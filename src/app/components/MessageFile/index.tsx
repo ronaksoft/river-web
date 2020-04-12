@@ -80,8 +80,12 @@ export const getFileInfo = (message: IMessage): IFileInfo => {
     return info;
 };
 
-export const getFileExtension = (type: string, name?: string) => {
-    switch (type) {
+export const getFileExtension = (mime: string, name?: string) => {
+    const arrs = mime.split(';');
+    if (arrs.length > 0) {
+        mime = arrs[0];
+    }
+    switch (mime) {
         case 'text/plain':
             return 'txt';
         case 'text/markdown':

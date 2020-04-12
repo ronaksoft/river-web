@@ -60,7 +60,7 @@ export default class FileRepo {
         this.db = this.dbService.getDB();
     }
 
-    public getTemp(id: string, part: number): Promise<ITempFile> {
+    public getTemp(id: string, part: number): Promise<ITempFile | undefined> {
         return this.db.temps.where('[id+part]').equals([id, part]).filter((item) => {
             return item.part === part;
         }).first();
@@ -87,7 +87,7 @@ export default class FileRepo {
         return pipe.toArray();
     }
 
-    public persistTempFiles(id: string, docId: string, mimeType: string) {
+    public persistTempFiles(id: string, docId: string, mimeType: string, useBuffer?: boolean) {
         return this.get(docId).then((file) => {
             if (file) {
                 return {
@@ -109,7 +109,7 @@ export default class FileRepo {
                     const blob = new Blob(blobs, {type: mimeType});
                     setTimeout(() => {
                         this.removeTempsById(id);
-                    }, 1000);
+                    }, useBuffer ? 10000 : 1000);
                     return this.createWithHash(docId, blob);
                 });
             }

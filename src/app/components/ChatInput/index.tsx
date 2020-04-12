@@ -1969,6 +1969,10 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private getUploaderInput(mimeType: string) {
+        const arrs = mimeType.split(';');
+        if (arrs.length > 0) {
+            mimeType = arrs[0];
+        }
         switch (mimeType) {
             case 'image/png':
             case 'image/jpeg':

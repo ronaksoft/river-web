@@ -1,3 +1,6 @@
+## 0.32.9
+* 🎉 Video streaming
+
 ## 0.32.8
 * UI bug fixed
 * Minor improvements

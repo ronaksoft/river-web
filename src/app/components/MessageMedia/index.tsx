@@ -225,6 +225,7 @@ interface IState {
     fileState: 'download' | 'view' | 'progress' | 'open';
     info: IMediaInfo;
     message: IMessage;
+    streamReady: boolean;
     transition: boolean;
 }
 
@@ -275,6 +276,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             fileState: this.getFileState(props.message),
             info,
             message: props.message,
+            streamReady: this.isStreamReady(info.mimeType || ''),
             transition: false,
         };
 
@@ -314,6 +316,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 fileState: this.getFileState(newProps.message),
                 info,
                 message: newProps.message,
+                streamReady: this.isStreamReady(info.mimeType || ''),
             }, () => {
                 this.initProgress();
             });
@@ -359,7 +362,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     /* View downloaded document */
     public viewDocument = () => {
         const {fileState, message} = this.state;
-        if (this.mediaBigRef && (fileState === 'view' || fileState === 'open')) {
+        if (this.mediaBigRef && (fileState === 'view' || fileState === 'open' || true)) {
             this.showMediaHandler(this.mediaBigRef);
             if (!this.contentRead && this.props.onAction) {
                 this.contentRead = true;
@@ -390,38 +393,17 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                          maxWidth: this.pictureContentSize.maxWidth,
                          minWidth: this.pictureContentSize.width,
                      }}>
-                    {Boolean(info.duration) &&
-                    <div className="media-duration">
-                        <PlayArrowRounded/><span>{getDuration(info.duration || 0)}</span>
-                        {!message.contentread && <span className="unread-bullet"/>}
-                    </div>}
+                    {this.durationContent()}
                     {Boolean(((fileState !== 'view' && fileState !== 'open') || transition) && (message.id || 0) > 0) &&
                     <div className="media-container">
                         <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
-                        <div className="media-big" style={{height: this.pictureContentSize.height}}>
-                            {this.blurredImageEnable &&
-                            <CachedPhoto className="blurred-picture" blur={10}
-                                         fileLocation={info.thumbFile}/>}
-                            <CachedPhoto className="picture"
-                                         fileLocation={(message.id || 0) < 0 && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
-                                         style={this.pictureContentSize}
-                                         onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
-                            {this.getMediaAction()}
-                        </div>
+                        {this.getContent()}
                     </div>}
                     {Boolean((fileState === 'view' || fileState === 'open') || transition || (message.id || 0) < 0) &&
                     <div className={'media-container downloaded-media' + (transition ? ' media-transition' : '')}>
-                        <div ref={this.pictureBigRefHandler} style={{height: this.pictureContentSize.height}}
-                             className="media-big"
-                             onClick={this.showMediaHandler}>
-                            {this.blurredImageEnable &&
-                            <CachedPhoto className="blurred-picture" blur={10}
-                                         fileLocation={info.thumbFile} searchTemp={true}/>}
-                            <CachedPhoto className="picture" style={this.pictureContentSize}
-                                         fileLocation={message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
-                                         onLoad={this.cachedPhotoLoadHandler} searchTemp={true}/>
-                            {this.getMediaAction()}
-                        </div>
+                        {Boolean((message.id || 0) < 0) &&
+                        <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>}
+                        {this.getContent(true)}
                     </div>}
                 </div>
                 {Boolean(info.caption.length > 0) &&
@@ -431,6 +413,40 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 >{renderBody(info.caption, info.entityList, this.isElectron, this.props.onBodyAction, this.props.measureFn)}</div>}
             </div>
         );
+    }
+
+    private getContent(downloaded?: boolean) {
+        const {info, message} = this.state;
+        return (<div ref={this.pictureBigRefHandler} className="media-big"
+                     style={{height: this.pictureContentSize.height}}>
+            {this.blurredImageEnable &&
+            <CachedPhoto className="blurred-picture" blur={10}
+                         fileLocation={info.thumbFile}/>}
+            <CachedPhoto className="picture"
+                         fileLocation={(message.id || 0) < 0 && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
+                         style={this.pictureContentSize}
+                         onLoad={this.cachedPhotoLoadHandler} blur={downloaded ? undefined : 10} searchTemp={true}/>
+            {this.getMediaAction()}
+        </div>);
+    }
+
+    private durationContent() {
+        const {info, message, streamReady} = this.state;
+        if (Boolean(info.duration) && (message.id || 0) > 0) {
+            if (streamReady && !message.downloaded) {
+                return (<div className="media-duration media-stream-ready">
+                    {this.progressContent()}
+                    <span>{getDuration(info.duration || 0)}</span>
+                    {!message.contentread && <span className="unread-bullet"/>}
+                </div>);
+            } else {
+                return (<div className="media-duration">
+                    <PlayArrowRounded/><span>{getDuration(info.duration || 0)}</span>
+                    {!message.contentread && <span className="unread-bullet"/>}
+                </div>);
+            }
+        }
+        return null;
     }
 
     /* Ref handler */
@@ -462,22 +478,15 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     private getMediaAction() {
-        const {fileState, message} = this.state;
+        const {fileState, message, streamReady} = this.state;
         if ((message.id || 0) < 0 || fileState === 'download' || fileState === 'progress') {
-            return (
-                <div className="media-action">
-                    {Boolean(fileState === 'download') &&
-                    <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
-                    {Boolean(fileState === 'progress') && <React.Fragment>
-                        <div className="progress">
-                            <svg viewBox='0 0 32 32'>
-                                <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
-                            </svg>
-                        </div>
-                        <CloseRounded className="action" onClick={this.cancelFileHandler}/>
-                    </React.Fragment>}
-                </div>
-            );
+            if (streamReady && !message.downloaded && (message.id || 0) > 0) {
+                return (<div className="media-action" onClick={this.viewDocument}>
+                    <PlayArrowRounded/>
+                </div>);
+            } else {
+                return this.progressContent();
+            }
         } else if (message.messagetype === C_MESSAGE_TYPE.Video) {
             return (<div className="media-action" onClick={this.viewDocument}>
                 <PlayArrowRounded/>
@@ -485,6 +494,22 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         } else {
             return '';
         }
+    }
+
+    private progressContent() {
+        const {fileState} = this.state;
+        return (<div className="media-action">
+            {Boolean(fileState === 'download') &&
+            <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
+            {Boolean(fileState === 'progress') && <React.Fragment>
+                <div className="progress">
+                    <svg viewBox='0 0 32 32'>
+                        <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
+                    </svg>
+                </div>
+                <CloseRounded className="action" onClick={this.cancelFileHandler}/>
+            </React.Fragment>}
+        </div>);
     }
 
     /* Progress circle ref handler */
@@ -536,7 +561,10 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* Download file handler */
-    private downloadFileHandler = () => {
+    private downloadFileHandler = (e?: any) => {
+        if (e) {
+            e.stopPropagation();
+        }
         if (this.props.onAction) {
             this.props.onAction('download', this.state.message);
             this.setState({
@@ -589,6 +617,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
     /* Cancel file download/upload */
     private cancelFileHandler = (e: any) => {
+        e.stopPropagation();
         if (this.props.onAction) {
             e.stopPropagation();
             if (this.props.message && (this.props.message.id || 0) < 0) {
@@ -662,7 +691,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         if (e.stopPropagation) {
             e.stopPropagation();
         }
-        const {info, message} = this.state;
+        const {info, message, streamReady} = this.state;
         if (!info || !info.file) {
             return;
         }
@@ -691,6 +720,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             }],
             peerId: message.peerid || '',
             rect: el.getBoundingClientRect(),
+            stream: streamReady && !message.downloaded,
             type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
         };
         this.documentViewerService.loadDocument(doc);
@@ -716,6 +746,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private captionClickHandler = (e: any) => {
         e.stopPropagation();
         e.preventDefault();
+    }
+
+    private isStreamReady(mimeType: string) {
+        // @ts-ignore
+        if (MediaSource === undefined) {
+            return false;
+        }
+        return MediaSource.isTypeSupported(mimeType);
     }
 }
 

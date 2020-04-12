@@ -27,6 +27,7 @@ import RTLDetector from "../../services/utilities/rtl_detector";
 import {throttle} from 'lodash';
 import ImageEditor from "../ImageEditor";
 import VideoFrameSelector from "../VideoFrameSelector";
+import {getCodec} from "../StreamVideo/helper";
 
 import './style.scss';
 
@@ -59,6 +60,7 @@ export interface IUploaderFile extends FileWithPreview {
     duration?: number;
     height?: number;
     mediaType?: 'image' | 'video' | 'audio' | 'none';
+    mimeType?: string;
     performer?: string;
     ready?: boolean;
     rtl?: boolean;
@@ -380,7 +382,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             if (item.mediaType === 'image' && item.preview) {
                 this.getImageSize(item.preview, index);
             } else if (item.mediaType === 'video' && item.preview) {
-                this.getVideoSizeAndThumb(item.preview, index);
+                this.getVideoSizeAndThumb(item, index);
             } else if (item.mediaType === 'audio') {
                 this.getAudioMetadata(item, index);
             }
@@ -416,7 +418,8 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     /* Get video size and thumbnail */
-    private getVideoSizeAndThumb(src: string, index: number) {
+    private getVideoSizeAndThumb(item: IUploaderFile, index: number) {
+        const src = item.preview || '';
         const video = document.createElement('video');
         video.onloadedmetadata = () => {
             const {items} = this.state;
@@ -445,13 +448,15 @@ class MediaPreview extends React.Component<IProps, IState> {
                                         if (items[index].videoThumb) {
                                             this.previewRefs[index].push(items[index].videoThumb || '');
                                         }
-                                        items[index].ready = true;
                                     }
-                                    this.setState({
-                                        items,
-                                    }, () => {
-                                        video.remove();
-                                        canvas.remove();
+                                    video.remove();
+                                    canvas.remove();
+                                    getCodec(item.type, item).then((mime) => {
+                                        item.mimeType = mime;
+                                        items[index].ready = true;
+                                        this.setState({
+                                            items,
+                                        });
                                     });
                                 }, 'image/jpeg', '0.8');
                             } else {
@@ -588,6 +593,10 @@ class MediaPreview extends React.Component<IProps, IState> {
 
     /* Get type by mime */
     private getTypeByMime(mime: string) {
+        const a = mime.split(';');
+        if (a.length > 0) {
+            mime = a[0];
+        }
         switch (mime) {
             case 'image/png':
             case 'image/jpeg':
@@ -697,7 +706,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                         caption: items[i].caption || '',
                         duration: items[i].duration ? Math.round(items[i].duration || 0) : undefined,
                         file: dist[i * 2],
-                        fileType: items[i].type,
+                        fileType: items[i].mimeType || items[i].type,
                         mediaType: items[i].mediaType || 'none',
                         name: items[i].name,
                         performer: items[i].performer,

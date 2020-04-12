@@ -146,6 +146,7 @@ import {
     EventWebSocketClose, EventWebSocketOpen
 } from "../../services/events";
 import Smoother from "../../services/utilities/smoother";
+import BufferProgressBroadcaster from "../../services/bufferProgress";
 
 import './style.scss';
 
@@ -205,6 +206,7 @@ class Chat extends React.Component<IProps, IState> {
     private electronService: ElectronService;
     private riverTime: RiverTime;
     private progressBroadcaster: ProgressBroadcaster;
+    private bufferProgressBroadcaster: BufferProgressBroadcaster;
     private firstTimeLoad: boolean = true;
     private rtlDetector: RTLDetector;
     private moveDownRef: MoveDown | undefined;
@@ -287,6 +289,7 @@ class Chat extends React.Component<IProps, IState> {
         this.isMobileView = (window.innerWidth < 600);
         this.updateManager.setUserId(this.connInfo.UserID || '');
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
+        this.bufferProgressBroadcaster = BufferProgressBroadcaster.getInstance();
         this.electronService = ElectronService.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
         this.messageReadThrottle = throttle(this.readMessage, 256);
@@ -559,7 +562,7 @@ class Chat extends React.Component<IProps, IState> {
                                   onAction={this.leftMenuActionHandler}
                                   onGroupCreate={this.leftMenuGroupCreateHandler}
                                   onMenuShrunk={this.leftMenuMenuShrunkHandler}
-                                  onError={this.leftMenuErrorHandler}
+                                  onError={this.textErrorHandler}
                                   iframeActive={this.state.iframeActive}
                                   mobileView={this.isMobileView}
                         />
@@ -802,7 +805,8 @@ class Chat extends React.Component<IProps, IState> {
                                onClose={this.forwardDialogCloseHandler}/>
                 <UserDialog key="user-dialog" ref={this.userDialogRefHandler} onAction={this.userDialogActionHandler}/>
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
-                                onJumpOnMessage={this.documentViewerJumpOnMessageHandler}/>
+                                onJumpOnMessage={this.documentViewerJumpOnMessageHandler}
+                                onError={this.textErrorHandler}/>
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler}/>
@@ -2779,7 +2783,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private leftMenuErrorHandler = (text: string) => {
+    private textErrorHandler = (text: string) => {
         if (this.props.enqueueSnackbar) {
             this.props.enqueueSnackbar(text);
         }
@@ -2969,7 +2973,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.cancelSend(message.id || 0);
                 break;
             case 'download':
-                this.downloadFile(message);
+            case 'download_stream':
+                this.downloadFile(message, cmd === 'download_stream');
                 break;
             case 'save':
                 this.saveFile(message);
@@ -3864,14 +3869,15 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview' | 'start_bot', message: IMessage | number, fileId?: string) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview' | 'start_bot', message: IMessage | number, fileId?: string) => {
         const execute = (msg: IMessage) => {
             switch (cmd) {
                 case 'cancel':
                     this.cancelSend(msg.id || 0);
                     break;
                 case 'download':
-                    this.downloadFile(msg);
+                case 'download_stream':
+                    this.downloadFile(msg, cmd === 'download_stream');
                     break;
                 case 'cancel_download':
                     this.cancelDownloadFile(msg);
@@ -3915,6 +3921,8 @@ class Chat extends React.Component<IProps, IState> {
                     if (msg) {
                         execute(msg);
                     }
+                }).catch((err) => {
+                    window.console.log(message, err);
                 });
             }
         } else {
@@ -3967,7 +3975,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Download file */
-    private downloadFile(msg: IMessage) {
+    private downloadFile(msg: IMessage, userBuffer: boolean) {
         const mediaDocument = getMediaDocument(msg);
         if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
             const fileLocation = new InputFileLocation();
@@ -3975,11 +3983,22 @@ class Chat extends React.Component<IProps, IState> {
             fileLocation.setClusterid(mediaDocument.doc.clusterid || 1);
             fileLocation.setFileid(mediaDocument.doc.id);
             fileLocation.setVersion(mediaDocument.doc.version || 0);
-            this.fileManager.receiveFile(fileLocation, mediaDocument.doc.md5checksum || '', mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
-                this.progressBroadcaster.publish(msg.id || 0, progress);
-            }).then(() => {
+            let downloadPromise: any = null;
+            if (userBuffer) {
+                downloadPromise = this.fileManager.downloadStreamFile(fileLocation, mediaDocument.doc.md5checksum || '', mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (bufferProgress) => {
+                    this.bufferProgressBroadcaster.publish(msg.id || 0, bufferProgress);
+                }, (progress) => {
+                    this.progressBroadcaster.publish(msg.id || 0, progress);
+                });
+            } else {
+                downloadPromise = this.fileManager.receiveFile(fileLocation, mediaDocument.doc.md5checksum || '', mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
+                    this.progressBroadcaster.publish(msg.id || 0, progress);
+                });
+            }
+            downloadPromise.then(() => {
                 this.broadcastEvent('File_Downloaded', {id: msg.id});
                 this.progressBroadcaster.remove(msg.id || 0);
+                this.bufferProgressBroadcaster.remove(msg.id || 0);
                 msg.downloaded = true;
                 this.messageRepo.lazyUpsert([msg]);
                 if (fileLocation) {
@@ -4004,11 +4023,12 @@ class Chat extends React.Component<IProps, IState> {
                 if (msg.messagetype === C_MESSAGE_TYPE.File && this.settingsConfigManager.getDownloadSettings().auto_save_files) {
                     this.saveFile(msg);
                 }
-            }).catch((err) => {
+            }).catch((err: any) => {
                 window.console.debug(err);
-                if (err.code !== C_FILE_ERR_CODE.ALREADY_IN_QUEUE) {
+                if (err && err.code !== C_FILE_ERR_CODE.ALREADY_IN_QUEUE) {
                     this.progressBroadcaster.failed(msg.id || 0);
                     this.progressBroadcaster.remove(msg.id || 0);
+                    this.bufferProgressBroadcaster.remove(msg.id || 0);
                 }
             });
         }
@@ -4030,11 +4050,11 @@ class Chat extends React.Component<IProps, IState> {
     /* ChatInput media select handler */
     private chatInputMediaSelectHandler = (items: IMediaItem[], param?: any) => {
         items.forEach((item) => {
-            this.fileManager.getFileLocationBySha256(item.file).then((fileLocation) => {
-                this.sendMediaMessage(item.mediaType, item, fileLocation, param);
-            }).catch(() => {
+            // this.fileManager.getFileLocationBySha256(item.file).then((fileLocation) => {
+            //     this.sendMediaMessage(item.mediaType, item, fileLocation, param);
+            // }).catch(() => {
                 this.sendMediaMessage(item.mediaType, item, null, param);
-            });
+            // });
         });
     }
 

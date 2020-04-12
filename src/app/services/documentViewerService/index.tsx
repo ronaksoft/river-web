@@ -37,7 +37,8 @@ export interface IDocument {
     rect?: ClientRect;
     peer?: InputPeer;
     photoId?: string;
-    type: 'avatar' | 'picture' | 'video' | 'video_stream' | 'location' | 'code';
+    type: 'avatar' | 'picture' | 'video' | 'location' | 'code';
+    stream?: boolean;
 }
 
 export default class DocumentViewerService {

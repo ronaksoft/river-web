@@ -218,6 +218,17 @@
   }
 }
 
+.bubble-wrapper.related, .group .bubble-wrapper.avatar {
+  .message-file {
+    &.has-thumbnail {
+      .file-thumbnail {
+        top: 1px;
+        height: 62px;
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {

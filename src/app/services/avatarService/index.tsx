@@ -176,7 +176,9 @@ export default class AvatarService {
                                     this.throttleBroadcast([{id, fileId}]);
                                     resolve(this.avatars[id].src);
                                 } else {
-                                    this.avatars[id].retries++;
+                                    if (this.avatars[id]) {
+                                        this.avatars[id].retries++;
+                                    }
                                     reject();
                                 }
                             });

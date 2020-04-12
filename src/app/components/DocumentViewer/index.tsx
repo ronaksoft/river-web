@@ -47,6 +47,7 @@ import Scrollbars from "react-custom-scrollbars";
 import {EventKeyDown, EventMouseMove, EventMouseUp} from "../../services/events";
 
 import './style.scss';
+import StreamVideo from "../StreamVideo";
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -81,8 +82,9 @@ interface ISize {
 
 interface IProps {
     className?: string;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileId?: string) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileId?: string) => void;
     onJumpOnMessage?: (id: number) => void;
+    onError: (text: string) => void;
 }
 
 interface IState {
@@ -281,15 +283,23 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                         <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
                                                      blur={item.downloaded === false ? 10 : 0}/>
                                     </div>}
-                                    {Boolean(!item.downloaded && item.duration) &&
+                                    {Boolean(!item.downloaded && item.duration && !doc.stream) &&
                                     <div className="media-duration">
                                         <PlayArrowRounded/><span>{getDuration(item.duration || 0)}</span>
                                     </div>}
-                                    {this.getDownloadAction()}
-                                    {Boolean(item.downloaded !== false) &&
+                                    {!Boolean(doc.stream) && this.getDownloadAction()}
+                                    {Boolean(item.downloaded !== false && !doc.stream) &&
                                     <CachedVideo className="video" fileLocation={item.fileLocation}
                                                  autoPlay={this.firstTimeLoad}
                                                  timeOut={200} onPlay={this.cachedVideoPlayHandler}/>}
+                                    {Boolean(doc.stream) &&
+                                    <StreamVideo className="video" fileLocation={item.fileLocation}
+                                                 size={item.fileSize || 0} mimeType={item.mimeType}
+                                                 autoPlay={this.firstTimeLoad} msgId={item.id || 0}
+                                                 onPlay={this.cachedVideoPlayHandler}
+                                                 onStartDownload={this.videoStreamStartDownloadHandler}
+                                                 onError={this.videoStreamErrorHandler}
+                                    />}
                                 </div>
                             </React.Fragment>
                         );
@@ -346,6 +356,23 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
         return (<DownloadProgress id={doc.items[0].id || 0} fileSize={doc.items[0].fileSize || 0}
                                   onAction={this.props.onAction} onComplete={this.downloadCompleteHandler}/>);
+    }
+
+    private videoStreamStartDownloadHandler = (msgId: number) => {
+        if (this.props.onAction) {
+            this.props.onAction('download_stream', msgId);
+        }
+    }
+
+    private videoStreamErrorHandler = () => {
+        const {doc} = this.state;
+        if (doc) {
+            doc.stream = false;
+            this.props.onError(i18n.t('media.cannot_stream_video'));
+            this.setState({
+                doc,
+            });
+        }
     }
 
     private initPagination() {

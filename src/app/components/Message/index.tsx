@@ -703,7 +703,7 @@ class Message extends React.Component<IProps, IState> {
         const menuItems: any[] = [];
         const id = items[moreIndex].id;
         const me = items[moreIndex].me;
-        const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio];
+        const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio, C_MESSAGE_TYPE.Video];
         if (id && id < 0) {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {

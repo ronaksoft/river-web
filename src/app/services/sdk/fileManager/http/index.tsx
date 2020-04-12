@@ -221,6 +221,7 @@ export default class Http {
                 this.workerMessage('fnDecrypt', uint8ToBase64(data));
             }
         }).catch((err) => {
+            window.console.log(err);
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 if (!axios.isCancel(err)) {
                     this.messageListeners[reqId].reject(err);

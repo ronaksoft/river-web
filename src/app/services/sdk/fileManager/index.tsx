@@ -35,7 +35,6 @@ export interface IFileProgress {
 }
 
 export interface IFileBuffer {
-    buffer?: ArrayBuffer;
     cache: boolean;
     completed: boolean;
     part: number;
@@ -623,24 +622,26 @@ export default class FileManager {
                 }
             } else if (chunkInfo.doneParts === chunkInfo.totalParts) {
                 if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                    if (this.fileDownloadQueue[id].completed) {
+                    const downloadInfo = this.fileDownloadQueue[id];
+                    if (downloadInfo.completed) {
                         return;
                     }
-                    const instant = this.fileDownloadQueue[id].size === 0;
+                    const instant = downloadInfo.size === 0;
                     this.fileDownloadQueue[id].completed = true;
                     this.clearDownloadQueueById(id);
                     this.dispatchDownloadProgress(id, 'complete');
-                    this.fileRepo.persistTempFiles(id, id, this.fileDownloadQueue[id].mimeType || 'application/octet-stream').then((res) => {
+                    this.fileRepo.persistTempFiles(id, id, downloadInfo.mimeType || 'application/octet-stream', downloadInfo.onBuffer !== undefined).then((res) => {
                         if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                            const downloadInfo2 = this.fileDownloadQueue[id];
                             let check = true;
-                            if (res && this.fileDownloadQueue[id].md5 && this.fileDownloadQueue[id].md5 !== '' && this.fileDownloadQueue[id].md5 !== res.md5) {
+                            if (res && downloadInfo2.md5 && downloadInfo2.md5 !== '' && downloadInfo2.md5 !== res.md5) {
                                 check = false;
                                 this.fileRepo.remove(id).finally(() => {
-                                    this.fileDownloadQueue[id].reject(`md5 hashes are not match. ${this.fileDownloadQueue[id].md5}, ${res.md5}`);
+                                    downloadInfo2.reject(`md5 hashes are not match. ${downloadInfo2.md5}, ${res.md5}`);
                                     delete this.fileDownloadQueue[id];
                                 });
                             } else {
-                                this.fileDownloadQueue[id].resolve();
+                                downloadInfo2.resolve();
                             }
                             if (check) {
                                 delete this.fileDownloadQueue[id];
@@ -730,9 +731,6 @@ export default class FileManager {
     private download(fileLocation: core_types_pb.InputFileLocation, part: number, offset: number, limit: number, cancel: any, onUploadProgress: (e: any) => void, onDownloadProgress: (e: any) => void, useBuffer: boolean): Promise<number> {
         return this.receiveFileChunk(fileLocation, offset, limit, cancel, onUploadProgress, onDownloadProgress).then((res) => {
             const id = fileLocation.getFileid() || '';
-            if (useBuffer) {
-                this.dispatchBuffer(id, part, res.getBytes_asU8().buffer);
-            }
             return this.fileRepo.setTemp({
                 data: new Blob([res.getBytes_asU8()]),
                 id,
@@ -740,6 +738,12 @@ export default class FileManager {
                 part,
                 type: res.getType(),
             }).then(() => {
+                if (useBuffer) {
+                    if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                        this.fileDownloadQueue[id].bufferedParts.push(part);
+                    }
+                    this.dispatchBuffer(id);
+                }
                 return res.getBytes_asU8().byteLength;
             });
         });
@@ -967,7 +971,7 @@ export default class FileManager {
                 }
             }
             if (this.fileDownloadQueue[id].onBuffer !== undefined && res.length > 0) {
-                this.dispatchBuffer(id, res[res.length - 1].part);
+                this.dispatchBuffer(id);
             }
             doneCallback();
         }).catch(() => {
@@ -1145,82 +1149,33 @@ export default class FileManager {
         }, 110);
     }
 
-    private dispatchBuffer(id: string, part: number, buffer?: ArrayBuffer) {
-        return new Promise((resolve) => {
-            if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                const fileInfo = this.fileDownloadQueue[id];
-                if (buffer && fileInfo.bufferCurrentPart + 1 === part) {
-                    if (fileInfo.onBuffer) {
-                        fileInfo.onBuffer({
-                            buffer,
-                            cache: false,
-                            completed: (fileInfo.totalParts === part),
-                            part,
-                        });
-                    }
-                    if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                        this.fileDownloadQueue[id].bufferCurrentPart = part;
-                    }
-                    resolve(part);
-                } else {
-                    fileInfo.bufferedParts.sort();
-                    const index = fileInfo.bufferedParts.indexOf(fileInfo.bufferCurrentPart);
-                    if (index > -1) {
-                        const fromPart = fileInfo.bufferedParts[index];
-                        let toPart: number = 0;
-                        for (let i = index + 1; i++; i < fileInfo.bufferedParts.length) {
-                            if (fileInfo.bufferedParts[i - 1] + 1 !== fileInfo.bufferedParts[i]) {
-                                toPart = fileInfo.bufferedParts[i - 1];
-                                break;
-                            }
-                        }
-                        if (toPart !== 0 && fromPart !== toPart) {
-                            this.dispatchBufferFromTempFiles(id, fromPart + 1, toPart, toPart === part ? buffer : undefined);
-                        }
-                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                            this.fileDownloadQueue[id].bufferCurrentPart = toPart;
-                        }
-                        resolve(toPart);
-                    } else {
-                        resolve(0);
-                    }
-                }
-            } else {
-                resolve(0);
-            }
-        });
-    }
-
-    private dispatchBufferFromTempFiles(id: string, from: number, to: number, buffer?: ArrayBuffer) {
-        if (!this.fileDownloadQueue.hasOwnProperty(id)) {
-            return;
-        }
-        const fileInfo = this.fileDownloadQueue[id];
-        if (buffer !== undefined) {
-            to = to - 1;
-            this.fileRepo.getTempsRangeById(id, from, to).then((res) => {
-                const promises: any[] = [];
-                res.forEach((item) => {
-                    promises.push(convertBlobToArrayBuffer(item.data));
-                });
-                Promise.all(promises).then((buffers) => {
-                    if (buffer !== undefined) {
-                        buffers.push(buffer);
-                    }
-                    let part = from;
-                    buffers.forEach((buff) => {
+    private dispatchBuffer(id: string) {
+        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+            const fileInfo = this.fileDownloadQueue[id];
+            const parts = fileInfo.bufferedParts.sort((i1, i2) => i1 - i2);
+            if (parts.length > 0) {
+                while (true) {
+                    const part = parts[0];
+                    if (fileInfo.bufferCurrentPart + 1 === part) {
                         if (fileInfo.onBuffer) {
                             fileInfo.onBuffer({
-                                buffer: buff,
                                 cache: false,
-                                completed: fileInfo.totalParts === part,
+                                completed: (fileInfo.totalParts === part),
                                 part,
                             });
                         }
-                        part++;
-                    });
-                });
-            });
+                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                            this.fileDownloadQueue[id].bufferCurrentPart = part;
+                        }
+                        fileInfo.bufferedParts.shift();
+                        if (fileInfo.bufferedParts.length === 0) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
         }
     }
 }

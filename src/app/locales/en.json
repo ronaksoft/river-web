@@ -317,7 +317,8 @@
     "location": "Location",
     "file": "File",
     "playing_from": "Playing from:",
-    "preview": "Preview"
+    "preview": "Preview",
+    "cannot_stream_video": "Cannot stream the video"
   },
   "input": {
     "you_are_no_longer_in_this_group": "You are no longer in this group",

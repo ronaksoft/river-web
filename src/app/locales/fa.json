@@ -307,13 +307,14 @@
     "global_search": "جستجو کلی"
   },
   "media": {
-    "photo_video": "تصویر و ویدو",
+    "photo_video": "تصویر و ویدئو",
     "audio": "پیام‌های صوتی",
     "contact": "مخاطب",
     "location": "نقشه",
     "file": "فایل",
     "playing_from": "در حال پخش از:",
-    "preview": "پیش نمایش"
+    "preview": "پیش نمایش",
+    "cannot_stream_video": "استریم ویدئو امکان پدیز نیست"
   },
   "input": {
     "you_are_no_longer_in_this_group": "شما دیگر در این گروه عضو نیستید",
