@@ -1,3 +1,7 @@
+## 0.32.8
+* UI bug fixed
+* Minor improvements
+
 ## 0.32.7
 * Label bug fixed
 

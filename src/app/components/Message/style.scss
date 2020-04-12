@@ -345,38 +345,38 @@
         line-height: 1.1em;
         text-align: center;
       }
+    }
 
-      ._mention {
-        color: var(--light-mention);
-        display: inline-block;
-        direction: ltr;
+    ._mention {
+      color: var(--light-mention);
+      display: inline-block;
+      direction: ltr;
 
-        &:hover {
-          text-decoration: underline;
-        }
+      &:hover {
+        text-decoration: underline;
       }
+    }
 
-      ._bold {
-        font-weight: bold;
-      }
+    ._bold {
+      font-weight: bold;
+    }
 
-      ._italic {
-        font-style: italic;
-      }
+    ._italic {
+      font-style: italic;
+    }
 
-      ._mail {
-      }
+    ._mail {
+    }
 
-      ._url {
-        color: var(--light-mention);
-        display: inline-block;
-        cursor: pointer;
-      }
+    ._url {
+      color: var(--light-mention);
+      display: inline-block;
+      cursor: pointer;
+    }
 
-      ._hashtag {
-        color: var(--light-mention);
-        display: inline-block;
-      }
+    ._hashtag {
+      color: var(--light-mention);
+      display: inline-block;
     }
 
     .more {
@@ -779,10 +779,8 @@ html[theme="dark-blue"] {
 
   .bubble-wrapper {
     .bubble {
-      .inner {
-        ._mention, ._hashtag, ._url {
-          color: var(--dark-mention);
-        }
+      ._mention, ._hashtag, ._url {
+        color: var(--dark-mention);
       }
     }
 
@@ -876,10 +874,8 @@ html[theme="dark-night"] {
 
   .bubble-wrapper {
     .bubble {
-      .inner {
-        ._mention, ._hashtag, _url {
-          color: var(--dark-night-mention);
-        }
+      ._mention, ._hashtag, _url {
+        color: var(--dark-night-mention);
       }
     }
 
@@ -932,10 +928,8 @@ html[theme="dark-blue"] {
 
   .bubble-wrapper {
     .bubble {
-      .inner {
-        ._mention, ._hashtag, _url {
-          color: var(--dark-blue-mention);
-        }
+      ._mention, ._hashtag, _url {
+        color: var(--dark-blue-mention);
       }
     }
 

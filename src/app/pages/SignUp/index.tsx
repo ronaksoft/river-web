@@ -39,24 +39,20 @@ import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/cha
 import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
 import {EventFocus, EventWasmInit, EventWebSocketOpen} from "../../services/events";
+import {detect} from 'detect-browser';
 
 import './tel-input.css';
 import './style.scss';
 
-function getChromeVersion() {
-    const raw = window.navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
-    return raw ? parseInt(raw[2], 10) : false;
+let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
+const electronVersion = ElectronService.electronVersion();
+const browserVersion = detect();
+if (electronVersion) {
+    C_CLIENT = `Desktop:- ${electronVersion} ${(browserVersion ? '(' + browserVersion.os +')' : '')}`;
+} else if (browserVersion) {
+    C_CLIENT = `Web:- ${browserVersion.name} ${browserVersion.version} (${browserVersion.os})`;
 }
 
-let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
-if (window.navigator.userAgent.indexOf(' electron/') > -1) {
-    const ver = getChromeVersion();
-    if (ver) {
-        C_CLIENT = `Desktop:- Chrome-${ver}`;
-    } else {
-        C_CLIENT = `Desktop:- ${window.navigator.userAgent}`;
-    }
-}
 export const codeLen = 5;
 export const codePlaceholder = [...new Array(codeLen)].map(o => '_').join('');
 
@@ -771,7 +767,7 @@ class SignUp extends React.Component<IProps, IState> {
             // this.notification.initToken().then((token) => {
             //     this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             // }).catch(() => {
-                this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+            this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
             // });
         }).catch((err) => {
             this.setState({
