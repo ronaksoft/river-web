@@ -15,7 +15,7 @@ import ChangePhone from "../SVG/change_phone";
 import Button from '@material-ui/core/Button';
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import TextField from "@material-ui/core/TextField/TextField";
-import SDK from "../../services/sdk";
+import APIManager from "../../services/sdk";
 import {AccountPassword} from "../../services/sdk/messages/chat.api.accounts_pb";
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
@@ -46,7 +46,7 @@ interface IState {
 }
 
 class ChangePhoneModal extends React.Component<IProps, IState> {
-    private sdk: SDK;
+    private apiManager: APIManager;
     private timeout: any = null;
     private userRepo: UserRepo;
 
@@ -63,7 +63,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
             step: 1,
         };
 
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
     }
 
@@ -209,7 +209,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
     }
 
     private getAccountPassword() {
-        this.sdk.accountGetPassword().then((res) => {
+        this.apiManager.accountGetPassword().then((res) => {
             this.setState({
                 accountPassword: res,
             });
@@ -258,7 +258,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
         if (phone === '') {
             return;
         }
-        this.sdk.accountSendChangePhoneCode(phone).then((res) => {
+        this.apiManager.accountSendChangePhoneCode(phone).then((res) => {
             this.setState({
                 phone: res.phone || '',
                 phoneHash: res.phonecodehash || '',
@@ -282,7 +282,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
             return;
         }
         const changeNumber = (inputPass?: InputPassword) => {
-            this.sdk.accountChangeNumber(phone, code, phoneHash, inputPass).then((res) => {
+            this.apiManager.accountChangeNumber(phone, code, phoneHash, inputPass).then((res) => {
                 this.setState({
                     step: 4,
                 });
@@ -290,9 +290,9 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                     id: this.userRepo.getCurrentUserId(),
                     phone,
                 }]);
-                const connInfo = this.sdk.getConnInfo();
+                const connInfo = this.apiManager.getConnInfo();
                 connInfo.Phone = phone;
-                this.sdk.setConnInfo(connInfo);
+                this.apiManager.setConnInfo(connInfo);
                 this.timeout = setTimeout(() => {
                     this.modalCloseHandler();
                 }, 4000);
@@ -325,7 +325,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
             });
         }
         if (accountPassword && accountPassword.getHaspassword()) {
-            this.sdk.genInputPassword(password, accountPassword).then((inputPassword) => {
+            this.apiManager.genInputPassword(password, accountPassword).then((inputPassword) => {
                 changeNumber(inputPassword);
             });
         } else {

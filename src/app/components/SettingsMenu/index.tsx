@@ -43,7 +43,7 @@ import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo from '../../repository/user';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 import {cloneDeep, debounce, find, findIndex, isEqual} from 'lodash';
 import Scrollbars from 'react-custom-scrollbars';
 import {
@@ -234,7 +234,7 @@ interface IState {
 
 class SettingsMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private readonly userId: string;
     private readonly currentAuthID: string;
     private readonly usernameCheckDebounce: any;
@@ -272,8 +272,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        this.sdk = SDK.getInstance();
-        this.userId = this.sdk.getConnInfo().UserID || '';
+        this.apiManager = APIManager.getInstance();
+        this.userId = this.apiManager.getConnInfo().UserID || '';
 
         this.state = {
             avatarMenuAnchorEl: null,
@@ -295,7 +295,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             pageContent: 'none',
             pageSubContent: 'none',
             passwordMode: 0,
-            phone: this.sdk.getConnInfo().Phone || '',
+            phone: this.apiManager.getConnInfo().Phone || '',
             privacy: cloneDeep(privacyDefault),
             profileCropperOpen: false,
             profilePictureCrop: {
@@ -343,7 +343,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.backgroundService = BackgroundService.getInstance();
         this.settingsConfigManger = SettingsConfigManager.getInstance();
 
-        this.currentAuthID = this.sdk.getConnInfo().AuthID;
+        this.currentAuthID = this.apiManager.getConnInfo().AuthID;
 
         this.electronService = ElectronService.getInstance();
         this.hasScrollbar = getScrollbarWidth() > 0;
@@ -385,8 +385,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     customBackgroundSrc: URL.createObjectURL(res),
                 });
             }
+        }).catch(() => {
+            //
         });
-        this.sdk.systemGetInfo(true).then((res) => {
+        this.apiManager.systemGetInfo(true).then((res) => {
             this.setState({
                 riverGroupName: res.workgroupname || '',
             });
@@ -1287,7 +1289,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             window.location.reload();
         };
         if (l !== lang) {
-            this.sdk.setLang(lang).then(() => {
+            this.apiManager.setLang(lang).then(() => {
                 fn();
             }).catch(() => {
                 fn();
@@ -1422,7 +1424,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 const inputUser = new InputUser();
                 inputUser.setAccesshash('0');
                 inputUser.setUserid(this.userId);
-                return this.sdk.getUserFull([inputUser]).then((data) => {
+                return this.apiManager.getUserFull([inputUser]).then((data) => {
                     const index = findIndex(data.usersList, {id: this.userId});
                     if (index > -1) {
                         return data.usersList[index];
@@ -1498,7 +1500,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private checkUsername = (username: string) => {
-        this.sdk.usernameAvailable(username).then((res) => {
+        this.apiManager.usernameAvailable(username).then((res) => {
             this.setState({
                 usernameAvailable: res.result || false,
             });
@@ -1591,7 +1593,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (!user) {
             return;
         }
-        this.sdk.updateProfile(firstname, lastname, bio).then(() => {
+        this.apiManager.updateProfile(firstname, lastname, bio).then(() => {
             user.firstname = firstname;
             user.lastname = lastname;
             user.bio = bio;
@@ -1626,7 +1628,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             });
             return;
         }
-        this.sdk.updateUsername(username).then((res) => {
+        this.apiManager.updateUsername(username).then((res) => {
             user.firstname = res.firstname;
             user.lastname = res.lastname;
             user.username = res.username;
@@ -1711,7 +1713,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             inputFile.setFilename(`picture_${id}.ogg`);
             inputFile.setMd5checksum('');
             inputFile.setTotalparts(1);
-            this.sdk.uploadProfilePicture(inputFile).then((res) => {
+            this.apiManager.uploadProfilePicture(inputFile).then((res) => {
                 const {user} = this.state;
                 if (user) {
                     user.photo = res;
@@ -1804,7 +1806,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 this.showAvatarHandler();
                 break;
             case 'remove':
-                this.sdk.removeProfilePicture().then(() => {
+                this.apiManager.removeProfilePicture().then(() => {
                     const {user} = this.state;
                     if (user) {
                         if (user.photo) {
@@ -1917,7 +1919,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             loading: true,
         });
 
-        this.sdk.sessionGetAll().then((res) => {
+        this.apiManager.sessionGetAll().then((res) => {
             this.setState({
                 loading: false,
                 sessions: this.modifySessions(res.authorizationsList),
@@ -1945,7 +1947,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private terminateSessionHandler = () => {
         const {confirmDialogSelectedId} = this.state;
         if (confirmDialogSelectedId !== '') {
-            this.sdk.sessionTerminate(confirmDialogSelectedId).then(() => {
+            this.apiManager.sessionTerminate(confirmDialogSelectedId).then(() => {
                 const {sessions} = this.state;
                 if (confirmDialogSelectedId !== '0') {
                     const index = findIndex(sessions, {authid: confirmDialogSelectedId});
@@ -2043,7 +2045,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         const privacyList: PrivacyKey[] = [PrivacyKey.PRIVACYKEYCALL, PrivacyKey.PRIVACYKEYCHATINVITE, PrivacyKey.PRIVACYKEYFORWARDEDMESSAGE, PrivacyKey.PRIVACYKEYLASTSEEN, PrivacyKey.PRIVACYKEYPHONENUMBER, PrivacyKey.PRIVACYKEYPROFILEPHOTO];
         privacyList.forEach((pr) => {
             const key = this.getPrivacyType(pr);
-            this.sdk.getPrivacy(pr).then((res) => {
+            this.apiManager.getPrivacy(pr).then((res) => {
                 const {privacy} = this.state;
                 privacy[key] = this.transformPrivacy(res);
                 privacy[key].loading = false;
@@ -2263,7 +2265,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             }
         });
         if (diff) {
-            this.sdk.setPrivacy(data).then(() => {
+            this.apiManager.setPrivacy(data).then(() => {
                 this.lastPrivacy = cloneDeep(privacy);
             }).catch(() => {
                 this.setState({
@@ -2286,7 +2288,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     private changePhoneModalDoneHandler = () => {
         this.setState({
-            phone: this.sdk.getConnInfo().Phone || '',
+            phone: this.apiManager.getConnInfo().Phone || '',
         });
     }
 
@@ -2306,7 +2308,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private getPasswordSettings() {
-        this.sdk.accountGetPassword().then((res) => {
+        this.apiManager.accountGetPassword().then((res) => {
             this.setState({
                 passwordMode: res.getHaspassword() ? 2 : 1,
             });
@@ -2449,7 +2451,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         const inputUser = new InputUser();
         inputUser.setUserid(user.id || '');
         inputUser.setAccesshash(user.accesshash || '');
-        this.sdk.accountUnblock(inputUser).then(() => {
+        this.apiManager.accountUnblock(inputUser).then(() => {
             const index = findIndex(contactList, {id: user.id});
             if (index > -1) {
                 contactList.splice(index, 1);
@@ -2468,7 +2470,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        this.sdk.accountGetBlockedUser(skip || 0, C_BLOCKED_USER_LIST_LIMIT).then((res) => {
+        this.apiManager.accountGetBlockedUser(skip || 0, C_BLOCKED_USER_LIST_LIMIT).then((res) => {
             this.contactHasMore = res.usersList.length === C_BLOCKED_USER_LIST_LIMIT;
             if (!skip) {
                 this.setState({
@@ -2509,7 +2511,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     /* Remove synced contacts handler */
     private removeSyncedContactsHandler = () => {
-        this.sdk.deleteAllContacts().then(() => {
+        this.apiManager.deleteAllContacts().then(() => {
             if (this.props.onError) {
                 this.props.onError(i18n.t('settings.synced_contacts_removed_successfully'));
             }

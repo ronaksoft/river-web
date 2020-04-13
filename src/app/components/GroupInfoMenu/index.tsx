@@ -16,7 +16,7 @@ import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
     GroupFlags, InputFile, InputPeer, InputUser, ParticipantType, PeerNotifySettings, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
@@ -100,7 +100,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private loading: boolean = false;
     private readonly userId: string;
     private riverTime: RiverTime;
@@ -146,9 +146,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         // User Repository singleton
         this.userRepo = UserRepo.getInstance();
         // SDK singleton
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
 
-        this.userId = SDK.getInstance().getConnInfo().UserID || '';
+        this.userId = APIManager.getInstance().getConnInfo().UserID || '';
 
         this.fileManager = FileManager.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
@@ -457,7 +457,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return;
         }
         this.loading = true;
-        this.sdk.groupGetFull(peer).then((res) => {
+        this.apiManager.groupGetFull(peer).then((res) => {
             const group: IGroup = res.group;
             group.participantList = res.participantsList;
             group.photogalleryList = res.photogalleryList;
@@ -512,7 +512,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }
         if (title.length > 0 && group.title !== title) {
             this.loading = true;
-            this.sdk.groupEditTitle(peer, title).then(() => {
+            this.apiManager.groupEditTitle(peer, title).then(() => {
                 group.title = title;
                 this.setState({
                     group,
@@ -581,7 +581,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.moreCloseHandler();
         switch (cmd) {
             case 'remove':
-                this.sdk.groupRemoveMember(peer, user).then(() => {
+                this.apiManager.groupRemoveMember(peer, user).then(() => {
                     const index = findIndex(participants, {userid: currentUser.userid});
                     if (index > -1) {
                         participants.splice(index, 1);
@@ -594,7 +594,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 });
                 break;
             case 'promote':
-                this.sdk.groupUpdateAdmin(peer, user, true).then(() => {
+                this.apiManager.groupUpdateAdmin(peer, user, true).then(() => {
                     const index = findIndex(participants, {userid: currentUser.userid});
                     if (index > -1) {
                         participants[index].type = ParticipantType.PARTICIPANTTYPEADMIN;
@@ -605,7 +605,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 });
                 break;
             case 'demote':
-                this.sdk.groupUpdateAdmin(peer, user, false).then(() => {
+                this.apiManager.groupUpdateAdmin(peer, user, false).then(() => {
                     const index = findIndex(participants, {userid: currentUser.userid});
                     if (index > -1) {
                         participants[index].type = ParticipantType.PARTICIPANTTYPEMEMBER;
@@ -669,7 +669,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             // @ts-ignore
             member.userid = member.id;
             user.setAccesshash(member.accesshash || '');
-            promises.push(this.sdk.groupAddMember(peer, user, forwardLimit));
+            promises.push(this.apiManager.groupAddMember(peer, user, forwardLimit));
         });
         /* waits for all promises to be resolved */
         if (promises.length > 0) {
@@ -740,7 +740,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }
         settings.setFlags(0);
         settings.setSound('');
-        this.sdk.setNotifySettings(peer, settings).then(() => {
+        this.apiManager.setNotifySettings(peer, settings).then(() => {
             dialog.notifysettings = settings.toObject();
             this.setState({
                 dialog,
@@ -795,7 +795,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             }
         };
         toggleAdmin();
-        this.sdk.groupToggleAdmin(peer, !e.currentTarget.checked).then(() => {
+        this.apiManager.groupToggleAdmin(peer, !e.currentTarget.checked).then(() => {
             this.loading = false;
         }).catch(() => {
             toggleAdmin();
@@ -854,7 +854,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             inputFile.setFilename(`picture_${id}.jpg`);
             inputFile.setMd5checksum('');
             inputFile.setTotalparts(1);
-            this.sdk.groupUploadPicture(group.id || '', inputFile).then((res) => {
+            this.apiManager.groupUploadPicture(group.id || '', inputFile).then((res) => {
                 if (group) {
                     group.photo = res;
                 }
@@ -966,7 +966,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 break;
             case 'remove':
                 if (this.state.group) {
-                    this.sdk.groupRemovePicture(this.state.group.id || '');
+                    this.apiManager.groupRemovePicture(this.state.group.id || '');
                 }
                 break;
             case 'change':

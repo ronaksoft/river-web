@@ -21,7 +21,7 @@ import {isProd} from "../../../../App";
 import IframeService from "../../iframe";
 import {isMobile} from "../../utilities/localize";
 import Presenter from "../presenters";
-import SDK from "../index";
+import APIManager from "../index";
 
 export interface IFileProgress {
     active?: boolean;
@@ -149,7 +149,7 @@ export default class FileManager {
     private fileBundle: IFileBundle[] = [];
     private reqId: number = 0;
     private readonly fileGetManyThrottle: any = null;
-    private sdk: SDK;
+    private apiManager: APIManager;
 
     public constructor() {
         if (localStorage.getItem('river.conn.info')) {
@@ -165,7 +165,7 @@ export default class FileManager {
         }
         this.fileRepo = FileRepo.getInstance();
         this.fileGetManyThrottle = throttle(this.downloadMany, 100);
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
     }
 
     public setUrl(url: string) {
@@ -182,7 +182,7 @@ export default class FileManager {
                 reader.onloadend = () => {
                     crypto.subtle.digest('SHA-256', reader.result as ArrayBuffer).then((sha256) => {
                         const ui8Sha256 = new Uint8Array(sha256);
-                        this.sdk.getFileBySha256(ui8Sha256, blob.size).then((fileLocation) => {
+                        this.apiManager.getFileBySha256(ui8Sha256, blob.size).then((fileLocation) => {
                             resolve(fileLocation);
                         }).catch((err: any) => {
                             reject(err);
@@ -555,6 +555,7 @@ export default class FileManager {
                 } else {
                     this.startDownloadQueue();
                 }
+                this.cancel(id);
                 return;
             }
             const chunkInfo = this.fileDownloadQueue[id];

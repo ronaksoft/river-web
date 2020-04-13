@@ -13,7 +13,7 @@ import TextField from '@material-ui/core/TextField/TextField';
 import {CheckRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 import {PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
@@ -41,7 +41,7 @@ interface IState {
 class ContactMenus extends React.Component<IProps, IState> {
     private contactListRef: ContactList | undefined;
     private userRepo: UserRepo;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private broadcaster: Broadcaster;
 
     constructor(props: IProps) {
@@ -57,7 +57,7 @@ class ContactMenus extends React.Component<IProps, IState> {
         };
 
         this.userRepo = UserRepo.getInstance();
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
 
         this.broadcaster = Broadcaster.getInstance();
     }
@@ -200,7 +200,7 @@ class ContactMenus extends React.Component<IProps, IState> {
             lastname: lastName,
             phone,
         });
-        this.sdk.contactImport(true, contacts).then((data) => {
+        this.apiManager.contactImport(true, contacts).then((data) => {
             data.contactusersList.forEach((user) => {
                 this.userRepo.importBulk(true, [user]).then(() => {
                     if (this.contactListRef) {
@@ -235,7 +235,7 @@ class ContactMenus extends React.Component<IProps, IState> {
             case 'remove':
                 const contactIds: string[] = [];
                 contactIds.push(contact.id || '');
-                this.sdk.removeContact(contactIds).then(() => {
+                this.apiManager.removeContact(contactIds).then(() => {
                     this.userRepo.removeContact(contact.id || '').finally(() => {
                         if (this.contactListRef) {
                             this.contactListRef.reload();

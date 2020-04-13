@@ -10,7 +10,7 @@
 import DB from '../../services/db/user';
 import {IUser} from './interface';
 import {differenceBy, find, uniqBy, uniq, throttle} from 'lodash';
-import SDK from "../../services/sdk";
+import APIManager from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Dexie from 'dexie';
 import {Int64BE} from 'int64-buffer';
@@ -57,7 +57,7 @@ export default class UserRepo {
 
     private dbService: DB;
     private db: DexieUserDB;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private lastContactTimestamp: number = 0;
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
@@ -68,7 +68,7 @@ export default class UserRepo {
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.throttleBroadcastExecute = throttle(this.broadcastThrottledList, 255);
         this.riverTime = RiverTime.getInstance();
@@ -83,7 +83,7 @@ export default class UserRepo {
     }
 
     public getCurrentUserId(): string {
-        return this.sdk.getConnInfo().UserID || '';
+        return this.apiManager.getConnInfo().UserID || '';
     }
 
     public create(user: IUser) {
@@ -125,7 +125,7 @@ export default class UserRepo {
                     const input: InputUser = new InputUser();
                     input.setUserid(user.id || '');
                     input.setAccesshash(user.accesshash || '');
-                    this.sdk.getUserFull([input]).then((res) => {
+                    this.apiManager.getUserFull([input]).then((res) => {
                         let u: IUser | undefined = find(res.usersList, {id});
                         if (u) {
                             u.is_contact = user.is_contact;
@@ -166,7 +166,7 @@ export default class UserRepo {
         const reg = new RegExp(keyword || '', 'gi');
         const searchFilter = (u: IUser) => {
             if (reg.test('Saved Messages')) {
-                if (u.id === this.sdk.getConnInfo().UserID) {
+                if (u.id === this.apiManager.getConnInfo().UserID) {
                     return true;
                 }
             }
@@ -248,7 +248,7 @@ export default class UserRepo {
                 });
             } else {
                 const crc32 = this.getContactsCrc();
-                this.sdk.getContacts(crc32 + 1).then((remoteRes) => {
+                this.apiManager.getContacts(crc32 + 1).then((remoteRes) => {
                     if (remoteRes.modified) {
                         this.importBulk(true, remoteRes.contactusersList).then(() => {
                             this.importBulk(false, remoteRes.usersList);
@@ -278,7 +278,7 @@ export default class UserRepo {
     }
 
     public contactSearch(query: string) {
-        return this.sdk.contactSearch(query).then((res) => {
+        return this.apiManager.contactSearch(query).then((res) => {
             this.importBulk(false, res.usersList);
             return res.usersList;
         }).catch((err) => {

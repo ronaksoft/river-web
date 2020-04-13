@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import {CloseRounded} from "@material-ui/icons";
@@ -34,7 +34,7 @@ interface IState {
 }
 
 class Loading extends React.Component<IProps, IState> {
-    private sdk: SDK;
+    private apiManager: APIManager;
     private tm: any = null;
     private iframeService: IframeService;
     private versionClickTimeout: any = null;
@@ -52,17 +52,17 @@ class Loading extends React.Component<IProps, IState> {
             msg: '',
             percent: 0,
         };
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
     }
 
     public componentDidMount() {
         window.addEventListener('wasmInit', this.wasmInitHandler);
         window.addEventListener('authProgress', this.authProgressHandler);
         window.addEventListener('fnStarted', this.fnStartedHandler);
-        this.sdk.loadConnInfo();
-        if ((this.sdk.getConnInfo().UserID || 0) > 0) {
+        this.apiManager.loadConnInfo();
+        if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
             this.props.history.push('/chat/null');
-        } else if (this.sdk.getConnInfo().AuthID !== '0') {
+        } else if (this.apiManager.getConnInfo().AuthID !== '0') {
             this.props.history.push('/signup/null');
         }
 
@@ -162,7 +162,7 @@ class Loading extends React.Component<IProps, IState> {
     }
 
     private wasmInitHandler = () => {
-        // this.sdk.authRecall('0');
+        // this.apiManager.authRecall('0');
     }
 
     private authProgressHandler = (event: any) => {
@@ -177,7 +177,7 @@ class Loading extends React.Component<IProps, IState> {
     private fnStartedHandler = (event: any) => {
         const duration = event.detail.duration;
         if (duration === -1) {
-            if ((this.sdk.getConnInfo().UserID || 0) > 0) {
+            if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
                 this.props.history.push('/chat/null');
             } else {
                 this.props.history.push('/signup/null');
@@ -187,7 +187,7 @@ class Loading extends React.Component<IProps, IState> {
                 msg: `It took ${duration} seconds to secure your connection`,
             });
             setTimeout(() => {
-                if ((this.sdk.getConnInfo().UserID || 0) > 0) {
+                if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
                     this.props.history.push('/chat/null');
                 } else {
                     this.props.history.push('/signup/null');

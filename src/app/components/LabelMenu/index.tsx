@@ -26,7 +26,7 @@ import {localize} from "../../services/utilities/localize";
 import Scrollbars from "react-custom-scrollbars";
 import {throttle, findIndex} from "lodash";
 import {labelColors} from "./vars";
-import SDK from "../../services/sdk";
+import APIManager from "../../services/sdk";
 import {ILabel} from "../../repository/label/interface";
 import LabelRepo from "../../repository/label";
 import Broadcaster from "../../services/broadcaster";
@@ -81,7 +81,7 @@ const C_LABEL_LIST_LIMIT = 20;
 
 class LabelMenu extends React.Component<IProps, IState> {
     private list: FixedSizeList | undefined;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private labelRepo: LabelRepo;
     private broadcaster: Broadcaster;
     private readonly searchThrottle: any;
@@ -110,7 +110,7 @@ class LabelMenu extends React.Component<IProps, IState> {
             selectedIds: [],
         };
 
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.labelRepo = LabelRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.searchThrottle = throttle(this.searchIt, 512);
@@ -368,7 +368,7 @@ class LabelMenu extends React.Component<IProps, IState> {
             loading: true,
         });
         if (selectedId === 0) {
-            this.sdk.labelCreate(this.state.name, this.state.color).then((res) => {
+            this.apiManager.labelCreate(this.state.name, this.state.color).then((res) => {
                 const {list} = this.state;
                 list.push({
                     colour: res.colour || '',
@@ -393,7 +393,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                 }
             });
         } else {
-            this.sdk.labelEdit(selectedId, this.state.name, this.state.color).then(() => {
+            this.apiManager.labelEdit(selectedId, this.state.name, this.state.color).then(() => {
                 const {list} = this.state;
                 const index = list.findIndex(o => o.id === selectedId);
                 if (index > -1) {
@@ -480,7 +480,7 @@ class LabelMenu extends React.Component<IProps, IState> {
 
     private confirmAcceptHandler = () => {
         const {selectedIds} = this.state;
-        this.sdk.labelDelete(selectedIds).then(() => {
+        this.apiManager.labelDelete(selectedIds).then(() => {
             const {list} = this.state;
             selectedIds.forEach((id) => {
                 const index = findIndex(list, {id});

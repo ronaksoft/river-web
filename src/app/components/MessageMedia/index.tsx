@@ -17,7 +17,7 @@ import {
     DocumentAttributeType, DocumentAttributeVideo,
     MediaDocument
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
-import {CloseRounded, CloudDownloadRounded, PlayArrowRounded} from '@material-ui/icons';
+import {CloseRounded, ArrowDownwardRounded, PlayArrowRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 import CachedPhoto from '../CachedPhoto';
@@ -215,7 +215,7 @@ export const getDuration = (duration: number) => {
 interface IProps {
     measureFn: any;
     message: IMessage;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read', message: IMessage) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'read', message: IMessage) => void;
     onBodyAction: (cmd: string, text: string) => void;
     parentEl: any;
     peer: InputPeer | null;
@@ -384,7 +384,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {fileState, info, message, transition} = this.state;
+        const {fileState, info, message, transition, streamReady} = this.state;
         return (
             <div ref={this.refHandler} className={'message-media' + this.messageMediaClass}>
                 <div className={'media-content' + (message.messagetype === C_MESSAGE_TYPE.Video ? ' video' : '')}
@@ -396,7 +396,8 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     {this.durationContent()}
                     {Boolean(((fileState !== 'view' && fileState !== 'open') || transition) && (message.id || 0) > 0) &&
                     <div className="media-container">
-                        <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
+                        {!Boolean(streamReady && !message.downloaded) &&
+                        <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>}
                         {this.getContent()}
                     </div>}
                     {Boolean((fileState === 'view' || fileState === 'open') || transition || (message.id || 0) < 0) &&
@@ -434,13 +435,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         const {info, message, streamReady} = this.state;
         if (Boolean(info.duration) && (message.id || 0) > 0) {
             if (streamReady && !message.downloaded) {
-                return (<div className="media-duration media-stream-ready">
-                    {this.progressContent()}
-                    <span>{getDuration(info.duration || 0)}</span>
+                return (<div className="media-duration-container media-stream-ready">
+                    {this.progressContent(true)}
+                    <div className="stream-media-duration">{getDuration(info.duration || 0)}</div>
+                    <div className="stream-media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
                     {!message.contentread && <span className="unread-bullet"/>}
                 </div>);
             } else {
-                return (<div className="media-duration">
+                return (<div className="media-duration-container">
                     <PlayArrowRounded/><span>{getDuration(info.duration || 0)}</span>
                     {!message.contentread && <span className="unread-bullet"/>}
                 </div>);
@@ -485,7 +487,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     <PlayArrowRounded/>
                 </div>);
             } else {
-                return this.progressContent();
+                return this.progressContent(false);
             }
         } else if (message.messagetype === C_MESSAGE_TYPE.Video) {
             return (<div className="media-action" onClick={this.viewDocument}>
@@ -496,11 +498,11 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         }
     }
 
-    private progressContent() {
+    private progressContent(stream: boolean) {
         const {fileState} = this.state;
         return (<div className="media-action">
             {Boolean(fileState === 'download') &&
-            <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
+            <ArrowDownwardRounded onClick={this.downloadFileHandler(stream)}/>}
             {Boolean(fileState === 'progress') && <React.Fragment>
                 <div className="progress">
                     <svg viewBox='0 0 32 32'>
@@ -561,12 +563,12 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* Download file handler */
-    private downloadFileHandler = (e?: any) => {
+    private downloadFileHandler = (stream: boolean) => (e?: any) => {
         if (e) {
             e.stopPropagation();
         }
         if (this.props.onAction) {
-            this.props.onAction('download', this.state.message);
+            this.props.onAction(stream ? 'download_stream' : 'download', this.state.message);
             this.setState({
                 fileState: 'progress',
             }, () => {
@@ -601,12 +603,12 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     switch (peer.getType()) {
                         case PeerType.PEERUSER:
                             if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.chat_photos) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.chat_videos)) {
-                                this.downloadFileHandler();
+                                this.downloadFileHandler(false)();
                             }
                             break;
                         case PeerType.PEERGROUP:
                             if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.group_photos) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.group_videos)) {
-                                this.downloadFileHandler();
+                                this.downloadFileHandler(false);
                             }
                             break;
                     }

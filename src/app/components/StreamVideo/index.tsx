@@ -31,15 +31,20 @@ interface IState {
     src?: string;
 }
 
+const C_MAX_CHUNK_SIZE = 10;
+const C_CHUNK_BUFFER_TRIGGER_LEN = 5;
+
 class StreamVideo extends React.PureComponent<IProps, IState> {
     private videoRef: HTMLVideoElement | undefined;
     private fileRepo: FileRepo;
-    private mediaSource: MediaSource;
+    private readonly mediaSource: MediaSource;
     private sourceBuffer: SourceBuffer | undefined;
-    private buffers: IFileBuffer[] = [];
+    private parts: IFileBuffer[] = [];
     private inProgress: boolean = false;
     private bufferProgressBroadcaster: BufferProgressBroadcaster;
     private eventReferences: any[] = [];
+    private completed: boolean = false;
+    private firstTime: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -55,7 +60,8 @@ class StreamVideo extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.bufferProgressBroadcaster.listen(this.props.msgId, this.bufferHandler);
+        window.console.log('componentDidMount');
+        this.eventReferences.push(this.bufferProgressBroadcaster.listen(this.props.msgId, this.bufferHandler));
         this.getFile();
     }
 
@@ -110,7 +116,17 @@ class StreamVideo extends React.PureComponent<IProps, IState> {
         if (!this.sourceBuffer) {
             return;
         }
-        this.buffers.push(data);
+        this.parts.push(data);
+        if (data.completed) {
+            this.completed = true;
+        }
+        if (this.firstTime) {
+            this.firstTime = false;
+            if (data.part !== 1) {
+                this.loadFromDb(data.part);
+                this.inProgress = true;
+            }
+        }
         if (!this.inProgress) {
             this.updateEndHandler();
         }
@@ -123,16 +139,22 @@ class StreamVideo extends React.PureComponent<IProps, IState> {
             }
         }
         this.inProgress = false;
-        if (!this.sourceBuffer || this.buffers.length === 0) {
+        if (!this.completed && this.parts.length < C_CHUNK_BUFFER_TRIGGER_LEN) {
             return;
         }
-        const buffer = this.buffers.shift();
-        if (buffer) {
+        if (!this.sourceBuffer || this.parts.length === 0) {
+            return;
+        }
+        const chunkSize = Math.min(this.parts.length, C_MAX_CHUNK_SIZE);
+        const firstBuffer = this.parts[0];
+        const lastBuffer = this.parts[chunkSize - 1];
+        if (firstBuffer && lastBuffer) {
+            this.parts.splice(0, chunkSize);
             this.inProgress = true;
             const id = this.props.fileLocation.fileid || '0';
-            this.fileRepo.getTemp(id, buffer.part).then((res) => {
-                if (res) {
-                    return convertBlobToArrayBuffer(res.data);
+            this.fileRepo.getTempsRangeById(id, firstBuffer.part, lastBuffer.part).then((res) => {
+                if (res.length > 0) {
+                    return convertBlobToArrayBuffer(new Blob(res.map(o => o.data), {type: res[0].data.type}));
                 } else {
                     throw Error('not found');
                 }
@@ -158,6 +180,17 @@ class StreamVideo extends React.PureComponent<IProps, IState> {
                 canceller();
             }
         });
+    }
+
+    private loadFromDb(part: number) {
+        for (let i = part - 1; i > 0; i--) {
+            this.parts.unshift({
+                cache: false,
+                completed: false,
+                part: i,
+            });
+        }
+        this.updateEndHandler();
     }
 }
 

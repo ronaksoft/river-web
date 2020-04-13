@@ -10,7 +10,7 @@
 import MessageDB from '../../services/db/message';
 import {IMessage, IMessageWithCount, IPendingMessage} from './interface';
 import {cloneDeep, differenceBy, find, throttle, findIndex, uniq, difference, groupBy} from 'lodash';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import {InputPeer, MediaType, MessageEntityType, UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
@@ -308,7 +308,7 @@ export default class MessageRepo {
 
     private dbService: MessageDB;
     private db: DexieMessageDB;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private userId: string;
@@ -320,11 +320,11 @@ export default class MessageRepo {
     private readonly updateThrottle: any = null;
 
     private constructor() {
-        SDK.getInstance().loadConnInfo();
-        this.userId = SDK.getInstance().getConnInfo().UserID || '0';
+        APIManager.getInstance().loadConnInfo();
+        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
         this.dbService = MessageDB.getInstance();
         this.db = this.dbService.getDB();
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDb, 300);
@@ -332,8 +332,8 @@ export default class MessageRepo {
     }
 
     public loadConnInfo() {
-        SDK.getInstance().loadConnInfo();
-        this.userId = SDK.getInstance().getConnInfo().UserID || '0';
+        APIManager.getInstance().loadConnInfo();
+        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
     }
 
     public getCurrentUserId(): string {
@@ -435,7 +435,7 @@ export default class MessageRepo {
                         return;
                     }
                     const lim = limit - len;
-                    this.sdk.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
+                    this.apiManager.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(false, remoteRes.usersList);
                         this.groupRepo.importBulk(remoteRes.groupsList);
                         remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
@@ -968,7 +968,7 @@ export default class MessageRepo {
                 maxId: id,
             };
         }
-        return this.sdk.getMessageHistory(peer, query).then((remoteRes) => {
+        return this.apiManager.getMessageHistory(peer, query).then((remoteRes) => {
             return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc, ignoreMax).then(() => {
                 return remoteRes;
             });
@@ -1040,7 +1040,7 @@ export default class MessageRepo {
                 return;
             }
             delete this.messageBundle[peerid];
-            this.sdk.getManyMessage(peer, ids).then((res) => {
+            this.apiManager.getManyMessage(peer, ids).then((res) => {
                 const messages: IMessage[] = [];
                 const dataIds = Object.keys(data.reqs);
                 res.messagesList.forEach((msg) => {

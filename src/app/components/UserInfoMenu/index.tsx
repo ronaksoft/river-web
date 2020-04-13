@@ -24,7 +24,7 @@ import {
     PeerType,
     PhoneContact
 } from '../../services/sdk/messages/chat.core.types_pb';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
@@ -88,7 +88,7 @@ export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
 class UserInfoMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private dialogRepo: DialogRepo;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private riverTime: RiverTime;
     private documentViewerService: DocumentViewerService;
     private broadcaster: Broadcaster;
@@ -119,7 +119,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         // Dialog Repository singleton
         this.dialogRepo = DialogRepo.getInstance();
         // SDK singleton
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         // DocumentViewerService singleton
         this.documentViewerService = DocumentViewerService.getInstance();
         // Broadcaster singleton
@@ -408,7 +408,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             const inputUser = new InputUser();
             inputUser.setAccesshash(user.accesshash || '');
             inputUser.setUserid(user.id || '');
-            this.sdk.contactAdd(inputUser, firstname, lastname, phone).then(() => {
+            this.apiManager.contactAdd(inputUser, firstname, lastname, phone).then(() => {
                 this.userRepo.importBulk(true, [user], false, this.callerId);
                 user.lastname = lastname;
                 user.firstname = firstname;
@@ -432,7 +432,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 lastname,
                 phone: isInContact ? user.phone : phone,
             });
-            this.sdk.contactImport(true, contacts).then((data) => {
+            this.apiManager.contactImport(true, contacts).then((data) => {
                 const items: any[] = [];
                 data.usersList.forEach((item) => {
                     items.push(item);
@@ -501,7 +501,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         }
         settings.setFlags(0);
         settings.setSound('');
-        this.sdk.setNotifySettings(peer, settings).then(() => {
+        this.apiManager.setNotifySettings(peer, settings).then(() => {
             dialog.notifysettings = settings.toObject();
             this.setState({
                 dialog,
@@ -591,7 +591,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         inputUser.setUserid(user.id || '');
         inputUser.setAccesshash(user.accesshash || '');
         if (user.blocked) {
-            this.sdk.accountUnblock(inputUser).then(() => {
+            this.apiManager.accountUnblock(inputUser).then(() => {
                 this.userRepo.importBulk(false, [{
                     blocked: false,
                     id: user.id || '',
@@ -602,7 +602,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 });
             });
         } else {
-            this.sdk.accountBlock(inputUser).then(() => {
+            this.apiManager.accountBlock(inputUser).then(() => {
                 this.userRepo.importBulk(false, [{
                     blocked: true,
                     id: user.id || '',

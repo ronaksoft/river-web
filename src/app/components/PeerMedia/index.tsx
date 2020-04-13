@@ -200,7 +200,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                                 <PlayCircleFilledRounded/>
                             </div>}
                             {Boolean(item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Audio || item.type === C_MESSAGE_TYPE.Voice) &&
-                            <div className="media-duration">{getDuration(item.info.duration || 0)}</div>}
+                            <div className="media-duration-container">{getDuration(item.info.duration || 0)}</div>}
                         </div>
                     );
                 })}

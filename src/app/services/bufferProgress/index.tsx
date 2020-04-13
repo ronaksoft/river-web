@@ -11,7 +11,6 @@ import {IFileBuffer} from '../sdk/fileManager';
 
 interface IBufferProgressItem {
     fnQueue: { [key: number]: any };
-    progress: IFileBuffer;
 }
 
 export default class BufferProgressBroadcaster {
@@ -44,15 +43,9 @@ export default class BufferProgressBroadcaster {
         if (!this.listeners.hasOwnProperty(id)) {
             this.listeners[id] = {
                 fnQueue: [],
-                progress: {
-                    cache: false,
-                    completed: false,
-                    part: 0,
-                },
             };
         }
         this.listeners[id].fnQueue[fnIndex] = fn;
-        fn(this.listeners[id].progress);
         return () => {
             if (this.listeners.hasOwnProperty(id)) {
                 delete this.listeners[id].fnQueue[fnIndex];
@@ -70,7 +63,6 @@ export default class BufferProgressBroadcaster {
         if (!this.listeners.hasOwnProperty(id)) {
             return;
         }
-        this.listeners[id].progress = progress;
         const keys = Object.keys(this.listeners[id].fnQueue);
         keys.forEach((key) => {
             const fn = this.listeners[id].fnQueue[key];

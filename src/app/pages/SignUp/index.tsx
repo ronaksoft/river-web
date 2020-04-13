@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
@@ -87,7 +87,7 @@ interface IState {
 }
 
 class SignUp extends React.Component<IProps, IState> {
-    private sdk: SDK;
+    private apiManager: APIManager;
     private countdownInterval: any = null;
     private workspaceManager: WorkspaceManger;
     private qrCanvasRef: any = null;
@@ -134,7 +134,7 @@ class SignUp extends React.Component<IProps, IState> {
             workspaceError: '',
             workspaceInfo: {},
         };
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.workspaceManager = WorkspaceManger.getInstance();
     }
 
@@ -142,11 +142,11 @@ class SignUp extends React.Component<IProps, IState> {
         window.addEventListener(EventWasmInit, this.wasmInitHandler);
         window.addEventListener(EventWebSocketOpen, this.wsOpenHandler);
         window.addEventListener(EventFocus, this.windowFocusHandler);
-        this.sdk.loadConnInfo();
-        if (this.sdk.getConnInfo().AuthID === '0' && this.props.match.params.mode !== 'workspace') {
+        this.apiManager.loadConnInfo();
+        if (this.apiManager.getConnInfo().AuthID === '0' && this.props.match.params.mode !== 'workspace') {
             this.props.history.push('/loading');
         }
-        if (this.sdk.isStarted()) {
+        if (this.apiManager.isStarted()) {
             this.wsOpenHandler();
         }
         this.initPhoneInput();
@@ -500,7 +500,7 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        this.sdk.sendCode(this.state.phone).then((data) => {
+        this.apiManager.sendCode(this.state.phone).then((data) => {
             this.setState({
                 loading: false,
                 phone: '+' + data.phone,
@@ -550,7 +550,7 @@ class SignUp extends React.Component<IProps, IState> {
             loading: true,
         });
         if (countdown === 0) {
-            this.sdk.resendCode(phone.slice(1), phoneHash).then(() => {
+            this.apiManager.resendCode(phone.slice(1), phoneHash).then(() => {
                 this.focus('f-code');
                 this.startCountdown();
                 this.setState({
@@ -562,7 +562,7 @@ class SignUp extends React.Component<IProps, IState> {
                 });
             });
         } else {
-            this.sdk.login(phone.slice(1), code, phoneHash).then((res) => {
+            this.apiManager.login(phone.slice(1), code, phoneHash).then((res) => {
                 // @ts-ignore
                 if (res.user) {
                     this.login(res as AuthAuthorization.AsObject);
@@ -611,12 +611,12 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private login(res: AuthAuthorization.AsObject) {
-        const info = this.sdk.loadConnInfo();
+        const info = this.apiManager.loadConnInfo();
         info.UserID = res.user.id;
         info.FirstName = res.user.firstname;
         info.LastName = res.user.lastname;
         info.Phone = this.state.phone;
-        this.sdk.setConnInfo(info);
+        this.apiManager.setConnInfo(info);
         UserRepo.getInstance().importBulk(false, [res.user]);
         this.setState({
             loading: false,
@@ -625,9 +625,9 @@ class SignUp extends React.Component<IProps, IState> {
         this.props.history.push('/chat/null');
         this.dispatchWSOpenEvent();
         // this.notification.initToken().then((token) => {
-        //     this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+        //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
         // }).catch(() => {
-        this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+        this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
         // });
     }
 
@@ -642,7 +642,7 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        this.sdk.resendCode(phone.slice(1), phoneHash).then(() => {
+        this.apiManager.resendCode(phone.slice(1), phoneHash).then(() => {
             this.focus('f-code');
             this.startCountdown();
             this.setState({
@@ -721,7 +721,7 @@ class SignUp extends React.Component<IProps, IState> {
     private recoveryQuestionModalDoneHandler = (list: SecurityQuestion.AsObject[]) => {
         const {accountPassword} = this.state;
         if (accountPassword) {
-            this.sdk.accountRecover(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), accountPassword.getSrpid() || '', list.map(o => {
+            this.apiManager.accountRecover(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), accountPassword.getSrpid() || '', list.map(o => {
                 return {
                     answer: o.answer || '',
                     questionid: o.id || 0,
@@ -751,13 +751,13 @@ class SignUp extends React.Component<IProps, IState> {
             loading: true,
         });
         const lang = localStorage.getItem('river.lang') || 'en';
-        this.sdk.register(phone, code, phoneHash, fName, lName, lang).then((res) => {
-            const info = this.sdk.loadConnInfo();
+        this.apiManager.register(phone, code, phoneHash, fName, lName, lang).then((res) => {
+            const info = this.apiManager.loadConnInfo();
             info.UserID = res.user.id;
             info.FirstName = res.user.firstname;
             info.LastName = res.user.lastname;
             info.Phone = this.state.phone;
-            this.sdk.setConnInfo(info);
+            this.apiManager.setConnInfo(info);
             this.setState({
                 loading: false,
                 tries: this.state.tries + 1,
@@ -765,9 +765,9 @@ class SignUp extends React.Component<IProps, IState> {
             this.props.history.push('/chat/null');
             this.dispatchWSOpenEvent();
             // this.notification.initToken().then((token) => {
-            //     this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+            //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             // }).catch(() => {
-            this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
             // });
         }).catch((err) => {
             this.setState({
@@ -818,14 +818,14 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private wasmInitHandler = () => {
-        if (parseInt(this.sdk.getConnInfo().AuthID, 10) === 0) {
+        if (parseInt(this.apiManager.getConnInfo().AuthID, 10) === 0) {
             this.props.history.push('/loading');
         }
     }
 
     private wsOpenHandler = () => {
-        if ((this.sdk.getConnInfo().UserID || 0) > 0) {
-            this.sdk.authRecall().then(() => {
+        if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
+            this.apiManager.authRecall().then(() => {
                 this.props.history.push('/chat/null');
                 return;
             }).catch((err) => {
@@ -833,7 +833,7 @@ class SignUp extends React.Component<IProps, IState> {
             });
         }
         if (this.state.step === 'phone') {
-            this.sdk.systemGetInfo().then((res) => {
+            this.apiManager.systemGetInfo().then((res) => {
                 this.setState({
                     workspaceInfo: res,
                 }, () => {
@@ -1026,9 +1026,9 @@ class SignUp extends React.Component<IProps, IState> {
             return;
         }
         const srpId = accountPassword.getSrpid() || '';
-        this.sdk.genInputPassword(password, accountPassword).then((inputPassword) => {
+        this.apiManager.genInputPassword(password, accountPassword).then((inputPassword) => {
             inputPassword.setSrpid(srpId);
-            this.sdk.loginByPassword(inputPassword).then((res) => {
+            this.apiManager.loginByPassword(inputPassword).then((res) => {
                 this.login(res);
             });
         });

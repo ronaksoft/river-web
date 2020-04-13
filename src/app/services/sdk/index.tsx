@@ -112,15 +112,15 @@ import UniqueId from "../uniqueId";
 import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/bot.api_pb";
 import {FileGetBySha256} from "./messages/chat.api.files_pb";
 
-export default class SDK {
+export default class APIManager {
     public static getInstance() {
         if (!this.instance) {
-            this.instance = new SDK();
+            this.instance = new APIManager();
         }
         return this.instance;
     }
 
-    private static instance: SDK;
+    private static instance: APIManager;
 
     private server: Server;
     private connInfo: IConnInfo;

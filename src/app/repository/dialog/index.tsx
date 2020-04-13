@@ -10,7 +10,7 @@
 import DB from '../../services/db/dialog';
 import {IDialog, IDialogWithUpdateId, IDraft} from './interface';
 import {throttle, differenceBy, find, uniqBy, cloneDeep} from 'lodash';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
@@ -33,7 +33,7 @@ export default class DialogRepo {
 
     private dbService: DB;
     private db: DexieDialogDB;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private messageRepo: MessageRepo;
     private userId: string;
     private userRepo: UserRepo;
@@ -45,17 +45,17 @@ export default class DialogRepo {
     public constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDbDebounced, 256);
-        this.userId = SDK.getInstance().getConnInfo().UserID || '0';
+        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
     }
 
     public loadConnInfo() {
-        SDK.getInstance().loadConnInfo();
-        this.userId = SDK.getInstance().getConnInfo().UserID || '0';
+        APIManager.getInstance().loadConnInfo();
+        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
     }
 
     /* Drafts Start*/
@@ -132,7 +132,7 @@ export default class DialogRepo {
     }
 
     public getMany({skip, limit}: any): Promise<IDialog[]> {
-        return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
+        return this.apiManager.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
             remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
@@ -150,7 +150,7 @@ export default class DialogRepo {
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();
         }
-        return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
+        return this.apiManager.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
             // window.console.log('remoteRes.dialogsList', remoteRes.dialogsList.length);
             // cloneDeep(remoteRes.dialogsList).forEach((d)=> {
             //     if (d.peertype === PeerType.PEERGROUP) {

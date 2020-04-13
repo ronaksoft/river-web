@@ -13,7 +13,7 @@ import {differenceBy, find, uniqBy} from 'lodash';
 import {DexieLabelDB} from '../../services/db/dexie/label';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
-import SDK from "../../services/sdk";
+import APIManager from "../../services/sdk";
 import Dexie from 'dexie';
 import MessageRepo from "../message";
 import {IMessage} from "../message/interface";
@@ -39,7 +39,7 @@ export default class LabelRepo {
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private broadcaster: Broadcaster;
-    private sdk: SDK;
+    private apiManager: APIManager;
 
     private constructor() {
         this.dbService = DB.getInstance();
@@ -48,7 +48,7 @@ export default class LabelRepo {
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.db.labels.toArray().then((items) => {
             items.forEach((item) => {
                 LabelRepo.labelColors[item.id || 0] = item.colour || '';
@@ -79,7 +79,7 @@ export default class LabelRepo {
     }
 
     public getLabels(): Promise<ILabel[]> {
-        return this.sdk.labelGet().then((res) => {
+        return this.apiManager.labelGet().then((res) => {
             this.upsert(res.labelsList);
             return res.labelsList;
         });
@@ -166,7 +166,7 @@ export default class LabelRepo {
     }
 
     public getRemoteMessageByItem(id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
-        return this.sdk.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
+        return this.apiManager.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
             remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
             this.insertManyLabelItem(id, remoteRes.messagesList);
             this.messageRepo.insertDiscrete(remoteRes.messagesList);

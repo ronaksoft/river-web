@@ -28,7 +28,7 @@ import {
     difference,
     uniq,
 } from 'lodash';
-import SDK from '../../services/sdk/index';
+import APIManager from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
@@ -193,7 +193,7 @@ class Chat extends React.Component<IProps, IState> {
     private mainRepo: MainRepo;
     private labelRepo: LabelRepo;
     private isLoading: boolean = false;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private updateManager: UpdateManager;
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
@@ -273,9 +273,9 @@ class Chat extends React.Component<IProps, IState> {
         this.selectedDialogId = props.match.params.id;
         this.riverTime = RiverTime.getInstance();
         this.fileManager = FileManager.getInstance();
-        this.sdk = SDK.getInstance();
-        this.sdk.loadConnInfo();
-        this.connInfo = this.sdk.getConnInfo();
+        this.apiManager = APIManager.getInstance();
+        this.apiManager.loadConnInfo();
+        this.connInfo = this.apiManager.getConnInfo();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
@@ -1755,7 +1755,7 @@ class Chat extends React.Component<IProps, IState> {
                 entities = param.entities;
             }
 
-            this.sdk.editMessage(randomId, message.id || 0, text, peer, entities).then(() => {
+            this.apiManager.editMessage(randomId, message.id || 0, text, peer, entities).then(() => {
                 if (this.messageRef) {
                     this.messageRef.setScrollMode('stay');
                 }
@@ -1818,7 +1818,7 @@ class Chat extends React.Component<IProps, IState> {
                 message_id: id,
             });
 
-            this.sdk.sendMessage(randomId, text, peer, replyTo, entities, (reqId: number) => {
+            this.apiManager.sendMessage(randomId, text, peer, replyTo, entities, (reqId: number) => {
                 message.req_id = reqId;
                 index = this.pushMessage(message);
             }).then((res) => {
@@ -1895,7 +1895,9 @@ class Chat extends React.Component<IProps, IState> {
     private resolveRandomMessageIdError(err: Error.AsObject, randomId: number, id: number) {
         if (err && err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemRandomID) {
             this.messageRepo.removePending(randomId);
-            this.messageRepo.remove(id);
+            if (id < 0) {
+                this.messageRepo.remove(id);
+            }
             const index = findIndex(this.messages, (o) => {
                 return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
             });
@@ -1995,7 +1997,7 @@ class Chat extends React.Component<IProps, IState> {
             peer.setType(PeerType.PEERUSER);
             peer.setAccesshash(contact.accesshash || '');
             peer.setId(contact.id || '');
-            this.sdk.sendMessage(randomId, text, peer).then((res) => {
+            this.apiManager.sendMessage(randomId, text, peer).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -2012,7 +2014,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        this.sdk.typing(peer, typing).catch((err) => {
+        this.apiManager.typing(peer, typing).catch((err) => {
             window.console.debug(err);
         });
     }
@@ -2317,7 +2319,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setAppStatus({
             isConnecting: false,
         });
-        this.sdk.authRecall().then((res) => {
+        this.apiManager.authRecall().then((res) => {
             if (res.timestamp) {
                 this.riverTime.setServerTime(res.timestamp);
                 this.userRepo.getAllContacts();
@@ -2413,7 +2415,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private fnStartedHandler = () => {
         this.messageRepo.loadConnInfo();
-        this.connInfo = this.sdk.getConnInfo();
+        this.connInfo = this.apiManager.getConnInfo();
         this.updateManager.setUserId(this.connInfo.UserID || '');
     }
 
@@ -2746,7 +2748,7 @@ class Chat extends React.Component<IProps, IState> {
             user.setUserid(contact.id || '');
             users.push(user);
         });
-        this.sdk.groupCreate(users, title).then((res) => {
+        this.apiManager.groupCreate(users, title).then((res) => {
             this.groupRepo.importBulk([res]);
             const dialog: IDialog = {
                 accesshash: '0',
@@ -2767,7 +2769,7 @@ class Chat extends React.Component<IProps, IState> {
                 inputFile.setFilename(`picture_${fileId}.jpg`);
                 inputFile.setMd5checksum('');
                 inputFile.setTotalparts(1);
-                this.sdk.groupUploadPicture(res.id || '', inputFile);
+                this.apiManager.groupUploadPicture(res.id || '', inputFile);
             }
         });
     }
@@ -2791,8 +2793,8 @@ class Chat extends React.Component<IProps, IState> {
 
     private logOutHandler() {
         const wipe = () => {
-            this.sdk.stopNetWork();
-            this.sdk.resetConnInfo();
+            this.apiManager.stopNetWork();
+            this.apiManager.resetConnInfo();
             this.mainRepo.destroyDB().then(() => {
                 this.updateManager.setLastUpdateId(0);
                 this.updateManager.flushLastUpdateId();
@@ -2803,7 +2805,7 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
         this.updateManager.disableLiveUpdate();
-        this.sdk.logout(this.connInfo.AuthID).then((res) => {
+        this.apiManager.logout(this.connInfo.AuthID).then((res) => {
             wipe();
         }).catch(() => {
             wipe();
@@ -2926,7 +2928,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         keys.forEach((key) => {
-            this.sdk.setMessagesReadHistory(this.dialogReadMap[key].peer, this.dialogReadMap[key].id);
+            this.apiManager.setMessagesReadHistory(this.dialogReadMap[key].peer, this.dialogReadMap[key].id);
             delete this.dialogReadMap[key];
         });
     }
@@ -3076,7 +3078,7 @@ class Chat extends React.Component<IProps, IState> {
             //     break;
             case C_BUTTON_ACTION.ButtonCallback:
                 const buttonCallback: ButtonCallback.AsObject = data;
-                this.sdk.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId).then((res) => {
+                this.apiManager.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId).then((res) => {
                     if ((res.message || '').length > 0) {
                         this.setState({
                             botAlertMessage: res.message || '',
@@ -3377,7 +3379,7 @@ class Chat extends React.Component<IProps, IState> {
             case 'remove_dialog':
                 const dialog = this.getDialogById(peer.getId() || '');
                 if (dialog) {
-                    this.sdk.clearMessage(peer, dialog.topmessageid || 0, true).then(() => {
+                    this.apiManager.clearMessage(peer, dialog.topmessageid || 0, true).then(() => {
                         this.dialogRemove(peer.getId() || '');
                     });
                 }
@@ -3425,7 +3427,7 @@ class Chat extends React.Component<IProps, IState> {
             targetPeer.setAccesshash(recipient.accesshash);
             targetPeer.setId(recipient.id);
             targetPeer.setType(recipient.type);
-            promises.push(this.sdk.forwardMessage(peer, msgIds, UniqueId.getRandomId(), targetPeer, false));
+            promises.push(this.apiManager.forwardMessage(peer, msgIds, UniqueId.getRandomId(), targetPeer, false));
         });
         this.forwardDialogCloseHandler();
         Promise.all(promises).catch((err) => {
@@ -3464,7 +3466,7 @@ class Chat extends React.Component<IProps, IState> {
                     listPeer,
                     peerIds: [peer.getId() || ''],
                 });
-                this.sdk.removeMessage(peer, remoteMsgIds, mode === 1).catch((err) => {
+                this.apiManager.removeMessage(peer, remoteMsgIds, mode === 1).catch((err) => {
                     window.console.debug(err);
                 });
             }
@@ -3603,11 +3605,11 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'clear':
                 if (dialog.topmessageid) {
-                    this.sdk.clearMessage(peer, dialog.topmessageid, false);
+                    this.apiManager.clearMessage(peer, dialog.topmessageid, false);
                 }
                 break;
             case 'pin':
-                this.sdk.dialogTogglePin(peer, true).then(() => {
+                this.apiManager.dialogTogglePin(peer, true).then(() => {
                     this.pinDialog(peer.getId() || '', true, true);
                 }).catch((err) => {
                     if (err.code === C_ERR.ErrCodeInternal && err.items === 'max pinned dialogs reached') {
@@ -3618,7 +3620,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
             case 'unpin':
-                this.sdk.dialogTogglePin(peer, false).then(() => {
+                this.apiManager.dialogTogglePin(peer, false).then(() => {
                     this.pinDialog(peer.getId() || '', false, true);
                 });
                 break;
@@ -3659,7 +3661,7 @@ class Chat extends React.Component<IProps, IState> {
             });
         }
 
-        this.sdk.sendMessage(randomId, message.body || '', peer, message.replyto, messageEntities).then((res) => {
+        this.apiManager.sendMessage(randomId, message.body || '', peer, message.replyto, messageEntities).then((res) => {
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
             this.modifyPendingMessage({
@@ -3687,7 +3689,7 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         const fn = () => {
-            this.sdk.sendMediaMessage(randomId, peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+            this.apiManager.sendMediaMessage(randomId, peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -3770,7 +3772,9 @@ class Chat extends React.Component<IProps, IState> {
                             message_id: res.message_id,
                         });
                     } else {
-                        this.messageRepo.remove(res.message_id);
+                        if (res.message_id < 0) {
+                            this.messageRepo.remove(res.message_id);
+                        }
                     }
                 });
             }
@@ -3782,7 +3786,9 @@ class Chat extends React.Component<IProps, IState> {
         setTimeout(() => {
             this.messageRepo.getPending(id).then((res) => {
                 if (res) {
-                    this.messageRepo.remove(res.message_id);
+                    if (res.message_id < 0) {
+                        this.messageRepo.remove(res.message_id);
+                    }
                     this.messageRepo.removePending(res.id);
                     if (res.file_ids && res.file_ids.length > 0) {
                         this.messageRepo.get(id).then((msg) => {
@@ -3863,7 +3869,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.resendTextMessage(res.id, message);
                 }
             } else {
-                this.messageRepo.remove(message.id || 0);
+                if ((message.id || 0) < 0) {
+                    this.messageRepo.remove(message.id || 0);
+                }
             }
         });
     }
@@ -3933,9 +3941,12 @@ class Chat extends React.Component<IProps, IState> {
     /* Cancel sending message */
     private cancelSend(id: number, noUpdate?: boolean) {
         const removeMessage = () => {
+            if (id > 0) {
+                return;
+            }
             this.messageRepo.get(id).then((msg) => {
                 if (msg && msg.req_id) {
-                    this.sdk.cancelRequest(msg.req_id);
+                    this.apiManager.cancelRequest(msg.req_id);
                 }
                 this.messageRepo.remove(id).then(() => {
                     const messages = this.messages;
@@ -3999,8 +4010,10 @@ class Chat extends React.Component<IProps, IState> {
                 this.broadcastEvent('File_Downloaded', {id: msg.id});
                 this.progressBroadcaster.remove(msg.id || 0);
                 this.bufferProgressBroadcaster.remove(msg.id || 0);
-                msg.downloaded = true;
-                this.messageRepo.lazyUpsert([msg]);
+                this.messageRepo.lazyUpsert([{
+                    downloaded: true,
+                    id: msg.id,
+                }]);
                 if (fileLocation) {
                     const fileLocationObject = fileLocation.toObject();
                     this.fileRepo.upsertFileMap([{
@@ -4050,11 +4063,11 @@ class Chat extends React.Component<IProps, IState> {
     /* ChatInput media select handler */
     private chatInputMediaSelectHandler = (items: IMediaItem[], param?: any) => {
         items.forEach((item) => {
-            // this.fileManager.getFileLocationBySha256(item.file).then((fileLocation) => {
-            //     this.sendMediaMessage(item.mediaType, item, fileLocation, param);
-            // }).catch(() => {
+            this.fileManager.getFileLocationBySha256(item.file).then((fileLocation) => {
+                this.sendMediaMessage(item.mediaType, item, fileLocation, param);
+            }).catch(() => {
                 this.sendMediaMessage(item.mediaType, item, null, param);
-            // });
+            });
         });
     }
 
@@ -4324,7 +4337,7 @@ class Chat extends React.Component<IProps, IState> {
                     type: inputMediaType,
                 });
             }
-            this.sdk.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
+            this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -4462,7 +4475,7 @@ class Chat extends React.Component<IProps, IState> {
             message_id: id,
         });
 
-        this.sdk.sendMediaMessage(randomId, peer, mediaType, media, replyTo).then((res) => {
+        this.apiManager.sendMediaMessage(randomId, peer, mediaType, media, replyTo).then((res) => {
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
             this.modifyPendingMessage({
@@ -4602,7 +4615,7 @@ class Chat extends React.Component<IProps, IState> {
     private readMessageContent(message: IMessage) {
         const peer = this.peer;
         if (message && !message.contentread && !message.me && peer) {
-            this.sdk.readMessageContent([message.id || 0], peer);
+            this.apiManager.readMessageContent([message.id || 0], peer);
         }
     }
 
@@ -4625,15 +4638,15 @@ class Chat extends React.Component<IProps, IState> {
         if (!inputPeer) {
             return;
         }
-        const id = this.sdk.getConnInfo().UserID || '';
+        const id = this.apiManager.getConnInfo().UserID || '';
         const user = new InputUser();
         user.setUserid(id);
         user.setAccesshash('');
         const dialogId = inputPeer.getId() || '';
-        this.sdk.groupRemoveMember(inputPeer, user).then(() => {
+        this.apiManager.groupRemoveMember(inputPeer, user).then(() => {
             const dialog = this.getDialogById(dialogId);
             if (dialog && dialog.topmessageid) {
-                this.sdk.clearMessage(inputPeer, dialog.topmessageid, true);
+                this.apiManager.clearMessage(inputPeer, dialog.topmessageid, true);
             }
         }).catch((err) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMember) {
@@ -4657,13 +4670,13 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer.peer) {
             return;
         }
-        const id = this.sdk.getConnInfo().UserID || '';
+        const id = this.apiManager.getConnInfo().UserID || '';
         const user = new InputUser();
         user.setUserid(id);
         user.setAccesshash('');
         const dialog = this.getDialogById(peer.peer.getId() || '');
         if (dialog && dialog.topmessageid) {
-            this.sdk.clearMessage(peer.peer, dialog.topmessageid, true);
+            this.apiManager.clearMessage(peer.peer, dialog.topmessageid, true);
         }
         this.confirmDialogCloseHandler();
     }
@@ -4934,7 +4947,7 @@ class Chat extends React.Component<IProps, IState> {
         settings.setMuteuntil(mode);
         settings.setFlags(0);
         settings.setSound('');
-        this.sdk.setNotifySettings(peer, settings).then(() => {
+        this.apiManager.setNotifySettings(peer, settings).then(() => {
             this.updateDialogsNotifySettings(peer.getId() || '', settings.toObject(), true);
         });
     }
@@ -5057,10 +5070,10 @@ class Chat extends React.Component<IProps, IState> {
         }
         const promises: any[] = [];
         if (addIds.length > 0) {
-            promises.push(this.sdk.labelAddToMessage(this.peer, addIds, ids));
+            promises.push(this.apiManager.labelAddToMessage(this.peer, addIds, ids));
         }
         if (removeIds.length > 0) {
-            promises.push(this.sdk.labelRemoveFromMessage(this.peer, removeIds, ids));
+            promises.push(this.apiManager.labelRemoveFromMessage(this.peer, removeIds, ids));
         }
         Promise.all(promises).then((res) => {
             ids.forEach((id) => {
@@ -5095,7 +5108,7 @@ class Chat extends React.Component<IProps, IState> {
         inputPeer.setAccesshash(user.accesshash || '');
         inputPeer.setId(user.id || '');
         inputPeer.setType(PeerType.PEERUSER);
-        this.sdk.botStart(inputPeer, randomId).then(() => {
+        this.apiManager.botStart(inputPeer, randomId).then(() => {
             user.is_bot_started = true;
             this.userRepo.importBulk(false, [user]);
             const entities: MessageEntity[] = [];

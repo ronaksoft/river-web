@@ -27,7 +27,7 @@ import Menu from '@material-ui/core/Menu/Menu';
 import {ClickAwayListener} from "@material-ui/core";
 import i18n from '../../services/i18n';
 import {Loading} from "../Loading";
-import SDK from "../../services/sdk";
+import APIManager from "../../services/sdk";
 import {InputPeer, PeerType, UserPhoto} from "../../services/sdk/messages/chat.core.types_pb";
 import UserRepo from "../../repository/user";
 import GroupRepo from "../../repository/group";
@@ -45,9 +45,9 @@ import {Swipeable, EventData} from "react-swipeable";
 import {C_AVATAR_SIZE} from "../SettingsMenu";
 import Scrollbars from "react-custom-scrollbars";
 import {EventKeyDown, EventMouseMove, EventMouseUp} from "../../services/events";
+import StreamVideo from "../StreamVideo";
 
 import './style.scss';
-import StreamVideo from "../StreamVideo";
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -129,13 +129,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private lastAnchorType?: 'message' | 'shared_media' | 'shared_media_full';
     private preventClose: boolean = false;
     private firstTimeLoad: boolean = true;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private userId: string = '';
     private hasAccess: boolean = false;
     private isTransitioning: boolean = false;
     private removeTooltipTimeout: any = null;
+    private downloadProgressRef: DownloadProgress | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -155,7 +156,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         };
 
         this.documentViewerService = DocumentViewService.getInstance();
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
     }
@@ -284,7 +285,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                                      blur={item.downloaded === false ? 10 : 0}/>
                                     </div>}
                                     {Boolean(!item.downloaded && item.duration && !doc.stream) &&
-                                    <div className="media-duration">
+                                    <div className="media-duration-container">
                                         <PlayArrowRounded/><span>{getDuration(item.duration || 0)}</span>
                                     </div>}
                                     {!Boolean(doc.stream) && this.getDownloadAction()}
@@ -354,13 +355,22 @@ class DocumentViewer extends React.Component<IProps, IState> {
             return '';
         }
 
-        return (<DownloadProgress id={doc.items[0].id || 0} fileSize={doc.items[0].fileSize || 0}
+        return (<DownloadProgress ref={this.downloadProgressRefHandler} id={doc.items[0].id || 0} fileSize={doc.items[0].fileSize || 0}
                                   onAction={this.props.onAction} onComplete={this.downloadCompleteHandler}/>);
+    }
+
+    private downloadProgressRefHandler = (ref: any) => {
+        this.downloadProgressRef = ref;
     }
 
     private videoStreamStartDownloadHandler = (msgId: number) => {
         if (this.props.onAction) {
             this.props.onAction('download_stream', msgId);
+            setTimeout(() => {
+                if (this.downloadProgressRef) {
+                    this.downloadProgressRef.setFileState('progress');
+                }
+            }, 1000);
         }
     }
 
@@ -1229,12 +1239,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
         };
         switch (doc.peer.getType()) {
             case PeerType.PEERUSER:
-                this.sdk.updateProfilePicture(galleryList[index].photoid || '0').then(() => {
+                this.apiManager.updateProfilePicture(galleryList[index].photoid || '0').then(() => {
                     fn(false);
                 });
                 break;
             case PeerType.PEERGROUP:
-                this.sdk.groupUpdatePicture(doc.peer.getId() || '', galleryList[index].photoid || '0').then(() => {
+                this.apiManager.groupUpdatePicture(doc.peer.getId() || '', galleryList[index].photoid || '0').then(() => {
                     fn(true);
                 });
                 break;
@@ -1281,12 +1291,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
         };
         switch (doc.peer.getType()) {
             case PeerType.PEERUSER:
-                this.sdk.removeProfilePicture(galleryList[index].photoid || '0').then(() => {
+                this.apiManager.removeProfilePicture(galleryList[index].photoid || '0').then(() => {
                     fn(false);
                 });
                 break;
             case PeerType.PEERGROUP:
-                this.sdk.groupRemovePicture(doc.peer.getId() || '', galleryList[index].photoid || '0').then(() => {
+                this.apiManager.groupRemovePicture(doc.peer.getId() || '', galleryList[index].photoid || '0').then(() => {
                     fn(true);
                 });
                 break;

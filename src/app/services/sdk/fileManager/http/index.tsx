@@ -31,6 +31,9 @@ interface IMessageListener {
     resolve: any;
 }
 
+const C_TIMEOUT = 60000;
+const C_TIMEOUT_SAMPLE = 10;
+
 export default class Http {
     private worker: Worker;
     private reqId: number;
@@ -43,6 +46,7 @@ export default class Http {
     private readyHandler: any = null;
     private readonly shareWorker: any = null;
     private socket: Socket | undefined;
+    private executionTimes: number[] = [];
 
     public constructor(shareWorker: boolean, id: number) {
         const fileUrl = localStorage.getItem('river.workspace_url_file') || '';
@@ -74,6 +78,10 @@ export default class Http {
             window.addEventListener('wsOpen', fn);
         } else {
             fn();
+        }
+
+        for (let i = 0; i < C_TIMEOUT_SAMPLE; i++) {
+            this.executionTimes.push(C_TIMEOUT);
         }
     }
 
@@ -204,6 +212,7 @@ export default class Http {
         const cancelToken = new axios.CancelToken((c) => {
             this.messageListeners[reqId].cancel = c;
         });
+        const time = Date.now();
         axios.post(this.dataCenterUrl, base64ToU8a(base64), {
             cancelToken,
             headers: {
@@ -213,7 +222,9 @@ export default class Http {
             onDownloadProgress: message.onDownloadProgress,
             onUploadProgress: message.onUploadProgress,
             responseType: 'arraybuffer',
+            timeout: this.getTimeout(),
         }).then((response) => {
+            this.setTimeout(Date.now() - time);
             return response.data;
         }).then((bytes) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
@@ -221,7 +232,7 @@ export default class Http {
                 this.workerMessage('fnDecrypt', uint8ToBase64(data));
             }
         }).catch((err) => {
-            window.console.log(err);
+            this.setTimeout(Date.now() - time);
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 if (!axios.isCancel(err)) {
                     this.messageListeners[reqId].reject(err);
@@ -257,6 +268,24 @@ export default class Http {
                 cmd,
                 data,
             });
+        }
+    }
+
+    private getTimeout() {
+        let totalTime = 0;
+        this.executionTimes.forEach((time) => {
+            totalTime += time;
+        });
+        return Math.floor((totalTime / this.executionTimes.length) + 1000);
+    }
+
+    private setTimeout(time: number) {
+        if (time < 2000) {
+            time = 2000;
+        }
+        this.executionTimes.push(time);
+        if (this.executionTimes.length > C_TIMEOUT_SAMPLE) {
+            this.executionTimes.unshift();
         }
     }
 }

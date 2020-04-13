@@ -14,7 +14,7 @@ import i18n from '../../services/i18n';
 import Button from '@material-ui/core/Button';
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import TextField from "@material-ui/core/TextField/TextField";
-import SDK from "../../services/sdk";
+import APIManager from "../../services/sdk";
 import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/chat.api.accounts_pb";
 import {C_ERR, C_ERR_ITEM, C_MSG} from "../../services/sdk/const";
 import {InputPassword} from "../../services/sdk/messages/chat.core.types_pb";
@@ -42,7 +42,7 @@ interface IState {
 }
 
 class TwoStepVerificationModal extends React.Component<IProps, IState> {
-    private sdk: SDK;
+    private apiManager: APIManager;
     private timeout: any = null;
     private recoveryQuestionModalRef: RecoveryQuestionModal | undefined;
 
@@ -61,7 +61,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
             step: 2
         };
 
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
     }
 
     public openDialog(edit: boolean) {
@@ -213,7 +213,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
     }
 
     private getAccountPassword() {
-        this.sdk.accountGetPassword().then((res) => {
+        this.apiManager.accountGetPassword().then((res) => {
             this.setState({
                 accountPassword: res,
             });
@@ -271,7 +271,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
         }
 
         const setPassword = (passHash: Uint8Array | undefined, inputPass?: InputPassword) => {
-            this.sdk.accountSetPassword(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), passHash, hint, securityQuestions, inputPass).then(() => {
+            this.apiManager.accountSetPassword(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), passHash, hint, securityQuestions, inputPass).then(() => {
                 this.setState({
                     hint: '',
                     oldPassword: '',
@@ -301,7 +301,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
 
         const changePassword = (inputPass?: InputPassword) => {
             if (mode === 'change') {
-                this.sdk.genSrpHash(password, accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8()).then((passHash) => {
+                this.apiManager.genSrpHash(password, accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8()).then((passHash) => {
                     setPassword(passHash, inputPass);
                 });
             } else {
@@ -310,7 +310,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
         };
 
         if (accountPassword.getHaspassword()) {
-            this.sdk.genInputPassword(oldPassword, accountPassword).then((inputPassword) => {
+            this.apiManager.genInputPassword(oldPassword, accountPassword).then((inputPassword) => {
                 changePassword(inputPassword);
             });
         } else {
@@ -342,7 +342,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
         }, () => {
             const {mode, accountPassword} = this.state;
             if (mode === 'recover' && accountPassword) {
-                this.sdk.accountRecover(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), accountPassword.getSrpid() || '', list.map(o => {
+                this.apiManager.accountRecover(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), accountPassword.getSrpid() || '', list.map(o => {
                     return {
                         answer: o.answer || '',
                         questionid: o.id || 0,

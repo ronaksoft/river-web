@@ -13,7 +13,7 @@ import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/s
 import {
     DocumentAttributeFile, DocumentAttributeType, MediaDocument,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
-import {CloseRounded, CloudDownloadRounded, InsertDriveFileRounded} from '@material-ui/icons';
+import {CloseRounded, ArrowDownwardRounded, InsertDriveFileRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
@@ -289,7 +289,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                             </div>
                         </Tooltip>}
                         {Boolean(fileState === 'download') &&
-                        <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
+                        <ArrowDownwardRounded onClick={this.downloadFileHandler}/>}
                         {Boolean(fileState === 'progress') && <React.Fragment>
                             <div className="progress">
                                 <svg viewBox='0 0 32 32'>

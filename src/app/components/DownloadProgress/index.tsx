@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {CloseRounded, CloudDownloadRounded} from '@material-ui/icons';
+import {CloseRounded, ArrowDownwardRounded} from '@material-ui/icons';
 import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import {getHumanReadableSize} from '../MessageFile';
@@ -61,7 +61,7 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (this.messageId !== newProps.id) {
             this.messageId = newProps.id;
             this.initProgress();
@@ -70,6 +70,15 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
 
     public componentWillUnmount() {
         this.removeAllListeners();
+    }
+
+    public setFileState(fileState: 'progress' | 'download') {
+        this.setState({
+            fileState,
+        }, () => {
+            window.console.log('case #1');
+            this.initProgress();
+        });
     }
 
     public render() {
@@ -82,7 +91,7 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
                 {thumbFile && thumbFile.fileid !== '' && <CachedPhoto className="download-progress-audio-thumbnail" fileLocation={thumbFile}/>}
                 <div className="media-action">
                     {Boolean(fileState === 'download') &&
-                    <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
+                    <ArrowDownwardRounded onClick={this.downloadFileHandler}/>}
                     {Boolean(fileState === 'progress') && <React.Fragment>
                         <div className="progress">
                             <svg viewBox='0 0 32 32'>
@@ -103,6 +112,7 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
 
     /* Download progress handler */
     private downloadProgressHandler = (progress: IFileProgress) => {
+        window.console.log('case #4');
         if (this.props.hideSizeIndicator !== true) {
             if (this.props.id > 0) {
                 this.displayFileSize(progress.download);
@@ -160,10 +170,12 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
     /* Initialize progress bar */
     private initProgress() {
         if (this.state.fileState === 'progress' || this.props.id < 0) {
+            window.console.log('case #2');
             this.removeAllListeners();
             this.eventReferences.push(this.progressBroadcaster.listen(this.props.id, this.downloadProgressHandler));
         } else {
             if (this.progressBroadcaster.isActive(this.props.id)) {
+                window.console.log('case #3');
                 this.setState({
                     fileState: 'progress',
                 }, () => {

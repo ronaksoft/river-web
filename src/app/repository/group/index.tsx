@@ -14,7 +14,7 @@ import {DexieUserDB} from '../../services/db/dexie/user';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
 import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
-import SDK from "../../services/sdk";
+import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
 
 export const GroupDBUpdated = 'Group_DB_Updated';
@@ -33,7 +33,7 @@ export default class GroupRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private broadcaster: Broadcaster;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private riverTime: RiverTime;
     private throttleBroadcastList: string[] = [];
     private readonly throttleBroadcastExecute: any = undefined;
@@ -42,7 +42,7 @@ export default class GroupRepo {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.broadcaster = Broadcaster.getInstance();
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.throttleBroadcastExecute = throttle(this.broadcastThrottledList, 255);
         this.riverTime = RiverTime.getInstance();
     }
@@ -83,7 +83,7 @@ export default class GroupRepo {
                     input.setType(PeerType.PEERGROUP);
                     input.setId(id);
                     input.setAccesshash('0');
-                    this.sdk.groupGetFull(input).then((res) => {
+                    this.apiManager.groupGetFull(input).then((res) => {
                         let g: IGroup | undefined = res.group;
                         g.participantList = res.participantsList;
                         g.photogalleryList = res.photogalleryList;

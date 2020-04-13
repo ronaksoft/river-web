@@ -47,7 +47,7 @@ import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
-import SDK from '../../services/sdk';
+import APIManager from '../../services/sdk';
 import {IUser} from '../../repository/user/interface';
 import {IGroup} from '../../repository/group/interface';
 import DialogRepo from '../../repository/dialog';
@@ -202,7 +202,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private dialogRepo: DialogRepo;
     private messageRepo: MessageRepo;
     private lastLines: number = 1;
-    private sdk: SDK;
+    private apiManager: APIManager;
     private mentions: IMentions[] = [];
     private lastMentionsCount: number = 0;
     private inputsRef: any = null;
@@ -279,7 +279,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.groupRepo = GroupRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.messageRepo = MessageRepo.getInstance();
-        this.sdk = SDK.getInstance();
+        this.apiManager = APIManager.getInstance();
         this.riverTime = RiverTime.getInstance();
 
         // @ts-ignore
@@ -1014,7 +1014,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         ucount: 1,
                     });
                 }
-                return this.sdk.clearDraft(this.state.peer).then(() => {
+                return this.apiManager.clearDraft(this.state.peer).then(() => {
                     if (this.state.peer) {
                         return this.dialogRepo.upsert([{
                             draft: {},
@@ -1167,7 +1167,7 @@ class ChatInput extends React.Component<IProps, IState> {
         const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
             const users: any[] = [];
             const reg = new RegExp(word, "i");
-            const userId = this.sdk.getConnInfo().UserID;
+            const userId = this.apiManager.getConnInfo().UserID;
             let exactMatchIndex: number = -1;
             for (const [i, participant] of participants.entries()) {
                 if (userId !== participant.userid &&
@@ -1196,7 +1196,7 @@ class ChatInput extends React.Component<IProps, IState> {
         };
         // Get from server if participants were not in group
         const getRemoteGroupFull = () => {
-            this.sdk.groupGetFull(peer).then((res) => {
+            this.apiManager.groupGetFull(peer).then((res) => {
                 const group: IGroup = res.group;
                 group.participantList = res.participantsList;
                 group.photogalleryList = res.photogalleryList;
@@ -1368,7 +1368,7 @@ class ChatInput extends React.Component<IProps, IState> {
             replyto: message ? message.id : undefined,
         };
         if ((draftMessage.body || '').length > 0 || (mode && mode !== C_MSG_MODE.Normal)) {
-            this.sdk.saveDraft(oldPeer, draftMessage.body || '', draftMessage.replyto, draftMessage.entitiesList).then(() => {
+            this.apiManager.saveDraft(oldPeer, draftMessage.body || '', draftMessage.replyto, draftMessage.entitiesList).then(() => {
                 this.dialogRepo.lazyUpsert([{
                     draft: draftMessage,
                     peerid: oldPeerObj.id || '',
@@ -1383,7 +1383,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         ucount: 1,
                     });
                 }
-                this.sdk.clearDraft(oldPeer).then(() => {
+                this.apiManager.clearDraft(oldPeer).then(() => {
                     this.dialogRepo.lazyUpsert([{
                         draft: {},
                         peerid: oldPeerObj.id || '',
@@ -2217,7 +2217,7 @@ class ChatInput extends React.Component<IProps, IState> {
         const inputUser = new InputUser();
         inputUser.setUserid(user.id || '');
         inputUser.setAccesshash(user.accesshash || '');
-        this.sdk.accountUnblock(inputUser).then(() => {
+        this.apiManager.accountUnblock(inputUser).then(() => {
             user.blocked = false;
             this.setState({
                 user,

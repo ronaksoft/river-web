@@ -133,7 +133,7 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
 
 interface IProps {
     onContextMenu: (cmd: string, id: IMessage) => void;
-    onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
+    onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'download_stream' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLastMessage: (message: IMessage | null) => void;
     onLastIncomingMessage: (message: IMessage | null) => void;

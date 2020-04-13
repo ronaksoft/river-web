@@ -38,7 +38,7 @@ import {IUser} from "../../../repository/user/interface";
 import {C_MESSAGE_ACTION} from "../../../repository/message/consts";
 import {getMessageTitle} from "../../../components/Dialog/utils";
 import {kMerge} from "../../utilities/kDash";
-import SDK from "../index";
+import APIManager from "../index";
 import {ILabel} from "../../../repository/label/interface";
 import {IGroup} from "../../../repository/group/interface";
 import DialogRepo from "../../../repository/dialog";
@@ -147,7 +147,7 @@ export default class UpdateManager {
     private labelRepo: LabelRepo | undefined;
 
     // SDK
-    private sdk: SDK | undefined;
+    private apiManager: APIManager | undefined;
 
     public constructor() {
         window.console.debug('Update manager started');
@@ -163,7 +163,7 @@ export default class UpdateManager {
             this.labelRepo = LabelRepo.getInstance();
 
             // Initialize SDK
-            this.sdk = SDK.getInstance();
+            this.apiManager = APIManager.getInstance();
         }, 100);
     }
 
@@ -295,8 +295,8 @@ export default class UpdateManager {
             };
             if (updateId) {
                 fn(updateId);
-            } else if (this.sdk) {
-                this.sdk.getUpdateState().then((res) => {
+            } else if (this.apiManager) {
+                this.apiManager.getUpdateState().then((res) => {
                     // TODO: check
                     fn(res.updateid || 0);
                 }).catch(reject);
@@ -305,10 +305,10 @@ export default class UpdateManager {
     }
 
     private startSyncing(lastId: number, limit: number) {
-        if (!this.sdk) {
+        if (!this.apiManager) {
             return;
         }
-        this.sdk.getUpdateDifference(lastId, limit).then((res) => {
+        this.apiManager.getUpdateDifference(lastId, limit).then((res) => {
             this.applyDiffUpdate(res.toObject()).then((id) => {
                 this.startSyncing(id, limit);
             }).catch((err2) => {
@@ -677,10 +677,10 @@ export default class UpdateManager {
                     phone: updateUsername.phone,
                     username: updateUsername.username,
                 });
-                if (this.sdk) {
-                    const connInfo = this.sdk.getConnInfo();
+                if (this.apiManager) {
+                    const connInfo = this.apiManager.getConnInfo();
                     connInfo.Phone = updateUsername.phone;
-                    this.sdk.setConnInfo(connInfo);
+                    this.apiManager.setConnInfo(connInfo);
                 }
                 break;
             case C_MSG.UpdateUserPhoto:

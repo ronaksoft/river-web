@@ -93,3 +93,11 @@ html[theme="dark-blue"] {
     }
   }
 }
+
+html[theme="dark-blue"] {
+  .status-bar {
+    .try-again-container .try-again {
+      color: var(--dark-mention);
+    }
+  }
+}
