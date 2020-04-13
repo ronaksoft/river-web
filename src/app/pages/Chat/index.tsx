@@ -2349,7 +2349,7 @@ class Chat extends React.Component<IProps, IState> {
                 isUpdating: true,
             });
         }).catch((err) => {
-            if (err.err !== 'too_soon') {
+            if (err.err === 'too_late') {
                 this.snapshot();
             }
         });
@@ -2468,7 +2468,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private notifyUser(peerId: string, ids: number[]) {
-        window.console.log('notifyUser', peerId, ids);
         const user = this.userRepo.getInstant(peerId);
         if (user) {
             if (ids.length === 1) {
@@ -2487,7 +2486,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private notifyGroup(peerId: string, ids: number[]) {
-        window.console.log('notifyGroup', peerId, ids);
         this.groupRepo.get(peerId).then((group) => {
             if (group) {
                 if (ids.length === 1) {

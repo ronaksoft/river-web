@@ -76,7 +76,6 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
         this.setState({
             fileState,
         }, () => {
-            window.console.log('case #1');
             this.initProgress();
         });
     }
@@ -112,7 +111,6 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
 
     /* Download progress handler */
     private downloadProgressHandler = (progress: IFileProgress) => {
-        window.console.log('case #4');
         if (this.props.hideSizeIndicator !== true) {
             if (this.props.id > 0) {
                 this.displayFileSize(progress.download);
@@ -170,12 +168,10 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
     /* Initialize progress bar */
     private initProgress() {
         if (this.state.fileState === 'progress' || this.props.id < 0) {
-            window.console.log('case #2');
             this.removeAllListeners();
             this.eventReferences.push(this.progressBroadcaster.listen(this.props.id, this.downloadProgressHandler));
         } else {
             if (this.progressBroadcaster.isActive(this.props.id)) {
-                window.console.log('case #3');
                 this.setState({
                     fileState: 'progress',
                 }, () => {

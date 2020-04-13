@@ -60,7 +60,6 @@ class StreamVideo extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
-        window.console.log('componentDidMount');
         this.eventReferences.push(this.bufferProgressBroadcaster.listen(this.props.msgId, this.bufferHandler));
         this.getFile();
     }
@@ -114,6 +113,12 @@ class StreamVideo extends React.PureComponent<IProps, IState> {
 
     private bufferHandler = (data: IFileBuffer) => {
         if (!this.sourceBuffer) {
+            return;
+        }
+        if (data.cache) {
+            if (this.props.onError) {
+                this.props.onError('already_downloaded');
+            }
             return;
         }
         this.parts.push(data);

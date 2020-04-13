@@ -366,19 +366,29 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private videoStreamStartDownloadHandler = (msgId: number) => {
         if (this.props.onAction) {
             this.props.onAction('download_stream', msgId);
-            setTimeout(() => {
-                if (this.downloadProgressRef) {
-                    this.downloadProgressRef.setFileState('progress');
-                }
-            }, 1000);
         }
     }
 
-    private videoStreamErrorHandler = () => {
+    private videoStreamErrorHandler = (err: any) => {
         const {doc} = this.state;
         if (doc) {
-            doc.stream = false;
-            this.props.onError(i18n.t('media.cannot_stream_video'));
+            if (err === 'already_downloaded') {
+                this.props.onError(i18n.t('media.this_video_is_already_downloaded'));
+                if (doc.items.length > 0) {
+                    doc.items[0].downloaded = true;
+                    this.setState({
+                        doc,
+                    });
+                }
+            } else {
+                this.props.onError(i18n.t('media.cannot_stream_video'));
+                doc.stream = false;
+                setTimeout(() => {
+                    if (this.downloadProgressRef) {
+                        this.downloadProgressRef.setFileState('progress');
+                    }
+                }, 100);
+            }
             this.setState({
                 doc,
             });

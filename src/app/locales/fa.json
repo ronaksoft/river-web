@@ -314,7 +314,8 @@
     "file": "فایل",
     "playing_from": "در حال پخش از:",
     "preview": "پیش نمایش",
-    "cannot_stream_video": "استریم ویدئو امکان پدیز نیست"
+    "cannot_stream_video": "استریم ویدئو امکان پدیز نیست",
+    "this_video_is_already_downloaded": "این ویدئو قبلا دانلود شده است"
   },
   "input": {
     "you_are_no_longer_in_this_group": "شما دیگر در این گروه عضو نیستید",
