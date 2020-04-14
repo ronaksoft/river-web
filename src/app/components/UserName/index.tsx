@@ -92,7 +92,7 @@ class UserName extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {onlyFirstName, defaultString} = this.props;
+        const {onlyFirstName, defaultString, noIcon} = this.props;
         let {postfix, prefix} = this.props;
         prefix = prefix || '';
         postfix = postfix || '';
@@ -111,18 +111,18 @@ class UserName extends React.Component<IProps, IState> {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{Boolean(this.props.noIcon !== true && user.official) &&
+                      onClick={this.clickHandler}>{Boolean(noIcon !== true && user.official) &&
                 <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{Boolean(this.props.noIcon !== true && user.isbot) &&
+                    style={{color: '#27AE60'}}/>}{Boolean(noIcon !== true && user.isbot) &&
                 <MemoryRounded/>}{(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}</span>
             );
         } else {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{Boolean(this.props.noIcon !== true && user.official) &&
+                      onClick={this.clickHandler}>{Boolean(noIcon !== true && user.official) &&
                 <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{Boolean(this.props.noIcon !== true && user.isbot) &&
+                    style={{color: '#27AE60'}}/>}{Boolean(noIcon !== true && user.isbot) &&
                 <MemoryRounded/>}{(user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
             );
         }
