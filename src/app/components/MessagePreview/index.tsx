@@ -150,7 +150,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                         {this.getThumbnail(mediaInfo)}
                         <div className="preview-message">
                             <div className="preview-message-user">
-                                <UserName id={previewMessage.senderid || ''} you={true}/>
+                                <UserName id={previewMessage.senderid || ''} you={true} noIcon={true}/>
                             </div>
                             <div className="preview-message-body">
                                 {this.getMessageBody(previewMessage)}

@@ -19,7 +19,6 @@ import {ThemeChanged} from "../SettingsMenu";
 interface IProps {
     className?: string;
     defaultString?: string;
-    hideBadge?: boolean;
     id: string;
     noDetail?: boolean;
     onlyFirstName?: boolean;
@@ -112,7 +111,7 @@ class UserName extends React.Component<IProps, IState> {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true && user.official) &&
+                      onClick={this.clickHandler}>{Boolean(this.props.noIcon !== true && user.official) &&
                 <VerifiedUserRounded
                     style={{color: '#27AE60'}}/>}{Boolean(this.props.noIcon !== true && user.isbot) &&
                 <MemoryRounded/>}{(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}</span>
@@ -121,7 +120,7 @@ class UserName extends React.Component<IProps, IState> {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true && user.official) &&
+                      onClick={this.clickHandler}>{Boolean(this.props.noIcon !== true && user.official) &&
                 <VerifiedUserRounded
                     style={{color: '#27AE60'}}/>}{Boolean(this.props.noIcon !== true && user.isbot) &&
                 <MemoryRounded/>}{(user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>

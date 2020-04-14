@@ -89,11 +89,11 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
                         if (elem.str.indexOf('@') === 0) {
                             return (
                                 <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
-                                          noIcon={true} hideBadge={true} unsafe={true}
+                                          noIcon={true} unsafe={true}
                                           defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
                         } else {
                             return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true} noIcon={true}
-                                              hideBadge={true} defaultString={elem.str} onLoad={measureFn}/>);
+                                              defaultString={elem.str} onLoad={measureFn}/>);
                         }
                     case MessageEntityType.MESSAGEENTITYTYPEBOLD:
                         return (<span key={i} className="_bold">{elem.str}</span>);
@@ -908,7 +908,7 @@ class Message extends React.Component<IProps, IState> {
                                      onContextMenu={this.messageContextMenuHandler(index)}>
                                     {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
                                     <UserName className="name" uniqueColor={true} id={message.senderid || ''}
-                                              hideBadge={true} noDetail={this.state.selectable}
+                                              noIcon={true} noDetail={this.state.selectable}
                                               onLoad={userNameLoadHandler}/>}
                                     {Boolean(message.replyto && message.replyto !== 0 && message.deleted_reply !== true) &&
                                     <MessagePreview message={message} peer={peer}
