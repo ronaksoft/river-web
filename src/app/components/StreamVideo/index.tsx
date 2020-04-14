@@ -12,6 +12,7 @@ import {convertBlobToArrayBuffer, IFileBuffer} from "../../services/sdk/fileMana
 import FileRepo from "../../repository/file";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
 import {InputFileLocation} from "../../services/sdk/messages/chat.core.types_pb";
+import {transformMimeType} from "./helper";
 
 interface IProps {
     msgId: number;
@@ -97,15 +98,7 @@ class StreamVideo extends React.PureComponent<IProps, IState> {
             return;
         }
         const {mimeType, msgId} = this.props;
-        let mime = mimeType || 'video/mp4';
-        switch (mimeType) {
-            case 'video/mp4':
-                mime = 'video/mp4; codecs="avc1.64001E,mp4a.40.2"';
-                break;
-            case 'video/webm':
-                mime = 'video/webm; codecs="vorbis,vp8"';
-                break;
-        }
+        const mime = transformMimeType(mimeType || 'video/mp4');
         URL.revokeObjectURL(this.videoRef.src);
         this.sourceBuffer = this.mediaSource.addSourceBuffer(mime);
         this.props.onStartDownload(msgId);
@@ -167,7 +160,7 @@ class StreamVideo extends React.PureComponent<IProps, IState> {
                 if (this.sourceBuffer) {
                     this.sourceBuffer.appendBuffer(buf);
                     this.sourceBuffer.onupdateend = () => {
-                        this.updateEndHandler(true);
+                        this.updateEndHandler(lastBuffer.completed);
                     };
                 }
             }).catch(() => {

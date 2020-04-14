@@ -179,7 +179,8 @@ class UserDialog extends React.Component<IProps, IState> {
                             />}
                         </div>
                         <div className="line">
-                            {!edit && <div className="form-control">
+                            {!edit && Boolean(user && (user.lastname || '').length > 0) &&
+                            <div className="form-control">
                                 <label>{i18n.t('general.last_name')}</label>
                                 <div className="inner">{user.lastname}</div>
                                 {isInContact && <div className="action">

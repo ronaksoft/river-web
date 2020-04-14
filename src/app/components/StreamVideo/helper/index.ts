@@ -62,3 +62,15 @@ export const getCodec = (mime: string, file: File): Promise<string> => {
         };
     });
 };
+
+export const transformMimeType = (mimeType: string) => {
+    switch (mimeType) {
+        case 'video/mp4':
+            return 'video/mp4; codecs="avc1.64001E,mp4a.40.2"';
+        case 'audio/aac; codecs="H.264"':
+            return 'video/mp4; codecs="avc1.4d401f,mp4a.40.2"; profiles="isom,mp42"';
+        case 'video/webm':
+            return 'video/webm; codecs="vorbis,vp8"';
+    }
+    return mimeType;
+};

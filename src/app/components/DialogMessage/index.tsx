@@ -119,7 +119,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                             {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                             <UserName className="name" id={dialog.peerid || ''} noDetail={true}
                                       you={dialog.saved_messages} onLoad={this.userNameLoadHandler}
-                                      youPlaceholder="Saved Messages"/>}
+                                      youPlaceholder="Saved Messages" hideBadge={true} noIcon={true}/>}
                             {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                             <GroupName className="name" id={dialog.peerid || ''}/>}
                             {dialog.preview_me && <span
@@ -350,7 +350,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 {ids.slice(0, 2).map((id, index) => {
                     return (<span key={index}>
                         {index !== 0 ? (ids.length - 1 === index ? ' & ' : ', ') : ''}
-                        <UserName id={id} onlyFirstName={true}/>
+                        <UserName id={id} onlyFirstName={true} hideBadge={true} noIcon={true}/>
                     </span>);
                 })}
             {Boolean(ids.length > 2) && <span> & {ids.length - 2} more</span>}

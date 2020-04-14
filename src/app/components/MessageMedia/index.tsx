@@ -26,10 +26,11 @@ import DocumentViewerService from '../../services/documentViewerService';
 import {getHumanReadableSize} from '../MessageFile';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import SettingsConfigManager from '../../services/settingsConfigManager';
-
-import './style.scss';
 import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
+import {transformMimeType} from "../StreamVideo/helper";
+
+import './style.scss';
 
 const C_MAX_HEIGHT = 256;
 const C_MIN_HEIGHT = 86;
@@ -424,7 +425,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             <CachedPhoto className="blurred-picture" blur={10}
                          fileLocation={info.thumbFile}/>}
             <CachedPhoto className="picture"
-                         fileLocation={(message.id || 0) < 0 && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
+                         fileLocation={((message.id || 0) < 0 || downloaded) && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
                          style={this.pictureContentSize}
                          onLoad={this.cachedPhotoLoadHandler} blur={downloaded ? undefined : 10} searchTemp={true}/>
             {this.getMediaAction()}
@@ -755,7 +756,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         if (MediaSource === undefined) {
             return false;
         }
-        return MediaSource.isTypeSupported(mimeType);
+        return MediaSource.isTypeSupported(transformMimeType(mimeType));
     }
 }
 

@@ -381,6 +381,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     });
                 }
             } else {
+                window.console.log(err.target.error);
                 this.props.onError(i18n.t('media.cannot_stream_video'));
                 doc.stream = false;
                 setTimeout(() => {

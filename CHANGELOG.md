@@ -1,3 +1,6 @@
+## 0.32.10
+* Known bugs fixed
+
 ## 0.32.9
 * 🎉 Video streaming
 * Upload/Download improvements
