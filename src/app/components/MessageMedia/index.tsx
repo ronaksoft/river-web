@@ -423,11 +423,15 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                      style={{height: this.pictureContentSize.height}}>
             {this.blurredImageEnable &&
             <CachedPhoto className="blurred-picture" blur={10}
-                         fileLocation={info.thumbFile}/>}
+                         fileLocation={info.thumbFile}
+                         tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
+            />}
             <CachedPhoto className="picture"
                          fileLocation={((message.id || 0) < 0 || downloaded) && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
                          style={this.pictureContentSize}
-                         onLoad={this.cachedPhotoLoadHandler} blur={downloaded ? undefined : 10} searchTemp={true}/>
+                         onLoad={this.cachedPhotoLoadHandler} blur={downloaded ? undefined : 10} searchTemp={true}
+                         tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
+            />
             {this.getMediaAction()}
         </div>);
     }
@@ -723,7 +727,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             }],
             peerId: message.peerid || '',
             rect: el.getBoundingClientRect(),
-            stream: streamReady && !message.downloaded,
+            stream: Boolean(streamReady && !message.downloaded),
             type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
         };
         this.documentViewerService.loadDocument(doc);

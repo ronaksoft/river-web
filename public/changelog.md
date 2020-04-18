@@ -1,3 +1,7 @@
+## 0.32.11
+* File upload updated
+* Known bugs fixed
+
 ## 0.32.10
 * Known bugs fixed
 

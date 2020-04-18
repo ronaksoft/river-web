@@ -20,6 +20,7 @@ interface IProps {
     onLoad?: () => void;
     searchTemp?: boolean;
     style?: CSSProperties;
+    tempFile?: Blob;
 }
 
 interface IState {
@@ -34,6 +35,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
     private retries: number = 0;
     private tryTimeout: any = null;
     private mounted: boolean = true;
+    private tempFileSrc: string | null = null;
 
     constructor(props: IProps) {
         super(props);
@@ -71,19 +73,38 @@ class CachedPhoto extends React.Component<IProps, IState> {
         if (this.props.fileLocation) {
             this.cachedFileService.unmountCache(this.props.fileLocation.fileid || '');
         }
+        if (this.tempFileSrc) {
+            URL.revokeObjectURL(this.tempFileSrc);
+            this.tempFileSrc = null;
+        }
     }
 
     public render() {
         const {className, src} = this.state;
         return (
             <div className={className} style={this.props.style} onClick={this.props.onClick}>
-                {Boolean(src) && <img src={src} alt="avatar" onLoad={this.props.onLoad} onError={this.imgErrorHandler}/>}
+                {Boolean(src) &&
+                <img src={src} alt="avatar" onLoad={this.props.onLoad} onError={this.imgErrorHandler}/>}
             </div>
         );
     }
 
     /* Get file from cached storage */
     private getFile = () => {
+        if (this.props.tempFile) {
+            if (this.tempFileSrc) {
+                URL.revokeObjectURL(this.tempFileSrc);
+            }
+            this.tempFileSrc = URL.createObjectURL(this.props.tempFile);
+            this.setState({
+                src: this.tempFileSrc,
+            });
+            return;
+        }
+        if (this.tempFileSrc) {
+            URL.revokeObjectURL(this.tempFileSrc);
+            this.tempFileSrc = null;
+        }
         clearTimeout(this.tryTimeout);
         const timeout = setTimeout(() => {
             this.getFile();

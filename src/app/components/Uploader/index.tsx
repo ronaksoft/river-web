@@ -154,7 +154,8 @@ class MediaPreview extends React.Component<IProps, IState> {
                 {Boolean(items.length > 0 && items[selected].mediaType === 'image') &&
                 <ImageEditor ref={this.imageEditorRefHandler} onImageReady={this.imageEditorImageReadyHandler}/>}
                 {Boolean(items.length > 0 && items[selected].mediaType === 'video') &&
-                <VideoFrameSelector ref={this.videoFrameSelectorRefHandler} onDone={this.videoFrameSelectorDoneHandler}/>}
+                <VideoFrameSelector ref={this.videoFrameSelectorRefHandler}
+                                    onDone={this.videoFrameSelectorDoneHandler}/>}
                 <div className="uploader-container">
                     {loading && <div className="uploader-loader">
                         <span>{i18n.t('uploader.converting')}</span>
@@ -169,9 +170,9 @@ class MediaPreview extends React.Component<IProps, IState> {
                         </IconButton>
                     </div>
                     <div className="attachment-preview-container">
-                        <Dropzone
+                        {dialogOpen && <Dropzone
                             ref={this.dropzoneRefHandler}
-                            onDrop={this.onDrop}
+                            onDrop={this.dropzoneDropHandler}
                             className="uploader-dropzone"
                             accept={isFile ? undefined : this.props.accept}
                         >
@@ -232,7 +233,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                     {i18n.tf('uploader.drop_you_param_here', isFile ? '' : 'media ')}
                                 </div>}
                             </div>
-                        </Dropzone>
+                        </Dropzone>}
                         <div className="attachment-details-container">
                             <TextField
                                 className={'caption-input ' + (items[selected] && items[selected].rtl ? 'rtl' : 'ltr')}
@@ -310,7 +311,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     /* On drop handler */
-    private onDrop = (accepted: FileWithPreview[]) => {
+    private dropzoneDropHandler = (accepted: FileWithPreview[]) => {
         if (this.state.isFile) {
             accepted.forEach((item: any) => {
                 item.ready = true;
@@ -367,10 +368,12 @@ class MediaPreview extends React.Component<IProps, IState> {
         const {items} = this.state;
         items.map((item, index) => {
             item.mediaType = this.getTypeByMime(item.type);
-            if (checkFormat && thumbnailReadyMIMEs.indexOf(item.type) === -1) {
-                return item;
-            } else if (checkFormat) {
-                item.ready = false;
+            if (checkFormat) {
+                if (thumbnailReadyMIMEs.indexOf(item.type) === -1) {
+                    return item;
+                } else {
+                    item.ready = false;
+                }
             }
             if (!this.previewRefs[index]) {
                 this.previewRefs[index] = [];
@@ -793,7 +796,10 @@ class MediaPreview extends React.Component<IProps, IState> {
     /* VideoFrameSelector done handler */
     private videoFrameSelectorDoneHandler = (blob: Blob, url: string) => {
         const {items, selected} = this.state;
-        items[selected].tempThumb = new File([blob], `frame_${Date.now()}`, {type: blob.type, lastModified: Date.now()});;
+        items[selected].tempThumb = new File([blob], `frame_${Date.now()}`, {
+            lastModified: Date.now(),
+            type: blob.type,
+        });
         items[selected].videoThumb = url;
         if (items[selected].videoThumb) {
             this.previewRefs[selected].push(items[selected].videoThumb || '');

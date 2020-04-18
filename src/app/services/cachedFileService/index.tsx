@@ -191,6 +191,13 @@ export default class CachedFileService {
     private getRemoteFile(fileLoc: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, blurRadius?: number): Promise<string> {
         const id = fileLoc.fileid || '';
         return new Promise((resolve, reject) => {
+            if (fileLoc.accesshash === '') {
+                if (this.files[id]) {
+                    this.files[id].retries++;
+                }
+                reject();
+                return;
+            }
             const fileLocation = new InputFileLocation();
             fileLocation.setFileid(id);
             fileLocation.setAccesshash(fileLoc.accesshash || '');

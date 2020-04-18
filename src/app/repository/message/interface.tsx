@@ -31,6 +31,7 @@ interface IMessage extends UserMessage.AsObject {
     req_id?: number;
     mark_as_sent?: boolean;
     replydata?: any;
+    temp_file?: Blob;
 }
 
 interface IPendingMessage {
