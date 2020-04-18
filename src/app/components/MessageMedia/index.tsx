@@ -613,7 +613,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                             break;
                         case PeerType.PEERGROUP:
                             if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.group_photos) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.group_videos)) {
-                                this.downloadFileHandler(false);
+                                this.downloadFileHandler(false)();
                             }
                             break;
                     }

@@ -1,3 +1,6 @@
+## 0.32.12
+* Auto download bug fixed
+
 ## 0.32.11
 * File upload updated
 * Known bugs fixed
