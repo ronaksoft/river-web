@@ -8,8 +8,7 @@
 */
 
 import * as React from 'react';
-import {Picker} from 'emoji-mart';
-import PopUpMenu from '../PopUpMenu';
+import {Picker as EmojiPicker} from 'emoji-mart';
 import {cloneDeep, sortBy, throttle, range} from 'lodash';
 import {
     AttachFileRounded,
@@ -32,6 +31,8 @@ import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import Popover from '@material-ui/core/Popover';
+import {PopoverPosition} from '@material-ui/core/Popover';
 import {
     DraftMessage,
     GroupFlags,
@@ -143,7 +144,7 @@ interface IProps {
 interface IState {
     botKeyboard: boolean;
     disableAuthority: number;
-    emojiAnchorEl: any;
+    emojiAnchorPos: PopoverPosition | undefined;
     isBot: boolean;
     mediaInputMode: 'media' | 'music' | 'contact' | 'location' | 'file' | 'none';
     peer: InputPeer | null;
@@ -257,7 +258,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.state = {
             botKeyboard: false,
             disableAuthority: 0x0,
-            emojiAnchorEl: null,
+            emojiAnchorPos: undefined,
             isBot: false,
             mediaInputMode: 'none',
             peer: props.peer,
@@ -667,14 +668,17 @@ class ChatInput extends React.Component<IProps, IState> {
                                 <div className={'emoji-wrapper' + (isBot ? ' is-bot' : '')}>
                                     {isBot && <span className="icon" onClick={this.toggleBotKeyboardHandler}>
                                         {botKeyboard ? <KeyboardRounded/> : <ViewModuleRounded/>}
-                                </span>}
+                                    </span>}
                                     <span className="icon" onClick={this.emojiClickHandler}>
-                                    <SentimentSatisfiedRounded/>
-                                </span>
-                                    <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
-                                        <Picker custom={[]} onSelect={this.emojiSelectHandler} native={true}
-                                                showPreview={false}/>
-                                    </PopUpMenu>
+                                        <SentimentSatisfiedRounded/>
+                                    </span>
+                                    <Popover open={Boolean(this.state.emojiAnchorPos)} anchorReference="anchorPosition"
+                                             anchorPosition={this.state.emojiAnchorPos} onClose={this.emojiHandleClose}
+                                             classes={{paper: 'emoji-menu-paper'}}
+                                    >
+                                        <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
+                                                     showPreview={false}/>
+                                    </Popover>
                                 </div>
                             </div>
                             <div className="voice-recorder">
@@ -849,7 +853,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.mentions = [];
         this.lastMentionsCount = 0;
         this.setState({
-            emojiAnchorEl: null,
+            emojiAnchorPos: undefined,
             textareaValue: '',
         }, () => {
             this.computeLines();
@@ -895,7 +899,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.mentions = [];
                 this.lastMentionsCount = 0;
                 this.setState({
-                    emojiAnchorEl: null,
+                    emojiAnchorPos: undefined,
                     textareaValue: '',
                 }, () => {
                     this.computeLines();
@@ -947,11 +951,15 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    private emojiClickHandler = (event: any) => {
-        event.stopPropagation();
-        event.preventDefault();
+    private emojiClickHandler = (e: any) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const pos = e.target.getBoundingClientRect();
         this.setState({
-            emojiAnchorEl: event.currentTarget,
+            emojiAnchorPos: {
+                left: pos.left - 318,
+                top: pos.top - 445,
+            },
         });
     }
 
@@ -963,7 +971,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private emojiHandleClose = () => {
         this.setState({
-            emojiAnchorEl: null,
+            emojiAnchorPos: undefined,
         });
     }
 

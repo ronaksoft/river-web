@@ -674,6 +674,10 @@
   }
 }
 
+.emoji-menu-paper {
+  background-color: transparent !important;
+}
+
 html[direction="rtl"] {
   .chat-input {
     border-width: 1px 0 1px 1px;
@@ -691,6 +695,10 @@ html[direction="rtl"] {
         direction: ltr;
         margin: 8px 48px 0 0;
       }
+    }
+
+    .inputs .input-actions .send {
+      transform: rotateY(180deg);
     }
   }
 }
