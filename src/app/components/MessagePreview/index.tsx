@@ -232,11 +232,16 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
             case C_MESSAGE_TYPE.File:
-                return (
-                    <div className="preview-thumbnail">
-                        <CachedPhoto key="reply-thumbnail" className="thumbnail" fileLocation={mediaInfo.thumbFile}/>
-                    </div>
-                );
+                if (mediaInfo.thumbFile && mediaInfo.thumbFile.fileid !== '') {
+                    return (
+                        <div className="preview-thumbnail">
+                            <CachedPhoto key="reply-thumbnail" className="thumbnail"
+                                         fileLocation={mediaInfo.thumbFile}/>
+                        </div>
+                    );
+                } else {
+                    return null;
+                }
             case C_MESSAGE_TYPE.Audio:
                 if (mediaInfo.thumbFile && mediaInfo.thumbFile.fileid !== '') {
                     return (
@@ -246,10 +251,10 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                         </div>
                     );
                 } else {
-                    return '';
+                    return null;
                 }
             default:
-                return '';
+                return null;
         }
     }
 

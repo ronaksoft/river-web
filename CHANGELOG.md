@@ -1,3 +1,6 @@
+## 0.32.14
+* Known bug fixed
+
 ## 0.32.13
 * Emoji picker updated
 
