@@ -436,6 +436,7 @@ export default class MessageRepo {
                     }
                     const lim = limit - len;
                     this.apiManager.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
+                        window.console.log('case#1', 'peer:', peer, remoteRes);
                         this.userRepo.importBulk(false, remoteRes.usersList);
                         this.groupRepo.importBulk(remoteRes.groupsList);
                         remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
@@ -552,6 +553,7 @@ export default class MessageRepo {
                 }
             } else {
                 return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - (ignoreMax ? 0 : 1)), (mode === 0x2), limit, ignoreMax).then((remoteRes) => {
+                    window.console.log('case#2', 'peer:', peer, remoteRes);
                     this.userRepo.importBulk(false, remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
                     remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
