@@ -249,6 +249,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private selectMediaRef: SelectMedia | undefined;
     private botKeyboard: IKeyboardBotData | undefined;
     private firstLoad: boolean = true;
+    private microphonePermission: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -1514,18 +1515,26 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Voice anchor mouse down handler */
     private voiceMouseDownHandler = () => {
         if (this.state.voiceMode !== 'lock' && this.state.voiceMode !== 'play') {
-            this.voiceMouseIn = true;
-            this.setState({
-                voiceMode: 'down',
-            }, () => {
-                this.voiceStateChange();
+            this.checkMicrophonePermission().then((res) => {
+                if (!res) {
+                    return;
+                }
+                this.voiceMouseIn = true;
+                this.setState({
+                    voiceMode: 'down',
+                }, () => {
+                    this.voiceStateChange();
+                });
+                this.voiceRecord();
             });
-            this.voiceRecord();
         }
     }
 
     /* Voice anchor mouse up handler */
     private voiceMouseUpHandler = (e: any) => {
+        if (!this.microphonePermission) {
+            return;
+        }
         if (this.state.voiceMode !== 'lock' && this.state.voiceMode !== 'play') {
             e.stopPropagation();
             this.setState({
@@ -1541,7 +1550,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Voice anchor mouse Enter handler */
     private voiceMouseEnterHandler = () => {
-        if (!this.voiceMouseIn) {
+        if (!this.microphonePermission || !this.voiceMouseIn) {
             return;
         }
         if (this.state.voiceMode !== 'down') {
@@ -1555,7 +1564,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Voice anchor mouse down handler */
     private voiceMouseLeaveHandler = () => {
-        if (!this.voiceMouseIn) {
+        if (!this.microphonePermission || !this.voiceMouseIn) {
             return;
         }
         if (this.state.voiceMode !== 'lock') {
@@ -1569,6 +1578,9 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Voice anchor mouse down handler */
     private voiceMouseClickHandler = () => {
+        if (!this.microphonePermission) {
+            return;
+        }
         if (this.state.voiceMode === 'lock') {
             this.voiceRecordEnd();
             this.setState({
@@ -2332,6 +2344,39 @@ class ChatInput extends React.Component<IProps, IState> {
         this.textarea.value = textVal;
         this.setState({
             textareaValue: textVal,
+        });
+    }
+
+    private checkMicrophonePermission() {
+        if (!navigator.permissions) {
+            return Promise.resolve(true);
+        }
+        if (this.microphonePermission) {
+            return Promise.resolve(true);
+        }
+        return new Promise(resolve => {
+            navigator.permissions.query(
+                {name: 'microphone'},
+            ).then((permissionStatus) => {
+                switch (permissionStatus.state) {
+                    case 'denied':
+                        resolve(false);
+                        return;
+                    case 'granted':
+                        resolve(true);
+                        this.microphonePermission = true;
+                        return;
+                    case 'prompt':
+                        navigator.mediaDevices.getUserMedia({audio: true}).then(() => {
+                            resolve(true);
+                            this.microphonePermission = true;
+                            this.inputsMode = 'voice';
+                        }).catch((err) => {
+                            resolve(false);
+                        });
+                        return;
+                }
+            });
         });
     }
 }

@@ -396,7 +396,8 @@
     "unread_messages": "پیام‌های جدید",
     "draft": "پیش‌نویس:",
     "replied_message": "پیام پاسخ داده شده",
-    "took_an_screenshot": "از صفحه عکس گرفت"
+    "took_an_screenshot": "از صفحه عکس گرفت",
+    "unsupported_file": "این فایل پشتیبانی نمی‌شود"
   },
   "uploader": {
     "converting": "درحال تبدیل کردن...",

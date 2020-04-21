@@ -126,6 +126,16 @@
   }
 }
 
+.select-media-tooltip-popper {
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.select-media-tooltip {
+  border-radius: 50%;
+  font-size: 14px;
+}
+
 html[theme="dark"],
 html[theme="dark-night"] {
   .select-media .media-input-frame .media-input-container .media-item {

@@ -674,61 +674,38 @@ class MediaPreview extends React.Component<IProps, IState> {
                 }
             } else if (isFile) {
                 promise.push(this.convertFileToBlob(item));
+                promise.push(new Promise((resolve) => {
+                    resolve(item.tempThumb);
+                }));
             }
         });
-        if (isFile) {
-            Promise.all(promise).then((dist) => {
-                const output: IMediaItem[] = [];
-                for (let i = 0; i < items.length; i++) {
-                    output.push({
-                        caption: items[i].caption,
-                        file: dist[i],
-                        fileType: items[i].type,
-                        mediaType: 'file',
-                        name: items[i].name,
-                        thumb: dist[i * 2 + 1] ? {
-                            file: dist[i * 2 + 1],
-                            fileType: 'image/jpeg',
-                            height: Math.round(items[i].height || 0),
-                            width: Math.round(items[i].width || 0),
-                        } : undefined,
-                    });
-                }
-                this.props.onDone(output);
-                this.dialogCloseHandler();
-                this.setState({
-                    loading: false,
+        Promise.all(promise).then((dist) => {
+            const output: IMediaItem[] = [];
+            for (let i = 0; i < items.length; i++) {
+                output.push({
+                    album: items[i].album,
+                    caption: items[i].caption || '',
+                    duration: items[i].duration ? Math.round(items[i].duration || 0) : undefined,
+                    file: dist[i * 2],
+                    fileType: items[i].mimeType || items[i].type,
+                    mediaType: isFile ? 'file' : (items[i].mediaType || 'none'),
+                    name: items[i].name,
+                    performer: items[i].performer,
+                    thumb: dist[i * 2 + 1] ? {
+                        file: dist[i * 2 + 1],
+                        fileType: 'image/jpeg',
+                        height: Math.round(items[i].height || 0),
+                        width: Math.round(items[i].width || 0),
+                    } : undefined,
+                    title: items[i].title,
                 });
+            }
+            this.props.onDone(output);
+            this.dialogCloseHandler();
+            this.setState({
+                loading: false,
             });
-        } else {
-            Promise.all(promise).then((dist) => {
-                const output: IMediaItem[] = [];
-                for (let i = 0; i < items.length; i++) {
-                    output.push({
-                        album: items[i].album,
-                        caption: items[i].caption || '',
-                        duration: items[i].duration ? Math.round(items[i].duration || 0) : undefined,
-                        file: dist[i * 2],
-                        fileType: items[i].mimeType || items[i].type,
-                        mediaType: items[i].mediaType || 'none',
-                        name: items[i].name,
-                        performer: items[i].performer,
-                        thumb: dist[i * 2 + 1] ? {
-                            file: dist[i * 2 + 1],
-                            fileType: 'image/jpeg',
-                            height: Math.round(items[i].height || 0),
-                            width: Math.round(items[i].width || 0),
-                        } : undefined,
-                        title: items[i].title,
-                    });
-                }
-                this.props.onDone(output);
-                this.dialogCloseHandler();
-                this.setState({
-                    loading: false,
-                });
-            });
-        }
+        });
     }
 
     /* ImageEditor ref handler */

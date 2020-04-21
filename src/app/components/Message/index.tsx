@@ -118,7 +118,7 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
                         return (<span key={i} className="_url"
                                       onClick={botCommandHandler(elem.str || '')}>{elem.str}</span>);
                     case MessageEntityType.MESSAGEENTITYTYPECODE:
-                        return (<CodeViewer snippet={elem.str || ''} onDone={measureFn}/>);
+                        return (<CodeViewer key={i} snippet={elem.str || ''} onDone={measureFn}/>);
                     default:
                         return (<span key={i}>{elem.str}</span>);
                 }
@@ -145,6 +145,7 @@ interface IProps {
     onRendered?: scrollFunc;
     onBotCommand?: (cmd: string, params?: any) => void;
     onBotButtonAction?: (cmd: number, data: any, msgId?: number) => void;
+    onError?: (text: string) => void;
     showDate: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
     isMobileView: boolean;
@@ -1319,7 +1320,9 @@ class Message extends React.Component<IProps, IState> {
         e.preventDefault();
         this.dragLeaveHandler();
         const files: File[] = [];
+        let hasData = false;
         if (e.dataTransfer.items) {
+            hasData = true;
             // Use DataTransferItemList interface to access the file(s)
             for (let i = 0; i < e.dataTransfer.items.length; i++) {
                 // If dropped items aren't files, reject them
@@ -1336,6 +1339,10 @@ class Message extends React.Component<IProps, IState> {
         }
         if (files.length > 0) {
             this.props.onDrop(files);
+        } else if (hasData) {
+            if (this.props.onError) {
+                this.props.onError(i18n.t('message.unsupported_file'));
+            }
         }
     }
 

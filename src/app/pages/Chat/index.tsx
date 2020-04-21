@@ -185,6 +185,7 @@ class Chat extends React.Component<IProps, IState> {
     private messageRef: Message | undefined;
     private chatInputRef: ChatInput | undefined;
     private messages: IMessage[] = [];
+    private messageMap: { [key: number]: boolean } = {};
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
@@ -601,6 +602,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onDrop={this.messageDropHandler}
                                          onBotCommand={this.messageBotCommandHandler}
                                          onBotButtonAction={this.messageBotButtonActionHandler}
+                                         onError={this.textErrorHandler}
                                          userId={this.connInfo.UserID}
                                          isBot={this.isBot}
                                 />
@@ -1363,6 +1365,7 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         this.messages = [];
+        this.messageMap = {};
 
         if (this.chatInputRef) {
             this.chatInputRef.setLastMessage(null);
@@ -1610,52 +1613,59 @@ class Chat extends React.Component<IProps, IState> {
             // date breakpoint
             if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
                 || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
-                if (push) {
-                    defaultMessages.push({
-                        createdon: msg.createdon,
-                        id: msg.id,
-                        messagetype: C_MESSAGE_TYPE.Date,
-                        senderid: msg.senderid,
-                    });
-                } else {
-                    defaultMessages.splice(addition, 0, {
-                        createdon: msg.createdon,
-                        id: msg.id,
-                        messagetype: C_MESSAGE_TYPE.Date,
-                        senderid: msg.senderid,
-                    });
+                const t = {
+                    createdon: msg.createdon,
+                    id: msg.id,
+                    messagetype: C_MESSAGE_TYPE.Date,
+                    senderid: msg.senderid,
+                };
+                if (!this.messageMapExist(t)) {
+                    if (push) {
+                        defaultMessages.push(t);
+                    } else {
+                        defaultMessages.splice(addition, 0, t);
+                    }
+                    addition++;
+                    msg.avatar = true;
                 }
-                addition++;
-                msg.avatar = true;
             }
 
             if (push && messageReadId !== undefined && !this.newMessageFlag && (msg.id || 0) > messageReadId && !msg.me) {
-                defaultMessages.push({
+                const t = {
                     createdon: msg.createdon,
                     id: (msg.id || 0) + 0.5,
                     messagetype: C_MESSAGE_TYPE.NewMessage,
-                });
-                addition++;
-                this.newMessageFlag = true;
-                msg.avatar = true;
+                };
+                if (!this.messageMapExist(t)) {
+                    defaultMessages.push(t);
+                    addition++;
+                    this.newMessageFlag = true;
+                    msg.avatar = true;
+                }
             }
 
+            let unshiftCheck = false;
             if (push) {
-                defaultMessages.push(msg);
-                let len = defaultMessages.length;
-                if (len > 0 && !msg.avatar) {
-                    len--;
-                    defaultMessages[len].avatar = this.isAvatar(len);
+                if (!this.messageMapExist(msg)) {
+                    defaultMessages.push(msg);
+                    let len = defaultMessages.length;
+                    if (len > 0 && !msg.avatar) {
+                        len--;
+                        defaultMessages[len].avatar = this.isAvatar(len);
+                    }
                 }
             } else {
-                defaultMessages.splice(addition, 0, msg);
-                if (addition > 0 && !msg.avatar) {
-                    defaultMessages[addition].avatar = this.isAvatar(addition);
+                if (!this.messageMapExist(msg)) {
+                    defaultMessages.splice(addition, 0, msg);
+                    if (addition > 0 && !msg.avatar) {
+                        defaultMessages[addition].avatar = this.isAvatar(addition);
+                    }
+                    unshiftCheck = true;
                 }
             }
 
             addition++;
-            if (!push && messages.length === key + 1) {
+            if (unshiftCheck && messages.length === key + 1) {
                 if (defaultMessages[addition - 1] && defaultMessages[addition] && defaultMessages[addition].messagetype === C_MESSAGE_TYPE.Date && TimeUtility.isInSameDay(defaultMessages[addition - 1].createdon, defaultMessages[addition].createdon)) {
                     defaultMessages.splice(addition, 1);
                     addition--;
@@ -1673,54 +1683,6 @@ class Chat extends React.Component<IProps, IState> {
             maxId,
             maxReadId,
             minId,
-            msgs: defaultMessages,
-        };
-    }
-
-    // @ts-ignore
-    private modifyMessagesBetween(defaultMessages: IMessage[], messages: IMessage[], id: number): { msgs: IMessage[], index: number, lastIndex: number } | null {
-        if (!messages.length) {
-            return null;
-        }
-        const index = findLastIndex(defaultMessages, {id});
-        if (index === -1) {
-            return null;
-        }
-        let cnt = 0;
-        messages.forEach((msg) => {
-            const iter = ((index + cnt) - 1);
-            // avatar breakpoint
-            msg.avatar = (iter === -1) || (iter > -1 && msg.senderid !== defaultMessages[iter].senderid);
-            // date breakpoint
-            if ((iter === -1) || (iter > -1 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[iter].createdon))) {
-                defaultMessages.splice(index, 0, {
-                    createdon: msg.createdon,
-                    id: msg.id,
-                    messagetype: C_MESSAGE_TYPE.Date,
-                    senderid: msg.senderid,
-                });
-                msg.avatar = true;
-                cnt++;
-            }
-            defaultMessages.splice(index + cnt, 0, msg);
-            cnt++;
-        });
-        if (defaultMessages.length > (index + cnt)) {
-            const lastMsg = messages[messages.length - 1];
-            const borderMsg = defaultMessages[index + cnt];
-            if (!TimeUtility.isInSameDay(lastMsg.createdon, borderMsg.createdon)) {
-                defaultMessages.splice(index + cnt, 0, {
-                    createdon: borderMsg.createdon,
-                    id: borderMsg.id,
-                    messagetype: C_MESSAGE_TYPE.Date,
-                    senderid: borderMsg.senderid,
-                });
-                borderMsg.avatar = true;
-            }
-        }
-        return {
-            index,
-            lastIndex: index - 1,
             msgs: defaultMessages,
         };
     }
@@ -1829,6 +1791,7 @@ class Chat extends React.Component<IProps, IState> {
                     randomid: randomId,
                 }, true);
                 message.id = res.messageid;
+                this.messageMapAppend(message);
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
                 this.checkMessageOrder(message);
@@ -1862,25 +1825,31 @@ class Chat extends React.Component<IProps, IState> {
             if (lastValid !== dialog.topmessageid && findLastIndex(this.messages, {id: dialog.topmessageid || 0}) === -1) {
                 this.messageRef.clearAll();
                 this.messages = [];
+                this.messageMap = {};
                 gapNumber = dialog.topmessageid || 0;
                 this.messageRef.setLoading(true, true);
             }
         }
         if (this.messages.length > 0 &&
             !TimeUtility.isInSameDay(message.createdon, this.messages[this.messages.length - 1].createdon)) {
-            this.messages.push({
+            const t = {
                 createdon: message.createdon,
                 id: message.id,
                 messagetype: C_MESSAGE_TYPE.Date,
                 senderid: message.senderid,
-            });
+            };
+            if (!this.messageMapExist(t)) {
+                this.messages.push(t);
+            }
         }
         if (this.messages.length > 0 && message.senderid !== this.messages[this.messages.length - 1].senderid) {
             message.avatar = true;
         } else if (this.messages.length === 0) {
             message.avatar = true;
         }
-        this.messages.push(message);
+        if (!this.messageMapExist(message)) {
+            this.messages.push(message);
+        }
         if (gapNumber) {
             this.messageLoadMoreBeforeHandler(gapNumber);
         }
@@ -1955,7 +1924,7 @@ class Chat extends React.Component<IProps, IState> {
             }
         };
         const index = findLastIndex(this.messages, {id: msg.id});
-        if (index < -1) {
+        if (index <= -1) {
             return false;
         }
 
@@ -3520,6 +3489,7 @@ class Chat extends React.Component<IProps, IState> {
                     return;
                 }
                 this.messages = [];
+                this.messageMap = {};
                 this.messageRef.clearAll();
                 this.setScrollMode('top');
                 const dataMsg = this.modifyMessages(this.messages, res, true);
@@ -3668,6 +3638,7 @@ class Chat extends React.Component<IProps, IState> {
             });
 
             message.id = res.messageid;
+            this.messageMapAppend(message);
 
             this.messageRepo.lazyUpsert([message]);
             this.updateDialogs(message, '0');
@@ -3696,6 +3667,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
 
                 message.id = res.messageid;
+                this.messageMapAppend(message);
                 message.downloaded = true;
 
                 this.messageRepo.lazyUpsert([message]);
@@ -4116,6 +4088,10 @@ class Chat extends React.Component<IProps, IState> {
 
                 attributesList.push(attrFile);
                 attributesDataList.push(attrFileData.toObject());
+
+                if (mediaItem.thumb) {
+                    tempImageFile = mediaItem.thumb.file;
+                }
                 break;
             case 'image':
                 messageType = C_MESSAGE_TYPE.Picture;
@@ -4346,6 +4322,7 @@ class Chat extends React.Component<IProps, IState> {
                     });
 
                     message.id = res.messageid;
+                    this.messageMapAppend(message);
                     message.downloaded = true;
 
                     if (sha256FileLocation) {
@@ -4503,6 +4480,7 @@ class Chat extends React.Component<IProps, IState> {
             });
 
             message.id = res.messageid;
+            this.messageMapAppend(message);
 
             this.messageRepo.lazyUpsert([message]);
             this.updateDialogs(message, '0');
@@ -5145,6 +5123,24 @@ class Chat extends React.Component<IProps, IState> {
 
     private updateFunctionHandler = () => {
         this.forceUpdate();
+    }
+
+    private messageMapAppend(message: IMessage) {
+        if (!message.id) {
+            return;
+        }
+        this.messageMap[(message.id * 100) + (message.messagetype || 0)] = true;
+    }
+
+    private messageMapExist(message: IMessage) {
+        if (!message.id) {
+            return false;
+        }
+        if (this.messageMap[(message.id * 100) + (message.messagetype || 0)]) {
+            return true;
+        }
+        this.messageMapAppend(message);
+        return false;
     }
 }
 

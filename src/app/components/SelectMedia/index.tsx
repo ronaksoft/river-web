@@ -14,22 +14,10 @@ import {
 import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayListener';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
-import {makeStyles} from '@material-ui/styles';
 import {debounce} from 'lodash';
 import i18n from '../../services/i18n';
 
 import './style.scss';
-
-const tooltipClass: any = makeStyles({
-    popper: {
-        borderRadius: '50%',
-        fontSize: 14,
-    },
-    tooltip: {
-        borderRadius: '50%',
-        fontSize: 14,
-    }
-});
 
 let items: any[] = [];
 
@@ -121,7 +109,10 @@ class SelectMedia extends React.Component<IProps, IState> {
                             {items.map((item, index) => {
                                 return (
                                     <Tooltip key={index} title={item.title} placement="left"
-                                             classes={tooltipClass}
+                                             classes={{
+                                                 popper: 'select-media-tooltip-popper',
+                                                 tooltip: 'select-media-tooltip',
+                                             }}
                                              TransitionComponent={Zoom}>
                                         <div
                                             className={'media-item ' + item.cmd + (currentCmd === item.cmd ? ' selected' : '')}

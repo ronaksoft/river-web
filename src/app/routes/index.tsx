@@ -15,12 +15,21 @@ import SignUp from './../pages/SignUp';
 import Loading from './../pages/Loading';
 import Test from './../pages/Test2';
 
+/* tslint:disable:jsx-no-lambda */
 export default (
     <Switch>
-        <Route path="/chat/:id/:mid?" component={Chat}/>
-        <Route path="/signup/:mode" component={SignUp}/>
-        <Route path="/loading" component={Loading}/>
-        <Route path="/test" component={Test}/>
+        <Route path="/chat/:id/:mid?" component={(props: any) => (
+            <Chat {...props}/>
+        )}/>
+        <Route path="/signup/:mode" component={(props: any) => (
+            <SignUp {...props}/>
+        )}/>
+        <Route path="/loading" component={(props: any) => (
+            <Loading {...props}/>
+        )}/>
+        <Route path="/test" component={(props: any) => (
+            <Test {...props}/>
+        )}/>
         <Redirect from="/" to="/loading"/>
     </Switch>
 );
