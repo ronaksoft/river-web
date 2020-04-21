@@ -1,3 +1,6 @@
+## 0.32.15
+* Minor bugs fixed
+
 ## 0.32.14
 * Known bug fixed
 

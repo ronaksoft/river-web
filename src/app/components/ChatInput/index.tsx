@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {Picker as EmojiPicker} from 'emoji-mart';
-import {cloneDeep, sortBy, throttle, range} from 'lodash';
+import {cloneDeep, sortBy, throttle, range, uniqBy} from 'lodash';
 import {
     AttachFileRounded,
     ClearRounded,
@@ -1200,13 +1200,13 @@ class ChatInput extends React.Component<IProps, IState> {
                 users[exactMatchIndex] = users[0];
                 users[0] = hold;
             }
-            callback(users);
+            callback(uniqBy(users, 'id'));
         };
         // Get from server if participants were not in group
         const getRemoteGroupFull = () => {
             this.apiManager.groupGetFull(peer).then((res) => {
                 const group: IGroup = res.group;
-                group.participantList = res.participantsList;
+                group.participantList = uniqBy(group.participantList, 'userid');
                 group.photogalleryList = res.photogalleryList;
                 group.hasUpdate = false;
                 if (res && res.participantsList) {
@@ -1246,7 +1246,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 <UserAvatar id={a.id} noDetail={true}/>
             </div>
             <div className="info">
-                <UserName id={a.id} className="name" unsafe={true} noDetail={true}/>
+                <UserName id={a.id} className="name" unsafe={true} noDetail={true} noIcon={true}/>
                 {Boolean(a.username) && <span className="username">{a.username}</span>}
             </div>
         </div>);
