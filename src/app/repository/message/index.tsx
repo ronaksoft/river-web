@@ -416,8 +416,8 @@ export default class MessageRepo {
                             return;
                         }
                     }
-                    let maxId = null;
-                    let minId = null;
+                    let maxId: any = null;
+                    let minId: any = null;
                     if (before !== undefined) {
                         maxId = before - 1;
                     }
@@ -436,7 +436,11 @@ export default class MessageRepo {
                     }
                     const lim = limit - len;
                     this.apiManager.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
-                        window.console.log('case#1', 'peer:', peer, remoteRes);
+                        window.console.log('case#1', {
+                            lim,
+                            maxId,
+                            minId,
+                        }, 'peer:', peer ? peer.toObject() : '', remoteRes);
                         this.userRepo.importBulk(false, remoteRes.usersList);
                         this.groupRepo.importBulk(remoteRes.groupsList);
                         remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
@@ -553,7 +557,13 @@ export default class MessageRepo {
                 }
             } else {
                 return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - (ignoreMax ? 0 : 1)), (mode === 0x2), limit, ignoreMax).then((remoteRes) => {
-                    window.console.log('case#2', 'peer:', peer, remoteRes);
+                    window.console.log('case#2', {
+                        after,
+                        before,
+                        ignoreMax,
+                        limit,
+                        mode,
+                    }, 'peer:', peer ? peer.toObject() : '', remoteRes);
                     this.userRepo.importBulk(false, remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
                     remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
@@ -707,7 +717,7 @@ export default class MessageRepo {
         return pipe2.limit(limit || 32).toArray();
     }
 
-    public searchAll({keyword, labelIds}: { keyword?: string, labelIds?: number[] }, {after, limit}: { after?: number, limit?: number}) {
+    public searchAll({keyword, labelIds}: { keyword?: string, labelIds?: number[] }, {after, limit}: { after?: number, limit?: number }) {
         const pipe = this.db.messages;
         let pipe2: Dexie.Collection<IMessage, number>;
         if (after) {

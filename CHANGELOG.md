@@ -1,3 +1,6 @@
+## 0.32.18
+* Minor improvements
+
 ## 0.32.17
 * ResizeObserver infinite loop bug fixed
 * Minor enhancements

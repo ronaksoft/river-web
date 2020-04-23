@@ -531,7 +531,7 @@ class ChatInput extends React.Component<IProps, IState> {
         }
         if ((data && data.mode === C_REPLY_ACTION.ReplyKeyboardMarkup) && ((this.botKeyboard && this.botKeyboard.msgId < data.msgId) || !this.botKeyboard)) {
             const lastKeyboard = this.botKeyboard;
-            if (!this.state.botKeyboard && lastKeyboard && data && lastKeyboard.msgId !== data.msgId) {
+            if (!this.state.botKeyboard && (!lastKeyboard || (lastKeyboard && data && lastKeyboard.msgId !== data.msgId))) {
                 this.toggleBotKeyboardHandler();
             }
             this.botKeyboard = data;

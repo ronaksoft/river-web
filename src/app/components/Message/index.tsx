@@ -47,9 +47,10 @@ import animateScrollTo from "animated-scroll-to";
 import Landscape from "../SVG";
 import MessageBot from "../MessageBot";
 import {ThemeChanged} from "../SettingsMenu";
-import {EventMouseUp, EventResize} from "../../services/events";
+import {EventMouseUp} from "../../services/events";
 import CodeViewer from "../CodeViewer";
 import {spanMessageEntities} from "../../services/utilities/entity";
+import ResizeObserver from "resize-observer-polyfill";
 
 import './style.scss';
 
@@ -265,6 +266,7 @@ class Message extends React.Component<IProps, IState> {
     // @ts-ignore
     private hasEnd: boolean = false;
     private savedMessages: boolean = false;
+    private resizeObserver: ResizeObserver | undefined;
     private readonly containerResizeThrottle: any;
 
     constructor(props: IProps) {
@@ -295,7 +297,7 @@ class Message extends React.Component<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
         this.documentViewerService = DocumentViewerService.getInstance();
-        this.containerResizeThrottle = throttle(this.getContainerSize, 256);
+        this.containerResizeThrottle = throttle(this.getContainerSize, 10);
 
         this.menuItem = {
             1: {
@@ -350,9 +352,13 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
+        this.resizeObserver = new ResizeObserver(this.containerResizeThrottle);
+        const el = document.querySelector('.conversation');
+        if (el) {
+            this.resizeObserver.observe(el);
+        }
         this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
         window.addEventListener(EventMouseUp, this.dragLeaveHandler, true);
-        window.addEventListener(EventResize, this.containerResizeThrottle);
         this.getContainerSize();
     }
 
@@ -442,7 +448,9 @@ class Message extends React.Component<IProps, IState> {
             }
         });
         window.removeEventListener(EventMouseUp, this.dragLeaveHandler, true);
-        window.removeEventListener(EventResize, this.containerResizeThrottle);
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
     }
 
     public setLoading(loading: boolean, overlay?: boolean) {
@@ -590,7 +598,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public resizeContainer() {
-        this.containerResizeThrottle();
+        // this.containerResizeThrottle();
     }
 
     public render() {
