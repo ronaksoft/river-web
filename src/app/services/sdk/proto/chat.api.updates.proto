@@ -52,6 +52,7 @@ message UpdateNewMessage {
     required UserMessage Message = 1;
     required User Sender = 2;
     optional fixed64 AccessHash = 3 [jstype = JS_STRING];
+    optional int64 SenderRefID = 4;
 }
 
 // UpdateMessageEdited

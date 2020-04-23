@@ -2093,7 +2093,8 @@ proto.msg.UpdateNewMessage.toObject = function(includeInstance, msg) {
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
     message: (f = msg.getMessage()) && chat_core_types_pb.UserMessage.toObject(includeInstance, f),
     sender: (f = msg.getSender()) && chat_core_types_pb.User.toObject(includeInstance, f),
-    accesshash: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    accesshash: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    senderrefid: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2151,6 +2152,10 @@ proto.msg.UpdateNewMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setSenderrefid(value);
       break;
     default:
       reader.skipField();
@@ -2215,6 +2220,13 @@ proto.msg.UpdateNewMessage.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeFixed64String(
       3,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeInt64(
+      4,
       f
     );
   }
@@ -2400,6 +2412,42 @@ proto.msg.UpdateNewMessage.prototype.clearAccesshash = function() {
  */
 proto.msg.UpdateNewMessage.prototype.hasAccesshash = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional int64 SenderRefID = 4;
+ * @return {number}
+ */
+proto.msg.UpdateNewMessage.prototype.getSenderrefid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.UpdateNewMessage} returns this
+ */
+proto.msg.UpdateNewMessage.prototype.setSenderrefid = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateNewMessage} returns this
+ */
+proto.msg.UpdateNewMessage.prototype.clearSenderrefid = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateNewMessage.prototype.hasSenderrefid = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

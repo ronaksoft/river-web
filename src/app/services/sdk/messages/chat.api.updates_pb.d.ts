@@ -206,6 +206,11 @@ export class UpdateNewMessage extends jspb.Message {
   getAccesshash(): string | undefined;
   setAccesshash(value: string): void;
 
+  hasSenderrefid(): boolean;
+  clearSenderrefid(): void;
+  getSenderrefid(): number | undefined;
+  setSenderrefid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateNewMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateNewMessage): UpdateNewMessage.AsObject;
@@ -223,6 +228,7 @@ export namespace UpdateNewMessage {
     message: chat_core_types_pb.UserMessage.AsObject,
     sender: chat_core_types_pb.User.AsObject,
     accesshash?: string,
+    senderrefid?: number,
   }
 }
 
