@@ -895,7 +895,7 @@ export default class UpdateManager {
             if (label.increase_counter) {
                 label.increase_counter += label.increase_counter;
             }
-            labels[l.id || ''] = kMerge(l, labels);
+            labels[l.id || ''] = kMerge(l, label);
         } else {
             labels[label.id || 0] = label;
         }
@@ -922,24 +922,24 @@ export default class UpdateManager {
             const promises: any[] = [];
             // User list
             const userList: IUser[] = [];
-            Object.keys(transaction.users).forEach((key) => {
-                userList.push(transaction.users[key]);
+            Object.values(transaction.users).forEach((user) => {
+                userList.push(user);
             });
             if (userList.length > 0 && this.userRepo) {
                 promises.push(this.userRepo.importBulk(false, userList));
             }
             // Group list
             const groupList: IGroup[] = [];
-            Object.keys(transaction.groups).forEach((key) => {
-                groupList.push(transaction.groups[key]);
+            Object.values(transaction.groups).forEach((group) => {
+                groupList.push(group);
             });
             if (groupList.length > 0 && this.groupRepo) {
                 promises.push(this.groupRepo.importBulk(groupList));
             }
             // Label list
             const labelList: ILabel[] = [];
-            Object.keys(transaction.labels).forEach((key) => {
-                labelList.push(transaction.labels[key]);
+            Object.values(transaction.labels).forEach((label) => {
+                labelList.push(label);
             });
             if (labelList.length > 0 && this.labelRepo) {
                 promises.push(this.labelRepo.importBulk(labelList));
@@ -1075,8 +1075,8 @@ export default class UpdateManager {
     private applyDialogs(dialogs: { [key: string]: IDialog }): Promise<string[]> {
         const dialogList: IDialog[] = [];
         const keys = Object.keys(dialogs);
-        keys.forEach((key) => {
-            dialogList.push(dialogs[key]);
+        Object.values(dialogs).forEach((dialog) => {
+            dialogList.push(dialog);
         });
         if (dialogList.length > 0 && this.dialogRepo) {
             return this.dialogRepo.importBulk(dialogList).then(() => {
@@ -1092,9 +1092,7 @@ export default class UpdateManager {
         const keys: number[] = [];
         const peerIds: string[] = [];
         const minIdPerPeer: { [key: string]: number } = {};
-        // @ts-ignore
-        Object.keys(messages).forEach((key: number) => {
-            const message = messages[key];
+        Object.values(messages).forEach((message) => {
             if (!message.id) {
                 return;
             }
@@ -1135,8 +1133,8 @@ export default class UpdateManager {
     private applyRemovedMessages(removedMessages: { [key: string]: number[] }): Promise<IMessageDBRemoved> {
         const peerIds = Object.keys(removedMessages);
         const ids: number[] = [];
-        peerIds.forEach((peerId) => {
-            ids.push(...removedMessages[peerId]);
+        Object.values(removedMessages).forEach((removedMessage) => {
+            ids.push(...removedMessage);
         });
         if (ids.length > 0 && this.messageRepo) {
             return this.messageRepo.removeMany(ids).then(() => {
@@ -1197,9 +1195,7 @@ export default class UpdateManager {
         if (!this.listenerList[eventConstructor]) {
             return;
         }
-        const keys = Object.keys(this.listenerList[eventConstructor]);
-        keys.forEach((key) => {
-            const fn = this.listenerList[eventConstructor][key];
+        Object.values(this.listenerList[eventConstructor]).forEach((fn) => {
             if (fn) {
                 fn(data);
             }
