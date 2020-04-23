@@ -1,3 +1,7 @@
+## 0.32.17
+* ResizeObserver infinite loop bug fixed
+* Minor enhancements
+
 ## 0.32.16
 * Voice recording enhanced
 * Check for duplicated message

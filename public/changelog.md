@@ -1,3 +1,6 @@
+## 0.32.17
+* Known bugs fixed
+
 ## 0.32.16
 * Voice recording enhanced
 * Check for duplicated message

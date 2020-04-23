@@ -50,7 +50,7 @@ interface IProps {
     onSettingsAction: (cmd: 'logout' | 'count_dialog') => void;
     onSettingsClose: (e: any) => void;
     onUpdateMessages: (keep?: boolean) => void;
-    onMenuShrunk: (shrunk: boolean) => void;
+    onShrunk: (shrunk: boolean) => void;
     onError?: (text: string) => void;
 }
 
@@ -146,7 +146,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     public componentDidMount(): void {
         if (!this.props.mobileView && !this.props.iframeActive && localStorage.getItem('river.shrunk_menu') === 'true') {
-            this.props.onMenuShrunk(true);
+            this.props.onShrunk(true);
             this.setState({
                 shrunkMenu: true,
             });
@@ -458,7 +458,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.setState({
             shrunkMenu: !this.state.shrunkMenu,
         }, () => {
-            this.props.onMenuShrunk(this.state.shrunkMenu);
+            this.props.onShrunk(this.state.shrunkMenu);
             localStorage.setItem('river.shrunk_menu', this.state.shrunkMenu ? 'true' : 'false');
         });
     }

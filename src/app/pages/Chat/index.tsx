@@ -562,7 +562,7 @@ class Chat extends React.Component<IProps, IState> {
                                   onReloadDialog={this.settingReloadDialogHandler}
                                   onAction={this.leftMenuActionHandler}
                                   onGroupCreate={this.leftMenuGroupCreateHandler}
-                                  onMenuShrunk={this.leftMenuMenuShrunkHandler}
+                                  onShrunk={this.leftMenuShrunkHandler}
                                   onError={this.textErrorHandler}
                                   iframeActive={this.state.iframeActive}
                                   mobileView={this.isMobileView}
@@ -642,7 +642,9 @@ class Chat extends React.Component<IProps, IState> {
                         <RightMenu key="right-menu" ref={this.rightMenuRefHandler}
                                    onChange={this.rightMenuChangeHandler}
                                    onMessageAttachmentAction={this.messageAttachmentActionHandler}
-                                   onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}/>
+                                   onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}
+                                   onToggleMenu={this.rightMenuToggleMenuHandler}
+                        />
                     </div>
                     <NewMessage key="new-message" open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessageHandler}/>
@@ -819,7 +821,7 @@ class Chat extends React.Component<IProps, IState> {
     private containerRefHandler = (ref: any) => {
         this.containerRef = ref;
         if (this.shrunk) {
-            this.leftMenuMenuShrunkHandler(true);
+            this.leftMenuShrunkHandler(true);
         }
     }
 
@@ -2741,7 +2743,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private leftMenuMenuShrunkHandler = (shrunk: boolean) => {
+    private leftMenuShrunkHandler = (shrunk: boolean) => {
         this.shrunk = shrunk;
         if (this.containerRef) {
             if (shrunk) {
@@ -4693,6 +4695,13 @@ class Chat extends React.Component<IProps, IState> {
             confirmDialogOpen: true,
             leftMenuSelectedDialogId: this.selectedDialogId,
         });
+    }
+
+    /* RightMenu toggle menu handler */
+    private rightMenuToggleMenuHandler = () => {
+        if (this.messageRef) {
+            this.messageRef.resizeContainer();
+        }
     }
 
     /* Update force log out */

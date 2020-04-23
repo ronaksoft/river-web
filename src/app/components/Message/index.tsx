@@ -8,7 +8,6 @@
 */
 
 import * as React from 'react';
-import AutoSizer from "react-virtualized-auto-sizer";
 import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -16,7 +15,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {
     GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntity, MessageEntityType, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
-import {findLastIndex} from 'lodash';
+import {findLastIndex, throttle} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
@@ -154,6 +153,10 @@ interface IProps {
 }
 
 interface IState {
+    containerSize: {
+        width: number,
+        height: number,
+    };
     items: IMessage[];
     loading: boolean;
     loadingOverlay: boolean;
@@ -261,13 +264,20 @@ class Message extends React.Component<IProps, IState> {
     private newMessageIndex: number = -1;
     // @ts-ignore
     private hasEnd: boolean = false;
-    private estimatedHeight = window.innerHeight - 98;
     private savedMessages: boolean = false;
+    private readonly containerResizeThrottle: any;
 
     constructor(props: IProps) {
         super(props);
 
+        const height = window.innerHeight - 98;
+        const width = window.innerWidth - 318;
+
         this.state = {
+            containerSize: {
+                height,
+                width,
+            },
             items: [],
             loading: false,
             loadingOverlay: false,
@@ -285,6 +295,7 @@ class Message extends React.Component<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
         this.documentViewerService = DocumentViewerService.getInstance();
+        this.containerResizeThrottle = throttle(this.getContainerSize, 256);
 
         this.menuItem = {
             1: {
@@ -341,7 +352,8 @@ class Message extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
         window.addEventListener(EventMouseUp, this.dragLeaveHandler, true);
-        window.addEventListener(EventResize, this.windowResizeHandler);
+        window.addEventListener(EventResize, this.containerResizeThrottle);
+        this.getContainerSize();
     }
 
     public setPeer(peer: InputPeer | null) {
@@ -430,7 +442,7 @@ class Message extends React.Component<IProps, IState> {
             }
         });
         window.removeEventListener(EventMouseUp, this.dragLeaveHandler, true);
-        window.removeEventListener(EventResize, this.windowResizeHandler);
+        window.removeEventListener(EventResize, this.containerResizeThrottle);
     }
 
     public setLoading(loading: boolean, overlay?: boolean) {
@@ -577,61 +589,59 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
+    public resizeContainer() {
+        this.containerResizeThrottle();
+    }
+
     public render() {
-        const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay} = this.state;
+        const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay, containerSize} = this.state;
         return (
-            <AutoSizer
-                defaultHeight={this.estimatedHeight}
-            >
-                {({width, height}: any) => (
-                    <div className="main-messages">
-                        <div
-                            className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
-                            onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
-                            style={{height: `${height}px`, width: `${width}px`}}
-                        >
-                            <KKWindow
-                                ref={this.refHandler}
-                                containerRef={this.containerRefHandler}
-                                className="chat active-chat"
-                                height={height}
-                                estimatedHeight={this.estimatedHeight}
-                                width={width}
-                                count={items.length}
-                                overscan={30}
-                                renderer={this.rowRenderHandler}
-                                noRowsRenderer={this.noRowsRendererHandler}
-                                keyMapper={this.keyMapperHandler}
-                                estimatedItemSize={41}
-                                estimatedItemSizeFunc={this.getHeight}
-                                loadBeforeLimit={10}
-                                onLoadBefore={this.kkWindowBeforeHandler}
-                                onLoadAfter={this.props.onLoadMoreAfter}
-                                onScrollPos={this.scrollPosHandler}
-                            />
-                            <Menu
-                                anchorEl={moreAnchorEl}
-                                anchorPosition={moreAnchorPos}
-                                anchorReference={moreAnchorPos ? 'anchorPosition' : 'anchorEl'}
-                                open={Boolean(moreAnchorEl || moreAnchorPos)}
-                                onClose={this.moreCloseHandler}
-                                className="kk-context-menu"
-                            >
-                                {this.contextMenuItem()}
-                            </Menu>
-                        </div>
-                        <div ref={this.dropZoneRefHandler} className="messages-dropzone hidden"
-                             onDrop={this.dragLeaveHandler}>
-                            <div className="dropzone" onDrop={this.dropHandler}>
-                                Drop your files here
-                            </div>
-                        </div>
-                        {loadingOverlay && <div className="messages-overlay-loading">
-                            <Loading/>
-                        </div>}
+            <div className="main-messages">
+                <div
+                    className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
+                    onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
+                    style={{height: `${containerSize.height}px`, width: `${containerSize.width}px`}}
+                >
+                    <KKWindow
+                        ref={this.refHandler}
+                        containerRef={this.containerRefHandler}
+                        className="chat active-chat"
+                        height={containerSize.height}
+                        estimatedHeight={containerSize.height}
+                        width={containerSize.width}
+                        count={items.length}
+                        overscan={30}
+                        renderer={this.rowRenderHandler}
+                        noRowsRenderer={this.noRowsRendererHandler}
+                        keyMapper={this.keyMapperHandler}
+                        estimatedItemSize={41}
+                        estimatedItemSizeFunc={this.getHeight}
+                        loadBeforeLimit={10}
+                        onLoadBefore={this.kkWindowBeforeHandler}
+                        onLoadAfter={this.props.onLoadMoreAfter}
+                        onScrollPos={this.scrollPosHandler}
+                    />
+                    <Menu
+                        anchorEl={moreAnchorEl}
+                        anchorPosition={moreAnchorPos}
+                        anchorReference={moreAnchorPos ? 'anchorPosition' : 'anchorEl'}
+                        open={Boolean(moreAnchorEl || moreAnchorPos)}
+                        onClose={this.moreCloseHandler}
+                        className="kk-context-menu"
+                    >
+                        {this.contextMenuItem()}
+                    </Menu>
+                </div>
+                <div ref={this.dropZoneRefHandler} className="messages-dropzone hidden"
+                     onDrop={this.dragLeaveHandler}>
+                    <div className="dropzone" onDrop={this.dropHandler}>
+                        Drop your files here
                     </div>
-                )}
-            </AutoSizer>
+                </div>
+                {loadingOverlay && <div className="messages-overlay-loading">
+                    <Loading/>
+                </div>}
+            </div>
         );
     }
 
@@ -1292,13 +1302,6 @@ class Message extends React.Component<IProps, IState> {
         this.dropZoneRef = ref;
     }
 
-    private windowResizeHandler = () => {
-        // if (this.scrollbar.enable) {
-        //     this.modifyScrollThumb();
-        // }
-        // this.fitList(true);
-    }
-
     private dragEnterHandler = (e: any) => {
         if (!this.dropZoneRef) {
             return;
@@ -1421,6 +1424,28 @@ class Message extends React.Component<IProps, IState> {
                     });
                 }
                 break;
+        }
+    }
+
+    private getContainerSize = () => {
+        const el = document.querySelector('.conversation');
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            this.setState({
+                containerSize: {
+                    height: rect.height,
+                    width: rect.width,
+                },
+            });
+        } else {
+            const height = window.innerHeight - 98;
+            const width = window.innerWidth - 318;
+            this.setState({
+                containerSize: {
+                    height,
+                    width,
+                },
+            });
         }
     }
 }

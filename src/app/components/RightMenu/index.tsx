@@ -18,6 +18,7 @@ interface IProps {
     onChange: (shrink: boolean) => void;
     onDeleteAndExitGroup?: () => void;
     onMessageAttachmentAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
+    onToggleMenu: (open: boolean) => void;
 }
 
 interface IState {
@@ -51,11 +52,19 @@ class RightMenu extends React.PureComponent<IProps, IState> {
                 shrink = true;
                 this.setState({
                     rightMenu: true,
+                }, () => {
+                    if (this.props.onToggleMenu) {
+                        this.props.onToggleMenu(this.state.rightMenu);
+                    }
                 });
             } else {
                 shrink = false;
                 this.setState({
                     rightMenu: false,
+                }, () => {
+                    if (this.props.onToggleMenu) {
+                        this.props.onToggleMenu(this.state.rightMenu);
+                    }
                 });
             }
         } else {
@@ -64,12 +73,20 @@ class RightMenu extends React.PureComponent<IProps, IState> {
                 shrink = false;
                 this.setState({
                     rightMenu: false,
+                }, () => {
+                    if (this.props.onToggleMenu) {
+                        this.props.onToggleMenu(this.state.rightMenu);
+                    }
                 });
             } else {
                 this.ref.classList.add('active');
                 shrink = true;
                 this.setState({
                     rightMenu: true,
+                }, () => {
+                    if (this.props.onToggleMenu) {
+                        this.props.onToggleMenu(this.state.rightMenu);
+                    }
                 });
             }
         }

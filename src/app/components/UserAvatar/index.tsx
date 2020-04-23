@@ -201,26 +201,27 @@ class UserAvatar extends React.Component<IProps, IState> {
         const {user, className, photo} = this.state;
         if (this.props.savedMessages) {
             return (
-                <span className={'saved-messages-avatar ' + className}>
+                <span className={'uac saved-messages-avatar ' + className}>
                     <BookmarkRounded/>
                 </span>
             );
         } else if (this.state.id === '2374') {
             return (
-                <span className={'avatar-official ' + className}>
+                <span className={'uac avatar-official ' + className}>
                     <img src={icon} alt="avatar"/>
                 </span>
             );
         } else if (user && user.deleted) {
             return (
-                <span className={'user-deleted ' + className}>
+                <span className={'uac user-deleted ' + className}>
                     <DeletedUserLight/>
                 </span>
             );
         } else {
             return (
                 <>
-                <span className={className} onClick={this.clickHandler}>{(user && photo) ?
+                <span className={'uac' + (className ? ` ${className}` : '')}
+                      onClick={this.clickHandler}>{(user && photo) ?
                     <img className="avatar-image" src={photo} alt="avatar"
                          onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}</span>
                     {this.getOnlineIndicator()}
