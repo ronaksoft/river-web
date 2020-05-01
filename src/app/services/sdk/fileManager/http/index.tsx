@@ -56,7 +56,7 @@ export default class Http {
         this.worker = new Worker('/bin/worker.js?v20');
         this.workerId = id;
 
-        if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0)) {
+        if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0 || fileUrl.indexOf('localhost') > -1)) {
             this.dataCenterUrl = 'http://' + fileUrl;
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
             this.dataCenterUrl = 'https://' + window.location.host + '/file';

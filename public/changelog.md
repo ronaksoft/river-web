@@ -1,3 +1,6 @@
+## 0.32.19
+* Dev settings updated
+
 ## 0.32.18
 * Minor improvements
 
