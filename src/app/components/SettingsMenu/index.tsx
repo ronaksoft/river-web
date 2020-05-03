@@ -105,6 +105,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import IsMobile from "../../services/isMobile";
 import AvatarService from "../../services/avatarService";
+import {C_VERSION} from "../../../App";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -118,8 +119,6 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.32.19';
-export const C_ELECTRON_VERSION = '7.2.1';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 

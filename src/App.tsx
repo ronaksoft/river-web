@@ -23,7 +23,6 @@ import * as Sentry from '@sentry/browser';
 import I18n from "./app/services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from "./app/services/iframe";
 import UniqueId from "./app/services/uniqueId";
-import {C_ELECTRON_VERSION, C_VERSION} from "./app/components/SettingsMenu";
 import Server from "./app/services/sdk/server";
 import {SnackbarProvider} from 'notistack';
 // @ts-ignore
@@ -32,6 +31,9 @@ import {EventBeforeUnload, EventBlur, EventDragOver, EventDrop, EventFocus, Even
 import ElectronService from "./app/services/electron";
 
 import './App.scss';
+
+export const C_VERSION = '0.32.19';
+export const C_ELECTRON_VERSION = '7.2.1';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {

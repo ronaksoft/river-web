@@ -123,12 +123,12 @@ import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
 import CachedMessageService from "../../services/cachedMessageService";
-import {isProd} from "../../../App";
+import {C_VERSION, isProd} from "../../../App";
 import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 import CachedFileService from "../../services/cachedFileService";
 import LeftMenu, {menuAction} from "../../components/LeftMenu";
-import {C_CUSTOM_BG_ID, C_VERSION} from "../../components/SettingsMenu";
+import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
 import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
@@ -1378,14 +1378,14 @@ class Chat extends React.Component<IProps, IState> {
         let before = 10000000000;
         // Scroll pos check
         if (beforeMsg !== undefined) {
-            before = beforeMsg + 1;
+            before = beforeMsg;
         } else {
             if (dialog) {
                 if ((dialog.unreadcount || 0) > 1) {
                     this.updateDialogsCounter(this.selectedDialogId, {scrollPos: -1});
                     const tBefore = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
                     if (tBefore > 0) {
-                        before = tBefore + 1;
+                        before = tBefore;
                     }
                 } else if ((dialog.scroll_pos || -1) !== -1) {
                     before = dialog.scroll_pos || 1000000000;
@@ -1418,7 +1418,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messageRef) {
             this.messageRef.clearAll();
         }
-        this.messageRepo.getMany({peer, limit: 40, before, ignoreMax: true}, (data) => {
+        this.messageRepo.list({peer, limit: 40, before, withPending: true}, (data) => {
             // Checks peerid on transition
             if (this.selectedDialogId !== dialogId || !this.messageRef) {
                 this.setLoading(false);
@@ -1501,30 +1501,29 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const after = this.getMaxId();
-        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || after === -1) {
+        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || after <= 0) {
             return;
         }
 
         window.console.log('messageLoadMoreAfterHandler');
         this.setLoading(true);
-        this.messageRepo.getManyCache({
+        this.messageRepo.list({
             after,
-            ignoreMax: true,
             limit: 25,
             peer
-        }, peer).then((res) => {
+        }).then((res) => {
             if (this.selectedDialogId !== peerId || !this.messageRef) {
                 this.setLoading(false);
                 return;
             }
             this.setScrollMode('none');
             if (this.moveDownRef) {
-                this.moveDownRef.setVisible(res.messages.length > 0);
+                this.moveDownRef.setVisible(res.length > 0);
             }
-            this.setEndOfMessage(res.messages.length > 0);
+            this.setEndOfMessage(res.length > 0);
             setTimeout(() => {
                 if (this.messageRef) {
-                    const dataMsg = this.modifyMessages(this.messages, res.messages, true, dialog.readinboxmaxid || 0);
+                    const dataMsg = this.modifyMessages(this.messages, res, true, dialog.readinboxmaxid || 0);
                     this.messageRef.setMessages(dataMsg.msgs);
                 }
                 this.setLoading(false);
@@ -1558,7 +1557,7 @@ class Chat extends React.Component<IProps, IState> {
 
         this.setLoading(true);
 
-        this.messageRepo.getMany({
+        this.messageRepo.list({
             before,
             limit: 30,
             peer,
@@ -2363,6 +2362,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setAppStatus({
                     isUpdating: false,
                 });
+                this.updateManager.flushLastUpdateId();
                 requestAnimationFrame(() => {
                     if (res.dialogs.length > 0) {
                         this.startSyncing();
@@ -2545,10 +2545,10 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peerIds && data.peerIds.indexOf(this.selectedDialogId) > -1) {
             // this.getMessagesByDialogId(this.selectedDialogId);
             const after = data.minIds[this.selectedDialogId] || this.getMaxId();
-            if (after === -1) {
+            if (after <= 0) {
                 return;
             }
-            this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((res) => {
+            this.messageRepo.list({after, limit: 100, peer}).then((res) => {
                 if (!this.messageRef) {
                     return;
                 }
@@ -2557,8 +2557,8 @@ class Chat extends React.Component<IProps, IState> {
                 } else {
                     this.setScrollMode('none');
                 }
-                const modifiedMsgs = this.modifyMessages(this.messages, res.messages, true);
-                res.messages.forEach((msg) => {
+                const modifiedMsgs = this.modifyMessages(this.messages, res, true);
+                res.forEach((msg) => {
                     this.downloadThumbnail(msg);
                     this.checkMessageOrder(msg);
                 });
@@ -3485,7 +3485,7 @@ class Chat extends React.Component<IProps, IState> {
 
             const dialogId = peer.getId() || '';
 
-            this.messageRepo.getMany({peer, after: id - 1, limit: 25}).then((res) => {
+            this.messageRepo.list({peer, after: id, limit: 25}).then((res) => {
                 if (this.selectedDialogId !== dialogId || res.length === 0 || !this.messageRef) {
                     this.setLoading(false);
                     return;

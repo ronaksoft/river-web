@@ -9,11 +9,9 @@
 
 import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
-// @ts-ignore
 import riverLogo from '../../../asset/image/about/river.png';
-// @ts-ignore
 import ronakLogo from '../../../asset/image/about/ronak.png';
-import {C_VERSION} from "../SettingsMenu";
+import {C_VERSION} from "../../../App";
 
 import './style.scss';
 

@@ -260,6 +260,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
 
     private clickHandler = (e: any) => {
         if (!this.props.disableClick && this.props.onClick && !this.state.error) {
+            window.console.log('click on preview');
             this.props.onClick(this.props.message.replyto || 0, e);
         }
     }

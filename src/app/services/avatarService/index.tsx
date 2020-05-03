@@ -169,9 +169,11 @@ export default class AvatarService {
                             this.fileRepo.get(fileId).then((fileRes) => {
                                 if (fileRes) {
                                     this.removeCache(id, fileId);
-                                    this.avatars[id].fileId = fileId;
-                                    this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
-                                    this.avatars[id].retries = 0;
+                                    if (this.avatars[id]) {
+                                        this.avatars[id].fileId = fileId;
+                                        this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
+                                        this.avatars[id].retries = 0;
+                                    }
                                     this.broadcastEvent(AvatarSrcUpdated, {items: [{id, fileId}]});
                                     this.throttleBroadcast([{id, fileId}]);
                                     resolve(this.avatars[id].src);

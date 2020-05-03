@@ -269,6 +269,9 @@ class UserAvatar extends React.Component<IProps, IState> {
 
     /* Get profile picture AKA avatar */
     private getAvatarPhoto(user: IUser) {
+        if (!this.mounted) {
+            return;
+        }
         if (user && user.photo && user.photo.photosmall.fileid && user.photo.photosmall.fileid !== '0') {
             if (user.id !== this.state.user.id) {
                 this.avatarService.resetRetries(user.id || '');
@@ -298,6 +301,9 @@ class UserAvatar extends React.Component<IProps, IState> {
     /* Get avatar from service */
     private getAvatar(id: string, fileId: string) {
         this.avatarService.getAvatar(id, fileId).then((photo) => {
+            if (!this.mounted) {
+                return;
+            }
             if (photo !== '') {
                 this.setState({
                     photo,

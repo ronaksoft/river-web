@@ -1,3 +1,6 @@
+## 0.32.20
+* Message Repository v2.0
+
 ## 0.32.19
 * Dev settings updated
 

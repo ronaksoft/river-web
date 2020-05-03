@@ -14,7 +14,7 @@ import IntlTelInput from 'react-intl-tel-input';
 import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
-import {C_VERSION, languageList} from '../../components/SettingsMenu';
+import {languageList} from '../../components/SettingsMenu';
 import TextField from '@material-ui/core/TextField';
 import {TimerRounded, ArrowForwardRounded, CropFreeRounded, LanguageRounded} from '@material-ui/icons';
 import {SystemInfo} from '../../services/sdk/messages/chat.api.system_pb';
@@ -40,6 +40,7 @@ import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
 import {EventFocus, EventWasmInit, EventWebSocketOpen} from "../../services/events";
 import {detect} from 'detect-browser';
+import {C_VERSION} from "../../../App";
 
 import './tel-input.css';
 import './style.scss';
@@ -48,7 +49,7 @@ let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const electronVersion = ElectronService.electronVersion();
 const browserVersion = detect();
 if (electronVersion) {
-    C_CLIENT = `Desktop:- ${electronVersion} ${(browserVersion ? '(' + browserVersion.os +')' : '')}`;
+    C_CLIENT = `Desktop:- ${electronVersion} ${(browserVersion ? '(' + browserVersion.os + ')' : '')}`;
 } else if (browserVersion) {
     C_CLIENT = `Web:- ${browserVersion.name} ${browserVersion.version} (${browserVersion.os})`;
 }
@@ -824,14 +825,13 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private wsOpenHandler = () => {
-        if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
-            this.apiManager.authRecall().then(() => {
+        this.apiManager.authRecall().then(() => {
+            if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
                 this.props.history.push('/chat/null');
-                return;
-            }).catch((err) => {
-                window.console.warn(err);
-            });
-        }
+            }
+        }).catch((err) => {
+            window.console.warn(err);
+        });
         if (this.state.step === 'phone') {
             this.apiManager.systemGetInfo().then((res) => {
                 this.setState({

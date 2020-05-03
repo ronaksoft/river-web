@@ -15,8 +15,8 @@ import {CloseRounded} from "@material-ui/icons";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {Link} from "react-router-dom";
 import ElectronService from "../../services/electron";
-import {C_VERSION} from "../../components/SettingsMenu";
 import DevTools from "../../components/DevTools";
+import {C_VERSION} from "../../../App";
 
 import './style.scss';
 

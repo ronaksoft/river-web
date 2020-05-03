@@ -8,8 +8,8 @@
 */
 
 import MessageDB from '../../services/db/message';
-import {IMessage, IMessageWithCount, IPendingMessage} from './interface';
-import {cloneDeep, differenceBy, find, throttle, findIndex, uniq, difference, groupBy} from 'lodash';
+import {IMessage, IPendingMessage} from './interface';
+import {cloneDeep, differenceBy, find, throttle, uniq, difference, groupBy} from 'lodash';
 import APIManager from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -399,64 +399,103 @@ export default class MessageRepo {
         });
     }
 
-    public getMany({peer, limit, before, after, ignoreMax}: any, callback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
-        limit = limit || 30;
-        let fnCallback = callback;
-        if (ignoreMax && callback) {
-            fnCallback = this.getPeerPendingMessage(peer, callback);
+    public list({peer, limit, before, after, withPending}: { peer: InputPeer, limit?: number, before?: number, after?: number, withPending?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMessage[]> {
+        let fnEarlyCallback = earlyCallback;
+        if (withPending && earlyCallback) {
+            fnEarlyCallback = this.getPeerPendingMessage(peer, earlyCallback);
         }
-        return new Promise((resolve, reject) => {
-            this.getManyCache({limit, before, after, ignoreMax}, peer, fnCallback).then((res) => {
-                const len = res.count;
-                if (len < limit) {
-                    if (before !== undefined && len > 0) {
-                        const index = findIndex(res.messages, {messagetype: C_MESSAGE_TYPE.End});
-                        if (index > -1) {
-                            resolve(res.messages);
-                            return;
-                        }
+        const pipe = this.db.messages.where('[peerid+id]');
+        let pipe2: Dexie.Collection<IMessage, number>;
+        let mode = 0x0;
+        if (before !== undefined) {
+            mode = mode | 0x1;
+        }
+        if (after !== undefined) {
+            mode = mode | 0x2;
+        }
+        const safeLimit = limit || 30;
+        const safeBefore = before || 0;
+        const safeAfter = after || 0;
+        const peerId = peer.getId() || '';
+        switch (mode) {
+            // none
+            default:
+            case 0x0:
+                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true);
+                break;
+            // before
+            case 0x1:
+                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, safeBefore], true, false);
+                break;
+            // after
+            case 0x2:
+                pipe2 = pipe.between([peerId, safeAfter], [peerId, Dexie.maxKey], false, true);
+                break;
+            // between
+            case 0x3:
+                pipe2 = pipe.between([peerId, safeAfter], [peerId, safeBefore], false, false);
+                break;
+        }
+        // not before
+        if (mode !== 0x2) {
+            pipe2 = pipe2.reverse();
+        }
+        // filter pending messages
+        pipe2 = pipe2.filter((item: IMessage) => {
+            return (item.id || 0) > 0;
+        });
+        return pipe2.limit(safeLimit).toArray().then((res) => {
+            const earlyMessages: IMessage[] = [];
+            const hasHole = res.some((item) => {
+                if (fnEarlyCallback && mode === 0x1) {
+                    if (item.messagetype === C_MESSAGE_TYPE.Hole) {
+                        fnEarlyCallback(earlyMessages);
+                        return true;
                     }
-                    let maxId: any = null;
-                    let minId: any = null;
-                    if (before !== undefined) {
-                        maxId = before - 1;
-                    }
-                    if (after !== undefined) {
-                        minId = after + 1;
-                    }
-                    if (len > 0 && res.lastId !== -1 && before !== undefined) {
-                        maxId = res.lastId - 1;
-                    }
-                    if (len > 0 && res.lastId !== -1 && after !== undefined) {
-                        minId = res.lastId + 1;
-                    }
-                    if (maxId === 0 || minId === 0) {
-                        resolve(res.messages);
-                        return;
-                    }
-                    const lim = limit - len;
-                    this.apiManager.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
-                        window.console.log('case#1', {
-                            lim,
-                            maxId,
-                            minId,
-                        }, 'peer:', peer ? peer.toObject() : '', remoteRes);
-                        this.userRepo.importBulk(false, remoteRes.usersList);
-                        this.groupRepo.importBulk(remoteRes.groupsList);
-                        remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
-                        return this.transform(remoteRes.messagesList);
-                    }).then((remoteRes) => {
-                        this.checkBoundaries(peer.getId() || '', lim, res.messages, remoteRes, before !== undefined);
-                        this.importBulk(remoteRes, true);
-                        resolve([...res.messages, ...remoteRes]);
-                    }).catch((err2) => {
-                        if (fnCallback === undefined) {
-                            reject(err2);
-                        }
-                    });
-                } else {
-                    resolve(res.messages);
+                    earlyMessages.push(item);
                 }
+                return (item.messagetype === C_MESSAGE_TYPE.Hole);
+            });
+            window.console.debug('has hole:', hasHole);
+            let lastId: number = (mode === 0x2 ? safeAfter : safeBefore);
+            const asc = (mode === 0x2);
+            if (!hasHole) {
+                if (res.length > 0) {
+                    lastId = (res[res.length - 1].id || -1);
+                    if (lastId !== -1) {
+                        if (asc) {
+                            lastId += 1;
+                        } else {
+                            lastId -= 1;
+                        }
+                    }
+                }
+                if (fnEarlyCallback && res.length > 0) {
+                    fnEarlyCallback(res);
+                    return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit - res.length);
+                } else {
+                    return this.completeMessagesLimitFromRemote(peer, res, lastId, asc, safeLimit - res.length);
+                }
+            } else {
+                return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit);
+            }
+        });
+    }
+
+    public completeMessagesLimitFromRemote(peer: InputPeer, messages: IMessage[], id: number, asc: boolean, limit: number): Promise<IMessage[]> {
+        if (id === -1) {
+            return Promise.reject('bad message id');
+        }
+        if (limit === 0) {
+            return Promise.resolve(messages);
+        }
+
+        return this.checkHoles(peer, id, asc, limit).then((remoteMessages) => {
+            this.userRepo.importBulk(false, remoteMessages.usersList);
+            this.groupRepo.importBulk(remoteMessages.groupsList);
+            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, this.userId);
+            return this.importBulk(remoteMessages.messagesList, true).then(() => {
+                return [...messages, ...remoteMessages.messagesList];
             });
         });
     }
@@ -468,116 +507,6 @@ export default class MessageRepo {
         } else {
             return pipe.reverse().toArray();
         }
-    }
-
-    public getManyCache({limit, before, after, ignoreMax}: any, peer: InputPeer, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessageWithCount> {
-        ignoreMax = ignoreMax || false;
-        const pipe = this.db.messages.where('[peerid+id]');
-        let pipe2: Dexie.Collection<IMessage, number>;
-        let mode = 0x0;
-        if (before !== null && before !== undefined) {
-            mode = mode | 0x1;
-        }
-        if (after !== null && after !== undefined) {
-            mode = mode | 0x2;
-        }
-        limit = limit || 30;
-        const peerId = peer.getId() || '';
-        switch (mode) {
-            // none
-            default:
-            case 0x0:
-                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true);
-                break;
-            // before
-            case 0x1:
-                before = (ignoreMax ? before - 1 : before);
-                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, before], true, true);
-                break;
-            // after
-            case 0x2:
-                pipe2 = pipe.between([peerId, after], [peerId, Dexie.maxKey], true, true);
-                break;
-            // between
-            case 0x3:
-                pipe2 = pipe.between([peerId, after + 1], [peerId, before - 1], true, true);
-                break;
-        }
-        if (mode !== 0x2) {
-            pipe2 = pipe2.reverse();
-        }
-        pipe2 = pipe2.filter((item: IMessage) => {
-            return (item.id || 0) > 0;
-        });
-        return pipe2.limit(limit + (ignoreMax ? 1 : 2)).toArray().then((res) => {
-            const cacheMsgs: IMessage[] = [];
-            const hasHole = res.some((msg, key) => {
-                if (fnCallback && ignoreMax && mode === 0x1) {
-                    if (msg.messagetype === C_MESSAGE_TYPE.Hole) {
-                        fnCallback(cacheMsgs);
-                        return true;
-                    }
-                    cacheMsgs.push(msg);
-                }
-                return (msg.messagetype === C_MESSAGE_TYPE.Hole);
-            });
-            window.console.debug('has hole:', hasHole);
-            const endIndex = findIndex(res, {messagetype: C_MESSAGE_TYPE.End});
-            if (!hasHole || endIndex > -1) {
-                // Trims start of result
-                if (res.length > 0) {
-                    if (mode === 0x2) {
-                        if (res[0].id === after) {
-                            res.shift();
-                        }
-                    } else {
-                        if (res[0].id === before && !ignoreMax) {
-                            res.shift();
-                        }
-                    }
-                }
-                // Trims end of result
-                if (res.length === limit + 1) {
-                    res.pop();
-                }
-
-                if (fnCallback) {
-                    fnCallback(res);
-                    return {
-                        count: res.length,
-                        lastId: res.length > 0 ? res[res.length - 1].id : -1,
-                        messages: [],
-                    };
-                } else {
-                    return {
-                        count: res.length,
-                        lastId: res.length > 0 ? res[res.length - 1].id : -1,
-                        messages: res,
-                    };
-                }
-            } else {
-                return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - (ignoreMax ? 0 : 1)), (mode === 0x2), limit, ignoreMax).then((remoteRes) => {
-                    window.console.log('case#2', {
-                        after,
-                        before,
-                        ignoreMax,
-                        limit,
-                        mode,
-                    }, 'peer:', peer ? peer.toObject() : '', remoteRes);
-                    this.userRepo.importBulk(false, remoteRes.usersList);
-                    this.groupRepo.importBulk(remoteRes.groupsList);
-                    remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
-                    return this.transform(remoteRes.messagesList);
-                }).then((remoteRes) => {
-                    this.importBulk(remoteRes, true);
-                    return {
-                        count: remoteRes.length,
-                        lastId: remoteRes.length > 0 ? remoteRes[remoteRes.length - 1].id : -1,
-                        messages: remoteRes,
-                    };
-                });
-            }
-        });
     }
 
     public getLastMessage(peerId: string) {
@@ -752,20 +681,11 @@ export default class MessageRepo {
         return pipe2.limit(limit || 32).toArray();
     }
 
-    public transform(msgs: IMessage[]) {
-        return msgs.map((msg) => {
-            return msg;
-        });
-    }
-
     public importBulk(msgs: IMessage[], noTransform?: boolean): Promise<any> {
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();
         }
-        let tempMsgs = cloneDeep(msgs);
-        if (noTransform !== true) {
-            tempMsgs = this.transform(tempMsgs);
-        }
+        const tempMsgs = cloneDeep(msgs);
         return this.upsert(tempMsgs).catch((err) => {
             window.console.debug(err);
         });
@@ -859,8 +779,8 @@ export default class MessageRepo {
             }).reverse().first();
     }
 
-    public clearHistory(peerId: string, messageId: number): Promise<any> {
-        return this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, messageId], true, true).delete();
+    public clearHistory(peerId: string, id: number): Promise<any> {
+        return this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, id], true, true).delete();
     }
 
     public flush() {
@@ -905,11 +825,7 @@ export default class MessageRepo {
                 }
             });
             for (const [id, data] of Object.entries(holeIds)) {
-                holes.push({
-                    id: parseInt(id, 10) + (data.lower ? 0.5 : -0.5),
-                    messagetype: C_MESSAGE_TYPE.Hole,
-                    peerid: data.peerId,
-                });
+                holes.push(this.getHoleMessage(data.peerId, parseInt(id, 10), data.lower));
             }
             return this.db.messages.bulkPut([...messages, ...holes]);
         });
@@ -929,6 +845,14 @@ export default class MessageRepo {
             messagetype: C_MESSAGE_TYPE.Hole,
             peerid: peerId,
         });
+    }
+
+    public getHoleMessage(peerId: string, id: number, asc: boolean): IMessage {
+        return {
+            id: id + (asc ? 0.5 : -0.5),
+            messagetype: C_MESSAGE_TYPE.Hole,
+            peerid: peerId,
+        };
     }
 
     public insertEnd(peerId: string, id: number) {
@@ -964,61 +888,6 @@ export default class MessageRepo {
         this.lazyMap = {};
         this.upsert(messages).then(() => {
             //
-        });
-    }
-
-    private checkHoles(peer: InputPeer, id: number, asc: boolean, limit: number, ignoreMax: boolean) {
-        let query = {};
-        if (asc) {
-            query = {
-                limit,
-                minId: id,
-            };
-        } else {
-            query = {
-                limit,
-                maxId: id,
-            };
-        }
-        return this.apiManager.getMessageHistory(peer, query).then((remoteRes) => {
-            return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc, ignoreMax).then(() => {
-                return remoteRes;
-            });
-        });
-    }
-
-    private modifyHoles(peerId: string, res: UserMessage.AsObject[], asc: boolean, ignoreMax: boolean) {
-        let max = 0;
-        let min = Infinity;
-        res.forEach((item) => {
-            if (item.id && item.id > max) {
-                max = item.id;
-            }
-            if (item.id && item.id < min) {
-                min = item.id;
-            }
-        });
-        return this.removeHolesInRange(peerId, min, max, asc, ignoreMax);
-    }
-
-    private removeHolesInRange(peerId: string, min: number, max: number, asc: boolean, ignoreMax: boolean) {
-        return this.db.messages.where('[peerid+id]').between([peerId, min - 1], [peerId, max + 1], true, true).filter((item) => {
-            return (item.messagetype === C_MESSAGE_TYPE.Hole);
-        }).delete().finally(() => {
-            const promises: Array<Promise<IMessage | undefined>> = [];
-            promises.push(this.db.messages.get(min - 1));
-            promises.push(this.db.messages.get(max + 1));
-            return new Promise((resolve) => {
-                Promise.all(promises).then((resArr) => {
-                    if (!resArr[0]) {
-                        this.insertHole(peerId, min, false);
-                    }
-                    if (!resArr[1] && !ignoreMax) {
-                        this.insertHole(peerId, max, true);
-                    }
-                    resolve();
-                });
-            });
         });
     }
 
@@ -1089,30 +958,59 @@ export default class MessageRepo {
         });
     }
 
-    private checkBoundaries(peeId: string, limit: number, local: IMessage[], remote: IMessage[], before: boolean) {
-        return;
-        // if (local.length > 0) {
-        //     let min = local[local.length - 1].id || 0;
-        //     let max = local[0].id || 0;
-        //     min = Math.min(min, max);
-        //     if (remote.length > 0) {
-        //         min = remote[remote.length - 1].id || 0;
-        //         max = remote[0].id || 0;
-        //         min = Math.min(min, max);
-        //         if (before) {
-        //             this.insertHole(peeId, min, true);
-        //             if (remote.length < limit) {
-        //                 this.insertEnd(peeId, min);
-        //             }
-        //         }
-        //     } else {
-        //         if (before && local.length < limit) {
-        //             this.insertEnd(peeId, min);
-        //         }
-        //     }
-        // } else if (before) {
-        //     this.insertEnd(peeId, 1.5);
-        // }
+    private checkHoles(peer: InputPeer, id: number, asc: boolean, limit: number) {
+        let query: any = {};
+        limit += 1;
+        if (asc) {
+            query = {
+                limit,
+                minId: id,
+            };
+        } else {
+            query = {
+                limit,
+                maxId: id,
+            };
+        }
+        return this.apiManager.getMessageHistory(peer, query).then((remoteRes) => {
+            return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc, limit - 1).then(() => {
+                return remoteRes;
+            });
+        });
+    }
+
+    private modifyHoles(peerId: string, res: UserMessage.AsObject[], asc: boolean, limit: number) {
+        let max = 0;
+        let min = Infinity;
+        res.forEach((item) => {
+            if (item.id && item.id > max) {
+                max = item.id;
+            }
+            if (item.id && item.id < min) {
+                min = item.id;
+            }
+        });
+        let edgeMessage: IMessage | undefined;
+        if (res.length === limit + 1) {
+            edgeMessage = res.pop();
+        }
+        return this.db.messages.where('[peerid+id]').between([peerId, min - 1], [peerId, max + 1], true, true).filter((item) => {
+            return (item.messagetype === C_MESSAGE_TYPE.Hole);
+        }).delete().then((dres) => {
+            if (edgeMessage) {
+                const messages: IMessage[] = [];
+                return this.db.messages.where('[peerid+id]').equals([peerId, edgeMessage.id || 0]).first().then((edgeRes) => {
+                    if (!edgeRes && edgeMessage) {
+                        messages.push(this.getHoleMessage(peerId, edgeMessage.id || 0, !asc));
+                        // window.console.log('insert hole at', edgeMessage.id);
+                    }
+                    messages.push(...MessageRepo.parseMessageMany(res, this.userId));
+                    return this.upsert(messages);
+                });
+            } else {
+                return this.upsert(res);
+            }
+        });
     }
 
     private broadcastEvent(name: string, data: any) {
