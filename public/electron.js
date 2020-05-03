@@ -57,6 +57,7 @@ createWindow = (forceShow) => {
     mainWindow = new BrowserWindow({
         backgroundColor: '#27AE60',
         minWidth: 316,
+        minHeight: 480,
         show: false,
         webPreferences: {
             nodeIntegration: false,

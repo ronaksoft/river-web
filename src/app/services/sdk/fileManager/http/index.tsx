@@ -80,8 +80,14 @@ export default class Http {
             fn();
         }
 
-        for (let i = 0; i < C_TIMEOUT_SAMPLE; i++) {
-            this.executionTimes.push(C_TIMEOUT);
+        this.initTimeout();
+
+        // @ts-ignore
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            connection.addEventListener('change', () => {
+                this.initTimeout();
+            });
         }
     }
 
@@ -286,6 +292,13 @@ export default class Http {
         this.executionTimes.push(time);
         if (this.executionTimes.length > C_TIMEOUT_SAMPLE) {
             this.executionTimes.unshift();
+        }
+    }
+
+    private initTimeout() {
+        this.executionTimes = [];
+        for (let i = 0; i < C_TIMEOUT_SAMPLE; i++) {
+            this.executionTimes.push(C_TIMEOUT);
         }
     }
 }

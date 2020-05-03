@@ -1,3 +1,6 @@
+## 0.32.21
+* Known bugs fixed
+
 ## 0.32.20
 * Message Repository v2.0
 

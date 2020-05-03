@@ -179,7 +179,7 @@
             }
 
             textarea {
-              height: 1.1em !important;
+              height: 1.2em !important;
               padding-right: 26px;
               padding-left: 12px;
               overflow: hidden !important;
@@ -187,7 +187,7 @@
 
               @for $i from 2 through 12 {
                 &._#{$i}-line {
-                  height: #{1.1 * ($i + 0.2)}em !important;
+                  height: #{1.1 * ($i + 0.3)}em !important;
                 }
               }
 

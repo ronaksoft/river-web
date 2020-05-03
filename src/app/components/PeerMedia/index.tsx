@@ -199,6 +199,11 @@ class PeerMedia extends React.Component<IProps, IState> {
                             <div className="video-icon">
                                 <PlayCircleFilledRounded/>
                             </div>}
+                            {Boolean(item.type === C_MESSAGE_TYPE.Audio || item.type === C_MESSAGE_TYPE.Voice) &&
+                            <div className="video-icon" onClick={this.audioActionClickHandler(item.id)}>
+                                {!item.playing && <PlayArrowRounded/>}
+                                {item.playing && <PauseRounded/>}
+                            </div>}
                             {Boolean(item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Audio || item.type === C_MESSAGE_TYPE.Voice) &&
                             <div className="media-duration-container">{getDuration(item.info.duration || 0)}</div>}
                         </div>
@@ -220,7 +225,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                             {this.getFileIcon(item)}
                             <div className="media-item-info">
                                 <div
-                                    className="media-name">{item.type === C_MESSAGE_TYPE.Voice ? 'Voice' : item.info.fileName}</div>
+                                    className="media-name">{this.getName(item)}</div>
                                 {!(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Audio) &&
                                 <div className="media-size">{getHumanReadableSize(item.info.size)}</div>}
                                 {(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Audio) &&
@@ -232,6 +237,17 @@ class PeerMedia extends React.Component<IProps, IState> {
                 })}
             </div>
         );
+    }
+
+    private getName(item: IMedia) {
+        switch (item.type) {
+            case C_MESSAGE_TYPE.Voice:
+                return i18n.t('media.audio');
+            case C_MESSAGE_TYPE.Audio:
+                return item.info.title;
+            default:
+                return item.info.fileName;
+        }
     }
 
     /* Get file icon */
