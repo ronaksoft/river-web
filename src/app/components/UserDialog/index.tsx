@@ -178,6 +178,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 onChange={this.onFirstnameChangeHandler}
                             />}
                         </div>
+                        {edit || Boolean(user && (user.lastname || '').length > 0) &&
                         <div className="line">
                             {!edit && Boolean(user && (user.lastname || '').length > 0) &&
                             <div className="form-control">
@@ -202,6 +203,15 @@ class UserDialog extends React.Component<IProps, IState> {
                                 className="input-edit"
                                 onChange={this.onLastnameChangeHandler}
                             />}
+                        </div>}
+                        {Boolean(edit || (isInContact && (user.phone || '').length > 0)) &&
+                        <div className="line">
+                            {Boolean(isInContact && !edit && (user.phone || '').length > 0) && <div className="line">
+                                <div className="form-control">
+                                    <label>{i18n.t('general.phone')}</label>
+                                    <div className="inner">{user.phone}</div>
+                                </div>
+                            </div>}
                             {Boolean(edit && !isInContact) &&
                             <TextField
                                 label={i18n.t('general.phone')}
@@ -213,12 +223,6 @@ class UserDialog extends React.Component<IProps, IState> {
                                 className="input-edit"
                                 onChange={this.onPhoneChangeHandler}
                             />}
-                        </div>
-                        {Boolean(isInContact && !edit && (user.phone || '').length > 0) && <div className="line">
-                            <div className="form-control">
-                                <label>{i18n.t('general.phone')}</label>
-                                <div className="inner">{user.phone}</div>
-                            </div>
                         </div>}
                         {Boolean(user.username && (user.username || '').length > 0) && <div className="line">
                             <div className="form-control">

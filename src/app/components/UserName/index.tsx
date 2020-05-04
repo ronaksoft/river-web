@@ -31,6 +31,7 @@ interface IProps {
     youPlaceholder?: string;
     onLoad?: (user?: IUser) => void;
     noIcon?: boolean;
+    onClick?: (id: string) => void;
 }
 
 interface IState {
@@ -185,6 +186,9 @@ class UserName extends React.Component<IProps, IState> {
         const {prefix, defaultString} = this.props;
         if (!user || this.props.noDetail === true) {
             return;
+        }
+        if (this.props.onClick) {
+            this.props.onClick(user.id || '');
         }
         e.stopPropagation();
         e.preventDefault();

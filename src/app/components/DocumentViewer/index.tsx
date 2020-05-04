@@ -48,6 +48,8 @@ import {EventKeyDown, EventMouseMove, EventMouseUp} from "../../services/events"
 import StreamVideo from "../StreamVideo";
 
 import './style.scss';
+import {renderBody} from "../Message";
+import ElectronService from "../../services/electron";
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -137,6 +139,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private isTransitioning: boolean = false;
     private removeTooltipTimeout: any = null;
     private downloadProgressRef: DownloadProgress | undefined;
+    private isElectron: boolean = ElectronService.isElectron();
 
     constructor(props: IProps) {
         super(props);
@@ -355,7 +358,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
             return '';
         }
 
-        return (<DownloadProgress ref={this.downloadProgressRefHandler} id={doc.items[0].id || 0} fileSize={doc.items[0].fileSize || 0}
+        return (<DownloadProgress ref={this.downloadProgressRefHandler} id={doc.items[0].id || 0}
+                                  fileSize={doc.items[0].fileSize || 0}
                                   onAction={this.props.onAction} onComplete={this.downloadCompleteHandler}/>);
     }
 
@@ -381,7 +385,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     });
                 }
             } else {
-                window.console.log(err.target.error);
                 this.props.onError(i18n.t('media.cannot_stream_video'));
                 doc.stream = false;
                 setTimeout(() => {
@@ -516,9 +519,11 @@ class DocumentViewer extends React.Component<IProps, IState> {
             <div className="document-viewer-caption" onClick={this.preventClosing}>
                 <div className="caption-wrapper">
                     {Boolean((doc.items[0].caption || '').length !== 0) &&
-                    <div className={'caption ' + (doc.items[0].rtl ? 'rtl' : 'ltr')}>{doc.items[0].caption}</div>}
+                    <div className={'caption ' + (doc.items[0].rtl ? 'rtl' : 'ltr')}>
+                        {renderBody(doc.items[0].caption, doc.items[0].entityList, this.isElectron, this.bodyActionHandler, undefined)}
+                    </div>}
                     {Boolean(doc.items[0].userId) && <div className="sender-container">
-                        <UserName className="caption-user" id={doc.items[0].userId || ''}/>
+                        <UserName className="caption-user" id={doc.items[0].userId || ''} noIcon={true}/>
                         <div className="caption-date">{TimeUtility.dynamicDate(doc.items[0].createdon || 0)}</div>
                     </div>}
                 </div>
@@ -1136,6 +1141,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private preventClosing = () => {
+        window.console.log('preventClosing');
         this.preventClose = true;
         if (this.removeTooltipTimeout) {
             clearTimeout(this.removeTooltipTimeout);
@@ -1368,6 +1374,18 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (this.props.onJumpOnMessage && doc && doc.type !== 'avatar' && doc.items.length > 0) {
             this.props.onJumpOnMessage(doc.items[0].id || 0);
             this.dialogCloseHandler(true)();
+        }
+    }
+
+    private bodyActionHandler = (cmd: string, text: string) => {
+        window.console.log(cmd, text);
+        switch (cmd) {
+            case 'open_external_link':
+                ElectronService.openExternal(text);
+                break;
+            default:
+                this.preventClosing();
+                break;
         }
     }
 }

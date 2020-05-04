@@ -361,7 +361,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* View downloaded document */
-    public viewDocument = () => {
+    public viewDocumentHandler = () => {
         const {fileState, message} = this.state;
         if (this.mediaBigRef && (fileState === 'view' || fileState === 'open' || true)) {
             this.showMediaHandler(this.mediaBigRef);
@@ -488,14 +488,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         const {fileState, message, streamReady} = this.state;
         if ((message.id || 0) < 0 || fileState === 'download' || fileState === 'progress' || fileState === 'failed') {
             if (streamReady && !message.downloaded && (message.id || 0) > 0) {
-                return (<div className="media-action" onClick={this.viewDocument}>
+                return (<div className="media-action" onClick={this.viewDocumentHandler}>
                     <PlayArrowRounded/>
                 </div>);
             } else {
                 return this.progressContent(false);
             }
         } else if (message.messagetype === C_MESSAGE_TYPE.Video) {
-            return (<div className="media-action" onClick={this.viewDocument}>
+            return (<div className="media-action" onClick={this.viewDocumentHandler}>
                 <PlayArrowRounded/>
             </div>);
         } else {
@@ -714,6 +714,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 createdon: message.createdon,
                 downloaded: message.downloaded || false,
                 duration: info.duration,
+                entityList: info.entityList,
                 fileLocation: info.file,
                 fileSize: info.size,
                 height: info.height,

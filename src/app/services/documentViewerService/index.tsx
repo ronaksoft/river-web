@@ -7,12 +7,13 @@
     Copyright Ronak Software Group 2019
 */
 
-import {InputFileLocation, InputPeer} from '../sdk/messages/chat.core.types_pb';
+import {InputFileLocation, InputPeer, MessageEntity} from '../sdk/messages/chat.core.types_pb';
 import MediaRepo from '../../repository/media';
 import {C_MEDIA_TYPE} from '../../repository/media/interface';
 
 interface IDocumentItem {
     caption: string;
+    entityList?: MessageEntity.AsObject[];
     downloaded?: boolean;
     duration?: number;
     fileLocation: InputFileLocation.AsObject;

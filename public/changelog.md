@@ -1,3 +1,7 @@
+## 0.32.23
+* Document viewer updated
+* Profile viewer updated
+
 ## 0.32.22
 * Known bugs fixed
 

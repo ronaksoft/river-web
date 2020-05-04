@@ -203,6 +203,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             onChange={this.onFirstnameChangeHandler}
                                         />}
                                     </div>
+                                    {Boolean(edit || (user && (user.lastname || '').length > 0)) &&
                                     <div className="line">
                                         {!edit && Boolean(user && (user.lastname || '').length > 0) &&
                                         <div className="form-control">
@@ -227,6 +228,16 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             className="input-edit"
                                             onChange={this.onLastnameChangeHandler}
                                         />}
+                                    </div>}
+                                    {Boolean(edit || (isInContact && user && (user.phone || '').length > 0)) &&
+                                    <div className="line">
+                                        {!edit && isInContact && user && (user.phone || '').length > 0 &&
+                                        <div className="line">
+                                            <div className="form-control">
+                                                <label>{i18n.t('general.phone')}</label>
+                                                <div className="inner">{user.phone}</div>
+                                            </div>
+                                        </div>}
                                         {Boolean(edit && !isInContact) &&
                                         <TextField
                                             label={i18n.t('general.phone')}
@@ -238,17 +249,11 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             className="input-edit"
                                             onChange={this.onPhoneChangeHandler}
                                         />}
-                                    </div>
+                                    </div>}
                                     {Boolean(user && (user.username || '').length > 0) && <div className="line">
                                         <div className="form-control">
                                             <label>{i18n.t('general.username')}</label>
                                             <div className="inner">@{user.username}</div>
-                                        </div>
-                                    </div>}
-                                    {isInContact && user && (user.phone || '').length > 0 && <div className="line">
-                                        <div className="form-control">
-                                            <label>{i18n.t('general.phone')}</label>
-                                            <div className="inner">{user.phone}</div>
                                         </div>
                                     </div>}
                                     {Boolean(user && (user.bio || '').length > 0) && <div className="line">

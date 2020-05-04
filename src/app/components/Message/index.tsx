@@ -76,6 +76,9 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
         const botCommandHandler = (text: string) => (e: any) => {
             onAction('bot_command', text);
         };
+        const userNameClickHandler = (id: string) => {
+            onAction('user_name', id);
+        };
         const classMap = {
             [MessageEntityType.MESSAGEENTITYTYPEBOLD]: '_bold',
             [MessageEntityType.MESSAGEENTITYTYPEITALIC]: '_italic',
@@ -90,10 +93,14 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
                             return (
                                 <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
                                           noIcon={true} unsafe={true}
-                                          defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
+                                          defaultString={elem.str.substr(1)} onLoad={measureFn}
+                                          onClick={userNameClickHandler}
+                                />);
                         } else {
                             return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true} noIcon={true}
-                                              defaultString={elem.str} onLoad={measureFn}/>);
+                                              defaultString={elem.str} onLoad={measureFn}
+                                              onClick={userNameClickHandler}
+                            />);
                         }
                     case MessageEntityType.MESSAGEENTITYTYPEBOLD:
                         return (<span key={i} className="_bold">{elem.str}</span>);
