@@ -1141,7 +1141,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private preventClosing = () => {
-        window.console.log('preventClosing');
         this.preventClose = true;
         if (this.removeTooltipTimeout) {
             clearTimeout(this.removeTooltipTimeout);
@@ -1378,7 +1377,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private bodyActionHandler = (cmd: string, text: string) => {
-        window.console.log(cmd, text);
         switch (cmd) {
             case 'open_external_link':
                 ElectronService.openExternal(text);
