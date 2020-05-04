@@ -1,3 +1,6 @@
+## 0.32.22
+* Known bugs fixed
+
 ## 0.32.21
 * Known bugs fixed
 

@@ -223,7 +223,7 @@ interface IProps {
 }
 
 interface IState {
-    fileState: 'download' | 'view' | 'progress' | 'open';
+    fileState: 'download' | 'view' | 'progress' | 'open' | 'failed';
     info: IMediaInfo;
     message: IMessage;
     streamReady: boolean;
@@ -486,7 +486,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
     private getMediaAction() {
         const {fileState, message, streamReady} = this.state;
-        if ((message.id || 0) < 0 || fileState === 'download' || fileState === 'progress') {
+        if ((message.id || 0) < 0 || fileState === 'download' || fileState === 'progress' || fileState === 'failed') {
             if (streamReady && !message.downloaded && (message.id || 0) > 0) {
                 return (<div className="media-action" onClick={this.viewDocument}>
                     <PlayArrowRounded/>
@@ -524,8 +524,8 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         this.circleProgressRef = ref;
     }
 
-    /* Upload progress handler */
-    private uploadProgressHandler = (progress: IFileProgress) => {
+    /* File progress handler */
+    private fileProgressHandler = (progress: IFileProgress) => {
         const {message} = this.state;
         if ((message.id || 0) > 0) {
             this.displayFileSize(progress.download);
@@ -591,7 +591,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         if (this.state.fileState === 'progress') {
             if (message) {
                 this.removeAllListeners();
-                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.fileProgressHandler));
             }
         } else {
             if (this.progressBroadcaster.isActive(message.id || 0)) {
@@ -599,7 +599,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     fileState: 'progress',
                 }, () => {
                     this.removeAllListeners();
-                    this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+                    this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.fileProgressHandler));
                 });
             } else {
                 const {peer} = this.props;

@@ -110,16 +110,16 @@ class RecoveryQuestionModal extends React.Component<IProps, IState> {
             <SettingsModal open={open} title={i18n.t('settings.recovery.recovery_options')}
                            icon={<SyncAltRounded/>}
                            onClose={this.modalCloseHandler}
-                           height="580px"
+                           height={answer ? '420px' : '580px'}
                            noScrollbar={true}
             >
                 <div className="recovery-dialog">
-                    <div className="recovery-header">
+                    {!answer && <div className="recovery-header">
                         {i18n.t('settings.recovery.security_questions')}
-                    </div>
-                    <div className="recovery-text">
+                    </div>}
+                    {!answer && <div className="recovery-text">
                         {i18n.t('settings.recovery.security_questions_text')}
-                    </div>
+                    </div>}
                     {questions.map((question, index) => {
                         return (<React.Fragment key={index}>
                             <div className="recovery-header">

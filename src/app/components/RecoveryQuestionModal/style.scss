@@ -16,8 +16,10 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 10px 16px 4px;
+    padding: 16px 12px 0;
     line-height: 1em;
+    font-size: 13px;
+    color: var(--river);
 
     svg {
       font-size: 100px;
@@ -29,7 +31,7 @@
   .recovery-success {
     line-height: 1.3em;
     max-width: 300px;
-    padding: 6px 12px;
+    padding: 4px 12px 6px;
     font-size: 14px;
     text-align: justify;
 
@@ -46,6 +48,10 @@
 
   .recovery-input {
     padding: 6px 12px 0;
+
+    > div {
+      margin: 0;
+    }
 
     &.bottom-gap {
       padding: 6px 12px 12px;
@@ -93,7 +99,7 @@ html[theme="dark-night"] {
       }
     }
 
-    .recovery-header, .recovery-success {
+    .recovery-success {
       color: var(--white);
     }
 

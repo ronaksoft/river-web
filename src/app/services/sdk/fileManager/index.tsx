@@ -630,21 +630,17 @@ export default class FileManager {
                     const instant = downloadInfo.size === 0;
                     this.fileDownloadQueue[id].completed = true;
                     this.clearDownloadQueueById(id);
-                    this.dispatchDownloadProgress(id, 'complete');
                     this.fileRepo.persistTempFiles(id, id, downloadInfo.mimeType || 'application/octet-stream', downloadInfo.onBuffer !== undefined).then((res) => {
                         if (this.fileDownloadQueue.hasOwnProperty(id)) {
                             const downloadInfo2 = this.fileDownloadQueue[id];
-                            let check = true;
                             if (res && downloadInfo2.md5 && downloadInfo2.md5 !== '' && downloadInfo2.md5 !== res.md5) {
-                                check = false;
                                 this.fileRepo.remove(id).finally(() => {
                                     downloadInfo2.reject(`md5 hashes are not match. ${downloadInfo2.md5}, ${res.md5}`);
                                     delete this.fileDownloadQueue[id];
                                 });
                             } else {
+                                this.dispatchDownloadProgress(id, 'complete');
                                 downloadInfo2.resolve();
-                            }
-                            if (check) {
                                 delete this.fileDownloadQueue[id];
                             }
                         }

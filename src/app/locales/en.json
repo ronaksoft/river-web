@@ -357,7 +357,8 @@
     "en": "en",
     "fa": "fa",
     "password_note": "You have enabled Two-Step Verification, so your account is protected with an additional password.",
-    "timeout": "Internet Timeout"
+    "timeout": "Internet Timeout",
+    "please_fill_the_form": "Please fill the form"
   },
   "status": {
     "members": "{0} members",

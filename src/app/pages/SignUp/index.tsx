@@ -69,10 +69,10 @@ interface IState {
     anchorEl: any;
     code: string;
     countdown: number;
-    fName: string;
+    firstName: string;
     iframeActive: boolean;
-    lName: string;
     languageDialogOpen: boolean;
+    lastName: string;
     loading: boolean;
     password: string;
     phone?: string;
@@ -118,10 +118,10 @@ class SignUp extends React.Component<IProps, IState> {
             anchorEl: null,
             code: '',
             countdown: 60,
-            fName: '',
+            firstName: '',
             iframeActive: this.iframeService.isActive(),
-            lName: '',
             languageDialogOpen: false,
+            lastName: '',
             loading: false,
             password: '',
             phone: '',
@@ -162,8 +162,8 @@ class SignUp extends React.Component<IProps, IState> {
         this.eventReferences.push(this.iframeService.listen(C_IFRAME_SUBJECT.UserInfo, (e) => {
             this.iframeService.bool(e.reqId);
             this.setState({
-                fName: e.data.firstname,
-                lName: e.data.lastname,
+                firstName: e.data.firstname,
+                lastName: e.data.lastname,
                 phone: e.data.phone,
                 workspace: e.data.workspace,
             });
@@ -310,9 +310,10 @@ class SignUp extends React.Component<IProps, IState> {
                                                label={i18n.t('general.first_name')}
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
-                                               value={this.state.fName}
+                                               value={this.state.firstName}
                                                onKeyDown={this.registerKeyDownHandler}
-                                               onChange={this.firstNameChangeHandler}/>
+                                               onChange={this.firstNameChangeHandler}
+                                    />
                                     <span className="focus-input"/>
                                 </div>}
                                 {step === 'register' &&
@@ -321,9 +322,10 @@ class SignUp extends React.Component<IProps, IState> {
                                                label={i18n.t('general.last_name')}
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
-                                               value={this.state.lName}
+                                               value={this.state.lastName}
                                                onKeyDown={this.registerKeyDownHandler}
-                                               onChange={this.lastNameChangeHandler}/>
+                                               onChange={this.lastNameChangeHandler}
+                                    />
                                     <span className="focus-input"/>
                                 </div>}
                             </React.Fragment>}
@@ -685,13 +687,13 @@ class SignUp extends React.Component<IProps, IState> {
 
     private firstNameChangeHandler = (e: any) => {
         this.setState({
-            fName: e.target.value,
+            firstName: e.target.value,
         });
     }
 
     private lastNameChangeHandler = (e: any) => {
         this.setState({
-            lName: e.target.value,
+            lastName: e.target.value,
         });
     }
 
@@ -722,7 +724,9 @@ class SignUp extends React.Component<IProps, IState> {
     private recoveryQuestionModalDoneHandler = (list: SecurityQuestion.AsObject[]) => {
         const {accountPassword} = this.state;
         if (accountPassword) {
-            this.apiManager.accountRecover(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), accountPassword.getSrpid() || '', list.map(o => {
+            this.apiManager.accountRecover(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), accountPassword.getSrpid() || '', list.filter(o => {
+                return (o.answer || '') !== '';
+            }).map(o => {
                 return {
                     answer: o.answer || '',
                     questionid: o.id || 0,
@@ -744,15 +748,21 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private registerHandler = () => {
-        const {phone, phoneHash, code, fName, lName} = this.state;
+        const {phone, phoneHash, code, firstName, lastName} = this.state;
         if (!phone || !phoneHash || code.length < codeLen) {
+            return;
+        }
+        if (firstName.length === 0 && lastName.length === 0) {
+            if (this.props.enqueueSnackbar) {
+                this.props.enqueueSnackbar(i18n.t('sign_up.please_fill_the_form'));
+            }
             return;
         }
         this.setState({
             loading: true,
         });
         const lang = localStorage.getItem('river.lang') || 'en';
-        this.apiManager.register(phone, code, phoneHash, fName, lName, lang).then((res) => {
+        this.apiManager.register(phone, code, phoneHash, firstName, lastName, lang).then((res) => {
             const info = this.apiManager.loadConnInfo();
             info.UserID = res.user.id;
             info.FirstName = res.user.firstname;
