@@ -1040,6 +1040,10 @@ class SignUp extends React.Component<IProps, IState> {
             inputPassword.setSrpid(srpId);
             this.apiManager.loginByPassword(inputPassword).then((res) => {
                 this.login(res);
+            }).catch(() => {
+                if (this.props.enqueueSnackbar) {
+                    this.props.enqueueSnackbar(i18n.t('sign_up.incorrect_password'));
+                }
             });
         });
     }

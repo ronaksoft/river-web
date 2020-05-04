@@ -354,7 +354,8 @@
     "fa": "فا",
     "password_note": "شما تأیید دو مرحله ای را فعال کرده اید، بنابراین حساب شما با یک رمز عبور محافظت می شود.",
     "timeout": "Internet Timeout",
-    "please_fill_the_form": "لطفا فرم را تکمیل کنید"
+    "please_fill_the_form": "لطفا فرم را تکمیل کنید",
+    "incorrect_password": "گذرواژه اشتباه است"
   },
   "status": {
     "members": "{0} عضو",
