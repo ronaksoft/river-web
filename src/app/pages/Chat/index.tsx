@@ -46,7 +46,12 @@ import {
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
-import UpdateManager, {IDialogDBUpdated, IMessageDBRemoved, IMessageDBUpdated} from '../../services/sdk/updateManager';
+import UpdateManager, {
+    IDialogDBUpdated,
+    IMessageDBRemoved,
+    IMessageDBUpdated,
+    IMessageIdDBUpdated
+} from '../../services/sdk/updateManager';
 import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
@@ -126,7 +131,6 @@ import CachedMessageService from "../../services/cachedMessageService";
 import {C_VERSION, isProd} from "../../../App";
 import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
-import CachedFileService from "../../services/cachedFileService";
 import LeftMenu, {menuAction} from "../../components/LeftMenu";
 import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
 import RightMenu from "../../components/RightMenu";
@@ -241,7 +245,6 @@ class Chat extends React.Component<IProps, IState> {
     private updateReadInboxTimeout: any = {};
     private isRecording: boolean = false;
     private upcomingDialogId: string = 'null';
-    private cachedFileService: CachedFileService;
     private selectedDialogId: string = 'null';
     private peer: InputPeer | null = null;
     private messageSelectable: boolean = false;
@@ -298,7 +301,6 @@ class Chat extends React.Component<IProps, IState> {
         this.settingsConfigManager = SettingsConfigManager.getInstance();
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 128);
         this.cachedMessageService = CachedMessageService.getInstance();
-        this.cachedFileService = CachedFileService.getInstance();
         this.avatarService = AvatarService.getInstance();
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
@@ -441,6 +443,9 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: message db updated
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageDB, this.updateMessageDBUpdatedHandler));
+
+        // Update: message db updated
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageIdDB, this.updateMessageIdDBUpdatedHandler));
 
         // Update: message db removed
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageDBRemoved, this.updateMessageDBRemovedHandler));
@@ -1039,7 +1044,6 @@ class Chat extends React.Component<IProps, IState> {
         if (!message || !message.id) {
             return;
         }
-        this.checkPendingMessage(message.id || 0);
         this.downloadThumbnail(message);
         // Clear the message history
         if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
@@ -1080,7 +1084,6 @@ class Chat extends React.Component<IProps, IState> {
     /* Update drop message */
     private updateMessageDropHandler = (data: UpdateNewMessage.AsObject) => {
         if (data.message) {
-            this.checkPendingMessage(data.message.id || 0);
             this.updateDialogs(data.message, data.accesshash || '0');
         }
         if (this.messageRef) {
@@ -1217,7 +1220,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        data.messageidsList.sort().forEach((id) => {
+        data.messageidsList.sort((a, b) => a - b).forEach((id) => {
             if (this.messageRef) {
                 // Update and broadcast changes in cache
                 this.cachedMessageService.removeMessage(id);
@@ -1787,10 +1790,6 @@ class Chat extends React.Component<IProps, IState> {
             }).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
-                this.modifyPendingMessage({
-                    messageid: res.messageid,
-                    randomid: randomId,
-                }, true);
                 message.id = res.messageid;
                 this.messageMapAppend(message);
                 this.messageRepo.lazyUpsert([message]);
@@ -1970,10 +1969,6 @@ class Chat extends React.Component<IProps, IState> {
             this.apiManager.sendMessage(randomId, text, peer).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
-                this.modifyPendingMessage({
-                    messageid: res.messageid,
-                    randomid: randomId,
-                });
             });
         });
     }
@@ -2044,67 +2039,65 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateDialogs(msg: IMessage, accessHash: string, force?: boolean) {
-        const id = msg.peerid || '';
-        if (msg.peerid === '') {
-            return;
-        }
-        const dialogs = this.dialogs;
-        let toUpdateDialog: IDialog | null = null;
-        const messageTitle = getMessageTitle(msg);
-        if (this.dialogMap.hasOwnProperty(id)) {
-            let index = this.dialogMap[id];
-            // Double check
-            if (dialogs[index].peerid !== msg.peerid) {
-                index = findIndex(dialogs, {peerid: id});
-                if (index === -1) {
-                    return;
+        return new Promise((resolve) => {
+            const id = msg.peerid || '';
+            if (msg.peerid === '') {
+                return;
+            }
+            const dialogs = this.dialogs;
+            const messageTitle = getMessageTitle(msg);
+            if (this.dialogMap.hasOwnProperty(id)) {
+                let index = this.dialogMap[id];
+                // Double check
+                if (dialogs[index].peerid !== msg.peerid) {
+                    index = findIndex(dialogs, {peerid: id});
+                    if (index === -1) {
+                        return;
+                    }
                 }
-            }
-            if ((dialogs[index].topmessageid || 0) < (msg.id || 0) || force === true) {
-                dialogs[index].action_code = msg.messageaction;
-                dialogs[index].action_data = msg.actiondata;
-                dialogs[index].topmessageid = msg.id;
-                dialogs[index].preview = messageTitle.text;
-                dialogs[index].preview_icon = messageTitle.icon;
-                dialogs[index].preview_me = msg.me;
-                dialogs[index].preview_rtl = msg.rtl;
-                dialogs[index].sender_id = msg.senderid;
-                dialogs[index].last_update = msg.createdon;
-                dialogs[index].peerid = id;
-                dialogs[index].peertype = msg.peertype;
-                toUpdateDialog = dialogs[index];
-                if (force) {
-                    toUpdateDialog.force = force;
+                if ((dialogs[index].topmessageid || 0) < (msg.id || 0) || force === true) {
+                    dialogs[index].action_code = msg.messageaction;
+                    dialogs[index].action_data = msg.actiondata;
+                    dialogs[index].topmessageid = msg.id;
+                    dialogs[index].preview = messageTitle.text;
+                    dialogs[index].preview_icon = messageTitle.icon;
+                    dialogs[index].preview_me = msg.me;
+                    dialogs[index].preview_rtl = msg.rtl;
+                    dialogs[index].sender_id = msg.senderid;
+                    dialogs[index].last_update = msg.createdon;
+                    dialogs[index].peerid = id;
+                    dialogs[index].peertype = msg.peertype;
                 }
+                if ((!dialogs[index].accesshash || dialogs[index].accesshash === '0') && accessHash !== '0') {
+                    dialogs[index].accesshash = accessHash;
+                }
+            } else {
+                const dialog: IDialog = {
+                    action_code: msg.messageaction,
+                    action_data: msg.actiondata,
+                    last_update: msg.createdon,
+                    peerid: id,
+                    peertype: msg.peertype,
+                    preview: messageTitle.text,
+                    preview_icon: messageTitle.icon,
+                    preview_me: msg.me,
+                    preview_rtl: msg.rtl,
+                    saved_messages: (this.connInfo.UserID === id),
+                    sender_id: msg.senderid,
+                    topmessageid: msg.id,
+                    unreadcount: 0,
+                };
+                if (accessHash !== '0') {
+                    dialog.accesshash = accessHash;
+                }
+                dialogs.push(dialog);
+                this.dialogMap[id] = dialogs.length - 1;
             }
-            if ((!dialogs[index].accesshash || dialogs[index].accesshash === '0') && accessHash !== '0') {
-                dialogs[index].accesshash = accessHash;
-                toUpdateDialog = dialogs[index];
-            }
-        } else {
-            const dialog: IDialog = {
-                action_code: msg.messageaction,
-                action_data: msg.actiondata,
-                last_update: msg.createdon,
-                peerid: id,
-                peertype: msg.peertype,
-                preview: messageTitle.text,
-                preview_icon: messageTitle.icon,
-                preview_me: msg.me,
-                preview_rtl: msg.rtl,
-                saved_messages: (this.connInfo.UserID === id),
-                sender_id: msg.senderid,
-                topmessageid: msg.id,
-                unreadcount: 0,
-            };
-            if (accessHash !== '0') {
-                dialog.accesshash = accessHash;
-            }
-            toUpdateDialog = dialog;
-            dialogs.push(dialog);
-            this.dialogMap[id] = dialogs.length - 1;
-        }
-        this.dialogsSortThrottle(dialogs);
+            setTimeout(() => {
+                this.dialogsSortThrottle(dialogs);
+            }, 256);
+            resolve();
+        });
         // if (toUpdateDialog) {
         //     this.dialogRepo.lazyUpsert([toUpdateDialog]);
         // }
@@ -2533,11 +2526,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateMessageDBUpdatedHandler = (data: IMessageDBUpdated) => {
-        if (data.ids) {
-            data.ids.forEach((id) => {
-                this.checkPendingMessage(id, true);
-            });
-        }
         const peer = this.peer;
         if (!peer) {
             return;
@@ -2588,11 +2576,31 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private updateMessageIdDBUpdatedHandler = (data: IMessageIdDBUpdated) => {
+        if (this.messageRef && data.peerIds && data.peerIds.hasOwnProperty(this.selectedDialogId)) {
+            const ids = data.peerIds[this.selectedDialogId].sort((a, b) => b - a);
+            this.messageRepo.getIn(ids, true).then((res) => {
+                let hasUpdate = false;
+                for (let i = this.messages.length - 1; i >= 0 && ids.length > 0 && res.length > 0; i--) {
+                    if (this.messages[i].id === ids[0] && res[0].id === ids[0]) {
+                        hasUpdate = true;
+                        this.messages[i] = res[0];
+                        res.shift();
+                        ids.shift();
+                    }
+                }
+                if (hasUpdate && this.messageRef) {
+                    this.messageRef.updateList();
+                }
+            });
+        }
+    }
+
     private updateMessageDBRemovedHandler = (data: IMessageDBRemoved) => {
         if (data.peerIds.indexOf(this.selectedDialogId) === -1) {
             return;
         }
-        data.listPeer[this.selectedDialogId].sort().forEach((id) => {
+        data.listPeer[this.selectedDialogId].sort((a, b) => a - b).forEach((id) => {
             if (!this.messageRef) {
                 return;
             }
@@ -3390,7 +3398,7 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 return o;
             }
-        }).sort();
+        }).sort((a, b) => a - b);
         forwardRecipients.forEach((recipient) => {
             const targetPeer = new InputPeer();
             targetPeer.setAccesshash(recipient.accesshash);
@@ -3634,10 +3642,6 @@ class Chat extends React.Component<IProps, IState> {
         this.apiManager.sendMessage(randomId, message.body || '', peer, message.replyto, messageEntities).then((res) => {
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
-            this.modifyPendingMessage({
-                messageid: res.messageid,
-                randomid: randomId,
-            });
 
             message.id = res.messageid;
             this.messageMapAppend(message);
@@ -3663,10 +3667,6 @@ class Chat extends React.Component<IProps, IState> {
             this.apiManager.sendMediaMessage(randomId, peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
-                this.modifyPendingMessage({
-                    messageid: res.messageid,
-                    randomid: randomId,
-                });
 
                 message.id = res.messageid;
                 this.messageMapAppend(message);
@@ -3720,104 +3720,6 @@ class Chat extends React.Component<IProps, IState> {
     private updateMessageIDHandler = (data: UpdateMessageID.AsObject) => {
         if (this.isUpdating) {
             return;
-        }
-        this.modifyPendingMessage(data);
-    }
-
-    /* Modify pending message */
-    private modifyPendingMessage(data: UpdateMessageID.AsObject, remove?: boolean) {
-        if (!data.randomid) {
-            return;
-        }
-        const randomId = data.randomid || 0;
-        this.messageRepo.getPending(randomId).then((res) => {
-            if (res) {
-                this.messageRepo.removePending(randomId).then(() => {
-                    if (!remove && res.file_ids && res.file_ids.length > 0) {
-                        this.messageRepo.upsert([{
-                            id: res.message_id,
-                            pmodified: true,
-                        }]);
-                        this.messageRepo.addPending({
-                            file_ids: res.file_ids,
-                            id: data.messageid || 0,
-                            message_id: res.message_id,
-                        });
-                    } else {
-                        if (res.message_id < 0) {
-                            this.messageRepo.remove(res.message_id);
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    /* Check pending message */
-    private checkPendingMessage(id: number, instant?: boolean) {
-        setTimeout(() => {
-            this.messageRepo.getPending(id).then((res) => {
-                if (res) {
-                    if (res.message_id < 0) {
-                        this.messageRepo.remove(res.message_id);
-                    }
-                    this.messageRepo.removePending(res.id);
-                    if (res.file_ids && res.file_ids.length > 0) {
-                        this.messageRepo.get(id).then((msg) => {
-                            if (msg && res.file_ids && res.file_ids.length > 0) {
-                                this.modifyTempFiles(res.file_ids, msg);
-                            }
-                        });
-                    }
-                }
-            });
-        }, instant ? 0 : 1000);
-    }
-
-    /* Modify temp chunks */
-    private modifyTempFiles(ids: string[], message: IMessage) {
-        const mediaDocument = getMediaDocument(message);
-        if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-            const persistFilePromises: any[] = [];
-            persistFilePromises.push(this.fileRepo.persistTempFiles(ids[0], mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream'));
-            this.cachedFileService.swap(ids[0], {
-                accesshash: mediaDocument.doc.accesshash,
-                clusterid: mediaDocument.doc.clusterid,
-                fileid: mediaDocument.doc.id,
-                version: 0,
-            });
-            // Check thumbnail
-            if (ids.length > 1 && mediaDocument.doc.thumbnail) {
-                persistFilePromises.push(this.fileRepo.persistTempFiles(ids[1], mediaDocument.doc.thumbnail.fileid || '', 'image/jpeg'));
-                this.cachedFileService.swap(ids[0], mediaDocument.doc.thumbnail);
-            }
-            Promise.all(persistFilePromises).then(() => {
-                this.messageRepo.get(message.id || 0).then((msg) => {
-                    if (msg) {
-                        msg.downloaded = true;
-                        if (this.messages) {
-                            const index = findIndex(this.messages, (o) => {
-                                return o && o.id === msg.id && o.messagetype === msg.messagetype;
-                            });
-                            if (index > -1) {
-                                this.messages[index] = msg;
-                                if (this.messageRef) {
-                                    this.messageRef.updateList();
-                                }
-                            }
-                        }
-                        this.messageRepo.lazyUpsert([msg]);
-                        const mediaDoc: MediaDocument.AsObject = msg.mediadata;
-                        if (mediaDoc && mediaDoc.doc && mediaDoc.doc.id) {
-                            this.fileRepo.upsertFileMap([{
-                                clusterid: mediaDoc.doc.clusterid || 0,
-                                id: mediaDoc.doc.id || '',
-                                msg_ids: [msg.id || 0],
-                            }]);
-                        }
-                    }
-                });
-            });
         }
     }
 
@@ -4318,10 +4220,6 @@ class Chat extends React.Component<IProps, IState> {
                 this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
                     // For double checking update message id
                     this.updateManager.setMessageId(res.messageid || 0);
-                    this.modifyPendingMessage({
-                        messageid: res.messageid,
-                        randomid: randomId,
-                    });
 
                     message.id = res.messageid;
                     this.messageMapAppend(message);
@@ -4476,10 +4374,6 @@ class Chat extends React.Component<IProps, IState> {
         this.apiManager.sendMediaMessage(randomId, peer, mediaType, media, replyTo).then((res) => {
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
-            this.modifyPendingMessage({
-                messageid: res.messageid,
-                randomid: randomId,
-            });
 
             message.id = res.messageid;
             this.messageMapAppend(message);

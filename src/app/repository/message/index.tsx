@@ -345,9 +345,19 @@ export default class MessageRepo {
         return this.db.pendingMessages.put(pending);
     }
 
+    /* Add pending message */
+    public addPendingMany(list: IPendingMessage[]) {
+        return this.db.pendingMessages.bulkPut(list);
+    }
+
     /* Get pending message by randomId */
     public getPending(id: number) {
         return this.db.pendingMessages.get(id);
+    }
+
+    /* Get pending message by randomId */
+    public getPendingByIds(ids: number[]): Promise<IPendingMessage[]> {
+        return this.db.pendingMessages.where('id').anyOf(ids).toArray();
     }
 
     /* Get pending message by messageId */
@@ -358,6 +368,11 @@ export default class MessageRepo {
     /* Remove pending message */
     public removePending(id: number) {
         return this.db.pendingMessages.delete(id);
+    }
+
+    /* Remove pending messages by ids */
+    public removePendingByIds(ids: number[]) {
+        return this.db.pendingMessages.bulkDelete(ids);
     }
 
     public create(msg: IMessage) {
@@ -804,7 +819,7 @@ export default class MessageRepo {
         const edgeIds: any[] = [];
         const holeIds: { [key: number]: { lower: boolean, peerId: string } } = {};
         for (const [peerId, msgs] of Object.entries(peerGroups)) {
-            msgs.sort().forEach((msg, index) => {
+            msgs.sort((a, b) => (a.id || 0) - (b.id || 0)).forEach((msg, index) => {
                 const id = msg.id || 0;
                 if (id > 1 && (index === 0 || (index > 0 && ((msgs[index - 1].id || 0) + 1) !== msg.id))) {
                     edgeIds.push([peerId, id - 1]);

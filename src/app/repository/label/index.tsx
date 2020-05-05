@@ -214,7 +214,7 @@ export default class LabelRepo {
         }
         const labelItems: ILabelItem[] = [];
         msgIds.forEach((id) => {
-            if ((label.min || 0) <= id && id <= (label.max || 0)) {
+            if ((!label.min && !label.max) || ((label.min || 0) <= id && id <= (label.max || 0))) {
                 labelItems.push({
                     lid: labelId,
                     mid: id,
@@ -236,11 +236,8 @@ export default class LabelRepo {
         }
         const labelItems: any[] = [];
         msgIds.forEach((id) => {
-            if ((label.min || 0) <= id && id <= (label.max || 0)) {
-                labelItems.push({
-                    lid: labelId,
-                    mid: id,
-                });
+            if ((!label.min && !label.max) || ((label.min || 0) <= id && id <= (label.max || 0))) {
+                labelItems.push([labelId, id]);
             }
         });
         if (labelItems.length > 0) {
@@ -250,6 +247,7 @@ export default class LabelRepo {
     }
 
     private insertManyLabelItem(labelId: number, messageList: IMessage[]) {
+        window.console.log(labelId, messageList);
         if (messageList.length > 0) {
             this.db.labels.get(labelId).then((label) => {
                 if (!label) {

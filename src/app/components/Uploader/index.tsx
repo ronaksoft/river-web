@@ -11,16 +11,16 @@ import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {
-    AddRounded, CancelRounded, CheckRounded, PlayCircleFilledRounded, ConfirmationNumberRounded,
+    AddRounded, CheckRounded, PlayCircleFilledRounded, ConfirmationNumberRounded,
     InsertDriveFileRounded, MusicNoteRounded, CloseRounded, BrushRounded, CropLandscapeRounded,
+    PhotoOutlined, InsertDriveFileOutlined,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
-import TextField from '@material-ui/core/TextField/TextField';
 // @ts-ignore
 import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
-import IconButton from '@material-ui/core/IconButton/IconButton';
+import {TextField, IconButton, Tabs, Tab} from '@material-ui/core';
 import {IDimension} from '../Cropper';
 import i18n from '../../services/i18n';
 import RTLDetector from "../../services/utilities/rtl_detector";
@@ -77,6 +77,7 @@ interface IProps {
 
 interface IState {
     dialogOpen: boolean;
+    hasFile: boolean;
     isFile: boolean;
     items: IUploaderFile[];
     lastSelected: number;
@@ -101,6 +102,7 @@ class MediaPreview extends React.Component<IProps, IState> {
 
         this.state = {
             dialogOpen: false,
+            hasFile: false,
             isFile: false,
             items: [],
             lastSelected: 0,
@@ -116,11 +118,9 @@ class MediaPreview extends React.Component<IProps, IState> {
     public openDialog(items: File[], isFile?: boolean) {
         this.reset();
         const inputItems: IUploaderFile[] = items;
-        if (isFile) {
-            inputItems.forEach((item) => {
-                item.ready = true;
-            });
-        }
+        inputItems.forEach((item) => {
+            item.ready = false;
+        });
         this.setState({
             dialogOpen: true,
             isFile: isFile || false,
@@ -140,7 +140,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, selected, lastSelected, dialogOpen, loading, isFile} = this.state;
+        const {items, selected, lastSelected, dialogOpen, loading, isFile, hasFile} = this.state;
         return (
             <Dialog
                 open={dialogOpen}
@@ -161,7 +161,13 @@ class MediaPreview extends React.Component<IProps, IState> {
                         <span>{i18n.t('uploader.converting')}</span>
                     </div>}
                     <div className="uploader-header">
-                        <span className="header-title">{i18n.t('uploader.upload_media')}</span>
+                        <Tabs className="uploader-tabs" value={isFile ? 1 : 0} indicatorColor="primary"
+                              textColor="primary" onChange={this.tabChangeHandler}>
+                            <Tab icon={<PhotoOutlined/>} disabled={hasFile} classes={{selected: 'tab-selected'}}/>
+                            <Tab icon={<InsertDriveFileOutlined/>} disabled={hasFile}
+                                 classes={{selected: 'tab-selected'}}/>
+                        </Tabs>
+                        <div className="uploader-gap"/>
                         <IconButton
                             className="header-icon"
                             onClick={this.dialogCloseHandler}
@@ -178,8 +184,9 @@ class MediaPreview extends React.Component<IProps, IState> {
                         >
                             <div className="slider-attachment">
                                 {items.length > 0 && this.state.show && (
-                                    <div className={'slide' + (selected > lastSelected ? ' left' : ' right')}
-                                         onClick={this.slideClickHandler}>
+                                    <div
+                                        className={'slide' + (selected > lastSelected ? ' left' : ' right') + (isFile ? ' file-mode' : '')}
+                                        onClick={this.slideClickHandler}>
                                         {Boolean(!isFile) && <React.Fragment>
                                             {Boolean(items[selected].mediaType === 'image') && <React.Fragment>
                                                 <img ref={this.imageRefHandler} className="front"
@@ -219,7 +226,12 @@ class MediaPreview extends React.Component<IProps, IState> {
                                             )}
                                         </React.Fragment>}
                                         {Boolean(isFile && items[selected]) && <div className="file-slide">
-                                            <div className="icon">
+                                            <div className="file-container">
+                                                <div className="icon">
+                                                    {items[selected].mediaType === 'image' &&
+                                                    <img src={items[selected].preview} alt="preview"/>}
+                                                    <InsertDriveFileRounded/>
+                                                </div>
                                                 <div className="extension">
                                                     {items[selected].name}<br/>
                                                     <span className="size">
@@ -235,18 +247,21 @@ class MediaPreview extends React.Component<IProps, IState> {
                             </div>
                         </Dropzone>}
                         <div className="attachment-details-container">
-                            <TextField
-                                className={'caption-input ' + (items[selected] && items[selected].rtl ? 'rtl' : 'ltr')}
-                                label={i18n.t('uploader.write_a_caption')}
-                                fullWidth={true}
-                                multiline={true}
-                                rowsMax={2}
-                                inputProps={{
-                                    maxLength: 512,
-                                }}
-                                value={(items[selected] ? (items[selected].caption || '') : '')}
-                                onChange={this.captionChangeHandler}
-                            />
+                            <div className="caption-container">
+                                <TextField
+                                    className={'caption-input ' + (items[selected] && items[selected].rtl ? 'rtl' : 'ltr')}
+                                    label={i18n.t('uploader.write_a_caption')}
+                                    fullWidth={true}
+                                    multiline={true}
+                                    margin="dense"
+                                    rowsMax={2}
+                                    inputProps={{
+                                        maxLength: 512,
+                                    }}
+                                    value={(items[selected] ? (items[selected].caption || '') : '')}
+                                    onChange={this.captionChangeHandler}
+                                />
+                            </div>
                             <div className="attachment-action" onClick={this.doneHandler}>
                                 <CheckRounded/>
                             </div>
@@ -257,6 +272,10 @@ class MediaPreview extends React.Component<IProps, IState> {
                             autoHide={true}
                         >
                             <div className="attachment-items">
+                                <div key="add-file" className="item add-file" onClick={this.addMediaHandler}>
+                                    <AddRounded/>
+                                    <span className="text">{i18n.t('uploader.add_media')}</span>
+                                </div>
                                 {items.length > 0 && items.map((item, index) => {
                                     return (
                                         <div key={index}
@@ -288,15 +307,11 @@ class MediaPreview extends React.Component<IProps, IState> {
                                             {Boolean(!item.ready) &&
                                             <div className="item-busy"><ConfirmationNumberRounded/></div>}
                                             <div className="remove" onClick={this.removeItemHandler(index)}>
-                                                <CancelRounded/>
+                                                <CloseRounded/>
                                             </div>
                                         </div>
                                     );
                                 })}
-                                <div key="add-file" className="item add-file" onClick={this.addMediaHandler}>
-                                    <AddRounded/>
-                                    <span className="text">{i18n.t('uploader.add_media')}</span>
-                                </div>
                             </div>
                         </Scrollbars>
                     </div>
@@ -308,6 +323,13 @@ class MediaPreview extends React.Component<IProps, IState> {
     /* Dropzone ref handler */
     private dropzoneRefHandler = (ref: any) => {
         this.dropzoneRef = ref;
+    }
+
+    private tabChangeHandler = (e: any, val: number) => {
+        const {hasFile} = this.state;
+        this.setState({
+            isFile: hasFile ? true : val === 1,
+        });
     }
 
     /* On drop handler */
@@ -366,12 +388,17 @@ class MediaPreview extends React.Component<IProps, IState> {
     /* Get media metadata and preview not exist */
     private initMedias(checkFormat?: boolean) {
         const {items} = this.state;
+        let hasFile = false;
         items.map((item, index) => {
             item.mediaType = this.getTypeByMime(item.type);
             if (checkFormat) {
                 if (thumbnailReadyMIMEs.indexOf(item.type) === -1) {
+                    hasFile = true;
                     return item;
                 } else {
+                    if (item.ready) {
+                        return item;
+                    }
                     item.ready = false;
                 }
             }
@@ -392,6 +419,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             return item;
         });
         this.setState({
+            hasFile,
             items,
         });
     }
@@ -637,36 +665,45 @@ class MediaPreview extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        const config = {
-            autoRotate: true,
-            maxHeight: 1280,
-            maxWidth: 1280,
-            quality: 0.8,
-        };
-        const thumbConfig = {
-            autoRotate: true,
-            maxHeight: 160,
-            maxWidth: 160,
-            quality: 0.8,
-        };
-        const videoThumbConfig = {
-            autoRotate: true,
-            maxHeight: 360,
-            maxWidth: 360,
-            quality: 0.9,
-        };
         const promise: any[] = [];
         items.forEach((item) => {
             if (item.mediaType === 'image') {
+                const height = Math.round(item.height || 0);
+                const width = Math.round(item.width || 0);
+                const maxSize = Math.max(height, width);
+                const config = {
+                    autoRotate: true,
+                    maxHeight: Math.min(1280, maxSize),
+                    maxWidth: Math.min(1280, maxSize),
+                    quality: 0.85,
+                };
                 promise.push(readAndCompressImage(item, config));
+                const thumbConfig = {
+                    autoRotate: true,
+                    maxHeight: Math.min(160, maxSize),
+                    maxWidth: Math.min(160, maxSize),
+                    quality: 0.8,
+                };
                 promise.push(readAndCompressImage(item, thumbConfig));
             } else if (item.mediaType === 'video') {
+                const videoThumbConfig = {
+                    autoRotate: true,
+                    maxHeight: 360,
+                    maxWidth: 360,
+                    quality: 0.9,
+                };
                 promise.push(this.convertFileToBlob(item));
                 promise.push(readAndCompressImage(item.tempThumb, videoThumbConfig));
             } else if (item.mediaType === 'audio') {
                 promise.push(this.convertFileToBlob(item));
                 if (item.tempThumb) {
-                    promise.push(readAndCompressImage(new Blob([item.tempThumb], {type: item.tempThumb.type}), videoThumbConfig));
+                    const coverThumbConfig = {
+                        autoRotate: true,
+                        maxHeight: 360,
+                        maxWidth: 360,
+                        quality: 0.9,
+                    };
+                    promise.push(readAndCompressImage(new Blob([item.tempThumb], {type: item.tempThumb.type}), coverThumbConfig));
                 } else {
                     promise.push(new Promise((resolve) => {
                         resolve(item.tempThumb);

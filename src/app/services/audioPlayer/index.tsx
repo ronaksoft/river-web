@@ -191,12 +191,12 @@ export default class AudioPlayer {
                     this.musicPlaylist.push(messageId);
                     this.callUpdatePlaylistHandler();
                     if (this.musicPlaylist.length > 1) {
-                        this.musicPlaylist.sort();
+                        this.musicPlaylist.sort((a, b) => a - b);
                     }
                 } else {
                     this.voicePlaylist.push(messageId);
                     if (this.voicePlaylist.length > 1) {
-                        this.voicePlaylist.sort();
+                        this.voicePlaylist.sort((a, b) => a - b);
                     }
                 }
             } else {
@@ -410,7 +410,7 @@ export default class AudioPlayer {
             };
             this.voicePlaylist.push(messageId);
             if (this.voicePlaylist.length > 1) {
-                this.voicePlaylist.sort();
+                this.voicePlaylist.sort((a, b) => a - b);
             }
         }
         this.tracks[messageId].fnQueue[fnIndex] = fn;
@@ -658,7 +658,7 @@ export default class AudioPlayer {
             keys.forEach((i) => {
                 this.voicePlaylist.push(i);
             });
-            this.voicePlaylist.sort();
+            this.voicePlaylist.sort((a, b) => a - b);
             this.backUpTracks = {};
         }
     }

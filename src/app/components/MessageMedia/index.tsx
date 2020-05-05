@@ -363,7 +363,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     /* View downloaded document */
     public viewDocumentHandler = () => {
         const {fileState, message} = this.state;
-        if (this.mediaBigRef && (fileState === 'view' || fileState === 'open' || true)) {
+        if (this.mediaBigRef && (fileState === 'view' || fileState === 'open')) {
             this.showMediaHandler(this.mediaBigRef);
             if (!this.contentRead && this.props.onAction) {
                 this.contentRead = true;

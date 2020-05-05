@@ -178,7 +178,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 onChange={this.onFirstnameChangeHandler}
                             />}
                         </div>
-                        {edit || Boolean(user && (user.lastname || '').length > 0) &&
+                        {Boolean(edit || (user && (user.lastname || '').length > 0)) &&
                         <div className="line">
                             {!edit && Boolean(user && (user.lastname || '').length > 0) &&
                             <div className="form-control">

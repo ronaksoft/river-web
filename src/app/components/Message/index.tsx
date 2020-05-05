@@ -858,8 +858,8 @@ class Message extends React.Component<IProps, IState> {
         };
         /* Bubble click handler */
         const bubbleClickHandler = () => {
-            if (messageMedia.ref && messageMedia.ref.viewDocument) {
-                messageMedia.ref.viewDocument();
+            if (messageMedia.ref && messageMedia.ref.viewDocumentHandler) {
+                messageMedia.ref.viewDocumentHandler();
             }
         };
         const userNameLoadHandler = () => {

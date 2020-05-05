@@ -1,3 +1,7 @@
+## 0.32.24
+* New media uploader
+* Known bugs fixed
+
 ## 0.32.23
 * Document viewer updated
 * Profile viewer updated

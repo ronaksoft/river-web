@@ -30,7 +30,7 @@ import {
     UpdateUserTyping,
 } from '../messages/chat.api.updates_pb';
 import {uniq, cloneDeep} from 'lodash';
-import MessageRepo from '../../../repository/message';
+import MessageRepo, {getMediaDocument} from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';
 import {IDialog} from "../../../repository/dialog/interface";
 import {IMessage} from "../../../repository/message/interface";
@@ -45,6 +45,9 @@ import DialogRepo from "../../../repository/dialog";
 import UserRepo from "../../../repository/user";
 import GroupRepo from "../../../repository/group";
 import LabelRepo from "../../../repository/label";
+import FileRepo from "../../../repository/file";
+import CachedFileService from "../../cachedFileService";
+import {IFileMap} from "../../../repository/file/interface";
 
 const C_MAX_UPDATE_DIFF = 5000;
 const C_DIFF_AMOUNT = 100;
@@ -60,6 +63,10 @@ export interface IMessageDBUpdated {
     ids: number[];
     minIds: { [key: string]: number };
     peerIds: string[];
+}
+
+export interface IMessageIdDBUpdated {
+    peerIds: { [key: string]: number[] };
 }
 
 export interface IMessageDBRemoved {
@@ -86,6 +93,11 @@ interface IClearDialog {
     remove: boolean;
 }
 
+interface IModifyTempFile {
+    fileIds: string[];
+    message: IMessage;
+}
+
 interface ITransactionPayload {
     clearDialogs: IClearDialog[];
     dialogs: { [key: string]: IDialog };
@@ -98,6 +110,7 @@ interface ITransactionPayload {
     lastOne?: boolean;
     live: boolean;
     messages: { [key: number]: IMessage };
+    randomMessageIds: number[];
     removedMessages: { [key: string]: number[] };
     toCheckDialogIds: string[];
     updateId: number;
@@ -145,6 +158,10 @@ export default class UpdateManager {
     private userRepo: UserRepo | undefined;
     private groupRepo: GroupRepo | undefined;
     private labelRepo: LabelRepo | undefined;
+    private fileRepo: FileRepo | undefined;
+
+    // Cached File Service
+    private cachedFileService: CachedFileService | undefined;
 
     // SDK
     private apiManager: APIManager | undefined;
@@ -161,6 +178,10 @@ export default class UpdateManager {
             this.dialogRepo = DialogRepo.getInstance();
             this.messageRepo = MessageRepo.getInstance();
             this.labelRepo = LabelRepo.getInstance();
+            this.fileRepo = FileRepo.getInstance();
+
+            // Initialize cached file service
+            this.cachedFileService = CachedFileService.getInstance();
 
             // Initialize SDK
             this.apiManager = APIManager.getInstance();
@@ -462,6 +483,7 @@ export default class UpdateManager {
             lastOne: data.lastOne || false,
             live,
             messages: {},
+            randomMessageIds: [],
             removedMessages: {},
             toCheckDialogIds: [],
             updateId: data.maxupdateid || 0,
@@ -519,6 +541,10 @@ export default class UpdateManager {
                 this.callUpdateHandler(update.constructor, updateNewMessage);
                 // Add message
                 this.mergeMessage(transaction.messages, transaction.incomingIds, message);
+                // Add random message
+                if (message.senderid === this.userId) {
+                    transaction.randomMessageIds.push(updateNewMessage.senderrefid || 0);
+                }
                 // Check [deleted dialog]/[clear history]
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                     transaction.clearDialogs.push({
@@ -946,7 +972,7 @@ export default class UpdateManager {
             }
             // Message list
             if (Object.keys(transaction.messages).length > 0) {
-                promises.push(this.applyMessages(transaction.messages, transaction.editedMessageIds).then((res) => {
+                promises.push(this.applyMessages(transaction.messages, transaction.editedMessageIds, transaction.randomMessageIds).then((res) => {
                     if (!transaction.live) {
                         this.callHandlers(C_MSG.UpdateMessageDB, res);
                     }
@@ -1087,11 +1113,12 @@ export default class UpdateManager {
         }
     }
 
-    private applyMessages(messages: { [key: number]: IMessage }, editedMessageIds: number[]): Promise<IMessageDBUpdated> {
+    private applyMessages(messages: { [key: number]: IMessage }, editedMessageIds: number[], randomMessageIds: number[]): Promise<IMessageDBUpdated> {
         const messageList: IMessage[] = [];
         const keys: number[] = [];
         const peerIds: string[] = [];
         const minIdPerPeer: { [key: string]: number } = {};
+        const myMessageList: IMessage[] = [];
         Object.values(messages).forEach((message) => {
             if (!message.id) {
                 return;
@@ -1109,8 +1136,14 @@ export default class UpdateManager {
                         minIdPerPeer[message.peerid || ''] = message.id;
                     }
                 }
+                if (message.senderid === this.userId) {
+                    myMessageList.push(message);
+                }
             }
         });
+        if (myMessageList.length > 0) {
+            this.modifyPendingMessages(randomMessageIds, myMessageList);
+        }
         if (messageList.length > 0 && this.messageRepo) {
             return this.messageRepo.importBulk(messageList).then(() => {
                 return {
@@ -1128,6 +1161,106 @@ export default class UpdateManager {
                 peerIds,
             });
         }
+    }
+
+    private modifyPendingMessages(randomMessageIds: number[], messages: IMessage[]) {
+        return new Promise((resolve, reject) => {
+            const messageRepo = this.messageRepo;
+            if (!messageRepo) {
+                reject();
+                return;
+            }
+            const messageMap: { [key: number]: IMessage } = {};
+            messages.forEach((message, index) => {
+                messageMap[randomMessageIds[index] || 0] = message;
+            });
+            messageRepo.getPendingByIds(randomMessageIds).then((pendingArr) => {
+                messageRepo.removePendingByIds(randomMessageIds);
+                if (pendingArr) {
+                    const toRemoveIds: number[] = [];
+                    const toModifyTempList: IModifyTempFile[] = [];
+                    pendingArr.forEach((pending) => {
+                        if (pending.message_id < 0) {
+                            toRemoveIds.push(pending.message_id);
+                        }
+                        if (pending.file_ids && pending.file_ids.length > 0 && messageMap.hasOwnProperty(pending.id)) {
+                            toModifyTempList.push({
+                                fileIds: pending.file_ids,
+                                message: messageMap[pending.id],
+                            });
+                        }
+                    });
+                    if (toRemoveIds.length > 0) {
+                        messageRepo.removeMany(toRemoveIds);
+                    }
+                    if (toModifyTempList.length > 0) {
+                        this.modifyTempFiles(toModifyTempList);
+                    }
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    /* Modify temp chunks */
+    private modifyTempFiles(list: IModifyTempFile[]) {
+        const messageRepo = this.messageRepo;
+        const fileRepo = this.fileRepo;
+        const cachedFileService = this.cachedFileService;
+        if (!messageRepo || !fileRepo || !cachedFileService) {
+            return;
+        }
+        const persistFilePromises: any[] = [];
+        const messages: IMessage[] = [];
+        const fileMapList: IFileMap[] = [];
+        list.forEach((item) => {
+            const mediaDocument = getMediaDocument(item.message);
+            if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+                persistFilePromises.push(fileRepo.persistTempFiles(item.fileIds[0], mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream'));
+                cachedFileService.swap(item.fileIds[0], {
+                    accesshash: mediaDocument.doc.accesshash,
+                    clusterid: mediaDocument.doc.clusterid,
+                    fileid: mediaDocument.doc.id,
+                    version: 0,
+                });
+                // Check thumbnail
+                if (item.fileIds.length > 1 && mediaDocument.doc.thumbnail) {
+                    persistFilePromises.push(fileRepo.persistTempFiles(item.fileIds[1], mediaDocument.doc.thumbnail.fileid || '', 'image/jpeg'));
+                    cachedFileService.swap(item.fileIds[0], mediaDocument.doc.thumbnail);
+                }
+                item.message.downloaded = true;
+                messages.push(item.message);
+                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+                    fileMapList.push({
+                        clusterid: mediaDocument.doc.clusterid || 0,
+                        id: mediaDocument.doc.id || '',
+                        msg_ids: [item.message.id || 0],
+                    });
+                }
+            }
+        });
+        Promise.all(persistFilePromises).then(() => {
+            if (messages.length > 0) {
+                messageRepo.upsert(messages).then(() => {
+                    const data: IMessageIdDBUpdated = {
+                        peerIds: {},
+                    };
+                    messages.forEach((message) => {
+                        if (data.peerIds && data.peerIds.hasOwnProperty(message.peerid || '')) {
+                            data.peerIds[message.peerid || ''].push(message.id || 0);
+                        } else {
+                            data.peerIds[message.peerid || ''] = [message.id || 0];
+                        }
+                    });
+                    this.callHandlers(C_MSG.UpdateMessageIdDB, data);
+                });
+            }
+            if (fileMapList.length > 0) {
+                fileRepo.upsertFileMap(fileMapList);
+            }
+        });
     }
 
     private applyRemovedMessages(removedMessages: { [key: string]: number[] }): Promise<IMessageDBRemoved> {
