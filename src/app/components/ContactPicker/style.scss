@@ -60,21 +60,20 @@
       justify-content: center;
       align-items: center;
       height: 40px;
-      background-color: var(--river);
-      color: var(--white);
-      text-transform: uppercase;
+      border-bottom: 1px solid rgba(172, 176, 180, 0.2);
+      color: rgba(0, 0, 0, 0.54);
 
       .action {
         position: absolute;
         top: 0;
-        left: 0;
+        right: 0;
         height: 40px;
         width: 40px;
         margin: 0 5px;
         padding: 8px;
 
         svg {
-          color: var(--white);
+          color: rgba(0, 0, 0, 0.54);
         }
       }
     }
@@ -138,6 +137,21 @@ html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
   .contact-picker {
+    .contact-picker-paper {
+      background-color: var(--dark);
+    }
+
+    .page-content {
+      .dialog-header {
+        border-color: var(--dark-medium);
+        color: var(--light);
+
+        svg {
+          color: var(--light);
+        }
+      }
+    }
+
     .dialog-content {
       background-color: var(--dark);
 
@@ -154,6 +168,16 @@ html[theme="dark-blue"] {
 
 html[theme="dark-blue"] {
   .contact-picker {
+    .page-content {
+      .dialog-header {
+        border-color: var(--dark-blue-medium);
+      }
+    }
+
+    .contact-picker-paper {
+      background-color: var(--dark-blue-low);
+    }
+
     .dialog-content {
       background-color: var(--dark-blue-low);
 

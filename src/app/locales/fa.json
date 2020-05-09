@@ -411,7 +411,8 @@
     "map_caption": "عنوانی بنویسید (به عنوان پاسخ ارسال خواهد شد)",
     "share_location": "اشتراک نقشه",
     "edit_photo": "اصلاح تصویر",
-    "select_video_frame": "انتخاب فریم ویدئو"
+    "select_video_frame": "انتخاب فریم ویدئو",
+    "add_it": "اضافه کن"
   },
   "label": {
     "labels": "برچسب‌ها",

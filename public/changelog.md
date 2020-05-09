@@ -1,3 +1,7 @@
+## 0.32.25
+* Themes updated
+* Known bugs fixed
+
 ## 0.32.24
 * New media uploader
 * Known bugs fixed

@@ -11,9 +11,9 @@ import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {
-    AddRounded, CheckRounded, PlayCircleFilledRounded, ConfirmationNumberRounded,
+    AddRounded, PlayCircleFilledRounded, ConfirmationNumberRounded,
     InsertDriveFileRounded, MusicNoteRounded, CloseRounded, BrushRounded, CropLandscapeRounded,
-    PhotoOutlined, InsertDriveFileOutlined,
+    PhotoOutlined, InsertDriveFileOutlined, SendRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 // @ts-ignore
@@ -179,6 +179,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                         {dialogOpen && <Dropzone
                             ref={this.dropzoneRefHandler}
                             onDrop={this.dropzoneDropHandler}
+                            activeClassName="dropzone-active"
                             className="uploader-dropzone"
                             accept={isFile ? undefined : this.props.accept}
                         >
@@ -245,6 +246,9 @@ class MediaPreview extends React.Component<IProps, IState> {
                                     {i18n.tf('uploader.drop_you_param_here', isFile ? '' : 'media ')}
                                 </div>}
                             </div>
+                            <div className="dropzone-placeholder">
+                                {i18n.t('uploader.add_it')}
+                            </div>
                         </Dropzone>}
                         <div className="attachment-details-container">
                             <div className="caption-container">
@@ -263,60 +267,85 @@ class MediaPreview extends React.Component<IProps, IState> {
                                 />
                             </div>
                             <div className="attachment-action" onClick={this.doneHandler}>
-                                <CheckRounded/>
+                                <SendRounded/>
                             </div>
                         </div>
                     </div>
                     <div className="attachments-slide-container">
-                        <Scrollbars
-                            autoHide={true}
-                        >
-                            <div className="attachment-items">
-                                <div key="add-file" className="item add-file" onClick={this.addMediaHandler}>
-                                    <AddRounded/>
-                                    <span className="text">{i18n.t('uploader.add_media')}</span>
-                                </div>
-                                {items.length > 0 && items.map((item, index) => {
-                                    return (
-                                        <div key={index}
-                                             className={'item' + (selected === index ? ' selected' : '')}
-                                             onClick={this.selectMedia(index, undefined)}
-                                        >
-                                            {Boolean(!isFile && item.mediaType === 'image') &&
-                                            <div className="preview"
-                                                 style={{backgroundImage: 'url(' + item.preview + ')'}}/>}
-                                            {Boolean(!isFile && item.mediaType === 'video') && <React.Fragment>
-                                                <div className="preview"
-                                                     style={{backgroundImage: 'url(' + item.videoThumb + ')'}}/>
-                                                <div className="preview-icon">
-                                                    <PlayCircleFilledRounded/>
-                                                </div>
-                                            </React.Fragment>}
-                                            {Boolean(!isFile && item.mediaType === 'audio') && <React.Fragment>
-                                                {item.preview && <div className="preview"
-                                                                      style={{backgroundImage: 'url(' + item.preview + ')'}}/>}
-                                                <div className="preview-icon">
-                                                    <MusicNoteRounded/>
-                                                </div>
-                                            </React.Fragment>}
-                                            {Boolean(isFile) && <div className="file-preview">
-                                                <InsertDriveFileRounded/>
-                                                <span
-                                                    className="extension">{getFileExtension(item.type, item.name)}</span>
-                                            </div>}
-                                            {Boolean(!item.ready) &&
-                                            <div className="item-busy"><ConfirmationNumberRounded/></div>}
-                                            <div className="remove" onClick={this.removeItemHandler(index)}>
-                                                <CloseRounded/>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                        <div className="add-file-container">
+                            <div key="add-file" className="item add-file" onClick={this.addMediaHandler}>
+                                <AddRounded/>
+                                <span className="text">{i18n.t('uploader.add_media')}</span>
                             </div>
-                        </Scrollbars>
+                        </div>
+                        <div className="attachment-item-container">
+                            <Scrollbars
+                                autoHide={true}
+                            >
+                                <div className={'attachment-items' + (isFile ? ' file-mode' : '')}>
+                                    {items.length > 0 && items.map((item, index) => {
+                                        return (
+                                            <div key={index}
+                                                 className={'item' + (selected === index ? ' selected' : '')}
+                                                 onClick={this.selectMediaHandler(index, undefined)}
+                                            >
+                                                {this.getSlideItem(item)}
+                                                {Boolean(!item.ready) &&
+                                                <div className="item-busy"><ConfirmationNumberRounded/></div>}
+                                                <div className="remove" onClick={this.removeItemHandler(index)}>
+                                                    <CloseRounded/>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </Scrollbars>
+                        </div>
                     </div>
                 </div>
             </Dialog>
+        );
+    }
+
+    private getSlideItem(item: IUploaderFile) {
+        const {isFile} = this.state;
+        switch (item.mediaType) {
+            case 'image':
+                return (
+                    <>
+                        <div className="preview" style={{backgroundImage: 'url(' + item.preview + ')'}}/>
+                        {isFile && this.getFileItem(item)}
+                    </>
+                );
+            case 'video':
+                return (
+                    <>
+                        <div className="preview"
+                             style={{backgroundImage: 'url(' + item.videoThumb + ')'}}/>
+                        {!isFile ? <div className="preview-icon">
+                            <PlayCircleFilledRounded/>
+                        </div> : this.getFileItem(item)}
+                    </>
+                );
+            case 'audio':
+                return (<>
+                    {item.preview && <div className="preview"
+                                          style={{backgroundImage: 'url(' + item.preview + ')'}}/>}
+                    {!isFile ? <div className="preview-icon">
+                        <MusicNoteRounded/>
+                    </div> : this.getFileItem(item)}
+                </>);
+            default:
+                return this.getFileItem(item);
+
+        }
+    }
+
+    private getFileItem(item: IUploaderFile) {
+        return (<div className="file-preview">
+                <InsertDriveFileRounded/>
+                <span className="extension">{getFileExtension(item.type, item.name)}</span>
+            </div>
         );
     }
 
@@ -351,9 +380,12 @@ class MediaPreview extends React.Component<IProps, IState> {
         });
     }
 
-    /* Select media */
-    private selectMedia = (index: number, callback?: () => void) => (e: any) => {
+    /* Select media handler */
+    private selectMediaHandler = (index: number, callback?: () => void) => (e?: any) => {
         if (this.state.selected === index) {
+            if (callback) {
+                callback();
+            }
             return;
         }
         this.setState({
@@ -394,6 +426,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             if (checkFormat) {
                 if (thumbnailReadyMIMEs.indexOf(item.type) === -1) {
                     hasFile = true;
+                    item.ready = true;
                     return item;
                 } else {
                     if (item.ready) {
@@ -558,7 +591,7 @@ class MediaPreview extends React.Component<IProps, IState> {
         const {items, selected} = this.state;
         const removeItem = () => {
             items.splice(index, 1);
-            this.previewRefs[index].forEach((item) => {
+            (this.previewRefs[index] || []).forEach((item) => {
                 URL.revokeObjectURL(item);
             });
             this.previewRefs.splice(index, 1);
@@ -568,9 +601,9 @@ class MediaPreview extends React.Component<IProps, IState> {
         };
         if (selected >= index && selected > 0) {
             if (selected === index) {
-                this.selectMedia(selected - 1, () => {
+                this.selectMediaHandler(selected - 1, () => {
                     removeItem();
-                });
+                })();
             } else {
                 this.setState({
                     lastSelected: selected - 1,
@@ -614,12 +647,14 @@ class MediaPreview extends React.Component<IProps, IState> {
 
     /* Resize action area to image size */
     private setImageActionSize() {
+        const isVideo = this.state.items[this.state.selected] && this.state.items[this.state.selected].mediaType === 'video';
         setTimeout(() => {
             if (this.imageRef && this.imageActionRef) {
-                this.imageActionRef.style.height = `${this.imageRef.clientHeight}px`;
+                this.imageActionRef.style.height = `${this.imageRef.clientHeight - (isVideo ? 96 : 0)}px`;
                 this.imageActionRef.style.width = `${this.imageRef.clientWidth}px`;
+                this.imageActionRef.style.marginTop = `${isVideo ? -48 : 0}px`;
             }
-        }, (this.state.items[this.state.selected] && this.state.items[this.state.selected].mediaType === 'video') ? 1000 : 50);
+        }, isVideo ? 1000 : 50);
     }
 
     /* Get type by mime */
