@@ -10,15 +10,15 @@
 .map-picker-dialog {
   .map-picker-dialog-paper {
     line-height: 0;
-    max-width: 480px;
+    max-width: 470px;
     background: transparent;
     overflow: hidden;
   }
 
   .map-picker-container {
     position: relative;
-    height: 560px;
-    width: 480px;
+    height: 470px;
+    width: 510px;
     background: var(--white);
 
     .map-picker-loader {

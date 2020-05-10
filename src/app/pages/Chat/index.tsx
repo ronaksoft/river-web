@@ -4117,6 +4117,14 @@ class Chat extends React.Component<IProps, IState> {
             replyTo = param.message.id;
         }
 
+        if (mediaItem.entities && mediaItem.entities.length > 0) {
+            message.entitiesList = mediaItem.entities.map((entity: core_types_pb.MessageEntity) => {
+                return entity.toObject();
+            });
+            mediaDocument.setEntitiesList(mediaItem.entities);
+
+        }
+
         this.pushMessage(message);
 
         const sendDocument = (sha256FileLocation: FileLocation.AsObject | null) => {
@@ -4130,12 +4138,18 @@ class Chat extends React.Component<IProps, IState> {
                 inputDocument.setClusterid(sha256FileLocation.clusterid || 0);
                 inputDocument.setId(sha256FileLocation.fileid || '0');
                 inputMediaDocument.setDocument(inputDocument);
+                if (mediaItem.entities) {
+                    inputMediaDocument.setEntitiesList(mediaItem.entities);
+                }
             } else {
                 inputMediaUploadedDocument.setCaption(mediaItem.caption || '');
                 inputMediaUploadedDocument.setMimetype(mediaItem.fileType);
                 inputMediaUploadedDocument.setStickersList([]);
                 inputMediaUploadedDocument.setAttributesList(attributesList);
                 inputMediaUploadedDocument.setFile(inputFile);
+                if (mediaItem.entities) {
+                    inputMediaUploadedDocument.setEntitiesList(mediaItem.entities);
+                }
             }
 
             if (mediaItem.thumb) {

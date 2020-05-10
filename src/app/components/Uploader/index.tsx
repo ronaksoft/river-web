@@ -20,7 +20,7 @@ import Scrollbars from 'react-custom-scrollbars';
 import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
-import {TextField, IconButton, Tabs, Tab} from '@material-ui/core';
+import {IconButton, Tabs, Tab} from '@material-ui/core';
 import {IDimension} from '../Cropper';
 import i18n from '../../services/i18n';
 import RTLDetector from "../../services/utilities/rtl_detector";
@@ -28,8 +28,12 @@ import {throttle} from 'lodash';
 import ImageEditor from "../ImageEditor";
 import VideoFrameSelector from "../VideoFrameSelector";
 import {getCodec} from "../StreamVideo/helper";
+import {InputPeer, MessageEntity} from "../../services/sdk/messages/chat.core.types_pb";
+import MentionInput, {IMention} from "../MentionInput";
+import {measureNodeHeight} from "../ChatInput/measureHeight";
 
 import './style.scss';
+import {generateEntities} from "../ChatInput";
 
 const thumbnailReadyMIMEs = 'image/png,image/jpeg,image/jpg,image/gif,image/webp,video/webm,video/mp4,audio/mp4,audio/ogg,audio/mp3'.split(',');
 
@@ -44,6 +48,7 @@ export interface IMediaItem {
     album?: string;
     caption?: string;
     duration?: number;
+    entities?: MessageEntity[] | null;
     file: Blob;
     fileType: string;
     mediaType: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none';
@@ -60,11 +65,13 @@ export interface IUploaderFile extends FileWithPreview {
     duration?: number;
     height?: number;
     mediaType?: 'image' | 'video' | 'audio' | 'none';
+    mentionList?: IMention[];
     mimeType?: string;
     performer?: string;
     ready?: boolean;
     rtl?: boolean;
     tempThumb?: File;
+    textarea?: string;
     title?: string;
     videoThumb?: string;
     width?: number;
@@ -73,6 +80,7 @@ export interface IUploaderFile extends FileWithPreview {
 interface IProps {
     accept: string;
     onDone: (items: IMediaItem[]) => void;
+    peer: InputPeer | null;
 }
 
 interface IState {
@@ -82,9 +90,22 @@ interface IState {
     items: IUploaderFile[];
     lastSelected: number;
     loading: boolean;
+    targetPeer?: InputPeer | null;
     selected: number;
     show: boolean;
 }
+
+const mentionInputStyle = {
+    input: {
+        border: 'none',
+        bottom: 'auto',
+        lineHeight: '1.2em',
+        minHeight: '20px',
+        outline: 'none',
+        padding: 0,
+        position: 'relative',
+    },
+};
 
 class MediaPreview extends React.Component<IProps, IState> {
     private dropzoneRef: Dropzone | undefined;
@@ -96,6 +117,9 @@ class MediaPreview extends React.Component<IProps, IState> {
     private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
     private rtlDetector: RTLDetector;
     private readonly rtlDetectorThrottle: any;
+    private mentionContainer: any = null;
+    // @ts-ignore
+    private textarea: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -109,13 +133,14 @@ class MediaPreview extends React.Component<IProps, IState> {
             loading: false,
             selected: 0,
             show: true,
+            targetPeer: null,
         };
 
         this.rtlDetector = RTLDetector.getInstance();
         this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
     }
 
-    public openDialog(items: File[], isFile?: boolean) {
+    public openDialog(items: File[], isFile?: boolean, targetPeer?: InputPeer) {
         this.reset();
         const inputItems: IUploaderFile[] = items;
         inputItems.forEach((item) => {
@@ -125,6 +150,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             dialogOpen: true,
             isFile: isFile || false,
             items: inputItems,
+            targetPeer,
         }, () => {
             if (!isFile) {
                 this.initMedias();
@@ -251,20 +277,25 @@ class MediaPreview extends React.Component<IProps, IState> {
                             </div>
                         </Dropzone>}
                         <div className="attachment-details-container">
-                            <div className="caption-container">
-                                <TextField
-                                    className={'caption-input ' + (items[selected] && items[selected].rtl ? 'rtl' : 'ltr')}
-                                    label={i18n.t('uploader.write_a_caption')}
-                                    fullWidth={true}
-                                    multiline={true}
-                                    margin="dense"
-                                    rowsMax={2}
-                                    inputProps={{
-                                        maxLength: 512,
-                                    }}
-                                    value={(items[selected] ? (items[selected].caption || '') : '')}
-                                    onChange={this.captionChangeHandler}
-                                />
+                            <div
+                                className="caption-container">
+                                <div className="suggestion-list-container-zero">
+                                    <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
+                                </div>
+                                <div
+                                    className={'caption-input-container ' + (items[selected] && items[selected].rtl ? 'rtl' : 'ltr')}>
+                                    <MentionInput
+                                        peer={this.state.targetPeer || this.props.peer}
+                                        isBot={false}
+                                        className="mention"
+                                        style={mentionInputStyle}
+                                        inputRef={this.textareaRefHandler}
+                                        suggestionsPortalHost={this.mentionContainer}
+                                        value={(items[selected] ? (items[selected].textarea || '') : '')}
+                                        onChange={this.captionChangeHandler}
+                                        placeholder={i18n.t('uploader.write_a_caption')}
+                                    />
+                                </div>
                             </div>
                             <div className="attachment-action" onClick={this.doneHandler}>
                                 <SendRounded/>
@@ -305,6 +336,14 @@ class MediaPreview extends React.Component<IProps, IState> {
                 </div>
             </Dialog>
         );
+    }
+
+    private mentionContainerRefHandler = (ref: any) => {
+        this.mentionContainer = ref;
+    }
+
+    private textareaRefHandler = (ref: any) => {
+        this.textarea = ref;
     }
 
     private getSlideItem(item: IUploaderFile) {
@@ -414,6 +453,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             loading: false,
             selected: 0,
             show: true,
+            targetPeer: undefined,
         });
     }
 
@@ -618,11 +658,14 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     /* Caption change handler */
-    private captionChangeHandler = (e: any) => {
+    private captionChangeHandler = (e: any, a: any, b: any, mentions: IMention[]) => {
         const {items, selected} = this.state;
         if (items[selected]) {
-            const text = e.currentTarget.value;
-            items[selected].caption = text;
+            const text = e.target.value;
+            items[selected].textarea = text;
+            items[selected].mentionList = mentions;
+            items[selected].caption = (this.textarea ? this.textarea.value : '');
+            this.computeLines();
             this.rtlDetectorThrottle(text);
             this.setState({
                 items,
@@ -754,10 +797,12 @@ class MediaPreview extends React.Component<IProps, IState> {
         Promise.all(promise).then((dist) => {
             const output: IMediaItem[] = [];
             for (let i = 0; i < items.length; i++) {
+                const {entities, text} = generateEntities(items[i].caption || '', items[i].mentionList || []);
                 output.push({
                     album: items[i].album,
-                    caption: items[i].caption || '',
+                    caption: text,
                     duration: items[i].duration ? Math.round(items[i].duration || 0) : undefined,
+                    entities,
                     file: dist[i * 2],
                     fileType: items[i].mimeType || items[i].type,
                     mediaType: isFile ? 'file' : (items[i].mediaType || 'none'),
@@ -856,6 +901,21 @@ class MediaPreview extends React.Component<IProps, IState> {
         this.setState({
             items,
         });
+    }
+
+    private computeLines() {
+        if (!this.textarea) {
+            return;
+        }
+        let lines = 1;
+        const nodeInfo = measureNodeHeight(this.textarea, 234243, false, 1, 40);
+        if (nodeInfo) {
+            lines = nodeInfo.rowCount;
+        } else {
+            lines = this.textarea.value.split('\n').length;
+        }
+        lines++;
+        this.textarea.style.height = `${lines * 1.2}em`;
     }
 }
 

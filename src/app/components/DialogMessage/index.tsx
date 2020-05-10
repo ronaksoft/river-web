@@ -106,7 +106,9 @@ class DialogMessage extends React.Component<IProps, IState> {
             <Link className="dialog-a" onClick={this.props.onClick}
                   to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
                 <div
-                    className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
+                    className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}
+                    onDragEnter={this.dragEnterHandler} onDragLeave={this.dragLeaveHandler}
+                >
                     <div
                         className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
                         {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
@@ -319,6 +321,15 @@ class DialogMessage extends React.Component<IProps, IState> {
                 isBot: user.isbot || false,
             });
         }
+    }
+
+    private dragEnterHandler = (e: any) => {
+        // e.currentTarget.style.cursor = 'copy';
+    }
+
+    private dragLeaveHandler = (e: any) => {
+        // e.currentTarget.style.cursor = 'default';
+        // e.dataTransfer.dropEffect = "copy";
     }
 }
 

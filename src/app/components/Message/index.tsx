@@ -47,7 +47,7 @@ import animateScrollTo from "animated-scroll-to";
 import Landscape from "../SVG";
 import MessageBot from "../MessageBot";
 import {ThemeChanged} from "../SettingsMenu";
-import {EventMouseUp} from "../../services/events";
+import {EventBlur, EventMouseUp} from "../../services/events";
 import CodeViewer from "../CodeViewer";
 import {spanMessageEntities} from "../../services/utilities/entity";
 import ResizeObserver from "resize-observer-polyfill";
@@ -366,6 +366,7 @@ class Message extends React.Component<IProps, IState> {
         }
         this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
         window.addEventListener(EventMouseUp, this.dragLeaveHandler, true);
+        window.addEventListener(EventBlur, this.dragLeaveHandler, true);
         this.getContainerSize();
     }
 
@@ -455,6 +456,7 @@ class Message extends React.Component<IProps, IState> {
             }
         });
         window.removeEventListener(EventMouseUp, this.dragLeaveHandler, true);
+        window.addEventListener(EventBlur, this.dragLeaveHandler, true);
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
         }
@@ -614,8 +616,8 @@ class Message extends React.Component<IProps, IState> {
             <div className="main-messages">
                 <div
                     className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
-                    onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
                     style={{height: `${containerSize.height}px`, width: `${containerSize.width}px`}}
+                    onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
                 >
                     <KKWindow
                         ref={this.refHandler}

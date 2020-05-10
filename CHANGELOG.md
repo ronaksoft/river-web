@@ -1,3 +1,6 @@
+## 0.32.26
+* Mention added in media uploader
+
 ## 0.32.25
 * Themes updated
 * Known bugs fixed 

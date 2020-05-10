@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {Picker as EmojiPicker} from 'emoji-mart';
-import {cloneDeep, sortBy, throttle, range, uniqBy} from 'lodash';
+import {cloneDeep, throttle, range} from 'lodash';
 import {
     AttachFileRounded,
     ClearRounded,
@@ -36,7 +36,6 @@ import {PopoverPosition} from '@material-ui/core/Popover';
 import {
     DraftMessage,
     GroupFlags,
-    GroupParticipant,
     InputPeer,
     InputUser,
     MessageEntity,
@@ -45,12 +44,9 @@ import {
     TypingAction,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
-// @ts-ignore
-import {Mention, MentionsInput} from 'react-mentions';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import APIManager from '../../services/sdk';
 import {IUser} from '../../repository/user/interface';
-import {IGroup} from '../../repository/group/interface';
 import DialogRepo from '../../repository/dialog';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
@@ -80,29 +76,10 @@ import BotLayout from "../BotLayout";
 import Scrollbars from "react-custom-scrollbars";
 import {ThemeChanged} from "../SettingsMenu";
 import {EventKeyUp, EventMouseUp, EventPaste, EventResize} from "../../services/events";
+import MentionInput, {IMention, mentionize} from "../MentionInput";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
-
-const limit = 9;
-const emojiKey = 'emoji-mart.frequently';
-
-// @[@yasaman](580637822969180) hi
-const mentionize = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
-    sortedEntities.sort((i1, i2) => {
-        if (i1.offset === undefined || i2.offset === undefined) {
-            return 0;
-        }
-        return i2.offset - i1.offset;
-    });
-    const fn = (t1: string, t2: string, s: number, e: number) => {
-        return t1.substr(0, s) + t2 + t1.substr(s + e, t1.length);
-    };
-    sortedEntities.forEach((en) => {
-        text = fn(text, `@[${text.substr(en.offset, en.length)}](${en.val})`, en.offset, en.length);
-    });
-    return text;
-};
 
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
@@ -119,6 +96,99 @@ const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, leng
     });
     return text;
 };
+
+/* Generate entities for message */
+export const generateEntities = (text: string, mentions: IMention[]): { entities: MessageEntity[] | null, text: string } => {
+    if (text === '') {
+        return {entities: null, text: ''};
+    }
+    const entities: MessageEntity[] = [];
+    if (mentions.length > 0) {
+        mentions.filter((m) => {
+            return m.id.indexOf(':') === -1 && m.id.indexOf('/') === -1;
+        }).forEach((mention) => {
+            const entity = new MessageEntity();
+            entity.setOffset(mention.plainTextIndex);
+            entity.setLength(mention.display.length);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
+            entity.setUserid(mention.id);
+            entities.push(entity);
+        });
+        mentions.filter((c) => {
+            return c.id.indexOf('/') === 0;
+        }).forEach((command) => {
+            const entity = new MessageEntity();
+            entity.setOffset(command.plainTextIndex);
+            entity.setLength(command.display.length);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
+            entities.push(entity);
+        });
+    }
+    // Code extractor
+    const removeRange = (str: string, from: number, len: number) => {
+        return str.substring(0, from) + str.substring(from + len);
+    };
+    const codeResult: any[] = [];
+    const codeReg = XRegExp('```([\\s\\S]*?)```');
+    XRegExp.forEach(text, codeReg, (match, index) => {
+        const start = match.index - (6 * index);
+        const len = match[1].length;
+        text = removeRange(text, start, 3);
+        text = removeRange(text, start + len, 3);
+        const entity = new MessageEntity();
+        entity.setOffset(start);
+        entity.setLength(len);
+        entity.setType(MessageEntityType.MESSAGEENTITYTYPECODE);
+        entity.setUserid('');
+        entities.push(entity);
+        codeResult.push({
+            len,
+            start,
+        });
+    });
+    // Make sure code stays un touched
+    const underlineRange = (str: string, from: number, len: number) => {
+        return str.substring(0, from) + range(len).map(o => '_') + str.substring(from + len);
+    };
+    let underlineText = text;
+    if (codeResult.length > 0) {
+        codeResult.forEach((r) => {
+            underlineText = underlineRange(underlineText, r.start, r.len);
+        });
+    }
+    XRegExp.forEach(underlineText, /\bhttps?:\/\/\S+/, (match) => {
+        const entity = new MessageEntity();
+        entity.setOffset(match.index);
+        entity.setLength(match[0].length);
+        entity.setType(MessageEntityType.MESSAGEENTITYTYPEURL);
+        entity.setUserid('');
+        entities.push(entity);
+    });
+    const hashTagReg = XRegExp('#[\\p{L}_]+');
+    XRegExp.forEach(underlineText, hashTagReg, (match) => {
+        const entity = new MessageEntity();
+        entity.setOffset(match.index);
+        entity.setLength(match[0].length);
+        entity.setType(MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
+        entity.setUserid('');
+        entities.push(entity);
+    });
+    // const fn = (f: number, l: number, e: any) => {
+    //     const entity = new MessageEntity();
+    //     entity.setOffset(f);
+    //     entity.setLength(l);
+    //     entity.setType(e);
+    //     entity.setUserid('');
+    //     entities.push(entity);
+    // };
+    //
+    // fn(5, 7, MessageEntityType.MESSAGEENTITYTYPEBOLD);
+    // fn(6, 10, MessageEntityType.MESSAGEENTITYTYPEITALIC);
+    // fn(7, 3, MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
+    // fn(10, 5, MessageEntityType.MESSAGEENTITYTYPEEMAIL);
+    //  text = "hi this is kk and nice to meet you";
+    return {entities, text};
+}
 
 interface IProps {
     getDialog: (id: string) => IDialog | null;
@@ -160,15 +230,7 @@ interface IState {
     voiceMode: 'lock' | 'down' | 'up' | 'play';
 }
 
-interface IMentions {
-    display: string;
-    id: string;
-    index: number;
-    plainTextIndex: number;
-    type?: string;
-}
-
-const defaultMentionInputStyle = {
+const mentionInputStyle = {
     input: {
         border: 'none',
         height: '20px',
@@ -204,7 +266,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private messageRepo: MessageRepo;
     private lastLines: number = 1;
     private apiManager: APIManager;
-    private mentions: IMentions[] = [];
+    private mentions: IMention[] = [];
     private lastMentionsCount: number = 0;
     private inputsRef: any = null;
     private waveRef: any = null;
@@ -590,7 +652,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                            onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
                     <MediaPreview ref={this.mediaPreviewRefHandler} accept={this.getFileType()}
-                                  onDone={this.mediaPreviewDoneHandler}/>
+                                  onDone={this.mediaPreviewDoneHandler} peer={this.state.peer}/>
                     <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}/>
                     <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
                     {(!selectable && previewMessage) &&
@@ -629,42 +691,20 @@ class ChatInput extends React.Component<IProps, IState> {
                             </div>
                             <div className={'input' + (this.state.rtl ? ' rtl' : ' ltr') + (isBot ? ' is-bot' : '')}>
                                 <div className="textarea-container">
-                                    <MentionsInput value={textareaValue}
-                                                   onChange={this.handleChange}
-                                                   inputRef={this.textareaRefHandler}
-                                                   onKeyUp={this.inputKeyUpHandler}
-                                                   onKeyDown={this.inputKeyDownHandler}
-                                                   allowSpaceInQuery={true}
-                                                   className="mention"
-                                                   placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
-                                                   style={defaultMentionInputStyle}
-                                                   suggestionsPortalHost={this.mentionContainer}
-                                                   spellCheck={true}
-                                                   onFocus={this.props.onFocus}
-                                    >
-                                        <Mention
-                                            trigger="@"
-                                            type="mention"
-                                            data={this.searchMentionHandler}
-                                            className="mention-item"
-                                            renderSuggestion={this.renderMentionSuggestion}
-                                        />
-                                        <Mention
-                                            trigger=":"
-                                            type="emoji"
-                                            data={this.searchEmojiHandler}
-                                            renderSuggestion={this.renderEmojiSuggestion}
-                                            style={{border: 'none'}}
-                                            onAdd={this.emojiAddHandler}
-                                        />
-                                        <Mention
-                                            trigger="/"
-                                            type="emoji"
-                                            data={this.searchBotCommandHandler}
-                                            renderSuggestion={this.renderBotCommandSuggestion}
-                                            style={{border: 'none'}}
-                                        />
-                                    </MentionsInput>
+                                    <MentionInput
+                                        peer={this.state.peer}
+                                        isBot={isBot || false}
+                                        value={textareaValue}
+                                        onChange={this.textInputChangeHandler}
+                                        inputRef={this.textareaRefHandler}
+                                        onKeyUp={this.inputKeyUpHandler}
+                                        onKeyDown={this.inputKeyDownHandler}
+                                        className="mention"
+                                        placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
+                                        style={mentionInputStyle}
+                                        suggestionsPortalHost={this.mentionContainer}
+                                        onFocus={this.props.onFocus}
+                                    />
                                 </div>
                                 <div className={'emoji-wrapper' + (isBot ? ' is-bot' : '')}>
                                     {isBot && <span className="icon" onClick={this.toggleBotKeyboardHandler}>
@@ -830,7 +870,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private submitMessage = () => {
         const {previewMessage, previewMessageMode} = this.state;
         if (this.props.onMessage) {
-            const {entities, text} = this.generateEntities();
+            const {entities, text} = generateEntities(this.textarea ? this.textarea.value : '', this.mentions);
             if (previewMessageMode === C_MSG_MODE.Normal) {
                 this.removeDraft(true).finally(() => {
                     this.props.onMessage(text, {
@@ -876,7 +916,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     return;
                 }
                 if (this.props.onMessage) {
-                    const {entities, text} = this.generateEntities();
+                    const {entities, text} = generateEntities(this.textarea ? this.textarea.value : '', this.mentions);
                     if (previewMessageMode === C_MSG_MODE.Normal) {
                         this.removeDraft(true).finally(() => {
                             this.props.onMessage(text, {
@@ -1111,7 +1151,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     /* Textarea change handler */
-    private handleChange = (value: any, a: any, b: any, mentions: IMentions[]) => {
+    private textInputChangeHandler = (e: any, a: any, b: any, mentions: IMention[]) => {
         if (this.mentions.length !== mentions.length) {
             clearTimeout(this.preventMessageSendTimeout);
             this.preventMessageSend = true;
@@ -1121,7 +1161,7 @@ class ChatInput extends React.Component<IProps, IState> {
         }
         this.mentions = mentions;
         this.setState({
-            textareaValue: value.target.value,
+            textareaValue: e.target.value,
         }, () => {
             this.computeLines();
         });
@@ -1159,192 +1199,6 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.setInputMode('text');
             }
         }
-    }
-
-    /* Search mention in group */
-    private searchMentionHandler = (keyword: string, callback: any) => {
-        const {peer} = this.state;
-        if (!peer) {
-            callback([]);
-            return;
-        }
-        if (peer.getType() !== PeerType.PEERGROUP) {
-            callback([]);
-            return;
-        }
-        // Search engine
-        const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
-            const users: any[] = [];
-            const reg = new RegExp(word, "i");
-            const userId = this.apiManager.getConnInfo().UserID;
-            let exactMatchIndex: number = -1;
-            for (const [i, participant] of participants.entries()) {
-                if (userId !== participant.userid &&
-                    (reg.test(`${participant.firstname} ${participant.lastname}`) ||
-                        (participant.username && reg.test(participant.username)))) {
-                    users.push({
-                        display: participant.username ? `@${participant.username}` : `${participant.firstname} ${participant.lastname}`,
-                        id: participant.userid,
-                        index: i,
-                        username: participant.username,
-                    });
-                    if (word === participant.username) {
-                        exactMatchIndex = users.length - 1;
-                    }
-                }
-                if (users.length >= 32) {
-                    break;
-                }
-            }
-            if (users.length > 1 && exactMatchIndex > 0) {
-                const hold = users[exactMatchIndex];
-                users[exactMatchIndex] = users[0];
-                users[0] = hold;
-            }
-            callback(uniqBy(users, 'id'));
-        };
-        // Get from server if participants were not in group
-        const getRemoteGroupFull = () => {
-            this.apiManager.groupGetFull(peer).then((res) => {
-                const group: IGroup = res.group;
-                group.participantList = uniqBy(group.participantList, 'userid');
-                group.photogalleryList = res.photogalleryList;
-                group.hasUpdate = false;
-                if (res && res.participantsList) {
-                    searchParticipant(keyword, res.participantsList);
-                }
-                this.groupRepo.importBulk([group]);
-                const contacts: IUser[] = [];
-                res.participantsList.forEach((list) => {
-                    contacts.push({
-                        accesshash: list.accesshash,
-                        firstname: list.firstname,
-                        id: list.userid,
-                        lastname: list.lastname,
-                        username: list.username,
-                    });
-                });
-                this.userRepo.importBulk(false, contacts);
-            }).catch(() => {
-                callback([]);
-            });
-        };
-        this.groupRepo.get(peer.getId() || '').then((group) => {
-            if (group && group.participantList && !group.hasUpdate) {
-                searchParticipant(keyword, group.participantList);
-            } else {
-                getRemoteGroupFull();
-            }
-        }).catch(() => {
-            getRemoteGroupFull();
-        });
-    }
-
-    /* Mention suggestion renderer */
-    private renderMentionSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
-        return (<div className={'inner ' + (focused ? 'focused' : '')}>
-            <div className="avatar">
-                <UserAvatar id={a.id} noDetail={true}/>
-            </div>
-            <div className="info">
-                <UserName id={a.id} className="name" unsafe={true} noDetail={true} noIcon={true}/>
-                {Boolean(a.username) && <span className="username">{a.username}</span>}
-            </div>
-        </div>);
-    }
-
-    /* Generate entities for message */
-    private generateEntities(): { entities: MessageEntity[] | null, text: string } {
-        if (!this.textarea) {
-            return {entities: null, text: ''};
-        }
-        let text = this.textarea.value;
-        const entities: MessageEntity[] = [];
-        if (this.mentions.length > 0) {
-            this.mentions.filter((m) => {
-                return m.id.indexOf(':') === -1 && m.id.indexOf('/') === -1;
-            }).forEach((mention) => {
-                const entity = new MessageEntity();
-                entity.setOffset(mention.plainTextIndex);
-                entity.setLength(mention.display.length);
-                entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
-                entity.setUserid(mention.id);
-                entities.push(entity);
-            });
-            this.mentions.filter((c) => {
-                return c.id.indexOf('/') === 0;
-            }).forEach((command) => {
-                const entity = new MessageEntity();
-                entity.setOffset(command.plainTextIndex);
-                entity.setLength(command.display.length);
-                entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
-                entities.push(entity);
-            });
-        }
-        // Code extractor
-        const removeRange = (str: string, from: number, len: number) => {
-            return str.substring(0, from) + str.substring(from + len);
-        };
-        const codeResult: any[] = [];
-        const codeReg = XRegExp('```([\\s\\S]*?)```');
-        XRegExp.forEach(text, codeReg, (match, index) => {
-            const start = match.index - (6 * index);
-            const len = match[1].length;
-            text = removeRange(text, start, 3);
-            text = removeRange(text, start + len, 3);
-            const entity = new MessageEntity();
-            entity.setOffset(start);
-            entity.setLength(len);
-            entity.setType(MessageEntityType.MESSAGEENTITYTYPECODE);
-            entity.setUserid('');
-            entities.push(entity);
-            codeResult.push({
-                len,
-                start,
-            });
-        });
-        // Make sure code stays un touched
-        const underlineRange = (str: string, from: number, len: number) => {
-            return str.substring(0, from) + range(len).map(o => '_') + str.substring(from + len);
-        };
-        let underlineText = text;
-        if (codeResult.length > 0) {
-            codeResult.forEach((r) => {
-                underlineText = underlineRange(underlineText, r.start, r.len);
-            });
-        }
-        XRegExp.forEach(underlineText, /\bhttps?:\/\/\S+/, (match) => {
-            const entity = new MessageEntity();
-            entity.setOffset(match.index);
-            entity.setLength(match[0].length);
-            entity.setType(MessageEntityType.MESSAGEENTITYTYPEURL);
-            entity.setUserid('');
-            entities.push(entity);
-        });
-        const hashTagReg = XRegExp('#[\\p{L}_]+');
-        XRegExp.forEach(underlineText, hashTagReg, (match) => {
-            const entity = new MessageEntity();
-            entity.setOffset(match.index);
-            entity.setLength(match[0].length);
-            entity.setType(MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
-            entity.setUserid('');
-            entities.push(entity);
-        });
-        // const fn = (f: number, l: number, e: any) => {
-        //     const entity = new MessageEntity();
-        //     entity.setOffset(f);
-        //     entity.setLength(l);
-        //     entity.setType(e);
-        //     entity.setUserid('');
-        //     entities.push(entity);
-        // };
-        //
-        // fn(5, 7, MessageEntityType.MESSAGEENTITYTYPEBOLD);
-        // fn(6, 10, MessageEntityType.MESSAGEENTITYTYPEITALIC);
-        // fn(7, 3, MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
-        // fn(10, 5, MessageEntityType.MESSAGEENTITYTYPEEMAIL);
-        //  text = "hi this is kk and nice to meet you";
-        return {entities, text};
     }
 
     /* Checks draft for save and restore */
@@ -2078,133 +1932,6 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.props.onVoiceStateChange) {
             this.props.onVoiceStateChange(this.state.voiceMode);
         }
-    }
-
-    /* Search emoji */
-    private searchEmojiHandler = (keyword: string, callback: any) => {
-        const emojis: any[] = [];
-        keyword = keyword.toLowerCase();
-        if (keyword && keyword !== '') {
-            for (let i = 0; i < emojiList.length && emojis.length < limit; i++) {
-                if (emojiList[i] && emojiList[i].n.indexOf(keyword) > -1) {
-                    emojis.push({
-                        display: emojiList[i].d,
-                        id: `:${emojiList[i].n}`,
-                        index: i,
-                    });
-                }
-            }
-        } else {
-            const freq = localStorage.getItem(emojiKey);
-            if (freq) {
-                const freqData = JSON.parse(freq);
-                let freqList: Array<{ cnt: number, val: string }> = [];
-                Object.keys(freqData).forEach((key) => {
-                    freqList.push({
-                        cnt: freqData[key],
-                        val: key,
-                    });
-                });
-                freqList = sortBy(freqList, 'cnt').reverse();
-                for (let i = 0; i < freqList.length && emojis.length < limit; i++) {
-                    const emoji = this.emojiMap[freqList[i].val];
-                    if (emoji) {
-                        emojis.push({
-                            display: emojiList[emoji].d,
-                            id: `:${emojiList[emoji].n}`,
-                            index: i,
-                        });
-                    }
-                }
-            }
-            for (let i = 0; i < limit && emojis.length < limit; i++) {
-                emojis.push({
-                    display: emojiList[i].d,
-                    id: `:${emojiList[i].n}`,
-                    index: i,
-                });
-            }
-        }
-        callback(emojis);
-    }
-
-    /* Emoji suggestion renderer */
-    private renderEmojiSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
-        return (<div className={'inner ' + (focused ? 'focused' : '')}>
-            <div className="emoji-display">{a.display}</div>
-            <div className="info">
-                <div className="name">{a.id}</div>
-            </div>
-        </div>);
-    }
-
-    /* Inline emoji add handler */
-    private emojiAddHandler = (d: string) => {
-        d = d.substr(1);
-        const freq = localStorage.getItem(emojiKey);
-        if (freq) {
-            const freqData = JSON.parse(freq);
-            if (freqData.hasOwnProperty(d)) {
-                freqData[d]++;
-            } else {
-                freqData[d] = 1;
-            }
-            localStorage.setItem(emojiKey, JSON.stringify(freqData));
-        } else {
-            const item: any = {};
-            item[d] = 1;
-            localStorage.setItem(emojiKey, JSON.stringify(item));
-        }
-    }
-
-    /* Search bot command */
-    private searchBotCommandHandler = (keyword: string, callback: any) => {
-        const {isBot, user} = this.state;
-        if (!isBot || !user) {
-            callback([]);
-            return;
-        }
-        const fn = (u: IUser) => {
-            if (u && u.botinfo && u.botinfo.botcommandsList.length > 0) {
-                const reg = new RegExp(keyword, "i");
-                callback(u.botinfo.botcommandsList.filter(o => {
-                    return reg.test(o.command || '');
-                }).map((c, i) => {
-                    const command = (c.command || '').indexOf('/') === 0 ? (c.command || '') : `/${(c.command || '')}`;
-                    return {
-                        desc: c.description,
-                        display: command,
-                        id: command,
-                        index: i,
-                        listDisplay: command.substr(1)
-                    };
-                }));
-            } else {
-                callback([]);
-            }
-        };
-        if (user && user.botinfo) {
-            fn(user);
-        } else {
-            this.userRepo.getFull(user.id || '', undefined, undefined, true).then((res) => {
-                fn(res);
-            });
-        }
-        return;
-    }
-
-    /* Bot command suggestion renderer */
-    private renderBotCommandSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
-        return (<div className={'inner ' + (focused ? 'focused' : '')}>
-            <div className="bot-command-display">
-                <div className="command-container">
-                    <span className="command">/</span><span className="command-name">{a.listDisplay}</span>
-                </div>
-            </div>
-            <div className="info">
-                <div className="name">{a.desc}</div>
-            </div>
-        </div>);
     }
 
     /* Window paste handler */

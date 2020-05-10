@@ -336,13 +336,111 @@
           flex: 1;
           padding: 0;
 
-          .caption-input {
-            margin: 0;
+          .suggestion-list-container-zero {
+            position: relative;
+            height: 0;
+
+            .suggestion-list-container {
+              position: absolute;
+              transition: height 0.1s;
+              z-index: 1000;
+              background-color: #F5F5F5;
+              line-height: 0.7em;
+              bottom: 8px;
+              left: 0;
+              right: 0;
+              border-radius: 4px 4px 0 0;
+              box-shadow: 0px -0.5px 4px rgba(0, 0, 0, 0.25);
+
+              .mention__suggestions {
+                position: static !important;
+                background-color: transparent !important;
+                top: auto !important;
+                left: auto !important;
+                overflow: hidden;
+                margin-top: 8px !important;
+
+                .mention__suggestions__list {
+                  white-space: nowrap;
+                  text-align: left;
+                  max-height: 182px;
+                  overflow-y: auto;
+
+                  .mention__suggestions__item {
+                    font-size: 12px;
+                    direction: ltr;
+
+                    .inner {
+                      display: flex;
+                      flex-direction: row;
+                      padding: 3px 8px;
+
+                      &.focused {
+                        background-color: var(--white);
+                      }
+
+                      .avatar {
+                        height: 32px;
+                        width: 32px;
+                        margin-right: 8px;
+                      }
+
+                      .emoji-display {
+                        height: 32px;
+                        width: 32px;
+                        font-size: 24px;
+                        line-height: 32px;
+                        margin-right: 8px;
+                        text-align: center;
+                        padding-top: 3px;
+                      }
+
+                      .info {
+                        flex: 1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: flex-start;
+                        flex-direction: column;
+
+                        .name {
+                          margin-top: 3px;
+                        }
+
+                        .username {
+                          color: var(--grey);
+                          margin-top: 3px;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          .caption-input-container {
+            position: relative;
+            max-height: 80px;
+            overflow-y: auto;
+            margin: 0 0 8px;
+            border-bottom: 1px solid var(--grey-low);
+
+            textarea {
+              font-size: 16px;
+            }
 
             &.rtl {
               textarea {
                 direction: rtl;
                 text-align: right;
+              }
+
+              .mention {
+                .mention__control {
+                  .mention__highlighter {
+                    direction: rtl;
+                  }
+                }
               }
             }
 
@@ -350,6 +448,35 @@
               textarea {
                 direction: ltr;
                 text-align: left;
+              }
+
+              .mention {
+                .mention__control {
+                  .mention__highlighter {
+                    direction: ltr;
+                  }
+                }
+              }
+            }
+
+            .mention {
+              position: static !important;
+
+              .mention__control {
+                position: relative;
+
+                .mention__highlighter {
+                  position: absolute !important;
+                  left: 0 !important;
+                  top: 0 !important;
+                  right: 0 !important;
+
+                  .mention-item {
+                    border-bottom: 1px solid var(--grey);
+                    line-height: 1.1em;
+                    display: inline-block;
+                  }
+                }
               }
             }
           }
@@ -608,10 +735,30 @@ html[theme="dark-night"] {
       }
     }
 
-    .attachment-details-container {
-      .caption-input {
-        label, textarea, svg {
-          color: var(--white);
+    .attachment-preview-container {
+      .attachment-details-container {
+        .caption-container {
+          .suggestion-list-container-zero {
+            .suggestion-list-container {
+              background-color: var(--dark-low);
+
+              .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+                color: var(--light);
+
+                .inner.focused {
+                  background-color: var(--dark-high);
+                }
+              }
+            }
+          }
+        }
+
+        .caption-input-container {
+          border-color: var(--dark-low) !important;
+
+          label, textarea, svg {
+            color: var(--white);
+          }
         }
       }
     }
@@ -674,10 +821,34 @@ html[theme="dark-blue"] {
       }
     }
 
-    .attachment-details-container {
-      .caption-input {
-        label, textarea, svg {
-          color: var(--white);
+    .attachment-preview-container {
+      .attachment-details-container {
+        .caption-container {
+          .suggestion-list-container-zero {
+            .suggestion-list-container {
+              background-color: var(--dark-blue-low);
+
+              .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+                color: var(--white);
+
+                .inner.focused {
+                  background-color: var(--dark-blue-hover);
+
+                  .username {
+                    color: var(--light);
+                  }
+                }
+              }
+            }
+          }
+
+          .caption-input-container {
+            border-color: var(--dark-blue-low) !important;
+
+            label, textarea, svg {
+              color: var(--white);
+            }
+          }
         }
       }
     }

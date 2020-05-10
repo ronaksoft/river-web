@@ -732,7 +732,7 @@
     bottom: 12px;
     right: 12px;
     left: 12px;
-    height: 128px;
+    height: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1325,7 +1325,7 @@ html[gradient="3"]:not([bubble="5"]) {
         }
 
         ._url, ._hashtag, ._mention {
-          color: #570f77;
+          color: #58f4a0;
         }
       }
     }
