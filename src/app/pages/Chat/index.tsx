@@ -113,7 +113,7 @@ import {getFileExtension, getFileInfo} from '../../components/MessageFile';
 import AudioPlayerShell from '../../components/AudioPlayerShell';
 import DocumentViewer from '../../components/DocumentViewer';
 import {IUser} from '../../repository/user/interface';
-import {IMediaItem} from '../../components/Uploader';
+import Uploader, {getUploaderInput, IMediaItem, IUploaderOptions} from '../../components/Uploader';
 import {IGeoItem} from '../../components/MapPicker';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import BackgroundService from '../../services/backgroundService';
@@ -257,6 +257,7 @@ class Chat extends React.Component<IProps, IState> {
     private avatarService: AvatarService;
     private isBot: boolean = false;
     private smoother: Smoother;
+    private uploaderRef: Uploader | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -571,6 +572,7 @@ class Chat extends React.Component<IProps, IState> {
                                   onError={this.textErrorHandler}
                                   iframeActive={this.state.iframeActive}
                                   mobileView={this.isMobileView}
+                                  onDrop={this.leftMenuDropHandler}
                         />
                         {this.selectedDialogId !== 'null' &&
                         <div
@@ -620,9 +622,9 @@ class Chat extends React.Component<IProps, IState> {
                                        onBulkAction={this.chatInputBulkActionHandler}
                                        onAction={this.chatInputActionHandler}
                                        onVoiceSend={this.chatInputVoiceHandler}
-                                       onMediaSelected={this.chatInputMediaSelectHandler}
-                                       onContactSelected={this.chatInputContactSelectHandler}
-                                       onMapSelected={this.chatInputMapSelectHandler}
+                                       onFileSelect={this.chatInputFileSelectHandler}
+                                       onContactSelect={this.chatInputContactSelectHandler}
+                                       onMapSelect={this.chatInputMapSelectHandler}
                                        onVoiceStateChange={this.chatInputVoiceStateChangeHandler}
                                        getDialog={this.chatInputGetDialogHandler}
                                        onClearDraft={this.updateDraftMessageClearedHandler}
@@ -819,6 +821,7 @@ class Chat extends React.Component<IProps, IState> {
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler}/>
+                <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
             </div>
         );
     }
@@ -2762,6 +2765,23 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private leftMenuDropHandler = (peerId: string, files: File[], hasData: boolean) => {
+        if (files.length === 0 && hasData) {
+            if (this.props.enqueueSnackbar) {
+                this.props.enqueueSnackbar(i18n.t('message.unsupported_file'));
+            }
+        } else {
+            const peer = this.getPeerByDialogId(peerId)
+            if (peer && peer.peer && this.uploaderRef) {
+                const isFile = files.some((o) => getUploaderInput(o.type) === 'file');
+                this.uploaderRef.openDialog(peer.peer, files, {
+                    isFile,
+                    peer: peer.peer,
+                });
+            }
+        }
+    }
+
     private textErrorHandler = (text: string) => {
         if (this.props.enqueueSnackbar) {
             this.props.enqueueSnackbar(text);
@@ -3011,8 +3031,9 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Message on drop files handler */
     private messageDropHandler = (files: File[]) => {
-        if (this.chatInputRef) {
-            this.chatInputRef.openUploader(files);
+        if (this.uploaderRef && this.peer) {
+            const isFile = files.some((o) => getUploaderInput(o.type) === 'file');
+            this.uploaderRef.openDialog(this.peer, files, {isFile});
         }
     }
 
@@ -3557,6 +3578,11 @@ class Chat extends React.Component<IProps, IState> {
         this.labelDialogRef = ref;
     }
 
+    /* Uploader ref handler */
+    private uploaderRefHandler = (ref: any) => {
+        this.uploaderRef = ref;
+    }
+
     /* Context menu handler */
     private dialogContextMenuHandler = (cmd: string, dialog: IDialog) => {
         const peer = new InputPeer();
@@ -3934,18 +3960,18 @@ class Chat extends React.Component<IProps, IState> {
         this.sendMediaMessage('voice', item, param);
     }
 
-    /* ChatInput media select handler */
-    private chatInputMediaSelectHandler = (items: IMediaItem[], param?: any) => {
-        items.forEach((item) => {
-            this.sendMediaMessage(item.mediaType, item, param);
-        });
+    /* ChatInput file select handler */
+    private chatInputFileSelectHandler = (files: File[], options: IUploaderOptions) => {
+        if (this.uploaderRef && this.peer) {
+            this.uploaderRef.openDialog(this.peer, files, options);
+        }
     }
 
-    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none', mediaItem: IMediaItem, param?: any) {
+    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none', mediaItem: IMediaItem, param?: { mode?: number, message?: IMessage | null, peer?: InputPeer | null }) {
         if (type === 'none') {
             return;
         }
-        const peer = cloneDeep(this.peer);
+        const peer = (param && param.peer) ? param.peer : cloneDeep(this.peer);
         if (!peer) {
             return;
         }
@@ -4105,14 +4131,14 @@ class Chat extends React.Component<IProps, IState> {
             mediatype: MediaType.MEDIATYPEDOCUMENT,
             messageaction: C_MESSAGE_ACTION.MessageActionNope,
             messagetype: messageType,
-            peerid: this.selectedDialogId,
+            peerid: peer.getId(),
             peertype: peer.getType(),
             senderid: this.connInfo.UserID,
             temp_file: tempImageFile,
         };
 
         let replyTo: any;
-        if (param && param.mode === C_MSG_MODE.Reply) {
+        if (param && param.mode === C_MSG_MODE.Reply && param.message) {
             message.replyto = param.message.id;
             replyTo = param.message.id;
         }
@@ -4250,15 +4276,17 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageRepo.lazyUpsert([message]);
                     this.updateDialogs(message, '0');
 
-                    this.checkMessageOrder(message);
-                    // Force update messages
-                    if (this.messageRef) {
-                        this.messageRef.updateList();
+                    if (this.selectedDialogId === peer.getId()) {
+                        this.checkMessageOrder(message);
+                        // Force update messages
+                        if (this.messageRef) {
+                            this.messageRef.updateList();
+                        }
+                        this.newMessageLoadThrottle();
                     }
-                    this.newMessageLoadThrottle();
                 }).catch((err) => {
                     window.console.warn(err);
-                    if (!this.resolveRandomMessageIdError(err, randomId, id)) {
+                    if (!this.resolveRandomMessageIdError(err, randomId, id) && this.selectedDialogId === peer.getId()) {
                         const messages = this.messages;
                         const index = findIndex(messages, (o) => {
                             return o.id === id && o.messagetype === messageType;
@@ -4275,7 +4303,7 @@ class Chat extends React.Component<IProps, IState> {
             }).catch((err) => {
                 this.progressBroadcaster.remove(id);
                 this.onTyping(TypingAction.TYPINGACTIONCANCEL, peer);
-                if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED && this.selectedDialogId === peer.getId()) {
                     const messages = this.messages;
                     const index = findIndex(messages, (o) => {
                         return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -5007,6 +5035,16 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messageRef) {
                 this.messageRef.updateList();
             }
+        });
+    }
+
+    private uploaderDoneHandler = (items: IMediaItem[], options: IUploaderOptions) => {
+        items.forEach((item) => {
+            this.sendMediaMessage(item.mediaType, item, {
+                message: options.message,
+                mode: options.mode,
+                peer: options.peer,
+            });
         });
     }
 

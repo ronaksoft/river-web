@@ -1,3 +1,6 @@
+## 0.32.27
+* Drag and drop updated
+
 ## 0.32.26
 * Mention added in media uploader
 

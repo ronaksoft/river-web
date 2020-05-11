@@ -165,6 +165,7 @@ interface IState {
         width: number,
         height: number,
     };
+    enableDrag: boolean;
     items: IMessage[];
     loading: boolean;
     loadingOverlay: boolean;
@@ -260,7 +261,6 @@ class Message extends React.Component<IProps, IState> {
     private isSimplified: boolean = false;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
-    private dropZoneRef: any = null;
     private readId: number = 0;
     private scrollDownTimeout: any = null;
     // @ts-ignore
@@ -287,6 +287,7 @@ class Message extends React.Component<IProps, IState> {
                 height,
                 width,
             },
+            enableDrag: false,
             items: [],
             loading: false,
             loadingOverlay: false,
@@ -617,7 +618,7 @@ class Message extends React.Component<IProps, IState> {
                 <div
                     className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
                     style={{height: `${containerSize.height}px`, width: `${containerSize.width}px`}}
-                    onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
+                    onDragEnter={this.enableDragHandler}
                 >
                     <KKWindow
                         ref={this.refHandler}
@@ -648,12 +649,17 @@ class Message extends React.Component<IProps, IState> {
                     >
                         {this.contextMenuItem()}
                     </Menu>
-                </div>
-                <div ref={this.dropZoneRefHandler} className="messages-dropzone hidden"
-                     onDrop={this.dragLeaveHandler}>
-                    <div className="dropzone" onDrop={this.dropHandler}>
-                        Drop your files here
-                    </div>
+                    {this.state.enableDrag &&
+                    <div style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, zIndex: 10000}}
+                         ref={this.droppableAreaRefHandler}
+                         onDrop={this.dropHandler}
+                    />}
+                    {this.state.enableDrag &&
+                    <div className="messages-dropzone">
+                        <div className="dropzone">
+                            Drop your files here
+                        </div>
+                    </div>}
                 </div>
                 {loadingOverlay && <div className="messages-overlay-loading">
                     <Loading/>
@@ -1315,30 +1321,22 @@ class Message extends React.Component<IProps, IState> {
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
     }
 
-    private dropZoneRefHandler = (ref: any) => {
-        this.dropZoneRef = ref;
-    }
-
-    private dragEnterHandler = (e: any) => {
-        if (!this.dropZoneRef) {
-            return;
-        }
-        this.dropZoneRef.classList.remove('hidden');
-    }
-
-    private dragLeaveHandler = () => {
-        if (!this.dropZoneRef) {
-            return;
-        }
-        if (this.dropZoneRef.classList.contains('hidden')) {
-            return;
-        }
-        this.dropZoneRef.classList.add('hidden');
-    }
-
     private dropHandler = (e: any) => {
         e.preventDefault();
-        this.dragLeaveHandler();
+        this.setState({
+            enableDrag: false,
+        });
+        const el = document.querySelector('.messages-dropzone .dropzone');
+        if (!el) {
+            return;
+        }
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX;
+        const y = e.clientY;
+        if (!(rect.left <= x && x <= rect.left + rect.width &&
+            rect.top <= y && y <= rect.top + rect.height)) {
+            return;
+        }
         const files: File[] = [];
         let hasData = false;
         if (e.dataTransfer.items) {
@@ -1464,6 +1462,32 @@ class Message extends React.Component<IProps, IState> {
                 },
             });
         }
+    }
+
+    private enableDragHandler = () => {
+        this.setState({
+            enableDrag: true,
+        });
+    }
+
+    private droppableAreaRefHandler = (e: any) => {
+        if (e) {
+            e.addEventListener('dragenter', this.dragEnterHandler, false);
+            e.addEventListener('dragleave', this.dragLeaveHandler, false);
+        }
+    }
+
+    private dragEnterHandler = (e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    private dragLeaveHandler = (e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({
+            enableDrag: false,
+        });
     }
 }
 

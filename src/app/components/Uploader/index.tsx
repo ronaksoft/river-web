@@ -31,11 +31,20 @@ import {getCodec} from "../StreamVideo/helper";
 import {InputPeer, MessageEntity} from "../../services/sdk/messages/chat.core.types_pb";
 import MentionInput, {IMention} from "../MentionInput";
 import {measureNodeHeight} from "../ChatInput/measureHeight";
+import {generateEntities} from "../ChatInput";
+import {IMessage} from "../../repository/message/interface";
 
 import './style.scss';
-import {generateEntities} from "../ChatInput";
 
-const thumbnailReadyMIMEs = 'image/png,image/jpeg,image/jpg,image/gif,image/webp,video/webm,video/mp4,audio/mp4,audio/ogg,audio/mp3'.split(',');
+const thumbnailReadyMIMEs = 'image/png,image/jpeg,image/jpg,image/webp,video/webm,video/mp4,audio/mp4,audio/ogg,audio/mp3'.split(',');
+
+export interface IUploaderOptions {
+    accept?: string;
+    isFile?: boolean;
+    message?: IMessage | null;
+    mode?: number;
+    peer?: InputPeer | null;
+}
 
 interface IMediaThumb {
     file: Blob;
@@ -78,21 +87,42 @@ export interface IUploaderFile extends FileWithPreview {
 }
 
 interface IProps {
-    accept: string;
-    onDone: (items: IMediaItem[]) => void;
-    peer: InputPeer | null;
+    onDone: (items: IMediaItem[], options: IUploaderOptions) => void;
 }
 
 interface IState {
+    accept: string;
     dialogOpen: boolean;
     hasFile: boolean;
     isFile: boolean;
     items: IUploaderFile[];
     lastSelected: number;
     loading: boolean;
-    targetPeer?: InputPeer | null;
+    peer: InputPeer | null;
     selected: number;
     show: boolean;
+}
+
+export const getUploaderInput = (mimeType: string) => {
+    const arr = mimeType.split(';');
+    if (arr.length > 0) {
+        mimeType = arr[0];
+    }
+    switch (mimeType) {
+        case 'image/png':
+        case 'image/jpeg':
+        case 'image/jpg':
+        case 'image/webp':
+        case 'video/webm':
+        case 'video/mp4':
+            return 'media';
+        case 'audio/mp4':
+        case 'audio/ogg':
+        case 'audio/mp3':
+            return 'music';
+        default:
+            return 'file';
+    }
 }
 
 const mentionInputStyle = {
@@ -107,7 +137,7 @@ const mentionInputStyle = {
     },
 };
 
-class MediaPreview extends React.Component<IProps, IState> {
+class Uploader extends React.Component<IProps, IState> {
     private dropzoneRef: Dropzone | undefined;
     private imageRef: any;
     private imageActionRef: any;
@@ -118,41 +148,44 @@ class MediaPreview extends React.Component<IProps, IState> {
     private rtlDetector: RTLDetector;
     private readonly rtlDetectorThrottle: any;
     private mentionContainer: any = null;
-    // @ts-ignore
     private textarea: any = null;
+    private options: IUploaderOptions = {};
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            accept: '*',
             dialogOpen: false,
             hasFile: false,
             isFile: false,
             items: [],
             lastSelected: 0,
             loading: false,
+            peer: null,
             selected: 0,
             show: true,
-            targetPeer: null,
         };
 
         this.rtlDetector = RTLDetector.getInstance();
         this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
     }
 
-    public openDialog(items: File[], isFile?: boolean, targetPeer?: InputPeer) {
+    public openDialog(peer: InputPeer, items: File[], options: IUploaderOptions) {
         this.reset();
+        this.options = options;
         const inputItems: IUploaderFile[] = items;
         inputItems.forEach((item) => {
             item.ready = false;
         });
         this.setState({
+            accept: options.accept || '*',
             dialogOpen: true,
-            isFile: isFile || false,
+            isFile: options.isFile || false,
             items: inputItems,
-            targetPeer,
+            peer,
         }, () => {
-            if (!isFile) {
+            if (!options.isFile) {
                 this.initMedias();
                 this.setImageActionSize();
             } else {
@@ -187,12 +220,13 @@ class MediaPreview extends React.Component<IProps, IState> {
                         <span>{i18n.t('uploader.converting')}</span>
                     </div>}
                     <div className="uploader-header">
-                        <Tabs className="uploader-tabs" value={isFile ? 1 : 0} indicatorColor="primary"
-                              textColor="primary" onChange={this.tabChangeHandler}>
-                            <Tab icon={<PhotoOutlined/>} disabled={hasFile} classes={{selected: 'tab-selected'}}/>
-                            <Tab icon={<InsertDriveFileOutlined/>} disabled={hasFile}
-                                 classes={{selected: 'tab-selected'}}/>
-                        </Tabs>
+                        {!hasFile && <Tabs className="uploader-tabs" value={isFile ? 1 : 0} indicatorColor="primary"
+                                           textColor="primary" onChange={this.tabChangeHandler}>
+                            <Tab icon={<PhotoOutlined/>} label={i18n.t('media.media')}
+                                 disableRipple={true} classes={{selected: 'tab-selected'}}/>
+                            <Tab icon={<InsertDriveFileOutlined/>} label={i18n.t('media.file')}
+                                 disableRipple={true} classes={{selected: 'tab-selected'}}/>
+                        </Tabs>}
                         <div className="uploader-gap"/>
                         <IconButton
                             className="header-icon"
@@ -207,7 +241,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                             onDrop={this.dropzoneDropHandler}
                             activeClassName="dropzone-active"
                             className="uploader-dropzone"
-                            accept={isFile ? undefined : this.props.accept}
+                            accept={isFile ? undefined : this.state.accept}
                         >
                             <div className="slider-attachment">
                                 {items.length > 0 && this.state.show && (
@@ -258,8 +292,11 @@ class MediaPreview extends React.Component<IProps, IState> {
                                                     {items[selected].mediaType === 'image' &&
                                                     <img src={items[selected].preview} alt="preview"/>}
                                                     <InsertDriveFileRounded/>
+                                                    <span className="extension">
+                                                        {getFileExtension(items[selected].type, items[selected].name)}
+                                                    </span>
                                                 </div>
-                                                <div className="extension">
+                                                <div className="file-info">
                                                     {items[selected].name}<br/>
                                                     <span className="size">
                                                         {getHumanReadableSize(items[selected].size)}</span>
@@ -285,7 +322,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                 <div
                                     className={'caption-input-container ' + (items[selected] && items[selected].rtl ? 'rtl' : 'ltr')}>
                                     <MentionInput
-                                        peer={this.state.targetPeer || this.props.peer}
+                                        peer={this.state.peer || null}
                                         isBot={false}
                                         className="mention"
                                         style={mentionInputStyle}
@@ -451,9 +488,9 @@ class MediaPreview extends React.Component<IProps, IState> {
             items: [],
             lastSelected: 0,
             loading: false,
+            peer: null,
             selected: 0,
             show: true,
-            targetPeer: undefined,
         });
     }
 
@@ -635,7 +672,11 @@ class MediaPreview extends React.Component<IProps, IState> {
                 URL.revokeObjectURL(item);
             });
             this.previewRefs.splice(index, 1);
+            const hasFile = items.some((item) => {
+                return thumbnailReadyMIMEs.indexOf(item.type) === -1;
+            });
             this.setState({
+                hasFile,
                 items,
             });
         };
@@ -817,7 +858,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                     title: items[i].title,
                 });
             }
-            this.props.onDone(output);
+            this.props.onDone(output, this.options);
             this.dialogCloseHandler();
             this.setState({
                 loading: false,
@@ -919,4 +960,4 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 }
 
-export default MediaPreview;
+export default Uploader;

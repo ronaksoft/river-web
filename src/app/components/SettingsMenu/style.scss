@@ -286,7 +286,7 @@
       }
     }
 
-    .setting-switch-label {
+    .settings-switch-label {
       direction: ltr;
       width: 64px;
       margin: -10px 0;
@@ -1059,17 +1059,17 @@
     color: var(--grey);
   }
 
-  .setting-switch {
-    .setting-switch-base {
+  .settings-switch {
+    .settings-switch-base {
       padding: 9px;
     }
 
-    .setting-switch-thumb {
+    .settings-switch-thumb {
       color: var(--light);
     }
 
-    .setting-switch-checked {
-      .setting-switch-thumb {
+    .settings-switch-checked {
+      .settings-switch-thumb {
         color: var(--river-light);
       }
     }
@@ -1391,13 +1391,13 @@ html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
   .settings-menu {
-    .setting-switch {
-      .setting-switch-thumb {
+    .settings-switch {
+      .settings-switch-thumb {
         color: var(--grey);
       }
 
-      .setting-switch-checked {
-        .setting-switch-thumb {
+      .settings-switch-checked {
+        .settings-switch-thumb {
           color: var(--river);
         }
       }
@@ -1447,7 +1447,7 @@ html[theme="dark-blue"] {
       }
     }
 
-    .setting-switch-label {
+    .settings-switch-label {
       > span {
         color: var(--light);
       }

@@ -56,7 +56,7 @@ import {measureNodeHeight} from './measureHeight';
 import {getMessageTitle} from '../Dialog/utils';
 import XRegExp from 'xregexp';
 import SelectMedia from '../SelectMedia';
-import MediaPreview, {IMediaItem} from '../Uploader';
+import {getUploaderInput, IMediaItem, IUploaderOptions} from '../Uploader';
 import ContactPicker from '../ContactPicker';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
 import RiverTime from '../../services/utilities/river_time';
@@ -195,9 +195,9 @@ interface IProps {
     onAction: (cmd: string, message?: IMessage) => (e?: any) => void;
     onBulkAction: (cmd: string) => (e?: any) => void;
     onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
-    onContactSelected: (users: IUser[], caption: string, {mode, message}: any | undefined) => void;
-    onMapSelected: (item: IGeoItem, {mode, message}: any | undefined) => void;
-    onMediaSelected: (items: IMediaItem[], {mode, message}: any | undefined) => void;
+    onFileSelect: (files: File[], options: IUploaderOptions) => void;
+    onContactSelect: (users: IUser[], caption: string, {mode, message}: any | undefined) => void;
+    onMapSelect: (item: IGeoItem, {mode, message}: any | undefined) => void;
     onMessage: (text: string, {mode, message, entities}: any | undefined) => void;
     onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
     onTyping?: (typing: TypingAction) => void;
@@ -294,7 +294,6 @@ class ChatInput extends React.Component<IProps, IState> {
     private voicePlayerRef: VoicePlayer | undefined;
     private voiceCanceled: boolean = false;
     private fileInputRef: any = null;
-    private mediaPreviewRef: MediaPreview | undefined;
     private contactPickerRef: ContactPicker | undefined;
     private mapPickerRef: MapPicker | undefined;
     private riverTime: RiverTime;
@@ -510,27 +509,6 @@ class ChatInput extends React.Component<IProps, IState> {
         }, 100);
     }
 
-    public openUploader(files: File[]) {
-        if (this.mediaPreviewRef) {
-            let media: any = '';
-            files.forEach((file) => {
-                const t = this.getUploaderInput(file.type);
-                if (media !== t && media !== '') {
-                    media = 'file';
-                } else if (media !== 'file' || media === '') {
-                    media = t;
-                }
-            });
-            this.setState({
-                mediaInputMode: media,
-            }, () => {
-                if (this.mediaPreviewRef) {
-                    this.mediaPreviewRef.openDialog(files, Boolean(media === 'file'));
-                }
-            });
-        }
-    }
-
     public setLastMessage(message: IMessage | null, isLastMessage?: boolean) {
         if (message && this.lastMessage && this.lastMessage.id !== message.id) {
             this.checkAuthority();
@@ -651,8 +629,6 @@ class ChatInput extends React.Component<IProps, IState> {
                 <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                            onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
-                    <MediaPreview ref={this.mediaPreviewRefHandler} accept={this.getFileType()}
-                                  onDone={this.mediaPreviewDoneHandler} peer={this.state.peer}/>
                     <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}/>
                     <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
                     {(!selectable && previewMessage) &&
@@ -1720,6 +1696,7 @@ class ChatInput extends React.Component<IProps, IState> {
     /* File change handler */
     private fileChangeHandler = (e: any) => {
         if (e.currentTarget.files.length > 0) {
+            const {previewMessage, previewMessageMode} = this.state;
             const files: File[] = [];
             for (let i = 0; i < e.currentTarget.files.length; i++) {
                 files.push(e.currentTarget.files[i]);
@@ -1727,13 +1704,14 @@ class ChatInput extends React.Component<IProps, IState> {
             switch (this.state.mediaInputMode) {
                 case 'media':
                 case 'music':
-                    if (this.mediaPreviewRef) {
-                        this.mediaPreviewRef.openDialog(files);
-                    }
-                    break;
                 case 'file':
-                    if (this.mediaPreviewRef) {
-                        this.mediaPreviewRef.openDialog(files, true);
+                    if (this.props.onFileSelect) {
+                        this.props.onFileSelect(files, {
+                            accept: this.getFileType(),
+                            isFile: this.state.mediaInputMode === 'file',
+                            message: previewMessage,
+                            mode: previewMessageMode,
+                        });
                     }
                     break;
             }
@@ -1817,10 +1795,6 @@ class ChatInput extends React.Component<IProps, IState> {
         });
     }
 
-    private mediaPreviewRefHandler = (ref: any) => {
-        this.mediaPreviewRef = ref;
-    }
-
     private contactPickerRefHandler = (ref: any) => {
         this.contactPickerRef = ref;
     }
@@ -1833,7 +1807,7 @@ class ChatInput extends React.Component<IProps, IState> {
         const {mediaInputMode} = this.state;
         switch (mediaInputMode) {
             case 'media':
-                return 'image/png,image/jpeg,image/jpg,image/gif,image/webp,video/webm,video/mp4';
+                return 'image/png,image/jpeg,image/jpg,image/webp,video/webm,video/mp4';
             case 'music':
                 return "audio/mp4,audio/ogg,audio/mp3";
             case 'file':
@@ -1842,54 +1816,54 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    private getUploaderInput(mimeType: string) {
-        const arrs = mimeType.split(';');
-        if (arrs.length > 0) {
-            mimeType = arrs[0];
-        }
-        switch (mimeType) {
-            case 'image/png':
-            case 'image/jpeg':
-            case 'image/jpg':
-            case 'image/gif':
-            case 'image/webp':
-            case 'video/webm':
-            case 'video/mp4':
-                return 'media';
-            case 'audio/mp4':
-            case 'audio/ogg':
-            case 'audio/mp3':
-                return 'music';
-            default:
-                return 'file';
-        }
-    }
-
-    /* Send media handler */
-    private mediaPreviewDoneHandler = (items: IMediaItem[]) => {
-        const {mediaInputMode, previewMessage, previewMessageMode} = this.state;
-        const message = cloneDeep(previewMessage);
-        switch (mediaInputMode) {
-            case 'media':
-            case 'music':
-            case 'file':
-                if (this.props.onMediaSelected) {
-                    this.props.onMediaSelected(items, {
-                        message,
-                        mode: previewMessageMode,
-                    });
-                }
-                break;
-        }
-        this.clearPreviewMessage(true)();
-    }
+    // private getUploaderInput(mimeType: string) {
+    //     const arrs = mimeType.split(';');
+    //     if (arrs.length > 0) {
+    //         mimeType = arrs[0];
+    //     }
+    //     switch (mimeType) {
+    //         case 'image/png':
+    //         case 'image/jpeg':
+    //         case 'image/jpg':
+    //         case 'image/gif':
+    //         case 'image/webp':
+    //         case 'video/webm':
+    //         case 'video/mp4':
+    //             return 'media';
+    //         case 'audio/mp4':
+    //         case 'audio/ogg':
+    //         case 'audio/mp3':
+    //             return 'music';
+    //         default:
+    //             return 'file';
+    //     }
+    // }
+    //
+    // /* Send media handler */
+    // private mediaPreviewDoneHandler = (items: IMediaItem[]) => {
+    //     const {mediaInputMode, previewMessage, previewMessageMode} = this.state;
+    //     const message = cloneDeep(previewMessage);
+    //     switch (mediaInputMode) {
+    //         case 'media':
+    //         case 'music':
+    //         case 'file':
+    //             if (this.props.onMediaSelected) {
+    //                 this.props.onMediaSelected(items, {
+    //                     message,
+    //                     mode: previewMessageMode,
+    //                 });
+    //             }
+    //             break;
+    //     }
+    //     this.clearPreviewMessage(true)();
+    // }
 
     /* Send contact handler */
     private contactImportDoneHandler = (users: IUser[], caption: string) => {
         const {previewMessage, previewMessageMode} = this.state;
         const message = cloneDeep(previewMessage);
-        if (this.props.onContactSelected) {
-            this.props.onContactSelected(users, caption, {
+        if (this.props.onContactSelect) {
+            this.props.onContactSelect(users, caption, {
                 message,
                 mode: previewMessageMode,
             });
@@ -1900,8 +1874,8 @@ class ChatInput extends React.Component<IProps, IState> {
     private mapDoneDoneHandler = (data: IGeoItem) => {
         const {previewMessage, previewMessageMode} = this.state;
         const message = cloneDeep(previewMessage);
-        if (this.props.onMapSelected) {
-            this.props.onMapSelected(data, {
+        if (this.props.onMapSelect) {
+            this.props.onMapSelect(data, {
                 message,
                 mode: previewMessageMode,
             });
@@ -1937,6 +1911,7 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Window paste handler */
     private windowPasteHandler = (e: any) => {
         if (e.clipboardData && e.clipboardData.items) {
+            const {previewMessage, previewMessageMode} = this.state;
             const files: any[] = [];
             for (let i = 0; i < e.clipboardData.items.length; i++) {
                 const item = e.clipboardData.items[i];
@@ -1944,8 +1919,12 @@ class ChatInput extends React.Component<IProps, IState> {
                     files.push(item.getAsFile());
                 }
             }
-            if (files.length > 0) {
-                this.openUploader(files);
+            if (files.length > 0 && this.props.onFileSelect) {
+                this.props.onFileSelect(files, {
+                    isFile: files.length === 1 ? getUploaderInput(files[0].type) === 'file' : true,
+                    message: previewMessage,
+                    mode: previewMessageMode,
+                });
             }
         }
     }

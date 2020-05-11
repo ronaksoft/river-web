@@ -43,6 +43,7 @@ import './style.scss';
 interface IProps {
     cancelIsTyping: (id: string) => void;
     onContextMenu?: (cmd: string, dialog: IDialog) => void;
+    onDrop: (peerId: string, files: File[], hasData: boolean) => void;
 }
 
 interface IState {
@@ -367,14 +368,18 @@ class Dialog extends React.PureComponent<IProps, IState> {
                         return (
                             <DialogMessage key={dialog.peerid || index} dialog={dialog}
                                            isTyping={isTyping} selectedId={this.state.selectedId}
-                                           onContextMenuOpen={this.contextMenuOpenHandler(index)}/>
+                                           onContextMenuOpen={this.contextMenuOpenHandler(index)}
+                                           onDrop={this.props.onDrop}
+                            />
                         );
                     })}
                     {searchAddedItems.map((dialog, index) => {
                         return (
                             <DialogMessage key={dialog.peerid || index} dialog={dialog}
                                            isTyping={{}} selectedId={this.state.selectedId}
-                                           onClick={this.closeSearchHandler}/>
+                                           onClick={this.closeSearchHandler}
+                                           onDrop={this.props.onDrop}
+                            />
                         );
                     })}
                 </>}
@@ -384,7 +389,8 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     return (
                         <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
                                        dialog={dialog} isTyping={{}} selectedId=""
-                                       messageId={dialog.topmessageid}/>
+                                       messageId={dialog.topmessageid}
+                        />
                     );
                 })}
                 {Boolean(searchMessageItems.length === 0 && appliedSelectedLabelIds.length > 0) &&
@@ -486,7 +492,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     <Link to={`/chat/${dialog.peerid}`}>
                         <div
                             className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
-                            <DialogMessage dialog={dialog} isTyping={isTyping}
+                            <DialogMessage dialog={dialog} isTyping={isTyping} onDrop={this.props.onDrop}
                                            onContextMenuOpen={this.contextMenuOpenHandler(index)} selectedId=""/>
                         </div>
                     </Link>
@@ -499,7 +505,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     <div style={style} key={dialog.peerid || key} onClick={this.closeSearchHandler}>
                         <Link to={`/chat/${dialog.peerid}`}>
                             <div className="dialog">
-                                <DialogMessage dialog={dialog} isTyping={{}} selectedId=""/>
+                                <DialogMessage dialog={dialog} isTyping={{}} selectedId="" onDrop={this.props.onDrop}/>
                             </div>
                         </Link>
                     </div>
@@ -663,7 +669,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             });
             // Search remote server
             this.searchRepo.searchUsername(keyword).then((res) => {
-                ids.push(...res.map((o: any) => (o.id || '')));
+                ids.push(...(res || []).map((o: any) => (o.id || '')));
                 ids = uniq(ids);
                 contacts.push(...res);
                 contacts = uniqBy(contacts, 'id');

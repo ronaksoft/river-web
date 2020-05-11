@@ -52,6 +52,7 @@ interface IProps {
     onUpdateMessages: (keep?: boolean) => void;
     onShrunk: (shrunk: boolean) => void;
     onError?: (text: string) => void;
+    onDrop: (peerId: string, files: File[], hasData: boolean) => void;
 }
 
 interface IState {
@@ -323,9 +324,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         } else if (leftMenu === 'contacts') {
             return (<ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}/>);
         } else {
-            return (<Dialog key="dialog-menu" ref={this.dialogRefHandler}
-                            cancelIsTyping={this.props.cancelIsTyping}
-                            onContextMenu={this.props.onContextMenu}/>);
+            return (<Dialog key="dialog-menu" ref={this.dialogRefHandler} cancelIsTyping={this.props.cancelIsTyping}
+                            onContextMenu={this.props.onContextMenu} onDrop={this.props.onDrop}/>);
         }
     }
 

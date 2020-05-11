@@ -87,8 +87,17 @@
 
       .uploader-tabs {
         button {
-          padding: 0;
           min-width: 48px;
+          min-height: 48px;
+          padding: 0 8px;
+
+          .MuiTab-wrapper {
+            flex-direction: row;
+          }
+
+          svg {
+            margin: 0 4px 4px 0;
+          }
         }
       }
 
@@ -301,9 +310,23 @@
                     color: var(--white);
                     z-index: 10;
                   }
+
+                  .extension {
+                    position: absolute;
+                    top: 51%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    text-transform: uppercase;
+                    font-weight: bold;
+                    line-height: 1em;
+                    font-size: 14px;
+                    color: var(--grey-low);
+                    font-family: 'CourierNewPSMT';
+                    z-index: 100;
+                  }
                 }
 
-                .extension {
+                .file-info {
                   font-size: 16px;
                   line-height: 1.2em;
                   padding: 12px;
@@ -716,11 +739,15 @@ html[theme="dark-night"] {
 
       .uploader-tabs {
         button {
+          color: var(--white);
+
           svg {
             color: var(--white);
           }
 
           &.tab-selected {
+            color: var(--river);
+
             svg {
               color: var(--river);
             }
@@ -772,7 +799,7 @@ html[theme="dark-night"] {
             color: var(--white);
           }
 
-          .extension {
+          .file-info {
             color: var(--grey);
           }
         }
@@ -802,11 +829,15 @@ html[theme="dark-blue"] {
 
       .uploader-tabs {
         button {
+          color: var(--white);
+
           svg {
             color: var(--white);
           }
 
           &.tab-selected {
+            color: var(--river);
+
             svg {
               color: var(--river);
             }
@@ -862,7 +893,7 @@ html[theme="dark-blue"] {
             color: var(--white);
           }
 
-          .extension {
+          .file-info {
             color: var(--grey);
           }
         }

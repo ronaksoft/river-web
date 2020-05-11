@@ -41,6 +41,7 @@ interface IProps {
     onClick?: (e: any) => void;
     selectedId: string;
     messageId?: number;
+    onDrop?: (peerId: string, files: File[], hasData: boolean) => void;
 }
 
 interface IState {
@@ -103,11 +104,12 @@ class DialogMessage extends React.Component<IProps, IState> {
         const labelIds = dialog.label_ids || [];
         let labelCnt = 0;
         return (
-            <Link className="dialog-a" onClick={this.props.onClick}
-                  to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
+            <Link className="dialog-a" onClick={this.props.onClick} data-peerid={dialog.peerid}
+                  to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}
+                  onDrop={this.dropHandler}
+            >
                 <div
                     className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}
-                    onDragEnter={this.dragEnterHandler} onDragLeave={this.dragLeaveHandler}
                 >
                     <div
                         className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
@@ -323,13 +325,28 @@ class DialogMessage extends React.Component<IProps, IState> {
         }
     }
 
-    private dragEnterHandler = (e: any) => {
-        // e.currentTarget.style.cursor = 'copy';
-    }
-
-    private dragLeaveHandler = (e: any) => {
-        // e.currentTarget.style.cursor = 'default';
-        // e.dataTransfer.dropEffect = "copy";
+    private dropHandler = (e: any) => {
+        const files: File[] = [];
+        let hasData = false;
+        if (e.dataTransfer.items) {
+            hasData = true;
+            // Use DataTransferItemList interface to access the file(s)
+            for (let i = 0; i < e.dataTransfer.items.length; i++) {
+                // If dropped items aren't files, reject them
+                if (e.dataTransfer.items[i].kind === 'file') {
+                    const file = e.dataTransfer.items[i].getAsFile();
+                    files.push(file);
+                }
+            }
+        } else {
+            // Use DataTransfer interface to access the file(s)
+            for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                files.push(e.dataTransfer.files[i]);
+            }
+        }
+        if (this.props.onDrop) {
+            this.props.onDrop(this.props.dialog.peerid || '', files, hasData);
+        }
     }
 }
 
@@ -374,6 +391,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
             {distinct > 1 ? ` ${i18n.t('status.doing')}` : getActionType(typingList[ids[0]].action)}
             </span>);
     }
+
 };
 
 export default DialogMessage;

@@ -68,7 +68,7 @@ class Cropper extends React.Component<IProps, IState> {
         return (
             <React.Fragment>
                 <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
-                       onChange={this.fileChangeHandler} accept="image/gif, image/jpeg, image/png"/>
+                       onChange={this.fileChangeHandler} accept="image/jpg, image/jpeg, image/png"/>
                 <Dialog
                     open={profileCropperOpen}
                     onClose={this.profileCropperCloseHandler}

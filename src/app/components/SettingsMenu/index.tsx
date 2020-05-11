@@ -351,11 +351,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.avatarService = AvatarService.getInstance();
 
         this.switchClasses = {
-            checked: 'setting-switch-checked',
-            root: 'setting-switch',
-            switchBase: 'setting-switch-base',
-            thumb: 'setting-switch-thumb',
-            track: 'setting-switch-track',
+            checked: 'settings-switch-checked',
+            root: 'settings-switch',
+            switchBase: 'settings-switch-base',
+            thumb: 'settings-switch-thumb',
+            track: 'settings-switch-track',
         };
     }
 
@@ -522,7 +522,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <Brightness2Rounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.night_mode')}</div>
-                                        <div className="setting-switch-label">
+                                        <div className="settings-switch-label">
                                             <Switch
                                                 checked={Boolean(this.state.selectedTheme !== 'light')}
                                                 color="default"
