@@ -324,7 +324,7 @@ class Uploader extends React.Component<IProps, IState> {
                                     <MentionInput
                                         peer={this.state.peer || null}
                                         isBot={false}
-                                        className="mention"
+                                        className="uploader-mention"
                                         style={mentionInputStyle}
                                         inputRef={this.textareaRefHandler}
                                         suggestionsPortalHost={this.mentionContainer}

@@ -1,3 +1,6 @@
+## 0.32.28
+* Known bugs fixed
+
 ## 0.32.27
 * Drag and drop updated
 

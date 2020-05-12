@@ -47,7 +47,6 @@ import animateScrollTo from "animated-scroll-to";
 import Landscape from "../SVG";
 import MessageBot from "../MessageBot";
 import {ThemeChanged} from "../SettingsMenu";
-import {EventBlur, EventMouseUp} from "../../services/events";
 import CodeViewer from "../CodeViewer";
 import {spanMessageEntities} from "../../services/utilities/entity";
 import ResizeObserver from "resize-observer-polyfill";
@@ -366,8 +365,6 @@ class Message extends React.Component<IProps, IState> {
             this.resizeObserver.observe(el);
         }
         this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
-        window.addEventListener(EventMouseUp, this.dragLeaveHandler, true);
-        window.addEventListener(EventBlur, this.dragLeaveHandler, true);
         this.getContainerSize();
     }
 
@@ -456,8 +453,6 @@ class Message extends React.Component<IProps, IState> {
                 canceller();
             }
         });
-        window.removeEventListener(EventMouseUp, this.dragLeaveHandler, true);
-        window.addEventListener(EventBlur, this.dragLeaveHandler, true);
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
         }
@@ -1478,11 +1473,17 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private dragEnterHandler = (e: any) => {
+        if (!this.state.enableDrag) {
+            return;
+        }
         e.preventDefault();
         e.stopPropagation();
     }
 
     private dragLeaveHandler = (e: any) => {
+        if (!this.state.enableDrag) {
+            return;
+        }
         e.preventDefault();
         e.stopPropagation();
         this.setState({

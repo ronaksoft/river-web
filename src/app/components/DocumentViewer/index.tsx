@@ -46,10 +46,10 @@ import {C_AVATAR_SIZE} from "../SettingsMenu";
 import Scrollbars from "react-custom-scrollbars";
 import {EventKeyDown, EventMouseMove, EventMouseUp} from "../../services/events";
 import StreamVideo from "../StreamVideo";
-
-import './style.scss';
 import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
+
+import './style.scss';
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;

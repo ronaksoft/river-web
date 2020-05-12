@@ -33,7 +33,7 @@ export interface IMention {
 interface IProps {
     className?: string;
     inputRef: (ref: any) => void;
-    suggestionsPortalHost: (ref: any) => void;
+    suggestionsPortalHost: any;
     onChange: (value: any, a: any, b: any, mentions: IMention[]) => void;
     onKeyUp?: (e: any) => void;
     onKeyDown?: (e: any) => void;
@@ -117,8 +117,8 @@ class MentionInput extends React.Component<IProps, IState> {
                     trigger="@"
                     type="mention"
                     data={this.searchMentionHandler}
-                    className="mention-item"
                     renderSuggestion={this.renderMentionSuggestion}
+                    className="mention-item"
                 />
                 <Mention
                     trigger=":"
@@ -181,8 +181,16 @@ class MentionInput extends React.Component<IProps, IState> {
             callback(uniqBy(users, 'id'));
         };
         this.groupRepo.getFull(peer.getId() || '', undefined, true).then((group) => {
-            if (group && group.participantList) {
+            if (group && group.participantList && group.participantList.length > 0) {
                 searchParticipant(keyword, group.participantList);
+            } else {
+                this.groupRepo.getFull(peer.getId() || '').then((remoteGroup) => {
+                    if (remoteGroup && remoteGroup.participantList && remoteGroup.participantList.length > 0) {
+                        searchParticipant(keyword, remoteGroup.participantList);
+                    } else {
+                        callback([]);
+                    }
+                });
             }
         });
     }
@@ -216,6 +224,7 @@ class MentionInput extends React.Component<IProps, IState> {
             }
         } else {
             const freq = localStorage.getItem(emojiKey);
+            const freqCheckList: string[] = [];
             if (freq) {
                 const freqData = JSON.parse(freq);
                 let freqList: Array<{ cnt: number, val: string }> = [];
@@ -234,15 +243,18 @@ class MentionInput extends React.Component<IProps, IState> {
                             id: `:${emojiList[emoji].n}`,
                             index: i,
                         });
+                        freqCheckList.push(emojiList[emoji].n);
                     }
                 }
             }
             for (let i = 0; i < emojiLimit && emojis.length < emojiLimit; i++) {
-                emojis.push({
-                    display: emojiList[i].d,
-                    id: `:${emojiList[i].n}`,
-                    index: i,
-                });
+                if (freqCheckList.indexOf(emojiList[i].n) === -1) {
+                    emojis.push({
+                        display: emojiList[i].d,
+                        id: `:${emojiList[i].n}`,
+                        index: i,
+                    });
+                }
             }
         }
         callback(emojis);

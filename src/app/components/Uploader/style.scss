@@ -375,7 +375,7 @@
               border-radius: 4px 4px 0 0;
               box-shadow: 0px -0.5px 4px rgba(0, 0, 0, 0.25);
 
-              .mention__suggestions {
+              .uploader-mention__suggestions {
                 position: static !important;
                 background-color: transparent !important;
                 top: auto !important;
@@ -383,13 +383,13 @@
                 overflow: hidden;
                 margin-top: 8px !important;
 
-                .mention__suggestions__list {
+                .uploader-mention__suggestions__list {
                   white-space: nowrap;
                   text-align: left;
                   max-height: 182px;
                   overflow-y: auto;
 
-                  .mention__suggestions__item {
+                  .uploader-mention__suggestions__item {
                     font-size: 12px;
                     direction: ltr;
 
@@ -458,9 +458,9 @@
                 text-align: right;
               }
 
-              .mention {
-                .mention__control {
-                  .mention__highlighter {
+              .uploader-mention {
+                .uploader-mention__control {
+                  .uploader-mention__highlighter {
                     direction: rtl;
                   }
                 }
@@ -473,28 +473,28 @@
                 text-align: left;
               }
 
-              .mention {
-                .mention__control {
-                  .mention__highlighter {
+              .uploader-mention {
+                .uploader-mention__control {
+                  .uploader-mention__highlighter {
                     direction: ltr;
                   }
                 }
               }
             }
 
-            .mention {
+            .uploader-mention {
               position: static !important;
 
-              .mention__control {
+              .uploader-mention__control {
                 position: relative;
 
-                .mention__highlighter {
+                .uploader-mention__highlighter {
                   position: absolute !important;
                   left: 0 !important;
                   top: 0 !important;
                   right: 0 !important;
 
-                  .mention-item {
+                  .uploader-mention-item {
                     border-bottom: 1px solid var(--grey);
                     line-height: 1.1em;
                     display: inline-block;
@@ -769,7 +769,7 @@ html[theme="dark-night"] {
             .suggestion-list-container {
               background-color: var(--dark-low);
 
-              .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+              .uploader-mention__suggestions .uploader-mention__suggestions__list .uploader-mention__suggestions__item {
                 color: var(--light);
 
                 .inner.focused {
@@ -859,7 +859,7 @@ html[theme="dark-blue"] {
             .suggestion-list-container {
               background-color: var(--dark-blue-low);
 
-              .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+              .uploader-mention__suggestions .uploader-mention__suggestions__list .uploader-mention__suggestions__item {
                 color: var(--white);
 
                 .inner.focused {

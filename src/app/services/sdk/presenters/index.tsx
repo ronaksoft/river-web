@@ -13,7 +13,7 @@ import {BlockedContactsMany, ContactsImported, ContactsMany} from '../messages/c
 import {
     Bool,
     Error,
-    FileLocation,
+    FileLocation, GroupPhoto,
     Label,
     LabelsMany,
     MessageContainer,
@@ -104,6 +104,8 @@ export default class Presenter {
                 return BlockedContactsMany.deserializeBinary(data);
             case C_MSG.UserPhoto:
                 return UserPhoto.deserializeBinary(data);
+            case C_MSG.GroupPhoto:
+                return GroupPhoto.deserializeBinary(data);
             case C_MSG.BotCallbackAnswer:
                 return BotCallbackAnswer.deserializeBinary(data);
             case C_MSG.FileLocation:

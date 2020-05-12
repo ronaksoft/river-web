@@ -188,7 +188,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
     // fn(10, 5, MessageEntityType.MESSAGEENTITYTYPEEMAIL);
     //  text = "hi this is kk and nice to meet you";
     return {entities, text};
-}
+};
 
 interface IProps {
     getDialog: (id: string) => IDialog | null;
@@ -939,6 +939,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private mentionContainerRefHandler = (ref: any) => {
+        window.console.log(ref);
         this.mentionContainer = ref;
     }
 
