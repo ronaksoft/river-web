@@ -248,7 +248,7 @@ export default class UserRepo {
                 });
             } else {
                 const crc32 = this.getContactsCrc();
-                this.apiManager.getContacts(crc32 + 1).then((remoteRes) => {
+                this.apiManager.getContacts(crc32).then((remoteRes) => {
                     if (remoteRes.modified) {
                         this.importBulk(true, remoteRes.contactusersList).then(() => {
                             this.importBulk(false, remoteRes.usersList);
@@ -324,6 +324,9 @@ export default class UserRepo {
             }
             if (u2.status === UserStatus.USERSTATUSOFFLINE) {
                 u2.status_last_modified = 0;
+            }
+            if (u2.photogalleryList) {
+                u1.photogalleryList = u2.photogalleryList;
             }
             return kMerge(u1, u2);
         };

@@ -143,10 +143,10 @@ export default class SearchRepo {
                 }).filter(o => o !== null);
             });
         }).then((res) => {
-            fn(res);
+            fn(res || []);
         });
         this.searchUsername(keyword).then((res) => {
-            fn(res);
+            fn(res || []);
         });
         const fn = (us: IUser[]) => {
             users = uniqBy([...users, ...us], 'id');

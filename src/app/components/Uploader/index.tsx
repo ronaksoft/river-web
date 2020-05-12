@@ -123,7 +123,7 @@ export const getUploaderInput = (mimeType: string) => {
         default:
             return 'file';
     }
-}
+};
 
 const mentionInputStyle = {
     input: {
@@ -458,13 +458,21 @@ class Uploader extends React.Component<IProps, IState> {
 
     /* Select media handler */
     private selectMediaHandler = (index: number, callback?: () => void) => (e?: any) => {
+        const {items, selected} = this.state;
+        if (items[selected]) {
+            items[selected].caption = (this.textarea ? this.textarea.value : '');
+        }
         if (this.state.selected === index) {
             if (callback) {
                 callback();
             }
+            this.setState({
+                items,
+            });
             return;
         }
         this.setState({
+            items,
             lastSelected: this.state.selected,
             selected: index,
             show: false,
@@ -706,7 +714,6 @@ class Uploader extends React.Component<IProps, IState> {
             items[selected].textarea = text;
             items[selected].mentionList = mentions;
             items[selected].caption = (this.textarea ? this.textarea.value : '');
-            this.computeLines();
             this.rtlDetectorThrottle(text);
             this.setState({
                 items,
@@ -775,7 +782,7 @@ class Uploader extends React.Component<IProps, IState> {
 
     /* Check button click handler */
     private doneHandler = () => {
-        const {items, isFile} = this.state;
+        const {items, isFile, selected} = this.state;
         if (items.some((item) => {
             return !item.ready;
         })) {
@@ -784,6 +791,9 @@ class Uploader extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
+        if (items[selected]) {
+            items[selected].caption = (this.textarea ? this.textarea.value : '');
+        }
         const promise: any[] = [];
         items.forEach((item) => {
             if (item.mediaType === 'image') {
@@ -913,6 +923,7 @@ class Uploader extends React.Component<IProps, IState> {
             this.setState({
                 items,
             });
+            this.computeLines();
         }
     }
 

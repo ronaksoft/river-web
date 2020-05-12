@@ -1292,6 +1292,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         photogalleryList: galleryList,
                     }]);
                 } else {
+                    window.console.log(id, galleryList);
                     this.userRepo.upsert(false, [{
                         id,
                         photogalleryList: galleryList,

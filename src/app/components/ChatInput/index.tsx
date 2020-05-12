@@ -939,7 +939,6 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private mentionContainerRefHandler = (ref: any) => {
-        window.console.log(ref);
         this.mentionContainer = ref;
     }
 
