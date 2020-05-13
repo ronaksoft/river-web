@@ -1,3 +1,6 @@
+## 0.32.30
+* Minor bugs fixed
+
 ## 0.32.29
 * Fixed several issues related to bot
 * Cell views updated

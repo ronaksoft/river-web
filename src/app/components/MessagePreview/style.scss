@@ -11,7 +11,7 @@
 .message-preview {
   height: 42px;
   cursor: pointer;
-  max-width: calc(100vw - 400px);
+  max-width: calc(100vw - 447px);
 
   .preview-container {
     display: flex;
@@ -129,6 +129,12 @@
       border-top-left-radius: 0 !important;
       padding-left: 6px !important;
     }
+  }
+}
+
+.messages-inner.large-mode {
+  .message-preview {
+    max-width: calc(100vw - 606px);
   }
 }
 
@@ -262,5 +268,13 @@ html[bubble="4"] {
 .mobile-view {
   .message-preview {
     max-width: calc(100vw - 60px);
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  .messages-inner.large-mode {
+    .message-preview {
+      max-width: 794px;
+    }
   }
 }

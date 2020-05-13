@@ -3521,7 +3521,7 @@ class Chat extends React.Component<IProps, IState> {
 
             const dialogId = peer.getId() || '';
 
-            this.messageRepo.list({peer, after: id, limit: 25}).then((res) => {
+            this.messageRepo.list({peer, after: id - 1, limit: 25}).then((res) => {
                 if (this.selectedDialogId !== dialogId || res.length === 0 || !this.messageRef) {
                     this.setLoading(false);
                     return;

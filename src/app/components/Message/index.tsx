@@ -1462,7 +1462,7 @@ class Message extends React.Component<IProps, IState> {
 
     private checkMediaSize() {
         const windowWidth = window.innerWidth || 640;
-        const w = C_MEDIA_BREAKPOINT + (this.isLarge === undefined ? 0 : (this.isLarge ? -48 : 48));
+        const w = C_MEDIA_BREAKPOINT + (this.isLarge === undefined ? 0 : (this.isLarge ? -12 : 12));
         if (windowWidth > w && (this.isLarge === undefined || this.isLarge === false)) {
             initMediaSize();
             if (this.isLarge !== undefined && this.list) {

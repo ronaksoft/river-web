@@ -661,6 +661,16 @@
     }
   }
 
+  .bubble-wrapper {
+    &.me .message-container {
+      margin-left: 96px;
+    }
+
+    &.you .message-container {
+      margin-right: 96px;
+    }
+  }
+
   &.large-mode {
     .bubble-wrapper {
       &.me .message-container {
