@@ -262,7 +262,7 @@ class App extends React.Component<{}, IState> {
                             </Button>
                             {Boolean(desktopDownloadLink !== '') &&
                             <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
-                                {I18n.tf('chat.update_dialog.download_desktop_version', '7.2.1')}
+                                {I18n.tf('chat.update_dialog.download_desktop_version', '0.15.0')}
                             </Button>}
                         </DialogActions>
                     </Dialog>
