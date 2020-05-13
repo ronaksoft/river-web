@@ -44,6 +44,15 @@ export const getContactsCrc = (users: IUser[]) => {
     return parseInt(CRC.crc32(data), 16);
 };
 
+interface IUserAction {
+    callerId?: number;
+    force?: boolean;
+    isContact: boolean;
+    reject: any;
+    resolve: any;
+    users: IUser[];
+}
+
 export default class UserRepo {
     public static getInstance() {
         if (!this.instance) {
@@ -64,6 +73,8 @@ export default class UserRepo {
     private bubbleMode: string = localStorage.getItem('river.theme.bubble') || '4';
     private throttleBroadcastList: string[] = [];
     private readonly throttleBroadcastExecute: any = undefined;
+    private actionList: IUserAction[] = [];
+    private actionBusy: boolean = false;
 
     private constructor() {
         this.dbService = DB.getInstance();
@@ -134,7 +145,7 @@ export default class UserRepo {
                             }
                             u = kUserMerge(user, u);
                             u.last_updated = this.riverTime.now();
-                            this.upsert(false, [u], false, callerId);
+                            this.importBulk(false, [u], false, callerId);
                             resolve(u);
                         } else {
                             reject('not_found');
@@ -189,8 +200,25 @@ export default class UserRepo {
         if (!users || users.length === 0) {
             return Promise.resolve();
         }
-        const tempUsers = uniqBy(users, 'id');
-        return this.upsert(isContact, tempUsers, force, callerId);
+        const uniqUsers = uniqBy(users, 'id');
+
+        let internalResolve = null;
+        let internalReject = null;
+
+        const promise = new Promise<any>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+        this.actionList.push({
+            callerId,
+            force,
+            isContact,
+            reject: internalReject,
+            resolve: internalResolve,
+            users: uniqUsers,
+        });
+        this.applyActions();
+        return promise;
     }
 
     public upsert(isContact: boolean, users: IUser[], force?: boolean, callerId?: number): Promise<any> {
@@ -250,9 +278,8 @@ export default class UserRepo {
                 const crc32 = this.getContactsCrc();
                 this.apiManager.getContacts(crc32).then((remoteRes) => {
                     if (remoteRes.modified) {
-                        this.importBulk(true, remoteRes.contactusersList).then(() => {
-                            this.importBulk(false, remoteRes.usersList);
-                        });
+                        this.importBulk(true, remoteRes.contactusersList);
+                        this.importBulk(false, remoteRes.usersList);
                         this.storeContactsCrc(remoteRes.contactusersList);
                         this.lastContactTimestamp = now;
                         resolve(remoteRes.contactusersList);
@@ -366,6 +393,23 @@ export default class UserRepo {
         }
         this.broadcastEvent(UserDBUpdated, {ids: this.throttleBroadcastList});
         this.throttleBroadcastList = [];
+    }
+
+    private applyActions() {
+        if (!this.actionBusy && this.actionList.length > 0) {
+            const action = this.actionList.shift();
+            if (action) {
+                this.actionBusy = true;
+                this.upsert(action.isContact, action.users, action.force, action.callerId).then((res) => {
+                    action.resolve(res);
+                }).catch((err) => {
+                    action.reject(err);
+                }).finally(() => {
+                    this.actionBusy = false;
+                    this.applyActions();
+                });
+            }
+        }
     }
 
     private broadcastEvent(name: string, data: any) {

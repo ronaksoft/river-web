@@ -19,6 +19,13 @@ import RiverTime from "../../services/utilities/river_time";
 
 export const GroupDBUpdated = 'Group_DB_Updated';
 
+interface IGroupAction {
+    callerId?: number;
+    groups: IGroup[];
+    reject: any;
+    resolve: any;
+}
+
 export default class GroupRepo {
     public static getInstance() {
         if (!this.instance) {
@@ -37,6 +44,8 @@ export default class GroupRepo {
     private riverTime: RiverTime;
     private throttleBroadcastList: string[] = [];
     private readonly throttleBroadcastExecute: any = undefined;
+    private actionList: IGroupAction[] = [];
+    private actionBusy: boolean = false;
 
     private constructor() {
         this.dbService = DB.getInstance();
@@ -90,7 +99,7 @@ export default class GroupRepo {
                         if (g) {
                             g = kMerge(group, g);
                             g.last_updated = this.riverTime.now();
-                            this.upsert([g]);
+                            this.importBulk([g]);
                             resolve(g);
                         } else {
                             reject('not_found');
@@ -119,8 +128,22 @@ export default class GroupRepo {
         if (!groups || groups.length === 0) {
             return Promise.resolve();
         }
-        const tempGroup = uniqBy(groups, 'id');
-        return this.upsert(tempGroup, callerId);
+        const uniqueGroup = uniqBy(groups, 'id');
+        let internalResolve = null;
+        let internalReject = null;
+
+        const promise = new Promise<any>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+        this.actionList.push({
+            callerId,
+            groups: uniqueGroup,
+            reject: internalReject,
+            resolve: internalResolve,
+        });
+        this.applyActions();
+        return promise;
     }
 
     public upsert(groups: IGroup[], callerId?: number): Promise<any> {
@@ -183,6 +206,23 @@ export default class GroupRepo {
         }
         this.broadcastEvent(GroupDBUpdated, {ids: this.throttleBroadcastList});
         this.throttleBroadcastList = [];
+    }
+
+    private applyActions() {
+        if (!this.actionBusy && this.actionList.length > 0) {
+            const action = this.actionList.shift();
+            if (action) {
+                this.actionBusy = true;
+                this.upsert(action.groups, action.callerId).then((res) => {
+                    action.resolve(res);
+                }).catch((err) => {
+                    action.reject(err);
+                }).finally(() => {
+                    this.actionBusy = false;
+                    this.applyActions();
+                });
+            }
+        }
     }
 
     private broadcastEvent(name: string, data: any) {

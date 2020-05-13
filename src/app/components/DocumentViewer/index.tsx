@@ -1236,12 +1236,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
             if (doc.peer) {
                 const id = doc.peer.getId() || '';
                 if (group) {
-                    this.groupRepo.upsert([{
+                    this.groupRepo.importBulk([{
                         id,
                         photogalleryList: galleryList,
                     }]);
                 } else {
-                    this.userRepo.upsert(false, [{
+                    this.userRepo.importBulk(false, [{
                         id,
                         photogalleryList: galleryList,
                     }]);
@@ -1287,13 +1287,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
             if (doc.peer) {
                 const id = doc.peer.getId() || '';
                 if (group) {
-                    this.groupRepo.upsert([{
+                    this.groupRepo.importBulk([{
                         id,
                         photogalleryList: galleryList,
                     }]);
                 } else {
-                    window.console.log(id, galleryList);
-                    this.userRepo.upsert(false, [{
+                    this.userRepo.importBulk(false, [{
                         id,
                         photogalleryList: galleryList,
                     }]);

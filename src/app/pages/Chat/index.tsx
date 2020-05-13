@@ -715,7 +715,9 @@ class Chat extends React.Component<IProps, IState> {
                                 {(this.peer && this.peer.getType() === PeerType.PEERUSER) ?
                                     <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
                                         <UserName noDetail={true}
-                                                  id={this.selectedDialogId}/></> : i18n.t('chat.remove_message_dialog.remove_for_all')}
+                                                  id={this.selectedDialogId}
+                                                  noIcon={true}
+                                        /></> : i18n.t('chat.remove_message_dialog.remove_for_all')}
                             </Button>}
                             {Boolean(confirmDialogMode === 'remove_message_pending') &&
                             <Button onClick={this.removeMessageHandler(2)} color="primary">
@@ -745,11 +747,14 @@ class Chat extends React.Component<IProps, IState> {
                         <DialogTitle>{i18n.t('chat.delete_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                {i18n.t('chat.delete_dialog.p1')} <UserName className="group-name"
-                                                                            id={this.state.leftMenuSelectedDialogId}
-                                                                            you={this.state.leftMenuSelectedDialogId === this.connInfo.UserID}
-                                                                            youPlaceholder={i18n.t('general.saved_messages')}
-                            /> ?<br/>
+                                {i18n.t('chat.delete_dialog.p1')}
+                                <UserName className="group-name"
+                                          id={this.state.leftMenuSelectedDialogId}
+                                          you={this.state.leftMenuSelectedDialogId === this.connInfo.UserID}
+                                          youPlaceholder={i18n.t('general.saved_messages')}
+                                          noIcon={true}
+                                          noDetail={true}
+                                /> ?<br/>
                                 {i18n.t('chat.delete_dialog.p2')}
                             </DialogContentText>
                         </DialogContent>
@@ -782,7 +787,8 @@ class Chat extends React.Component<IProps, IState> {
                         <DialogTitle>{i18n.t('bot.alert')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                <UserName id={this.selectedDialogId || ''}/> {i18n.t('bot.bot_wants_your_phone')}
+                                <UserName id={this.selectedDialogId || ''} noIcon={true}
+                                          noDetail={true}/> {i18n.t('bot.bot_wants_your_phone')}
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
@@ -798,7 +804,8 @@ class Chat extends React.Component<IProps, IState> {
                         <DialogTitle>{i18n.t('bot.alert')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                <UserName id={this.selectedDialogId || ''}/> {i18n.t('bot.bot_wants_your_location')}
+                                <UserName id={this.selectedDialogId || ''} noIcon={true}
+                                          noDetail={true}/> {i18n.t('bot.bot_wants_your_location')}
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>

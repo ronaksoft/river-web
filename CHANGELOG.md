@@ -1,3 +1,9 @@
+## 0.32.29
+* Fixed several issues related to bot
+* Cell views updated
+* Transactional User/Group repository
+* Overall performance improvements
+
 ## 0.32.28
 * Known bugs fixed
 

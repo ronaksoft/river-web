@@ -548,17 +548,19 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     title: 'Remove',
                 });
             }
-            if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
-                menuItems.push({
-                    cmd: 'promote',
-                    title: 'Promote',
-                });
-            }
-            if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
-                menuItems.push({
-                    cmd: 'demote',
-                    title: 'Demote',
-                });
+            if (group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) {
+                if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
+                    menuItems.push({
+                        cmd: 'promote',
+                        title: 'Promote',
+                    });
+                }
+                if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
+                    menuItems.push({
+                        cmd: 'demote',
+                        title: 'Demote',
+                    });
+                }
             }
         } else {
             return (<span>You have no authority!</span>);

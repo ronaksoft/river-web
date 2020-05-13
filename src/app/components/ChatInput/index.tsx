@@ -592,7 +592,11 @@ class ChatInput extends React.Component<IProps, IState> {
             }
         } else if (this.state.isBot !== isBot) {
             this.setState({
-                isBot,
+                isBot: Boolean(data && data.data),
+            });
+        } else if (isBot) {
+            this.setState({
+                isBot: false,
             });
         }
     }
@@ -1816,48 +1820,6 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    // private getUploaderInput(mimeType: string) {
-    //     const arrs = mimeType.split(';');
-    //     if (arrs.length > 0) {
-    //         mimeType = arrs[0];
-    //     }
-    //     switch (mimeType) {
-    //         case 'image/png':
-    //         case 'image/jpeg':
-    //         case 'image/jpg':
-    //         case 'image/gif':
-    //         case 'image/webp':
-    //         case 'video/webm':
-    //         case 'video/mp4':
-    //             return 'media';
-    //         case 'audio/mp4':
-    //         case 'audio/ogg':
-    //         case 'audio/mp3':
-    //             return 'music';
-    //         default:
-    //             return 'file';
-    //     }
-    // }
-    //
-    // /* Send media handler */
-    // private mediaPreviewDoneHandler = (items: IMediaItem[]) => {
-    //     const {mediaInputMode, previewMessage, previewMessageMode} = this.state;
-    //     const message = cloneDeep(previewMessage);
-    //     switch (mediaInputMode) {
-    //         case 'media':
-    //         case 'music':
-    //         case 'file':
-    //             if (this.props.onMediaSelected) {
-    //                 this.props.onMediaSelected(items, {
-    //                     message,
-    //                     mode: previewMessageMode,
-    //                 });
-    //             }
-    //             break;
-    //     }
-    //     this.clearPreviewMessage(true)();
-    // }
-
     /* Send contact handler */
     private contactImportDoneHandler = (users: IUser[], caption: string) => {
         const {previewMessage, previewMessageMode} = this.state;
@@ -1984,7 +1946,7 @@ class ChatInput extends React.Component<IProps, IState> {
         const {user} = this.state;
         if (user) {
             user.is_bot_started = started;
-            this.userRepo.upsert(false, [user]);
+            this.userRepo.importBulk(false, [user]);
         }
     }
 

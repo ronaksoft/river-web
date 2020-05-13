@@ -32,13 +32,24 @@ import {transformMimeType} from "../StreamVideo/helper";
 
 import './style.scss';
 
-const C_MAX_HEIGHT = 256;
-const C_MIN_HEIGHT = 86;
-const C_MIN_HEIGHT_TINY = 100;
-const C_MAX_WIDTH = 256;
-const C_MAX_CAPTION_WIDTH = 256 + 6;
+export const C_MEDIA_BREAKPOINT = 1116;
+const C_MIN_HEIGHT_TINY = 102;
 const C_MIN_CAPTION_LEN_APPLIER = 10;
-const C_MIN_WIDTH = 86;
+let C_MAX_HEIGHT = 256;
+let C_MIN_HEIGHT = 96;
+let C_MAX_WIDTH = 256;
+let C_MAX_CAPTION_WIDTH = 256 + 6;
+let C_MIN_WIDTH = 96;
+
+export const initMediaSize = () => {
+    const width = window.innerWidth || 640;
+    const c = width < C_MEDIA_BREAKPOINT ? 1 : 1.5;
+    C_MAX_HEIGHT = 256 * c;
+    C_MIN_HEIGHT = 96 * c;
+    C_MAX_WIDTH = 256 * c;
+    C_MAX_CAPTION_WIDTH = 256 * c + 6;
+    C_MIN_WIDTH = 96 * c;
+};
 
 export interface IMediaInfo {
     album?: string;

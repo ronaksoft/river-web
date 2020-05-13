@@ -299,7 +299,6 @@
     padding: 3px 3px 15px 3px;
     vertical-align: top;
     border-radius: 5px;
-    max-width: 558px;
     min-width: 75px;
     min-height: 35px;
     box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
@@ -311,7 +310,7 @@
       text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
       color: var(--dark-medium);
       font-weight: 300;
-      max-width: 256px;
+      max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -631,45 +630,6 @@
   }
 }
 
-.mobile-view {
-  .chat {
-    padding-left: 7px;
-  }
-
-  .bubble-wrapper .bubble {
-    transition: margin-left 0.1s;
-  }
-
-  .bubble-wrapper.you {
-    .avatar {
-      display: none;
-    }
-
-    .arrow {
-      left: 0;
-    }
-
-    .message-container {
-      margin-left: 10px;
-    }
-  }
-
-  .selectable {
-    .bubble-wrapper {
-
-      .message-container {
-        margin-left: 36px;
-      }
-
-      &.you {
-        .arrow {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
 .messages-inner {
   position: relative;
   z-index: 2;
@@ -698,6 +658,18 @@
       background-color: rgba(0, 0, 0, 0.6);
       border-radius: 8px;
       cursor: pointer;
+    }
+  }
+
+  &.large-mode {
+    .bubble-wrapper {
+      &.me .message-container {
+        margin-left: 256px;
+      }
+
+      &.you .message-container {
+        margin-right: 256px;
+      }
     }
   }
 }
@@ -845,7 +817,7 @@ html[theme="dark-blue"] {
     }
   }
 
-  .selectable .bubble-wrapper {
+  .selectable .bubble-wrapper:not(.date-padding) {
     &:hover {
       background-color: var(--dark-hover-light);
     }
@@ -1212,11 +1184,11 @@ html[bubble="5"] {
 
 html[bubble="5"] {
   .bubble-wrapper {
+    align-items: flex-start;
+
     .arrow {
       display: none;
     }
-
-    align-items: flex-start;
 
     .message-container {
       margin-left: 44px !important;
@@ -1252,6 +1224,16 @@ html[bubble="5"] {
     &.me {
       > .avatar {
         visibility: visible;
+      }
+
+      .message-container {
+        margin-left: 0 !important;
+      }
+    }
+
+    &.you {
+      .message-container {
+        margin-right: 0 !important;
       }
     }
   }
@@ -1380,6 +1362,51 @@ html[gradient="5"]:not([bubble="5"]) {
       }
     }
   }
+}
+
+.mobile-view {
+  .chat {
+    padding-left: 7px;
+  }
+
+  .bubble-wrapper .bubble {
+    transition: margin-left 0.1s;
+  }
+
+  .bubble-wrapper.you {
+    .avatar {
+      display: none;
+    }
+
+    .arrow {
+      left: 0;
+    }
+
+    .message-container {
+      margin-left: 10px;
+    }
+  }
+
+  .selectable {
+    .bubble-wrapper {
+
+      .message-container {
+        margin-left: 36px;
+      }
+
+      &.you {
+        .arrow {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+html[bubble="5"] .mobile-view .bubble-wrapper .message-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin-left: 0 !important;
 }
 
 //html[bubble="3"] {

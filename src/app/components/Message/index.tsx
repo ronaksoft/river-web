@@ -31,7 +31,7 @@ import {ErrorRounded} from '@material-ui/icons';
 import MessageFile from '../MessageFile';
 import MessageContact from '../MessageContact';
 import CachedPhoto from '../CachedPhoto';
-import MessageMedia, {getContentSize} from '../MessageMedia';
+import MessageMedia, {C_MEDIA_BREAKPOINT, getContentSize, initMediaSize} from '../MessageMedia';
 import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import MessageLocation from '../MessageLocation';
 import Broadcaster from '../../services/broadcaster';
@@ -164,6 +164,7 @@ interface IState {
         width: number,
         height: number,
     };
+    enable: boolean;
     enableDrag: boolean;
     items: IMessage[];
     loading: boolean;
@@ -274,6 +275,7 @@ class Message extends React.Component<IProps, IState> {
     private savedMessages: boolean = false;
     private resizeObserver: ResizeObserver | undefined;
     private readonly containerResizeThrottle: any;
+    private isLarge?: boolean;
 
     constructor(props: IProps) {
         super(props);
@@ -286,6 +288,7 @@ class Message extends React.Component<IProps, IState> {
                 height,
                 width,
             },
+            enable: false,
             enableDrag: false,
             items: [],
             loading: false,
@@ -607,15 +610,15 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay, containerSize} = this.state;
+        const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay, containerSize, enable} = this.state;
         return (
             <div className="main-messages">
                 <div
-                    className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
+                    className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '') + (this.isLarge ? ' large-mode' : '')}
                     style={{height: `${containerSize.height}px`, width: `${containerSize.width}px`}}
                     onDragEnter={this.enableDragHandler}
                 >
-                    <KKWindow
+                    {enable && <KKWindow
                         ref={this.refHandler}
                         containerRef={this.containerRefHandler}
                         className="chat active-chat"
@@ -633,7 +636,7 @@ class Message extends React.Component<IProps, IState> {
                         onLoadBefore={this.kkWindowBeforeHandler}
                         onLoadAfter={this.props.onLoadMoreAfter}
                         onScrollPos={this.scrollPosHandler}
-                    />
+                    />}
                     <Menu
                         anchorEl={moreAnchorEl}
                         anchorPosition={moreAnchorPos}
@@ -1203,7 +1206,6 @@ class Message extends React.Component<IProps, IState> {
         this.setState({
             selectedIds,
         }, () => {
-            // this.list.forceUpdateGrid();
             if (cb) {
                 cb();
             }
@@ -1226,8 +1228,6 @@ class Message extends React.Component<IProps, IState> {
         this.props.onSelectedIdsChange(selectedIds);
         this.setState({
             selectedIds,
-        }, () => {
-            // this.list.forceUpdateGrid();
         });
     }
 
@@ -1457,6 +1457,37 @@ class Message extends React.Component<IProps, IState> {
                 },
             });
         }
+        this.checkMediaSize();
+    }
+
+    private checkMediaSize() {
+        const windowWidth = window.innerWidth || 640;
+        const w = C_MEDIA_BREAKPOINT + (this.isLarge === undefined ? 0 : (this.isLarge ? -48 : 48));
+        if (windowWidth > w && (this.isLarge === undefined || this.isLarge === false)) {
+            initMediaSize();
+            if (this.isLarge !== undefined && this.list) {
+                this.list.clearAll();
+            }
+            this.toggleEnable();
+            this.isLarge = true;
+        } else if (windowWidth < w && (this.isLarge === undefined || this.isLarge === true)) {
+            initMediaSize();
+            if (this.isLarge !== undefined && this.list) {
+                this.list.clearAll();
+            }
+            this.toggleEnable();
+            this.isLarge = false;
+        }
+    }
+
+    private toggleEnable() {
+        this.setState({
+            enable: false,
+        }, () => {
+            this.setState({
+                enable: true,
+            });
+        });
     }
 
     private enableDragHandler = () => {
