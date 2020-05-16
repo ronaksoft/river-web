@@ -591,12 +591,18 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.forceUpdate();
             }
         } else if (this.state.isBot !== isBot) {
+            if (this.botKeyboard) {
+                this.botKeyboard.data = data ? data.data : undefined;
+            }
             this.setState({
-                isBot: Boolean(data && data.data),
+               isBot,
             });
         } else if (isBot) {
+            if (this.botKeyboard) {
+                this.botKeyboard.data = data ? data.data : undefined;
+            }
             this.setState({
-                isBot: false,
+                isBot,
             });
         }
     }
@@ -673,7 +679,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 <div className="textarea-container">
                                     <MentionInput
                                         peer={this.state.peer}
-                                        isBot={isBot || false}
+                                        isBot={this.state.isBot || false}
                                         value={textareaValue}
                                         onChange={this.textInputChangeHandler}
                                         inputRef={this.textareaRefHandler}

@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import SettingsModal from '../SettingsModal';
-import {CheckRounded, LabelOutlined, LabelRounded, AddRounded, SearchRounded} from '@material-ui/icons';
+import {CheckRounded, LabelOutlined, LabelRounded, SearchRounded} from '@material-ui/icons';
 import i18n from '../../services/i18n';
 import {ILabel} from "../../repository/label/interface";
 import {TextField, InputAdornment} from "@material-ui/core";
@@ -122,14 +122,14 @@ class LabelDialog extends React.Component<IProps, IState> {
                             hideTracksWhenNotNeeded={true}
                             universal={true}
                         >
-                            <div key="create-label" className="label-item create-label">
+                            {/*<div key="create-label" className="label-item create-label">
                                 <div className="label-icon">
                                     <AddRounded/>
                                 </div>
                                 <div className="label-info">
                                     <div className="label-name">{i18n.t('label.create_label')}</div>
                                 </div>
-                            </div>
+                            </div>*/}
                             {list.map((label, key) => {
                                 return (<div key={key} className="label-item">
                                     <div className="label-icon" style={{backgroundColor: label.colour}}>

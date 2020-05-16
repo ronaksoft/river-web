@@ -32,7 +32,7 @@ import ElectronService from "./app/services/electron";
 
 import './App.scss';
 
-export const C_VERSION = '0.32.30';
+export const C_VERSION = '0.32.31';
 export const C_ELECTRON_VERSION = '8.2.5';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');

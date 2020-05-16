@@ -1,3 +1,8 @@
+## 0.32.31
+* Bot bugs fixed
+* Themes updated
+* Minor bugs fixed
+
 ## 0.32.30
 * Minor bugs fixed
 
