@@ -14,7 +14,19 @@
   flex-direction: column;
 
   .label-search {
-    padding: 6px 12px;
+    padding: 6px 12px 12px;
+
+    > div {
+      margin: 0;
+    }
+
+    .dialog-adornment {
+      color: var(--color-gale);
+
+      svg {
+        font-size: 20px;
+      }
+    }
   }
 
   .label-container {
@@ -54,7 +66,7 @@
         margin: 0 12px 0 6px;
 
         svg {
-          font-size: 28px;
+          font-size: 24px;
           color: var(--white);
         }
       }
@@ -84,6 +96,33 @@
         .label-counter {
           font-size: 14px;
           color: #A1A1A1;
+        }
+      }
+
+      &.create-label {
+        position: relative;
+        cursor: pointer;
+        margin: 0 0 8px;
+        padding-bottom: 12px;
+        height: 64px;
+
+        &::before {
+          position: absolute;
+          content: '';
+          bottom: 0;
+          left: 32px;
+          right: 32px;
+          height: 1px;
+          background-color: var(--color-hover-dark);
+        }
+
+        .label-icon {
+          background-color: var(--river);
+        }
+
+        .label-info .label-name {
+          color: var(--river);
+          font-size: 16px;
         }
       }
     }

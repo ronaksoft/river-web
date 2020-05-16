@@ -654,7 +654,9 @@ class Uploader extends React.Component<IProps, IState> {
     }
 
     /* Add new media items at end of items */
-    private addMediaHandler = () => {
+    private addMediaHandler = (e: any) => {
+        e.stopPropagation();
+        e.preventDefault();
         if (this.dropzoneRef) {
             this.dropzoneRef.open();
         }

@@ -78,7 +78,7 @@
     }
 
     .uploader-header {
-      height: 48px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -86,17 +86,23 @@
       border-bottom: 1px solid rgba(172, 176, 180, 0.2);
 
       .uploader-tabs {
+        height: 100%;
+
         button {
           min-width: 48px;
           min-height: 48px;
-          padding: 0 8px;
+          padding: 6px 8px 0;
+          margin: 0 8px;
+          text-transform: none;
+          font-size: 14px;
 
           .MuiTab-wrapper {
             flex-direction: row;
           }
 
           svg {
-            margin: 0 4px 4px 0;
+            font-size: 28px;
+            margin: 0 8px 4px 0;
           }
         }
       }

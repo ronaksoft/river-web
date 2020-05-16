@@ -35,6 +35,8 @@
       bottom: 0;
       left: 0;
       z-index: 11;
+      border-radius: 6px;
+      overflow: hidden;
 
       &.downloaded-media {
         z-index: 15;
@@ -298,12 +300,20 @@ html[theme="dark-blue"] {
 
 html[bubble="2"] {
   .message-media {
+    .media-content {
+      border-radius: 18px;
+    }
+
     .media-duration-container {
       top: 8px;
       left: 8px;
       height: 18px;
       border-radius: 8px;
       line-height: 18px;
+
+      .media-container {
+        border-radius: 8px;
+      }
 
       span {
         padding-top: 2px;

@@ -62,13 +62,13 @@ class SettingsModal extends React.Component<IProps, IState> {
             >
                 <React.Fragment>
                     <div className="settings-modal-header">
-                        <div className="modal-icon" onClick={this.props.onDone}>
-                            {icon || <AppsRounded/>}
-                        </div>
-                        <div className="modal-title">{title}</div>
                         <div className="modal-close">
                             <CloseRounded onClick={this.props.onClose}/>
                         </div>
+                        <div className={'modal-title' + (this.props.onDone ? ' with-icon' : '')}>{title}</div>
+                        {this.props.onDone && <div className="modal-icon" onClick={this.props.onDone}>
+                            {icon || <AppsRounded/>}
+                        </div>}
                     </div>
                     {Boolean(!noScrollbar) && <div className="setting-content" style={{height: this.props.height}}>
                         <Scrollbars

@@ -9,10 +9,10 @@
 
 import * as React from 'react';
 import SettingsModal from '../SettingsModal';
-import {CheckRounded, LabelOutlined, LabelRounded} from '@material-ui/icons';
+import {CheckRounded, LabelOutlined, LabelRounded, AddRounded, SearchRounded} from '@material-ui/icons';
 import i18n from '../../services/i18n';
 import {ILabel} from "../../repository/label/interface";
-import TextField from "@material-ui/core/TextField/TextField";
+import {TextField, InputAdornment} from "@material-ui/core";
 import LabelRepo from "../../repository/label";
 import Broadcaster from "../../services/broadcaster";
 import {throttle, difference, intersection, clone, isEqual, union} from "lodash";
@@ -102,12 +102,17 @@ class LabelDialog extends React.Component<IProps, IState> {
                 <div className="label-dialog">
                     <div className="label-search">
                         <TextField
-                            label={i18n.t('dialog.search')}
+                            placeholder={i18n.t('dialog.search')}
                             fullWidth={true}
-                            inputProps={{
-                                maxLength: 32,
+                            InputProps={{
+                                startAdornment:
+                                    <InputAdornment position="start" className="dialog-adornment">
+                                        <SearchRounded/>
+                                    </InputAdornment>
                             }}
                             value={search}
+                            variant="outlined"
+                            margin="dense"
                             onChange={this.searchChangeHandler}
                         />
                     </div>
@@ -117,10 +122,18 @@ class LabelDialog extends React.Component<IProps, IState> {
                             hideTracksWhenNotNeeded={true}
                             universal={true}
                         >
+                            <div key="create-label" className="label-item create-label">
+                                <div className="label-icon">
+                                    <AddRounded/>
+                                </div>
+                                <div className="label-info">
+                                    <div className="label-name">{i18n.t('label.create_label')}</div>
+                                </div>
+                            </div>
                             {list.map((label, key) => {
                                 return (<div key={key} className="label-item">
                                     <div className="label-icon" style={{backgroundColor: label.colour}}>
-                                        <LabelOutlined/>
+                                        <LabelRounded/>
                                     </div>
                                     <div className="label-info">
                                         <div className="label-name">{label.name}</div>

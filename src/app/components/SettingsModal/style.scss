@@ -18,12 +18,13 @@
 
   .settings-modal-header {
     width: 300px;
-    height: 38px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: row-reverse;
-    border-bottom: 1px solid #E0E0E0;
+    margin: 4px 0 0;
+    //border-bottom: 1px solid #E0E0E0;
 
     .modal-icon,
     .modal-close {
@@ -47,7 +48,13 @@
       font-weight: bold;
       font-size: 14px;
       line-height: 24px;
-      text-align: center;
+      text-align: left;
+      padding-left: 16px;
+
+      &.width-icon {
+        padding: 0;
+        text-align: center;
+      }
 
       svg {
         font-size: 16px;
