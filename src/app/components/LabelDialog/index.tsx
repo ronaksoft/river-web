@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import SettingsModal from '../SettingsModal';
-import {CheckRounded, LabelOutlined, LabelRounded, SearchRounded} from '@material-ui/icons';
+import {CheckRounded, LabelOutlined, LabelRounded, SearchRounded, AddRounded} from '@material-ui/icons';
 import i18n from '../../services/i18n';
 import {ILabel} from "../../repository/label/interface";
 import {TextField, InputAdornment} from "@material-ui/core";
@@ -19,12 +19,14 @@ import {throttle, difference, intersection, clone, isEqual, union} from "lodash"
 import Scrollbars from "react-custom-scrollbars";
 import {localize} from "../../services/utilities/localize";
 import Checkbox from "@material-ui/core/Checkbox";
+import LabelCreate from "../LabelCreate";
 
 import './style.scss';
 
 interface IProps {
     onClose?: () => void;
     onDone?: (msgIds: number[], addIds: number[], removeIds: number[]) => void;
+    onError?: (message: string) => void;
 }
 
 interface IState {
@@ -44,6 +46,7 @@ class LabelDialog extends React.Component<IProps, IState> {
     private selectedIds: number[] = [];
     private indeterminateIds: number[] = [];
     private msgIds: number[] = [];
+    private labelCreateRef: LabelCreate | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -99,6 +102,8 @@ class LabelDialog extends React.Component<IProps, IState> {
                            height="400px"
                            noScrollbar={true}
             >
+                <LabelCreate ref={this.labelCreateRefHandler} onError={this.props.onError}
+                             onDone={this.labelCreateDoneHandler}/>
                 <div className="label-dialog">
                     <div className="label-search">
                         <TextField
@@ -122,14 +127,6 @@ class LabelDialog extends React.Component<IProps, IState> {
                             hideTracksWhenNotNeeded={true}
                             universal={true}
                         >
-                            {/*<div key="create-label" className="label-item create-label">
-                                <div className="label-icon">
-                                    <AddRounded/>
-                                </div>
-                                <div className="label-info">
-                                    <div className="label-name">{i18n.t('label.create_label')}</div>
-                                </div>
-                            </div>*/}
                             {list.map((label, key) => {
                                 return (<div key={key} className="label-item">
                                     <div className="label-icon" style={{backgroundColor: label.colour}}>
@@ -154,6 +151,15 @@ class LabelDialog extends React.Component<IProps, IState> {
                                     </div>
                                 </div>);
                             })}
+                            <div key="create-label" className="label-item create-label"
+                                 onClick={this.addLabelHandler}>
+                                <div className="label-icon">
+                                    <AddRounded/>
+                                </div>
+                                <div className="label-info">
+                                    <div className="label-name">{i18n.t('label.create_label')}</div>
+                                </div>
+                            </div>
                         </Scrollbars>
                     </div>}
                     {Boolean(list.length === 0 && !loading) && <div className="label-container label-placeholder">
@@ -169,6 +175,25 @@ class LabelDialog extends React.Component<IProps, IState> {
                 </div>
             </SettingsModal>
         );
+    }
+
+    private labelCreateRefHandler = (ref: any) => {
+        this.labelCreateRef = ref;
+    }
+
+    private addLabelHandler = () => {
+        if (!this.labelCreateRef) {
+            return;
+        }
+        this.labelCreateRef.openDialog();
+    }
+
+    private labelCreateDoneHandler = (label: ILabel) => {
+        const {list} = this.state;
+        list.push(label);
+        this.setState({
+            list,
+        });
     }
 
     private modalCloseHandler = () => {

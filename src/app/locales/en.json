@@ -59,7 +59,8 @@
     "none": "None",
     "recover": "Recover",
     "ok": "OK",
-    "send": "Send"
+    "send": "Send",
+    "create": "Create"
   },
   "chat": {
     "search": "Search",
@@ -422,7 +423,7 @@
   "label": {
     "labels": "Labels",
     "create_a_new_label": "Create a new Label",
-    "label_title": "Label name",
+    "label_title": "Title",
     "label_count": "{0} item",
     "label_counts": "{0} items",
     "no_label": "No Label",

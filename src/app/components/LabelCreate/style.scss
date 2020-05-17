@@ -1,0 +1,159 @@
+/*
+    Creation Time: 2020 - May - 17
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.create-label-dialog {
+  width: 380px;
+
+  .input-container {
+    display: flex;
+    min-height: 48px;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+
+    .label-icon-holder {
+      height: 52px;
+      width: 52px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.11);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 16px 0 0;
+
+      svg {
+        color: var(--white);
+        font-size: 28px;
+      }
+    }
+
+    .label-title-input {
+      flex: 1;
+    }
+  }
+
+  .label-color-container {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: flex-start;
+    padding: 8px;
+
+    .label-color-item {
+      position: relative;
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      margin: 10px;
+      cursor: pointer;
+
+      &.selected {
+        &:after {
+          position: absolute;
+          content: '';
+          top: 2px;
+          right: 2px;
+          bottom: 2px;
+          left: 2px;
+          border-radius: 50%;
+          border: 2px solid var(--white);
+        }
+      }
+    }
+  }
+
+  .label-footer {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0 12px;
+  }
+}
+
+html[direction="rtl"] {
+  .create-label-dialog {
+    .input-container {
+      flex-direction: row-reverse;
+
+      .label-icon-holder {
+        margin: 0 0 0 16px;
+      }
+    }
+
+    .label-color-container {
+      justify-content: flex-end;
+    }
+
+    .label-footer {
+      direction: rtl;
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .create-label-dialog {
+    .input-container {
+      label, input {
+        color: var(--white);
+      }
+    }
+
+    .label-color-container {
+      .label-color-item {
+        &.selected {
+          &:after {
+            border-color: var(--dark-medium);
+          }
+        }
+      }
+    }
+
+    .label-footer {
+      button:not([disabled]) {
+        color: var(--white);
+      }
+
+      button.MuiButton-textPrimary {
+        color: var(--river);
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"]{
+  .create-label-dialog {
+    .input-container {
+      label, input {
+        color: var(--white);
+      }
+    }
+
+    .label-color-container {
+      .label-color-item {
+        &.selected {
+          &:after {
+            border-color: var(--dark-blue-medium);
+          }
+        }
+      }
+    }
+
+    .label-footer {
+      button:not([disabled]) {
+        color: var(--white);
+      }
+
+      button.MuiButton-textPrimary {
+        color: var(--river);
+      }
+    }
+  }
+}

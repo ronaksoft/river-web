@@ -247,7 +247,6 @@ export default class LabelRepo {
     }
 
     private insertManyLabelItem(labelId: number, messageList: IMessage[]) {
-        window.console.log(labelId, messageList);
         if (messageList.length > 0) {
             this.db.labels.get(labelId).then((label) => {
                 if (!label) {

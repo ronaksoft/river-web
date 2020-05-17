@@ -17,7 +17,7 @@ import {MediaGeoLocation} from '../../services/sdk/messages/chat.core.message.me
 
 import './style.scss';
 
-const getMapLocation = (message: IMessage) => {
+export const getMapLocation = (message: IMessage) => {
     const location: google.maps.LatLngLiteral = {
         lat: 0,
         lng: 0,

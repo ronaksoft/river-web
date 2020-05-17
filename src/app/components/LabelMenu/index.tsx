@@ -8,16 +8,11 @@
 */
 
 import * as React from 'react';
-import {trimStart} from 'lodash';
 import {
     KeyboardBackspaceRounded,
-    CheckRounded,
-    ControlPointRounded,
     LabelRounded,
-    LabelOutlined,
     EditRounded,
-    ColorLensRounded,
-    DeleteRounded,
+    DeleteRounded, SearchRounded, AddRounded,
 } from '@material-ui/icons';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton/IconButton';
@@ -25,7 +20,6 @@ import i18n from '../../services/i18n';
 import {localize} from "../../services/utilities/localize";
 import Scrollbars from "react-custom-scrollbars";
 import {throttle, findIndex} from "lodash";
-import {labelColors} from "./vars";
 import APIManager from "../../services/sdk";
 import {ILabel} from "../../repository/label/interface";
 import LabelRepo from "../../repository/label";
@@ -35,19 +29,15 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog/Dialog";
-import {IDialog} from "../../repository/dialog/interface";
-import {getMessageTitle} from "../Dialog/utils";
-import UserRepo from "../../repository/user";
-import DialogMessage from "../DialogMessage";
 import AutoSizer from "react-virtualized-auto-sizer";
-import {FixedSizeList, ListOnItemsRenderedProps} from "react-window";
-import getScrollbarWidth from "../../services/utilities/scrollbar_width";
-import IsMobile from "../../services/isMobile";
 import DialogSkeleton from "../DialogSkeleton";
 import {IMessage} from "../../repository/message/interface";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
+import {InputAdornment} from "@material-ui/core";
+import LabelCreate from "../LabelCreate";
+import {kMerge} from "../../services/utilities/kDash";
+import {LabelMessageItem} from "../LabelItem";
 
 import './style.scss';
 
@@ -57,54 +47,40 @@ interface IProps {
 }
 
 interface IState {
-    color: string;
     confirmOpen: boolean;
     label?: ILabel;
-    labelList: IDialog[];
+    labelList: IMessage[];
     labelLoading: boolean;
     list: ILabel[];
     loading: boolean;
-    name: string;
     page: string;
-    page2Mode: 'create' | 'label';
     search: string;
     selectedId: number;
     selectedIds: number[];
 }
 
-const listStyle: React.CSSProperties = {
-    overflowX: 'visible',
-    overflowY: 'visible',
-};
-
 const C_LABEL_LIST_LIMIT = 20;
 
 class LabelMenu extends React.Component<IProps, IState> {
-    private list: FixedSizeList | undefined;
     private apiManager: APIManager;
     private labelRepo: LabelRepo;
     private broadcaster: Broadcaster;
     private readonly searchThrottle: any;
     private eventReferences: any[] = [];
-    private userId: string = UserRepo.getInstance().getCurrentUserId();
     private readonly rtl: boolean = false;
-    private readonly hasScrollbar: boolean = false;
-    private readonly isMobile: boolean = false;
     private labelHasMore: boolean = false;
+    private labelCreateRef: LabelCreate | undefined;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            color: '',
             confirmOpen: false,
             labelList: [],
             labelLoading: false,
             list: [],
             loading: false,
-            name: '',
             page: '1',
-            page2Mode: 'create',
             search: '',
             selectedId: 0,
             selectedIds: [],
@@ -115,9 +91,7 @@ class LabelMenu extends React.Component<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
         this.searchThrottle = throttle(this.searchIt, 512);
 
-        this.hasScrollbar = getScrollbarWidth() > 0;
         this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
-        this.isMobile = this.isMobile = IsMobile.isAny();
     }
 
     public componentDidMount() {
@@ -134,9 +108,11 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, color, confirmOpen, name, search, list, loading, selectedIds, page2Mode, label} = this.state;
+        const {page, confirmOpen, search, list, loading, selectedIds, label} = this.state;
         return (
             <div className="label-menu">
+                <LabelCreate ref={this.labelCreateRefHandler} onError={this.props.onError}
+                             onDone={this.labelCreateDoneHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -146,26 +122,30 @@ class LabelMenu extends React.Component<IProps, IState> {
                                 <KeyboardBackspaceRounded/>
                             </IconButton>
                             <label>{i18n.t('label.labels')}</label>
-                            <IconButton
-                                onClick={this.addLabelPageHandler}
+                            {Boolean(selectedIds.length > 0) && <IconButton
+                                onClick={this.removeLabelHandler}
                                 className="add-remove-icon"
                             >
-                                <Tooltip
-                                    title={i18n.t(selectedIds.length > 0 ? 'general.remove' : 'label.create_a_new_label')}>
-                                    {Boolean(selectedIds.length > 0) ? <DeleteRounded/> : <ControlPointRounded/>}
+                                <Tooltip title={i18n.t('general.remove')}>
+                                    <DeleteRounded/>
                                 </Tooltip>
-                            </IconButton>
+                            </IconButton>}
                         </div>
                         <div className="label-search">
-                            <TextField fullWidth={true}
-                                       label={i18n.t('contact.search')}
-                                       className="title-edit"
-                                       type="text"
-                                       inputProps={{
-                                           maxLength: 32,
-                                       }}
-                                       value={search}
-                                       onChange={this.searchChangeHandler}/>
+                            <TextField
+                                placeholder={i18n.t('dialog.search')}
+                                fullWidth={true}
+                                InputProps={{
+                                    startAdornment:
+                                        <InputAdornment position="start" className="dialog-adornment">
+                                            <SearchRounded/>
+                                        </InputAdornment>
+                                }}
+                                value={search}
+                                variant="outlined"
+                                margin="dense"
+                                onChange={this.searchChangeHandler}
+                            />
                         </div>
                         {Boolean(list.length > 0) &&
                         <div className={'label-container' + (selectedIds.length > 0 ? ' selectable-mode' : '')}>
@@ -176,10 +156,22 @@ class LabelMenu extends React.Component<IProps, IState> {
                             >
                                 {list.map((lbl, key) => {
                                     return (<div key={key} className="label-item">
-                                        <div className="label-icon" style={{color: lbl.colour}}>
-                                            <div className="label-circle" style={{backgroundColor: lbl.colour}}>
-                                                <LabelOutlined className="svg-icon"/>
+                                        <div className="label-icon">
+                                            <div className="label-circle label-mode"
+                                                 style={{backgroundColor: lbl.colour}}>
+                                                <LabelRounded className="svg-icon"/>
                                             </div>
+                                            <div className="label-circle edit-mode"
+                                                 onClick={this.editLabelHandler(lbl)}>
+                                                <EditRounded/>
+                                            </div>
+                                        </div>
+                                        <div className="label-info" onClick={this.listLabelHandler(lbl)}>
+                                            <div className="label-name">{lbl.name}</div>
+                                            <div className="label-counter">
+                                                {i18n.tf(lbl.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(lbl.count || 0)))}</div>
+                                        </div>
+                                        <div className="label-action">
                                             <Checkbox
                                                 color="primary"
                                                 checked={selectedIds.indexOf(lbl.id || 0) > -1}
@@ -191,18 +183,19 @@ class LabelMenu extends React.Component<IProps, IState> {
                                                 className="checkbox-icon"
                                             />
                                         </div>
-                                        <div className="label-info" onClick={this.listLabelHandler(lbl)}>
-                                            <div className="label-name">{lbl.name}</div>
-                                            <div className="label-counter">
-                                                {i18n.tf(lbl.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(lbl.count || 0)))}</div>
-                                        </div>
-                                        <div className="label-action">
-                                            <IconButton onClick={this.editLabelHandler(lbl.id || 0)}>
-                                                <EditRounded/>
-                                            </IconButton>
-                                        </div>
                                     </div>);
                                 })}
+                                <div key="create-label" className="label-item create-label"
+                                     onClick={this.addLabelHandler}>
+                                    <div className="label-icon">
+                                        <div className="label-circle">
+                                            <AddRounded className="svg-icon"/>
+                                        </div>
+                                    </div>
+                                    <div className="label-info">
+                                        <div className="label-name">{i18n.t('label.create_label')}</div>
+                                    </div>
+                                </div>
                             </Scrollbars>
                         </div>}
                         {Boolean(list.length === 0 && !loading) && <div className="label-container label-placeholder">
@@ -210,57 +203,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                             {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
                         </div>}
                     </div>
-                    {Boolean(page2Mode === 'create') && <div className="page page-2">
-                        <div className="menu-header">
-                            <IconButton
-                                onClick={this.prevPageHandler}
-                            >
-                                <KeyboardBackspaceRounded/>
-                            </IconButton>
-                            <label>{i18n.t('label.create_a_new_label')}</label>
-                        </div>
-                        <div className="input-container">
-                            <div className="label-icon-holder" style={{backgroundColor: color}}>
-                                <ColorLensRounded/>
-                            </div>
-                            <TextField
-                                className="label-title-input"
-                                label={i18n.t('label.label_title')}
-                                fullWidth={true}
-                                value={name}
-                                inputProps={{
-                                    maxLength: 32,
-                                }}
-                                onChange={this.titleChangeHandler}
-                            />
-                        </div>
-                        <div className="label-color-container">
-                            {labelColors.map((c, key) => {
-                                if (color === c) {
-                                    return (
-                                        <div key={key} className="label-color-item" style={{backgroundColor: c}}>
-                                            <CheckRounded/>
-                                        </div>
-                                    );
-                                } else {
-                                    return (
-                                        <div key={key} className="label-color-item" style={{backgroundColor: c}}
-                                             onClick={this.changeLabelColorHandler(c)}/>
-                                    );
-                                }
-                            })}
-                        </div>
-                        {Boolean(name.length > 0 && color.length > 0) &&
-                        <div className={'actions-bar no-bg' + (loading ? 'disabled' : '')}>
-                            <div className="add-action" onClick={this.createLabelHandler}>
-                                <CheckRounded/>
-                            </div>
-                        </div>}
-                        <div className="actions-bar no-bg cancel" onClick={this.cancelHandler}>
-                            {i18n.t('general.cancel')}
-                        </div>
-                    </div>}
-                    {Boolean(page2Mode === 'label') && <div className="page page-2">
+                    {Boolean(label) && <div className="page page-2">
                         <div className="menu-header">
                             <IconButton
                                 onClick={this.prevPageHandler}
@@ -270,7 +213,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                             {label && <>
                                 <div className="header-label-icon">
                                     <div className="label-circle" style={{backgroundColor: label.colour}}>
-                                        <LabelOutlined/>
+                                        <LabelRounded/>
                                     </div>
                                 </div>
                                 <div className="header-label-info" onClick={this.listLabelHandler(label)}>
@@ -304,32 +247,40 @@ class LabelMenu extends React.Component<IProps, IState> {
         );
     }
 
+    private labelCreateRefHandler = (ref: any) => {
+        this.labelCreateRef = ref;
+    }
+
     private prevPageHandler = () => {
         this.setState({
             page: '1',
         });
     }
 
-    private titleChangeHandler = (e: any) => {
+    private addLabelHandler = () => {
+        if (!this.labelCreateRef) {
+            return;
+        }
+        this.labelCreateRef.openDialog();
+    }
+
+    private removeLabelHandler = () => {
         this.setState({
-            name: trimStart(e.currentTarget.value),
+            confirmOpen: true,
         });
     }
 
-    private addLabelPageHandler = () => {
-        const {selectedIds} = this.state;
-        if (selectedIds.length === 0) {
-            this.setState({
-                color: '',
-                name: '',
-                page: '2',
-                page2Mode: 'create',
-            });
+    private labelCreateDoneHandler = (label: ILabel) => {
+        const {list} = this.state;
+        const index = findIndex(list, {id: label.id});
+        if (index === -1) {
+            list.push(label);
         } else {
-            this.setState({
-                confirmOpen: true,
-            });
+            list[index] = kMerge(list[index], label);
         }
+        this.setState({
+            list,
+        });
     }
 
     private searchChangeHandler = (e: any) => {
@@ -345,93 +296,11 @@ class LabelMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private changeLabelColorHandler = (c: string) => (e?: any) => {
-        this.setState({
-            color: c,
-        });
-    }
-
-    private cancelHandler = () => {
-        this.setState({
-            color: '',
-            name: '',
-            page: '1',
-        });
-    }
-
-    private createLabelHandler = () => {
-        const {selectedId, loading} = this.state;
-        if (loading) {
+    private editLabelHandler = (label: ILabel) => (e?: any) => {
+        if (!this.labelCreateRef || label.id === 0) {
             return;
         }
-        this.setState({
-            loading: true,
-        });
-        if (selectedId === 0) {
-            this.apiManager.labelCreate(this.state.name, this.state.color).then((res) => {
-                const {list} = this.state;
-                list.push({
-                    colour: res.colour || '',
-                    count: res.count || 0,
-                    id: res.id || 0,
-                    name: res.name || '',
-                });
-                this.setState({
-                    color: '',
-                    list,
-                    loading: false,
-                    name: '',
-                    page: '1',
-                });
-            }).catch((err) => {
-                this.cancelHandler();
-                this.setState({
-                    loading: false,
-                });
-                if (this.props.onError && err.code === C_ERR.ErrCodeTooMany && err.items === C_ERR_ITEM.ErrItemLabel) {
-                    this.props.onError(i18n.t('label.max_label_warning'));
-                }
-            });
-        } else {
-            this.apiManager.labelEdit(selectedId, this.state.name, this.state.color).then(() => {
-                const {list} = this.state;
-                const index = list.findIndex(o => o.id === selectedId);
-                if (index > -1) {
-                    list[index].colour = this.state.color;
-                    list[index].name = this.state.name;
-                    this.setState({
-                        color: '',
-                        list,
-                        loading: false,
-                        name: '',
-                        page: '1',
-                    });
-                } else {
-                    this.cancelHandler();
-                }
-            }).catch(() => {
-                this.cancelHandler();
-                this.setState({
-                    loading: false,
-                });
-            });
-        }
-    }
-
-    private editLabelHandler = (id: number) => (e?: any) => {
-        if (id === 0) {
-            return;
-        }
-        const label = this.state.list.find(o => o.id === id);
-        if (label) {
-            this.setState({
-                color: label.colour || '',
-                name: label.name || '',
-                page: '2',
-                page2Mode: 'create',
-                selectedId: id,
-            });
-        }
+        this.labelCreateRef.openDialog(label);
     }
 
     private searchLabels(keyword?: string) {
@@ -504,7 +373,6 @@ class LabelMenu extends React.Component<IProps, IState> {
             label,
             labelList: [],
             page: '2',
-            page2Mode: 'label',
         }, () => {
             this.getLabelList();
         });
@@ -526,117 +394,49 @@ class LabelMenu extends React.Component<IProps, IState> {
                 );
             }
         } else {
-            if (this.isMobile || !this.hasScrollbar) {
-                return (
-                    <AutoSizer>
-                        {({width, height}: any) => {
-                            return (<FixedSizeList
-                                ref={this.refHandler}
-                                itemSize={64}
-                                itemCount={labelLoading ? labelList.length + 1 : labelList.length}
-                                overscanCount={10}
-                                width={width}
-                                height={height}
-                                className="label-list-container"
-                                direction={this.rtl ? 'ltr' : 'rtl'}
-                                onItemsRendered={this.labelItemRendered}
-                            >
-                                {({index, style}) => {
-                                    return this.rowRender({index, style, key: index});
+            return (
+                <AutoSizer>
+                    {({width, height}: any) => (
+                        <div className="label-list-inner" style={{
+                            height: height + 'px',
+                            width: width + 'px',
+                        }}>
+                            <Scrollbars
+                                autoHide={true}
+                                style={{
+                                    height: height + 'px',
+                                    width: width + 'px',
                                 }}
-                            </FixedSizeList>);
-                        }}
-                    </AutoSizer>
-                );
-            } else {
-                return (
-                    <AutoSizer>
-                        {({width, height}: any) => (
-                            <div className="label-list-inner" style={{
-                                height: height + 'px',
-                                width: width + 'px',
-                            }}>
-                                <Scrollbars
-                                    autoHide={true}
-                                    style={{
-                                        height: height + 'px',
-                                        width: width + 'px',
-                                    }}
-                                    onScroll={this.handleScroll}
-                                    hideTracksWhenNotNeeded={true}
-                                    universal={true}
-                                    rtl={!this.rtl}
-                                >
-                                    <FixedSizeList
-                                        ref={this.refHandler}
-                                        itemSize={64}
-                                        itemCount={labelLoading ? labelList.length + 1 : labelList.length}
-                                        overscanCount={10}
-                                        width={width}
-                                        height={height}
-                                        className="label-list-container"
-                                        style={listStyle}
-                                        onItemsRendered={this.labelItemRendered}
-                                    >
-                                        {({index, style}) => {
-                                            return this.rowRender({index, style, key: index});
-                                        }}
-                                    </FixedSizeList>
-                                </Scrollbars>
-                            </div>
-                        )}
-                    </AutoSizer>
-                );
-            }
+                                onScroll={this.handleScroll}
+                                hideTracksWhenNotNeeded={true}
+                                universal={true}
+                                rtl={!this.rtl}
+                            >
+                                {labelLoading && <div key="label-item-loading" className="label-item-loading">
+                                    <CircularProgress size={32} thickness={3} color="inherit"/>
+                                </div>}
+                                {labelList.map((message) => {
+                                    return (<LabelMessageItem key={message.id || 0} message={message}/>);
+                                })}
+                                {labelLoading && <div key="label-item-loading" className="label-item-loading">
+                                    <CircularProgress size={32} thickness={3} color="inherit"/>
+                                </div>}
+                            </Scrollbars>
+                        </div>
+                    )}
+                </AutoSizer>
+            );
         }
     }
 
     /* Custom Scrollbars handler */
     private handleScroll = (e: any) => {
+        // @ts-ignore
         const {scrollTop} = e.target;
-        if (this.list) {
-            this.list.scrollTo(scrollTop);
-        }
     }
 
-    private refHandler = (ref: any) => {
-        this.list = ref;
-    }
-
-    private rowRender = ({index, key, style}: any): any => {
-        const dialog = this.state.labelList[index];
-        if (dialog) {
-            return (
-                <div style={style} key={dialog.topmessageid || dialog.peerid || index}>
-                    <DialogMessage dialog={dialog} isTyping={{}} selectedId=""
-                                   messageId={dialog.topmessageid}/>
-                </div>
-            );
-        } else {
-            return (<div style={style} key="label-item-loading" className="label-item-loading">
-                <CircularProgress size={32} thickness={3} color="inherit"/>
-            </div>);
-        }
-    }
-
-    private transformMessage(res: IMessage[]): IDialog[] {
-        return res.map((msg) => {
-            const messageTitle = getMessageTitle(msg);
-            return {
-                label_ids: msg.labelidsList,
-                last_update: msg.createdon,
-                only_contact: true,
-                peerid: msg.peerid,
-                peertype: msg.peertype,
-                preview: messageTitle.text,
-                preview_icon: messageTitle.icon,
-                preview_me: msg.me,
-                preview_rtl: msg.rtl,
-                saved_messages: msg.peerid === this.userId,
-                sender_id: msg.senderid,
-                topmessageid: msg.id,
-            };
-        });
+    private transformMessage(res: IMessage[]): IMessage[] {
+        return res;
     }
 
     private getLabelList(after?: number) {
@@ -656,6 +456,7 @@ class LabelMenu extends React.Component<IProps, IState> {
             setTimeout(() => {
                 this.setState({
                     labelList: this.transformMessage(cacheMsg),
+                    labelLoading: false,
                 }, () => {
                     if (!loadOnce) {
                         loadOnce = true;
@@ -664,7 +465,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                 });
             }, 110);
         }).then((res) => {
-            const labelItems: IDialog[] = this.transformMessage(res.messageList);
+            const labelItems = this.transformMessage(res.messageList);
             this.labelHasMore = res.labelCount === C_LABEL_LIST_LIMIT;
             if (!after) {
                 setTimeout(() => {
@@ -694,7 +495,7 @@ class LabelMenu extends React.Component<IProps, IState> {
         if (!label || !labelList.length) {
             return;
         }
-        const before = labelList[0].topmessageid || 0;
+        const before = labelList[0].id || 0;
         this.labelRepo.getRemoteMessageByItem(label.id || 0, {min: before + 1, limit: 200}).then((res) => {
             labelList.unshift.apply(labelList, this.transformMessage(res.reverse()));
             this.setState({
@@ -703,13 +504,14 @@ class LabelMenu extends React.Component<IProps, IState> {
         });
     }
 
+    // @ts-ignore
     private labelItemRendered = (props: ListOnItemsRenderedProps) => {
         if (!this.labelHasMore || this.state.labelLoading) {
             return;
         }
         const {labelList} = this.state;
         if ((labelList.length - 5) < props.visibleStopIndex) {
-            this.getLabelList(labelList[labelList.length - 1].topmessageid);
+            this.getLabelList(labelList[labelList.length - 1].id);
         }
     }
 }

@@ -33,6 +33,7 @@
 
       &.page-2 {
         left: 100%;
+        background-color: var(--smoke);
       }
     }
 
@@ -139,36 +140,12 @@
     }
   }
 
-  .input-container {
-    display: flex;
-    min-height: 48px;
-    padding: 10px;
-    align-items: center;
-    justify-content: center;
-
-    .label-icon-holder {
-      height: 40px;
-      width: 40px;
-      border-radius: 50%;
-      background-color: rgba(0, 0, 0, 0.11);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 16px 0 0;
-
-      svg {
-        color: #fff;
-        font-size: 30px;
-      }
-    }
-
-    .label-title-input {
-      flex: 1;
-    }
-  }
-
   .label-search {
-    padding: 6px;
+    padding: 12px 12px 8px;
+
+    > div {
+      margin: 0;
+    }
   }
 
   .label-container {
@@ -219,18 +196,26 @@
           justify-content: center;
           width: 40px;
           height: 40px;
-          transition: opacity 0.1s;
+          transition: opacity 0.2s;
+
+          &.label-mode {
+            opacity: 1;
+          }
+
+          &.edit-mode {
+            opacity: 0;
+            background-color: var(--light);
+            cursor: pointer;
+
+            svg {
+              color: var(--grey);
+            }
+          }
 
           .svg-icon {
-            font-size: 28px;
+            font-size: 24px;
             color: var(--white);
           }
-        }
-
-        .checkbox-icon {
-          opacity: 0;
-          transition: opacity 0.1s;
-          color: inherit;
         }
       }
 
@@ -258,69 +243,74 @@
       }
 
       .label-action {
-        svg {
-          opacity: 0.05;
+        opacity: 0;
+
+        .checkbox {
+          color: var(--grey);
+
+          &.checkbox-checked {
+            color: var(--river);
+          }
         }
       }
 
       &:hover {
-        .label-action {
-          svg {
-            opacity: 1;
+        .label-icon {
+          .label-circle {
+            &.label-mode {
+              opacity: 0;
+            }
+
+            &.edit-mode {
+              opacity: 1;
+            }
           }
+        }
+      }
+
+      &.create-label {
+        position: relative;
+        cursor: pointer;
+        margin: 8px 0 0;
+        padding-top: 12px;
+        height: 64px;
+
+        &::before {
+          position: absolute;
+          content: '';
+          top: 0;
+          left: 32px;
+          right: 32px;
+          height: 1px;
+          background-color: var(--color-hover-dark);
+        }
+
+        .label-icon {
+          .label-circle {
+            background-color: var(--river);
+          }
+        }
+
+        .label-info .label-name {
+          color: var(--river);
+          font-size: 16px;
         }
       }
     }
 
-    .label-item:hover, &.selectable-mode .label-item {
-      .label-icon {
-        .label-circle {
-          opacity: 0.2;
-
-          .svg-icon {
-            opacity: 0;
-          }
-        }
-      }
-
-      .checkbox-icon {
+    &.selectable-mode .label-item, .label-item:hover, {
+      .label-action {
         opacity: 1;
       }
     }
 
-    &.selectable-mode .label-item {
-      .label-icon {
-        .label-circle {
-          opacity: 0;
-        }
+    &.selectable-mode .label-item .label-icon .label-circle {
+      &.edit-mode {
+        opacity: 0;
       }
-    }
 
-    &.selectable-mode .label-item .label-action {
-      display: none;
-    }
-  }
-
-  .label-color-container {
-    display: flex;
-    flex-wrap: wrap;
-    text-align: center;
-    justify-content: center;
-    padding: 8px 0;
-
-    .label-color-item {
-      height: 40px;
-      width: 40px;
-      border-radius: 50%;
-      margin: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-
-      svg {
-        color: #fff;
-        font-size: 30px;
+      &.label-mode {
+        opacity: 1;
       }
     }
   }
@@ -390,18 +380,6 @@ html[direction="rtl"] {
         transform: rotateY(180deg);
       }
     }
-
-    .input-container {
-      display: flex;
-      min-height: 48px;
-      padding: 10px;
-      align-items: center;
-      justify-content: center;
-
-      .label-icon-holder {
-        margin: 0 0 0 16px;
-      }
-    }
   }
 }
 
@@ -442,6 +420,12 @@ html[theme="dark-blue"] {
         .label-action {
           svg {
             color: var(--white);
+          }
+        }
+
+        &.create-label {
+          &::before {
+            background-color: var(--dark-hover-light);
           }
         }
       }

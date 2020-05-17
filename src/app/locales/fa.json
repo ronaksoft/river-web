@@ -58,7 +58,8 @@
     "none": "انتخاب کنید",
     "recover": "بازیابی",
     "ok": "باشه",
-    "send": "ارسال"
+    "send": "ارسال",
+    "create": "ساختن"
   },
   "chat": {
     "search": "جستجو",
@@ -418,13 +419,15 @@
   "label": {
     "labels": "برچسب‌ها",
     "create_a_new_label": "برچسب جدید",
-    "label_title": "عنوان برچسب",
+    "label_title": "عنوان",
     "label_count": "{0} آیتم",
     "label_counts": "{0} آیتم",
     "label_placeholder": "یک چسب بسازید",
     "no_result": "نتیجه‌ای یافت نشد!",
     "label_list": "لیست برچسب‌ها",
-    "max_label_warning": "شما نمی‌توانید بیش از ۲۰ برچسب ایجاد نمایید"
+    "max_label_warning": "شما نمی‌توانید بیش از ۲۰ برچسب ایجاد نمایید",
+    "no_label": "بدون برچسب",
+    "create_label": "برچسب جدید"
   },
   "bot": {
     "start_bot": "فعال کردن Bot",

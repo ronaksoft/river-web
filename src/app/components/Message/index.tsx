@@ -63,20 +63,26 @@ export const modifyURL = (url: string) => {
 };
 
 /* Render body based on entities */
-export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | undefined, isElectron: boolean, onAction: (cmd: string, text: string) => void, measureFn?: any) => {
+export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | undefined, isElectron?: boolean | number, onAction?: (cmd: string, text: string) => void, measureFn?: any) => {
     if (!entityList || entityList.length === 0) {
         return body;
     } else {
         const elems = spanMessageEntities(body, entityList);
         const openExternalLinkHandler = (url: string) => (e: any) => {
             e.preventDefault();
-            onAction('open_external_link', url);
+            if (onAction) {
+                onAction('open_external_link', url);
+            }
         };
         const botCommandHandler = (text: string) => (e: any) => {
-            onAction('bot_command', text);
+            if (onAction) {
+                onAction('bot_command', text);
+            }
         };
         const userNameClickHandler = (id: string) => {
-            onAction('user_name', id);
+            if (onAction) {
+                onAction('user_name', id);
+            }
         };
         const classMap = {
             [MessageEntityType.MESSAGEENTITYTYPEBOLD]: '_bold',
@@ -111,14 +117,19 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
                         return (<span key={i} className="_hashtag">{elem.str}</span>);
                     case MessageEntityType.MESSAGEENTITYTYPEURL:
                         const url = modifyURL(elem.str);
-                        if (isElectron) {
+                        if (isElectron === 1) {
                             return (
-                                <a key={i} href={url} onClick={openExternalLinkHandler(url)}
-                                   className="_url">{elem.str}</a>);
+                                <div key={i} className="_url">{elem.str}</div>);
                         } else {
-                            return (
-                                <a key={i} href={url} target="_blank" rel="noopener noreferrer"
-                                   className="_url">{elem.str}</a>);
+                            if (isElectron) {
+                                return (
+                                    <a key={i} href={url} onClick={openExternalLinkHandler(url)}
+                                       className="_url">{elem.str}</a>);
+                            } else {
+                                return (
+                                    <a key={i} href={url} target="_blank" rel="noopener noreferrer"
+                                       className="_url">{elem.str}</a>);
+                            }
                         }
                     case MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND:
                         return (<span key={i} className="_url"
@@ -1318,6 +1329,11 @@ class Message extends React.Component<IProps, IState> {
 
     private dropHandler = (e: any) => {
         e.preventDefault();
+        const messageId = e.dataTransfer.getData('message/id');
+        if (messageId) {
+            window.console.log('to do');
+            return;
+        }
         this.setState({
             enableDrag: false,
         });

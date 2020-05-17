@@ -84,7 +84,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
         return (
             <div className={className} style={this.props.style} onClick={this.props.onClick}>
                 {Boolean(src) &&
-                <img src={src} alt="avatar" onLoad={this.props.onLoad} onError={this.imgErrorHandler}/>}
+                <img src={src} alt="" onLoad={this.props.onLoad} onError={this.imgErrorHandler} draggable={false}/>}
             </div>
         );
     }

@@ -15,7 +15,7 @@ import LiveDate from '../LiveDate';
 import {
     AlternateEmailRounded, DoneAllRounded, DoneRounded, InsertDriveFileOutlined, LocationOnOutlined, MoreVert,
     MusicNoteOutlined, NotificationsOffRounded, PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined, ScheduleRounded,
-    VideocamOutlined, ForwardOutlined, ReplyOutlined, AddRounded,
+    VideocamOutlined, ForwardOutlined, ReplyOutlined,
 } from '@material-ui/icons';
 import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -28,7 +28,6 @@ import i18n from '../../services/i18n';
 import {localize} from '../../services/utilities/localize';
 import sdk from '../../services/sdk';
 import {Link} from "react-router-dom";
-import LabelRepo from "../../repository/label";
 import {IUser} from "../../repository/user/interface";
 
 import './style.scss';
@@ -56,7 +55,6 @@ class DialogMessage extends React.Component<IProps, IState> {
     private notifySetting: PeerNotifySettings.AsObject | undefined;
     private isTyping: { [key: string]: any } = {};
     private readonly userId: string;
-    private labelColors = LabelRepo.labelColors;
 
     constructor(props: IProps) {
         super(props);
@@ -101,8 +99,6 @@ class DialogMessage extends React.Component<IProps, IState> {
         const muted = isMuted(dialog.notifysettings);
         const hasCounter = Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
         const hasMention = Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
-        const labelIds = dialog.label_ids || [];
-        let labelCnt = 0;
         return (
             <Link className="dialog-a" onClick={this.props.onClick} data-peerid={dialog.peerid}
                   to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}
@@ -141,18 +137,6 @@ class DialogMessage extends React.Component<IProps, IState> {
                         {Boolean(dialog.only_contact !== true) &&
                         <div className="more" onClick={this.props.onContextMenuOpen}>
                             <MoreVert/>
-                        </div>}
-                        {Boolean(labelIds.length > 0) &&
-                        <div className={'message-label ' + (labelIds.length > 1 ? 'single-label' : 'many-label')}>
-                            {labelIds.slice(0, 3).map((id, key) => {
-                                if (this.labelColors.hasOwnProperty(id)) {
-                                    return (<div key={id} className={`circle-label label-${labelCnt++}`}
-                                                 style={{backgroundColor: this.labelColors[id]}}>
-                                        {key === 0 && labelIds.length > 3 ? <AddRounded/> : ''}
-                                    </div>);
-                                }
-                                return '';
-                            })}
                         </div>}
                     </div>
                 </div>

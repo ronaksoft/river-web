@@ -21,7 +21,7 @@
     }
 
     .dialog-adornment {
-      color: var(--color-gale);
+      color: var(--gale);
 
       svg {
         font-size: 20px;
@@ -102,14 +102,14 @@
       &.create-label {
         position: relative;
         cursor: pointer;
-        margin: 0 0 8px;
-        padding-bottom: 12px;
+        margin: 8px 0 0;
+        padding-top: 12px;
         height: 64px;
 
         &::before {
           position: absolute;
           content: '';
-          bottom: 0;
+          top: 0;
           left: 32px;
           right: 32px;
           height: 1px;
@@ -179,6 +179,12 @@ html[theme="dark-blue"] {
         .label-info {
           .label-name {
             color: var(--white);
+          }
+        }
+
+        &.create-label {
+          &::before {
+            background-color: var(--dark-hover-light);
           }
         }
       }

@@ -533,6 +533,8 @@ class Uploader extends React.Component<IProps, IState> {
                 this.getVideoSizeAndThumb(item, index);
             } else if (item.mediaType === 'audio') {
                 this.getAudioMetadata(item, index);
+            } else {
+                item.ready = true;
             }
             return item;
         });
@@ -768,6 +770,7 @@ class Uploader extends React.Component<IProps, IState> {
             case 'audio/mp4':
             case 'audio/mp3':
             case 'audio/ogg':
+            case 'audio/mpeg':
                 return 'audio';
             default:
                 return 'none';
