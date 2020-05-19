@@ -258,6 +258,10 @@ html[theme="dark-night"] {
 
       .map-picker-details-container {
         .caption-container {
+          textarea {
+            color: var(--white);
+          }
+
           .suggestion-list-container-zero {
             .suggestion-list-container {
               background-color: var(--dark-low);
@@ -290,6 +294,10 @@ html[theme="dark-blue"] {
 
       .map-picker-details-container {
         .caption-container {
+          textarea {
+            color: var(--white);
+          }
+
           .suggestion-list-container-zero {
             .suggestion-list-container {
               background-color: var(--dark-blue-low);
