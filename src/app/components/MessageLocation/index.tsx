@@ -9,16 +9,25 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer, MediaType} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer, MediaType, MessageEntity} from '../../services/sdk/messages/chat.core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import {PlaceRounded} from '@material-ui/icons';
 import {MediaGeoLocation} from '../../services/sdk/messages/chat.core.message.medias_pb';
-// import {C_GOOGLE_MAP_KEY} from '../MapPicker';
+import {renderBody} from "../Message";
+import ElectronService from "../../services/electron";
 
 import './style.scss';
 
+interface ILocationInfo {
+    caption: string;
+    entityList?: MessageEntity.AsObject[];
+    lat: number;
+    lng: number;
+}
+
 export const getMapLocation = (message: IMessage) => {
-    const location: google.maps.LatLngLiteral = {
+    const location: ILocationInfo = {
+        caption: '',
         lat: 0,
         lng: 0,
     };
@@ -26,91 +35,57 @@ export const getMapLocation = (message: IMessage) => {
         const media: MediaGeoLocation.AsObject = message.mediadata;
         location.lat = media.lat || 0;
         location.lng = media.pb_long || 0;
+        location.caption = media.caption || '';
+        location.entityList = media.entitiesList;
     }
     return location;
 };
 
 interface IProps {
+    measureFn: any;
     message: IMessage;
     peer: InputPeer | null;
+    onBodyAction: (cmd: string, text: string) => void;
 }
 
-interface IState {
-    lat: number;
-    long: number;
-    message: IMessage;
-}
-
-class MessageLocation extends React.PureComponent<IProps, IState> {
-    private lastId: number = 0;
-    private documentViewerService: DocumentViewerService;
-
-    constructor(props: IProps) {
-        super(props);
-
-        const location = getMapLocation(props.message);
-        this.state = {
-            lat: location.lat,
-            long: location.lng,
-            message: props.message,
-        };
-
-        this.documentViewerService = DocumentViewerService.getInstance();
+const showLocationHandler = (lat: number, long: number, message: IMessage) => (e: any) => {
+    if (e.stopPropagation) {
+        e.stopPropagation();
     }
+    const doc: IDocument = {
+        anchor: 'message',
+        items: [{
+            caption: '',
+            fileLocation: {},
+            geo: {
+                lat,
+                lng: long,
+            },
+        }],
+        peerId: message.peerid || '',
+        type: 'location',
+    };
+    DocumentViewerService.getInstance().loadDocument(doc);
+};
 
-    public componentWillReceiveProps(newProps: IProps) {
-        if (newProps.message && this.lastId !== newProps.message.id) {
-            this.lastId = newProps.message.id || 0;
-            this.setState({
-                message: newProps.message,
-            });
-        }
-    }
+const isElectron = ElectronService.isElectron();
 
-    /* View downloaded document */
-    public viewDocument = () => {
-        return;
-        // this.documentViewerService.loadDocument({});
-    }
-    // https://maps.googleapis.com/maps/api/staticmap?center=35.76344299316406,51.37594985961914&zoom=15&size=300x300&maptype=roadmap&key=AIzaSyAxXaCNUveWAy2fxxv824mFe1n53sLUSL4
-    // https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik
-    // https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik
-    // https://static-maps.yandex.ru/1.x/?lang=en-US&ll=-73.7638,42.6564&z=13&l=map&size=300,300
-    public render() {
-        const {lat, long} = this.state;
-        return (
-            <div className="message-location">
-                <div className="location-content" onClick={this.showLocationHandler}>
-                    <img
-                        src={`https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${long},${lat}&z=14&l=map&size=300,300`}
-                        alt={`location: ${long},${lat}`}/>
-                    <PlaceRounded/>
-                </div>
+const MessageLocation = ({peer, message, onBodyAction, measureFn}: IProps) => {
+    const locationInfo = getMapLocation(message);
+    return (
+        <div className="message-location">
+            <div className="location-content" onClick={showLocationHandler(locationInfo.lat, locationInfo.lng, message)}>
+                <img
+                    src={`https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${locationInfo.lng},${locationInfo.lat}&z=14&l=map&size=300,300`}
+                    alt={`location: ${locationInfo.lat}, ${locationInfo.lng}`}/>
+                <PlaceRounded/>
             </div>
-        );
-    }
-
-    /* Show location handler */
-    private showLocationHandler = (e: any) => {
-        if (e.stopPropagation) {
-            e.stopPropagation();
-        }
-        const {lat, long, message} = this.state;
-        const doc: IDocument = {
-            anchor: 'message',
-            items: [{
-                caption: '',
-                fileLocation: {},
-                geo: {
-                    lat,
-                    lng: long,
-                },
-            }],
-            peerId: message.peerid || '',
-            type: 'location',
-        };
-        this.documentViewerService.loadDocument(doc);
-    }
+            {Boolean(locationInfo.caption.length > 0) &&
+            <div className={'location-caption ' + (message.rtl ? 'rtl' : 'ltr')}>
+                {renderBody(locationInfo.caption, locationInfo.entityList, isElectron, onBodyAction, measureFn)}
+            </div>}
+        </div>
+    );
 }
 
 export default MessageLocation;

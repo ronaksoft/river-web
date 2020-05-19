@@ -139,7 +139,7 @@ interface IState {
     user: IUser;
 }
 
-class UserAvatar extends React.Component<IProps, IState> {
+class UserAvatar extends React.PureComponent<IProps, IState> {
     private userRepo: UserRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;

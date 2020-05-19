@@ -67,7 +67,7 @@ class MoveDown extends React.Component<IProps, IState> {
                 </Badge>
             </div>);
         } else {
-            return '';
+            return null;
         }
     }
 

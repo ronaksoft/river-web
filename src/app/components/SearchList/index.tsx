@@ -290,7 +290,7 @@ class SearchList extends React.Component<IProps, IState> {
             );
         } else if (inputPeer.mode === 'label' && inputPeer.label) {
             if (this.props.onlyContact) {
-                return '';
+                return null;
             } else {
                 return (<div style={style} key={index} className="category-item">{inputPeer.label}</div>);
             }
@@ -503,7 +503,7 @@ class SearchList extends React.Component<IProps, IState> {
             case C_MESSAGE_ICON.Photo:
                 return (<PhotoOutlined className="preview-icon"/>);
             default:
-                return '';
+                return null;
         }
     }
 

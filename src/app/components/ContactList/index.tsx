@@ -578,7 +578,7 @@ class ContactList extends React.Component<IProps, IState> {
         }
         const {contacts, moreIndex} = this.state;
         if (!contacts[moreIndex]) {
-            return '';
+            return null;
         }
         const menuItems = [{
             cmd: 'remove',

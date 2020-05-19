@@ -1,6 +1,16 @@
 syntax = "proto2";
 package msg;
 
+// Ping
+message Ping {
+    required int64 ID = 1;
+}
+
+// Pong
+message Pong {
+    required int64 ID = 2;
+}
+
 // MessageEnvelope
 // This type of message will be used to contain another ProtoBuffer Message inside
 message MessageEnvelope {
@@ -92,11 +102,13 @@ message Dialog {
     optional DraftMessage Draft = 11;
 }
 
-// Peer
-message Peer {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required int32 Type = 2;
-    required fixed64 AccessHash = 3 [jstype = JS_STRING];
+// PeerType
+enum PeerType {
+    PeerSelf = 0;
+    PeerUser = 1;
+    PeerGroup = 2;
+    PeerSuperGroup = 3;
+    PeerChannel = 4;
 }
 
 // InputPeer
@@ -106,13 +118,11 @@ message InputPeer {
     required fixed64 AccessHash = 3 [jstype = JS_STRING];
 }
 
-// PeerType
-enum PeerType {
-    PeerSelf = 0;
-    PeerUser = 1;
-    PeerGroup = 2;
-    PeerSuperGroup = 3;
-    PeerChannel = 4;
+// Peer
+message Peer {
+    required int64 ID = 1 [jstype = JS_STRING];
+    required int32 Type = 2;
+    required fixed64 AccessHash = 3 [jstype = JS_STRING];
 }
 
 // InputUser
@@ -200,6 +210,9 @@ message BotInfo {
     required int64 UserID = 2;
     optional string Description = 3;
     repeated BotCommands BotCommands = 4;
+    optional bool InlineGeo = 5;
+    optional string InlinePlaceHolder = 6;
+    optional bool InlineQuery = 7;
 }
 
 // ContactUser
@@ -214,6 +227,25 @@ message ContactUser {
     optional UserPhoto Photo = 8;
 }
 
+// InputMediaType
+enum InputMediaType {
+    InputMediaTypeEmpty = 0;
+    InputMediaTypeInvoice = 1;
+    InputMediaTypePoll = 2;
+    InputMediaTypeContact = 3;
+    InputMediaTypeUploadedDocument = 4;
+    InputMediaTypeDocument = 5;
+    InputMediaTypeGeoLocation = 6;
+    InputMediaTypeWebDocument = 7;
+    InputMediaTypeSealed = 8;
+    InputMediaTypeMessageDocument = 9;
+    InputMediaTypeReserved4 = 10;
+    InputMediaTypeReserved5 = 11;
+    InputMediaTypeReserved6 = 12;
+    InputMediaTypeReserved7 = 13;
+    InputMediaTypeReserved8 = 14;
+}
+
 // MediaType
 enum MediaType {
     MediaTypeEmpty = 0;
@@ -222,11 +254,14 @@ enum MediaType {
     MediaTypeContact = 3;
     MediaTypeGeoLocation = 4;
     MediaTypeInvoice = 5;
-    MediaTypeReserved1 = 6;
-    MediaTypeReserved2 = 7;
-    MediaTypeReserved3 = 8;
-    MediaTypeReserved4 = 9;
-    MediaTypeReserved5 = 10;
+    MediaTypeWebDocument = 6;
+    MediaTypeSealed = 7;
+    MediaTypeReserved1 = 8;
+    MediaTypeReserved2 = 9;
+    MediaTypeReserved3 = 10;
+    MediaTypeReserved4 = 11;
+    MediaTypeReserved5 = 12;
+    MediaTypeReserved6 = 13;
 }
 
 // UserMessage
@@ -254,6 +289,7 @@ message UserMessage {
     optional int64 ReplyMarkup = 21;
     optional bytes ReplyMarkupData = 22;
     repeated int32 LabelIDs = 23;
+    optional int64 ViaBotID = 24;
 }
 
 // DraftMessage
@@ -330,6 +366,13 @@ message InputFile {
     required string MD5Checksum = 4;
 }
 
+// InputDocument
+message InputDocument {
+    required int64 ID = 1 [jstype = JS_STRING];
+    required fixed64 AccessHash = 2 [jstype = JS_STRING];
+    required int32 ClusterID = 3;
+}
+
 // GroupFlags
 enum GroupFlags {
     GroupFlagsEmpty = 0;
@@ -385,13 +428,6 @@ message GroupParticipant {
     optional UserPhoto Photo = 8;
 }
 
-// InputDocument
-message InputDocument {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required fixed64 AccessHash = 2 [jstype = JS_STRING];
-    required int32 ClusterID = 3;
-}
-
 // NotificationType
 enum PushTokenProvider {
     PushTokenFirebase = 0;
@@ -444,3 +480,16 @@ message Label {
 message LabelsMany {
     repeated Label Labels = 1;
 }
+
+// InputGeoLocation
+message InputGeoLocation {
+    required float Lat = 1;
+    required float Long = 2;
+}
+
+// GeoLocation
+message GeoLocation {
+    required float Lat = 1;
+    required float Long = 2;
+}
+

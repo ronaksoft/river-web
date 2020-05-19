@@ -7,8 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import {UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
-import {InputMediaType} from "../../services/sdk/messages/chat.api.messages_pb";
+import {InputMediaType, UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
 
 interface IMessage extends UserMessage.AsObject {
     actiondata?: any;

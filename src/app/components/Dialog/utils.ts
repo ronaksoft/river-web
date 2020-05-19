@@ -53,7 +53,7 @@ const getSystemMessageTitle = (message: IMessage) => {
     }
 };
 
-export const getMessageTitle = (message: IMessage): { text: string, icon: number } => {
+export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean): { text: string, icon: number } => {
     const messageIcon: { text: string, icon: number } = {text: '', icon: C_MESSAGE_ICON.None};
     if (message.messagetype === C_MESSAGE_TYPE.System) {
         messageIcon.text = getSystemMessageTitle(message);
@@ -110,7 +110,7 @@ export const getMessageTitle = (message: IMessage): { text: string, icon: number
                         }
                     }
                 }
-                if (messageMediaDocument.caption && messageMediaDocument.caption.length > 0) {
+                if (ignoreCaption !== true && messageMediaDocument.caption && messageMediaDocument.caption.length > 0) {
                     messageIcon.text = (messageMediaDocument.caption || '').substr(0, 64);
                 }
                 break;

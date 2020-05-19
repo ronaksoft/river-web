@@ -104,8 +104,8 @@ export class MessagesSendMedia extends jspb.Message {
 
   hasMediatype(): boolean;
   clearMediatype(): void;
-  getMediatype(): InputMediaType | undefined;
-  setMediatype(value: InputMediaType): void;
+  getMediatype(): chat_core_types_pb.InputMediaType | undefined;
+  setMediatype(value: chat_core_types_pb.InputMediaType): void;
 
   hasMediadata(): boolean;
   clearMediadata(): void;
@@ -138,7 +138,7 @@ export namespace MessagesSendMedia {
   export type AsObject = {
     randomid?: number,
     peer: chat_core_types_pb.InputPeer.AsObject,
-    mediatype?: InputMediaType,
+    mediatype?: chat_core_types_pb.InputMediaType,
     mediadata: Uint8Array | string,
     replyto?: number,
     cleardraft?: boolean,
@@ -881,23 +881,5 @@ export namespace MessagesMany {
     groupsList: Array<chat_core_types_pb.Group.AsObject>,
     continuous?: boolean,
   }
-}
-
-export enum InputMediaType {
-  INPUTMEDIATYPEEMPTY = 0,
-  INPUTMEDIATYPEINVOICE = 1,
-  INPUTMEDIATYPEPOLL = 2,
-  INPUTMEDIATYPECONTACT = 3,
-  INPUTMEDIATYPEUPLOADEDDOCUMENT = 4,
-  INPUTMEDIATYPEDOCUMENT = 5,
-  INPUTMEDIATYPEGEOLOCATION = 6,
-  INPUTMEDIATYPERESERVED1 = 7,
-  INPUTMEDIATYPERESERVED2 = 8,
-  INPUTMEDIATYPERESERVED3 = 9,
-  INPUTMEDIATYPERESERVED4 = 10,
-  INPUTMEDIATYPERESERVED5 = 11,
-  INPUTMEDIATYPERESERVED6 = 12,
-  INPUTMEDIATYPERESERVED7 = 13,
-  INPUTMEDIATYPERESERVED8 = 14,
 }
 

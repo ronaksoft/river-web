@@ -105,7 +105,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     public render() {
         const {message, previewMessage, error} = this.state;
         if (!message.replyto || message.replyto === 0) {
-            return '';
+            return null;
         }
         if (!previewMessage && error) {
             return (
@@ -226,7 +226,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     private getThumbnail(mediaInfo: IMediaInfo) {
         const {previewMessage} = this.state;
         if (!previewMessage) {
-            return '';
+            return null;
         }
         switch (previewMessage.messagetype) {
             case C_MESSAGE_TYPE.Picture:

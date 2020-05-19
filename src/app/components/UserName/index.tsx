@@ -41,7 +41,7 @@ interface IState {
     user: IUser;
 }
 
-class UserName extends React.Component<IProps, IState> {
+class UserName extends React.PureComponent<IProps, IState> {
     private userRepo: UserRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;

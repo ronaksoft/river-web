@@ -510,7 +510,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 <PlayArrowRounded/>
             </div>);
         } else {
-            return '';
+            return null;
         }
     }
 

@@ -22,63 +22,28 @@ interface IProps {
     peer: InputPeer | null;
 }
 
-interface IState {
-    message: IMessage;
-    mode: 'user' | 'group';
-    peer: InputPeer | null;
-}
-
-class MessageForwarded extends React.PureComponent<IProps, IState> {
-    public static getDerivedStateFromProps(props: IProps, state: IState) {
-        if (state.message === props.message) {
-            return null;
-        }
-        return {
-            message: props.message,
-        };
+const MessageForwarded = ({message, peer, onDoubleClick}: IProps) => {
+    const mode = ((message.fwdsenderid || '').indexOf('-') === -1 ? 'user' : 'group');
+    if (!message.fwdsenderid || message.fwdsenderid === '0') {
+        return null;
     }
-
-    constructor(props: IProps) {
-        super(props);
-
-        const id = props.message.fwdsenderid || '';
-        this.state = {
-            message: props.message,
-            mode: (id.indexOf('-') === -1 ? 'user' : 'group'),
-            peer: props.peer,
-        };
-    }
-
-    public render() {
-        const {message, mode} = this.state;
-        if (!message.fwdsenderid || message.fwdsenderid === '0') {
-            return '';
-        }
-        return (
-            <div className="message-forwarded" onDoubleClick={this.onDoubleClickHandler}>
-                <div className="forwarded-container">
-                    <div className="forwarded-message-wrapper">
-                        <span className="forwarded-bar"/>
-                        {Boolean(mode === 'user') && <div className="forward-message-detail">
-                            <UserName id={message.fwdsenderid} you={true} noIcon={true}
-                                      prefix={i18n.t('message.forwarded_message_from')} defaultString="Forwarded message"/>
-                        </div>}
-                        {Boolean(mode === 'group') && <div className="forward-message-detail">
-                            <GroupName id={message.fwdsenderid} prefix="Forwarded from "
-                                       defaultString={i18n.t('message.forwarded_message')} noIcon={true}/>
-                        </div>}
-                    </div>
+    return (
+        <div className="message-forwarded" onDoubleClick={onDoubleClick}>
+            <div className="forwarded-container">
+                <div className="forwarded-message-wrapper">
+                    <span className="forwarded-bar"/>
+                    {Boolean(mode === 'user') && <div className="forward-message-detail">
+                        <UserName id={message.fwdsenderid} you={true} noIcon={true}
+                                  prefix={i18n.t('message.forwarded_message_from')} defaultString="Forwarded message"/>
+                    </div>}
+                    {Boolean(mode === 'group') && <div className="forward-message-detail">
+                        <GroupName id={message.fwdsenderid} prefix="Forwarded from "
+                                   defaultString={i18n.t('message.forwarded_message')} noIcon={true}/>
+                    </div>}
                 </div>
             </div>
-        );
-    }
-
-
-    private onDoubleClickHandler = (e: any) => {
-        if (this.props.onDoubleClick) {
-            this.props.onDoubleClick(e);
-        }
-    }
+        </div>
+    );
 }
 
 export default MessageForwarded;

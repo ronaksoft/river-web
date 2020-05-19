@@ -86,7 +86,7 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public USAFE_componentWillReceiveProps(newProps: IProps) {
         const {message} = this.state;
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
@@ -127,7 +127,7 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
         return (
             <div className="message-voice">
                 <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
-                             maxValue={16.0} message={this.state.message} onAction={this.actionHandler}/>
+                             max={16.0} message={this.state.message} onAction={this.actionHandler}/>
                 {!message.contentread && <span className="unread-bullet"/>}
             </div>
         );

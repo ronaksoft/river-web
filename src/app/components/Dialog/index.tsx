@@ -511,7 +511,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     </div>
                 );
             } else {
-                return '';
+                return null;
             }
         }
     }
@@ -557,7 +557,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private contextMenuItem() {
         const {searchItems, moreIndex} = this.state;
         if (!searchItems[moreIndex]) {
-            return '';
+            return null;
         }
         const menuTypes = {
             1: [4, 8, 9, 0, 6, 7, 0, 1, 5],

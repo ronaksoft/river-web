@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-@import '../../../style/mixin';
 
 a.dialog-a {
   text-decoration: none;
@@ -124,10 +123,10 @@ a.dialog-a {
         font-size: 12px;
         line-height: 23px;
         color: var(--dark);
-        @include font-bold;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: bold;
 
         svg {
           font-size: 15px;

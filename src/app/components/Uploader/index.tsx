@@ -91,7 +91,7 @@ interface IProps {
 }
 
 interface IState {
-    accept: string;
+    accept: string | undefined;
     dialogOpen: boolean;
     hasFile: boolean;
     isFile: boolean;
@@ -155,7 +155,7 @@ class Uploader extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            accept: '*',
+            accept: undefined,
             dialogOpen: false,
             hasFile: false,
             isFile: false,
@@ -179,7 +179,7 @@ class Uploader extends React.Component<IProps, IState> {
             item.ready = false;
         });
         this.setState({
-            accept: options.accept || '*',
+            accept: options.accept || undefined,
             dialogOpen: true,
             isFile: options.isFile || false,
             items: inputItems,
@@ -439,11 +439,6 @@ class Uploader extends React.Component<IProps, IState> {
 
     /* On drop handler */
     private dropzoneDropHandler = (accepted: FileWithPreview[]) => {
-        if (this.state.isFile) {
-            accepted.forEach((item: any) => {
-                item.ready = true;
-            });
-        }
         this.setState({
             items: [...this.state.items, ...accepted],
         }, () => {

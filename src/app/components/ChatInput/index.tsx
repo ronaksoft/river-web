@@ -9,12 +9,13 @@
 
 import * as React from 'react';
 import {Picker as EmojiPicker} from 'emoji-mart';
-import {cloneDeep, throttle, range} from 'lodash';
+import {cloneDeep, range, throttle} from 'lodash';
 import {
     AttachFileRounded,
     ClearRounded,
     DeleteRounded,
     ForwardRounded,
+    KeyboardRounded,
     KeyboardVoiceRounded,
     LabelRounded,
     LockRounded,
@@ -22,7 +23,6 @@ import {
     SentimentSatisfiedRounded,
     StopRounded,
     ViewModuleRounded,
-    KeyboardRounded,
 } from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
@@ -31,13 +31,13 @@ import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import Popover from '@material-ui/core/Popover';
-import {PopoverPosition} from '@material-ui/core/Popover';
+import Popover, {PopoverPosition} from '@material-ui/core/Popover';
 import {
     DraftMessage,
     GroupFlags,
     InputPeer,
     InputUser,
+    MediaType,
     MessageEntity,
     MessageEntityType,
     PeerType,
@@ -63,7 +63,7 @@ import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
 import MapPicker, {IGeoItem} from '../MapPicker';
 import CachedPhoto from "../CachedPhoto";
-import {getMediaInfo} from "../MessageMedia";
+import {getDuration, getMediaInfo} from "../MessageMedia";
 import i18n from '../../services/i18n';
 import {IDialog} from "../../repository/dialog/interface";
 import MessageRepo from "../../repository/message";
@@ -77,6 +77,10 @@ import Scrollbars from "react-custom-scrollbars";
 import {ThemeChanged} from "../SettingsMenu";
 import {EventKeyUp, EventMouseUp, EventPaste, EventResize} from "../../services/events";
 import MentionInput, {IMention, mentionize} from "../MentionInput";
+import {getMessageIcon} from "../DialogMessage";
+import {getMapLocation} from "../MessageLocation";
+import {MediaContact} from "../../services/sdk/messages/chat.core.message.medias_pb";
+import {getHumanReadableSize} from "../MessageFile";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
@@ -190,20 +194,28 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
     return {entities, text};
 };
 
+export interface IMessageParam {
+    entities?: MessageEntity[] | null;
+    mode?: number;
+    message?: IMessage | null;
+    peer?: InputPeer | null;
+}
+
 interface IProps {
     getDialog: (id: string) => IDialog | null;
     onAction: (cmd: string, message?: IMessage) => (e?: any) => void;
     onBulkAction: (cmd: string) => (e?: any) => void;
     onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
     onFileSelect: (files: File[], options: IUploaderOptions) => void;
-    onContactSelect: (users: IUser[], caption: string, {mode, message}: any | undefined) => void;
-    onMapSelect: (item: IGeoItem, {mode, message}: any | undefined) => void;
-    onMessage: (text: string, {mode, message, entities}: any | undefined) => void;
+    onContactSelect: (users: IUser[], caption: string, params: IMessageParam) => void;
+    onMapSelect: (item: IGeoItem, params: IMessageParam) => void;
+    onTextSend: (text: string, params: IMessageParam) => void;
     onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
     onTyping?: (typing: TypingAction) => void;
-    onVoiceSend: (item: IMediaItem, {mode, message}: any | undefined) => void;
+    onVoiceSend: (item: IMediaItem, params: IMessageParam) => void;
     onVoiceStateChange?: (state: 'lock' | 'down' | 'up' | 'play') => void;
     onBotButtonAction?: (cmd: number, data: any) => void;
+    onMessageDrop?: (message: IMessage, caption: string, params: IMessageParam) => void;
     peer: InputPeer | null;
     previewMessage?: IMessage;
     previewMessageMode?: number;
@@ -214,6 +226,7 @@ interface IProps {
 interface IState {
     botKeyboard: boolean;
     disableAuthority: number;
+    droppedMessage: IMessage | null;
     emojiAnchorPos: PopoverPosition | undefined;
     isBot: boolean;
     mediaInputMode: 'media' | 'music' | 'contact' | 'location' | 'file' | 'none';
@@ -320,6 +333,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.state = {
             botKeyboard: false,
             disableAuthority: 0x0,
+            droppedMessage: null,
             emojiAnchorPos: undefined,
             isBot: false,
             mediaInputMode: 'none',
@@ -595,7 +609,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.botKeyboard.data = data ? data.data : undefined;
             }
             this.setState({
-               isBot,
+                isBot,
             });
         } else if (isBot) {
             if (this.botKeyboard) {
@@ -607,10 +621,33 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
+    public loadMessage(id: number) {
+        this.messageRepo.get(id).then((message) => {
+            if (message) {
+                let text = '';
+                if (message.mediatype === MediaType.MEDIATYPEDOCUMENT) {
+                    const info = getMediaInfo(message);
+                    text = this.modifyBody(info.caption || '', info.entityList);
+                } else {
+                    text = this.modifyBody(message.body || '', message.entitiesList);
+                }
+                this.setState({
+                    droppedMessage: message,
+                    textareaValue: text,
+                }, () => {
+                    if (message && message.messagetype && message.messagetype !== C_MESSAGE_TYPE.Normal) {
+                        this.animatePreviewMessage();
+                    }
+                    this.computeLines();
+                });
+            }
+        });
+    }
+
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
-            disableAuthority, textareaValue, voiceMode, user, botKeyboard,
+            disableAuthority, textareaValue, voiceMode, user, botKeyboard, droppedMessage,
         } = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
@@ -628,27 +665,29 @@ class ChatInput extends React.Component<IProps, IState> {
                           onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</span>
                 </div>);
             } else {
-                return '';
+                return null;
             }
         } else if (!selectable && user && user.blocked) {
             return (<div className="input-placeholder" onClick={this.unblockHandler}>
                 <span className="btn">{i18n.t('general.unblock')}</span></div>);
         } else {
             const isBot = this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data);
+            const hasPreviewMessage = Boolean(previewMessage || (droppedMessage && droppedMessage.messagetype && droppedMessage.messagetype !== C_MESSAGE_TYPE.Normal));
             return (
                 <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                            onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
                     <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}/>
                     <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
-                    {(!selectable && previewMessage) &&
+                    {(!selectable && hasPreviewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
                             <div
-                                className={'preview-message-wrapper ' + this.getPreviewCN(previewMessageMode, previewMessage.senderid || '')}>
+                                className={'preview-message-wrapper ' + this.getPreviewClassName()}>
                                 <span className="preview-bar"/>
-                                {this.getThumbnail()}
-                                {Boolean(previewMessageMode === C_MSG_MODE.Reply) && <div className="preview-message">
+                                {this.getPreviewMessageThumbnail()}
+                                {(previewMessageMode === C_MSG_MODE.Reply && previewMessage) &&
+                                <div className="preview-message">
                                     <UserName className="preview-message-user" id={previewMessage.senderid || ''}
                                               you={true}/>
                                     <div className="preview-message-body">
@@ -659,6 +698,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 {Boolean(previewMessageMode === C_MSG_MODE.Edit) && <div className="preview-message">
                                     <div className="preview-message-user">{i18n.t('input.edit_message')}</div>
                                 </div>}
+                                {this.getLabelMessagePreview()}
                             </div>
                         </div>
                         <div className="preview-clear">
@@ -709,7 +749,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 </div>
                             </div>
                             <div className="voice-recorder">
-                                {Boolean(this.inputsMode === 'voice' && voiceMode !== 'play') && <React.Fragment>
+                                {Boolean(this.inputsMode === 'voice' && voiceMode !== 'play') && <>
                                     <div className="timer">
                                         <span className="bulb"/>
                                         <span ref={this.timerRefHandler}>00:00</span>
@@ -719,14 +759,14 @@ class ChatInput extends React.Component<IProps, IState> {
                                     </div>
                                     <div className="cancel"
                                          onClick={this.voiceCancelHandler}>{i18n.t('general.cancel')}</div>
-                                </React.Fragment>}
-                                {Boolean(this.inputsMode === 'voice' && voiceMode === 'play') && <React.Fragment>
+                                </>}
+                                {Boolean(this.inputsMode === 'voice' && voiceMode === 'play') && <>
                                     <div className="play-remove" onClick={this.voiceCancelHandler}>
                                         <DeleteRounded/>
                                     </div>
                                     <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
-                                                 maxValue={255.0}/>
-                                </React.Fragment>}
+                                                 max={255.0}/>
+                                </>}
                             </div>
                             <div className="input-actions">
                                 <div className="icon voice" onMouseDown={this.voiceMouseDownHandler}
@@ -842,39 +882,57 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    private getPreviewCN(mode: number, senderid: string) {
-        if (mode === C_MSG_MODE.Edit) {
+    private getPreviewClassName() {
+        const {previewMessageMode, previewMessage} = this.state;
+        if (previewMessageMode === C_MSG_MODE.Edit) {
             return 'edit';
-        } else if (mode === C_MSG_MODE.Reply && senderid === this.props.userId) {
+        } else if (previewMessageMode === C_MSG_MODE.Reply && previewMessage && previewMessage.senderid === this.props.userId) {
             return 'reply-you';
-        } else if (mode === C_MSG_MODE.Reply && senderid !== this.props.userId) {
+        } else if (previewMessageMode === C_MSG_MODE.Reply && previewMessage && previewMessage.senderid !== this.props.userId) {
             return 'reply';
         }
-        return '';
+        return 'loaded';
     }
 
     private submitMessage = () => {
         const {previewMessage, previewMessageMode} = this.state;
-        if (this.props.onMessage) {
-            const {entities, text} = generateEntities(this.textarea ? this.textarea.value : '', this.mentions);
-            if (previewMessageMode === C_MSG_MODE.Normal) {
-                this.removeDraft(true).finally(() => {
-                    this.props.onMessage(text, {
+        const {entities, text} = generateEntities(this.textarea ? this.textarea.value : '', this.mentions);
+        const droppedMessage = cloneDeep(this.state.droppedMessage);
+        if (previewMessageMode === C_MSG_MODE.Normal) {
+            this.clearPreviewMessage(true, () => {
+                if (droppedMessage) {
+                    if (this.props.onMessageDrop) {
+                        this.props.onMessageDrop(droppedMessage, text, {
+                            entities,
+                        });
+                    }
+                } else {
+                    this.props.onTextSend(text, {
                         entities,
                     });
-                    this.checkFocus();
-                });
-            } else {
-                this.clearPreviewMessage(true, () => {
-                    const message = cloneDeep(previewMessage);
-                    this.props.onMessage(text, {
+                }
+                this.checkFocus();
+            })();
+        } else {
+            this.clearPreviewMessage(true, () => {
+                const message = cloneDeep(previewMessage);
+                if (droppedMessage) {
+                    if (this.props.onMessageDrop) {
+                        this.props.onMessageDrop(droppedMessage, text, {
+                            entities,
+                            message,
+                            mode: previewMessageMode,
+                        });
+                    }
+                } else {
+                    this.props.onTextSend(text, {
                         entities,
                         message,
                         mode: previewMessageMode,
                     });
-                    this.checkFocus();
-                })();
-            }
+                }
+                this.checkFocus();
+            })();
         }
         this.textarea.value = '';
         this.mentions = [];
@@ -895,32 +953,49 @@ class ChatInput extends React.Component<IProps, IState> {
         const textVal = e.target.value;
         this.rtlDetectorThrottle(textVal);
         let cancelTyping = false;
+        const droppedMessage = cloneDeep(this.state.droppedMessage);
         if (e.key === 'Enter' && !e.shiftKey) {
             cancelTyping = true;
             setTimeout(() => {
                 if (this.preventMessageSend) {
                     return;
                 }
-                if (this.props.onMessage) {
-                    const {entities, text} = generateEntities(this.textarea ? this.textarea.value : '', this.mentions);
-                    if (previewMessageMode === C_MSG_MODE.Normal) {
-                        this.removeDraft(true).finally(() => {
-                            this.props.onMessage(text, {
+                const {entities, text} = generateEntities(this.textarea ? this.textarea.value : '', this.mentions);
+                if (previewMessageMode === C_MSG_MODE.Normal) {
+                    this.clearPreviewMessage(true, () => {
+                        if (droppedMessage) {
+                            if (this.props.onMessageDrop) {
+                                this.props.onMessageDrop(droppedMessage, text, {
+                                    entities,
+                                });
+                            }
+                        } else {
+                            this.props.onTextSend(text, {
                                 entities,
                             });
-                            this.checkFocus();
-                        });
-                    } else if (previewMessageMode !== C_MSG_MODE.Normal) {
-                        this.clearPreviewMessage(true, () => {
-                            const message = cloneDeep(previewMessage);
-                            this.props.onMessage(text, {
+                        }
+                        this.checkFocus();
+                    })();
+                } else if (previewMessageMode !== C_MSG_MODE.Normal) {
+                    this.clearPreviewMessage(true, () => {
+                        const message = cloneDeep(previewMessage);
+                        if (droppedMessage) {
+                            if (this.props.onMessageDrop) {
+                                this.props.onMessageDrop(droppedMessage, text, {
+                                    entities,
+                                    message,
+                                    mode: previewMessageMode,
+                                });
+                            }
+                        } else {
+                            this.props.onTextSend(text, {
                                 entities,
                                 message,
                                 mode: previewMessageMode,
                             });
-                            this.checkFocus();
-                        })();
-                    }
+                        }
+                        this.checkFocus();
+                    })();
                 }
                 this.textarea.value = '';
                 this.mentions = [];
@@ -1016,22 +1091,25 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private clearPreviewMessage = (removeDraft?: boolean, cb?: any) => (e?: any) => {
-        this.setState({
-            previewMessageHeight: 0,
-        });
-        setTimeout(() => {
+        if (this.state.previewMessageHeight > 0) {
             this.setState({
-                previewMessage: null,
-                previewMessageMode: C_MSG_MODE.Normal,
-                voiceMode: 'up',
-            }, () => {
-                this.voiceStateChange();
+                previewMessageHeight: 0,
             });
-            this.setInputMode('default');
-            if (this.props.onPreviewMessageChange) {
-                this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
-            }
-        }, 102);
+            setTimeout(() => {
+                this.setState({
+                    droppedMessage: null,
+                    previewMessage: null,
+                    previewMessageMode: C_MSG_MODE.Normal,
+                    voiceMode: 'up',
+                }, () => {
+                    this.voiceStateChange();
+                });
+                this.setInputMode('default');
+                if (this.props.onPreviewMessageChange) {
+                    this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
+                }
+            }, 102);
+        }
         this.removeDraft(removeDraft).finally(() => {
             if (cb) {
                 cb();
@@ -1070,7 +1148,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private animatePreviewMessage() {
         setTimeout(() => {
             const el = document.querySelector('.chat-input .previews .preview-message-wrapper');
-            if (el && this.state.previewMessage) {
+            if (el && (this.state.previewMessage || this.state.droppedMessage)) {
                 const targetEl = document.querySelector('.chat-input .previews');
                 if (targetEl) {
                     this.setState({
@@ -1158,6 +1236,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.textarea) {
             return;
         }
+        const {droppedMessage} = this.state;
         let lines = 1;
         const nodeInfo = measureNodeHeight(this.textarea, 12312, false, 1, 12);
         if (nodeInfo) {
@@ -1176,7 +1255,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.textarea.classList.add(`_${lines}-line`);
             this.lastLines = lines;
         }
-        if (this.textarea.value.length === 0) {
+        if (!Boolean(droppedMessage) && this.textarea.value.length === 0) {
             if (this.inputsMode !== 'default') {
                 this.setInputMode('default');
             }
@@ -1798,7 +1877,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     break;
                 case 'location':
                     if (this.mapPickerRef) {
-                        this.mapPickerRef.openDialog();
+                        this.mapPickerRef.openDialog(this.state.peer);
                     }
                     break;
             }
@@ -1851,10 +1930,10 @@ class ChatInput extends React.Component<IProps, IState> {
         this.clearPreviewMessage(true)();
     }
 
-    private getThumbnail() {
+    private getPreviewMessageThumbnail() {
         const {previewMessage} = this.state;
         if (!previewMessage) {
-            return '';
+            return null;
         }
         switch (previewMessage.messagetype) {
             case C_MESSAGE_TYPE.Picture:
@@ -1866,8 +1945,66 @@ class ChatInput extends React.Component<IProps, IState> {
                     </div>
                 );
             default:
-                return '';
+                return null;
         }
+    }
+
+    private getLabelMessagePreview() {
+        const {droppedMessage, previewMessage} = this.state;
+        if (!droppedMessage) {
+            return null;
+        }
+        const messageTitle = getMessageTitle(droppedMessage, true);
+        const hasPreviewMessage = Boolean(previewMessage);
+        if (droppedMessage.mediatype === MediaType.MEDIATYPEDOCUMENT) {
+            const info = getMediaInfo(droppedMessage);
+            return <>
+                <div className={'preview-message' + (hasPreviewMessage ? ' label-message' : '')}>
+                    <div
+                        className={'preview-message-title' + (droppedMessage.messagetype === C_MESSAGE_TYPE.Picture ? ' large' : '')}>
+                        {getMessageIcon(messageTitle.icon)}
+                        {messageTitle.text}
+                    </div>
+                    {(droppedMessage.messagetype === C_MESSAGE_TYPE.Voice || droppedMessage.messagetype === C_MESSAGE_TYPE.Video || droppedMessage.messagetype === C_MESSAGE_TYPE.Audio) &&
+                    <div className="preview-message-body">
+                        <div className="inner">{getDuration(info.duration || 0)}</div>
+                    </div>}
+                    {droppedMessage.messagetype === C_MESSAGE_TYPE.File &&
+                    <div className="preview-message-body">
+                        <div className="inner">{info.fileName} &bull; {getHumanReadableSize(info.size || 0)}</div>
+                    </div>}
+                </div>
+                {Boolean(info && info.thumbFile && info.thumbFile.fileid !== '') && <div className="preview-thumbnail">
+                    <CachedPhoto className="thumbnail" fileLocation={info.thumbFile}/>
+                </div>}
+            </>;
+        } else {
+            switch (droppedMessage.messagetype) {
+                case C_MESSAGE_TYPE.Location:
+                    const location = getMapLocation(droppedMessage);
+                    return <div className={'preview-message' + (hasPreviewMessage ? ' label-message' : '')}>
+                        <div className="preview-message-title">
+                            {getMessageIcon(messageTitle.icon)}
+                            {messageTitle.text}
+                        </div>
+                        <div className="preview-message-body">
+                            <div className="inner">{`${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`}</div>
+                        </div>
+                    </div>;
+                case C_MESSAGE_TYPE.Contact:
+                    const contact: MediaContact.AsObject = droppedMessage.mediadata;
+                    return <div className={'preview-message' + (hasPreviewMessage ? ' label-message' : '')}>
+                        <div className="preview-message-title">
+                            {getMessageIcon(messageTitle.icon)}
+                            {messageTitle.text}
+                        </div>
+                        <div className="preview-message-body">
+                            <div className="inner">{`${contact.firstname} ${contact.lastname} | ${contact.phone}`}</div>
+                        </div>
+                    </div>;
+            }
+        }
+        return null;
     }
 
     private voiceStateChange() {
@@ -1964,7 +2101,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private renderBotKeyboard() {
         if (!this.botKeyboard || !this.botKeyboard.data || this.botKeyboard.mode !== C_REPLY_ACTION.ReplyKeyboardMarkup) {
-            return '';
+            return null;
         }
         const layout = this.botKeyboard.data as ReplyKeyboardMarkup.AsObject;
         let height = layout.rowsList.length * 32 + 4;

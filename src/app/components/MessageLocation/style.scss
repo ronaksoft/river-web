@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2019
 */
-@import '../../../style/mixin';
 
 .message-location {
   padding: 0;
@@ -36,6 +35,22 @@
       font-size: 48px;
       color: #EB5757;
       transform: translate(-50%, -50%);
+    }
+  }
+
+  .location-caption {
+    padding: 6px 6px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+
+    &.rtl {
+      direction: rtl;
+      text-align: right;
+    }
+
+    &.ltr {
+      direction: ltr;
+      text-align: left;
     }
   }
 }

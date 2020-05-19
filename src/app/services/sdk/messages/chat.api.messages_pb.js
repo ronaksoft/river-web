@@ -15,7 +15,6 @@ var global = Function('return this')();
 
 var chat_core_types_pb = require('./chat.core.types_pb.js');
 goog.object.extend(proto, chat_core_types_pb);
-goog.exportSymbol('proto.msg.InputMediaType', null, global);
 goog.exportSymbol('proto.msg.MessagesBroadcast', null, global);
 goog.exportSymbol('proto.msg.MessagesClearDraft', null, global);
 goog.exportSymbol('proto.msg.MessagesClearHistory', null, global);
@@ -7113,26 +7112,5 @@ proto.msg.MessagesMany.prototype.hasContinuous = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
-
-/**
- * @enum {number}
- */
-proto.msg.InputMediaType = {
-  INPUTMEDIATYPEEMPTY: 0,
-  INPUTMEDIATYPEINVOICE: 1,
-  INPUTMEDIATYPEPOLL: 2,
-  INPUTMEDIATYPECONTACT: 3,
-  INPUTMEDIATYPEUPLOADEDDOCUMENT: 4,
-  INPUTMEDIATYPEDOCUMENT: 5,
-  INPUTMEDIATYPEGEOLOCATION: 6,
-  INPUTMEDIATYPERESERVED1: 7,
-  INPUTMEDIATYPERESERVED2: 8,
-  INPUTMEDIATYPERESERVED3: 9,
-  INPUTMEDIATYPERESERVED4: 10,
-  INPUTMEDIATYPERESERVED5: 11,
-  INPUTMEDIATYPERESERVED6: 12,
-  INPUTMEDIATYPERESERVED7: 13,
-  INPUTMEDIATYPERESERVED8: 14
-};
 
 goog.object.extend(exports, proto.msg);

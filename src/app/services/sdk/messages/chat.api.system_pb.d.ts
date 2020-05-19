@@ -53,34 +53,6 @@ export namespace SystemGetServerTime {
   }
 }
 
-export class SystemGetAppUpdate extends jspb.Message {
-  hasClienttype(): boolean;
-  clearClienttype(): void;
-  getClienttype(): string | undefined;
-  setClienttype(value: string): void;
-
-  hasVersion(): boolean;
-  clearVersion(): void;
-  getVersion(): number | undefined;
-  setVersion(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SystemGetAppUpdate.AsObject;
-  static toObject(includeInstance: boolean, msg: SystemGetAppUpdate): SystemGetAppUpdate.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: SystemGetAppUpdate, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SystemGetAppUpdate;
-  static deserializeBinaryFromReader(message: SystemGetAppUpdate, reader: jspb.BinaryReader): SystemGetAppUpdate;
-}
-
-export namespace SystemGetAppUpdate {
-  export type AsObject = {
-    clienttype?: string,
-    version?: number,
-  }
-}
-
 export class SystemGetInfo extends jspb.Message {
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SystemGetInfo.AsObject;
@@ -129,6 +101,122 @@ export namespace SystemGetConfig {
   }
 }
 
+export class SystemUploadUsage extends jspb.Message {
+  clearUsageList(): void;
+  getUsageList(): Array<ClientUsage>;
+  setUsageList(value: Array<ClientUsage>): void;
+  addUsage(value?: ClientUsage, index?: number): ClientUsage;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemUploadUsage.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemUploadUsage): SystemUploadUsage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemUploadUsage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemUploadUsage;
+  static deserializeBinaryFromReader(message: SystemUploadUsage, reader: jspb.BinaryReader): SystemUploadUsage;
+}
+
+export namespace SystemUploadUsage {
+  export type AsObject = {
+    usageList: Array<ClientUsage.AsObject>,
+  }
+}
+
+export class ClientUsage extends jspb.Message {
+  hasYear(): boolean;
+  clearYear(): void;
+  getYear(): number | undefined;
+  setYear(value: number): void;
+
+  hasMonth(): boolean;
+  clearMonth(): void;
+  getMonth(): number | undefined;
+  setMonth(value: number): void;
+
+  hasDay(): boolean;
+  clearDay(): void;
+  getDay(): number | undefined;
+  setDay(value: number): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasForegroundtime(): boolean;
+  clearForegroundtime(): void;
+  getForegroundtime(): number | undefined;
+  setForegroundtime(value: number): void;
+
+  hasAvgresponsetime(): boolean;
+  clearAvgresponsetime(): void;
+  getAvgresponsetime(): number | undefined;
+  setAvgresponsetime(value: number): void;
+
+  hasTotalrequests(): boolean;
+  clearTotalrequests(): void;
+  getTotalrequests(): number | undefined;
+  setTotalrequests(value: number): void;
+
+  hasReceivedmessages(): boolean;
+  clearReceivedmessages(): void;
+  getReceivedmessages(): number | undefined;
+  setReceivedmessages(value: number): void;
+
+  hasSentmessages(): boolean;
+  clearSentmessages(): void;
+  getSentmessages(): number | undefined;
+  setSentmessages(value: number): void;
+
+  hasReceivedmedia(): boolean;
+  clearReceivedmedia(): void;
+  getReceivedmedia(): number | undefined;
+  setReceivedmedia(value: number): void;
+
+  hasSentmedia(): boolean;
+  clearSentmedia(): void;
+  getSentmedia(): number | undefined;
+  setSentmedia(value: number): void;
+
+  hasUploadbytes(): boolean;
+  clearUploadbytes(): void;
+  getUploadbytes(): number | undefined;
+  setUploadbytes(value: number): void;
+
+  hasDownloadbytes(): boolean;
+  clearDownloadbytes(): void;
+  getDownloadbytes(): number | undefined;
+  setDownloadbytes(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ClientUsage.AsObject;
+  static toObject(includeInstance: boolean, msg: ClientUsage): ClientUsage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ClientUsage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ClientUsage;
+  static deserializeBinaryFromReader(message: ClientUsage, reader: jspb.BinaryReader): ClientUsage;
+}
+
+export namespace ClientUsage {
+  export type AsObject = {
+    year?: number,
+    month?: number,
+    day?: number,
+    userid?: number,
+    foregroundtime?: number,
+    avgresponsetime?: number,
+    totalrequests?: number,
+    receivedmessages?: number,
+    sentmessages?: number,
+    receivedmedia?: number,
+    sentmedia?: number,
+    uploadbytes?: number,
+    downloadbytes?: number,
+  }
+}
+
 export class SystemConfig extends jspb.Message {
   hasTestmode(): boolean;
   clearTestmode(): void;
@@ -155,20 +243,20 @@ export class SystemConfig extends jspb.Message {
   getForwardedmaxcount(): number | undefined;
   setForwardedmaxcount(value: number): void;
 
-  hasOnlineupdateperiodms(): boolean;
-  clearOnlineupdateperiodms(): void;
-  getOnlineupdateperiodms(): number | undefined;
-  setOnlineupdateperiodms(value: number): void;
+  hasOnlineupdateperiodinsec(): boolean;
+  clearOnlineupdateperiodinsec(): void;
+  getOnlineupdateperiodinsec(): number | undefined;
+  setOnlineupdateperiodinsec(value: number): void;
 
-  hasEdittimelimit(): boolean;
-  clearEdittimelimit(): void;
-  getEdittimelimit(): number | undefined;
-  setEdittimelimit(value: number): void;
+  hasEdittimelimitinsec(): boolean;
+  clearEdittimelimitinsec(): void;
+  getEdittimelimitinsec(): number | undefined;
+  setEdittimelimitinsec(value: number): void;
 
-  hasRevoketimelimit(): boolean;
-  clearRevoketimelimit(): void;
-  getRevoketimelimit(): number | undefined;
-  setRevoketimelimit(value: number): void;
+  hasRevoketimelimitinsec(): boolean;
+  clearRevoketimelimitinsec(): void;
+  getRevoketimelimitinsec(): number | undefined;
+  setRevoketimelimitinsec(value: number): void;
 
   hasPinneddialogsmaxcount(): boolean;
   clearPinneddialogsmaxcount(): void;
@@ -195,6 +283,31 @@ export class SystemConfig extends jspb.Message {
   setDcsList(value: Array<DataCenter>): void;
   addDcs(value?: DataCenter, index?: number): DataCenter;
 
+  hasMaxlabels(): boolean;
+  clearMaxlabels(): void;
+  getMaxlabels(): number | undefined;
+  setMaxlabels(value: number): void;
+
+  hasToppeerdecayrate(): boolean;
+  clearToppeerdecayrate(): void;
+  getToppeerdecayrate(): number | undefined;
+  setToppeerdecayrate(value: number): void;
+
+  hasToppeermaxstep(): boolean;
+  clearToppeermaxstep(): void;
+  getToppeermaxstep(): number | undefined;
+  setToppeermaxstep(value: number): void;
+
+  hasGifbot(): boolean;
+  clearGifbot(): void;
+  getGifbot(): string | undefined;
+  setGifbot(value: string): void;
+
+  hasWikibot(): boolean;
+  clearWikibot(): void;
+  getWikibot(): string | undefined;
+  setWikibot(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SystemConfig.AsObject;
   static toObject(includeInstance: boolean, msg: SystemConfig): SystemConfig.AsObject;
@@ -212,14 +325,19 @@ export namespace SystemConfig {
     expireon?: number,
     groupmaxsize?: number,
     forwardedmaxcount?: number,
-    onlineupdateperiodms?: number,
-    edittimelimit?: number,
-    revoketimelimit?: number,
+    onlineupdateperiodinsec?: number,
+    edittimelimitinsec?: number,
+    revoketimelimitinsec?: number,
     pinneddialogsmaxcount?: number,
     urlprefix?: number,
     messagemaxlength?: number,
     captionmaxlength?: number,
     dcsList: Array<DataCenter.AsObject>,
+    maxlabels?: number,
+    toppeerdecayrate?: number,
+    toppeermaxstep?: number,
+    gifbot?: string,
+    wikibot?: string,
   }
 }
 

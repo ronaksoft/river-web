@@ -181,6 +181,12 @@
         font-size: 28px;
       }
 
+      &.small {
+        svg {
+          font-size: 18px;
+        }
+      }
+
       .extension {
         position: absolute;
         top: 55%;
@@ -195,6 +201,7 @@
     .info {
       flex: 1;
       text-align: left;
+      padding: 2px 0 0;
 
       .name {
         font-size: 13px;
@@ -217,6 +224,7 @@
         color: var(--light-mention);
         text-decoration: none;
         text-transform: none;
+        margin: 4px 0 0;
       }
     }
   }
@@ -294,11 +302,6 @@
         align-items: center;
         justify-content: center;
         color: var(--white);
-
-        svg {
-          font-size: 12px;
-          color: var(--white);
-        }
       }
 
       &:nth-child(2) {
@@ -310,6 +313,47 @@
         transform: translateX(120%);
         z-index: 1;
       }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"], {
+  .label-message-item {
+    background-color: var(--dark-low);
+
+    .label-indicator {
+      .circle-label {
+        border-color: var(--dark-low);
+
+        &:first-child {
+          color: var(--dark-low);
+        }
+      }
+    }
+
+    .label-message-item-header, .label-message-body, .label-message-info {
+      color: var(--light);
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .label-message-item {
+    background-color: var(--dark-blue-low);
+
+    .label-indicator {
+      .circle-label {
+        border-color: var(--dark-blue-low);
+
+        &:first-child {
+          color: var(--dark-blue-low);
+        }
+      }
+    }
+
+    .label-message-item-header, .label-message-body, .label-message-info {
+      color: var(--light);
     }
   }
 }

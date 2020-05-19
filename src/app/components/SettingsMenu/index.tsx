@@ -1007,7 +1007,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     >{i18n.t(item.title)}</div>
                                                 );
                                             } else {
-                                                return '';
+                                                return null;
                                             }
                                         })}
                                     </div>
@@ -1096,7 +1096,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                         </div>
                                                     );
                                                 } else {
-                                                    return '';
+                                                    return null;
                                                 }
                                             } else {
                                                 return (

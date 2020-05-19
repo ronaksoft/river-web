@@ -51,7 +51,7 @@ export default function BotLayout({rows, prefix, onAction}: { rows: KeyboardButt
                              onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonBuy.text}</span>
                 </div>);
             default:
-                return '';
+                return null;
         }
     };
 

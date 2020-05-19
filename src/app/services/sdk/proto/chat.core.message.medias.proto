@@ -54,6 +54,10 @@ message DocumentAttributeFile {
     required string Filename = 1;
 }
 
+// DocumentAttributeAnimated
+message DocumentAttributeAnimated {
+}
+
 // DocumentAttribute
 message DocumentAttribute {
     required DocumentAttributeType Type = 1;
@@ -87,13 +91,48 @@ message Document {
     optional string MD5Checksum = 10;
 }
 
-// InputMediaPoll
-message InputMediaPoll {
-    required MediaPoll Poll = 1;
+// InputMediaInvoice
+message InputMediaInvoice {
+
+}
+
+// MediaInvoice
+message MediaInvoice {
+
+}
+
+// InputMediaWebDocument
+message InputMediaWebDocument {
+    required string Url = 1;
+    required int32 DocSize = 2;
+    required string MimeType = 3;
+    repeated DocumentAttribute Attributes = 4;
+}
+
+// MediaWebDocument
+message MediaWebDocument {
+    required string Url = 1;
+    required int32 DocSize = 2;
+    required string MimeType = 3;
+    repeated DocumentAttribute Attributes = 4;
+    required fixed64 AccessHash = 5 [jstype = JS_STRING];
+}
+
+// MediaWebPage
+message MediaWebPage {
+
 }
 
 // InputMediaContact
 message InputMediaContact {
+    required string Phone = 1;
+    required string FirstName = 2;
+    required string LastName = 3;
+    optional string VCard = 4;
+}
+
+// MediaContact
+message MediaContact {
     required string Phone = 1;
     required string FirstName = 2;
     required string LastName = 3;
@@ -120,10 +159,41 @@ message InputMediaDocument {
     repeated DocumentAttribute Attributes = 5;
 }
 
+// InputMediaMessageDocument
+message InputMediaMessageDocument {
+    required InputPeer Peer = 1;
+    required int64 MessageID = 2;
+    required string Caption = 3;
+    repeated MessageEntity Entities = 4;
+}
+
+// MediaDocument
+message MediaDocument {
+    required string Caption = 1;
+    required int32 TTLinSeconds = 2; // Seconds
+    required Document Doc = 3;
+    repeated MessageEntity Entities = 4;
+}
+
 // InputMediaGeoLocation
 message InputMediaGeoLocation {
     required float Lat = 1;
     required float Long = 2;
+    optional string Caption = 3;
+    repeated MessageEntity Entities = 4;
+}
+
+// MediaGeoLocation
+message MediaGeoLocation {
+    required float Lat = 1;
+    required float Long = 2;
+    optional string Caption = 3;
+    repeated MessageEntity Entities = 4;
+}
+
+// InputMediaPoll
+message InputMediaPoll {
+    required MediaPoll Poll = 1;
 }
 
 // MediaPoll
@@ -158,34 +228,18 @@ message PollAnswerVoters {
 
 }
 
-// MediaInvoice
-message MediaInvoice {
-
-}
-
-// MediaDocument
-message MediaDocument {
-    required string Caption = 1;
-    required int32 TTLinSeconds = 2; // Seconds
-    required Document Doc = 3;
+// InputMediaSealed
+message InputMediaSealed {
+    required InputMediaType MediaType = 1;
+    optional bytes Media = 2;
+    optional string Body = 3;
     repeated MessageEntity Entities = 4;
 }
 
-// MediaContact
-message MediaContact {
-    required string Phone = 1;
-    required string FirstName = 2;
-    required string LastName = 3;
-    optional string VCard = 4;
-}
-
-// MediaGeoLocation
-message MediaGeoLocation {
-    required float Lat = 1;
-    required float Long = 2;
-}
-
-// MediaWebPage
-message MediaWebPage {
-
+// MediaSealed
+message MediaSealed {
+    required MediaType MediaType = 1;
+    optional bytes Media = 2;
+    optional string Body = 3;
+    repeated MessageEntity Entities = 4;
 }

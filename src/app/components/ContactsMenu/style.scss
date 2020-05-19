@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-@import '../../../style/mixin';
 
 .contacts {
   display: flex;
@@ -93,7 +92,7 @@
           margin: 0 0 4px;
           color: var(--dark);
           text-decoration: none;
-          @include font-bold;
+          font-weight: bold;
         }
 
         .phone {

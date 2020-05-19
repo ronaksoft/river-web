@@ -4,6 +4,50 @@
 
 import * as jspb from "google-protobuf";
 
+export class Ping extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): number | undefined;
+  setId(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Ping.AsObject;
+  static toObject(includeInstance: boolean, msg: Ping): Ping.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Ping, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Ping;
+  static deserializeBinaryFromReader(message: Ping, reader: jspb.BinaryReader): Ping;
+}
+
+export namespace Ping {
+  export type AsObject = {
+    id?: number,
+  }
+}
+
+export class Pong extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): number | undefined;
+  setId(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Pong.AsObject;
+  static toObject(includeInstance: boolean, msg: Pong): Pong.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Pong, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Pong;
+  static deserializeBinaryFromReader(message: Pong, reader: jspb.BinaryReader): Pong;
+}
+
+export namespace Pong {
+  export type AsObject = {
+    id?: number,
+  }
+}
+
 export class MessageEnvelope extends jspb.Message {
   hasConstructor(): boolean;
   clearConstructor(): void;
@@ -400,40 +444,6 @@ export namespace Dialog {
   }
 }
 
-export class Peer extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
-  setId(value: string): void;
-
-  hasType(): boolean;
-  clearType(): void;
-  getType(): number | undefined;
-  setType(value: number): void;
-
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
-  setAccesshash(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Peer.AsObject;
-  static toObject(includeInstance: boolean, msg: Peer): Peer.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Peer, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Peer;
-  static deserializeBinaryFromReader(message: Peer, reader: jspb.BinaryReader): Peer;
-}
-
-export namespace Peer {
-  export type AsObject = {
-    id?: string,
-    type?: number,
-    accesshash?: string,
-  }
-}
-
 export class InputPeer extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
@@ -464,6 +474,40 @@ export namespace InputPeer {
   export type AsObject = {
     id?: string,
     type?: PeerType,
+    accesshash?: string,
+  }
+}
+
+export class Peer extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): number | undefined;
+  setType(value: number): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Peer.AsObject;
+  static toObject(includeInstance: boolean, msg: Peer): Peer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Peer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Peer;
+  static deserializeBinaryFromReader(message: Peer, reader: jspb.BinaryReader): Peer;
+}
+
+export namespace Peer {
+  export type AsObject = {
+    id?: string,
+    type?: number,
     accesshash?: string,
   }
 }
@@ -849,6 +893,21 @@ export class BotInfo extends jspb.Message {
   setBotcommandsList(value: Array<BotCommands>): void;
   addBotcommands(value?: BotCommands, index?: number): BotCommands;
 
+  hasInlinegeo(): boolean;
+  clearInlinegeo(): void;
+  getInlinegeo(): boolean | undefined;
+  setInlinegeo(value: boolean): void;
+
+  hasInlineplaceholder(): boolean;
+  clearInlineplaceholder(): void;
+  getInlineplaceholder(): string | undefined;
+  setInlineplaceholder(value: string): void;
+
+  hasInlinequery(): boolean;
+  clearInlinequery(): void;
+  getInlinequery(): boolean | undefined;
+  setInlinequery(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotInfo.AsObject;
   static toObject(includeInstance: boolean, msg: BotInfo): BotInfo.AsObject;
@@ -865,6 +924,9 @@ export namespace BotInfo {
     userid?: number,
     description?: string,
     botcommandsList: Array<BotCommands.AsObject>,
+    inlinegeo?: boolean,
+    inlineplaceholder?: string,
+    inlinequery?: boolean,
   }
 }
 
@@ -1054,6 +1116,11 @@ export class UserMessage extends jspb.Message {
   setLabelidsList(value: Array<number>): void;
   addLabelids(value: number, index?: number): number;
 
+  hasViabotid(): boolean;
+  clearViabotid(): void;
+  getViabotid(): number | undefined;
+  setViabotid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -1089,6 +1156,7 @@ export namespace UserMessage {
     replymarkup?: number,
     replymarkupdata?: Uint8Array | string,
     labelidsList?: Array<number>,
+    viabotid?: number,
   }
 }
 
@@ -1372,6 +1440,40 @@ export namespace InputFile {
   }
 }
 
+export class InputDocument extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
+
+  hasClusterid(): boolean;
+  clearClusterid(): void;
+  getClusterid(): number | undefined;
+  setClusterid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputDocument.AsObject;
+  static toObject(includeInstance: boolean, msg: InputDocument): InputDocument.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputDocument, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputDocument;
+  static deserializeBinaryFromReader(message: InputDocument, reader: jspb.BinaryReader): InputDocument;
+}
+
+export namespace InputDocument {
+  export type AsObject = {
+    id?: string,
+    accesshash?: string,
+    clusterid?: number,
+  }
+}
+
 export class GroupPhoto extends jspb.Message {
   hasPhotobig(): boolean;
   clearPhotobig(): void;
@@ -1568,40 +1670,6 @@ export namespace GroupParticipant {
   }
 }
 
-export class InputDocument extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
-  setId(value: string): void;
-
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
-  setAccesshash(value: string): void;
-
-  hasClusterid(): boolean;
-  clearClusterid(): void;
-  getClusterid(): number | undefined;
-  setClusterid(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputDocument.AsObject;
-  static toObject(includeInstance: boolean, msg: InputDocument): InputDocument.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputDocument, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputDocument;
-  static deserializeBinaryFromReader(message: InputDocument, reader: jspb.BinaryReader): InputDocument;
-}
-
-export namespace InputDocument {
-  export type AsObject = {
-    id?: string,
-    accesshash?: string,
-    clusterid?: number,
-  }
-}
-
 export class PrivacyRule extends jspb.Message {
   hasPrivacytype(): boolean;
   clearPrivacytype(): void;
@@ -1692,6 +1760,62 @@ export namespace LabelsMany {
   }
 }
 
+export class InputGeoLocation extends jspb.Message {
+  hasLat(): boolean;
+  clearLat(): void;
+  getLat(): number | undefined;
+  setLat(value: number): void;
+
+  hasLong(): boolean;
+  clearLong(): void;
+  getLong(): number | undefined;
+  setLong(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputGeoLocation.AsObject;
+  static toObject(includeInstance: boolean, msg: InputGeoLocation): InputGeoLocation.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputGeoLocation, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputGeoLocation;
+  static deserializeBinaryFromReader(message: InputGeoLocation, reader: jspb.BinaryReader): InputGeoLocation;
+}
+
+export namespace InputGeoLocation {
+  export type AsObject = {
+    lat?: number,
+    pb_long?: number,
+  }
+}
+
+export class GeoLocation extends jspb.Message {
+  hasLat(): boolean;
+  clearLat(): void;
+  getLat(): number | undefined;
+  setLat(value: number): void;
+
+  hasLong(): boolean;
+  clearLong(): void;
+  getLong(): number | undefined;
+  setLong(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GeoLocation.AsObject;
+  static toObject(includeInstance: boolean, msg: GeoLocation): GeoLocation.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GeoLocation, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GeoLocation;
+  static deserializeBinaryFromReader(message: GeoLocation, reader: jspb.BinaryReader): GeoLocation;
+}
+
+export namespace GeoLocation {
+  export type AsObject = {
+    lat?: number,
+    pb_long?: number,
+  }
+}
+
 export enum TypingAction {
   TYPINGACTIONTYPING = 0,
   TYPINGACTIONRECORDINGVOICE = 1,
@@ -1716,6 +1840,24 @@ export enum UserStatus {
   USERSTATUSLASTMONTH = 4,
 }
 
+export enum InputMediaType {
+  INPUTMEDIATYPEEMPTY = 0,
+  INPUTMEDIATYPEINVOICE = 1,
+  INPUTMEDIATYPEPOLL = 2,
+  INPUTMEDIATYPECONTACT = 3,
+  INPUTMEDIATYPEUPLOADEDDOCUMENT = 4,
+  INPUTMEDIATYPEDOCUMENT = 5,
+  INPUTMEDIATYPEGEOLOCATION = 6,
+  INPUTMEDIATYPEWEBDOCUMENT = 7,
+  INPUTMEDIATYPESEALED = 8,
+  INPUTMEDIATYPEMESSAGEDOCUMENT = 9,
+  INPUTMEDIATYPERESERVED4 = 10,
+  INPUTMEDIATYPERESERVED5 = 11,
+  INPUTMEDIATYPERESERVED6 = 12,
+  INPUTMEDIATYPERESERVED7 = 13,
+  INPUTMEDIATYPERESERVED8 = 14,
+}
+
 export enum MediaType {
   MEDIATYPEEMPTY = 0,
   MEDIATYPEPOLL = 1,
@@ -1723,11 +1865,14 @@ export enum MediaType {
   MEDIATYPECONTACT = 3,
   MEDIATYPEGEOLOCATION = 4,
   MEDIATYPEINVOICE = 5,
-  MEDIATYPERESERVED1 = 6,
-  MEDIATYPERESERVED2 = 7,
-  MEDIATYPERESERVED3 = 8,
-  MEDIATYPERESERVED4 = 9,
-  MEDIATYPERESERVED5 = 10,
+  MEDIATYPEWEBDOCUMENT = 6,
+  MEDIATYPESEALED = 7,
+  MEDIATYPERESERVED1 = 8,
+  MEDIATYPERESERVED2 = 9,
+  MEDIATYPERESERVED3 = 10,
+  MEDIATYPERESERVED4 = 11,
+  MEDIATYPERESERVED5 = 12,
+  MEDIATYPERESERVED6 = 13,
 }
 
 export enum MessageEntityType {

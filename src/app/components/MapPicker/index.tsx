@@ -10,11 +10,16 @@
 import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {CheckRounded} from '@material-ui/icons';
-import TextField from '@material-ui/core/TextField/TextField';
 import {MapComponent} from './map';
 import i18n from '../../services/i18n';
+import {InputPeer, MessageEntity} from "../../services/sdk/messages/chat.core.types_pb";
+import MentionInput, {IMention} from "../MentionInput";
+import RTLDetector from "../../services/utilities/rtl_detector";
+import {throttle} from "lodash";
+import {measureNodeHeight} from "../ChatInput/measureHeight";
 
 import './style.scss';
+import {generateEntities} from "../ChatInput";
 
 export const C_GOOGLE_MAP_KEY = 'AIzaSyC5e9DrKC2gHS9UD1sbHGI-H0wfzCgK58U';
 
@@ -25,6 +30,7 @@ export interface IPos {
 
 export interface IGeoItem {
     caption: string;
+    entities?: MessageEntity[] | null;
     lat: number;
     long: number;
 }
@@ -38,11 +44,30 @@ interface IState {
     defPos: google.maps.LatLngLiteral;
     dialogOpen: boolean;
     loading: boolean;
+    peer: InputPeer | null;
     pos: google.maps.LatLngLiteral;
+    rtl: boolean;
     zoom: number;
 }
 
+const mentionInputStyle = {
+    input: {
+        border: 'none',
+        bottom: 'auto',
+        lineHeight: '1.2em',
+        minHeight: '20px',
+        outline: 'none',
+        padding: 0,
+        position: 'relative',
+    },
+};
+
 class MapPicker extends React.Component<IProps, IState> {
+    private mentionContainer: any = null;
+    private textarea: any = null;
+    private rtlDetector: RTLDetector;
+    private readonly rtlDetectorThrottle: any;
+    private mentions: IMention[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -55,24 +80,30 @@ class MapPicker extends React.Component<IProps, IState> {
             },
             dialogOpen: false,
             loading: false,
+            peer: null,
             pos: {
                 lat: 35.772361,
                 lng: 51.3849373,
             },
+            rtl: false,
             zoom: 14,
         };
+
+        this.rtlDetector = RTLDetector.getInstance();
+        this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
     }
 
-    public openDialog() {
+    public openDialog(peer: InputPeer | null) {
         this.setState({
             dialogOpen: true,
+            peer,
         }, () => {
             this.initMap();
         });
     }
 
     public render() {
-        const {caption, dialogOpen, defPos, loading, pos, zoom} = this.state;
+        const {caption, dialogOpen, defPos, loading, pos, zoom, rtl} = this.state;
         return (
             <Dialog
                 open={dialogOpen}
@@ -104,18 +135,26 @@ class MapPicker extends React.Component<IProps, IState> {
                             />
                         </div>
                         <div className="map-picker-details-container">
-                            <TextField
-                                className="caption-input"
-                                label={i18n.t('uploader.map_caption')}
-                                fullWidth={true}
-                                multiline={true}
-                                rowsMax={2}
-                                inputProps={{
-                                    maxLength: 512,
-                                }}
-                                value={caption}
-                                onChange={this.captionChangeHandler}
-                            />
+                            <div
+                                className="caption-container">
+                                <div className="suggestion-list-container-zero">
+                                    <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
+                                </div>
+                                <div
+                                    className={'caption-input-container ' + (rtl ? 'rtl' : 'ltr')}>
+                                    <MentionInput
+                                        peer={this.state.peer}
+                                        isBot={false}
+                                        className="uploader-mention"
+                                        style={mentionInputStyle}
+                                        inputRef={this.textareaRefHandler}
+                                        suggestionsPortalHost={this.mentionContainer}
+                                        value={caption}
+                                        onChange={this.captionChangeHandler}
+                                        placeholder={i18n.t('uploader.write_a_caption')}
+                                    />
+                                </div>
+                            </div>
                             <div className="map-picker-action" onClick={this.doneHandler}>
                                 <CheckRounded/>
                             </div>
@@ -124,6 +163,14 @@ class MapPicker extends React.Component<IProps, IState> {
                 </div>
             </Dialog>
         );
+    }
+
+    private mentionContainerRefHandler = (ref: any) => {
+        this.mentionContainer = ref;
+    }
+
+    private textareaRefHandler = (ref: any) => {
+        this.textarea = ref;
     }
 
     /* Init google map */
@@ -147,15 +194,41 @@ class MapPicker extends React.Component<IProps, IState> {
         }
     }
 
-    /* Caption change change handler */
-    private captionChangeHandler = (e: any) => {
+    /* Caption change handler */
+    private captionChangeHandler = (e: any, a: any, b: any, mentions: IMention[]) => {
+        const text = e.target.value;
+        this.mentions = mentions;
+        this.rtlDetectorThrottle(text);
         this.setState({
-            caption: e.currentTarget.value,
+            caption: text,
         });
+    }
+
+    private detectRTL = (text: string) => {
+        this.setState({
+            rtl: this.rtlDetector.direction(text),
+        });
+        this.computeLines();
+    }
+
+    private computeLines() {
+        if (!this.textarea) {
+            return;
+        }
+        let lines = 1;
+        const nodeInfo = measureNodeHeight(this.textarea, 87845, false, 1, 40);
+        if (nodeInfo) {
+            lines = nodeInfo.rowCount;
+        } else {
+            lines = this.textarea.value.split('\n').length;
+        }
+        lines++;
+        this.textarea.style.height = `${lines * 1.2}em`;
     }
 
     /* Close dialog handler */
     private dialogCloseHandler = () => {
+        this.mentions = [];
         this.setState({
             caption: '',
             dialogOpen: false,
@@ -170,9 +243,11 @@ class MapPicker extends React.Component<IProps, IState> {
 
     /* Check button click handler */
     private doneHandler = () => {
+        const {entities, text} = generateEntities(this.textarea ? this.textarea.value : '', this.mentions);
         if (this.props.onDone) {
             this.props.onDone({
-                caption: this.state.caption,
+                caption: text,
+                entities,
                 lat: this.state.pos.lat,
                 long: this.state.pos.lng,
             });

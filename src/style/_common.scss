@@ -90,11 +90,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  @include font;
   background-size: cover;
   background-repeat: no-repeat;
-}
-
-input {
-  @include font;
 }

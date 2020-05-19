@@ -6,8 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-@import '../../../style/mixin';
-@import '../../../style/common';
 
 input {
   outline: none;
@@ -107,7 +105,6 @@ input {
     }
 
     .login-form-title {
-      @include font-bold;
       font-size: 30px;
       color: #14c261;
       line-height: 1.2;
@@ -115,6 +112,7 @@ input {
       text-align: center;
       width: 100%;
       display: block;
+      font-weight: bold;
     }
 
     .input-wrapper {
@@ -151,7 +149,6 @@ input {
     }
 
     .input {
-      @include font;
       color: #0f954b;
       line-height: 1.2;
       font-size: 18px;
@@ -320,7 +317,6 @@ input {
       }
 
       input[type=tel] {
-        @include font;
         position: relative;
         font-size: 16px;
         letter-spacing: .01rem;
@@ -560,7 +556,6 @@ html[theme="dark-night"] {
         }
 
         input[type=tel] {
-          @include font;
           background-color: var(--dark-medium);
           color: var(--white);
         }
@@ -633,7 +628,6 @@ html[theme="dark-blue"] {
         }
 
         input[type=tel] {
-          @include font;
           background-color: var(--dark-blue-medium);
           color: var(--white);
         }

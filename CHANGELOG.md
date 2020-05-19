@@ -1,3 +1,7 @@
+## 0.32.32
+* Now you can drag and drop **Labeled Messages** into conversations
+* Overall performance improvements
+
 ## 0.32.31
 * Bot bugs fixed
 * Themes updated

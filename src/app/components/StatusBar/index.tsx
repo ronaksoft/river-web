@@ -80,7 +80,7 @@ class StatusBar extends React.Component<IProps, IState> {
     public render() {
         const {peer, selectedDialogId} = this.state;
         if (!peer) {
-            return '';
+            return null;
         }
         const isGroup = peer.getType() === PeerType.PEERGROUP;
         const savedMessages = (this.props.currentUserId === selectedDialogId);
@@ -99,7 +99,7 @@ class StatusBar extends React.Component<IProps, IState> {
     private getChatStatus(hideStatus: boolean) {
         const {selectedDialogId, peer, isConnecting} = this.state;
         if (!peer) {
-            return '';
+            return null;
         }
         const showIsConnecting = this.smoother.getState(isConnecting);
         let typingList: { [key: string]: { fn: any, action: TypingAction } } = {};

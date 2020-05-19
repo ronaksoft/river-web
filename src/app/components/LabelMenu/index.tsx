@@ -52,6 +52,7 @@ interface IState {
     labelList: IMessage[];
     labelLoading: boolean;
     list: ILabel[];
+    loadBeforeLoading: boolean;
     loading: boolean;
     page: string;
     search: string;
@@ -59,7 +60,7 @@ interface IState {
     selectedIds: number[];
 }
 
-const C_LABEL_LIST_LIMIT = 20;
+const C_LABEL_LIST_LIMIT = 30;
 
 class LabelMenu extends React.Component<IProps, IState> {
     private apiManager: APIManager;
@@ -70,6 +71,7 @@ class LabelMenu extends React.Component<IProps, IState> {
     private readonly rtl: boolean = false;
     private labelHasMore: boolean = false;
     private labelCreateRef: LabelCreate | undefined;
+    private scrollbarRef: Scrollbars | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -79,6 +81,7 @@ class LabelMenu extends React.Component<IProps, IState> {
             labelList: [],
             labelLoading: false,
             list: [],
+            loadBeforeLoading: false,
             loading: false,
             page: '1',
             search: '',
@@ -374,12 +377,12 @@ class LabelMenu extends React.Component<IProps, IState> {
             labelList: [],
             page: '2',
         }, () => {
-            this.getLabelList();
+            this.loadLabelList();
         });
     }
 
     private getLabelWrapper() {
-        const {labelList, labelLoading} = this.state;
+        const {labelList, labelLoading, loadBeforeLoading} = this.state;
         if (labelList.length === 0) {
             if (labelLoading) {
                 return (<div className="label-list-container">
@@ -411,11 +414,12 @@ class LabelMenu extends React.Component<IProps, IState> {
                                 hideTracksWhenNotNeeded={true}
                                 universal={true}
                                 rtl={!this.rtl}
+                                ref={this.scrollbarRefHandler}
                             >
-                                {labelLoading && <div key="label-item-loading" className="label-item-loading">
+                                {loadBeforeLoading && <div key="label-item-loading" className="label-item-loading">
                                     <CircularProgress size={32} thickness={3} color="inherit"/>
                                 </div>}
-                                {labelList.map((message) => {
+                                {labelList.map((message, index) => {
                                     return (<LabelMessageItem key={message.id || 0} message={message}/>);
                                 })}
                                 {labelLoading && <div key="label-item-loading" className="label-item-loading">
@@ -429,17 +433,27 @@ class LabelMenu extends React.Component<IProps, IState> {
         }
     }
 
+    private scrollbarRefHandler = (ref: any) => {
+        this.scrollbarRef = ref;
+    }
+
     /* Custom Scrollbars handler */
     private handleScroll = (e: any) => {
-        // @ts-ignore
-        const {scrollTop} = e.target;
+        if (!this.state.labelLoading && this.labelHasMore && this.scrollbarRef) {
+            const {scrollTop} = e.target;
+            const {labelList} = this.state;
+            const pos = (this.scrollbarRef.getScrollHeight() - this.scrollbarRef.getClientHeight() - 64);
+            if (pos < scrollTop && labelList.length > 0) {
+                this.loadLabelList((labelList[labelList.length - 1].id || 0) + 1);
+            }
+        }
     }
 
     private transformMessage(res: IMessage[]): IMessage[] {
         return res;
     }
 
-    private getLabelList(after?: number) {
+    private loadLabelList(after?: number) {
         const {label, labelLoading} = this.state;
         if (!label || labelLoading) {
             return;
@@ -491,28 +505,25 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     private loadLabelBefore() {
-        const {label, labelList} = this.state;
-        if (!label || !labelList.length) {
+        const {label, labelList, loadBeforeLoading} = this.state;
+        if (!label || !labelList.length || loadBeforeLoading) {
             return;
         }
+        this.setState({
+            loadBeforeLoading: true,
+        });
         const before = labelList[0].id || 0;
         this.labelRepo.getRemoteMessageByItem(label.id || 0, {min: before + 1, limit: 200}).then((res) => {
             labelList.unshift.apply(labelList, this.transformMessage(res.reverse()));
             this.setState({
                 labelList,
+                loadBeforeLoading: false,
+            });
+        }).catch(() => {
+            this.setState({
+                loadBeforeLoading: false,
             });
         });
-    }
-
-    // @ts-ignore
-    private labelItemRendered = (props: ListOnItemsRenderedProps) => {
-        if (!this.labelHasMore || this.state.labelLoading) {
-            return;
-        }
-        const {labelList} = this.state;
-        if ((labelList.length - 5) < props.visibleStopIndex) {
-            this.getLabelList(labelList[labelList.length - 1].id);
-        }
     }
 }
 

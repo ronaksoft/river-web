@@ -30,7 +30,7 @@ interface IState {
     photo?: string;
 }
 
-class GroupAvatar extends React.Component<IProps, IState> {
+class GroupAvatar extends React.PureComponent<IProps, IState> {
     private groupRepo: GroupRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;

@@ -14,10 +14,11 @@ import Message, {highlightMessage, highlightMessageText} from '../../components/
 import MessageRepo, {getMediaDocument} from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
-import ChatInput, {C_TYPING_INTERVAL, C_TYPING_INTERVAL_OFFSET} from '../../components/ChatInput/index';
+import ChatInput, {C_TYPING_INTERVAL, C_TYPING_INTERVAL_OFFSET, IMessageParam} from '../../components/ChatInput/index';
 import {
     clone,
     cloneDeep,
+    difference,
     differenceBy,
     find,
     findIndex,
@@ -25,16 +26,18 @@ import {
     intersectionBy,
     throttle,
     trimStart,
-    difference,
     uniq,
 } from 'lodash';
 import APIManager from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
-    FileLocation, InputDocument,
+    Error,
+    FileLocation,
+    InputDocument,
     InputFile,
     InputFileLocation,
+    InputMediaType,
     InputPeer,
     InputUser,
     MediaType,
@@ -42,7 +45,7 @@ import {
     MessageEntityType,
     PeerNotifySettings,
     PeerType,
-    TypingAction,
+    TypingAction
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
@@ -57,10 +60,15 @@ import {
     UpdateDialogPinned,
     UpdateDraftMessage,
     UpdateDraftMessageCleared,
-    UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
+    UpdateGroupPhoto,
+    UpdateLabelDeleted,
+    UpdateLabelItemsAdded,
+    UpdateLabelItemsRemoved,
+    UpdateLabelSet,
     UpdateMessageEdited,
     UpdateMessageID,
-    UpdateMessagesDeleted, UpdateNewMessage,
+    UpdateMessagesDeleted,
+    UpdateNewMessage,
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
@@ -89,7 +97,6 @@ import UserDialog from '../../components/UserDialog';
 import {IInputPeer} from '../../components/SearchList';
 import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
-import {InputMediaType} from '../../services/sdk/messages/chat.api.messages_pb';
 import {
     Document,
     DocumentAttribute,
@@ -98,10 +105,14 @@ import {
     DocumentAttributePhoto,
     DocumentAttributeType,
     DocumentAttributeVideo,
-    InputMediaContact, InputMediaDocument,
+    InputMediaContact,
+    InputMediaDocument,
     InputMediaGeoLocation,
+    InputMediaMessageDocument,
     InputMediaUploadedDocument,
+    MediaContact,
     MediaDocument,
+    MediaGeoLocation,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo, {getFileLocation} from '../../repository/file';
@@ -136,7 +147,6 @@ import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
 import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
-import {Error} from '../../services/sdk/messages/chat.core.types_pb';
 import {OptionsObject, withSnackbar} from "notistack";
 import {scrollFunc} from "../../services/kkwindow/utils";
 import Landscape from "../../components/SVG";
@@ -144,10 +154,16 @@ import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
-import {ButtonCallback, ButtonUrl, Button as BotButton} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {Button as BotButton, ButtonCallback, ButtonUrl} from "../../services/sdk/messages/chat.core.message.markups_pb";
 import {
-    EventBlur, EventFocus, EventMouseWheel, EventNetworkStatus, EventWasmInit, EventWasmStarted,
-    EventWebSocketClose, EventWebSocketOpen
+    EventBlur,
+    EventFocus,
+    EventMouseWheel,
+    EventNetworkStatus,
+    EventWasmInit,
+    EventWasmStarted,
+    EventWebSocketClose,
+    EventWebSocketOpen
 } from "../../services/events";
 import Smoother from "../../services/utilities/smoother";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
@@ -258,6 +274,7 @@ class Chat extends React.Component<IProps, IState> {
     private isBot: boolean = false;
     private smoother: Smoother;
     private uploaderRef: Uploader | undefined;
+    private userId: string = '0';
 
     constructor(props: IProps) {
         super(props);
@@ -281,6 +298,7 @@ class Chat extends React.Component<IProps, IState> {
         this.apiManager = APIManager.getInstance();
         this.apiManager.loadConnInfo();
         this.connInfo = this.apiManager.getConnInfo();
+        this.userId = this.connInfo.UserID || '0';
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
@@ -313,7 +331,7 @@ class Chat extends React.Component<IProps, IState> {
                 scope.setUser({
                     'app_version': C_VERSION,
                     'auth_id': this.connInfo.AuthID,
-                    'user_id': this.connInfo.UserID
+                    'user_id': this.userId
                 });
             });
         }
@@ -609,15 +627,16 @@ class Chat extends React.Component<IProps, IState> {
                                          onDrop={this.messageDropHandler}
                                          onBotCommand={this.messageBotCommandHandler}
                                          onBotButtonAction={this.messageBotButtonActionHandler}
+                                         onMessageDrop={this.messageMessageDropHandler}
                                          onError={this.textErrorHandler}
-                                         userId={this.connInfo.UserID}
+                                         userId={this.userId}
                                          isBot={this.isBot}
                                 />
                                 <MoveDown key="move-down" ref={this.moveDownRefHandler}
                                           onClick={this.moveDownClickHandler}/>
                             </div>
                             <ChatInput key="chat-input" ref={this.chatInputRefHandler}
-                                       onMessage={this.chatInputTextMessageHandler}
+                                       onTextSend={this.chatInputTextSendHandler}
                                        onTyping={this.onTyping}
                                        onBulkAction={this.chatInputBulkActionHandler}
                                        onAction={this.chatInputActionHandler}
@@ -630,8 +649,9 @@ class Chat extends React.Component<IProps, IState> {
                                        onClearDraft={this.updateDraftMessageClearedHandler}
                                        onFocus={this.chatInputFocusHandler}
                                        onBotButtonAction={this.messageBotButtonActionHandler}
+                                       onMessageDrop={this.chatInputMessageDropHandler}
                                        peer={this.peer}
-                                       userId={this.connInfo.UserID}
+                                       userId={this.userId}
                             />
                         </div>}
                         {this.selectedDialogId === 'null' && <div className="column-center">
@@ -710,7 +730,7 @@ class Chat extends React.Component<IProps, IState> {
                                     autoFocus={true}>
                                 {i18n.t('chat.remove_message_dialog.remove')}
                             </Button>
-                            {Boolean(confirmDialogMode === 'remove_message_revoke' && this.selectedDialogId !== this.connInfo.UserID) &&
+                            {Boolean(confirmDialogMode === 'remove_message_revoke' && this.selectedDialogId !== this.userId) &&
                             <Button onClick={this.removeMessageHandler(1)} color="primary">
                                 {(this.peer && this.peer.getType() === PeerType.PEERUSER) ?
                                     <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
@@ -750,7 +770,7 @@ class Chat extends React.Component<IProps, IState> {
                                 {i18n.t('chat.delete_dialog.p1')}
                                 <UserName className="group-name"
                                           id={this.state.leftMenuSelectedDialogId}
-                                          you={this.state.leftMenuSelectedDialogId === this.connInfo.UserID}
+                                          you={this.state.leftMenuSelectedDialogId === this.userId}
                                           youPlaceholder={i18n.t('general.saved_messages')}
                                           noIcon={true}
                                           noDetail={true}
@@ -864,7 +884,7 @@ class Chat extends React.Component<IProps, IState> {
         } else if (this.isUpdating) {
             return (<span>{i18n.t('status.updating')}</span>);
         } else {
-            return '';
+            return null;
         }
     }
 
@@ -1701,12 +1721,12 @@ class Chat extends React.Component<IProps, IState> {
         };
     }
 
-    private chatInputTextMessageHandler = (text: string, param?: any) => {
+    private chatInputTextSendHandler = (text: string, param: IMessageParam) => {
         if (trimStart(text).length === 0) {
             return;
         }
 
-        const peer = this.peer;
+        const peer = param.peer ? param.peer : cloneDeep(this.peer);
         if (!peer) {
             if (this.messageRef) {
                 this.messageRef.setLoading(false);
@@ -1714,7 +1734,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        if (param && param.mode === C_MSG_MODE.Edit) {
+        if (param.mode === C_MSG_MODE.Edit && param.message) {
             const randomId = UniqueId.getRandomId();
             const messages = this.messages;
             const message: IMessage = param.message;
@@ -1764,7 +1784,7 @@ class Chat extends React.Component<IProps, IState> {
                 peerid: this.selectedDialogId,
                 peertype: peer.getType(),
                 rtl: this.rtlDetector.direction(text || ''),
-                senderid: this.connInfo.UserID,
+                senderid: this.userId,
             };
 
             const emLe = emojiLevel(text);
@@ -1773,14 +1793,14 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             let replyTo;
-            if (param && param.mode === C_MSG_MODE.Reply) {
+            if (param.mode === C_MSG_MODE.Reply && param.message) {
                 message.replyto = param.message.id;
                 replyTo = param.message.id;
                 this.cachedMessageService.setMessage(param.message);
             }
 
             let entities;
-            if (param && param.entities) {
+            if (param.entities) {
                 message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
                     return entity.toObject();
                 });
@@ -2000,7 +2020,7 @@ class Chat extends React.Component<IProps, IState> {
         const dialog = this.getDialogById(id);
         if (!dialog) {
             // Saved messages
-            if (this.connInfo.UserID === id) {
+            if (this.userId === id) {
                 contactPeer.setType(PeerType.PEERUSER);
                 contactPeer.setAccesshash('0');
                 contactPeer.setId(id);
@@ -2092,7 +2112,7 @@ class Chat extends React.Component<IProps, IState> {
                     preview_icon: messageTitle.icon,
                     preview_me: msg.me,
                     preview_rtl: msg.rtl,
-                    saved_messages: (this.connInfo.UserID === id),
+                    saved_messages: (this.userId === id),
                     sender_id: msg.senderid,
                     topmessageid: msg.id,
                     unreadcount: 0,
@@ -2390,7 +2410,7 @@ class Chat extends React.Component<IProps, IState> {
     private fnStartedHandler = () => {
         this.messageRepo.loadConnInfo();
         this.connInfo = this.apiManager.getConnInfo();
-        this.updateManager.setUserId(this.connInfo.UserID || '');
+        this.updateManager.setUserId(this.userId);
     }
 
     private networkStatusHandler = (event: any) => {
@@ -2657,7 +2677,7 @@ class Chat extends React.Component<IProps, IState> {
     /* Notify on new message received */
     private notifyMessage(data: UpdateNewMessage.AsObject) {
         const message: IMessage = data.message;
-        if (!(!this.isInChat && data.sender.id !== (this.connInfo.UserID || '') && this.canNotify(message.peerid || '')) && (message.mention_me !== true)) {
+        if (!(!this.isInChat && data.sender.id !== this.userId && this.canNotify(message.peerid || '')) && (message.mention_me !== true)) {
             return;
         }
         if (message.peertype === PeerType.PEERGROUP) {
@@ -2745,7 +2765,7 @@ class Chat extends React.Component<IProps, IState> {
                 peerid: res.id,
                 peertype: PeerType.PEERGROUP,
                 preview: `${i18n.t('general.you')}: ${i18n.t('message.created_the_group')}`,
-                sender_id: this.connInfo.UserID,
+                sender_id: this.userId,
             };
             this.dialogs.push(dialog);
             this.dialogsSortThrottle(this.dialogs);
@@ -3046,7 +3066,14 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Message on bot command handler */
     private messageBotCommandHandler = (cmd: string, params?: any) => {
-        this.chatInputTextMessageHandler(cmd, params);
+        this.chatInputTextSendHandler(cmd, params);
+    }
+
+    /* Message on message drop handler */
+    private messageMessageDropHandler = (id: number) => {
+        if (this.chatInputRef) {
+            this.chatInputRef.loadMessage(id);
+        }
     }
 
     /* Message on bot button click handler */
@@ -3057,7 +3084,7 @@ class Chat extends React.Component<IProps, IState> {
         switch (cmd) {
             case C_BUTTON_ACTION.Button:
                 const button: BotButton.AsObject = data;
-                this.chatInputTextMessageHandler(button.text || '');
+                this.chatInputTextSendHandler(button.text || '', {});
                 break;
             case C_BUTTON_ACTION.ButtonUrl:
                 const buttonUrl: ButtonUrl.AsObject = data;
@@ -3097,6 +3124,46 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private chatInputMessageDropHandler = (message: IMessage, caption: string, params: IMessageParam) => {
+        if (message.mediatype === MediaType.MEDIATYPEDOCUMENT) {
+            this.sendUploadedMediaMessage(caption, message, params);
+        } else {
+            switch (message.messagetype) {
+                case C_MESSAGE_TYPE.Location:
+                    const location: MediaGeoLocation.AsObject = message.mediadata;
+                    const geoItem: IGeoItem = {
+                        caption,
+                        lat: location.lat || 0,
+                        long: location.pb_long || 0,
+                    };
+                    this.sendMediaMessageWithNoFile('location', geoItem, {
+                        message: params.message,
+                        mode: params.mode,
+                    });
+                    break;
+                case C_MESSAGE_TYPE.Contact:
+                    const contact: MediaContact.AsObject = message.mediadata;
+                    const user: IUser = {
+                        firstname: contact.firstname,
+                        lastname: contact.lastname,
+                        phone: contact.phone,
+                    };
+                    this.sendMediaMessageWithNoFile('contact', user, {
+                        message: params.message,
+                        mode: params.mode,
+                    });
+                    break;
+                default:
+                    this.chatInputTextSendHandler(caption, {
+                        entities: params.entities,
+                        message: params.message,
+                        mode: params.mode,
+                    });
+                    break;
+            }
+        }
+    }
+
     private openLink(link: string) {
         if (link.length > 0) {
             if (link.indexOf('http://') === -1 && link.indexOf('https://') === -1) {
@@ -3115,10 +3182,10 @@ class Chat extends React.Component<IProps, IState> {
         this.confirmDialogCloseHandler();
         this.chatInputContactSelectHandler([{
             firstname: this.connInfo.FirstName || '',
-            id: this.connInfo.UserID || '',
+            id: this.userId,
             lastname: this.connInfo.LastName || '',
             phone: this.connInfo.Phone || '',
-        }]);
+        }], '', {});
     }
 
     private botSendLocationHandler = () => {
@@ -3129,7 +3196,7 @@ class Chat extends React.Component<IProps, IState> {
                     caption: '',
                     lat: pos.coords.latitude,
                     long: pos.coords.longitude,
-                });
+                }, {});
             }, this.geoLocationErrorHandler);
         }
     }
@@ -3963,7 +4030,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* ChatInput send voice handler */
-    private chatInputVoiceHandler = (item: IMediaItem, param?: any) => {
+    private chatInputVoiceHandler = (item: IMediaItem, param: IMessageParam) => {
         this.sendMediaMessage('voice', item, param);
     }
 
@@ -3974,11 +4041,11 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none', mediaItem: IMediaItem, param?: { mode?: number, message?: IMessage | null, peer?: InputPeer | null }) {
+    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none', mediaItem: IMediaItem, param: IMessageParam) {
         if (type === 'none') {
             return;
         }
-        const peer = (param && param.peer) ? param.peer : cloneDeep(this.peer);
+        const peer = param.peer ? param.peer : cloneDeep(this.peer);
         if (!peer) {
             return;
         }
@@ -4140,12 +4207,12 @@ class Chat extends React.Component<IProps, IState> {
             messagetype: messageType,
             peerid: peer.getId(),
             peertype: peer.getType(),
-            senderid: this.connInfo.UserID,
+            senderid: this.userId,
             temp_file: tempImageFile,
         };
 
         let replyTo: any;
-        if (param && param.mode === C_MSG_MODE.Reply && param.message) {
+        if (param.mode === C_MSG_MODE.Reply && param.message) {
             message.replyto = param.message.id;
             replyTo = param.message.id;
         }
@@ -4295,7 +4362,7 @@ class Chat extends React.Component<IProps, IState> {
                     window.console.warn(err);
                     if (!this.resolveRandomMessageIdError(err, randomId, id) && this.selectedDialogId === peer.getId()) {
                         const messages = this.messages;
-                        const index = findIndex(messages, (o) => {
+                        const index = findLastIndex(messages, (o) => {
                             return o.id === id && o.messagetype === messageType;
                         });
                         if (index > -1) {
@@ -4312,7 +4379,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.onTyping(TypingAction.TYPINGACTIONCANCEL, peer);
                 if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED && this.selectedDialogId === peer.getId()) {
                     const messages = this.messages;
-                    const index = findIndex(messages, (o) => {
+                    const index = findLastIndex(messages, (o) => {
                         return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
                     });
                     if (index > -1) {
@@ -4338,24 +4405,24 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* ChatInput contact select handler */
-    private chatInputContactSelectHandler = (users: IUser[], param?: any) => {
+    private chatInputContactSelectHandler = (users: IUser[], caption: string, params: IMessageParam) => {
         users.forEach((user) => {
-            this.sendMediaMessageWithNoFile('contact', user, param);
+            this.sendMediaMessageWithNoFile('contact', user, params);
         });
     }
 
     /* ChatInput map select handler */
-    private chatInputMapSelectHandler = (item: IGeoItem, param?: any) => {
-        this.sendMediaMessageWithNoFile('location', item, param);
+    private chatInputMapSelectHandler = (item: IGeoItem, params: IMessageParam) => {
+        this.sendMediaMessageWithNoFile('location', item, params);
     }
 
-    // Send media message with no file
-    private sendMediaMessageWithNoFile(type: 'contact' | 'location' | 'none', item: IUser | IGeoItem, param?: any) {
+    /* Send media message with no file */
+    private sendMediaMessageWithNoFile(type: 'contact' | 'location' | 'none', item: IUser | IGeoItem, params: IMessageParam) {
         if (type === 'none') {
             return;
         }
-        const peer = this.peer;
-        if (peer === null) {
+        const peer = params.peer ? params.peer : cloneDeep(this.peer);
+        if (!peer) {
             return;
         }
 
@@ -4368,7 +4435,6 @@ class Chat extends React.Component<IProps, IState> {
         let media: any;
         let mediaType = InputMediaType.INPUTMEDIATYPECONTACT;
         let mediaType2: MediaType = MediaType.MEDIATYPECONTACT;
-        let caption = '';
         if (type === 'contact') {
             const user = item as IUser;
             const contact = new InputMediaContact();
@@ -4386,7 +4452,8 @@ class Chat extends React.Component<IProps, IState> {
             const geoData = new InputMediaGeoLocation();
             geoData.setLat(location.lat);
             geoData.setLong(location.long);
-            caption = location.caption;
+            geoData.setCaption(location.caption || '');
+            geoData.setEntitiesList(location.entities || []);
             mediaData = geoData.toObject();
             media = geoData.serializeBinary();
             mediaType = InputMediaType.INPUTMEDIATYPEGEOLOCATION;
@@ -4402,15 +4469,15 @@ class Chat extends React.Component<IProps, IState> {
             mediatype: mediaType2,
             messageaction: C_MESSAGE_ACTION.MessageActionNope,
             messagetype: messageType,
-            peerid: this.selectedDialogId,
+            peerid: peer.getId(),
             peertype: peer.getType(),
-            senderid: this.connInfo.UserID,
+            senderid: this.userId,
         };
 
         let replyTo: any;
-        if (param && param.mode === C_MSG_MODE.Reply) {
-            message.replyto = param.message.id;
-            replyTo = param.message.id;
+        if (params.mode === C_MSG_MODE.Reply && params.message) {
+            message.replyto = params.message.id;
+            replyTo = params.message.id;
         }
 
         this.pushMessage(message);
@@ -4436,16 +4503,95 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.updateList();
             }
             this.newMessageLoadThrottle();
-
-            if (caption.length > 0) {
-                this.chatInputTextMessageHandler(caption, {mode: C_MSG_MODE.Reply, message: {id: res.messageid}});
-            }
         }).catch((err) => {
             window.console.warn(err);
             if (!this.resolveRandomMessageIdError(err, randomId, id)) {
                 const messages = this.messages;
-                const index = findIndex(messages, (o) => {
+                const index = findLastIndex(messages, (o) => {
                     return o.id === id && o.messagetype === messageType;
+                });
+                if (index > -1) {
+                    messages[index].error = true;
+                    this.messageRepo.importBulk([messages[index]], false);
+                    if (this.messageRef) {
+                        this.messageRef.updateList();
+                    }
+                }
+            }
+        });
+    }
+
+    /* Send media message with label message */
+    private sendUploadedMediaMessage(caption: string, msg: IMessage, params: IMessageParam) {
+        const peer = params.peer ? params.peer : cloneDeep(this.peer);
+        if (!peer) {
+            return;
+        }
+
+        const now = this.riverTime.now();
+        const randomId = UniqueId.getRandomId();
+        const id = -this.riverTime.milliNow();
+
+        const media = new InputMediaMessageDocument();
+        const inputPeer = new InputPeer();
+        inputPeer.setType(msg.peertype || PeerType.PEERUSER);
+        inputPeer.setId(msg.peerid || '0');
+        inputPeer.setAccesshash('0');
+        media.setMessageid(msg.id || 0);
+        media.setPeer(inputPeer);
+        media.setCaption(caption);
+
+        const message: IMessage = cloneDeep(msg);
+        message.id = id;
+        message.me = true;
+        message.createdon = now;
+        message.peerid = peer.getId();
+        message.peertype = peer.getType();
+        if (!message.mediadata) {
+            message.mediadata = {};
+        }
+        message.mediadata.caption = caption;
+
+        let replyTo: any;
+        if (params.mode === C_MSG_MODE.Reply && params.message) {
+            message.replyto = params.message.id;
+            replyTo = params.message.id;
+        }
+
+        if (params.entities) {
+            message.mediadata.entitiesList = params.entities.map(o => o.toObject());
+            media.setEntitiesList(params.entities);
+        }
+
+        this.pushMessage(message);
+
+        this.messageRepo.addPending({
+            id: randomId,
+            message_id: id,
+        });
+
+        this.apiManager.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEMESSAGEDOCUMENT, media.serializeBinary(), replyTo).then((res) => {
+            // For double checking update message id
+            this.updateManager.setMessageId(res.messageid || 0);
+
+            message.id = res.messageid;
+            this.messageMapAppend(message);
+
+            this.messageRepo.lazyUpsert([message]);
+            this.updateDialogs(message, '0');
+
+            this.checkMessageOrder(message);
+            // Force update messages
+            if (this.messageRef) {
+                this.messageRef.updateList();
+            }
+            this.newMessageLoadThrottle();
+        }).catch((err) => {
+            window.console.warn(err);
+            if (!this.resolveRandomMessageIdError(err, randomId, id)) {
+                const messages = this.messages;
+                const index = findLastIndex(messages, (o) => {
+                    return o.id === id;
                 });
                 if (index > -1) {
                     messages[index].error = true;
@@ -5077,7 +5223,7 @@ class Chat extends React.Component<IProps, IState> {
             entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
             entity.setUserid('');
             entities.push(entity);
-            this.chatInputTextMessageHandler('/start', {
+            this.chatInputTextSendHandler('/start', {
                 entities,
             });
         });

@@ -127,14 +127,21 @@ export default class LabelRepo {
                     if (cacheRes.messageList.length > 0) {
                         max = (cacheRes.messageList[cacheRes.messageList.length - 1].id || 0) - 1;
                     }
-                    this.getRemoteMessageByItem(id, {max: max || 0, limit: lim}).then((remoteRes) => {
-                        resolve({
-                            labelCount: cacheRes.labelCount + remoteRes.length,
-                            messageList: [...cacheRes.messageList, ...MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId())]
+                    if (lim !== 0) {
+                        this.getRemoteMessageByItem(id, {max: max || 0, limit: lim}).then((remoteRes) => {
+                            resolve({
+                                labelCount: cacheRes.labelCount + remoteRes.length,
+                                messageList: [...cacheRes.messageList, ...MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId())],
+                            });
+                        }).catch((remoteErr) => {
+                            reject(remoteErr);
                         });
-                    }).catch((remoteErr) => {
-                        reject(remoteErr);
-                    });
+                    } else {
+                        resolve({
+                            labelCount: cacheRes.labelCount,
+                            messageList: cacheRes.messageList,
+                        });
+                    }
                 } else {
                     resolve(cacheRes);
                 }

@@ -37,7 +37,6 @@ interface IState {
 }
 
 class ImageEditor extends React.Component<IProps, IState> {
-    // @ts-ignore
     private imageEditorRef: any | undefined;
     private size: {
         cssHeight: number,
@@ -46,9 +45,9 @@ class ImageEditor extends React.Component<IProps, IState> {
         width: number,
     } = {
         cssHeight: 568,
-        cssWidth: 568,
+        cssWidth: 743,
         height: 600,
-        width: 600,
+        width: 775,
     };
 
     constructor(props: IProps) {
@@ -185,7 +184,7 @@ class ImageEditor extends React.Component<IProps, IState> {
     private setLayoutSize(fullscreen?: boolean) {
         const h = window.innerHeight;
         const w = window.innerWidth;
-        if (w <= 640 || fullscreen) {
+        if (w <= 775 || fullscreen) {
             this.size = {
                 cssHeight: h - 82,
                 cssWidth: w - 32,
@@ -195,9 +194,9 @@ class ImageEditor extends React.Component<IProps, IState> {
         } else {
             this.size = {
                 cssHeight: 568,
-                cssWidth: 568,
+                cssWidth: 743,
                 height: 600,
-                width: 600,
+                width: 775,
             };
         }
     }

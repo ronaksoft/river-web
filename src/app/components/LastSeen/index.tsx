@@ -33,7 +33,7 @@ interface IState {
     you: boolean;
 }
 
-class LastSeen extends React.Component<IProps, IState> {
+class LastSeen extends React.PureComponent<IProps, IState> {
     private interval: any = null;
     private riverTime: RiverTime;
     private userRepo: UserRepo;
@@ -67,7 +67,7 @@ class LastSeen extends React.Component<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.getGroup));
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (this.state.id !== newProps.id) {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);

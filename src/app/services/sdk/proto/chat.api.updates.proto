@@ -293,12 +293,24 @@ message UpdateBotCallbackQuery {
     optional bytes Data = 5;
 }
 
-// UpdateBotInlineCallbackQuery
-message UpdateBotInlineCallbackQuery {
+// UpdateBotInlineQuery
+message UpdateBotInlineQuery {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
     required int64 QueryID = 1;
     required int64 UserID = 2;
-    optional int64 MessageID = 3;
-    optional bytes Data = 4;
+    required Peer Peer = 3;
+    required string Query = 4;
+    optional string Offset = 5;
+    optional GeoLocation Geo = 6;
+}
+
+// UpdateBotInlineSend
+message UpdateBotInlineSend {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required int64 UserID = 2;
+    required string Query = 3;
+    required string ResultID = 4;
+    optional GeoLocation Geo = 5;
 }

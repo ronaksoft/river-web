@@ -4,7 +4,7 @@
 
 import * as jspb from "google-protobuf";
 import * as chat_core_types_pb from "./chat.core.types_pb";
-import * as chat_api_messages_pb from "./chat.api.messages_pb";
+import * as chat_core_message_medias_pb from "./chat.core.message.medias_pb";
 
 export class BotStart extends jspb.Message {
   hasBot(): boolean;
@@ -88,6 +88,16 @@ export class BotSetInfo extends jspb.Message {
   getDescription(): string | undefined;
   setDescription(value: string): void;
 
+  hasInlineplaceholder(): boolean;
+  clearInlineplaceholder(): void;
+  getInlineplaceholder(): string | undefined;
+  setInlineplaceholder(value: string): void;
+
+  hasInlinegeo(): boolean;
+  clearInlinegeo(): void;
+  getInlinegeo(): boolean | undefined;
+  setInlinegeo(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotSetInfo.AsObject;
   static toObject(includeInstance: boolean, msg: BotSetInfo): BotSetInfo.AsObject;
@@ -105,6 +115,8 @@ export namespace BotSetInfo {
     owner?: number,
     botcommandsList: Array<chat_core_types_pb.BotCommands.AsObject>,
     description?: string,
+    inlineplaceholder?: string,
+    inlinegeo?: boolean,
   }
 }
 
@@ -275,8 +287,8 @@ export class BotSendMedia extends jspb.Message {
 
   hasMediatype(): boolean;
   clearMediatype(): void;
-  getMediatype(): chat_api_messages_pb.InputMediaType | undefined;
-  setMediatype(value: chat_api_messages_pb.InputMediaType): void;
+  getMediatype(): chat_core_types_pb.InputMediaType | undefined;
+  setMediatype(value: chat_core_types_pb.InputMediaType): void;
 
   hasMediadata(): boolean;
   clearMediadata(): void;
@@ -304,7 +316,7 @@ export namespace BotSendMedia {
   export type AsObject = {
     randomid?: number,
     peer: chat_core_types_pb.InputPeer.AsObject,
-    mediatype?: chat_api_messages_pb.InputMediaType,
+    mediatype?: chat_core_types_pb.InputMediaType,
     mediadata: Uint8Array | string,
     replyto?: number,
   }
@@ -442,6 +454,34 @@ export namespace BotRevokeToken {
   }
 }
 
+export class BotDeleteMessage extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotDeleteMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: BotDeleteMessage): BotDeleteMessage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotDeleteMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotDeleteMessage;
+  static deserializeBinaryFromReader(message: BotDeleteMessage, reader: jspb.BinaryReader): BotDeleteMessage;
+}
+
+export namespace BotDeleteMessage {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    messageidsList: Array<number>,
+  }
+}
+
 export class BotSetCallbackAnswer extends jspb.Message {
   hasQueryid(): boolean;
   clearQueryid(): void;
@@ -518,31 +558,479 @@ export namespace BotGetCallbackAnswer {
   }
 }
 
-export class BotDeleteMessage extends jspb.Message {
+export class BotGetInlineResults extends jspb.Message {
+  hasBot(): boolean;
+  clearBot(): void;
+  getBot(): chat_core_types_pb.InputUser;
+  setBot(value?: chat_core_types_pb.InputUser): void;
+
   hasPeer(): boolean;
   clearPeer(): void;
   getPeer(): chat_core_types_pb.InputPeer;
   setPeer(value?: chat_core_types_pb.InputPeer): void;
 
-  clearMessageidsList(): void;
-  getMessageidsList(): Array<number>;
-  setMessageidsList(value: Array<number>): void;
-  addMessageids(value: number, index?: number): number;
+  hasQuery(): boolean;
+  clearQuery(): void;
+  getQuery(): string | undefined;
+  setQuery(value: string): void;
+
+  hasOffset(): boolean;
+  clearOffset(): void;
+  getOffset(): string | undefined;
+  setOffset(value: string): void;
+
+  hasLocation(): boolean;
+  clearLocation(): void;
+  getLocation(): chat_core_types_pb.InputGeoLocation | undefined;
+  setLocation(value?: chat_core_types_pb.InputGeoLocation): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): BotDeleteMessage.AsObject;
-  static toObject(includeInstance: boolean, msg: BotDeleteMessage): BotDeleteMessage.AsObject;
+  toObject(includeInstance?: boolean): BotGetInlineResults.AsObject;
+  static toObject(includeInstance: boolean, msg: BotGetInlineResults): BotGetInlineResults.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: BotDeleteMessage, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): BotDeleteMessage;
-  static deserializeBinaryFromReader(message: BotDeleteMessage, reader: jspb.BinaryReader): BotDeleteMessage;
+  static serializeBinaryToWriter(message: BotGetInlineResults, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotGetInlineResults;
+  static deserializeBinaryFromReader(message: BotGetInlineResults, reader: jspb.BinaryReader): BotGetInlineResults;
 }
 
-export namespace BotDeleteMessage {
+export namespace BotGetInlineResults {
   export type AsObject = {
+    bot: chat_core_types_pb.InputUser.AsObject,
     peer: chat_core_types_pb.InputPeer.AsObject,
-    messageidsList: Array<number>,
+    query?: string,
+    offset?: string,
+    location?: chat_core_types_pb.InputGeoLocation.AsObject,
+  }
+}
+
+export class BotSetInlineResults extends jspb.Message {
+  hasGallery(): boolean;
+  clearGallery(): void;
+  getGallery(): boolean | undefined;
+  setGallery(value: boolean): void;
+
+  hasPrivate(): boolean;
+  clearPrivate(): void;
+  getPrivate(): boolean | undefined;
+  setPrivate(value: boolean): void;
+
+  hasCachetime(): boolean;
+  clearCachetime(): void;
+  getCachetime(): number | undefined;
+  setCachetime(value: number): void;
+
+  hasNextoffset(): boolean;
+  clearNextoffset(): void;
+  getNextoffset(): string | undefined;
+  setNextoffset(value: string): void;
+
+  clearResultsList(): void;
+  getResultsList(): Array<InputBotInlineResult>;
+  setResultsList(value: Array<InputBotInlineResult>): void;
+  addResults(value?: InputBotInlineResult, index?: number): InputBotInlineResult;
+
+  hasSwitchpm(): boolean;
+  clearSwitchpm(): void;
+  getSwitchpm(): BotInlineSwitchPM | undefined;
+  setSwitchpm(value?: BotInlineSwitchPM): void;
+
+  hasQueryid(): boolean;
+  clearQueryid(): void;
+  getQueryid(): number | undefined;
+  setQueryid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotSetInlineResults.AsObject;
+  static toObject(includeInstance: boolean, msg: BotSetInlineResults): BotSetInlineResults.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotSetInlineResults, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotSetInlineResults;
+  static deserializeBinaryFromReader(message: BotSetInlineResults, reader: jspb.BinaryReader): BotSetInlineResults;
+}
+
+export namespace BotSetInlineResults {
+  export type AsObject = {
+    gallery?: boolean,
+    pb_private?: boolean,
+    cachetime?: number,
+    nextoffset?: string,
+    resultsList: Array<InputBotInlineResult.AsObject>,
+    switchpm?: BotInlineSwitchPM.AsObject,
+    queryid?: number,
+  }
+}
+
+export class BotSendInlineResults extends jspb.Message {
+  hasRandomid(): boolean;
+  clearRandomid(): void;
+  getRandomid(): number | undefined;
+  setRandomid(value: number): void;
+
+  hasQueryid(): boolean;
+  clearQueryid(): void;
+  getQueryid(): number | undefined;
+  setQueryid(value: number): void;
+
+  hasResultid(): boolean;
+  clearResultid(): void;
+  getResultid(): string | undefined;
+  setResultid(value: string): void;
+
+  hasCleardraft(): boolean;
+  clearCleardraft(): void;
+  getCleardraft(): boolean | undefined;
+  setCleardraft(value: boolean): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  hasReplyto(): boolean;
+  clearReplyto(): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
+
+  hasSilent(): boolean;
+  clearSilent(): void;
+  getSilent(): boolean | undefined;
+  setSilent(value: boolean): void;
+
+  hasHidevia(): boolean;
+  clearHidevia(): void;
+  getHidevia(): boolean | undefined;
+  setHidevia(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotSendInlineResults.AsObject;
+  static toObject(includeInstance: boolean, msg: BotSendInlineResults): BotSendInlineResults.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotSendInlineResults, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotSendInlineResults;
+  static deserializeBinaryFromReader(message: BotSendInlineResults, reader: jspb.BinaryReader): BotSendInlineResults;
+}
+
+export namespace BotSendInlineResults {
+  export type AsObject = {
+    randomid?: number,
+    queryid?: number,
+    resultid?: string,
+    cleardraft?: boolean,
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    replyto?: number,
+    silent?: boolean,
+    hidevia?: boolean,
+  }
+}
+
+export class BotResults extends jspb.Message {
+  hasGallery(): boolean;
+  clearGallery(): void;
+  getGallery(): boolean | undefined;
+  setGallery(value: boolean): void;
+
+  hasQueryid(): boolean;
+  clearQueryid(): void;
+  getQueryid(): number | undefined;
+  setQueryid(value: number): void;
+
+  hasNextoffset(): boolean;
+  clearNextoffset(): void;
+  getNextoffset(): string | undefined;
+  setNextoffset(value: string): void;
+
+  hasSwitchpm(): boolean;
+  clearSwitchpm(): void;
+  getSwitchpm(): BotInlineSwitchPM | undefined;
+  setSwitchpm(value?: BotInlineSwitchPM): void;
+
+  clearResultsList(): void;
+  getResultsList(): Array<BotInlineResult>;
+  setResultsList(value: Array<BotInlineResult>): void;
+  addResults(value?: BotInlineResult, index?: number): BotInlineResult;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotResults.AsObject;
+  static toObject(includeInstance: boolean, msg: BotResults): BotResults.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotResults, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotResults;
+  static deserializeBinaryFromReader(message: BotResults, reader: jspb.BinaryReader): BotResults;
+}
+
+export namespace BotResults {
+  export type AsObject = {
+    gallery?: boolean,
+    queryid?: number,
+    nextoffset?: string,
+    switchpm?: BotInlineSwitchPM.AsObject,
+    resultsList: Array<BotInlineResult.AsObject>,
+  }
+}
+
+export class BotInlineSwitchPM extends jspb.Message {
+  hasText(): boolean;
+  clearText(): void;
+  getText(): string | undefined;
+  setText(value: string): void;
+
+  hasStartparam(): boolean;
+  clearStartparam(): void;
+  getStartparam(): string | undefined;
+  setStartparam(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotInlineSwitchPM.AsObject;
+  static toObject(includeInstance: boolean, msg: BotInlineSwitchPM): BotInlineSwitchPM.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotInlineSwitchPM, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotInlineSwitchPM;
+  static deserializeBinaryFromReader(message: BotInlineSwitchPM, reader: jspb.BinaryReader): BotInlineSwitchPM;
+}
+
+export namespace BotInlineSwitchPM {
+  export type AsObject = {
+    text?: string,
+    startparam?: string,
+  }
+}
+
+export class BotInlineResult extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): chat_core_types_pb.MediaType | undefined;
+  setType(value: chat_core_types_pb.MediaType): void;
+
+  hasTitle(): boolean;
+  clearTitle(): void;
+  getTitle(): string | undefined;
+  setTitle(value: string): void;
+
+  hasDescription(): boolean;
+  clearDescription(): void;
+  getDescription(): string | undefined;
+  setDescription(value: string): void;
+
+  hasUrl(): boolean;
+  clearUrl(): void;
+  getUrl(): string | undefined;
+  setUrl(value: string): void;
+
+  hasThumb(): boolean;
+  clearThumb(): void;
+  getThumb(): chat_core_message_medias_pb.MediaWebDocument | undefined;
+  setThumb(value?: chat_core_message_medias_pb.MediaWebDocument): void;
+
+  hasMessage(): boolean;
+  clearMessage(): void;
+  getMessage(): BotInlineMessage;
+  setMessage(value?: BotInlineMessage): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotInlineResult.AsObject;
+  static toObject(includeInstance: boolean, msg: BotInlineResult): BotInlineResult.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotInlineResult, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotInlineResult;
+  static deserializeBinaryFromReader(message: BotInlineResult, reader: jspb.BinaryReader): BotInlineResult;
+}
+
+export namespace BotInlineResult {
+  export type AsObject = {
+    id?: string,
+    type?: chat_core_types_pb.MediaType,
+    title?: string,
+    description?: string,
+    url?: string,
+    thumb?: chat_core_message_medias_pb.MediaWebDocument.AsObject,
+    message: BotInlineMessage.AsObject,
+  }
+}
+
+export class InputBotInlineResult extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): chat_core_types_pb.InputMediaType | undefined;
+  setType(value: chat_core_types_pb.InputMediaType): void;
+
+  hasTitle(): boolean;
+  clearTitle(): void;
+  getTitle(): string | undefined;
+  setTitle(value: string): void;
+
+  hasDescription(): boolean;
+  clearDescription(): void;
+  getDescription(): string | undefined;
+  setDescription(value: string): void;
+
+  hasUrl(): boolean;
+  clearUrl(): void;
+  getUrl(): string | undefined;
+  setUrl(value: string): void;
+
+  hasThumb(): boolean;
+  clearThumb(): void;
+  getThumb(): chat_core_message_medias_pb.InputMediaWebDocument | undefined;
+  setThumb(value?: chat_core_message_medias_pb.InputMediaWebDocument): void;
+
+  hasMessage(): boolean;
+  clearMessage(): void;
+  getMessage(): InputBotInlineMessage;
+  setMessage(value?: InputBotInlineMessage): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputBotInlineResult.AsObject;
+  static toObject(includeInstance: boolean, msg: InputBotInlineResult): InputBotInlineResult.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputBotInlineResult, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputBotInlineResult;
+  static deserializeBinaryFromReader(message: InputBotInlineResult, reader: jspb.BinaryReader): InputBotInlineResult;
+}
+
+export namespace InputBotInlineResult {
+  export type AsObject = {
+    id?: string,
+    type?: chat_core_types_pb.InputMediaType,
+    title?: string,
+    description?: string,
+    url?: string,
+    thumb?: chat_core_message_medias_pb.InputMediaWebDocument.AsObject,
+    message: InputBotInlineMessage.AsObject,
+  }
+}
+
+export class BotInlineMessage extends jspb.Message {
+  hasMediadata(): boolean;
+  clearMediadata(): void;
+  getMediadata(): Uint8Array | string;
+  getMediadata_asU8(): Uint8Array;
+  getMediadata_asB64(): string;
+  setMediadata(value: Uint8Array | string): void;
+
+  hasBody(): boolean;
+  clearBody(): void;
+  getBody(): string | undefined;
+  setBody(value: string): void;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<chat_core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
+  addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
+
+  hasReplyto(): boolean;
+  clearReplyto(): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
+
+  hasReplymarkup(): boolean;
+  clearReplymarkup(): void;
+  getReplymarkup(): number | undefined;
+  setReplymarkup(value: number): void;
+
+  hasReplymarkupdata(): boolean;
+  clearReplymarkupdata(): void;
+  getReplymarkupdata(): Uint8Array | string;
+  getReplymarkupdata_asU8(): Uint8Array;
+  getReplymarkupdata_asB64(): string;
+  setReplymarkupdata(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotInlineMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: BotInlineMessage): BotInlineMessage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotInlineMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotInlineMessage;
+  static deserializeBinaryFromReader(message: BotInlineMessage, reader: jspb.BinaryReader): BotInlineMessage;
+}
+
+export namespace BotInlineMessage {
+  export type AsObject = {
+    mediadata: Uint8Array | string,
+    body?: string,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
+    replyto?: number,
+    replymarkup?: number,
+    replymarkupdata: Uint8Array | string,
+  }
+}
+
+export class InputBotInlineMessage extends jspb.Message {
+  hasInputmediadata(): boolean;
+  clearInputmediadata(): void;
+  getInputmediadata(): Uint8Array | string;
+  getInputmediadata_asU8(): Uint8Array;
+  getInputmediadata_asB64(): string;
+  setInputmediadata(value: Uint8Array | string): void;
+
+  hasNowebpage(): boolean;
+  clearNowebpage(): void;
+  getNowebpage(): boolean | undefined;
+  setNowebpage(value: boolean): void;
+
+  hasBody(): boolean;
+  clearBody(): void;
+  getBody(): string | undefined;
+  setBody(value: string): void;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<chat_core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
+  addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
+
+  hasReplyto(): boolean;
+  clearReplyto(): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
+
+  hasReplymarkup(): boolean;
+  clearReplymarkup(): void;
+  getReplymarkup(): number | undefined;
+  setReplymarkup(value: number): void;
+
+  hasReplymarkupdata(): boolean;
+  clearReplymarkupdata(): void;
+  getReplymarkupdata(): Uint8Array | string;
+  getReplymarkupdata_asU8(): Uint8Array;
+  getReplymarkupdata_asB64(): string;
+  setReplymarkupdata(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputBotInlineMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: InputBotInlineMessage): InputBotInlineMessage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputBotInlineMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputBotInlineMessage;
+  static deserializeBinaryFromReader(message: InputBotInlineMessage, reader: jspb.BinaryReader): InputBotInlineMessage;
+}
+
+export namespace InputBotInlineMessage {
+  export type AsObject = {
+    inputmediadata: Uint8Array | string,
+    nowebpage?: boolean,
+    body?: string,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
+    replyto?: number,
+    replymarkup?: number,
+    replymarkupdata: Uint8Array | string,
   }
 }
 

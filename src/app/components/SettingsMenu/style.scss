@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-@import '../../../style/mixin';
 
 .settings-menu {
   height: 100%;
@@ -488,7 +487,6 @@
     text-align: center;
     font-size: 0.875rem;
     font-weight: 400;
-    @include font;
     line-height: 1.46429em;
     color: rgba(0, 0, 0, 0.87);
     margin-bottom: 10px;
@@ -1145,10 +1143,10 @@
         line-height: 23px;
         margin: 0 0 4px;
         color: var(--dark);
-        @include font-bold;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: bold;
 
         .inner {
           flex: 1;

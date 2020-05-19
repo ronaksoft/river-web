@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2019
 */
-@import '../../../style/mixin';
 
 .label-menu {
   height: 100%;
@@ -387,6 +386,12 @@ html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
   .label-menu {
+    .page-container {
+      .page.page-2 {
+        background-color: var(--dark-medium);
+      }
+    }
+
     .menu-header {
       background-color: var(--dark-medium);
       color: var(--white);
@@ -444,6 +449,12 @@ html[theme="dark-blue"] {
 
 html[theme="dark-blue"] {
   .label-menu {
+    .page-container {
+      .page.page-2 {
+        background-color: var(--dark-blue-medium);
+      }
+    }
+
     .menu-header {
       background-color: var(--dark-blue-medium);
       border-color: var(--dark-blue-low-op50);

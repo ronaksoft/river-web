@@ -162,6 +162,7 @@ interface IProps {
     onRendered?: scrollFunc;
     onBotCommand?: (cmd: string, params?: any) => void;
     onBotButtonAction?: (cmd: number, data: any, msgId?: number) => void;
+    onMessageDrop?: (id: number) => void;
     onError?: (text: string) => void;
     showDate: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
@@ -665,9 +666,7 @@ class Message extends React.Component<IProps, IState> {
                     />}
                     {this.state.enableDrag &&
                     <div className="messages-dropzone">
-                        <div className="dropzone">
-                            Drop your files here
-                        </div>
+                        <div className="dropzone">{i18n.t('message.drop_here')}</div>
                     </div>}
                 </div>
                 {loadingOverlay && <div className="messages-overlay-loading">
@@ -734,7 +733,7 @@ class Message extends React.Component<IProps, IState> {
     private contextMenuItem() {
         const {items, moreIndex} = this.state;
         if (!items[moreIndex]) {
-            return '';
+            return null;
         }
         const menuTypes = {
             1: [1, 2, 3, 4, 7, 12, 8, 9, 10, 11],
@@ -855,7 +854,7 @@ class Message extends React.Component<IProps, IState> {
     private rowRenderHandler = (index: number) => {
         const message = this.state.items[index];
         if (!message) {
-            return '';
+            return null;
         }
         const peer = this.peer;
         const readId = this.readId;
@@ -887,7 +886,7 @@ class Message extends React.Component<IProps, IState> {
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.Hole:
             case C_MESSAGE_TYPE.End:
-                return '';
+                return null;
             case C_MESSAGE_TYPE.Gap:
                 return (<div className="bubble-gap">
                     <div className="gap">
@@ -1268,9 +1267,10 @@ class Message extends React.Component<IProps, IState> {
                                           onAction={this.props.onAttachmentAction} onBodyAction={this.bodyActionHandler}
                                           parentEl={parentEl} measureFn={measureFn}/>);
                 case C_MESSAGE_TYPE.Location:
-                    return (<MessageLocation ref={refBindHandler} message={message} peer={peer}/>);
+                    return (<MessageLocation message={message} peer={peer} onBodyAction={this.bodyActionHandler}
+                                             measureFn={measureFn}/>);
                 default:
-                    return (<div>Unsupported message</div>);
+                    return (<div>{i18n.t('message.unsupported_message')}</div>);
             }
         } else {
             let emojiClass = '';
@@ -1329,14 +1329,16 @@ class Message extends React.Component<IProps, IState> {
 
     private dropHandler = (e: any) => {
         e.preventDefault();
-        const messageId = e.dataTransfer.getData('message/id');
-        if (messageId) {
-            window.console.log('to do');
-            return;
-        }
         this.setState({
             enableDrag: false,
         });
+        if (this.props.onMessageDrop) {
+            const messageId = e.dataTransfer.getData('message/id');
+            if (messageId) {
+                this.props.onMessageDrop(parseInt(messageId, 10));
+                return;
+            }
+        }
         const el = document.querySelector('.messages-dropzone .dropzone');
         if (!el) {
             return;

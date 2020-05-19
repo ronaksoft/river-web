@@ -24,7 +24,6 @@ message ContactsAdd {
 // @Function
 // @Return: ContactsMany
 message ContactsGet {
-    //    required string MD5Hash = 1;
     required uint32 Crc32Hash = 2;
 }
 
@@ -68,6 +67,48 @@ message ContactsGetBlocked {
 // @Returns: UsersMany
 message ContactsSearch {
     required string Q = 1;
+}
+
+// ContactsGetTopPeers
+// @Function
+// @Returns: ContactsTopPeers
+message ContactsGetTopPeers {
+    required int32 Offset = 1;
+    required int32 Limit = 2;
+    required TopPeerCategory Category = 3;
+}
+
+// ContactsResetTopPeer
+// @Function
+// @Returns: Bool
+message ContactsResetTopPeer {
+    required TopPeerCategory Category = 1;
+    required InputPeer Peer = 2;
+}
+
+// ContactsTopPeer
+message ContactsTopPeers {
+    required TopPeerCategory Category = 1;
+    required int32 Count = 2;
+    repeated TopPeer Peers = 3;
+    repeated User Users = 4;
+    repeated Group Groups = 5;
+}
+
+// TopPeerCategory
+enum TopPeerCategory {
+    Users = 0;
+    Groups = 1;
+    Forwards = 2;
+    BotsMessage = 3;
+    BotsInline = 4;
+}
+
+// TopPeer
+message TopPeer {
+    required Peer Peer = 1;
+    required float Rate = 2;
+    optional int64 LastUpdate = 3;
 }
 
 // BlockedContactsMany

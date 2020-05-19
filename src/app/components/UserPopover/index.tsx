@@ -84,7 +84,7 @@ class UserPopover extends React.Component<IProps, IState> {
                                             </div>
                                         </div>);
                                     } else {
-                                        return '';
+                                        return null;
                                     }
                                 })}
                             </Scrollbars>

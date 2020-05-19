@@ -7,8 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
-
+import React, {useEffect, useState} from 'react';
 import TimeUtility from '../../services/utilities/time';
 import RiverTime from '../../services/utilities/river_time';
 
@@ -17,75 +16,39 @@ interface IProps {
     time: number;
 }
 
-interface IState {
-    className: string;
-    time: number;
-}
+const riverTime = RiverTime.getInstance();
 
-class LiveDate extends React.Component<IProps, IState> {
-    private interval: any = null;
-    private riverTime: RiverTime;
-
-    constructor(props: IProps) {
-        super(props);
-
-        this.state = {
-            className: props.className || '',
-            time: props.time,
-        };
-
-        this.riverTime = RiverTime.getInstance();
+const getIntervalTime = (time: number) => {
+    const diff = riverTime.now() - time;
+    if (diff < 86400) {
+        return 10000;
+    } else {
+        return -1; // 3600000;
     }
+};
 
-    public componentDidMount() {
-        this.runInterval();
-    }
+export const LiveDate = ({time, className}: IProps) => {
+    const [t, setT] = useState(time);
 
-    public componentWillUnmount() {
-        clearInterval(this.interval);
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.time === newProps.time) {
-            return;
-        }
-        this.setState({
-            time: newProps.time,
-        }, () => {
-            this.runInterval();
-        });
-    }
-
-    public render() {
-        return (
-            <span className={this.state.className}>{TimeUtility.dynamic(this.state.time)}</span>
-        );
-    }
-
-    private getIntervalTime(time: number) {
-        const diff = this.riverTime.now() - time;
-        if (diff < 86400) {
-            return 10000;
-        } else {
-            return -1; // 3600000;
-        }
-    }
-
-    private runInterval() {
-        clearInterval(this.interval);
-        const intervalTime = this.getIntervalTime(this.state.time);
-        if (intervalTime === -1) {
-            this.setState({
-                time: this.state.time,
-            });
-        } else {
-            this.interval = setInterval(() => {
-                this.setState({
-                    time: this.state.time,
-                });
+    useEffect(() => {
+        setT(time);
+        let interval: any;
+        const intervalTime = getIntervalTime(time);
+        if (intervalTime !== -1) {
+            interval = setInterval(() => {
+                setT(time);
             }, intervalTime);
         }
-    }
-}
+        return () => {
+            if (interval) {
+                clearInterval(interval);
+            }
+        };
+    }, [time]);
+
+    return (
+        <span className={className || ''}>{TimeUtility.dynamic(t)}</span>
+    );
+};
 
 export default LiveDate;

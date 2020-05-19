@@ -27,102 +27,56 @@ interface IProps {
     forceDoubleTick: boolean;
 }
 
-interface IState {
-    editedTime: number;
-    id: number;
-    labelIds: number[];
-    markAsSent?: boolean;
-    readId: number;
-    status: boolean;
-    time: number;
-}
+const labelColors = LabelRepo.labelColors;
 
-class MessageStatus extends React.Component<IProps, IState> {
-    public static getDerivedStateFromProps(newProps: IProps, state: IState) {
-        return {
-            editedTime: newProps.editedTime || 0,
-            id: newProps.id || 0,
-            labelIds: newProps.labelIds || [],
-            markAsSent: newProps.markAsSent,
-            readId: newProps.readId || 0,
-            status: newProps.status,
-        };
-    }
-
-    private labelColors = LabelRepo.labelColors;
-
-    constructor(props: IProps) {
-        super(props);
-
-        this.state = {
-            editedTime: props.editedTime,
-            id: props.id || 0,
-            labelIds: props.labelIds || [],
-            readId: props.readId || 0,
-            status: props.status,
-            time: props.time,
-        };
-    }
-
-    public render() {
-        const {id, readId, status, time, editedTime, markAsSent} = this.state;
-        return (
-            <div className={'message-status'} onClick={this.onClickHandler} onDoubleClick={this.onDoubleClickHandler}>
-                {this.getLabels()}
-                {editedTime > 0 && <span className="edited">{i18n.t("general.edited")}</span>}
-                <span className="time">{TimeUtility.TimeParse(time)}</span>
-                {this.getStatus(id, readId, status, markAsSent)}
-            </div>
-        );
-    }
-
-    private getStatus(id: number, readId: number, status: boolean, markAsSent?: boolean) {
-        if (id && status) {
-            if (id < 0 && !markAsSent) {
-                return (<ScheduleRounded className="icon"/>);
-            } else if ((id > 0 && readId >= id) || this.props.forceDoubleTick) {
-                return (<DoneAllRounded className="icon"/>);
-            } else if ((id > 0 && readId < id) || markAsSent) {
-                return (<DoneRounded className="icon"/>);
-            } else {
-                return '';
-            }
+const GetStatus = ({id, readId, status, forceDoubleTick, markAsSent}: { id: number, readId: number, status: boolean, forceDoubleTick: boolean, markAsSent?: boolean }) => {
+    if (id && status) {
+        if (id < 0 && !markAsSent) {
+            return (<ScheduleRounded className="icon"/>);
+        } else if ((id > 0 && readId >= id) || forceDoubleTick) {
+            return (<DoneAllRounded className="icon"/>);
+        } else if ((id > 0 && readId < id) || markAsSent) {
+            return (<DoneRounded className="icon"/>);
         } else {
-            return '';
+            return null;
         }
+    } else {
+        return null;
     }
+};
 
-    private getLabels() {
-        const {labelIds} = this.state;
-        if (labelIds.length === 0) {
-            return;
-        }
-        let cnt = 0;
-        return (
-            <div className={'message-label ' + (labelIds.length > 1 ? 'single-label' : 'many-label')}>
-                {labelIds.slice(0, 3).map((id, key) => {
-                    if (this.labelColors.hasOwnProperty(id)) {
-                        return (<div key={id} className={`circle-label label-${cnt++}`}
-                                     style={{backgroundColor: this.labelColors[id]}}>
-                            {key === 0 && labelIds.length > 3 ? <AddRounded/> : ''}
-                        </div>);
-                    }
-                    return '';
-                })}
-            </div>
-        );
-    }
+const GetLabels = ({labelIds}: { labelIds: number[] }) => {
+    let cnt = 0;
+    return (
+        <div className={'message-label ' + (labelIds.length > 1 ? 'single-label' : 'many-label')}>
+            {labelIds.slice(0, 3).map((id, key) => {
+                if (labelColors.hasOwnProperty(id)) {
+                    return (<div key={id} className={`circle-label label-${cnt++}`}
+                                 style={{backgroundColor: labelColors[id]}}>
+                        {key === 0 && labelIds.length > 3 ? <AddRounded/> : ''}
+                    </div>);
+                }
+                return null;
+            })}
+        </div>
+    );
+};
 
-    private onDoubleClickHandler = (e: any) => {
-        if (this.props.onDoubleClick) {
-            this.props.onDoubleClick(e);
-        }
-    }
+/* Prevent propagation on status click */
+const onClickHandler = (e: any) => {
+    e.stopPropagation();
+};
 
-    /* Prevent propagation on status click */
-    private onClickHandler = (e: any) => {
-        e.stopPropagation();
-    }
+const MessageStatus = ({onDoubleClick, time, editedTime, forceDoubleTick, id, labelIds, markAsSent, readId, status}: IProps) => {
+    return (
+        <div className={'message-status'} onClick={onClickHandler} onDoubleClick={onDoubleClick}>
+            {labelIds && <GetLabels labelIds={labelIds}/>}
+            {editedTime > 0 && <span className="edited">{i18n.t("general.edited")}</span>}
+            <span className="time">{TimeUtility.TimeParse(time)}</span>
+            <GetStatus id={id || 0} readId={readId || 0} status={status} forceDoubleTick={forceDoubleTick}
+                       markAsSent={markAsSent}/>
+        </div>
+    );
 }
 
 export default MessageStatus;

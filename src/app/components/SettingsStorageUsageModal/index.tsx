@@ -264,7 +264,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
             case PeerType.PEERGROUP:
                 return <GroupName className="name" id={info.peerId}/>;
             default:
-                return '';
+                return null;
         }
     }
 
@@ -275,7 +275,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
             case PeerType.PEERGROUP:
                 return <GroupAvatar className="avatar" id={info.peerId}/>;
             default:
-                return '';
+                return null;
         }
     }
 

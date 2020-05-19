@@ -1438,7 +1438,7 @@ export namespace UpdateBotCallbackQuery {
   }
 }
 
-export class UpdateBotInlineCallbackQuery extends jspb.Message {
+export class UpdateBotInlineQuery extends jspb.Message {
   hasUcount(): boolean;
   clearUcount(): void;
   getUcount(): number | undefined;
@@ -1459,36 +1459,98 @@ export class UpdateBotInlineCallbackQuery extends jspb.Message {
   getUserid(): number | undefined;
   setUserid(value: number): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
-  setMessageid(value: number): void;
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.Peer;
+  setPeer(value?: chat_core_types_pb.Peer): void;
 
-  hasData(): boolean;
-  clearData(): void;
-  getData(): Uint8Array | string;
-  getData_asU8(): Uint8Array;
-  getData_asB64(): string;
-  setData(value: Uint8Array | string): void;
+  hasQuery(): boolean;
+  clearQuery(): void;
+  getQuery(): string | undefined;
+  setQuery(value: string): void;
+
+  hasOffset(): boolean;
+  clearOffset(): void;
+  getOffset(): string | undefined;
+  setOffset(value: string): void;
+
+  hasGeo(): boolean;
+  clearGeo(): void;
+  getGeo(): chat_core_types_pb.GeoLocation | undefined;
+  setGeo(value?: chat_core_types_pb.GeoLocation): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateBotInlineCallbackQuery.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateBotInlineCallbackQuery): UpdateBotInlineCallbackQuery.AsObject;
+  toObject(includeInstance?: boolean): UpdateBotInlineQuery.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateBotInlineQuery): UpdateBotInlineQuery.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateBotInlineCallbackQuery, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateBotInlineCallbackQuery;
-  static deserializeBinaryFromReader(message: UpdateBotInlineCallbackQuery, reader: jspb.BinaryReader): UpdateBotInlineCallbackQuery;
+  static serializeBinaryToWriter(message: UpdateBotInlineQuery, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateBotInlineQuery;
+  static deserializeBinaryFromReader(message: UpdateBotInlineQuery, reader: jspb.BinaryReader): UpdateBotInlineQuery;
 }
 
-export namespace UpdateBotInlineCallbackQuery {
+export namespace UpdateBotInlineQuery {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
     queryid?: number,
     userid?: number,
-    messageid?: number,
-    data: Uint8Array | string,
+    peer: chat_core_types_pb.Peer.AsObject,
+    query?: string,
+    offset?: string,
+    geo?: chat_core_types_pb.GeoLocation.AsObject,
+  }
+}
+
+export class UpdateBotInlineSend extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasQuery(): boolean;
+  clearQuery(): void;
+  getQuery(): string | undefined;
+  setQuery(value: string): void;
+
+  hasResultid(): boolean;
+  clearResultid(): void;
+  getResultid(): string | undefined;
+  setResultid(value: string): void;
+
+  hasGeo(): boolean;
+  clearGeo(): void;
+  getGeo(): chat_core_types_pb.GeoLocation | undefined;
+  setGeo(value?: chat_core_types_pb.GeoLocation): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateBotInlineSend.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateBotInlineSend): UpdateBotInlineSend.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateBotInlineSend, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateBotInlineSend;
+  static deserializeBinaryFromReader(message: UpdateBotInlineSend, reader: jspb.BinaryReader): UpdateBotInlineSend;
+}
+
+export namespace UpdateBotInlineSend {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    userid?: number,
+    query?: string,
+    resultid?: string,
+    geo?: chat_core_types_pb.GeoLocation.AsObject,
   }
 }
 

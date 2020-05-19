@@ -21,7 +21,7 @@ import {
     AddRounded,
     InsertDriveFileRounded,
     MusicNoteRounded,
-    PersonRounded,
+    PersonRounded, PlayArrowRounded,
     RecordVoiceOverRounded,
 } from "@material-ui/icons";
 import LabelRepo from "../../repository/label";
@@ -165,7 +165,7 @@ const LabelBodyFile = ({message}: IProps) => {
 
 const LabelBodyMedia = ({message}: IProps) => {
     const info = getMediaInfo(message);
-    const withBlur = (info.height / info.width) > 1;
+    const withBlur = (info.height / info.width) > 1 || Math.max(info.width, info.height) < 96;
     return <>
         <div className="label-message-media">
             {withBlur ? <><CachedPhoto className="thumbnail-blur" fileLocation={info.thumbFile} blur={10}/>
@@ -173,9 +173,14 @@ const LabelBodyMedia = ({message}: IProps) => {
                                  fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/></> :
                 <CachedPhoto className="thumbnail"
                              fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/>}
-            {message.messagetype === C_MESSAGE_TYPE.Video && <div className="duration">
-                {getDuration(info.duration || 0)}
-            </div>}
+            {message.messagetype === C_MESSAGE_TYPE.Video && <>
+                <div className="duration">
+                    {getDuration(info.duration || 0)}
+                </div>
+                <div className="icon">
+                    <PlayArrowRounded/>
+                </div>
+            </>}
         </div>
         {Boolean((info.caption || '').length > 0) &&
         <div className="label-message-body">
@@ -202,7 +207,7 @@ const LabelBodyLocation = ({message}: IProps) => {
 const LabelBodyVoice = ({message}: IProps) => {
     const info = getMediaInfo(message);
     return <div className="label-message-info">
-        <div className="icon">
+        <div className="icon small">
             <RecordVoiceOverRounded/>
         </div>
         <div className="info">

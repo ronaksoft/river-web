@@ -227,6 +227,148 @@ export namespace ContactsSearch {
   }
 }
 
+export class ContactsGetTopPeers extends jspb.Message {
+  hasOffset(): boolean;
+  clearOffset(): void;
+  getOffset(): number | undefined;
+  setOffset(value: number): void;
+
+  hasLimit(): boolean;
+  clearLimit(): void;
+  getLimit(): number | undefined;
+  setLimit(value: number): void;
+
+  hasCategory(): boolean;
+  clearCategory(): void;
+  getCategory(): TopPeerCategory | undefined;
+  setCategory(value: TopPeerCategory): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsGetTopPeers.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsGetTopPeers): ContactsGetTopPeers.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsGetTopPeers, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsGetTopPeers;
+  static deserializeBinaryFromReader(message: ContactsGetTopPeers, reader: jspb.BinaryReader): ContactsGetTopPeers;
+}
+
+export namespace ContactsGetTopPeers {
+  export type AsObject = {
+    offset?: number,
+    limit?: number,
+    category?: TopPeerCategory,
+  }
+}
+
+export class ContactsResetTopPeer extends jspb.Message {
+  hasCategory(): boolean;
+  clearCategory(): void;
+  getCategory(): TopPeerCategory | undefined;
+  setCategory(value: TopPeerCategory): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsResetTopPeer.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsResetTopPeer): ContactsResetTopPeer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsResetTopPeer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsResetTopPeer;
+  static deserializeBinaryFromReader(message: ContactsResetTopPeer, reader: jspb.BinaryReader): ContactsResetTopPeer;
+}
+
+export namespace ContactsResetTopPeer {
+  export type AsObject = {
+    category?: TopPeerCategory,
+    peer: chat_core_types_pb.InputPeer.AsObject,
+  }
+}
+
+export class ContactsTopPeers extends jspb.Message {
+  hasCategory(): boolean;
+  clearCategory(): void;
+  getCategory(): TopPeerCategory | undefined;
+  setCategory(value: TopPeerCategory): void;
+
+  hasCount(): boolean;
+  clearCount(): void;
+  getCount(): number | undefined;
+  setCount(value: number): void;
+
+  clearPeersList(): void;
+  getPeersList(): Array<TopPeer>;
+  setPeersList(value: Array<TopPeer>): void;
+  addPeers(value?: TopPeer, index?: number): TopPeer;
+
+  clearUsersList(): void;
+  getUsersList(): Array<chat_core_types_pb.User>;
+  setUsersList(value: Array<chat_core_types_pb.User>): void;
+  addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
+
+  clearGroupsList(): void;
+  getGroupsList(): Array<chat_core_types_pb.Group>;
+  setGroupsList(value: Array<chat_core_types_pb.Group>): void;
+  addGroups(value?: chat_core_types_pb.Group, index?: number): chat_core_types_pb.Group;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsTopPeers.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsTopPeers): ContactsTopPeers.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsTopPeers, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsTopPeers;
+  static deserializeBinaryFromReader(message: ContactsTopPeers, reader: jspb.BinaryReader): ContactsTopPeers;
+}
+
+export namespace ContactsTopPeers {
+  export type AsObject = {
+    category?: TopPeerCategory,
+    count?: number,
+    peersList: Array<TopPeer.AsObject>,
+    usersList: Array<chat_core_types_pb.User.AsObject>,
+    groupsList: Array<chat_core_types_pb.Group.AsObject>,
+  }
+}
+
+export class TopPeer extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.Peer;
+  setPeer(value?: chat_core_types_pb.Peer): void;
+
+  hasRate(): boolean;
+  clearRate(): void;
+  getRate(): number | undefined;
+  setRate(value: number): void;
+
+  hasLastupdate(): boolean;
+  clearLastupdate(): void;
+  getLastupdate(): number | undefined;
+  setLastupdate(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TopPeer.AsObject;
+  static toObject(includeInstance: boolean, msg: TopPeer): TopPeer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: TopPeer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TopPeer;
+  static deserializeBinaryFromReader(message: TopPeer, reader: jspb.BinaryReader): TopPeer;
+}
+
+export namespace TopPeer {
+  export type AsObject = {
+    peer: chat_core_types_pb.Peer.AsObject,
+    rate?: number,
+    lastupdate?: number,
+  }
+}
+
 export class BlockedContactsMany extends jspb.Message {
   clearContactsList(): void;
   getContactsList(): Array<BlockedContact>;
@@ -355,5 +497,13 @@ export namespace ContactsMany {
     modified?: boolean,
     usersList: Array<chat_core_types_pb.User.AsObject>,
   }
+}
+
+export enum TopPeerCategory {
+  USERS = 0,
+  GROUPS = 1,
+  FORWARDS = 2,
+  BOTSMESSAGE = 3,
+  BOTSINLINE = 4,
 }
 

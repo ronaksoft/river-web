@@ -28,7 +28,7 @@ interface IState {
     prefix: string;
 }
 
-class GroupName extends React.Component<IProps, IState> {
+class GroupName extends React.PureComponent<IProps, IState> {
     private groupRepo: GroupRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;

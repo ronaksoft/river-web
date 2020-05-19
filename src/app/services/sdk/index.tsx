@@ -35,7 +35,7 @@ import {
     Bool, Dialog, FileLocation,
     Group,
     GroupFull, GroupPhoto,
-    InputFile, InputPassword,
+    InputFile, InputMediaType, InputPassword,
     InputPeer,
     InputUser, Label, LabelsMany,
     MessageEntity,
@@ -46,7 +46,7 @@ import {
     User, UserPhoto
 } from './messages/chat.core.types_pb';
 import {
-    InputMediaType, MessagesClearDraft,
+    MessagesClearDraft,
     MessagesClearHistory,
     MessagesDelete,
     MessagesDialogs,

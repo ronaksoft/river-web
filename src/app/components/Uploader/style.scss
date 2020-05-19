@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-@import '../../../style/mixin';
 
 @keyframes uploader-splash {
   from {
@@ -785,14 +784,6 @@ html[theme="dark-night"] {
             }
           }
         }
-
-        .caption-input-container {
-          border-color: var(--dark-low) !important;
-
-          label, textarea, svg {
-            color: var(--white);
-          }
-        }
       }
     }
 
@@ -876,14 +867,6 @@ html[theme="dark-blue"] {
                   }
                 }
               }
-            }
-          }
-
-          .caption-input-container {
-            border-color: var(--dark-blue-low) !important;
-
-            label, textarea, svg {
-              color: var(--white);
             }
           }
         }

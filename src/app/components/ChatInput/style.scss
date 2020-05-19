@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-@import '../../../style/mixin';
 
 .chat-input {
   position: relative;
@@ -569,21 +568,52 @@
           max-height: 82px;
           display: flex;
           align-items: center;
+          justify-content: center;
           overflow: hidden;
           flex-grow: 1;
           flex-direction: column;
 
+          &.label-message {
+            border-left: 1px dashed var(--gale);
+            background-color: rgba(0, 0, 0, 0.06);
+          }
+
           .preview-message-user {
             color: #35cd96;
             font-size: 13px;
-            @include font-bold;
             text-align: left;
             justify-content: left;
             width: 100%;
+            font-weight: bold;
 
             svg {
               font-size: 13px;
               margin: 0 3px 0 0;
+            }
+          }
+
+          .preview-message-title {
+            font-size: 12px;
+            text-align: left;
+            justify-content: left;
+            width: 100%;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+
+            svg {
+              font-size: 13px;
+              margin: -2px 3px 0 0;
+            }
+
+            &.large {
+              font-size: 14px;
+
+              svg {
+                font-size: 16px;
+                margin: -2px 3px 0 0;
+              }
             }
           }
 
@@ -630,6 +660,12 @@
 
           .preview-message .preview-message-user {
             color: #6bcbef;
+          }
+        }
+
+        &.loaded {
+          .preview-bar {
+            background-color: #673ab7;
           }
         }
       }

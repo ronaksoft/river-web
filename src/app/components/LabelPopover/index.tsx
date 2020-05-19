@@ -80,7 +80,7 @@ class LabelPopover extends React.Component<IProps, IState> {
                                             <div className="label-name">{label.name}</div>
                                         </div>);
                                     } else {
-                                        return '';
+                                        return null;
                                     }
                                 })}
                             </Scrollbars>

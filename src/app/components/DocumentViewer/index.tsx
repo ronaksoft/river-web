@@ -219,7 +219,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private getContent() {
         const {doc, size, galleryList, gallerySelect} = this.state;
         if (!doc) {
-            return '';
+            return null;
         }
         switch (doc.type) {
             case 'avatar':
@@ -254,7 +254,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                             </div>
                         );
                     } else {
-                        return '';
+                        return null;
                     }
                 }
             case 'picture':
@@ -313,10 +313,11 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 return (<div className="location-container">
                     {doc.items.map((item, index) => {
                         if (!item.geo) {
-                            return '';
+                            return null;
                         } else {
                             return (
                                 <MapComponent
+                                    key={index}
                                     googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${C_GOOGLE_MAP_KEY}&v=3.exp&libraries=geometry,drawing,places`}
                                     loadingElement={<div style={{height: `100%`}}/>}
                                     containerElement={<div style={{height: `100%`}}/>}
@@ -336,7 +337,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     })}
                 </div>);
             default:
-                return '';
+                return null;
         }
     }
 
@@ -355,9 +356,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private getDownloadAction() {
         const {doc} = this.state;
         if (!doc || !(doc.items.length > 0 && doc.items[0].downloaded === false)) {
-            return '';
+            return null;
         }
-
         return (<DownloadProgress ref={this.downloadProgressRefHandler} id={doc.items[0].id || 0}
                                   fileSize={doc.items[0].fileSize || 0}
                                   onAction={this.props.onAction} onComplete={this.downloadCompleteHandler}/>);
@@ -402,7 +402,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private initPagination() {
         const {doc, prev, next, galleryList, gallerySelect} = this.state;
         if (!doc || doc.type === 'location') {
-            return '';
+            return null;
         }
         if (doc.type === 'avatar' && galleryList.length > 0) {
             return (
@@ -433,7 +433,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private initControls() {
         const {doc, contextMenuAnchorEl} = this.state;
         if (!doc || doc.type === 'location') {
-            return '';
+            return null;
         }
         const contextMenuItems = [{
             cmd: 'download',
@@ -513,7 +513,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private initCaption() {
         const {doc} = this.state;
         if (!doc || doc.items.length === 0 || ((doc.items[0].caption || '').length === 0 && !doc.items[0].userId)) {
-            return '';
+            return null;
         }
         return (
             <div className="document-viewer-caption" onClick={this.preventClosing}>
@@ -563,13 +563,13 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private getFloatObj() {
         const {doc, size} = this.state;
         if (!doc || doc.type === 'location') {
-            return '';
+            return null;
         }
         if (!size || !doc || doc.items.length === 0 || (doc.type === 'video' && !doc.items[0].thumbFileLocation)) {
             if (this.pictureWrapperRef) {
                 this.pictureWrapperRef.classList.remove('hide');
             }
-            return '';
+            return null;
         }
         const downloaded = !(doc.items.length > 0 && doc.items[0].downloaded === false);
         const fileLocation: any = (doc.type === 'video' ? doc.items[0].thumbFileLocation : (downloaded ? doc.items[0].fileLocation : doc.items[0].thumbFileLocation));
@@ -593,7 +593,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                  blur={downloaded ? 0 : 10}/>
                 </div>);
             } else {
-                return '';
+                return null;
             }
         }
         if (this.state.dialogOpen && !this.animated) {
@@ -1085,11 +1085,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
     /* Init slide show */
     private initSlideShow() {
         const {doc, galleryList, gallerySelect} = this.state;
-        if (!doc || doc.type !== 'avatar') {
-            return '';
-        }
-        if (galleryList.length === 0) {
-            return '';
+        if (!doc || doc.type !== 'avatar' || galleryList.length === 0) {
+            return null;
         }
         const totalWith = galleryList.length * 54;
         let maxWidth = totalWith + 6;

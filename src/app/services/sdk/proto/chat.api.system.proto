@@ -20,14 +20,6 @@ message SystemGetDHGroups {
 message SystemGetServerTime {
 }
 
-// SystemGetAppUpdate
-// @Function
-// @Returns: AppUpdate
-message SystemGetAppUpdate {
-    required string ClientType = 1;
-    required int32 Version = 2;
-}
-
 // SystemGetInfo
 // @Function
 // @Returns: SystemInfo
@@ -46,6 +38,30 @@ message SystemGetSalts {
 message SystemGetConfig {
 }
 
+// SystemUploadUsage
+// @Function
+// @Returns: Bool
+message SystemUploadUsage {
+    repeated ClientUsage Usage = 1;
+}
+
+// ClientUsage
+message ClientUsage {
+    required int32 Year = 1;
+    required int32 Month = 2;
+    required int32 Day = 3;
+    required int64 UserID = 4;
+    required int64 ForegroundTime = 5; // The time client is on foreground in seconds
+    required int64 AvgResponseTime = 6; // The average response time for each api
+    required int64 TotalRequests = 7;   // Total requests sent to server
+    optional int64 ReceivedMessages = 8;
+    optional int64 SentMessages = 9;
+    optional int64 ReceivedMedia = 10;
+    optional int64 SentMedia = 11;
+    optional int64 UploadBytes = 12;
+    optional int64 DownloadBytes = 13;
+}
+
 // SystemConfig
 message SystemConfig {
     required bool TestMode = 1;
@@ -53,14 +69,21 @@ message SystemConfig {
     required int64 ExpireOn = 3;
     required int32 GroupMaxSize = 4;
     required int32 ForwardedMaxCount = 5;
-    required int32 OnlineUpdatePeriodMs = 6; // The client should update its online status every N milliseconds
-    required int32 EditTimeLimit = 7;
-    required int32 RevokeTimeLimit = 8;
+    required int32 OnlineUpdatePeriodInSec = 6; // The client should update its online status every N milliseconds
+    required int32 EditTimeLimitInSec = 7;
+    required int32 RevokeTimeLimitInSec = 8;
     required int32 PinnedDialogsMaxCount = 9;
     required int32 UrlPrefix = 10;
     required int32 MessageMaxLength = 11;
     required int32 CaptionMaxLength = 12;
     repeated DataCenter DCs = 13;
+    required int32 MaxLabels = 14;
+    required float TopPeerDecayRate = 15;
+    required float TopPeerMaxStep = 16;
+    optional string GifBot = 110;
+    optional string WikiBot = 111;
+
+
 }
 
 // DataCenter
@@ -72,6 +95,7 @@ message DataCenter {
     required bool Quic = 5;
 
 }
+
 // SystemSalts
 message SystemSalts {
     repeated int64 Salts = 1;

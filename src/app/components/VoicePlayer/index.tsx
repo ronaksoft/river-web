@@ -24,7 +24,7 @@ import './style.scss';
 
 interface IProps {
     className?: string;
-    maxValue: number;
+    max: number;
     sampleCount?: number;
     message?: IMessage;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'play') => void;
@@ -258,7 +258,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             this.canvasConfig.height = el.clientHeight;
             this.canvasConfig.width = el.clientWidth;
             this.canvasConfig.totalWith = this.canvasConfig.barWidth + this.canvasConfig.barSpace;
-            this.canvasConfig.ratio = (this.canvasConfig.height - 1) / this.props.maxValue;
+            this.canvasConfig.ratio = (this.canvasConfig.height - 1) / this.props.max;
             this.canvasConfig.maxBars = Math.floor(this.canvasConfig.width / (this.canvasConfig.barWidth + this.canvasConfig.barSpace));
             const htmlEl = document.querySelector('html');
             if (htmlEl) {
