@@ -32,8 +32,8 @@ import ElectronService from "./app/services/electron";
 
 import './App.scss';
 
-export const C_VERSION = '0.32.31';
-export const C_ELECTRON_VERSION = '8.2.5';
+export const C_VERSION = '0.32.32';
+export const C_ELECTRON_VERSION = '9.0.0';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {

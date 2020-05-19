@@ -60,7 +60,7 @@ interface IState {
     selectedIds: number[];
 }
 
-const C_LABEL_LIST_LIMIT = 30;
+const C_LABEL_LIST_LIMIT = 20;
 
 class LabelMenu extends React.Component<IProps, IState> {
     private apiManager: APIManager;
@@ -444,7 +444,7 @@ class LabelMenu extends React.Component<IProps, IState> {
             const {labelList} = this.state;
             const pos = (this.scrollbarRef.getScrollHeight() - this.scrollbarRef.getClientHeight() - 64);
             if (pos < scrollTop && labelList.length > 0) {
-                this.loadLabelList((labelList[labelList.length - 1].id || 0) + 1);
+                this.loadLabelList(labelList[labelList.length - 1].id || 0);
             }
         }
     }
