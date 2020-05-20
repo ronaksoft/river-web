@@ -39,6 +39,7 @@ import './style.scss';
 
 interface IProps {
     message: IMessage;
+    onAction?: (cmd: 'download', message: IMessage) => void;
 }
 
 const C_MEDIA_RATIO = 96 / 306;
@@ -177,7 +178,7 @@ const viewDocumentHandler = (message: IMessage) => (e: any) => {
         items: [{
             caption: info.caption,
             createdon: message.createdon,
-            downloaded: message.downloaded || false,
+            downloaded: (message.messagetype === C_MESSAGE_TYPE.Picture) ? true : (message.downloaded || false),
             duration: info.duration,
             entityList: info.entityList,
             fileLocation: info.file,
@@ -199,7 +200,7 @@ const viewDocumentHandler = (message: IMessage) => (e: any) => {
     DocumentViewerService.getInstance().loadDocument(doc);
 };
 
-const LabelBodyMedia = ({message}: IProps) => {
+const LabelBodyMedia = ({message, onAction}: IProps) => {
     const info = getMediaInfo(message);
     const withBlur = (info.height / info.width) > 1 || Math.max(info.width, info.height) < 96;
     const ratio = info.height / info.width;
@@ -207,12 +208,17 @@ const LabelBodyMedia = ({message}: IProps) => {
     if (ratio < C_MEDIA_RATIO) {
         height = Math.max(306 * ratio, 48);
     }
+    const mediaLoadHandler = () => {
+        if (onAction) {
+            onAction('download', message);
+        }
+    };
     return <>
         <div className={`label-message-media item_${message.id || 0}`} style={{height: `${height}px`}}>
             {withBlur ? <><CachedPhoto className="thumbnail-blur" fileLocation={info.thumbFile} blur={10}/>
-                    <CachedPhoto className="thumbnail blur-top"
+                    <CachedPhoto className="thumbnail blur-top" onLoad={mediaLoadHandler}
                                  fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/></> :
-                <CachedPhoto className="thumbnail"
+                <CachedPhoto className="thumbnail" onLoad={mediaLoadHandler}
                              fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/>}
             {message.messagetype === C_MESSAGE_TYPE.Video && <>
                 <div className="duration">
@@ -273,7 +279,7 @@ const LabelBodyDefault = ({message}: IProps) => {
     </div>;
 };
 
-const LabelBody = ({message}: IProps) => {
+const LabelBody = ({message, onAction}: IProps) => {
     switch (message.messagetype) {
         case C_MESSAGE_TYPE.Audio:
             return <LabelBodyAudio message={message}/>;
@@ -285,7 +291,7 @@ const LabelBody = ({message}: IProps) => {
             return <LabelBodyLocation message={message}/>;
         case C_MESSAGE_TYPE.Picture:
         case C_MESSAGE_TYPE.Video:
-            return <LabelBodyMedia message={message}/>;
+            return <LabelBodyMedia message={message} onAction={onAction}/>;
         case C_MESSAGE_TYPE.Voice:
             return <LabelBodyVoice message={message}/>;
         default:
@@ -293,7 +299,7 @@ const LabelBody = ({message}: IProps) => {
     }
 };
 
-export const LabelMessageItem = ({message}: IProps) => {
+export const LabelMessageItem = ({message, onAction}: IProps) => {
     const dragStart = (e: any) => {
         e.dataTransfer.setData("message/id", message.id || '');
     };
@@ -302,7 +308,7 @@ export const LabelMessageItem = ({message}: IProps) => {
         <Link className="label-message-item-href" to={`/chat/${message.peerid}/${message.id}`}>
             <div className="label-message-item" draggable={true} onDragStart={dragStart}>
                 <LabelHeader message={message}/>
-                <LabelBody message={message}/>
+                <LabelBody message={message} onAction={onAction}/>
                 <LabelIndicator labelIds={message.labelidsList || []}/>
             </div>
         </Link>

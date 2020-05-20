@@ -224,6 +224,14 @@
     }
   }
 
+  &:active {
+    .label-message-media {
+      .media-actions {
+        opacity: 0;
+      }
+    }
+  }
+
   .label-message-info {
     display: flex;
     align-items: center;

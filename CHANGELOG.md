@@ -1,5 +1,5 @@
 ## 0.32.34
-* Label document preview
+* Label item preview
 
 ## 0.32.33
 * Simpler way to check dialogs while browsing labels

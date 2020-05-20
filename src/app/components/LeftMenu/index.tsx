@@ -32,6 +32,8 @@ import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
 import {omitBy, isNil, debounce} from "lodash";
 import LabelMenu from "../LabelMenu";
+import {IMessage} from "../../repository/message/interface";
+
 import './style.scss';
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
@@ -52,6 +54,7 @@ interface IProps {
     onShrunk: (shrunk: boolean) => void;
     onError?: (text: string) => void;
     onDrop: (peerId: string, files: File[], hasData: boolean) => void;
+    onMediaAction?: (cmd: 'download', message: IMessage) => void;
 }
 
 interface IState {
@@ -322,7 +325,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     {Boolean(overlayMode === 1) && <NewGroupMenu onClose={this.overlayCloseHandler}
                                                                  onCreate={this.props.onGroupCreate}/>}
                     {Boolean(overlayMode === 2) &&
-                    <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}/>}
+                    <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
+                               onAction={this.props.onMediaAction}/>}
                 </div>
             </div>
         );

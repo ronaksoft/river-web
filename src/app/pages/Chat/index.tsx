@@ -591,6 +591,7 @@ class Chat extends React.Component<IProps, IState> {
                                   iframeActive={this.state.iframeActive}
                                   mobileView={this.isMobileView}
                                   onDrop={this.leftMenuDropHandler}
+                                  onMediaAction={this.messageAttachmentActionHandler}
                         />
                         {this.selectedDialogId !== 'null' &&
                         <div

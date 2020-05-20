@@ -45,6 +45,7 @@ interface IProps {
     onClose?: () => void;
     onError?: (text: string) => void;
     onMouseEnter?: (e: any) => void;
+    onAction?: (cmd: 'download', message: IMessage) => void;
 }
 
 interface IState {
@@ -421,7 +422,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                                     <CircularProgress size={32} thickness={3} color="inherit"/>
                                 </div>}
                                 {labelList.map((message, index) => {
-                                    return (<LabelMessageItem key={message.id || 0} message={message}/>);
+                                    return (<LabelMessageItem key={message.id || 0} message={message} onAction={this.props.onAction}/>);
                                 })}
                                 {labelLoading && <div key="label-item-loading" className="label-item-loading">
                                     <CircularProgress size={32} thickness={3} color="inherit"/>
