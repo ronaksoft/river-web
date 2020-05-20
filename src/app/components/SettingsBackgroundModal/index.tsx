@@ -8,14 +8,12 @@
 */
 
 import * as React from 'react';
-import GridList from '@material-ui/core/GridList/GridList';
+import {GridList, Slider, GridListTile} from '@material-ui/core';
 import {backgrounds, bgPics, C_CUSTOM_BG} from '../SettingsMenu/vars/theme';
-import GridListTile from '@material-ui/core/GridListTile/GridListTile';
 import SettingsModal from '../SettingsModal';
 import {
     AddRounded, BlurOnRounded, CheckRounded,
 } from '@material-ui/icons';
-import Slider from '@material-ui/lab/Slider/Slider';
 import {throttle} from 'lodash';
 import BackgroundService from '../../services/backgroundService';
 // @ts-ignore
@@ -250,7 +248,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
         });
     }
 
-    private blurAmountChangeHandler = (e: any, value: number) => {
+    private blurAmountChangeHandler = (e: any, value: any) => {
         this.setState({
             blurAmount: value,
         }, () => {

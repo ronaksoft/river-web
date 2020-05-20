@@ -8,13 +8,11 @@
 */
 
 import * as React from 'react';
-import Dialog from '@material-ui/core/Dialog/Dialog';
+import {Dialog, Slider, CircularProgress} from '@material-ui/core';
 import {CheckRounded, CloseRounded} from "@material-ui/icons";
 import i18n from "../../services/i18n";
 import {getDuration} from "../MessageMedia";
 import Scrollbars from "react-custom-scrollbars";
-import Slider from "@material-ui/lab/Slider";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import {range} from 'lodash';
 
 import './style.scss';
@@ -217,7 +215,7 @@ class VideoFrameSelector extends React.Component<IProps, IState> {
         this.analyzeVideo();
     }
 
-    private timeChangeHandler = (e: any, value: number) => {
+    private timeChangeHandler = (e: any, value: any) => {
         this.setState({
             time: value,
         });

@@ -12,8 +12,6 @@ interface IConfig {
     dictionaries: { [key: string]: any };
 }
 
-const C_CACHE_SIZE = 100;
-
 class I18n {
     public static I() {
         if (!this.instance) {
@@ -26,9 +24,7 @@ class I18n {
     private static instance: I18n;
     private lang: string = 'en';
     private translations: any = {};
-    private dictionaryList: { [key: string]: any } = {};
-    private lastTranslations: string[] = [];
-    private lastTransMap: { [key: string]: string } = {};
+    private dictionaryList: { [key: string]: string } = {};
 
     private constructor() {
 
@@ -36,20 +32,17 @@ class I18n {
 
     public init(config: IConfig) {
         this.lang = config.defLang;
-        this.dictionaryList = config.dictionaries;
+        this.dictionaryList = {};
+        for (const [key, value] of Object.entries(config.dictionaries)) {
+            this.dictionaryList[key] = this.flatten(value);
+        }
         if (this.dictionaryList.hasOwnProperty(this.lang)) {
             this.translations = this.dictionaryList[this.lang];
         }
     }
 
     public t(key: string) {
-        const v = this.getCache(key);
-        if (v) {
-            return v;
-        }
-        const val = this.translate(key);
-        this.storeCache(key, val);
-        return val;
+        return this.translate(key);
     }
 
     public tf(key: string, args: string | string[]) {
@@ -79,43 +72,31 @@ class I18n {
     }
 
     private translate(key: string) {
-        if (key.indexOf('.') === -1) {
-            return this.translations[key] || key;
-        } else {
-            const keys = key.split('.');
-            let q: any = this.translations;
-            const len = keys.length - 1;
-            for (let i = 0; i < keys.length; i++) {
-                if (q.hasOwnProperty(keys[i])) {
-                    if (i === len) {
-                        return q[keys[i]];
-                    } else {
-                        q = q[keys[i]];
-                    }
-                } else {
-                    return key;
+        return this.translations[key] || key;
+    }
+
+    /* Thanks to https://github.com/hughsk/flat/blob/master/index.js */
+    private flatten(target: any) {
+        const delimiter = '.';
+        const output: any = {};
+
+        const fn = (object: any, prev?: any) => {
+            Object.keys(object).forEach((key) => {
+                const value = object[key];
+                const isArray = Array.isArray(value);
+                const type = Object.prototype.toString.call(value);
+                const isObject = (type === '[object Object]' || type === '[object Array]');
+                const newKey = prev ? prev + delimiter + key : key;
+                if (!isArray && isObject && Object.keys(value).length) {
+                    return fn(value, newKey);
                 }
-            }
-        }
-    }
+                output[newKey] = value;
+            });
+        };
 
-    private storeCache(key: string, val: string) {
-        this.lastTranslations.push(key);
-        this.lastTransMap[key] = val;
-        if (this.lastTranslations.length > C_CACHE_SIZE) {
-            const last = this.lastTranslations.shift();
-            if (last) {
-                delete this.lastTransMap[last];
-            }
-        }
-    }
+        fn(target);
 
-    private getCache(key: string) {
-        if (this.lastTransMap.hasOwnProperty(key)) {
-            return this.lastTransMap[key];
-        } else {
-            return null;
-        }
+        return output;
     }
 }
 

@@ -1,3 +1,7 @@
+## 0.32.33
+* Simpler way to check dialogs while browsing labels
+* Know bugs fixed
+
 ## 0.32.32
 * Now you can drag and drop **Labeled Messages** into conversations
 * Overall performance improvements

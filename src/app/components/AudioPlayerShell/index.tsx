@@ -21,10 +21,9 @@ import {
 import UserName from '../UserName';
 import {Link} from 'react-router-dom';
 import {getDuration, IMediaInfo} from '../MessageMedia';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayListener';
+import {ClickAwayListener, Slider} from '@material-ui/core';
 import Scrollbars from 'react-custom-scrollbars';
 import CachedPhoto from '../CachedPhoto';
-import Slider from '@material-ui/lab/Slider';
 import DownloadProgress from '../DownloadProgress';
 import {findIndex} from 'lodash';
 import i18n from '../../services/i18n';
@@ -215,7 +214,6 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                                 <div className="seek">
                                     <Slider
                                         value={seekProgress}
-                                        aria-labelledby="label"
                                         onChange={this.seekChangeHandler}
                                     />
                                 </div>
@@ -476,7 +474,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         }
     }
 
-    private seekChangeHandler = (e: any, value: number) => {
+    private seekChangeHandler = (e: any, value: any) => {
         this.setState({
             seekProgress: value,
         });

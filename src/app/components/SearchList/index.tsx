@@ -224,7 +224,7 @@ class SearchList extends React.Component<IProps, IState> {
                                                         savedMessages={this.userId === value.contact.id}/>}
                           tabIndex={-1} label={<UserName id={value.contact.id} noDetail={true} unsafe={true}
                                                          you={this.userId === value.contact.id}
-                                                         youPlaceholder="Saved Messages"/>}
+                                                         youPlaceholder={i18n.t('general.saved_messages')}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
         } else if (value.mode === 'dialog' && value.dialog) {
             if (value.dialog.peertype === PeerType.PEERUSER || value.dialog.peertype === PeerType.PEERSELF) {
@@ -233,7 +233,7 @@ class SearchList extends React.Component<IProps, IState> {
                                                         savedMessages={this.userId === value.dialog.peerid}/>}
                           tabIndex={-1} label={<UserName id={value.dialog.peerid} noDetail={true} unsafe={true}
                                                          you={this.userId === value.dialog.peerid}
-                                                         youPlaceholder="Saved Messages" noIcon={true}/>}
+                                                         youPlaceholder={i18n.t('general.saved_messages')} noIcon={true}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
             } else if (value.dialog.peertype === PeerType.PEERGROUP) {
                 return (<Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid}/>} tabIndex={-1}
@@ -279,7 +279,7 @@ class SearchList extends React.Component<IProps, IState> {
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF) &&
                     <UserName className="name" id={inputPeer.dialog.peerid || ''} noDetail={true}
                               you={this.userId === inputPeer.dialog.peerid}
-                              youPlaceholder="Saved Messages"/>}
+                              youPlaceholder={i18n.t('general.saved_messages')}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupAvatar className="avatar" id={inputPeer.dialog.peerid || ''}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&

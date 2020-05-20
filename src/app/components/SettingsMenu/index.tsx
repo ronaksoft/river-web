@@ -8,10 +8,6 @@
 */
 
 import * as React from 'react';
-import Switch from '@material-ui/core/Switch';
-import Button from '@material-ui/core/Button';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
     BookmarkRounded,
     Brightness2Rounded,
@@ -38,10 +34,10 @@ import {
     NotificationsRounded,
     GradientRounded,
     SyncDisabledRounded,
+    KeyboardArrowLeftRounded,
+    KeyboardArrowRightRounded,
 } from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
-import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo from '../../repository/user';
 import APIManager from '../../services/sdk';
 import {cloneDeep, debounce, find, findIndex, isEqual} from 'lodash';
@@ -72,11 +68,8 @@ import {
     PrivacyType
 } from '../../services/sdk/messages/chat.core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
-import Menu from '@material-ui/core/Menu/Menu';
-import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import AvatarCropper from '../AvatarCropper';
-import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions/DialogActions';
+import {CircularProgress, Slider, Radio, DialogActions, DialogTitle, MenuItem, Menu, IconButton, TextField, Switch, Button} from "@material-ui/core";
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import Broadcaster from '../../services/broadcaster';
 import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/chat.api.accounts_pb';
@@ -84,12 +77,10 @@ import TimeUtility from '../../services/utilities/time';
 import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
 import FileRepo from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
-import Radio from '@material-ui/core/Radio';
 import SettingsConfigManager, {IDownloadSettings, INotificationSettings} from '../../services/settingsConfigManager';
 import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
 import {Loading} from '../Loading';
 import i18n from '../../services/i18n';
-import Slider from "@material-ui/lab/Slider";
 import UserName from "../UserName";
 import ElectronService from "../../services/electron";
 import UserListDialog from "../UserListDialog";
@@ -101,7 +92,6 @@ import TwoStepVerificationModal from "../TwoStepVerificationModal";
 import DialogSkeleton from "../DialogSkeleton";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeList, ListOnItemsRenderedProps} from "react-window";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import IsMobile from "../../services/isMobile";
 import AvatarService from "../../services/avatarService";
@@ -565,7 +555,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="font-size-container">
                                                     <Button size="small" onClick={this.increaseFontSizeHandler}
                                                             disabled={this.state.fontSize === 5}>
-                                                        <KeyboardArrowRight/>
+                                                        <KeyboardArrowRightRounded/>
                                                     </Button>
                                                     <Slider
                                                         value={this.state.fontSize}
@@ -577,7 +567,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     />
                                                     <Button size="small" onClick={this.decreaseFontSizeHandler}
                                                             disabled={this.state.fontSize === 0}>
-                                                        <KeyboardArrowLeft/>
+                                                        <KeyboardArrowLeftRounded/>
                                                     </Button>
                                                 </div>
                                             </div>
@@ -1335,7 +1325,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     /* Font size change handler */
-    private fontSizeChangeHandler = (e: any, value: number) => {
+    private fontSizeChangeHandler = (e: any, value: any) => {
         this.setState({
             fontSize: value,
         }, () => {

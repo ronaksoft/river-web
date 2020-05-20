@@ -259,7 +259,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                         {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                         <UserName className="name" id={dialog.peerid || ''} noDetail={true}
                                   you={dialog.saved_messages} onLoad={userNameLoadHandler}
-                                  youPlaceholder="Saved Messages"/>}
+                                  youPlaceholder={i18n.t('general.saved_messages')}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                         <GroupName className="name" id={dialog.peerid || ''}/>}
                         {dialog.preview_me && <span

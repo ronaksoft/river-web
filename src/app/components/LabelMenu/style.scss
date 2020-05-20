@@ -378,6 +378,14 @@ html[direction="rtl"] {
       > button {
         transform: rotateY(180deg);
       }
+
+      .header-label-icon {
+        padding: 6px 0 6px 6px;
+      }
+
+      .header-label-info {
+        align-items: flex-end;
+      }
     }
   }
 }

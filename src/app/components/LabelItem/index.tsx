@@ -39,6 +39,7 @@ interface IProps {
     message: IMessage;
 }
 
+const C_MEDIA_RATIO = 96 / 306;
 const labelColors = LabelRepo.labelColors;
 
 const LabelHeader = ({message}: IProps) => {
@@ -99,7 +100,7 @@ const LabelBodyAudio = ({message}: IProps) => {
     const info = getMediaInfo(message);
     return <>
         {Boolean(info.thumbFile && info.thumbFile.fileid !== '') ? <div className="label-message-media">
-            <CachedPhoto className="thumbnail" fileLocation={info.thumbFile}/>
+            <CachedPhoto className="thumbnail audio" fileLocation={info.thumbFile}/>
             <div className="icon">
                 <MusicNoteRounded/>
             </div>
@@ -166,8 +167,13 @@ const LabelBodyFile = ({message}: IProps) => {
 const LabelBodyMedia = ({message}: IProps) => {
     const info = getMediaInfo(message);
     const withBlur = (info.height / info.width) > 1 || Math.max(info.width, info.height) < 96;
+    const ratio = info.height / info.width;
+    let height = 96;
+    if (ratio < C_MEDIA_RATIO) {
+        height = Math.max(306 * ratio, 48);
+    }
     return <>
-        <div className="label-message-media">
+        <div className="label-message-media" style={{height: `${height}px`}}>
             {withBlur ? <><CachedPhoto className="thumbnail-blur" fileLocation={info.thumbFile} blur={10}/>
                     <CachedPhoto className="thumbnail-blur-top"
                                  fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/></> :
@@ -196,10 +202,10 @@ const LabelBodyMedia = ({message}: IProps) => {
 const LabelBodyLocation = ({message}: IProps) => {
     const info = getMapLocation(message);
     return <div className="label-message-media">
-        <div className="thumbnail">
+        <div className="thumbnail map">
             <img
                 src={`https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${info.lng},${info.lat}&z=14&l=map&size=306,96`}
-                alt={`location: ${info.lat},${info.lng}`}/>
+                alt={`location: ${info.lat},${info.lng}`} draggable={false}/>
         </div>
     </div>;
 };

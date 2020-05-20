@@ -637,7 +637,7 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                             <ChatInput key="chat-input" ref={this.chatInputRefHandler}
                                        onTextSend={this.chatInputTextSendHandler}
-                                       onTyping={this.onTyping}
+                                       onTyping={this.chatInputTypingHandler}
                                        onBulkAction={this.chatInputBulkActionHandler}
                                        onAction={this.chatInputActionHandler}
                                        onVoiceSend={this.chatInputVoiceHandler}
@@ -2003,7 +2003,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onTyping = (typing: TypingAction, forcePeer?: InputPeer) => {
+    private chatInputTypingHandler = (typing: TypingAction, forcePeer?: InputPeer) => {
         const peer = forcePeer || this.peer;
         if (peer === null) {
             return;
@@ -4315,9 +4315,9 @@ class Chat extends React.Component<IProps, IState> {
                     break;
             }
 
-            this.onTyping(TypingAction.TYPINGACTIONUPLOADING, peer);
+            this.chatInputTypingHandler(TypingAction.TYPINGACTIONUPLOADING, peer);
             Promise.all(uploadPromises).then((arr) => {
-                this.onTyping(TypingAction.TYPINGACTIONCANCEL, peer);
+                this.chatInputTypingHandler(TypingAction.TYPINGACTIONCANCEL, peer);
                 this.progressBroadcaster.remove(id);
                 if (!sha256FileLocation && arr.length !== 0) {
                     inputFile.setMd5checksum(arr[0]);
@@ -4376,7 +4376,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }).catch((err) => {
                 this.progressBroadcaster.remove(id);
-                this.onTyping(TypingAction.TYPINGACTIONCANCEL, peer);
+                this.chatInputTypingHandler(TypingAction.TYPINGACTIONCANCEL, peer);
                 if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED && this.selectedDialogId === peer.getId()) {
                     const messages = this.messages;
                     const index = findLastIndex(messages, (o) => {
@@ -4406,6 +4406,9 @@ class Chat extends React.Component<IProps, IState> {
 
     /* ChatInput contact select handler */
     private chatInputContactSelectHandler = (users: IUser[], caption: string, params: IMessageParam) => {
+        if (this.chatInputRef) {
+            this.chatInputRef.clearPreviewMessage(true)();
+        }
         users.forEach((user) => {
             this.sendMediaMessageWithNoFile('contact', user, params);
         });
@@ -4413,6 +4416,9 @@ class Chat extends React.Component<IProps, IState> {
 
     /* ChatInput map select handler */
     private chatInputMapSelectHandler = (item: IGeoItem, params: IMessageParam) => {
+        if (this.chatInputRef) {
+            this.chatInputRef.clearPreviewMessage(true)();
+        }
         this.sendMediaMessageWithNoFile('location', item, params);
     }
 
@@ -4435,6 +4441,7 @@ class Chat extends React.Component<IProps, IState> {
         let media: any;
         let mediaType = InputMediaType.INPUTMEDIATYPECONTACT;
         let mediaType2: MediaType = MediaType.MEDIATYPECONTACT;
+        let rtl: boolean = false;
         if (type === 'contact') {
             const user = item as IUser;
             const contact = new InputMediaContact();
@@ -4454,6 +4461,7 @@ class Chat extends React.Component<IProps, IState> {
             geoData.setLong(location.long);
             geoData.setCaption(location.caption || '');
             geoData.setEntitiesList(location.entities || []);
+            rtl =  this.rtlDetector.direction(location.caption || '');
             mediaData = geoData.toObject();
             media = geoData.serializeBinary();
             mediaType = InputMediaType.INPUTMEDIATYPEGEOLOCATION;
@@ -4471,6 +4479,7 @@ class Chat extends React.Component<IProps, IState> {
             messagetype: messageType,
             peerid: peer.getId(),
             peertype: peer.getType(),
+            rtl,
             senderid: this.userId,
         };
 
@@ -4551,6 +4560,7 @@ class Chat extends React.Component<IProps, IState> {
             message.mediadata = {};
         }
         message.mediadata.caption = caption;
+        message.labelidsList = undefined;
 
         let replyTo: any;
         if (params.mode === C_MSG_MODE.Reply && params.message) {
@@ -5192,6 +5202,9 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private uploaderDoneHandler = (items: IMediaItem[], options: IUploaderOptions) => {
+        if (this.chatInputRef) {
+            this.chatInputRef.clearPreviewMessage(true)();
+        }
         items.forEach((item) => {
             this.sendMediaMessage(item.mediaType, item, {
                 message: options.message,

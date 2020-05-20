@@ -44,6 +44,7 @@ import './style.scss';
 interface IProps {
     onClose?: () => void;
     onError?: (text: string) => void;
+    onMouseEnter?: (e: any) => void;
 }
 
 interface IState {
@@ -113,7 +114,7 @@ class LabelMenu extends React.Component<IProps, IState> {
     public render() {
         const {page, confirmOpen, search, list, loading, selectedIds, label} = this.state;
         return (
-            <div className="label-menu">
+            <div className="label-menu" onMouseEnter={this.props.onMouseEnter}>
                 <LabelCreate ref={this.labelCreateRefHandler} onError={this.props.onError}
                              onDone={this.labelCreateDoneHandler}/>
                 <div className={'page-container page-' + page}>

@@ -176,10 +176,8 @@ export default class UserRepo {
     public getManyCache(isContact: boolean, {keyword, limit}: any): Promise<IUser[]> {
         const reg = new RegExp(keyword || '', 'gi');
         const searchFilter = (u: IUser) => {
-            if (reg.test('Saved Messages')) {
-                if (u.id === this.apiManager.getConnInfo().UserID) {
-                    return true;
-                }
+            if (u.id === this.apiManager.getConnInfo().UserID && reg.test('Saved Messages')) {
+                return true;
             }
             return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(`${u.firstname} ${u.lastname}`));
         };

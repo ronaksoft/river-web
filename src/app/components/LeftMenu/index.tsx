@@ -30,10 +30,9 @@ import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
 import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
-import {omitBy, isNil} from "lodash";
+import {omitBy, isNil, debounce} from "lodash";
 import LabelMenu from "../LabelMenu";
 import './style.scss';
-
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -59,6 +58,7 @@ interface IState {
     chatMoreAnchorEl: any;
     connectionStatus: boolean;
     connectionStatusHide: boolean;
+    dialogHover: boolean;
     iframeActive: boolean;
     isConnecting: boolean;
     isOnline: boolean;
@@ -91,6 +91,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private chatMoreMenuItem: any[];
     private timeout: any = null;
     private unreadCounter: number = 0;
+    private readonly dialogHoverDebounce: any;
 
     constructor(props: IProps) {
         super(props);
@@ -99,6 +100,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             chatMoreAnchorEl: null,
             connectionStatus: false,
             connectionStatusHide: false,
+            dialogHover: false,
             iframeActive: props.iframeActive,
             isConnecting: false,
             isOnline: false,
@@ -143,6 +145,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             cmd: 'logout',
             title: i18n.t('chat.log_out'),
         }];
+
+        this.dialogHoverDebounce = debounce(this.dialogHoverDebounceHandler, 666);
     }
 
     public componentDidMount(): void {
@@ -212,10 +216,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu} = this.state;
+        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover} = this.state;
+        const className = (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (overlayMode ? ' label-mode' : '') + (dialogHover ? ' dialog-hover' : '') + (shrunkMenu ? ' shrunk-menu' : '');
         return (
-            <div
-                className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (shrunkMenu ? ' shrunk-menu' : '')}>
+            <div className={'column-left ' + className}>
                 {!shrunkMenu && <div className="top-bar">
                     {iframeActive &&
                     <span className="close-btn">
@@ -293,8 +297,18 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             </IconButton>
                         </Tooltip>
                     </span>
+                    {Boolean(overlayMode === 2) && <div className="actions">
+                        <Tooltip
+                            title={i18n.t('chat.search')}
+                            placement="bottom"
+                        >
+                            <IconButton
+                                onClick={this.chatTopIconActionHandler('search')}
+                            ><SearchRounded/></IconButton>
+                        </Tooltip>
+                    </div>}
                 </div>}
-                <div className="left-content">
+                <div className="left-content" onMouseEnter={this.contentMouseEnterHandler} onMouseLeave={this.contentMouseLeaveHandler}>
                     {this.connectionStatus()}
                     {this.leftMenuRender()}
                 </div>
@@ -409,6 +423,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             case 'labels':
                 this.setState({
                     overlayMode: 2,
+                    shrunkMenu: true,
                 });
                 break;
             case 'new_message':
@@ -432,6 +447,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private overlayCloseHandler = () => {
         this.setState({
             overlayMode: 0,
+            shrunkMenu: false,
         });
     }
 
@@ -455,12 +471,45 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     private toggleMenuHandler = () => {
-        this.setState({
-            shrunkMenu: !this.state.shrunkMenu,
-        }, () => {
-            this.props.onShrunk(this.state.shrunkMenu);
-            localStorage.setItem('river.shrunk_menu', this.state.shrunkMenu ? 'true' : 'false');
-        });
+        if (this.state.overlayMode === 2) {
+            this.setState({
+                dialogHover: !this.state.dialogHover,
+            });
+        } else {
+            this.setState({
+                shrunkMenu: !this.state.shrunkMenu,
+            }, () => {
+                this.props.onShrunk(this.state.shrunkMenu);
+                localStorage.setItem('river.shrunk_menu', this.state.shrunkMenu ? 'true' : 'false');
+            });
+        }
+    }
+
+    private contentMouseLeaveHandler = () => {
+        if (this.state.overlayMode !== 2) {
+            return;
+        }
+        this.dialogHoverDebounce.cancel();
+        if (this.state.dialogHover) {
+            this.setState({
+                dialogHover: false,
+            });
+        }
+    }
+
+    private contentMouseEnterHandler = () => {
+        if (this.state.overlayMode !== 2 || this.state.dialogHover) {
+            return;
+        }
+        this.dialogHoverDebounce();
+    }
+
+    private dialogHoverDebounceHandler = () => {
+        if (!this.state.dialogHover) {
+            this.setState({
+                dialogHover: true,
+            });
+        }
     }
 
     private settingsSubPlaceChangeHandler = (place: string, subPlace: string) => {

@@ -644,6 +644,33 @@ class ChatInput extends React.Component<IProps, IState> {
         });
     }
 
+    public clearPreviewMessage = (removeDraft?: boolean, cb?: any) => (e?: any) => {
+        if (this.state.previewMessageHeight > 0) {
+            this.setState({
+                previewMessageHeight: 0,
+            });
+            setTimeout(() => {
+                this.setState({
+                    droppedMessage: null,
+                    previewMessage: null,
+                    previewMessageMode: C_MSG_MODE.Normal,
+                    voiceMode: 'up',
+                }, () => {
+                    this.voiceStateChange();
+                });
+                this.setInputMode('default');
+                if (this.props.onPreviewMessageChange) {
+                    this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
+                }
+            }, 102);
+        }
+        this.removeDraft(removeDraft).finally(() => {
+            if (cb) {
+                cb();
+            }
+        });
+    }
+
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
@@ -1087,33 +1114,6 @@ class ChatInput extends React.Component<IProps, IState> {
         const rtl = this.rtlDetector.direction(text);
         this.setState({
             rtl,
-        });
-    }
-
-    private clearPreviewMessage = (removeDraft?: boolean, cb?: any) => (e?: any) => {
-        if (this.state.previewMessageHeight > 0) {
-            this.setState({
-                previewMessageHeight: 0,
-            });
-            setTimeout(() => {
-                this.setState({
-                    droppedMessage: null,
-                    previewMessage: null,
-                    previewMessageMode: C_MSG_MODE.Normal,
-                    voiceMode: 'up',
-                }, () => {
-                    this.voiceStateChange();
-                });
-                this.setInputMode('default');
-                if (this.props.onPreviewMessageChange) {
-                    this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
-                }
-            }, 102);
-        }
-        this.removeDraft(removeDraft).finally(() => {
-            if (cb) {
-                cb();
-            }
         });
     }
 
@@ -2132,7 +2132,8 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.textarea) {
             return;
         }
-        let textVal = this.textarea.value;
+        let textVal: string = this.textarea.value;
+        let startPosHold = this.textarea.selectionStart;
         // IE support
         // @ts-ignore
         if (document.selection) {
@@ -2155,6 +2156,12 @@ class ChatInput extends React.Component<IProps, IState> {
         this.textarea.value = textVal;
         this.setState({
             textareaValue: textVal,
+        }, () => {
+            if (startPosHold && this.textarea) {
+                startPosHold += text.length;
+                this.textarea.focus();
+                this.textarea.setSelectionRange(startPosHold, startPosHold);
+            }
         });
     }
 
