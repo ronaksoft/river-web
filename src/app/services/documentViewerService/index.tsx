@@ -32,7 +32,7 @@ interface IDocumentItem {
 }
 
 export interface IDocument {
-    anchor?: 'message' | 'shared_media' | 'shared_media_full';
+    anchor?: 'message' | 'shared_media' | 'shared_media_full' | 'label';
     items: IDocumentItem[];
     peerId?: string;
     rect?: ClientRect;

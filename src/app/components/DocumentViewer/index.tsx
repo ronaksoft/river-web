@@ -128,7 +128,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         startPan: false,
         zoom: 1,
     };
-    private lastAnchorType?: 'message' | 'shared_media' | 'shared_media_full';
+    private lastAnchorType?: 'message' | 'shared_media' | 'shared_media_full' | 'label';
     private preventClose: boolean = false;
     private firstTimeLoad: boolean = true;
     private apiManager: APIManager;
@@ -650,6 +650,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
         }
         let el: Element | null;
         switch (doc.anchor) {
+            case 'label':
+                el = document.querySelector(`.label-message-item .label-message-media.item_${doc.items[0].id} .thumbnail`);
+                break;
             case 'shared_media':
                 el = document.querySelector(`.peer-media .media-item.item_${doc.items[0].id} .picture`);
                 break;

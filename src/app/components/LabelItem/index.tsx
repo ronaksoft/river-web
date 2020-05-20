@@ -22,7 +22,7 @@ import {
     InsertDriveFileRounded,
     MusicNoteRounded,
     PersonRounded, PlayArrowRounded,
-    RecordVoiceOverRounded,
+    RecordVoiceOverRounded, VisibilityRounded,
 } from "@material-ui/icons";
 import LabelRepo from "../../repository/label";
 import {Link} from "react-router-dom";
@@ -32,6 +32,8 @@ import {MediaContact} from "../../services/sdk/messages/chat.core.message.medias
 import {getFileExtension, getFileInfo, getHumanReadableSize} from "../MessageFile";
 import {getMapLocation} from "../MessageLocation";
 import i18n from "../../services/i18n";
+import DocumentViewerService, {IDocument} from "../../services/documentViewerService";
+import {IconButton} from '@material-ui/core';
 
 import './style.scss';
 
@@ -164,6 +166,39 @@ const LabelBodyFile = ({message}: IProps) => {
     </>;
 };
 
+const viewDocumentHandler = (message: IMessage) => (e: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    // @ts-ignore
+    const el = e.currentTarget.parentElement.parentElement.querySelector('.thumbnail');
+    const info = getMediaInfo(message);
+    const doc: IDocument = {
+        anchor: 'label',
+        items: [{
+            caption: info.caption,
+            createdon: message.createdon,
+            downloaded: message.downloaded || false,
+            duration: info.duration,
+            entityList: info.entityList,
+            fileLocation: info.file,
+            fileSize: info.size,
+            height: info.height,
+            id: message.id || 0,
+            md5: info.md5,
+            mimeType: info.mimeType,
+            rtl: message.rtl,
+            thumbFileLocation: message.messagetype !== C_MESSAGE_TYPE.Picture ? info.thumbFile : undefined,
+            userId: message.senderid || '',
+            width: info.width,
+        }],
+        peerId: message.peerid || '',
+        rect: el ? el.getBoundingClientRect() : undefined,
+        stream: false,
+        type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
+    };
+    DocumentViewerService.getInstance().loadDocument(doc);
+};
+
 const LabelBodyMedia = ({message}: IProps) => {
     const info = getMediaInfo(message);
     const withBlur = (info.height / info.width) > 1 || Math.max(info.width, info.height) < 96;
@@ -173,9 +208,9 @@ const LabelBodyMedia = ({message}: IProps) => {
         height = Math.max(306 * ratio, 48);
     }
     return <>
-        <div className="label-message-media" style={{height: `${height}px`}}>
+        <div className={`label-message-media item_${message.id || 0}`} style={{height: `${height}px`}}>
             {withBlur ? <><CachedPhoto className="thumbnail-blur" fileLocation={info.thumbFile} blur={10}/>
-                    <CachedPhoto className="thumbnail-blur-top"
+                    <CachedPhoto className="thumbnail blur-top"
                                  fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/></> :
                 <CachedPhoto className="thumbnail"
                              fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/>}
@@ -187,6 +222,11 @@ const LabelBodyMedia = ({message}: IProps) => {
                     <PlayArrowRounded/>
                 </div>
             </>}
+            <div className="media-actions">
+                <IconButton onClick={viewDocumentHandler(message)}>
+                    <VisibilityRounded/>
+                </IconButton>
+            </div>
         </div>
         {Boolean((info.caption || '').length > 0) &&
         <div className="label-message-body">

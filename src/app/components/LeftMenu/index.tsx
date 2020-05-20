@@ -91,7 +91,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private chatMoreMenuItem: any[];
     private timeout: any = null;
     private unreadCounter: number = 0;
-    private readonly dialogHoverDebounce: any;
+    private readonly mouseEnterDebounce: any;
+    private readonly mouseLeaveDebounce: any;
 
     constructor(props: IProps) {
         super(props);
@@ -146,7 +147,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             title: i18n.t('chat.log_out'),
         }];
 
-        this.dialogHoverDebounce = debounce(this.dialogHoverDebounceHandler, 666);
+        this.mouseEnterDebounce = debounce(this.mouseEnterDebounceHandler, 512);
+        this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
     }
 
     public componentDidMount(): void {
@@ -285,7 +287,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                         </Menu>
                     </div>
                 </div>}
-                {shrunkMenu && <div className="top-bar">
+                {shrunkMenu && <div className="top-bar" onMouseEnter={this.contentMouseEnterHandler}
+                                    onMouseLeave={this.contentMouseLeaveHandler}>
                     <span className="menu-btn">
                         <Tooltip
                             title={i18n.t('general.expand')}
@@ -308,7 +311,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                         </Tooltip>
                     </div>}
                 </div>}
-                <div className="left-content" onMouseEnter={this.contentMouseEnterHandler} onMouseLeave={this.contentMouseLeaveHandler}>
+                <div className="left-content" onMouseEnter={this.contentMouseEnterHandler}
+                     onMouseLeave={this.contentMouseLeaveHandler}>
                     {this.connectionStatus()}
                     {this.leftMenuRender()}
                 </div>
@@ -489,22 +493,19 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         if (this.state.overlayMode !== 2) {
             return;
         }
-        this.dialogHoverDebounce.cancel();
-        if (this.state.dialogHover) {
-            this.setState({
-                dialogHover: false,
-            });
-        }
+        this.mouseEnterDebounce.cancel();
+        this.mouseLeaveDebounce();
     }
 
     private contentMouseEnterHandler = () => {
-        if (this.state.overlayMode !== 2 || this.state.dialogHover) {
+        if (this.state.overlayMode !== 2) {
             return;
         }
-        this.dialogHoverDebounce();
+        this.mouseLeaveDebounce.cancel();
+        this.mouseEnterDebounce();
     }
 
-    private dialogHoverDebounceHandler = () => {
+    private mouseEnterDebounceHandler = () => {
         if (!this.state.dialogHover) {
             this.setState({
                 dialogHover: true,
@@ -512,10 +513,18 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
     }
 
+    private mouseLeaveDebounceHandler = () => {
+        if (this.state.dialogHover) {
+            this.setState({
+                dialogHover: false,
+            });
+        }
+    }
+
     private settingsSubPlaceChangeHandler = (place: string, subPlace: string) => {
         if (place === 'label') {
             this.setState({
-                leftMenu: "chat",
+                leftMenu: 'chat',
             }, () => {
                 this.chatMoreActionHandler('labels')();
             });

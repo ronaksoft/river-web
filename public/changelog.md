@@ -1,3 +1,6 @@
+## 0.32.34
+* Label document preview
+
 ## 0.32.33
 * Simpler way to check dialogs while browsing labels
 * Know bugs fixed
