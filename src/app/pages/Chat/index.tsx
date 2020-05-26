@@ -3014,9 +3014,6 @@ class Chat extends React.Component<IProps, IState> {
                     this.labelDialogRef.openDialog([message.id || 0], [message.labelidsList || []]);
                 }
                 break;
-            default:
-                window.console.debug(cmd, message);
-                break;
         }
     }
 

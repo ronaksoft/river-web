@@ -22,7 +22,7 @@ import './style.scss';
 let items: any[] = [];
 
 interface IProps {
-    onAction: (cmd: 'media' | 'music' | 'contact' | 'location' | 'file') => (e: any) => void;
+    onAction: (cmd: 'media' | 'audio' | 'contact' | 'location' | 'file') => (e: any) => void;
     onClose?: () => void;
 }
 
@@ -53,7 +53,7 @@ class SelectMedia extends React.Component<IProps, IState> {
                 title: i18n.t('media.photo_video'),
             },
             {
-                cmd: 'music',
+                cmd: 'audio',
                 icon: <HeadsetTwoTone/>,
                 title: i18n.t('media.audio'),
             },

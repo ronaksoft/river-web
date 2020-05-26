@@ -40,6 +40,29 @@
     justify-content: center;
     flex-direction: column;
 
+    &.with-loading {
+      &:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 64px;
+        width: 64px;
+        border-radius: 8px;
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+    }
+
+    &.with-bg {
+      //background-color: var(--light);
+
+      svg {
+        border-radius: 50%;
+        background-color: var(--light);
+      }
+    }
+
     .placeholder-label {
       margin: 24px 0 0;
       background-color: rgba(0, 0, 0, 0.21);
@@ -729,9 +752,9 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 60px;
-  height: 60px;
-  border-radius: 5px;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -750,209 +773,263 @@ html[direction="rtl"] {
 html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
-  .chat {
-    border-color: transparent;
-
-    .chat-placeholder .placeholder-label {
-      color: var(--white);
-    }
-  }
-
-  .bubble-wrapper {
-    .bubble {
-      ._mention, ._hashtag, ._url {
-        color: var(--dark-mention);
-      }
+  .main-messages {
+    .chat {
+      border-color: transparent;
     }
 
-    &.me {
-      .bubble {
-        background-color: var(--dark-accent-low);
-        color: #eee;
-
-        > .name {
-          color: #eee;
+    .chat-placeholder {
+      &.with-loading {
+        &:before {
+          background-color: var(--dark-medium);
         }
       }
 
-      .arrow {
-        &:after {
-          background-color: var(--dark-accent-low);
-          color: #eee;
-        }
-      }
-    }
+      &.with-bg {
+        //background-color: var(--dark-low);
 
-    &.you {
-      .bubble {
-        background-color: var(--dark-accent-medium);
-        color: #eee;
-
-        > .name {
-          color: #eee;
+        svg {
+          border-radius: 50%;
+          background-color: var(--dark-low);
         }
       }
 
-      .arrow {
-        &:after {
-          background-color: var(--dark-accent-medium);
-          color: #eee;
-        }
-      }
-    }
-
-    > .date {
-      background-color: rgba(24, 24, 24, 0.5);
-      color: #D1D1D3;
-    }
-
-    .system-message {
-      background-color: rgba(255, 255, 255, 0.5);
-      color: var(--dark);
-    }
-
-    .checkbox {
-      &:not(.checked) {
+      .placeholder-label {
         color: var(--white);
       }
     }
-  }
 
-  .bubble-gap,
-  .bubble-wrapper {
-    .loading {
-      background-color: rgba(255, 255, 255, 0.5);
-      color: #333;
+    .bubble-wrapper {
+      .bubble {
+        ._mention, ._hashtag, ._url {
+          color: var(--dark-mention);
+        }
+      }
+
+      &.me {
+        .bubble {
+          background-color: var(--dark-accent-low);
+          color: #eee;
+
+          > .name {
+            color: #eee;
+          }
+        }
+
+        .arrow {
+          &:after {
+            background-color: var(--dark-accent-low);
+            color: #eee;
+          }
+        }
+      }
+
+      &.you {
+        .bubble {
+          background-color: var(--dark-accent-medium);
+          color: #eee;
+
+          > .name {
+            color: #eee;
+          }
+        }
+
+        .arrow {
+          &:after {
+            background-color: var(--dark-accent-medium);
+            color: #eee;
+          }
+        }
+      }
+
+      > .date {
+        background-color: rgba(24, 24, 24, 0.5);
+        color: #D1D1D3;
+      }
+
+      .system-message {
+        background-color: rgba(255, 255, 255, 0.5);
+        color: var(--dark);
+      }
+
+      .checkbox {
+        &:not(.checked) {
+          color: var(--white);
+        }
+      }
     }
-  }
 
-  .selectable .bubble-wrapper:not(.date-padding) {
-    &:hover {
-      background-color: var(--dark-hover-light);
+    .bubble-gap,
+    .bubble-wrapper {
+      .loading {
+        background-color: rgba(255, 255, 255, 0.5);
+        color: #333;
+      }
     }
 
-    &.selected {
-      background-color: #27AE6020;
-    }
-  }
+    .selectable .bubble-wrapper:not(.date-padding) {
+      &:hover {
+        background-color: var(--dark-hover-light);
+      }
 
-  .messages-dropzone {
-    .dropzone {
+      &.selected {
+        background-color: #27AE6020;
+      }
+    }
+
+    .messages-dropzone {
+      .dropzone {
+        background-color: var(--dark-medium);
+        color: var(--white);
+      }
+    }
+
+    .messages-overlay-loading {
       background-color: var(--dark-medium);
-      color: var(--white);
     }
-  }
-
-  .messages-overlay-loading {
-    background-color: var(--dark-medium);
   }
 }
 
 html[theme="dark-night"] {
-  .chat {
-    border-color: transparent;
-  }
+  .main-messages {
+    .chat {
+      border-color: transparent;
+    }
 
-  .bubble-wrapper {
-    .bubble {
-      ._mention, ._hashtag, _url {
-        color: var(--dark-night-mention);
+    .chat-placeholder {
+      &.with-loading {
+        &:before {
+          background-color: var(--dark-night-medium);
+        }
+      }
+
+      .with-bg {
+        //background-color: var(--dark-night-low);
+
+        svg {
+          background-color: var(--dark-night-low);
+        }
       }
     }
 
-    &.me {
+    .bubble-wrapper {
       .bubble {
-        background-color: var(--dark-night-accent-low);
+        ._mention, ._hashtag, ._url {
+          color: var(--dark-night-mention);
+        }
       }
 
-      .arrow {
-        &:after {
+      &.me {
+        .bubble {
           background-color: var(--dark-night-accent-low);
         }
-      }
-    }
 
-    &.you {
-      .bubble {
-        background-color: var(--dark-night-accent-medium);
-      }
-
-      .arrow {
-        &:after {
-          background-color: var(--dark-night-accent-medium);
+        .arrow {
+          &:after {
+            background-color: var(--dark-night-accent-low);
+          }
         }
       }
+
+      &.you {
+        .bubble {
+          background-color: var(--dark-night-accent-medium);
+        }
+
+        .arrow {
+          &:after {
+            background-color: var(--dark-night-accent-medium);
+          }
+        }
+      }
+
+      > .date {
+        background-color: rgba(52, 67, 89, 0.5);
+        color: #D1D1D3;
+      }
     }
 
-    > .date {
-      background-color: rgba(52, 67, 89, 0.5);
-      color: #D1D1D3;
+    .messages-dropzone {
+      .dropzone {
+        background-color: var(--dark-night-low);
+        color: var(--white);
+      }
     }
-  }
 
-  .messages-dropzone {
-    .dropzone {
-      background-color: var(--dark-night-low);
-      color: var(--white);
+    .messages-overlay-loading {
+      background-color: var(--dark-night-medium);
     }
-  }
-
-  .messages-overlay-loading {
-    background-color: var(--dark-night-medium);
   }
 }
 
 html[theme="dark-blue"] {
-  .chat {
-    border-color: var(--dark-blue-low);
-  }
+  .main-messages {
+    .chat {
+      border-color: var(--dark-blue-low);
+    }
 
-  .bubble-wrapper {
-    .bubble {
-      ._mention, ._hashtag, _url {
-        color: var(--dark-blue-mention);
+    .chat-placeholder {
+
+      &.with-loading:before {
+        background-color: var(--dark-blue-medium);
+      }
+
+      &.with-bg {
+        //background-color: var(--dark-blue-low);
+
+        svg {
+          background-color: var(--dark-blue-low);
+        }
       }
     }
 
-    &.me {
+    .bubble-wrapper {
       .bubble {
-        background-color: var(--dark-blue-accent-low);
+        ._mention, ._hashtag, ._url {
+          color: var(--dark-blue-mention);
+        }
       }
 
-      .arrow {
-        &:after {
+      &.me {
+        .bubble {
           background-color: var(--dark-blue-accent-low);
         }
-      }
-    }
 
-    &.you {
-      .bubble {
-        background-color: var(--dark-blue-accent-medium);
-      }
-
-      .arrow {
-        &:after {
-          background-color: var(--dark-blue-accent-medium);
+        .arrow {
+          &:after {
+            background-color: var(--dark-blue-accent-low);
+          }
         }
       }
+
+      &.you {
+        .bubble {
+          background-color: var(--dark-blue-accent-medium);
+        }
+
+        .arrow {
+          &:after {
+            background-color: var(--dark-blue-accent-medium);
+          }
+        }
+      }
+
+      > .date {
+        background-color: rgba(52, 67, 89, 0.5);
+        color: #D1D1D3;
+      }
     }
 
-    > .date {
-      background-color: rgba(52, 67, 89, 0.5);
-      color: #D1D1D3;
+    .messages-dropzone {
+      .dropzone {
+        background-color: var(--dark-blue-low);
+        color: var(--white);
+      }
     }
-  }
 
-  .messages-dropzone {
-    .dropzone {
-      background-color: var(--dark-blue-low);
-      color: var(--white);
+    .messages-overlay-loading {
+      background-color: var(--dark-blue-medium);
     }
-  }
-
-  .messages-overlay-loading {
-    background-color: var(--dark-blue-medium);
   }
 }
 
@@ -1252,12 +1329,12 @@ html[gradient="1"]:not([bubble="5"]) {
   .bubble-wrapper {
     &.me {
       .arrow:after {
-        background: var(--gradient-morning);
+        background-image: var(--gradient-morning);
         background-attachment: fixed;
       }
 
       .bubble {
-        background: var(--gradient-morning);
+        background-image: var(--gradient-morning);
         background-attachment: fixed;
         color: #fff;
 
@@ -1277,12 +1354,12 @@ html[gradient="2"]:not([bubble="5"]) {
   .bubble-wrapper {
     &.me {
       .arrow:after {
-        background: var(--gradient-venice);
+        background-image: var(--gradient-venice);
         background-attachment: fixed;
       }
 
       .bubble {
-        background: var(--gradient-venice);
+        background-image: var(--gradient-venice);
         background-attachment: fixed;
         color: #fff;
 
@@ -1302,12 +1379,12 @@ html[gradient="3"]:not([bubble="5"]) {
   .bubble-wrapper {
     &.me {
       .arrow:after {
-        background: var(--gradient-paradise);
+        background-image: var(--gradient-paradise);
         background-attachment: fixed;
       }
 
       .bubble {
-        background: var(--gradient-paradise);
+        background-image: var(--gradient-paradise);
         background-attachment: fixed;
         color: #fff;
 
@@ -1327,12 +1404,12 @@ html[gradient="4"]:not([bubble="5"]) {
   .bubble-wrapper {
     &.me {
       .arrow:after {
-        background: var(--gradient-ocean);
+        background-image: var(--gradient-ocean);
         background-attachment: fixed;
       }
 
       .bubble {
-        background: var(--gradient-ocean);
+        background-image: var(--gradient-ocean);
         background-attachment: fixed;
         color: #fff;
 
@@ -1352,12 +1429,12 @@ html[gradient="5"]:not([bubble="5"]) {
   .bubble-wrapper {
     &.me {
       .arrow:after {
-        background: var(--gradient-rainbow);
+        background-image: var(--gradient-rainbow);
         background-attachment: fixed;
       }
 
       .bubble {
-        background: var(--gradient-rainbow);
+        background-image: var(--gradient-rainbow);
         background-attachment: fixed;
         color: #fff;
 

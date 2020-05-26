@@ -266,14 +266,44 @@ html[bubble="4"] {
 
 .mobile-view {
   .message-preview {
-    max-width: calc(100vw - 60px);
+    max-width: calc(100vw - 60px) !important;
   }
 }
 
-@media screen and (min-width: 1400px) {
-  .messages-inner.large-mode {
-    .message-preview {
-      max-width: 794px;
+.messages-inner {
+  .bubble-wrapper {
+    &.media {
+      .message-preview {
+        max-width: 256px;
+      }
+    }
+
+    &.voice {
+      .message-preview {
+        max-width: 458px;
+      }
+    }
+
+    &.file, &.audio {
+      .message-preview {
+        max-width: 320px;
+      }
+    }
+  }
+
+  &.large-mode {
+    .bubble-wrapper {
+      &.media {
+        .message-preview {
+          max-width: 390px;
+        }
+      }
+
+      &.file, &.audio {
+        .message-preview {
+          max-width: 458px;
+        }
+      }
     }
   }
 }

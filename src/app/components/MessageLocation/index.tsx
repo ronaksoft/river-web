@@ -76,7 +76,7 @@ const MessageLocation = ({peer, message, onBodyAction, measureFn}: IProps) => {
         <div className="message-location">
             <div className="location-content" onClick={showLocationHandler(locationInfo.lat, locationInfo.lng, message)}>
                 <img
-                    src={`https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${locationInfo.lng},${locationInfo.lat}&z=14&l=map&size=300,300`}
+                    src={`https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${locationInfo.lng},${locationInfo.lat}&z=14&l=map&size=390,390`}
                     alt={`location: ${locationInfo.lat}, ${locationInfo.lng}`}/>
                 <PlaceRounded/>
             </div>

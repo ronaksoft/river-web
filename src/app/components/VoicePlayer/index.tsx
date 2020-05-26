@@ -76,6 +76,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private settingsConfigManager: SettingsConfigManager;
     private objectUrlImages: string[] = [];
     private readonly lastId: number = 0;
+    private themeChangeEvent: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -101,13 +102,13 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
     public componentDidMount() {
         window.addEventListener(EventMouseUp, this.windowMouseUpHandler);
-        this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangedHandler));
+        this.themeChangeEvent = this.broadcaster.listen(ThemeChanged, this.themeChangedHandler);
         if (this.props.message && (this.props.message.id || 0) > 0) {
             this.eventReferences.push(this.audioPlayer.listen(this.props.message.id || 0, this.audioPlayerHandler));
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (newProps.message) {
             if (this.lastId !== newProps.message.id) {
                 if (this.lastId !== newProps.message.id && this.lastId < 0) {
@@ -124,6 +125,9 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     public componentWillUnmount() {
         this.removeAllListeners();
         this.revokeUrlImages();
+        if (this.themeChangeEvent) {
+            this.themeChangeEvent();
+        }
         window.removeEventListener(EventMouseUp, this.windowMouseUpHandler);
     }
 

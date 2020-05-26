@@ -124,7 +124,7 @@ class UserName extends React.PureComponent<IProps, IState> {
                       onClick={this.clickHandler}>{Boolean(noIcon !== true && user.official) &&
                 <VerifiedUserRounded
                     style={{color: '#27AE60'}}/>}{Boolean(noIcon !== true && user.isbot) &&
-                <MemoryRounded/>}{(user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
+                <MemoryRounded/>}{(user.id) ? (onlyFirstName ? `${prefix}${user.firstname}${postfix}` : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
             );
         }
     }

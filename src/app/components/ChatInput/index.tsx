@@ -229,7 +229,7 @@ interface IState {
     droppedMessage: IMessage | null;
     emojiAnchorPos: PopoverPosition | undefined;
     isBot: boolean;
-    mediaInputMode: 'media' | 'music' | 'contact' | 'location' | 'file' | 'none';
+    mediaInputMode: 'media' | 'audio' | 'contact' | 'location' | 'file' | 'none';
     peer: InputPeer | null;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
@@ -489,10 +489,12 @@ class ChatInput extends React.Component<IProps, IState> {
 
     public setSelectable(enable: boolean, disable: boolean) {
         if (enable !== this.state.selectable || disable !== this.state.selectableDisable) {
-            this.setState({
-                selectable: enable,
-                selectableDisable: disable,
-            });
+            this.clearPreviewMessage(false, () => {
+                this.setState({
+                    selectable: enable,
+                    selectableDisable: disable,
+                });
+            })();
         }
     }
 
@@ -1792,7 +1794,7 @@ class ChatInput extends React.Component<IProps, IState> {
             }
             switch (this.state.mediaInputMode) {
                 case 'media':
-                case 'music':
+                case 'audio':
                 case 'file':
                     if (this.props.onFileSelect) {
                         this.props.onFileSelect(files, {
@@ -1860,13 +1862,13 @@ class ChatInput extends React.Component<IProps, IState> {
         //
     }
 
-    private selectMediaActionHandler = (mode: 'media' | 'music' | 'file' | 'contact' | 'location') => (e: any) => {
+    private selectMediaActionHandler = (mode: 'media' | 'audio' | 'file' | 'contact' | 'location') => (e: any) => {
         this.setState({
             mediaInputMode: mode,
         }, () => {
             switch (mode) {
                 case 'media':
-                case 'music':
+                case 'audio':
                 case 'file':
                     this.openFileDialog();
                     break;
@@ -1897,7 +1899,7 @@ class ChatInput extends React.Component<IProps, IState> {
         switch (mediaInputMode) {
             case 'media':
                 return 'image/png,image/jpeg,image/jpg,image/webp,video/webm,video/mp4';
-            case 'music':
+            case 'audio':
                 return "audio/mp4,audio/ogg,audio/mp3";
             case 'file':
             default:

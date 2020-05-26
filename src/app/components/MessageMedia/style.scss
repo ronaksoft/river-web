@@ -285,6 +285,14 @@
   }
 }
 
+.bubble-wrapper.media.related {
+  .message-media {
+    .media-content {
+      max-width: unset !important;
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {

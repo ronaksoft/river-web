@@ -71,20 +71,23 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
     if (dialog.draft && dialog.draft.peerid) {
         return (
             <span className="preview-message draft-message">
-                    <span className="preview-inner"><span
-                        className="red-font">{i18n.t('message.draft')}</span>&nbsp;{dialog.draft.body}</span>
+                <span className="preview-inner">
+                    <span className="red-font">{i18n.t('message.draft')}</span>
+                    &nbsp;{dialog.draft.body}
                 </span>
+            </span>
         );
     }
     if (dialog.action_code === C_MESSAGE_ACTION.MessageActionNope) {
         return (
             <span className="preview-message">
-                    {Boolean(dialog.peertype === PeerType.PEERGROUP && dialog.sender_id) && <span className="sender">
-                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true} noDetail={true} noIcon={true}
-                              postfix=":"/>&nbsp;</span>}
-                {getMessageIcon(dialog.preview_icon)}<span
-                className="preview-inner">{dialog.preview}</span>
-                </span>
+                {Boolean(dialog.peertype === PeerType.PEERGROUP && dialog.sender_id) && <span className="sender">
+                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true}
+                              noDetail={true} noIcon={true} postfix=":"/>&nbsp;
+                </span>}
+                {getMessageIcon(dialog.preview_icon)}
+                <span className="preview-inner">{dialog.preview}</span>
+            </span>
         );
     }
     switch (dialog.action_code) {

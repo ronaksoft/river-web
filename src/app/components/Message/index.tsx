@@ -704,6 +704,12 @@ class Message extends React.Component<IProps, IState> {
                 break;
             case C_MESSAGE_TYPE.System:
                 return 41;
+            case C_MESSAGE_TYPE.Location:
+                if (this.isLarge) {
+                    return 220;
+                } else {
+                    return 120;
+                }
             case C_MESSAGE_TYPE.Normal:
             case undefined:
                 if (message.em_le) {
@@ -840,11 +846,11 @@ class Message extends React.Component<IProps, IState> {
 
     private noRowsRendererHandler = () => {
         if (this.state.loading || this.state.loadingPersist || this.props.isMobileView) {
-            return (<div className="chat-placeholder">
+            return (<div className="chat-placeholder with-loading">
                 <Loading/>
             </div>);
         } else {
-            return (<div className="chat-placeholder">
+            return (<div className="chat-placeholder with-bg">
                 <Landscape/>
                 <div className="placeholder-label">{i18n.t('general.no_message')}</div>
             </div>);
@@ -1300,7 +1306,7 @@ class Message extends React.Component<IProps, IState> {
                 type = 'voice';
                 break;
             case C_MESSAGE_TYPE.Audio:
-                type = 'music';
+                type = 'audio';
                 break;
         }
         if (type === 'media') {
@@ -1309,10 +1315,10 @@ class Message extends React.Component<IProps, IState> {
                 type = 'media_caption';
             }
         }
-        if (type === 'music') {
+        if (type === 'audio') {
             const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
             if ((messageMediaDocument.caption || '').length > 0) {
-                type = 'music_caption';
+                type = 'audio_caption';
             }
         }
         let related = '';

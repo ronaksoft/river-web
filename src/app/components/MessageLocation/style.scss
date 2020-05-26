@@ -55,6 +55,20 @@
   }
 }
 
+.messages-inner.large-mode {
+  .message-location {
+    min-height: 220px;
+    min-width: 390px;
+
+    .location-content {
+      img {
+        width: 390px;
+        height: 220px;
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {

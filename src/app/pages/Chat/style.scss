@@ -22,7 +22,7 @@
 
 .wrapper {
   position: relative;
-  width: var(--wrapper);
+  width: 1400px;
   height: 900px;
   overflow: hidden;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
@@ -59,7 +59,7 @@
       position: relative;
       width: 100%;
       flex: 1;
-      background-color: rgba(168, 144, 106, 0.3);
+      background-color: var(light);
       background-repeat: repeat;
       background-size: 100px;
       transition: background 0.2s;
@@ -67,7 +67,7 @@
       direction: ltr;
 
       &.no-result {
-        background-image: none !important;
+        //background-image: none !important;
       }
 
       .move-down {
@@ -103,12 +103,12 @@
     .start-messaging {
       width: 100%;
       height: 100%;
-      background-color: rgba(168, 144, 106, 0.3);
+      background-color: var(--light);
       background-size: 100px;
 
       &.no-result {
         background-image: none !important;
-        background-color: var(--light);
+        //background-color: var(--light);
       }
 
       .start-messaging-header {

@@ -16,9 +16,8 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   padding: 0;
   border: 0;
   font-size: 100%;
-  font: inherit;
   vertical-align: baseline;
-  @include font;
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
 }
 
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
@@ -154,7 +153,7 @@ table {
 
 @font-face {
   font-family: 'YekanBakh';
-  font-weight: 700;
+  font-weight: bold;
   src: url(asset/font/YekanBakh/YekanBakhNestedWeb-Bold.eot?) format("eot"),
   url(asset/font/YekanBakh/YekanBakhNestedWeb-Bold.ttf) format("truetype"),
   url(asset/font/YekanBakh/YekanBakhNestedWeb-Bold.woff) format("woff"),
@@ -299,7 +298,7 @@ table {
 
 .markdown-body .pl-sr .pl-cce {
   color: #22863a;
-  font-weight: 700;
+  font-weight: bold;
 }
 
 .markdown-body .pl-ml {
@@ -310,7 +309,7 @@ table {
 .markdown-body .pl-mh .pl-en,
 .markdown-body .pl-ms {
   color: #005cc5;
-  font-weight: 700;
+  font-weight: bold;
 }
 
 .markdown-body .pl-mi {
@@ -320,7 +319,7 @@ table {
 
 .markdown-body .pl-mb {
   color: #24292e;
-  font-weight: 700;
+  font-weight: bold;
 }
 
 .markdown-body .pl-md {
@@ -345,7 +344,7 @@ table {
 
 .markdown-body .pl-mdr {
   color: #6f42c1;
-  font-weight: 700;
+  font-weight: bold;
 }
 
 .markdown-body .pl-ba {
