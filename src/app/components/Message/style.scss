@@ -407,7 +407,7 @@
       height: 20px;
       width: 16px;
       display: block;
-      background-color: inherit;
+      background: inherit;
       visibility: hidden;
       z-index: 30;
 
@@ -580,7 +580,7 @@
   &.media_caption {
     .bubble {
       .more {
-        background-color: transparent;
+        background: transparent;
         overflow: hidden;
         display: flex;
         align-items: flex-start;
@@ -775,7 +775,7 @@ html[theme="dark-night"],
 html[theme="dark-blue"] {
   .main-messages {
     .chat {
-      border-color: transparent;
+      border-color: var(--dark-medium);
     }
 
     .chat-placeholder {
@@ -893,7 +893,7 @@ html[theme="dark-blue"] {
 html[theme="dark-night"] {
   .main-messages {
     .chat {
-      border-color: transparent;
+      border-color: var(--dark-night-medium);
     }
 
     .chat-placeholder {

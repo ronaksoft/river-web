@@ -191,6 +191,10 @@
 
       .title-edit {
         margin-bottom: 10px;
+
+        .adornment-button {
+          background-color: var(--river);
+        }
       }
     }
 
@@ -347,17 +351,10 @@
   }
 
   .leave-group {
-    height: 48px;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    color: var(--red);
-    padding: 0 10px;
-    cursor: pointer;
+    padding: 6px;
 
     svg {
-      color: var(--red);
-      margin-right: 10px;
+      margin: 0 6px;
     }
   }
 

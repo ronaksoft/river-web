@@ -186,8 +186,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            addMemberDialogEnable, avatarMenuAnchorEl, group, page,
-            peer, participants, title, titleEdit, moreAnchorEl,
+            addMemberDialogEnable, avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl,
             dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto, shareMediaEnabled
         } = this.state;
         const isAdmin = group ? hasAuthority(group, false) : false;
@@ -264,6 +263,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                     <InputAdornment position="end">
                                                         <IconButton
                                                             onClick={this.onTitleConfirmHandler}
+                                                            className="adornment-button"
                                                         >
                                                             {Boolean(group.title === title) ? <CloseRounded/> :
                                                                 <CheckRounded/>}
@@ -338,8 +338,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         <AddRounded/> {i18n.t('peer_info.add_member')}
                                     </div>}
                                 </div>}
-                                <div className="leave-group kk-card" onClick={this.leaveGroupHandler}>
-                                    <ExitToAppRounded/> {i18n.t('peer_info.leave_the')} '{group ? group.title : ''}'
+                                <div className="leave-group kk-card">
+                                    <Button color="secondary" fullWidth={true} onClick={this.leaveGroupHandler}>
+                                        <ExitToAppRounded/> {i18n.t('peer_info.leave_the')} '{group ? group.title : ''}'
+                                    </Button>
                                 </div>
                             </div>
                         </Scrollbars>

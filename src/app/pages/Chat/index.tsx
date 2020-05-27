@@ -3057,8 +3057,12 @@ class Chat extends React.Component<IProps, IState> {
     /* Message on drop files handler */
     private messageDropHandler = (files: File[]) => {
         if (this.uploaderRef && this.peer) {
-            const isFile = files.some((o) => getUploaderInput(o.type) === 'file');
-            this.uploaderRef.openDialog(this.peer, files, {isFile});
+            let options: IUploaderOptions = {};
+            if (this.chatInputRef) {
+                options = this.chatInputRef.getUploaderOptions();
+            }
+            options.isFile = files.some((o) => getUploaderInput(o.type) === 'file');
+            this.uploaderRef.openDialog(this.peer, files, options);
         }
     }
 
@@ -4459,7 +4463,7 @@ class Chat extends React.Component<IProps, IState> {
             geoData.setLong(location.long);
             geoData.setCaption(location.caption || '');
             geoData.setEntitiesList(location.entities || []);
-            rtl =  this.rtlDetector.direction(location.caption || '');
+            rtl = this.rtlDetector.direction(location.caption || '');
             mediaData = geoData.toObject();
             media = geoData.serializeBinary();
             mediaType = InputMediaType.INPUTMEDIATYPEGEOLOCATION;

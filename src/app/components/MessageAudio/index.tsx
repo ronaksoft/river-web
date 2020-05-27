@@ -152,7 +152,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
     private audioActionClickHandler = (id: number) => (e: any) => {
         const {playing} = this.state;
         if (!playing) {
-            this.audioPlayer.play(id);
+            this.audioPlayer.play(id, true);
         } else {
             this.audioPlayer.pause(id);
         }

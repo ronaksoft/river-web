@@ -81,6 +81,7 @@ export default class AudioPlayer {
     private updateDurationFn?: (info: IAudioInfo, duration: number) => void;
     private playTimeout: any = null;
     private pauseTimeout: any = null;
+    private active: boolean = false;
 
     private constructor() {
         this.audio = document.createElement('audio');
@@ -92,6 +93,13 @@ export default class AudioPlayer {
     * */
     public setInstantVoice(blob: Blob, callback?: any) {
         this.prepareInstantAudio(blob, callback);
+    }
+
+    public setActive(active: boolean) {
+        this.active = active;
+        if (!active && this.audio) {
+            this.audio.src = '';
+        }
     }
 
     public getMusicPlayList() {
@@ -133,6 +141,9 @@ export default class AudioPlayer {
 
     /* Add audio to playlist */
     public addToPlaylist(messageId: number, peerId: string, fileId: string, userId: string, downloaded: boolean, mediaInfo?: IMediaInfo) {
+        if (messageId < 0) {
+            return;
+        }
         if (this.playingFromPeerId && this.playingFromPeerId !== peerId) {
             if (this.backUpPeerId !== peerId) {
                 this.backUpTracks = {};
@@ -264,6 +275,8 @@ export default class AudioPlayer {
                     clearInterval(this.pauseTimeout);
                     clearInterval(this.playTimeout);
                 }
+            }).catch((err) => {
+                window.console.log(err);
             });
         } else {
             if (!this.audio) {
@@ -286,7 +299,7 @@ export default class AudioPlayer {
                     this.stopPlayerInterval();
                     this.setState(messageId, 'pause', 0);
                     if (messageId !== C_INSTANT_AUDIO) {
-                        this.next();
+                        this.next(true);
                     }
                 };
             });
@@ -506,7 +519,7 @@ export default class AudioPlayer {
                     };
                     this.audio.onloadeddata = (e) => {
                         this.currentTrack = messageId;
-                        this.play(messageId);
+                        this.play(messageId, true);
                         resolve();
                     };
                     this.audio.onerror = (err) => {
@@ -521,11 +534,17 @@ export default class AudioPlayer {
                         reject(err);
                     };
                     this.audio.onpause = () => {
+                        if (!this.active) {
+                            return;
+                        }
                         this.pauseTimeout = setTimeout(() => {
                             this.pause(messageId);
                         }, 100);
                     };
                     this.audio.onplay = () => {
+                        if (!this.active) {
+                            return;
+                        }
                         this.playTimeout = setTimeout(() => {
                             this.play(messageId);
                         }, 100);

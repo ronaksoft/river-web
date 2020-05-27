@@ -22,7 +22,7 @@ import {
     InsertDriveFileRounded,
     MusicNoteRounded,
     PersonRounded, PlayArrowRounded,
-    RecordVoiceOverRounded, VisibilityRounded,
+    RecordVoiceOverRounded, PageviewRounded,
 } from "@material-ui/icons";
 import LabelRepo from "../../repository/label";
 import {Link} from "react-router-dom";
@@ -110,6 +110,7 @@ const LabelBodyAudio = ({message}: IProps) => {
             <div className="duration">
                 {getDuration(info.duration || 0)}
             </div>
+            {(info.title || '').length > 0 && <div className="title">{info.title}</div>}
         </div> : <div className="label-message-info">
             <div className="icon">
                 <MusicNoteRounded/>
@@ -171,7 +172,7 @@ const viewDocumentHandler = (message: IMessage) => (e: any) => {
     e.stopPropagation();
     e.preventDefault();
     // @ts-ignore
-    const el = e.currentTarget.parentElement.parentElement.querySelector('.thumbnail');
+    const el = e.currentTarget.querySelector('.thumbnail');
     const info = getMediaInfo(message);
     const doc: IDocument = {
         anchor: 'label',
@@ -200,6 +201,10 @@ const viewDocumentHandler = (message: IMessage) => (e: any) => {
     DocumentViewerService.getInstance().loadDocument(doc);
 };
 
+const showHandler = (e: any) => {
+    e.stopPropagation();
+};
+
 const LabelBodyMedia = ({message, onAction}: IProps) => {
     const info = getMediaInfo(message);
     const withBlur = (info.height / info.width) > 1 || Math.max(info.width, info.height) < 96;
@@ -214,7 +219,8 @@ const LabelBodyMedia = ({message, onAction}: IProps) => {
         }
     };
     return <>
-        <div className={`label-message-media item_${message.id || 0}`} style={{height: `${height}px`}}>
+        <div className={`label-message-media item_${message.id || 0}`} style={{height: `${height}px`}}
+             onClick={viewDocumentHandler(message)}>
             {withBlur ? <><CachedPhoto className="thumbnail-blur" fileLocation={info.thumbFile} blur={10}/>
                     <CachedPhoto className="thumbnail blur-top" onLoad={mediaLoadHandler}
                                  fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/></> :
@@ -229,8 +235,8 @@ const LabelBodyMedia = ({message, onAction}: IProps) => {
                 </div>
             </>}
             <div className="media-actions">
-                <IconButton onClick={viewDocumentHandler(message)}>
-                    <VisibilityRounded/>
+                <IconButton size="small" onClick={showHandler}>
+                    <PageviewRounded/>
                 </IconButton>
             </div>
         </div>

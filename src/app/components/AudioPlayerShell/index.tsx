@@ -299,7 +299,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         this.setState({
             playState: 'play',
         });
-        this.audioPlayer.play(this.messageId);
+        this.audioPlayer.play(this.messageId, true);
     }
 
     private pauseHandler = () => {
@@ -327,10 +327,11 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         });
     }
 
-    private openPlayer(open?: boolean) {
+    private openPlayer(open: boolean) {
         if (!this.shellRef) {
             return;
         }
+        this.audioPlayer.setActive(open);
         if (open === undefined) {
             this.shellRef.classList.toggle('open');
             this.open = !this.open;
@@ -470,7 +471,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         if (this.audioPlayer.isPlaying(id)) {
             this.audioPlayer.pause(id);
         } else {
-            this.audioPlayer.play(id);
+            this.audioPlayer.play(id, true);
         }
     }
 

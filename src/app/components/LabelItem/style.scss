@@ -120,7 +120,9 @@
         position: absolute;
         top: 2px;
         right: 2px;
+        padding: 2px;
         z-index: 15;
+        background-color: transparent;
 
         svg {
           color: var(--white);
@@ -211,7 +213,7 @@
       }
     }
 
-    .duration {
+    .duration, .title {
       position: absolute;
       top: 4px;
       left: 4px;
@@ -221,6 +223,18 @@
       color: var(--white);
       font-size: 10px;
       white-space: nowrap;
+    }
+
+    .title {
+      top: auto;
+      bottom: 4px;
+      font-size: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 256px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 

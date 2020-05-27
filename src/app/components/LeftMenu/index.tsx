@@ -150,7 +150,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             title: i18n.t('chat.log_out'),
         }];
 
-        this.mouseEnterDebounce = debounce(this.mouseEnterDebounceHandler, 512);
+        this.mouseEnterDebounce = debounce(this.mouseEnterDebounceHandler, 320);
         this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
     }
 

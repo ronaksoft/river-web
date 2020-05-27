@@ -228,6 +228,7 @@ interface IState {
     disableAuthority: number;
     droppedMessage: IMessage | null;
     emojiAnchorPos: PopoverPosition | undefined;
+    inputMode: 'voice' | 'text' | 'attachment' | 'default';
     isBot: boolean;
     mediaInputMode: 'media' | 'audio' | 'contact' | 'location' | 'file' | 'none';
     peer: InputPeer | null;
@@ -281,11 +282,9 @@ class ChatInput extends React.Component<IProps, IState> {
     private apiManager: APIManager;
     private mentions: IMention[] = [];
     private lastMentionsCount: number = 0;
-    private inputsRef: any = null;
     private waveRef: any = null;
     private canvasRef: any = null;
     private canvasCtx: CanvasRenderingContext2D | null = null;
-    private inputsMode: 'voice' | 'text' | 'attachment' | 'default' = 'default';
     private recorder: Recorder;
     private timerRef: any = null;
     private timerInterval: any = null;
@@ -335,6 +334,7 @@ class ChatInput extends React.Component<IProps, IState> {
             disableAuthority: 0x0,
             droppedMessage: null,
             emojiAnchorPos: undefined,
+            inputMode: 'default',
             isBot: false,
             mediaInputMode: 'none',
             peer: props.peer,
@@ -513,6 +513,15 @@ class ChatInput extends React.Component<IProps, IState> {
         clearTimeout(this.preventMessageSendTimeout);
     }
 
+    public getUploaderOptions(): IUploaderOptions {
+        return {
+            accept: this.getFileType(),
+            isFile: this.state.mediaInputMode === 'file',
+            message: this.state.previewMessage,
+            mode: this.state.previewMessageMode,
+        };
+    }
+
     public focus() {
         setTimeout(() => {
             if (!this.textarea) {
@@ -647,20 +656,20 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public clearPreviewMessage = (removeDraft?: boolean, cb?: any) => (e?: any) => {
-        if (this.state.previewMessageHeight > 0) {
+        if (this.state.previewMessageHeight > 0 || this.state.inputMode === 'voice') {
             this.setState({
                 previewMessageHeight: 0,
             });
             setTimeout(() => {
                 this.setState({
                     droppedMessage: null,
+                    inputMode: 'default',
                     previewMessage: null,
                     previewMessageMode: C_MSG_MODE.Normal,
                     voiceMode: 'up',
                 }, () => {
                     this.voiceStateChange();
                 });
-                this.setInputMode('default');
                 if (this.props.onPreviewMessageChange) {
                     this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
                 }
@@ -676,7 +685,7 @@ class ChatInput extends React.Component<IProps, IState> {
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
-            disableAuthority, textareaValue, voiceMode, user, botKeyboard, droppedMessage,
+            disableAuthority, user, botKeyboard, droppedMessage, inputMode,
         } = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
@@ -700,7 +709,7 @@ class ChatInput extends React.Component<IProps, IState> {
             return (<div className="input-placeholder" onClick={this.unblockHandler}>
                 <span className="btn">{i18n.t('general.unblock')}</span></div>);
         } else {
-            const isBot = this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data);
+            const isBot = Boolean(this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data));
             const hasPreviewMessage = Boolean(previewMessage || (droppedMessage && droppedMessage.messagetype && droppedMessage.messagetype !== C_MESSAGE_TYPE.Normal));
             return (
                 <div className="chat-input">
@@ -740,63 +749,11 @@ class ChatInput extends React.Component<IProps, IState> {
                     </div>}
                     <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
                     {Boolean(!selectable) && <>
-                        <div ref={this.inputsRefHandler} className={`inputs mode-${this.inputsMode}`}>
+                        <div className={`inputs mode-${inputMode}`}>
                             <div className="user">
                                 <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
                             </div>
-                            <div className={'input' + (this.state.rtl ? ' rtl' : ' ltr') + (isBot ? ' is-bot' : '')}>
-                                <div className="textarea-container">
-                                    <MentionInput
-                                        peer={this.state.peer}
-                                        isBot={this.state.isBot || false}
-                                        value={textareaValue}
-                                        onChange={this.textInputChangeHandler}
-                                        inputRef={this.textareaRefHandler}
-                                        onKeyUp={this.inputKeyUpHandler}
-                                        onKeyDown={this.inputKeyDownHandler}
-                                        className="mention"
-                                        placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
-                                        style={mentionInputStyle}
-                                        suggestionsPortalHost={this.mentionContainer}
-                                        onFocus={this.props.onFocus}
-                                    />
-                                </div>
-                                <div className={'emoji-wrapper' + (isBot ? ' is-bot' : '')}>
-                                    {isBot && <span className="icon" onClick={this.toggleBotKeyboardHandler}>
-                                        {botKeyboard ? <KeyboardRounded/> : <ViewModuleRounded/>}
-                                    </span>}
-                                    <span className="icon" onClick={this.emojiClickHandler}>
-                                        <SentimentSatisfiedRounded/>
-                                    </span>
-                                    <Popover open={Boolean(this.state.emojiAnchorPos)} anchorReference="anchorPosition"
-                                             anchorPosition={this.state.emojiAnchorPos} onClose={this.emojiHandleClose}
-                                             classes={{paper: 'emoji-menu-paper'}}
-                                    >
-                                        <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
-                                                     showPreview={false}/>
-                                    </Popover>
-                                </div>
-                            </div>
-                            <div className="voice-recorder">
-                                {Boolean(this.inputsMode === 'voice' && voiceMode !== 'play') && <>
-                                    <div className="timer">
-                                        <span className="bulb"/>
-                                        <span ref={this.timerRefHandler}>00:00</span>
-                                    </div>
-                                    <div className="preview">
-                                        <canvas ref={this.canvasRefHandler}/>
-                                    </div>
-                                    <div className="cancel"
-                                         onClick={this.voiceCancelHandler}>{i18n.t('general.cancel')}</div>
-                                </>}
-                                {Boolean(this.inputsMode === 'voice' && voiceMode === 'play') && <>
-                                    <div className="play-remove" onClick={this.voiceCancelHandler}>
-                                        <DeleteRounded/>
-                                    </div>
-                                    <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
-                                                 max={255.0}/>
-                                </>}
-                            </div>
+                            {this.getInputContent(isBot)}
                             <div className="input-actions">
                                 <div className="icon voice" onMouseDown={this.voiceMouseDownHandler}
                                      onMouseUp={this.voiceMouseUpHandler} onMouseEnter={this.voiceMouseEnterHandler}
@@ -811,7 +768,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                     <SelectMedia ref={this.selectMediaRefHandler} onClose={this.selectMediaCloseHandler}
                                                  onAction={this.selectMediaActionHandler}/>
                                 </div>
-                                <div className="icon send" onClick={this.submitMessage}>
+                                <div className="icon send" onClick={this.sendHandler}>
                                     <SendRounded/>
                                 </div>
                             </div>
@@ -863,6 +820,73 @@ class ChatInput extends React.Component<IProps, IState> {
                     </div>}
                 </div>
             );
+        }
+    }
+
+    private getInputContent(isBot: boolean) {
+        const {inputMode, textareaValue, botKeyboard, voiceMode} = this.state;
+        switch (inputMode) {
+            default:
+            case 'attachment':
+                return null;
+            case 'default':
+            case 'text':
+                return (
+                    <div className={'input' + (this.state.rtl ? ' rtl' : ' ltr') + (isBot ? ' is-bot' : '')}>
+                        <div className="textarea-container">
+                            <MentionInput
+                                peer={this.state.peer}
+                                isBot={this.state.isBot || false}
+                                value={textareaValue}
+                                onChange={this.textInputChangeHandler}
+                                inputRef={this.textareaRefHandler}
+                                onKeyUp={this.inputKeyUpHandler}
+                                onKeyDown={this.inputKeyDownHandler}
+                                className="mention"
+                                placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
+                                style={mentionInputStyle}
+                                suggestionsPortalHost={this.mentionContainer}
+                                onFocus={this.props.onFocus}
+                            />
+                        </div>
+                        <div className={'emoji-wrapper' + (isBot ? ' is-bot' : '')}>
+                            {isBot && <span className="icon" onClick={this.toggleBotKeyboardHandler}>
+                                {botKeyboard ? <KeyboardRounded/> : <ViewModuleRounded/>}
+                            </span>}
+                            <span className="icon" onClick={this.emojiClickHandler}>
+                                <SentimentSatisfiedRounded/>
+                            </span>
+                            <Popover open={Boolean(this.state.emojiAnchorPos)} anchorReference="anchorPosition"
+                                     anchorPosition={this.state.emojiAnchorPos} onClose={this.emojiCloseHandler}
+                                     classes={{paper: 'emoji-menu-paper'}}
+                            >
+                                <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
+                                             showPreview={false}/>
+                            </Popover>
+                        </div>
+                    </div>);
+            case 'voice':
+                return (
+                    <div className="voice-recorder">
+                        {Boolean(inputMode === 'voice' && voiceMode !== 'play') && <>
+                            <div className="timer">
+                                <span className="bulb"/>
+                                <span ref={this.timerRefHandler}>00:00</span>
+                            </div>
+                            <div className="preview">
+                                <canvas ref={this.canvasRefHandler}/>
+                            </div>
+                            <div className="cancel"
+                                 onClick={this.voiceCancelHandler}>{i18n.t('general.cancel')}</div>
+                        </>}
+                        {Boolean(inputMode === 'voice' && voiceMode === 'play') && <>
+                            <div className="play-remove" onClick={this.voiceCancelHandler}>
+                                <DeleteRounded/>
+                            </div>
+                            <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
+                                         max={255.0}/>
+                        </>}
+                    </div>);
         }
     }
 
@@ -923,7 +947,7 @@ class ChatInput extends React.Component<IProps, IState> {
         return 'loaded';
     }
 
-    private submitMessage = () => {
+    private sendHandler = () => {
         const {previewMessage, previewMessageMode} = this.state;
         const {entities, text} = generateEntities(this.textarea ? this.textarea.value : '', this.mentions);
         const droppedMessage = cloneDeep(this.state.droppedMessage);
@@ -1100,7 +1124,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.focus();
     }
 
-    private emojiHandleClose = () => {
+    private emojiCloseHandler = () => {
         this.setState({
             emojiAnchorPos: undefined,
         });
@@ -1238,7 +1262,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.textarea) {
             return;
         }
-        const {droppedMessage} = this.state;
+        const {droppedMessage, inputMode} = this.state;
         let lines = 1;
         const nodeInfo = measureNodeHeight(this.textarea, 12312, false, 1, 12);
         if (nodeInfo) {
@@ -1258,11 +1282,11 @@ class ChatInput extends React.Component<IProps, IState> {
             this.lastLines = lines;
         }
         if (!Boolean(droppedMessage) && this.textarea.value.length === 0) {
-            if (this.inputsMode !== 'default') {
+            if (inputMode !== 'default') {
                 this.setInputMode('default');
             }
         } else {
-            if (this.inputsMode !== 'text') {
+            if (inputMode !== 'text') {
                 this.setInputMode('text');
             }
         }
@@ -1344,11 +1368,6 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    /* Inputs ref handler */
-    private inputsRefHandler = (ref: any) => {
-        this.inputsRef = ref;
-    }
-
     /* Wave ref handler */
     private waveRefHandler = (ref: any) => {
         this.waveRef = ref;
@@ -1403,7 +1422,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 const data = new Uint8Array(audioAnalyser.frequencyBinCount);
 
                 const loop = () => {
-                    if (this.inputsMode !== 'voice') {
+                    if (this.state.inputMode !== 'voice') {
                         return;
                     }
                     if (this.state.voiceMode !== 'lock' && this.state.voiceMode !== 'down') {
@@ -1576,8 +1595,8 @@ class ChatInput extends React.Component<IProps, IState> {
     private voiceCancelHandler = () => {
         this.voiceCanceled = true;
         this.voiceRecordEnd();
-        this.setInputMode('default');
         this.setState({
+            inputMode: 'default',
             voiceMode: 'up',
         }, () => {
             this.voiceStateChange();
@@ -1586,12 +1605,9 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Set input mode */
     private setInputMode(mode: 'voice' | 'text' | 'attachment' | 'default') {
-        if (!this.inputsRef) {
-            return;
-        }
-        this.inputsRef.classList.remove('mode-voice', 'mode-text', 'mode-attachment', 'mode-default');
-        this.inputsRef.classList.add(`mode-${mode}`);
-        this.inputsMode = mode;
+        this.setState({
+            inputMode: mode,
+        });
     }
 
     private visualize = (arr: Uint8Array, callback: () => void) => {
@@ -2190,7 +2206,9 @@ class ChatInput extends React.Component<IProps, IState> {
                         navigator.mediaDevices.getUserMedia({audio: true}).then(() => {
                             resolve(true);
                             this.microphonePermission = true;
-                            this.inputsMode = 'voice';
+                            this.setState({
+                                inputMode: 'voice',
+                            });
                         }).catch((err) => {
                             resolve(false);
                         });
