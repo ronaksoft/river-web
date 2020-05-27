@@ -920,6 +920,10 @@ html[theme="dark-blue"] {
       .attachment-preview-container .uploader-dropzone .slider-attachment .slide .image-actions {
         opacity: 1;
       }
+
+      .attachment-preview-container .uploader-dropzone .slider-attachment .slide .file-slide .file-container {
+        flex-direction: column;
+      }
     }
   }
 }
