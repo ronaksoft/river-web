@@ -10,6 +10,7 @@
 import FileRepo from '../../repository/file';
 import {clone} from 'lodash';
 import {IMediaInfo} from '../../components/MessageMedia';
+import MessageRepo from "../../repository/message";
 
 export interface IAudioEvent {
     currentTime: number;
@@ -73,6 +74,7 @@ export default class AudioPlayer {
     private currentTrack: number = 0;
     private playerInterval: any = null;
     private fileRepo: FileRepo;
+    private messageRepo: MessageRepo;
     private lastObjectUrl: string = '';
     private playingFromPeerId: string | undefined;
     private fastEnable: boolean = false;
@@ -86,6 +88,7 @@ export default class AudioPlayer {
     private constructor() {
         this.audio = document.createElement('audio');
         this.fileRepo = FileRepo.getInstance();
+        this.messageRepo = MessageRepo.getInstance();
     }
 
     /* Set instant audio file with blob
@@ -270,21 +273,32 @@ export default class AudioPlayer {
         if (this.currentTrack !== messageId && messageId !== C_INSTANT_AUDIO) {
             URL.revokeObjectURL(this.lastObjectUrl);
             this.stop(this.currentTrack);
-            this.prepareTrack(messageId).then(() => {
+            return this.prepareTrack(messageId).then(() => {
                 if (force) {
                     clearInterval(this.pauseTimeout);
                     clearInterval(this.playTimeout);
                 }
             }).catch((err) => {
-                window.console.log(err);
+                if (err === 'not found') {
+                    return this.messageRepo.get(messageId).then((res) => {
+                        if (res && this.tracks[messageId] && res.mediadata && res.mediadata.doc && res.mediadata.doc.id) {
+                            this.tracks[messageId].fileId = res.mediadata.doc.id;
+                            return this.prepareTrack(messageId);
+                        } else {
+                            throw Error('not found');
+                        }
+                    });
+                } else {
+                    throw err;
+                }
             });
         } else {
             if (!this.audio) {
-                return false;
+                return Promise.reject();
             }
-            this.audio.play().then(() => {
+            return this.audio.play().then(() => {
                 if (!this.audio) {
-                    return;
+                    return Promise.reject();
                 }
                 clearTimeout(this.playTimeout);
                 this.playTimeout = null;
@@ -302,9 +316,9 @@ export default class AudioPlayer {
                         this.next(true);
                     }
                 };
+                return Promise.resolve();
             });
         }
-        return true;
     }
 
     /* Pause audio */

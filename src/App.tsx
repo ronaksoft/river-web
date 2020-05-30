@@ -32,7 +32,7 @@ import ElectronService from "./app/services/electron";
 
 import './App.scss';
 
-export const C_VERSION = '0.32.36';
+export const C_VERSION = '0.32.37';
 export const C_ELECTRON_VERSION = '9.0.0';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
@@ -66,6 +66,7 @@ interface IState {
     errorMessage: string;
     hasUpdate: boolean;
     updateContent: string;
+    updateMode: string;
     desktopDownloadLink: string;
 }
 
@@ -96,6 +97,7 @@ class App extends React.Component<{}, IState> {
             errorMessage: `You are receiving "Auth Error", do you like to clear all site data?`,
             hasUpdate: false,
             updateContent: '',
+            updateMode: '',
         };
 
         this.mainRepo = MainRepo.getInstance();
@@ -189,22 +191,28 @@ class App extends React.Component<{}, IState> {
                 desktopDownloadLink: this.getDesktopLink(),
                 hasUpdate: true,
                 updateContent: md().render(text),
+                updateMode: 'notif',
             });
         }).catch(() => {
             this.setState({
                 desktopDownloadLink: this.getDesktopLink(),
                 hasUpdate: true,
                 updateContent: '',
+                updateMode: 'notif',
             });
         });
     }
 
     public onSuccess() {
-        //
+        this.setState({
+            hasUpdate: true,
+            updateContent: '',
+            updateMode: 'reload',
+        });
     }
 
     public render() {
-        const {alertOpen, clearingSiteData, errorMessage, hasUpdate, updateContent, desktopDownloadLink} = this.state;
+        const {alertOpen, clearingSiteData, errorMessage, hasUpdate, updateContent, desktopDownloadLink, updateMode} = this.state;
         return (
             <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                 <MuiThemeProvider theme={theme}>
@@ -244,27 +252,41 @@ class App extends React.Component<{}, IState> {
                             paper: 'confirm-dialog-paper'
                         }}
                     >
-                        <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                {I18n.t('chat.update_dialog.body')}
-                            </DialogContentText>
-                            {Boolean(updateContent !== '') && <DialogContentText>
-                                <div className="markdown-body" dangerouslySetInnerHTML={{__html: updateContent}}/>
-                            </DialogContentText>}
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.updateDialogCloseHandler} color="secondary">
-                                {I18n.t('general.cancel')}
-                            </Button>
-                            <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
-                                {I18n.t('chat.update_dialog.update')}
-                            </Button>
-                            {Boolean(desktopDownloadLink !== '') &&
-                            <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
-                                {I18n.tf('chat.update_dialog.download_desktop_version', '0.15.0')}
-                            </Button>}
-                        </DialogActions>
+                        {updateMode === 'notif' ? <>
+                            <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    {I18n.t('chat.update_dialog.body')}
+                                </DialogContentText>
+                                {Boolean(updateContent !== '') && <DialogContentText>
+                                    <div className="markdown-body" dangerouslySetInnerHTML={{__html: updateContent}}/>
+                                </DialogContentText>}
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={this.updateDialogCloseHandler} color="secondary">
+                                    {I18n.t('general.ok')}
+                                </Button>
+                                {Boolean(desktopDownloadLink !== '') &&
+                                <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
+                                    {I18n.tf('chat.update_dialog.download_desktop_version', '0.15.0')}
+                                </Button>}
+                            </DialogActions>
+                        </> : <>
+                            <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    {I18n.t('chat.update_dialog.reload_text')}
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={this.updateDialogCloseHandler} color="secondary">
+                                    {I18n.t('general.cancel')}
+                                </Button>
+                                <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
+                                    {I18n.t('chat.update_dialog.reload')}
+                                </Button>
+                            </DialogActions>
+                        </>}
                     </Dialog>
                 </MuiThemeProvider>
             </div>

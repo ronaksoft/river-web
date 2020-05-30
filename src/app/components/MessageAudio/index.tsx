@@ -68,7 +68,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
         this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (newProps.message) {
             const mInfo = getMediaInfo(newProps.message);
             if (this.lastId !== newProps.message.id || this.fileId !== mInfo.file.fileid) {

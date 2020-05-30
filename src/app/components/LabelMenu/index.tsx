@@ -12,7 +12,7 @@ import {
     KeyboardBackspaceRounded,
     LabelRounded,
     EditRounded,
-    DeleteRounded, SearchRounded, AddRounded,
+    DeleteRounded, SearchRounded, AddRounded, AddCircle,
 } from '@material-ui/icons';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton/IconButton';
@@ -203,9 +203,12 @@ class LabelMenu extends React.Component<IProps, IState> {
                                 </div>
                             </Scrollbars>
                         </div>}
-                        {Boolean(list.length === 0 && !loading) && <div className="label-container label-placeholder">
-                            <LabelRounded/>
-                            {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
+                        {Boolean(list.length === 0 && !loading) &&
+                        <div className="label-container fill-list">
+                            <div className="label-placeholder" onClick={this.addLabelHandler}>
+                                <AddCircle/>
+                                {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
+                            </div>
                         </div>}
                     </div>
                     {Boolean(label) && <div className="page page-2">
@@ -422,7 +425,8 @@ class LabelMenu extends React.Component<IProps, IState> {
                                     <CircularProgress size={32} thickness={3} color="inherit"/>
                                 </div>}
                                 {labelList.map((message, index) => {
-                                    return (<LabelMessageItem key={message.id || 0} message={message} onAction={this.props.onAction}/>);
+                                    return (<LabelMessageItem key={message.id || 0} message={message}
+                                                              onAction={this.props.onAction}/>);
                                 })}
                                 {labelLoading && <div key="label-item-loading" className="label-item-loading">
                                     <CircularProgress size={32} thickness={3} color="inherit"/>

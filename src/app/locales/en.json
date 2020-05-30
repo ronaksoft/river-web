@@ -108,7 +108,9 @@
       "body": "A new version is available",
       "update": "Update",
       "changelog": "Changelog",
-      "download_desktop_version": "Download desktop version {0}"
+      "download_desktop_version": "Download desktop version {0}",
+      "reload": "Reload",
+      "reload_text": "Successfully updated"
     }
   },
   "peer_info": {

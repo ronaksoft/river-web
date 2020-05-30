@@ -565,7 +565,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
         };
         const menuItems: any[] = [];
         const peerType = searchItems[moreIndex].peertype;
-        const dialog = this.state.items[moreIndex];
+        const dialog = searchItems[moreIndex];
         if (!dialog) {
             return;
         }

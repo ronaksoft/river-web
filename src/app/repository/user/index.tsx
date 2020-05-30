@@ -310,7 +310,7 @@ export default class UserRepo {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemUsername) {
                 return [] as User.AsObject[];
             } else {
-                return err;
+                throw err;
             }
         });
     }

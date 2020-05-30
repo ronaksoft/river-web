@@ -19,6 +19,13 @@ import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import SettingsConfigManager from '../../services/settingsConfigManager';
 import {ThemeChanged} from "../SettingsMenu";
 import {EventMouseUp} from "../../services/events";
+import {
+    DocumentAttributeAudio,
+    DocumentAttributeType,
+    MediaDocument
+} from "../../services/sdk/messages/chat.core.message.medias_pb";
+import {from4bitResolution} from "../ChatInput/utils";
+import {base64ToU8a} from "../../services/sdk/fileManager/http/utils";
 
 import './style.scss';
 
@@ -40,8 +47,38 @@ export interface IVoicePlayerData {
     duration: number;
     state: 'pause' | 'progress' | 'download';
     voice?: Blob;
-    voiceId?: string;
+    fileId?: string;
 }
+
+export const getVoiceInfo = (message: IMessage): IVoicePlayerData => {
+    const info: IVoicePlayerData = {
+        bars: [],
+        duration: 0,
+        fileId: '',
+        state: 'download',
+    };
+    const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+    if (!messageMediaDocument) {
+        return info;
+    }
+    info.fileId = messageMediaDocument.doc.id;
+    if (!message.attributes) {
+        return info;
+    }
+    messageMediaDocument.doc.attributesList.forEach((item, index) => {
+        if (item.type === DocumentAttributeType.ATTRIBUTETYPEAUDIO) {
+            if (message.attributes && message.attributes[index]) {
+                const attr: DocumentAttributeAudio.AsObject = message.attributes[index];
+                info.duration = attr.duration || 0;
+                if (attr.waveform) {
+                    // @ts-ignore
+                    info.bars = from4bitResolution(Array.from(base64ToU8a(attr.waveform)));
+                }
+            }
+        }
+    });
+    return info;
+};
 
 class VoicePlayer extends React.PureComponent<IProps, IState> {
     private bars: number[] = [];
@@ -75,7 +112,6 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private broadcaster: Broadcaster;
     private settingsConfigManager: SettingsConfigManager;
     private objectUrlImages: string[] = [];
-    private readonly lastId: number = 0;
     private themeChangeEvent: any = null;
 
     constructor(props: IProps) {
@@ -94,10 +130,6 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
         this.broadcaster = Broadcaster.getInstance();
         this.settingsConfigManager = SettingsConfigManager.getInstance();
-
-        if (props.message) {
-            this.lastId = props.message.id || 0;
-        }
     }
 
     public componentDidMount() {
@@ -108,19 +140,18 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         }
     }
 
-    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
-        if (newProps.message) {
-            if (this.lastId !== newProps.message.id) {
-                if (this.lastId !== newProps.message.id && this.lastId < 0) {
-                    this.audioPlayer.removeFromPlaylist(this.lastId);
-                    this.removeAllListeners();
-                    if (newProps.message && (newProps.message.id || 0) > 0) {
-                        this.eventReferences.push(this.audioPlayer.listen(newProps.message.id || 0, this.audioPlayerHandler));
-                    }
-                }
-            }
-        }
-    }
+    // public UNSAFE_componentWillReceiveProps(newProps: IProps) {
+    //     window.console.log(newProps);
+    //     if (newProps.message) {
+    //         if (this.lastId !== newProps.message.id && this.lastId < 0) {
+    //             this.audioPlayer.removeFromPlaylist(this.lastId);
+    //             this.removeAllListeners();
+    //             if (newProps.message && (newProps.message.id || 0) > 0) {
+    //                 this.eventReferences.push(this.audioPlayer.listen(newProps.message.id || 0, this.audioPlayerHandler));
+    //             }
+    //         }
+    //     }
+    // }
 
     public componentWillUnmount() {
         this.removeAllListeners();
@@ -149,12 +180,13 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             this.audioPlayer.setInstantVoice(this.voice);
         }
         this.setVoiceState(data.state);
-        if (data.voiceId) {
-            this.voiceId = data.voiceId;
+        if (data.fileId) {
+            this.voiceId = data.fileId;
             if (message) {
                 this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
                 this.removeAllListeners();
                 this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
+                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
             }
         }
     }
@@ -206,15 +238,6 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             if (this.voiceId) {
                 this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
             }
-        }
-    }
-
-    /* Set voice Id */
-    public setVoiceId(id?: string) {
-        const {message} = this.props;
-        this.voiceId = id;
-        if (this.voiceId && message) {
-            this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
         }
     }
 
@@ -362,13 +385,18 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private playVoiceHandler = () => {
         const {message} = this.props;
         if (this.voice) {
-            if (!this.audioPlayer.play(C_INSTANT_AUDIO)) {
+            this.audioPlayer.play(C_INSTANT_AUDIO).catch(() => {
+                if (!this.voice) {
+                    return;
+                }
                 this.audioPlayer.setInstantVoice(this.voice, () => {
                     this.audioPlayer.play(C_INSTANT_AUDIO);
                 });
-            }
+            });
         } else if (this.voiceId && message) {
-            this.audioPlayer.play(message.id || 0);
+            this.audioPlayer.play(message.id || 0, true).catch((err) => {
+                window.console.log(err, message);
+            });
         }
     }
 
@@ -501,11 +529,14 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             v = progress.progress * 73;
         } else if (progress.state === 'complete') {
             v = 75;
+            this.setVoiceState('pause');
         }
         if (v < 3) {
             v = 3;
         }
-        this.circleProgressRef.style.strokeDasharray = `${v} 75`;
+        if (this.circleProgressRef) {
+            this.circleProgressRef.style.strokeDasharray = `${v} 75`;
+        }
     }
 
     /* Remove all listeners */

@@ -12,7 +12,6 @@ import {IMessage} from '../../repository/message/interface';
 import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {
     DocumentAttributeAudio,
-    DocumentAttributeFile,
     DocumentAttributePhoto,
     DocumentAttributeType, DocumentAttributeVideo,
     MediaDocument
@@ -147,9 +146,6 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             } else {
                 info.performer = 'Unknown';
             }
-        } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
-            const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
-            info.fileName = docAttr.filename || '';
         }
     });
     return info;

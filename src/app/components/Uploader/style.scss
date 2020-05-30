@@ -770,6 +770,10 @@ html[theme="dark-night"] {
     .attachment-preview-container {
       .attachment-details-container {
         .caption-container {
+          .caption-input-container textarea {
+            color: var(--light);
+          }
+
           .suggestion-list-container-zero {
             .suggestion-list-container {
               background-color: var(--dark-low);
@@ -852,6 +856,10 @@ html[theme="dark-blue"] {
     .attachment-preview-container {
       .attachment-details-container {
         .caption-container {
+          .caption-input-container textarea {
+            color: var(--light);
+          }
+
           .suggestion-list-container-zero {
             .suggestion-list-container {
               background-color: var(--dark-blue-low);

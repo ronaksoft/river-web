@@ -1430,7 +1430,7 @@ class Chat extends React.Component<IProps, IState> {
         let minId: number = 0;
         this.setChatView(true);
 
-        const readyList = [null, null];
+        const readyList: any[] = [null, null];
         const deferFn = () => {
             readyList.pop();
             if (readyList.length === 0) {
@@ -1884,7 +1884,6 @@ class Chat extends React.Component<IProps, IState> {
         if (gapNumber) {
             this.messageLoadMoreBeforeHandler(gapNumber);
         }
-        // this.isLoading = true;
         this.setScrollMode('none');
         this.messageRef.setMessages(this.messages);
         this.messageRepo.lazyUpsert([message]);

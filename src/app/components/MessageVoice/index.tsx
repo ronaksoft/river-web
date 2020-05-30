@@ -10,12 +10,8 @@
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
-import VoicePlayer from '../VoicePlayer';
-import {
-    DocumentAttributeAudio, DocumentAttributeType, MediaDocument,
-} from '../../services/sdk/messages/chat.core.message.medias_pb';
-import {base64ToU8a} from '../../services/sdk/fileManager/http/utils';
-import {from4bitResolution} from '../ChatInput/utils';
+import VoicePlayer, {getVoiceInfo} from '../VoicePlayer';
+import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 
 import './style.scss';
 
@@ -29,10 +25,10 @@ interface IState {
     message: IMessage;
 }
 
-class MessageVoice extends React.PureComponent<IProps, IState> {
+class MessageVoice extends React.Component<IProps, IState> {
     private voicePlayerRef: VoicePlayer | undefined;
     private lastId: number = 0;
-    private voiceId: string = '';
+    private fileId: string = '';
     private downloaded: boolean = false;
     private contentRead: boolean = false;
 
@@ -52,59 +48,36 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
 
     public componentDidMount() {
         const {message} = this.state;
-        const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-        if (!message || !messageMediaDocument.doc) {
-            return;
-        }
-        const info: {
-            bars: number[],
-            duration: number,
-        } = {
-            bars: [],
-            duration: 0,
-        };
-        messageMediaDocument.doc.attributesList.forEach((item, index) => {
-            if (item.type === DocumentAttributeType.ATTRIBUTETYPEAUDIO) {
-                if (message.attributes && message.attributes[index]) {
-                    const attr: DocumentAttributeAudio.AsObject = message.attributes[index];
-                    info.duration = attr.duration || 0;
-                    if (attr.waveform) {
-                        // @ts-ignore
-                        info.bars = from4bitResolution(Array.from(base64ToU8a(attr.waveform)));
-                    }
-                }
-            }
-        });
-        this.voiceId = messageMediaDocument.doc.id || '';
+        const info = getVoiceInfo(message);
         if (this.voicePlayerRef) {
             this.voicePlayerRef.setData({
                 bars: info.bars,
                 duration: info.duration,
+                fileId: info.fileId,
                 state: this.getVoiceState(message),
-                voiceId: messageMediaDocument.doc.id,
             });
         }
     }
 
     public USAFE_componentWillReceiveProps(newProps: IProps) {
         const {message} = this.state;
-        if (newProps.message && this.lastId !== newProps.message.id) {
+        const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
+        if ((newProps.message && this.lastId !== newProps.message.id) || (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.fileId)) {
+            const info = getVoiceInfo(message);
             this.lastId = newProps.message.id || 0;
+            this.fileId = info.fileId || '';
             this.setState({
                 message: newProps.message,
             }, () => {
                 if (this.voicePlayerRef) {
-                    this.voicePlayerRef.setVoiceState(this.getVoiceState(message));
+                    this.voicePlayerRef.setData({
+                        bars: info.bars,
+                        duration: info.duration,
+                        fileId: info.fileId,
+                        state: this.getVoiceState(message),
+                    });
                 }
-                this.getVoiceId();
             });
-        }
-        const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
-        if (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.voiceId) {
-            this.voiceId = messageMediaDocument.doc.id || '';
-            if (this.voicePlayerRef) {
-                this.voicePlayerRef.setVoiceId(this.voiceId);
-            }
         }
         if ((newProps.message.downloaded || false) !== this.downloaded) {
             this.downloaded = (newProps.message.downloaded || false);
@@ -131,16 +104,6 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
                 {!message.contentread && <span className="unread-bullet"/>}
             </div>
         );
-    }
-
-    /* Get voice data */
-    private getVoiceId() {
-        if (!this.voicePlayerRef) {
-            return;
-        }
-        const {message} = this.state;
-        const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-        this.voicePlayerRef.setVoiceId(messageMediaDocument.doc.id);
     }
 
     /* Voice Player ref handler */

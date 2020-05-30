@@ -489,9 +489,15 @@ export default class MessageRepo {
                     fnEarlyCallback(res);
                     return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit - res.length);
                 } else {
+                    if (fnEarlyCallback) {
+                        fnEarlyCallback([]);
+                    }
                     return this.completeMessagesLimitFromRemote(peer, res, lastId, asc, safeLimit - res.length);
                 }
             } else {
+                if (fnEarlyCallback) {
+                    fnEarlyCallback([]);
+                }
                 return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit);
             }
         });
