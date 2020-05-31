@@ -434,7 +434,8 @@
     "no_result": "No Result!",
     "label_list": "Label List",
     "max_label_warning": "You can't add more than 20 labels",
-    "create_label": "Create Label"
+    "create_label": "Create Label",
+    "edit_label": "Edit Label"
   },
   "bot": {
     "start_bot": "Start Bot",

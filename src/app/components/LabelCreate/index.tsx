@@ -67,7 +67,7 @@ class LabelCreate extends React.Component<IProps, IState> {
     public render() {
         const {open, label, loading} = this.state;
         return (
-            <SettingsModal open={open} title={i18n.t('label.create_label')}
+            <SettingsModal open={open} title={i18n.t(label.id === 0 ? 'label.create_label' : 'label.edit_label')}
                            icon={<LabelOutlined/>}
                            onClose={this.modalCloseHandler}
                            height="370px"
@@ -114,6 +114,7 @@ class LabelCreate extends React.Component<IProps, IState> {
     private modalCloseHandler = () => {
         this.setState({
             label: cloneDeep(emptyLabel),
+            loading: false,
             open: false,
         });
         if (this.props.onClose) {
@@ -148,10 +149,10 @@ class LabelCreate extends React.Component<IProps, IState> {
         if (label.id === 0) {
             this.apiManager.labelCreate(label.name || '', label.colour || '').then((res) => {
                 this.labelRepo.upsert([res]);
-                this.modalCloseHandler();
                 if (this.props.onDone) {
                     this.props.onDone(res);
                 }
+                this.modalCloseHandler();
             }).catch((err) => {
                 if (this.props.onError && err.code === C_ERR.ErrCodeTooMany && err.items === C_ERR_ITEM.ErrItemLabel) {
                     this.props.onError(i18n.t('label.max_label_warning'));

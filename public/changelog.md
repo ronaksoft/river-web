@@ -1,3 +1,6 @@
+## 0.32.38
+* Bug fixes and performance improvements 
+
 ## 0.32.37
 * Uploader bug fixed
 * Voice bug fixed

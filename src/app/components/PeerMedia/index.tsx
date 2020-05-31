@@ -542,7 +542,7 @@ class PeerMedia extends React.Component<IProps, IState> {
         const {items} = this.state;
         const item = items[index];
         if (!items[index].playing) {
-            this.audioPlayer.addToPlaylist(id, this.peerId, item.info.file.fileid || '', item.userId, true);
+            this.audioPlayer.addToPlaylist(id, this.peerId, item.info.file.fileid || '', item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
             this.audioPlayer.play(id);
         } else {
             this.audioPlayer.pause(id);

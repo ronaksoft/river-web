@@ -430,7 +430,8 @@
     "label_list": "لیست برچسب‌ها",
     "max_label_warning": "شما نمی‌توانید بیش از ۲۰ برچسب ایجاد نمایید",
     "no_label": "بدون برچسب",
-    "create_label": "برچسب جدید"
+    "create_label": "برچسب جدید",
+    "edit_label": "ویرایش برچسب"
   },
   "bot": {
     "start_bot": "فعال کردن Bot",
