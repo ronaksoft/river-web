@@ -1,3 +1,8 @@
+## 0.32.39
+* Bug fixes and performance improvements
+* MessagePreview length bug fixed
+* Voice player updated
+
 ## 0.32.38
 * Bug fixes and performance improvements  
 * Voice bug fixed

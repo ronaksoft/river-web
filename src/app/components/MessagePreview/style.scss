@@ -137,11 +137,27 @@
   }
 }
 
+.column-center.shrink {
+  .messages-inner.large-mode {
+    .message-preview {
+      max-width: calc(100vw - 924px);
+    }
+  }
+}
+
 @media screen and (min-width: 1400px) {
   .App:not(.is-electron) {
     .messages-inner.large-mode {
       .message-preview {
         max-width: 794px;
+      }
+    }
+
+    .column-center.shrink {
+      .messages-inner.large-mode {
+        .message-preview {
+          max-width: 476px;
+        }
       }
     }
   }
