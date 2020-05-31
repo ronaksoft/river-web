@@ -27,8 +27,6 @@ interface IProps {
     forceDoubleTick: boolean;
 }
 
-const labelColors = LabelRepo.labelColors;
-
 const GetStatus = ({id, readId, status, forceDoubleTick, markAsSent}: { id: number, readId: number, status: boolean, forceDoubleTick: boolean, markAsSent?: boolean }) => {
     if (id && status) {
         if (id < 0 && !markAsSent) {
@@ -46,6 +44,7 @@ const GetStatus = ({id, readId, status, forceDoubleTick, markAsSent}: { id: numb
 };
 
 const GetLabels = ({labelIds}: { labelIds: number[] }) => {
+    const labelColors = LabelRepo.labelColors;
     let cnt = 0;
     return (
         <div className={'message-label ' + (labelIds.length > 1 ? 'single-label' : 'many-label')}>
@@ -77,6 +76,6 @@ const MessageStatus = ({onDoubleClick, time, editedTime, forceDoubleTick, id, la
                        markAsSent={markAsSent}/>
         </div>
     );
-}
+};
 
 export default MessageStatus;

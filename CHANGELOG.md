@@ -1,3 +1,8 @@
+## 0.32.40
+* WebAssembly updated
+* Label bug fixed
+* Bug fixes and performance improvements
+
 ## 0.32.39
 * Bug fixes and performance improvements
 * MessagePreview length bug fixed

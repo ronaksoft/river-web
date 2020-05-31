@@ -32,7 +32,7 @@ import ElectronService from "./app/services/electron";
 
 import './App.scss';
 
-export const C_VERSION = '0.32.39';
+export const C_VERSION = '0.32.40';
 export const C_ELECTRON_VERSION = '9.0.0';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
@@ -264,7 +264,10 @@ class App extends React.Component<{}, IState> {
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={this.updateDialogCloseHandler} color="secondary">
-                                    {I18n.t('general.ok')}
+                                    {I18n.t('general.cancel')}
+                                </Button>
+                                <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
+                                    {I18n.t('chat.update_dialog.update')}
                                 </Button>
                                 {Boolean(desktopDownloadLink !== '') &&
                                 <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
