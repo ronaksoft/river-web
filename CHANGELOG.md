@@ -1,5 +1,8 @@
 ## 0.32.38
 * Bug fixes and performance improvements  
+* Voice bug fixed
+* Shared Media bug fixed
+* Create/Edit label bug fixed
 
 ## 0.32.37
 * Uploader bug fixed
