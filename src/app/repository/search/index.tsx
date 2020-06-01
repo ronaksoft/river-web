@@ -13,7 +13,10 @@ import UserRepo from '../user';
 import GroupRepo from '../group';
 import {IUser} from '../user/interface';
 import MessageRepo from "../message";
-import {differenceBy, uniqBy} from "lodash";
+import {differenceBy, find, uniqBy} from "lodash";
+import {ITopPeerItem} from "../topPeer/interface";
+import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../topPeer";
+import {PeerType} from "../../services/sdk/messages/chat.core.types_pb";
 
 export default class SearchRepo {
     public static getInstance() {
@@ -30,12 +33,14 @@ export default class SearchRepo {
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private messageRepo: MessageRepo;
+    private topPeerRepo: TopPeerRepo;
 
     public constructor() {
         this.dialogRepo = DialogRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.messageRepo = MessageRepo.getInstance();
+        this.topPeerRepo = TopPeerRepo.getInstance();
     }
 
     public searchIds({skip, limit, keyword}: any): Promise<string[]> {
@@ -118,7 +123,7 @@ export default class SearchRepo {
         return this.userRepo.getCurrentUserId();
     }
 
-    public searchAllMessages({keyword, labelIds}: { keyword: string, labelIds: number[] }, params: { after?: number, limit?: number}) {
+    public searchAllMessages({keyword, labelIds}: { keyword: string, labelIds: number[] }, params: { after?: number, limit?: number }) {
         return this.messageRepo.searchAll({keyword, labelIds}, params);
     }
 
@@ -153,5 +158,51 @@ export default class SearchRepo {
             users = differenceBy(users, ignoreUsers, 'id');
             callback(users);
         };
+    }
+
+    public getSearchTopPeers(type: TopPeerType, limit: number, onlyUser?: boolean): Promise<ITopPeerItem[]> {
+        return this.topPeerRepo.list(type, limit).then((res) => {
+            const promises: any[] = [];
+            const userIds: string[] = [];
+            const groupIds: string[] = [];
+            res.forEach((item) => {
+                if (!item.peer) {
+                    return;
+                }
+                if (item.peer.type === PeerType.PEERUSER) {
+                    userIds.push(item.peer.id || '0');
+                } else if (item.peer.type === PeerType.PEERGROUP && onlyUser !== true) {
+                    groupIds.push(item.peer.id || '0');
+                }
+            });
+            promises.push(this.userRepo.findInArray(userIds, 0, C_TOP_PEER_LEN));
+            promises.push(this.groupRepo.findInArray(groupIds, 0, C_TOP_PEER_LEN));
+            return Promise.all(promises).then((data) => {
+                const list: ITopPeerItem[] = [];
+                res.forEach((item) => {
+                    if (!item.peer) {
+                        return;
+                    }
+                    if (item.peer.type === PeerType.PEERUSER) {
+                        const t = find(data[0], {id: item.id});
+                        if (t) {
+                            list.push({
+                                item: t,
+                                type: PeerType.PEERUSER,
+                            });
+                        }
+                    } else if (item.peer.type === PeerType.PEERGROUP && onlyUser !== true) {
+                        const t = find(data[1], {id: item.id});
+                        if (t) {
+                            list.push({
+                                item: t,
+                                type: PeerType.PEERGROUP,
+                            });
+                        }
+                    }
+                });
+                return list;
+            });
+        });
     }
 }

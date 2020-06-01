@@ -29,9 +29,9 @@ import {SnackbarProvider} from 'notistack';
 import md from 'markdown-it';
 import {EventBeforeUnload, EventBlur, EventDragOver, EventDrop, EventFocus, EventMessage} from "./app/services/events";
 import ElectronService from "./app/services/electron";
+import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 
 import './App.scss';
-import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 
 export const C_VERSION = '0.32.40';
 export const C_ELECTRON_VERSION = '9.0.0';

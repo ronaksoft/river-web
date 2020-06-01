@@ -8,15 +8,19 @@
 */
 
 import {C_LOCALSTORAGE, C_MSG} from '../const';
+import {UpdateContainer, UpdateEnvelope, UserStatus} from '../messages/chat.core.types_pb';
 import {
-    UpdateContainer,
-    UpdateEnvelope,
-    UserStatus
-} from '../messages/chat.core.types_pb';
-import {
-    UpdateDialogPinned, UpdateDifference,
-    UpdateDraftMessage, UpdateDraftMessageCleared, UpdateGroupParticipantAdd, UpdateGroupParticipantDeleted,
-    UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
+    UpdateDialogPinned,
+    UpdateDifference,
+    UpdateDraftMessage,
+    UpdateDraftMessageCleared,
+    UpdateGroupParticipantAdd,
+    UpdateGroupParticipantDeleted,
+    UpdateGroupPhoto,
+    UpdateLabelDeleted,
+    UpdateLabelItemsAdded,
+    UpdateLabelItemsRemoved,
+    UpdateLabelSet,
     UpdateMessageEdited,
     UpdateMessageID,
     UpdateMessagesDeleted,
@@ -24,12 +28,13 @@ import {
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents, UpdateUserBlocked,
+    UpdateReadMessagesContents,
+    UpdateUserBlocked,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping,
 } from '../messages/chat.api.updates_pb';
-import {uniq, cloneDeep} from 'lodash';
+import {cloneDeep, uniq} from 'lodash';
 import MessageRepo, {getMediaDocument} from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';
 import {IDialog} from "../../../repository/dialog/interface";
@@ -48,6 +53,7 @@ import LabelRepo from "../../../repository/label";
 import FileRepo from "../../../repository/file";
 import CachedFileService from "../../cachedFileService";
 import {IFileMap} from "../../../repository/file/interface";
+import TopPeerRepo, {ITopPeerWithType, TopPeerType} from "../../../repository/topPeer";
 
 const C_MAX_UPDATE_DIFF = 5000;
 const C_DIFF_AMOUNT = 100;
@@ -115,6 +121,7 @@ interface ITransactionPayload {
     toCheckDialogIds: string[];
     updateId: number;
     users: { [key: string]: IUser };
+    topPeers: ITopPeerWithType[];
 }
 
 export default class UpdateManager {
@@ -159,6 +166,7 @@ export default class UpdateManager {
     private groupRepo: GroupRepo | undefined;
     private labelRepo: LabelRepo | undefined;
     private fileRepo: FileRepo | undefined;
+    private topPeerRepo: TopPeerRepo | undefined;
 
     // Cached File Service
     private cachedFileService: CachedFileService | undefined;
@@ -179,6 +187,7 @@ export default class UpdateManager {
             this.messageRepo = MessageRepo.getInstance();
             this.labelRepo = LabelRepo.getInstance();
             this.fileRepo = FileRepo.getInstance();
+            this.topPeerRepo = TopPeerRepo.getInstance();
 
             // Initialize cached file service
             this.cachedFileService = CachedFileService.getInstance();
@@ -486,6 +495,7 @@ export default class UpdateManager {
             randomMessageIds: [],
             removedMessages: {},
             toCheckDialogIds: [],
+            topPeers: [],
             updateId: data.maxupdateid || 0,
             users: {},
         };
@@ -585,6 +595,27 @@ export default class UpdateManager {
                     status: UserStatus.USERSTATUSONLINE,
                     status_last_modified: message.createdon,
                 });
+                // Update top peers
+                if (message.me) {
+                    const tp: ITopPeerWithType = {
+                        id: message.peerid || '0',
+                        lastupdate: message.createdon || 0,
+                        peer: {
+                            accesshash: updateNewMessage.accesshash,
+                            id: message.peerid || '0',
+                            type: message.peertype,
+                        },
+                        rate: 0,
+                        type: TopPeerType.Search,
+                    };
+                    if (message.fwdsenderid !== '0') {
+                        tp.type = TopPeerType.Forward;
+                        transaction.topPeers.push(tp);
+                    } else {
+                        tp.type = TopPeerType.Search;
+                        transaction.topPeers.push(tp);
+                    }
+                }
                 break;
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
@@ -1000,6 +1031,10 @@ export default class UpdateManager {
                     }
                     return keys;
                 }));
+            }
+            // Top Peers
+            if (this.topPeerRepo && transaction.topPeers.length > 0) {
+                promises.push(this.topPeerRepo.importBulkEmbedType(transaction.topPeers));
             }
             if (promises.length > 0) {
                 Promise.all(promises).then(() => {

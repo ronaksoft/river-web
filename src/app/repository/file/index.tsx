@@ -169,8 +169,7 @@ export default class FileRepo {
         });
         return this.db.fileMap.where('[id+clusterid]').anyOf(indexList).toArray().then((result) => {
             const createItems: IFileMap[] = differenceWith(fileMaps, result, (i1, i2) => i1.id === i2.id && i1.clusterid === i2.clusterid);
-            const updateItems: IFileMap[] = result;
-            updateItems.map((fileMap: IFileMap) => {
+            const updateItems: IFileMap[] = result.map((fileMap: IFileMap) => {
                 const t = find(fileMaps, {id: fileMap.id, clusterid: fileMap.clusterid});
                 if (t) {
                     if (t.msg_ids && fileMap.msg_ids) {

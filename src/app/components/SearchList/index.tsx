@@ -16,8 +16,13 @@ import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
 import {
-    InsertDriveFileOutlined, LocationOnOutlined, NotInterestedRounded, PeopleOutlined, PhotoOutlined,
-    RecordVoiceOverOutlined, VideocamOutlined,
+    InsertDriveFileOutlined,
+    LocationOnOutlined,
+    NotInterestedRounded,
+    PeopleOutlined,
+    PhotoOutlined,
+    RecordVoiceOverOutlined,
+    VideocamOutlined,
 } from '@material-ui/icons';
 import {IDialog} from '../../repository/dialog/interface';
 import SearchRepo from '../../repository/search';
@@ -32,6 +37,9 @@ import i18n from '../../services/i18n';
 import {VariableSizeList} from "react-window";
 import IsMobile from "../../services/isMobile";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
+import TopPeer from "../TopPeer";
+import {TopPeerType} from "../../repository/topPeer";
+import {IGroup} from "../../repository/group/interface";
 
 import './style.scss';
 
@@ -130,6 +138,12 @@ class SearchList extends React.Component<IProps, IState> {
 
     public render() {
         const {selectedInputPeers} = this.state;
+        const ids: string[] = [];
+        selectedInputPeers.forEach((peer) => {
+            if (peer.mode === 'contact' && peer.contact) {
+                ids.push(peer.contact.id || '');
+            }
+        });
         return (
             <div className="search-list">
                 <div className="search-input-container">
@@ -144,6 +158,8 @@ class SearchList extends React.Component<IProps, IState> {
                         classes={{}}
                     />
                 </div>
+                <TopPeer type={this.props.onlyContact ? TopPeerType.Search : TopPeerType.Forward} noTitle={true}
+                         onlyUser={this.props.onlyContact} onSelect={this.topPeerSelectHandler} hideIds={ids}/>
                 <div className="search-list-container">
                     {this.getWrapper()}
                 </div>
@@ -223,7 +239,7 @@ class SearchList extends React.Component<IProps, IState> {
             return (<Chip key={key} avatar={<UserAvatar id={value.contact.id} noDetail={true}
                                                         savedMessages={this.userId === value.contact.id}/>}
                           tabIndex={-1} label={<UserName id={value.contact.id} noDetail={true} unsafe={true}
-                                                         you={this.userId === value.contact.id}
+                                                         you={this.userId === value.contact.id} noIcon={true}
                                                          youPlaceholder={i18n.t('general.saved_messages')}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
         } else if (value.mode === 'dialog' && value.dialog) {
@@ -233,7 +249,8 @@ class SearchList extends React.Component<IProps, IState> {
                                                         savedMessages={this.userId === value.dialog.peerid}/>}
                           tabIndex={-1} label={<UserName id={value.dialog.peerid} noDetail={true} unsafe={true}
                                                          you={this.userId === value.dialog.peerid}
-                                                         youPlaceholder={i18n.t('general.saved_messages')} noIcon={true}/>}
+                                                         youPlaceholder={i18n.t('general.saved_messages')}
+                                                         noIcon={true}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
             } else if (value.dialog.peertype === PeerType.PEERGROUP) {
                 return (<Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid}/>} tabIndex={-1}
@@ -352,7 +369,7 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     /* Add item to selectedInputPeers */
-    private addItemHandler = (inputPeer: ISearchItem) => (e: any) => {
+    private addItemHandler = (inputPeer: ISearchItem) => (e?: any) => {
         const {selectedInputPeers} = this.state;
         if (!selectedInputPeers || !inputPeer) {
             return;
@@ -520,6 +537,16 @@ class SearchList extends React.Component<IProps, IState> {
                 };
             });
         });
+    }
+
+    private topPeerSelectHandler = (type: PeerType, item: IUser | IGroup) => {
+        if (type === PeerType.PEERUSER) {
+            this.addItemHandler({
+                contact: item as IUser,
+                id: item.id,
+                mode: 'contact',
+            })();
+        }
     }
 }
 

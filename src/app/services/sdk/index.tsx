@@ -913,6 +913,10 @@ export default class APIManager {
         });
     }
 
+    public getInstantSystemConfig(): SystemConfig.AsObject {
+        return this.server.getSystemConfig();
+    }
+
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {
         return this.server.genSrpHash(password, algorithm, algorithmData);
     }

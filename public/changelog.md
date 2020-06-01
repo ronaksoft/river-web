@@ -1,3 +1,7 @@
+## 0.32.41
+* 🎉 New TopPeer feature
+* Bug fixes and performance improvements
+
 ## 0.32.40
 * WebAssembly updated
 * Bug fixes and performance improvements

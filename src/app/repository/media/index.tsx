@@ -163,8 +163,7 @@ export default class MediaRepo {
         });
         return this.db.medias.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IMedia[] = differenceBy(medias, result, 'id');
-            const updateItems: IMedia[] = result;
-            updateItems.map((media: IMedia) => {
+            const updateItems: IMedia[] = result.map((media: IMedia) => {
                 const t = find(medias, {id: media.id});
                 if (t) {
                     return this.mergeCheck(media, t);

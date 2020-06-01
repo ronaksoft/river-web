@@ -9,11 +9,8 @@
 
 import Dexie from 'dexie';
 import {IMessage, IPendingMessage} from '../../../repository/message/interface';
-import {IMessageHole} from '../../../repository/messageHole/interface';
 
 export class DexieMessageDB extends Dexie {
-    // @ts-ignore
-    public messageHoles: Dexie.Table<IMessageHole, any>;
     // @ts-ignore
     public messages: Dexie.Table<IMessage, number>;
     // @ts-ignore
@@ -28,7 +25,6 @@ export class DexieMessageDB extends Dexie {
         //
 
         this.version(1).stores({
-            // messageHoles: `[peerid+min+max]`,
             messages: `id,peerid,[peerid+id]`,
             pendingMessages: `id,message_id`,
         });

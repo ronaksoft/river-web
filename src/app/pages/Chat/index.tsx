@@ -167,9 +167,10 @@ import {
 } from "../../services/events";
 import Smoother from "../../services/utilities/smoother";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
+import {TopPeerCategory} from "../../services/sdk/messages/chat.api.contacts_pb";
+import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
 
 import './style.scss';
-import {TopPeerCategory} from "../../services/sdk/messages/chat.api.contacts_pb";
 
 export let notifyOptions: any[] = [];
 
@@ -214,6 +215,7 @@ class Chat extends React.Component<IProps, IState> {
     private fileRepo: FileRepo;
     private mainRepo: MainRepo;
     private labelRepo: LabelRepo;
+    private topPeerRepo: TopPeerRepo;
     private isLoading: boolean = false;
     private apiManager: APIManager;
     private updateManager: UpdateManager;
@@ -275,7 +277,8 @@ class Chat extends React.Component<IProps, IState> {
     private isBot: boolean = false;
     private smoother: Smoother;
     private uploaderRef: Uploader | undefined;
-    private userId: string = '0';
+    private topPeerInitialized: boolean = false;
+    private readonly userId: string = '0';
 
     constructor(props: IProps) {
         super(props);
@@ -307,6 +310,7 @@ class Chat extends React.Component<IProps, IState> {
         this.fileRepo = FileRepo.getInstance();
         this.mainRepo = MainRepo.getInstance();
         this.labelRepo = LabelRepo.getInstance();
+        this.topPeerRepo = TopPeerRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 256);
         this.isInChat = (document.visibilityState === 'visible');
@@ -2319,15 +2323,6 @@ class Chat extends React.Component<IProps, IState> {
             }
             this.userRepo.getAllContacts();
             this.apiManager.getSystemConfig();
-            this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, 20).then((tp) => {
-                window.console.log(tp);
-            });
-            this.apiManager.getTopPeer(TopPeerCategory.USERS, 0, 20).then((tp) => {
-                window.console.log(tp);
-            });
-            this.apiManager.getTopPeer(TopPeerCategory.GROUPS, 0, 20).then((tp) => {
-                window.console.log(tp);
-            });
             if (this.firstTimeLoad) {
                 this.firstTimeLoad = false;
                 this.startSyncing(res.updateid || 0);
@@ -2346,6 +2341,7 @@ class Chat extends React.Component<IProps, IState> {
             this.snapshot();
             return;
         }
+        this.getRemoteTopPeers();
         // Normal syncing
         this.updateManager.canSync(updateId).then(() => {
             this.updateManager.disableLiveUpdate();
@@ -2410,6 +2406,28 @@ class Chat extends React.Component<IProps, IState> {
             });
         });
         this.labelRepo.getLabels();
+        this.getRemoteTopPeers();
+    }
+
+    private getRemoteTopPeers() {
+        if (this.topPeerInitialized || localStorage.getItem('river.init_top_peer')) {
+            return;
+        }
+        localStorage.setItem('river.init_top_peer', 'true');
+        this.topPeerInitialized = true;
+        this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, C_TOP_PEER_LEN).then((res) => {
+            this.userRepo.importBulk(false, res.usersList);
+            this.userRepo.importBulk(false, res.groupsList);
+            this.topPeerRepo.insertFromRemote(TopPeerType.Forward, res.peersList);
+        });
+        this.apiManager.getTopPeer(TopPeerCategory.USERS, 0, C_TOP_PEER_LEN).then((res) => {
+            this.userRepo.importBulk(false, res.usersList);
+            this.topPeerRepo.insertFromRemote(TopPeerType.Search, res.peersList);
+        });
+        this.apiManager.getTopPeer(TopPeerCategory.GROUPS, 0, C_TOP_PEER_LEN).then((res) => {
+            this.userRepo.importBulk(false, res.groupsList);
+            this.topPeerRepo.insertFromRemote(TopPeerType.Search, res.peersList);
+        });
     }
 
     private wsCloseHandler = () => {

@@ -10,10 +10,10 @@
 import * as React from 'react';
 import AutoSizer from "react-virtualized-auto-sizer";
 import {Link} from 'react-router-dom';
-import {debounce, intersectionBy, clone, differenceBy, findIndex, uniq, uniqBy} from 'lodash';
+import {clone, debounce, differenceBy, findIndex, intersectionBy, uniq, uniqBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
-import {LabelOutlined, LabelRounded, MessageRounded, ClearRounded} from '@material-ui/icons';
+import {ClearRounded, LabelOutlined, LabelRounded, MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
@@ -38,6 +38,8 @@ import IconButton from "@material-ui/core/IconButton/IconButton";
 import LabelPopover from "../LabelPopover";
 import DialogSkeleton from "../DialogSkeleton";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import TopPeer from '../TopPeer';
+import {TopPeerType} from "../../repository/topPeer";
 
 import './style.scss';
 
@@ -49,6 +51,7 @@ interface IProps {
 
 interface IState {
     appliedSelectedLabelIds: number[];
+    focus: boolean;
     ids: string[];
     items: IDialog[];
     labelActive: boolean;
@@ -94,6 +97,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
         this.state = {
             appliedSelectedLabelIds: [],
+            focus: false,
             ids: [],
             items: [],
             labelActive: false,
@@ -276,7 +280,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {moreAnchorPos, appliedSelectedLabelIds, searchEnable, labelActive} = this.state;
+        const {moreAnchorPos, appliedSelectedLabelIds, searchEnable, labelActive, focus} = this.state;
         return (
             <div className="dialogs">
                 <div ref={this.containerRefHandler} className={'dialog-search' + (searchEnable ? ' open' : '')}>
@@ -298,6 +302,8 @@ class Dialog extends React.PureComponent<IProps, IState> {
                             'root': 'chip-root',
                         }}
                         variant="outlined"
+                        onFocus={this.focusHandler}
+                        onBlur={this.blurHandler}
                     />
                     <div className="search-label">
                         <IconButton
@@ -313,6 +319,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                                    onApply={this.labelPopoverApplyHandler} closeAfterSelect={true}
                                                    onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
+                {searchEnable && <TopPeer type={TopPeerType.Search} visible={focus}/>}
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
                     <AutoSizer>
@@ -847,6 +854,18 @@ class Dialog extends React.PureComponent<IProps, IState> {
             }
         }, 500);
         this.firstTimeInit = false;
+    }
+
+    private focusHandler = () => {
+        this.setState({
+            focus: true,
+        });
+    }
+
+    private blurHandler = () => {
+        this.setState({
+            focus: false,
+        });
     }
 }
 

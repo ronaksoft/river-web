@@ -144,6 +144,12 @@ html[theme="dark-blue"] {
   }
 }
 
+html[gradient="1"] {
+  .message-voice .voice-player .play-timer {
+    color: var(--light);
+  }
+}
+
 @keyframes rotateDonut {
   from {
     transform: rotate(0);

@@ -40,4 +40,8 @@ export default class RiverTime {
         const t = Math.floor(Date.now() / 1000);
         this.timeDiff = timestamp - t;
     }
+
+    public getDiff() {
+        return this.timeDiff;
+    }
 }

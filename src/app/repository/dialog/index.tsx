@@ -229,8 +229,7 @@ export default class DialogRepo {
         });
         return this.db.dialogs.where('peerid').anyOf(ids).toArray().then((result) => {
             const createItems: IDialog[] = differenceBy(tempDialogs, result, 'peerid');
-            const updateItems: IDialog[] = result;
-            updateItems.map((dialog: IDialog) => {
+            const updateItems: IDialog[] = result.map((dialog: IDialog) => {
                 const t = find(tempDialogs, {peerid: dialog.peerid});
                 if (t) {
                     return this.mergeCheck(dialog, t);

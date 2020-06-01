@@ -289,7 +289,11 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             this.canvasConfig.maxBars = Math.floor(this.canvasConfig.width / (this.canvasConfig.barWidth + this.canvasConfig.barSpace));
             const htmlEl = document.querySelector('html');
             if (htmlEl) {
-                this.canvasConfig.color = htmlEl.getAttribute('theme') === 'light' ? '#1A1A1A' : '#E6E6E6';
+                if (this.props.message) {
+                    this.canvasConfig.color = (htmlEl.getAttribute('theme') === 'light' && htmlEl.getAttribute('gradient') !== '1') ? '#1A1A1A' : '#E6E6E6';
+                } else {
+                    this.canvasConfig.color = htmlEl.getAttribute('theme') === 'light' ? '#1A1A1A' : '#E6E6E6';
+                }
             }
             if (this.canvasRef && this.canvasCtx) {
                 this.canvasCtx.canvas.height = (this.canvasConfig.height);

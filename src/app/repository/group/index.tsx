@@ -77,6 +77,13 @@ export default class GroupRepo {
         });
     }
 
+    public findInArray(ids: string[], skip: number, limit: number): Promise<IGroup[]> {
+        if (ids.length === 0) {
+            return Promise.resolve([]);
+        }
+        return this.db.groups.where('id').anyOf(ids).offset(skip || 0).limit(limit).toArray();
+    }
+
     public getFull(id: string, cacheCB?: (gs: IGroup) => void, checkLastUpdate?: boolean): Promise<IGroup> {
         return new Promise<IGroup>((resolve, reject) => {
             this.get(id).then((group) => {
@@ -128,7 +135,15 @@ export default class GroupRepo {
         if (!groups || groups.length === 0) {
             return Promise.resolve();
         }
+
         const uniqueGroup = uniqBy(groups, 'id');
+        if (this.actionList.length === 0 && !this.actionBusy) {
+            this.actionBusy = true;
+            return this.upsert(groups, callerId).finally(() => {
+                this.actionBusy = false;
+            });
+        }
+
         let internalResolve = null;
         let internalReject = null;
 
@@ -156,8 +171,7 @@ export default class GroupRepo {
         });
         return this.db.groups.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IGroup[] = differenceBy(groups, result, 'id');
-            const updateItems: IGroup[] = result;
-            updateItems.map((group: IGroup) => {
+            const updateItems: IGroup[] = result.map((group: IGroup) => {
                 const t = find(groups, {id: group.id});
                 if (t) {
                     return this.mergeCheck(group, t);

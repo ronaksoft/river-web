@@ -193,8 +193,7 @@ export default class LabelRepo {
         });
         return this.db.labels.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: ILabel[] = differenceBy(labels, result, 'id');
-            const updateItems: ILabel[] = result;
-            updateItems.map((label: ILabel) => {
+            const updateItems: ILabel[] = result.map((label: ILabel) => {
                 const t = find(labels, {id: label.id});
                 if (t) {
                     return this.mergeCheck(label, t);

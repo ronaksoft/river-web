@@ -118,7 +118,10 @@ export default class UserRepo {
         });
     }
 
-    public findInArray(ids: string[], skip: number, limit: number) {
+    public findInArray(ids: string[], skip: number, limit: number): Promise<IUser[]> {
+        if (ids.length === 0) {
+            return Promise.resolve([]);
+        }
         return this.db.users.where('id').anyOf(ids).offset(skip || 0).limit(limit).toArray();
     }
 
@@ -200,6 +203,13 @@ export default class UserRepo {
         }
         const uniqUsers = uniqBy(users, 'id');
 
+        if (this.actionList.length === 0 && !this.actionBusy) {
+            this.actionBusy = true;
+            return this.upsert(isContact, uniqUsers, force, callerId).finally(() => {
+                this.actionBusy = false;
+            });
+        }
+
         let internalResolve = null;
         let internalReject = null;
 
@@ -231,8 +241,7 @@ export default class UserRepo {
         }
         return this.db.users.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IUser[] = differenceBy(users, result, 'id');
-            const updateItems: IUser[] = result;
-            updateItems.map((user: IUser) => {
+            const updateItems: IUser[] = result.map((user: IUser) => {
                 return this.mergeUser(users, user, force);
             });
             createItems.forEach((user: IUser) => {
