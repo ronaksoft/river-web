@@ -8,7 +8,7 @@
 */
 
 import Http from './http';
-import {C_MSG} from '../const';
+import {C_LOCALSTORAGE, C_MSG} from '../const';
 import {File, FileGet, FileSavePart} from '../messages/chat.api.files_pb';
 import {Bool, FileLocation, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
 import FileRepo, {md5FromBlob} from '../../../repository/file';
@@ -152,7 +152,7 @@ export default class FileManager {
     private apiManager: APIManager;
 
     public constructor() {
-        if (localStorage.getItem('river.conn.info')) {
+        if (localStorage.getItem(C_LOCALSTORAGE.ConnInfo)) {
             if (!this.fileSeverInitialized) {
                 this.initFileServer();
             }

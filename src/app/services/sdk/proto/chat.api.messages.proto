@@ -221,5 +221,6 @@ message MessagesMany {
     repeated User Users = 2;
     repeated Group Groups = 3;
     optional bool Continuous = 4;
+    optional bool Empty = 5;
 }
 

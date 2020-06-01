@@ -140,7 +140,7 @@ class UserName extends React.PureComponent<IProps, IState> {
         if (this.props.you && this.userRepo.getCurrentUserId() === this.state.id) {
             this.setState({
                 user: {
-                    firstname: this.props.youPlaceholder || (i18n.t('general.you') + (this.props.postfix || '')),
+                    firstname: this.props.youPlaceholder || i18n.t('general.you'),
                     id: this.userRepo.getCurrentUserId(),
                     lastname: '',
                 },

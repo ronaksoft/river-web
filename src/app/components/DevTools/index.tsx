@@ -20,6 +20,7 @@ import ElectronService from "../../services/electron";
 import {serverKeys} from "../../services/sdk/server";
 
 import './style.scss';
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 interface IProps {
     className?: string;
@@ -42,12 +43,12 @@ class DevTools extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            debugServerKeys: localStorage.getItem('river.server_keys') || serverKeys,
+            debugServerKeys: localStorage.getItem(C_LOCALSTORAGE.ServerKeys) || serverKeys,
             electronLoadUrl: '',
-            fileUrl: localStorage.getItem('river.workspace_url_file') || 'file.river.im',
+            fileUrl: localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || 'file.river.im',
             open: false,
-            throttleInterval: parseInt(localStorage.getItem('river.debug.throttle_interval') || '200', 10),
-            url: localStorage.getItem('river.workspace_url') || 'cyrus.river.im'
+            throttleInterval: parseInt(localStorage.getItem(C_LOCALSTORAGE.DebugThrottleInterval) || '200', 10),
+            url: localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'cyrus.river.im'
         };
 
         this.electronService = ElectronService.getInstance();
@@ -163,10 +164,10 @@ class DevTools extends React.Component<IProps, IState> {
 
     /* Debug mode apply handler */
     private debugModeApplyHandler = () => {
-        localStorage.setItem('river.workspace_url', this.state.url);
-        localStorage.setItem('river.workspace_url_file', this.state.fileUrl);
-        localStorage.setItem('river.server_keys', this.state.debugServerKeys);
-        localStorage.setItem('river.debug.throttle_interval', String(this.state.throttleInterval));
+        localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, this.state.url);
+        localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, this.state.fileUrl);
+        localStorage.setItem(C_LOCALSTORAGE.ServerKeys, this.state.debugServerKeys);
+        localStorage.setItem(C_LOCALSTORAGE.DebugThrottleInterval, String(this.state.throttleInterval));
         if (ElectronService.isElectron() && this.state.electronLoadUrl !== this.electronLoadUrl) {
             this.electronService.setLoadUrl(this.state.electronLoadUrl);
         }

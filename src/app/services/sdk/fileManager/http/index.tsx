@@ -11,10 +11,11 @@ import Presenter from '../../presenters';
 import axios from 'axios';
 import {base64ToU8a, uint8ToBase64} from './utils';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
-import {C_MSG} from '../../const';
+import {C_LOCALSTORAGE, C_MSG} from '../../const';
 import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
 import Socket, {serverTime} from '../../server/socket';
+import {EventWebSocketOpen} from "../../../events";
 
 export interface IHttpRequest {
     constructor: number;
@@ -49,7 +50,7 @@ export default class Http {
     private executionTimes: number[] = [];
 
     public constructor(shareWorker: boolean, id: number) {
-        const fileUrl = localStorage.getItem('river.workspace_url_file') || '';
+        const fileUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || '';
         this.shareWorker = shareWorker;
 
         this.reqId = 0;
@@ -68,14 +69,14 @@ export default class Http {
             if (shareWorker) {
                 this.initShareWorker();
             } else {
-                window.removeEventListener('wsOpen', fn);
+                window.removeEventListener(EventWebSocketOpen, fn);
                 this.workerMessage('init', {});
                 this.initWorkerEvent();
             }
         };
 
         if (serverTime === 0) {
-            window.addEventListener('wsOpen', fn);
+            window.addEventListener(EventWebSocketOpen, fn);
         } else {
             fn();
         }
@@ -167,7 +168,10 @@ export default class Http {
             const d = e.data;
             switch (d.cmd) {
                 case 'loadConnInfo':
-                    this.workerMessage('loadConnInfo', {connInfo: localStorage.getItem('river.conn.info'), serverKeys});
+                    this.workerMessage('loadConnInfo', {
+                        connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo),
+                        serverKeys,
+                    });
                     this.workerMessage('initSDK', !serverTime ? 1 : serverTime);
                     break;
                 case 'fnStarted':

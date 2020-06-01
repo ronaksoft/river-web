@@ -9,41 +9,60 @@
 
 import {
     AuthAuthorization,
-    AuthCheckedPhone, AuthCheckPassword,
+    AuthCheckedPhone,
+    AuthCheckPassword,
     AuthCheckPhone,
     AuthLogin,
     AuthLogout,
     AuthRecall,
     AuthRecalled,
-    AuthRegister, AuthResendCode,
+    AuthRegister,
+    AuthResendCode,
     AuthSendCode,
     AuthSentCode
 } from './messages/chat.api.auth_pb';
 import Server from './server';
-import {C_ERR, C_ERR_ITEM, C_MSG} from './const';
+import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from './const';
 import {IConnInfo} from './interface';
 import {
     BlockedContactsMany,
-    ContactsAdd, ContactsBlock,
-    ContactsDelete, ContactsDeleteAll,
-    ContactsGet, ContactsGetBlocked,
+    ContactsAdd,
+    ContactsBlock,
+    ContactsDelete,
+    ContactsDeleteAll,
+    ContactsGet,
+    ContactsGetBlocked,
+    ContactsGetTopPeers,
     ContactsImport,
     ContactsImported,
-    ContactsMany, ContactsSearch, ContactsUnblock
+    ContactsMany,
+    ContactsSearch, ContactsTopPeers,
+    ContactsUnblock,
+    TopPeerCategory
 } from './messages/chat.api.contacts_pb';
 import {
-    Bool, Dialog, FileLocation,
+    Bool,
+    Dialog,
+    FileLocation,
     Group,
-    GroupFull, GroupPhoto,
-    InputFile, InputMediaType, InputPassword,
+    GroupFull,
+    GroupPhoto,
+    InputFile,
+    InputMediaType,
+    InputPassword,
     InputPeer,
-    InputUser, Label, LabelsMany,
+    InputUser,
+    Label,
+    LabelsMany,
     MessageEntity,
     PeerNotifySettings,
-    PhoneContact, PrivacyKey, PrivacyRule,
+    PhoneContact,
+    PrivacyKey,
+    PrivacyRule,
     PushTokenProvider,
     TypingAction,
-    User, UserPhoto
+    User,
+    UserPhoto
 } from './messages/chat.core.types_pb';
 import {
     MessagesClearDraft,
@@ -51,16 +70,20 @@ import {
     MessagesDelete,
     MessagesDialogs,
     MessagesEdit,
-    MessagesForward, MessagesGet,
+    MessagesForward,
+    MessagesGet,
     MessagesGetDialogs,
-    MessagesGetHistory, MessagesGetPinnedDialogs,
+    MessagesGetHistory,
+    MessagesGetPinnedDialogs,
     MessagesMany,
     MessagesReadContents,
-    MessagesReadHistory, MessagesSaveDraft,
+    MessagesReadHistory,
+    MessagesSaveDraft,
     MessagesSend,
     MessagesSendMedia,
     MessagesSent,
-    MessagesSetTyping, MessagesToggleDialogPin
+    MessagesSetTyping,
+    MessagesToggleDialogPin
 } from './messages/chat.api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/chat.api.updates_pb';
 import {
@@ -81,10 +104,12 @@ import {
     AccountSetLang,
     AccountSetNotifySettings,
     AccountSetPrivacy,
-    AccountUpdatePasswordSettings, AccountUpdatePhoto,
+    AccountUpdatePasswordSettings,
+    AccountUpdatePhoto,
     AccountUpdateProfile,
     AccountUpdateUsername,
-    AccountUploadPhoto, SecurityAnswer,
+    AccountUploadPhoto,
+    SecurityAnswer,
     SecurityQuestion
 } from './messages/chat.api.accounts_pb';
 import {
@@ -92,13 +117,22 @@ import {
     GroupsCreate,
     GroupsDeleteUser,
     GroupsEditTitle,
-    GroupsGetFull, GroupsRemovePhoto,
+    GroupsGetFull,
+    GroupsRemovePhoto,
     GroupsToggleAdmins,
-    GroupsUpdateAdmin, GroupsUpdatePhoto,
+    GroupsUpdateAdmin,
+    GroupsUpdatePhoto,
     GroupsUploadPhoto
 } from './messages/chat.api.groups_pb';
 import {UsersGet, UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
-import {SystemGetInfo, SystemInfo, SystemGetSalts, SystemSalts} from './messages/chat.api.system_pb';
+import {
+    SystemConfig,
+    SystemGetConfig,
+    SystemGetInfo,
+    SystemGetSalts,
+    SystemInfo,
+    SystemSalts
+} from './messages/chat.api.system_pb';
 import {parsePhoneNumberFromString} from 'libphonenumber-js';
 import {
     LabelItems,
@@ -106,7 +140,9 @@ import {
     LabelsCreate,
     LabelsDelete,
     LabelsEdit,
-    LabelsGet, LabelsListItems, LabelsRemoveFromMessage
+    LabelsGet,
+    LabelsListItems,
+    LabelsRemoveFromMessage
 } from "./messages/chat.api.labels_pb";
 import UniqueId from "../uniqueId";
 import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/bot.api_pb";
@@ -131,7 +167,7 @@ export default class APIManager {
     public constructor() {
         this.server = Server.getInstance();
 
-        const s = localStorage.getItem('river.conn.info');
+        const s = localStorage.getItem(C_LOCALSTORAGE.ConnInfo);
         if (s) {
             this.connInfo = JSON.parse(s);
         } else {
@@ -159,7 +195,7 @@ export default class APIManager {
     public setConnInfo(info: IConnInfo) {
         this.connInfo = info;
         const s = JSON.stringify(info);
-        localStorage.setItem('river.conn.info', s);
+        localStorage.setItem(C_LOCALSTORAGE.SystemConfig, s);
     }
 
     public resetConnInfo() {
@@ -171,12 +207,12 @@ export default class APIManager {
         info.Phone = '';
         info.Username = '';
         this.setConnInfo(info);
-        localStorage.removeItem('river.contacts.hash');
-        localStorage.removeItem('river.settings.download');
+        localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
+        localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
     }
 
     public loadConnInfo(): IConnInfo {
-        const s = localStorage.getItem('river.conn.info');
+        const s = localStorage.getItem(C_LOCALSTORAGE.ConnInfo);
         if (s) {
             this.connInfo = this.connInfo = JSON.parse(s);
         }
@@ -859,6 +895,22 @@ export default class APIManager {
             data.setMessageid(msgId);
         }
         return this.server.send(C_MSG.BotGetCallbackAnswer, data.serializeBinary(), true);
+    }
+
+    public getTopPeer(category: TopPeerCategory, offset: number, limit: number): Promise<ContactsTopPeers.AsObject> {
+        const data = new ContactsGetTopPeers();
+        data.setCategory(category);
+        data.setOffset(offset);
+        data.setLimit(limit);
+        return this.server.send(C_MSG.ContactsGetTopPeers, data.serializeBinary(), false);
+    }
+
+    public getSystemConfig(): Promise<SystemConfig.AsObject> {
+        const data = new SystemGetConfig();
+        return this.server.send(C_MSG.SystemGetConfig, data.serializeBinary(), false).then((config) => {
+            this.server.setSystemConfig(config);
+            return config;
+        });
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {

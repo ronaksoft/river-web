@@ -442,6 +442,11 @@ export class ContactsImported extends jspb.Message {
   setUsersList(value: Array<chat_core_types_pb.User>): void;
   addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
 
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsImported.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsImported): ContactsImported.AsObject;
@@ -456,6 +461,7 @@ export namespace ContactsImported {
   export type AsObject = {
     contactusersList: Array<chat_core_types_pb.ContactUser.AsObject>,
     usersList: Array<chat_core_types_pb.User.AsObject>,
+    empty?: boolean,
   }
 }
 
@@ -480,6 +486,11 @@ export class ContactsMany extends jspb.Message {
   setUsersList(value: Array<chat_core_types_pb.User>): void;
   addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
 
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsMany.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsMany): ContactsMany.AsObject;
@@ -496,6 +507,7 @@ export namespace ContactsMany {
     contactusersList: Array<chat_core_types_pb.ContactUser.AsObject>,
     modified?: boolean,
     usersList: Array<chat_core_types_pb.User.AsObject>,
+    empty?: boolean,
   }
 }
 

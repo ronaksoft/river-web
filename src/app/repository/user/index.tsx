@@ -20,7 +20,7 @@ import {InputUser, User, UserStatus} from '../../services/sdk/messages/chat.core
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge, kUserMerge} from "../../services/utilities/kDash";
-import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
+import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE} from "../../services/sdk/const";
 
 export const UserDBUpdated = 'User_DB_Updated';
 
@@ -70,7 +70,7 @@ export default class UserRepo {
     private lastContactTimestamp: number = 0;
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
-    private bubbleMode: string = localStorage.getItem('river.theme.bubble') || '4';
+    private bubbleMode: string = localStorage.getItem(C_LOCALSTORAGE.ThemeBubble) || '4';
     private throttleBroadcastList: string[] = [];
     private readonly throttleBroadcastExecute: any = undefined;
     private actionList: IUserAction[] = [];
@@ -366,13 +366,13 @@ export default class UserRepo {
     }
 
     private getContactsCrc() {
-        const crc = localStorage.getItem('river.contacts.hash') || '0';
+        const crc = localStorage.getItem(C_LOCALSTORAGE.ContactsHash) || '0';
         return parseInt(crc, 10);
     }
 
     private storeContactsCrc(users: IUser[]) {
         const crc32 = getContactsCrc(users);
-        localStorage.setItem('river.contacts.hash', String(crc32));
+        localStorage.setItem(C_LOCALSTORAGE.ContactsHash, String(crc32));
     }
 
     private throttleBroadcast(ids: string[]) {

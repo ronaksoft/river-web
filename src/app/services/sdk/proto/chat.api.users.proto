@@ -19,4 +19,5 @@ message UsersGetFull {
 // UsersMany
 message UsersMany {
     repeated User Users = 1;
+    optional bool Empty = 5;
 }

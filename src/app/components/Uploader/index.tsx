@@ -33,6 +33,7 @@ import MentionInput, {IMention} from "../MentionInput";
 import {measureNodeHeight} from "../ChatInput/measureHeight";
 import {generateEntities} from "../ChatInput";
 import {IMessage} from "../../repository/message/interface";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 
@@ -144,7 +145,7 @@ class Uploader extends React.Component<IProps, IState> {
     private previewRefs: string[][] = [];
     private imageEditorRef: ImageEditor | undefined;
     private videoFrameSelectorRef: VideoFrameSelector | undefined;
-    private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
+    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.Lang) === 'fa' || false;
     private rtlDetector: RTLDetector;
     private readonly rtlDetectorThrottle: any;
     private mentionContainer: any = null;

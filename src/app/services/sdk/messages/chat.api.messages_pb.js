@@ -6844,7 +6844,8 @@ proto.msg.MessagesMany.toObject = function(includeInstance, msg) {
     chat_core_types_pb.User.toObject, includeInstance),
     groupsList: jspb.Message.toObjectList(msg.getGroupsList(),
     chat_core_types_pb.Group.toObject, includeInstance),
-    continuous: (f = jspb.Message.getBooleanField(msg, 4)) == null ? undefined : f
+    continuous: (f = jspb.Message.getBooleanField(msg, 4)) == null ? undefined : f,
+    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -6899,6 +6900,10 @@ proto.msg.MessagesMany.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setContinuous(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEmpty(value);
       break;
     default:
       reader.skipField();
@@ -6957,6 +6962,13 @@ proto.msg.MessagesMany.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeBool(
       4,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeBool(
+      5,
       f
     );
   }
@@ -7110,6 +7122,42 @@ proto.msg.MessagesMany.prototype.clearContinuous = function() {
  */
 proto.msg.MessagesMany.prototype.hasContinuous = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional bool Empty = 5;
+ * @return {boolean}
+ */
+proto.msg.MessagesMany.prototype.getEmpty = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.MessagesMany} returns this
+ */
+proto.msg.MessagesMany.prototype.setEmpty = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.MessagesMany} returns this
+ */
+proto.msg.MessagesMany.prototype.clearEmpty = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.MessagesMany.prototype.hasEmpty = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

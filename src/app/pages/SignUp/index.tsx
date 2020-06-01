@@ -12,7 +12,7 @@ import APIManager from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
-import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
+import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import {languageList} from '../../components/SettingsMenu';
 import TextField from '@material-ui/core/TextField';
@@ -104,7 +104,7 @@ class SignUp extends React.Component<IProps, IState> {
         super(props);
         let step = 'phone';
         if (window.location.host !== 'web.river.im' && window.location.host !== 'web.river.ronaksoftware.com') {
-            if (!localStorage.getItem('river.workspace_url')) {
+            if (!localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl)) {
                 step = 'workspace';
             }
         }
@@ -127,7 +127,7 @@ class SignUp extends React.Component<IProps, IState> {
             phone: '',
             phoneHash: '',
             qrCodeOpen: false,
-            selectedLanguage: localStorage.getItem('river.lang') || 'en',
+            selectedLanguage: localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en',
             sendToPhone: false,
             step,
             tries: 0,
@@ -472,18 +472,18 @@ class SignUp extends React.Component<IProps, IState> {
                     this.initPhoneInput();
                 });
                 if (res.storageurl && res.storageurl.length > 0) {
-                    localStorage.setItem('river.workspace_url_file', res.storageurl || '');
+                    localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, res.storageurl || '');
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
-                const localWorkspace = localStorage.getItem('river.workspace_url');
+                const localWorkspace = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl);
                 if ((localWorkspace || 'cyrus.river.im') !== workspace) {
                     this.workspaceManager.closeWire();
-                    localStorage.setItem('river.workspace_url', workspace);
-                    localStorage.removeItem('river.contacts.hash');
-                    localStorage.removeItem('river.conn.info');
+                    localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, workspace);
+                    localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
+                    localStorage.removeItem(C_LOCALSTORAGE.ConnInfo);
                     window.location.reload();
                 } else if ((!localWorkspace || localWorkspace === '') && workspace === defaultGateway) {
-                    localStorage.setItem('river.workspace_url', workspace);
+                    localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, workspace);
                 }
 
             });
@@ -761,7 +761,7 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        const lang = localStorage.getItem('river.lang') || 'en';
+        const lang = localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en';
         this.apiManager.register(phone, code, phoneHash, firstName, lastName, lang).then((res) => {
             const info = this.apiManager.loadConnInfo();
             info.UserID = res.user.id;
@@ -823,7 +823,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     private dispatchWSOpenEvent() {
         setTimeout(() => {
-            const event = new CustomEvent('wsOpen');
+            const event = new CustomEvent(EventWebSocketOpen);
             window.dispatchEvent(event);
         }, 100);
     }
@@ -850,7 +850,7 @@ class SignUp extends React.Component<IProps, IState> {
                     this.focus('f-phone');
                 });
                 if (res.storageurl && res.storageurl.length > 0) {
-                    localStorage.setItem('river.workspace_url_file', res.storageurl || '');
+                    localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, res.storageurl || '');
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
             });
@@ -984,13 +984,12 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private changeLanguage = (lang: string) => (e: any) => {
-        const l = localStorage.getItem('river.lang');
+        const l = localStorage.getItem(C_LOCALSTORAGE.Lang);
         if (l !== lang) {
-            // @ts-ignore
             const selectedLang = find(languageList, {lang});
-            localStorage.setItem('river.lang', lang);
+            localStorage.setItem(C_LOCALSTORAGE.Lang, lang);
             if (selectedLang) {
-                localStorage.setItem('river.lang.dir', selectedLang.dir);
+                localStorage.setItem(C_LOCALSTORAGE.LangDir, selectedLang.dir);
             }
             this.setState({
                 selectedLanguage: lang,

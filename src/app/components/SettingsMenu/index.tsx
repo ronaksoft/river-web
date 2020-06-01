@@ -96,6 +96,7 @@ import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import IsMobile from "../../services/isMobile";
 import AvatarService from "../../services/avatarService";
 import {C_VERSION} from "../../../App";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -297,11 +298,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedBackground: '-1',
             selectedBgType: '0',
             selectedBubble: '1',
-            selectedCustomBackground: localStorage.getItem('river.theme.bg.pic') || '-1',
-            selectedCustomBackgroundBlur: parseInt(localStorage.getItem('river.theme.bg.blur') || '0', 10),
-            selectedGradient: localStorage.getItem('river.theme.gradient') || '0',
-            selectedLanguage: localStorage.getItem('river.lang') || 'en',
-            selectedTheme: localStorage.getItem('river.theme.color') || 'light',
+            selectedCustomBackground: localStorage.getItem(C_LOCALSTORAGE.ThemeBgPic) || '-1',
+            selectedCustomBackgroundBlur: parseInt(localStorage.getItem(C_LOCALSTORAGE.ThemeBgBlur) || '0', 10),
+            selectedGradient: localStorage.getItem(C_LOCALSTORAGE.ThemeGradient) || '0',
+            selectedLanguage: localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en',
+            selectedTheme: localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light',
             storageValues: {
                 auto_save_files: false,
                 chat_files: false,
@@ -336,7 +337,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
         this.electronService = ElectronService.getInstance();
         this.hasScrollbar = getScrollbarWidth() > 0;
-        this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
+        this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
         this.isMobile = this.isMobile = IsMobile.isAny();
         this.avatarService = AvatarService.getInstance();
 
@@ -350,7 +351,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        const bg = localStorage.getItem('river.theme.bg') || '-1';
+        const bg = localStorage.getItem(C_LOCALSTORAGE.ThemeBg) || '-1';
         let bgType: string = '0';
         if (bg === C_CUSTOM_BG) {
             bgType = '1';
@@ -360,12 +361,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
             bgType = '2';
         }
         this.setState({
-            fontSize: parseInt(localStorage.getItem('river.theme.font') || '2', 10),
+            fontSize: parseInt(localStorage.getItem(C_LOCALSTORAGE.ThemeFont) || '2', 10),
             notificationValues: this.settingsConfigManger.getNotificationSettings(),
             selectedBackground: bg,
             selectedBgType: bgType,
-            selectedBubble: localStorage.getItem('river.theme.bubble') || '1',
-            selectedTheme: localStorage.getItem('river.theme.color') || 'light',
+            selectedBubble: localStorage.getItem(C_LOCALSTORAGE.ThemeBubble) || '1',
+            selectedTheme: localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light',
             storageValues: this.settingsConfigManger.getDownloadSettings(),
         });
         this.backgroundService.getBackground(C_CUSTOM_BG_ID).then((res) => {
@@ -1264,13 +1265,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private changeLanguage = (lang: string) => (e: any) => {
-        const l = localStorage.getItem('river.lang');
+        const l = localStorage.getItem(C_LOCALSTORAGE.Lang);
         const fn = () => {
             // @ts-ignore
             const selectedLang = find(languageList, {lang});
-            localStorage.setItem('river.lang', lang);
+            localStorage.setItem(C_LOCALSTORAGE.Lang, lang);
             if (selectedLang) {
-                localStorage.setItem('river.lang.dir', selectedLang.dir);
+                localStorage.setItem(C_LOCALSTORAGE.LangDir, selectedLang.dir);
             }
             this.setState({
                 selectedLanguage: lang,
@@ -1302,7 +1303,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             return;
         }
         el.setAttribute('theme', this.state.selectedTheme);
-        localStorage.setItem('river.theme.color', this.state.selectedTheme);
+        localStorage.setItem(C_LOCALSTORAGE.ThemeColor, this.state.selectedTheme);
         this.broadcastEvent(ThemeChanged, null);
     }
 
@@ -1341,7 +1342,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (!el) {
             return;
         }
-        localStorage.setItem('river.theme.font', String(this.state.fontSize));
+        localStorage.setItem(C_LOCALSTORAGE.ThemeFont, String(this.state.fontSize));
         el.setAttribute('font', String(this.state.fontSize));
     }
 
@@ -1518,7 +1519,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 if (!el) {
                     return;
                 }
-                localStorage.setItem('river.theme.bg', id);
+                localStorage.setItem(C_LOCALSTORAGE.ThemeBg, id);
                 el.setAttribute('bg', id);
             });
         }
@@ -1553,7 +1554,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             if (!el) {
                 return;
             }
-            localStorage.setItem('river.theme.bubble', id);
+            localStorage.setItem(C_LOCALSTORAGE.ThemeBubble, id);
             el.setAttribute('bubble', id);
             if (this.props.onUpdateMessages) {
                 this.props.onUpdateMessages();
@@ -1571,7 +1572,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             if (!el) {
                 return;
             }
-            localStorage.setItem('river.theme.gradient', id);
+            localStorage.setItem(C_LOCALSTORAGE.ThemeGradient, id);
             el.setAttribute('gradient', id);
             this.broadcastEvent(ThemeChanged, null);
         });
@@ -1991,9 +1992,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedTheme: C_CUSTOM_BG,
         });
         this.fileRepo.upsertFile(C_CUSTOM_BG_ID, data.blob).then(() => {
-            localStorage.setItem('river.theme.bg.pic', data.id);
-            localStorage.setItem('river.theme.bg.blur', String(data.blur));
-            localStorage.setItem('river.theme.bg', C_CUSTOM_BG);
+            localStorage.setItem(C_LOCALSTORAGE.ThemeBgPic, data.id);
+            localStorage.setItem(C_LOCALSTORAGE.ThemeBgBlur, String(data.blur));
+            localStorage.setItem(C_LOCALSTORAGE.ThemeBg, C_CUSTOM_BG);
             const el = document.querySelector('html');
             if (el) {
                 el.setAttribute('bg', C_CUSTOM_BG);

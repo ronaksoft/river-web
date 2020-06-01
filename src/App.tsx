@@ -31,6 +31,7 @@ import {EventBeforeUnload, EventBlur, EventDragOver, EventDrop, EventFocus, Even
 import ElectronService from "./app/services/electron";
 
 import './App.scss';
+import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 
 export const C_VERSION = '0.32.40';
 export const C_ELECTRON_VERSION = '9.0.0';
@@ -46,7 +47,7 @@ if (isProd) {
 }
 
 const theme = createMuiTheme({
-    direction: localStorage.getItem('river.lang.dir') === 'rtl' ? 'rtl' : 'ltr',
+    direction: localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl' ? 'rtl' : 'ltr',
     palette: {
         primary: {
             contrastText: '#FFF',
@@ -71,7 +72,7 @@ interface IState {
 }
 
 I18n.init({
-    defLang: localStorage.getItem('river.lang') || 'en',
+    defLang: localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en',
     dictionaries: {
         en: require('./app/locales/en.json'),
         fa: require('./app/locales/fa.json'),
@@ -143,12 +144,12 @@ class App extends React.Component<{}, IState> {
 
         const el = document.querySelector('html');
         if (el) {
-            el.setAttribute('theme', localStorage.getItem('river.theme.color') || 'light');
-            el.setAttribute('font', localStorage.getItem('river.theme.font') || '2');
-            el.setAttribute('bg', localStorage.getItem('river.theme.bg') || '15');
-            el.setAttribute('bubble', localStorage.getItem('river.theme.bubble') || '4');
-            el.setAttribute('gradient', localStorage.getItem('river.theme.gradient') || '0');
-            el.setAttribute('direction', localStorage.getItem('river.lang.dir') || 'ltr');
+            el.setAttribute('theme', localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light');
+            el.setAttribute('font', localStorage.getItem(C_LOCALSTORAGE.ThemeFont) || '2');
+            el.setAttribute('bg', localStorage.getItem(C_LOCALSTORAGE.ThemeBg) || '15');
+            el.setAttribute('bubble', localStorage.getItem(C_LOCALSTORAGE.ThemeBubble) || '4');
+            el.setAttribute('gradient', localStorage.getItem(C_LOCALSTORAGE.ThemeGradient) || '0');
+            el.setAttribute('direction', localStorage.getItem(C_LOCALSTORAGE.LangDir) || 'ltr');
         }
 
         const refreshEl = document.querySelector('#refresh');
@@ -307,14 +308,14 @@ class App extends React.Component<{}, IState> {
             clearingSiteData: true,
         });
         this.mainRepo.destroyDB().then(() => {
-            const testUrl = localStorage.getItem('river.workspace_url') || '';
-            const testFileUrl = localStorage.getItem('river.workspace_url_file') || '';
-            const serverKeys = localStorage.getItem('river.server_keys') || '';
+            const testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
+            const testFileUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || '';
+            const serverKeys = localStorage.getItem(C_LOCALSTORAGE.ServerKeys) || '';
             localStorage.clear();
-            localStorage.setItem('river.workspace_url', testUrl);
-            localStorage.setItem('river.workspace_url_file', testFileUrl);
+            localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, testUrl);
+            localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, testFileUrl);
             if (serverKeys) {
-                localStorage.setItem('river.server_keys', serverKeys);
+                localStorage.setItem(C_LOCALSTORAGE.ServerKeys, serverKeys);
             }
             this.setState({
                 alertOpen: false,

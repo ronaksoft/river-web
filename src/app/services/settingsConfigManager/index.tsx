@@ -8,6 +8,7 @@
 */
 
 import {kMerge} from "../utilities/kDash";
+import {C_LOCALSTORAGE} from "../sdk/const";
 
 export interface IDownloadSettings {
     auto_save_files: boolean;
@@ -26,10 +27,8 @@ export interface INotificationSettings {
     count_muted: boolean;
 }
 
-const downloadSettingsKey = 'river.settings.download';
-
-const notificationSettingsKey = 'river.settings.notification';
-
+const downloadSettingsKey = C_LOCALSTORAGE.SettingsDownload;
+const notificationSettingsKey = C_LOCALSTORAGE.SettingsNotification;
 const defaultDownloadValues: IDownloadSettings = {
     auto_save_files: true,
     chat_files: false,

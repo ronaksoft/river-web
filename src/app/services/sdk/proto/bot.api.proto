@@ -4,6 +4,7 @@ package msg;
 
 import "chat.core.types.proto";
 import "chat.core.message.medias.proto";
+import "chat.api.wallpaper.proto";
 
 service BotProxy {
     rpc ServeBotRequest (stream MessageEnvelope) returns (stream MessageEnvelope) {
@@ -197,6 +198,16 @@ message BotSendInlineResults {
     optional bool HideVia = 8; // Hid via bot
 }
 
+// BotUploadWallPaper
+// @Function (BotFather, AdminBot)
+// @Return: Bool
+message BotUploadWallPaper {
+    required InputFileLocation File = 1;
+    required bool Dark = 2;
+    required bool Pattern = 3;
+    required WallPaperSettings Settings = 4;
+}
+
 // BotResults
 message BotResults {
     required bool Gallery = 1;
@@ -226,6 +237,7 @@ message BotInlineResult {
     required BotInlineMessage Message = 7;
 }
 
+// InputBotInlineResult
 message InputBotInlineResult {
     required string ID = 1;
     required InputMediaType Type = 2;

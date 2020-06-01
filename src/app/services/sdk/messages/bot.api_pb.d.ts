@@ -5,6 +5,7 @@
 import * as jspb from "google-protobuf";
 import * as chat_core_types_pb from "./chat.core.types_pb";
 import * as chat_core_message_medias_pb from "./chat.core.message.medias_pb";
+import * as chat_api_wallpaper_pb from "./chat.api.wallpaper_pb";
 
 export class BotStart extends jspb.Message {
   hasBot(): boolean;
@@ -723,6 +724,46 @@ export namespace BotSendInlineResults {
     replyto?: number,
     silent?: boolean,
     hidevia?: boolean,
+  }
+}
+
+export class BotUploadWallPaper extends jspb.Message {
+  hasFile(): boolean;
+  clearFile(): void;
+  getFile(): chat_core_types_pb.InputFileLocation;
+  setFile(value?: chat_core_types_pb.InputFileLocation): void;
+
+  hasDark(): boolean;
+  clearDark(): void;
+  getDark(): boolean | undefined;
+  setDark(value: boolean): void;
+
+  hasPattern(): boolean;
+  clearPattern(): void;
+  getPattern(): boolean | undefined;
+  setPattern(value: boolean): void;
+
+  hasSettings(): boolean;
+  clearSettings(): void;
+  getSettings(): chat_api_wallpaper_pb.WallPaperSettings;
+  setSettings(value?: chat_api_wallpaper_pb.WallPaperSettings): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotUploadWallPaper.AsObject;
+  static toObject(includeInstance: boolean, msg: BotUploadWallPaper): BotUploadWallPaper.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotUploadWallPaper, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotUploadWallPaper;
+  static deserializeBinaryFromReader(message: BotUploadWallPaper, reader: jspb.BinaryReader): BotUploadWallPaper;
+}
+
+export namespace BotUploadWallPaper {
+  export type AsObject = {
+    file: chat_core_types_pb.InputFileLocation.AsObject,
+    dark?: boolean,
+    pattern?: boolean,
+    settings: chat_api_wallpaper_pb.WallPaperSettings.AsObject,
   }
 }
 

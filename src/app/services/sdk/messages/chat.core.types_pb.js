@@ -14014,7 +14014,8 @@ proto.msg.LabelsMany.prototype.toObject = function(opt_includeInstance) {
 proto.msg.LabelsMany.toObject = function(includeInstance, msg) {
   var f, obj = {
     labelsList: jspb.Message.toObjectList(msg.getLabelsList(),
-    proto.msg.Label.toObject, includeInstance)
+    proto.msg.Label.toObject, includeInstance),
+    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -14056,6 +14057,10 @@ proto.msg.LabelsMany.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.msg.Label.deserializeBinaryFromReader);
       msg.addLabels(value);
       break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEmpty(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -14091,6 +14096,13 @@ proto.msg.LabelsMany.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       proto.msg.Label.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeBool(
+      5,
+      f
     );
   }
 };
@@ -14131,6 +14143,42 @@ proto.msg.LabelsMany.prototype.addLabels = function(opt_value, opt_index) {
  */
 proto.msg.LabelsMany.prototype.clearLabelsList = function() {
   return this.setLabelsList([]);
+};
+
+
+/**
+ * optional bool Empty = 5;
+ * @return {boolean}
+ */
+proto.msg.LabelsMany.prototype.getEmpty = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.LabelsMany} returns this
+ */
+proto.msg.LabelsMany.prototype.setEmpty = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.LabelsMany} returns this
+ */
+proto.msg.LabelsMany.prototype.clearEmpty = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.LabelsMany.prototype.hasEmpty = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

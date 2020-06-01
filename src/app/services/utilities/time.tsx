@@ -13,10 +13,11 @@ import fa from "moment/locale/fa";
 // @ts-ignore
 import en from "moment/locale/en-ca";
 import RiverTime from './river_time';
+import {C_LOCALSTORAGE} from "../sdk/const";
 
 class TimeUntiles {
     private riverTime: RiverTime;
-    private lang: string = localStorage.getItem('river.lang') || 'en';
+    private lang: string = localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en';
 
     constructor() {
         if (this.lang === 'fa') {

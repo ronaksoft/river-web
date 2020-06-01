@@ -84,6 +84,7 @@ import {getHumanReadableSize} from "../MessageFile";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
@@ -312,7 +313,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private lastMessage: IMessage | null = null;
-    private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
+    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.Lang) === 'fa' || false;
     private readonly isMobileView: boolean = false;
     private preventMessageSend: boolean = false;
     private preventMessageSendTimeout: any = null;

@@ -3495,7 +3495,8 @@ proto.msg.ContactsImported.toObject = function(includeInstance, msg) {
     contactusersList: jspb.Message.toObjectList(msg.getContactusersList(),
     chat_core_types_pb.ContactUser.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    chat_core_types_pb.User.toObject, includeInstance)
+    chat_core_types_pb.User.toObject, includeInstance),
+    empty: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -3542,6 +3543,10 @@ proto.msg.ContactsImported.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,chat_core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEmpty(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3585,6 +3590,13 @@ proto.msg.ContactsImported.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       chat_core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeBool(
+      3,
+      f
     );
   }
 };
@@ -3666,6 +3678,42 @@ proto.msg.ContactsImported.prototype.clearUsersList = function() {
 };
 
 
+/**
+ * optional bool Empty = 3;
+ * @return {boolean}
+ */
+proto.msg.ContactsImported.prototype.getEmpty = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.ContactsImported} returns this
+ */
+proto.msg.ContactsImported.prototype.setEmpty = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.ContactsImported} returns this
+ */
+proto.msg.ContactsImported.prototype.clearEmpty = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.ContactsImported.prototype.hasEmpty = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
 
 /**
  * List of repeated fields within this message type.
@@ -3711,7 +3759,8 @@ proto.msg.ContactsMany.toObject = function(includeInstance, msg) {
     chat_core_types_pb.ContactUser.toObject, includeInstance),
     modified: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    chat_core_types_pb.User.toObject, includeInstance)
+    chat_core_types_pb.User.toObject, includeInstance),
+    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -3766,6 +3815,10 @@ proto.msg.ContactsMany.deserializeBinaryFromReader = function(msg, reader) {
       var value = new chat_core_types_pb.User;
       reader.readMessage(value,chat_core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEmpty(value);
       break;
     default:
       reader.skipField();
@@ -3825,6 +3878,13 @@ proto.msg.ContactsMany.serializeBinaryToWriter = function(message, writer) {
       4,
       f,
       chat_core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeBool(
+      5,
+      f
     );
   }
 };
@@ -3977,6 +4037,42 @@ proto.msg.ContactsMany.prototype.addUsers = function(opt_value, opt_index) {
  */
 proto.msg.ContactsMany.prototype.clearUsersList = function() {
   return this.setUsersList([]);
+};
+
+
+/**
+ * optional bool Empty = 5;
+ * @return {boolean}
+ */
+proto.msg.ContactsMany.prototype.getEmpty = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.ContactsMany} returns this
+ */
+proto.msg.ContactsMany.prototype.setEmpty = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.ContactsMany} returns this
+ */
+proto.msg.ContactsMany.prototype.clearEmpty = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.ContactsMany.prototype.hasEmpty = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

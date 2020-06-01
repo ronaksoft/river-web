@@ -33,6 +33,7 @@ import {IUser} from "../../repository/user/interface";
 import {omitBy, isNil, debounce} from "lodash";
 import LabelMenu from "../LabelMenu";
 import {IMessage} from "../../repository/message/interface";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 
@@ -155,7 +156,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount(): void {
-        if (!this.props.mobileView && !this.props.iframeActive && localStorage.getItem('river.shrunk_menu') === 'true') {
+        if (!this.props.mobileView && !this.props.iframeActive && localStorage.getItem(C_LOCALSTORAGE.ShrunkMenu) === 'true') {
             this.props.onShrunk(true);
             this.setState({
                 shrunkMenu: true,
@@ -488,7 +489,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 shrunkMenu: !this.state.shrunkMenu,
             }, () => {
                 this.props.onShrunk(this.state.shrunkMenu);
-                localStorage.setItem('river.shrunk_menu', this.state.shrunkMenu ? 'true' : 'false');
+                localStorage.setItem(C_LOCALSTORAGE.ShrunkMenu, this.state.shrunkMenu ? 'true' : 'false');
             });
         }
     }

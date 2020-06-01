@@ -9,7 +9,7 @@
 
 import {C_MSG} from '../const';
 import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/chat.api.auth_pb';
-import {BlockedContactsMany, ContactsImported, ContactsMany} from '../messages/chat.api.contacts_pb';
+import {BlockedContactsMany, ContactsImported, ContactsMany, ContactsTopPeers} from '../messages/chat.api.contacts_pb';
 import {
     Bool,
     Error,
@@ -32,7 +32,7 @@ import {
 } from '../messages/chat.api.updates_pb';
 import {File} from '../messages/chat.api.files_pb';
 import {AccountAuthorizations, AccountPassword, AccountPrivacyRules} from '../messages/chat.api.accounts_pb';
-import {SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
+import {SystemConfig, SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
 import {UsersMany} from '../messages/chat.api.users_pb';
 import {LabelItems, LabelsListItems} from "../messages/chat.api.labels_pb";
 import {BotCallbackAnswer} from "../messages/bot.api_pb";
@@ -116,6 +116,10 @@ export default class Presenter {
                 return LabelsListItems.deserializeBinary(data);
             case C_MSG.MessagesGetDialogs:
                 return MessagesGetDialogs.deserializeBinary(data);
+            case C_MSG.ContactsTopPeers:
+                return ContactsTopPeers.deserializeBinary(data);
+            case C_MSG.SystemConfig:
+                return SystemConfig.deserializeBinary(data);
             default:
                 return null;
         }

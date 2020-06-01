@@ -864,6 +864,11 @@ export class MessagesMany extends jspb.Message {
   getContinuous(): boolean | undefined;
   setContinuous(value: boolean): void;
 
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesMany.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesMany): MessagesMany.AsObject;
@@ -880,6 +885,7 @@ export namespace MessagesMany {
     usersList: Array<chat_core_types_pb.User.AsObject>,
     groupsList: Array<chat_core_types_pb.Group.AsObject>,
     continuous?: boolean,
+    empty?: boolean,
   }
 }
 

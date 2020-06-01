@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import {C_MSG} from '../const';
+import {C_LOCALSTORAGE, C_MSG} from '../const';
 import {
     UpdateContainer,
     UpdateEnvelope,
@@ -190,7 +190,7 @@ export default class UpdateManager {
 
     /* Loads last update id form localStorage */
     public loadLastUpdateId(): number {
-        const data = localStorage.getItem('river.last_update_id');
+        const data = localStorage.getItem(C_LOCALSTORAGE.LastUpdateId);
         if (data) {
             this.lastUpdateId = JSON.parse(data).lastId;
             return this.lastUpdateId;
@@ -213,7 +213,7 @@ export default class UpdateManager {
     }
 
     public flushLastUpdateId = () => {
-        localStorage.setItem('river.last_update_id', JSON.stringify({
+        localStorage.setItem(C_LOCALSTORAGE.LastUpdateId, JSON.stringify({
             lastId: this.lastUpdateId,
         }));
     }

@@ -1744,6 +1744,11 @@ export class LabelsMany extends jspb.Message {
   setLabelsList(value: Array<Label>): void;
   addLabels(value?: Label, index?: number): Label;
 
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LabelsMany.AsObject;
   static toObject(includeInstance: boolean, msg: LabelsMany): LabelsMany.AsObject;
@@ -1757,6 +1762,7 @@ export class LabelsMany extends jspb.Message {
 export namespace LabelsMany {
   export type AsObject = {
     labelsList: Array<Label.AsObject>,
+    empty?: boolean,
   }
 }
 

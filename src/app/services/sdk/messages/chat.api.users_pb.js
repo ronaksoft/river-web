@@ -441,7 +441,8 @@ proto.msg.UsersMany.prototype.toObject = function(opt_includeInstance) {
 proto.msg.UsersMany.toObject = function(includeInstance, msg) {
   var f, obj = {
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    chat_core_types_pb.User.toObject, includeInstance)
+    chat_core_types_pb.User.toObject, includeInstance),
+    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -483,6 +484,10 @@ proto.msg.UsersMany.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,chat_core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEmpty(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -518,6 +523,13 @@ proto.msg.UsersMany.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       chat_core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeBool(
+      5,
+      f
     );
   }
 };
@@ -558,6 +570,42 @@ proto.msg.UsersMany.prototype.addUsers = function(opt_value, opt_index) {
  */
 proto.msg.UsersMany.prototype.clearUsersList = function() {
   return this.setUsersList([]);
+};
+
+
+/**
+ * optional bool Empty = 5;
+ * @return {boolean}
+ */
+proto.msg.UsersMany.prototype.getEmpty = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.UsersMany} returns this
+ */
+proto.msg.UsersMany.prototype.setEmpty = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UsersMany} returns this
+ */
+proto.msg.UsersMany.prototype.clearEmpty = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UsersMany.prototype.hasEmpty = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

@@ -7,6 +7,8 @@
     Copyright Ronak Software Group 2020
 */
 
+import {C_LOCALSTORAGE} from "../sdk/const";
+
 export const enToFa = (str: string | number) => {
     if (str === null || str === undefined) {
         return '';
@@ -37,7 +39,7 @@ export const faToEn = (str: string | number) => {
     return str;
 };
 
-const lang: string = localStorage.getItem('river.lang') || 'en';
+const lang: string = localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en';
 
 export const localize = (str: string | number) => {
     if (lang === 'fa') {

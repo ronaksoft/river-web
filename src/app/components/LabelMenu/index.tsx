@@ -38,6 +38,7 @@ import {InputAdornment} from "@material-ui/core";
 import LabelCreate from "../LabelCreate";
 import {kMerge} from "../../services/utilities/kDash";
 import {LabelMessageItem} from "../LabelItem";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 
@@ -96,7 +97,7 @@ class LabelMenu extends React.Component<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
         this.searchThrottle = throttle(this.searchIt, 512);
 
-        this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
+        this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
     }
 
     public componentDidMount() {

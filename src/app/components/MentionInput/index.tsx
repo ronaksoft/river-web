@@ -19,6 +19,7 @@ import UserName from "../UserName";
 import {emojiList} from "../ChatInput/emojis";
 import {IUser} from "../../repository/user/interface";
 import APIManager from "../../services/sdk";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 
@@ -50,7 +51,7 @@ interface IState {
 }
 
 const emojiLimit = 32;
-const emojiKey = 'emoji-mart.frequently';
+const emojiKey = C_LOCALSTORAGE.EmojiMartFrequency;
 
 const emojiMap: { [key: string]: number } = {};
 emojiList.forEach((emoji, index) => {

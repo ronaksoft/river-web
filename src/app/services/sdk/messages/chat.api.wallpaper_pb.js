@@ -748,8 +748,9 @@ proto.msg.WallPaperUpload.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.WallPaperUpload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    file: (f = msg.getFile()) && chat_core_types_pb.InputFile.toObject(includeInstance, f),
-    mimetype: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    uploadedfile: (f = msg.getUploadedfile()) && chat_core_types_pb.InputFile.toObject(includeInstance, f),
+    file: (f = msg.getFile()) && chat_core_types_pb.InputDocument.toObject(includeInstance, f),
+    mimetype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
     settings: (f = msg.getSettings()) && proto.msg.WallPaperSettings.toObject(includeInstance, f)
   };
 
@@ -790,13 +791,18 @@ proto.msg.WallPaperUpload.deserializeBinaryFromReader = function(msg, reader) {
     case 1:
       var value = new chat_core_types_pb.InputFile;
       reader.readMessage(value,chat_core_types_pb.InputFile.deserializeBinaryFromReader);
-      msg.setFile(value);
+      msg.setUploadedfile(value);
       break;
     case 2:
+      var value = new chat_core_types_pb.InputDocument;
+      reader.readMessage(value,chat_core_types_pb.InputDocument.deserializeBinaryFromReader);
+      msg.setFile(value);
+      break;
+    case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setMimetype(value);
       break;
-    case 3:
+    case 4:
       var value = new proto.msg.WallPaperSettings;
       reader.readMessage(value,proto.msg.WallPaperSettings.deserializeBinaryFromReader);
       msg.setSettings(value);
@@ -830,7 +836,7 @@ proto.msg.WallPaperUpload.prototype.serializeBinary = function() {
  */
 proto.msg.WallPaperUpload.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getFile();
+  f = message.getUploadedfile();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -838,17 +844,25 @@ proto.msg.WallPaperUpload.serializeBinaryToWriter = function(message, writer) {
       chat_core_types_pb.InputFile.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  f = message.getFile();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      chat_core_types_pb.InputDocument.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
     writer.writeString(
-      2,
+      3,
       f
     );
   }
   f = message.getSettings();
   if (f != null) {
     writer.writeMessage(
-      3,
+      4,
       f,
       proto.msg.WallPaperSettings.serializeBinaryToWriter
     );
@@ -857,30 +871,67 @@ proto.msg.WallPaperUpload.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputFile File = 1;
- * @return {!proto.msg.InputFile}
+ * optional InputFile UploadedFile = 1;
+ * @return {?proto.msg.InputFile}
  */
-proto.msg.WallPaperUpload.prototype.getFile = function() {
-  return /** @type{!proto.msg.InputFile} */ (
-    jspb.Message.getWrapperField(this, chat_core_types_pb.InputFile, 1, 1));
+proto.msg.WallPaperUpload.prototype.getUploadedfile = function() {
+  return /** @type{?proto.msg.InputFile} */ (
+    jspb.Message.getWrapperField(this, chat_core_types_pb.InputFile, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputFile} value
+ * @param {?proto.msg.InputFile|undefined} value
  * @return {!proto.msg.WallPaperUpload} returns this
 */
-proto.msg.WallPaperUpload.prototype.setFile = function(value) {
+proto.msg.WallPaperUpload.prototype.setUploadedfile = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
+ * @return {!proto.msg.WallPaperUpload} returns this
+ */
+proto.msg.WallPaperUpload.prototype.clearUploadedfile = function() {
+  return this.setUploadedfile(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.WallPaperUpload.prototype.hasUploadedfile = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional InputDocument File = 2;
+ * @return {?proto.msg.InputDocument}
+ */
+proto.msg.WallPaperUpload.prototype.getFile = function() {
+  return /** @type{?proto.msg.InputDocument} */ (
+    jspb.Message.getWrapperField(this, chat_core_types_pb.InputDocument, 2));
+};
+
+
+/**
+ * @param {?proto.msg.InputDocument|undefined} value
+ * @return {!proto.msg.WallPaperUpload} returns this
+*/
+proto.msg.WallPaperUpload.prototype.setFile = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
  * @return {!proto.msg.WallPaperUpload} returns this
  */
 proto.msg.WallPaperUpload.prototype.clearFile = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setFile(undefined);
 };
 
 
@@ -889,16 +940,16 @@ proto.msg.WallPaperUpload.prototype.clearFile = function() {
  * @return {boolean}
  */
 proto.msg.WallPaperUpload.prototype.hasFile = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * required string MimeType = 2;
+ * required string MimeType = 3;
  * @return {string}
  */
 proto.msg.WallPaperUpload.prototype.getMimetype = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -907,7 +958,7 @@ proto.msg.WallPaperUpload.prototype.getMimetype = function() {
  * @return {!proto.msg.WallPaperUpload} returns this
  */
 proto.msg.WallPaperUpload.prototype.setMimetype = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setField(this, 3, value);
 };
 
 
@@ -916,43 +967,6 @@ proto.msg.WallPaperUpload.prototype.setMimetype = function(value) {
  * @return {!proto.msg.WallPaperUpload} returns this
  */
 proto.msg.WallPaperUpload.prototype.clearMimetype = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.WallPaperUpload.prototype.hasMimetype = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required WallPaperSettings Settings = 3;
- * @return {!proto.msg.WallPaperSettings}
- */
-proto.msg.WallPaperUpload.prototype.getSettings = function() {
-  return /** @type{!proto.msg.WallPaperSettings} */ (
-    jspb.Message.getWrapperField(this, proto.msg.WallPaperSettings, 3, 1));
-};
-
-
-/**
- * @param {!proto.msg.WallPaperSettings} value
- * @return {!proto.msg.WallPaperUpload} returns this
-*/
-proto.msg.WallPaperUpload.prototype.setSettings = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.WallPaperUpload} returns this
- */
-proto.msg.WallPaperUpload.prototype.clearSettings = function() {
   return jspb.Message.setField(this, 3, undefined);
 };
 
@@ -961,8 +975,45 @@ proto.msg.WallPaperUpload.prototype.clearSettings = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.msg.WallPaperUpload.prototype.hasSettings = function() {
+proto.msg.WallPaperUpload.prototype.hasMimetype = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * required WallPaperSettings Settings = 4;
+ * @return {!proto.msg.WallPaperSettings}
+ */
+proto.msg.WallPaperUpload.prototype.getSettings = function() {
+  return /** @type{!proto.msg.WallPaperSettings} */ (
+    jspb.Message.getWrapperField(this, proto.msg.WallPaperSettings, 4, 1));
+};
+
+
+/**
+ * @param {!proto.msg.WallPaperSettings} value
+ * @return {!proto.msg.WallPaperUpload} returns this
+*/
+proto.msg.WallPaperUpload.prototype.setSettings = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.WallPaperUpload} returns this
+ */
+proto.msg.WallPaperUpload.prototype.clearSettings = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.WallPaperUpload.prototype.hasSettings = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
@@ -1099,9 +1150,8 @@ proto.msg.InputWallPaper.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InputWallPaper.toObject = function(includeInstance, msg) {
   var f, obj = {
-    clusterid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    id: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    accesshash: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    accesshash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1139,15 +1189,11 @@ proto.msg.InputWallPaper.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setClusterid(value);
-      break;
-    case 2:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setId(value);
       break;
-    case 3:
-      var value = /** @type {number} */ (reader.readInt64());
+    case 2:
+      var value = /** @type {number} */ (reader.readFixed64());
       msg.setAccesshash(value);
       break;
     default:
@@ -1181,22 +1227,15 @@ proto.msg.InputWallPaper.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = /** @type {number} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt32(
+    writer.writeInt64(
       1,
       f
     );
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeFixed64(
       2,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
-    writer.writeInt64(
-      3,
       f
     );
   }
@@ -1204,10 +1243,10 @@ proto.msg.InputWallPaper.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int32 ClusterID = 1;
+ * required int64 ID = 1;
  * @return {number}
  */
-proto.msg.InputWallPaper.prototype.getClusterid = function() {
+proto.msg.InputWallPaper.prototype.getId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
@@ -1216,7 +1255,7 @@ proto.msg.InputWallPaper.prototype.getClusterid = function() {
  * @param {number} value
  * @return {!proto.msg.InputWallPaper} returns this
  */
-proto.msg.InputWallPaper.prototype.setClusterid = function(value) {
+proto.msg.InputWallPaper.prototype.setId = function(value) {
   return jspb.Message.setField(this, 1, value);
 };
 
@@ -1225,7 +1264,7 @@ proto.msg.InputWallPaper.prototype.setClusterid = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.msg.InputWallPaper} returns this
  */
-proto.msg.InputWallPaper.prototype.clearClusterid = function() {
+proto.msg.InputWallPaper.prototype.clearId = function() {
   return jspb.Message.setField(this, 1, undefined);
 };
 
@@ -1234,16 +1273,16 @@ proto.msg.InputWallPaper.prototype.clearClusterid = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.msg.InputWallPaper.prototype.hasClusterid = function() {
+proto.msg.InputWallPaper.prototype.hasId = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * required int64 ID = 2;
+ * required fixed64 AccessHash = 2;
  * @return {number}
  */
-proto.msg.InputWallPaper.prototype.getId = function() {
+proto.msg.InputWallPaper.prototype.getAccesshash = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -1252,7 +1291,7 @@ proto.msg.InputWallPaper.prototype.getId = function() {
  * @param {number} value
  * @return {!proto.msg.InputWallPaper} returns this
  */
-proto.msg.InputWallPaper.prototype.setId = function(value) {
+proto.msg.InputWallPaper.prototype.setAccesshash = function(value) {
   return jspb.Message.setField(this, 2, value);
 };
 
@@ -1261,7 +1300,7 @@ proto.msg.InputWallPaper.prototype.setId = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.msg.InputWallPaper} returns this
  */
-proto.msg.InputWallPaper.prototype.clearId = function() {
+proto.msg.InputWallPaper.prototype.clearAccesshash = function() {
   return jspb.Message.setField(this, 2, undefined);
 };
 
@@ -1270,44 +1309,8 @@ proto.msg.InputWallPaper.prototype.clearId = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.msg.InputWallPaper.prototype.hasId = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 AccessHash = 3;
- * @return {number}
- */
-proto.msg.InputWallPaper.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.msg.InputWallPaper} returns this
- */
-proto.msg.InputWallPaper.prototype.setAccesshash = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputWallPaper} returns this
- */
-proto.msg.InputWallPaper.prototype.clearAccesshash = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
 proto.msg.InputWallPaper.prototype.hasAccesshash = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -1738,8 +1741,7 @@ proto.msg.WallPaper.toObject = function(includeInstance, msg) {
     pattern: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f,
     dark: (f = jspb.Message.getBooleanField(msg, 6)) == null ? undefined : f,
     document: (f = msg.getDocument()) && chat_core_message_medias_pb.Document.toObject(includeInstance, f),
-    settings: (f = msg.getSettings()) && proto.msg.WallPaperSettings.toObject(includeInstance, f),
-    slug: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f
+    settings: (f = msg.getSettings()) && proto.msg.WallPaperSettings.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1781,7 +1783,7 @@ proto.msg.WallPaper.deserializeBinaryFromReader = function(msg, reader) {
       msg.setId(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {number} */ (reader.readFixed64());
       msg.setAccesshash(value);
       break;
     case 3:
@@ -1809,10 +1811,6 @@ proto.msg.WallPaper.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.WallPaperSettings;
       reader.readMessage(value,proto.msg.WallPaperSettings.deserializeBinaryFromReader);
       msg.setSettings(value);
-      break;
-    case 9:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSlug(value);
       break;
     default:
       reader.skipField();
@@ -1852,7 +1850,7 @@ proto.msg.WallPaper.serializeBinaryToWriter = function(message, writer) {
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeFixed64(
       2,
       f
     );
@@ -1901,13 +1899,6 @@ proto.msg.WallPaper.serializeBinaryToWriter = function(message, writer) {
       proto.msg.WallPaperSettings.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 9));
-  if (f != null) {
-    writer.writeString(
-      9,
-      f
-    );
-  }
 };
 
 
@@ -1948,7 +1939,7 @@ proto.msg.WallPaper.prototype.hasId = function() {
 
 
 /**
- * required int64 AccessHash = 2;
+ * required fixed64 AccessHash = 2;
  * @return {number}
  */
 proto.msg.WallPaper.prototype.getAccesshash = function() {
@@ -2201,42 +2192,6 @@ proto.msg.WallPaper.prototype.hasSettings = function() {
 };
 
 
-/**
- * optional string Slug = 9;
- * @return {string}
- */
-proto.msg.WallPaper.prototype.getSlug = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.msg.WallPaper} returns this
- */
-proto.msg.WallPaper.prototype.setSlug = function(value) {
-  return jspb.Message.setField(this, 9, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.WallPaper} returns this
- */
-proto.msg.WallPaper.prototype.clearSlug = function() {
-  return jspb.Message.setField(this, 9, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.WallPaper.prototype.hasSlug = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 /**
  * List of repeated fields within this message type.
@@ -2278,7 +2233,9 @@ proto.msg.WallPapersMany.toObject = function(includeInstance, msg) {
   var f, obj = {
     wallpapersList: jspb.Message.toObjectList(msg.getWallpapersList(),
     proto.msg.WallPaper.toObject, includeInstance),
-    count: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    count: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    crc32hash: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2324,6 +2281,14 @@ proto.msg.WallPapersMany.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readInt32());
       msg.setCount(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setCrc32hash(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEmpty(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2365,6 +2330,20 @@ proto.msg.WallPapersMany.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt32(
       2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeUint32(
+      3,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeBool(
+      5,
       f
     );
   }
@@ -2442,6 +2421,78 @@ proto.msg.WallPapersMany.prototype.clearCount = function() {
  */
 proto.msg.WallPapersMany.prototype.hasCount = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required uint32 Crc32Hash = 3;
+ * @return {number}
+ */
+proto.msg.WallPapersMany.prototype.getCrc32hash = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.WallPapersMany} returns this
+ */
+proto.msg.WallPapersMany.prototype.setCrc32hash = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.WallPapersMany} returns this
+ */
+proto.msg.WallPapersMany.prototype.clearCrc32hash = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.WallPapersMany.prototype.hasCrc32hash = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional bool Empty = 5;
+ * @return {boolean}
+ */
+proto.msg.WallPapersMany.prototype.getEmpty = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.WallPapersMany} returns this
+ */
+proto.msg.WallPapersMany.prototype.setEmpty = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.WallPapersMany} returns this
+ */
+proto.msg.WallPapersMany.prototype.clearEmpty = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.WallPapersMany.prototype.hasEmpty = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Broadcaster from "../../services/broadcaster";
 import {ThemeChanged} from "../SettingsMenu";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 interface IState {
     dark: boolean;
@@ -14,7 +15,7 @@ class Landscape extends React.Component<any, IState> {
         super(props);
 
         this.state = {
-            dark: (localStorage.getItem('river.theme.color') || 'light') !== 'light',
+            dark: (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') !== 'light',
         };
 
         this.broadcaster = Broadcaster.getInstance();
@@ -1465,7 +1466,7 @@ class Landscape extends React.Component<any, IState> {
 
     private themeChangeHandler = () => {
         this.setState({
-            dark: (localStorage.getItem('river.theme.color') || 'light') !== 'light',
+            dark: (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') !== 'light',
         });
     }
 }

@@ -55,6 +55,11 @@ export class UsersMany extends jspb.Message {
   setUsersList(value: Array<chat_core_types_pb.User>): void;
   addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
 
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UsersMany.AsObject;
   static toObject(includeInstance: boolean, msg: UsersMany): UsersMany.AsObject;
@@ -68,6 +73,7 @@ export class UsersMany extends jspb.Message {
 export namespace UsersMany {
   export type AsObject = {
     usersList: Array<chat_core_types_pb.User.AsObject>,
+    empty?: boolean,
   }
 }
 

@@ -79,10 +79,15 @@ export namespace WallPaperDelete {
 }
 
 export class WallPaperUpload extends jspb.Message {
+  hasUploadedfile(): boolean;
+  clearUploadedfile(): void;
+  getUploadedfile(): chat_core_types_pb.InputFile | undefined;
+  setUploadedfile(value?: chat_core_types_pb.InputFile): void;
+
   hasFile(): boolean;
   clearFile(): void;
-  getFile(): chat_core_types_pb.InputFile;
-  setFile(value?: chat_core_types_pb.InputFile): void;
+  getFile(): chat_core_types_pb.InputDocument | undefined;
+  setFile(value?: chat_core_types_pb.InputDocument): void;
 
   hasMimetype(): boolean;
   clearMimetype(): void;
@@ -106,7 +111,8 @@ export class WallPaperUpload extends jspb.Message {
 
 export namespace WallPaperUpload {
   export type AsObject = {
-    file: chat_core_types_pb.InputFile.AsObject,
+    uploadedfile?: chat_core_types_pb.InputFile.AsObject,
+    file?: chat_core_types_pb.InputDocument.AsObject,
     mimetype?: string,
     settings: WallPaperSettings.AsObject,
   }
@@ -129,11 +135,6 @@ export namespace WallPaperReset {
 }
 
 export class InputWallPaper extends jspb.Message {
-  hasClusterid(): boolean;
-  clearClusterid(): void;
-  getClusterid(): number | undefined;
-  setClusterid(value: number): void;
-
   hasId(): boolean;
   clearId(): void;
   getId(): number | undefined;
@@ -156,7 +157,6 @@ export class InputWallPaper extends jspb.Message {
 
 export namespace InputWallPaper {
   export type AsObject = {
-    clusterid?: number,
     id?: number,
     accesshash?: number,
   }
@@ -255,11 +255,6 @@ export class WallPaper extends jspb.Message {
   getSettings(): WallPaperSettings | undefined;
   setSettings(value?: WallPaperSettings): void;
 
-  hasSlug(): boolean;
-  clearSlug(): void;
-  getSlug(): string | undefined;
-  setSlug(value: string): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): WallPaper.AsObject;
   static toObject(includeInstance: boolean, msg: WallPaper): WallPaper.AsObject;
@@ -280,7 +275,6 @@ export namespace WallPaper {
     dark?: boolean,
     document?: chat_core_message_medias_pb.Document.AsObject,
     settings?: WallPaperSettings.AsObject,
-    slug?: string,
   }
 }
 
@@ -294,6 +288,16 @@ export class WallPapersMany extends jspb.Message {
   clearCount(): void;
   getCount(): number | undefined;
   setCount(value: number): void;
+
+  hasCrc32hash(): boolean;
+  clearCrc32hash(): void;
+  getCrc32hash(): number | undefined;
+  setCrc32hash(value: number): void;
+
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): WallPapersMany.AsObject;
@@ -309,6 +313,8 @@ export namespace WallPapersMany {
   export type AsObject = {
     wallpapersList: Array<WallPaper.AsObject>,
     count?: number,
+    crc32hash?: number,
+    empty?: boolean,
   }
 }
 

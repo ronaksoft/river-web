@@ -10,6 +10,8 @@
 import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
 import {IServerRequest, serverKeys} from '../index';
 import ElectronService from '../../../electron';
+import {EventWasmInit, EventWebSocketClose, EventWebSocketOpen} from "../../../events";
+import {C_LOCALSTORAGE} from "../../const";
 
 export const defaultGateway = 'cyrus.river.im';
 
@@ -59,7 +61,7 @@ export default class Socket {
     private resolveGenInputPasswordFn: any | undefined;
 
     public constructor() {
-        this.testUrl = localStorage.getItem('river.workspace_url') || '';
+        this.testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
 
         this.worker = new Worker('/bin/worker.js?v21');
 
@@ -104,14 +106,14 @@ export default class Socket {
             const d = e.data;
             switch (d.cmd) {
                 case 'saveConnInfo':
-                    localStorage.setItem('river.conn.info', d.data);
+                    localStorage.setItem(C_LOCALSTORAGE.ConnInfo, d.data);
                     break;
                 case 'loadConnInfo':
-                    this.workerMessage('loadConnInfo', {connInfo: localStorage.getItem('river.conn.info'), serverKeys});
+                    this.workerMessage('loadConnInfo', {connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo), serverKeys});
                     this.initWebSocket();
                     this.workerMessage('initSDK', 0);
                     setTimeout(() => {
-                        this.dispatchEvent('wasmInit', null);
+                        this.dispatchEvent(EventWasmInit, null);
                     }, 50);
                     break;
                 case 'fnCallback':
@@ -151,7 +153,7 @@ export default class Socket {
                 case 'fnStarted':
                     serverTime = d.data.time;
                     if (!this.started && this.connected) {
-                        this.dispatchEvent('wsOpen', null);
+                        this.dispatchEvent(EventWebSocketOpen, null);
                     }
                     this.started = true;
                     this.dispatchEvent('fnStarted', d.data);
@@ -261,7 +263,7 @@ export default class Socket {
 
         this.tryCounter++;
 
-        this.testUrl = localStorage.getItem('river.workspace_url') || '';
+        this.testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
         if (this.testUrl.length > 0) {
             this.socket = new WebSocket(`ws://${this.testUrl}`);
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
@@ -284,9 +286,9 @@ export default class Socket {
             this.lastSendTime = Date.now();
             this.lastReceiveTime = Date.now();
             if (this.started) {
-                this.dispatchEvent('wsOpen', null);
+                this.dispatchEvent(EventWebSocketOpen, null);
             }
-            this.workerMessage('wsOpen', null);
+            this.workerMessage(EventWebSocketOpen, null);
         };
 
         // Listen for messages
@@ -318,7 +320,7 @@ export default class Socket {
                 window.console.log(e);
             }
         }
-        this.dispatchEvent('wsClose', null);
+        this.dispatchEvent(EventWebSocketClose, null);
         if (!this.online && !force) {
             return;
         }

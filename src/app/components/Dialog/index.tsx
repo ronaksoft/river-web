@@ -37,6 +37,7 @@ import {ILabel} from "../../repository/label/interface";
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import LabelPopover from "../LabelPopover";
 import DialogSkeleton from "../DialogSkeleton";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 
@@ -160,7 +161,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             },
         };
 
-        this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
+        this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
     }
 
     public componentDidMount() {

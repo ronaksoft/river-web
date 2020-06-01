@@ -31,6 +31,7 @@ import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
 import {Loading} from '../Loading';
 import SearchRepo from "../../repository/search";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 
@@ -132,7 +133,7 @@ class ContactList extends React.Component<IProps, IState> {
 
         this.isMobile = IsMobile.isAny();
         this.hasScrollbar = getScrollbarWidth() > 0;
-        this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
+        this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
 
         this.userRepo = UserRepo.getInstance();
         this.searchRepo = SearchRepo.getInstance();

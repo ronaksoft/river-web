@@ -55,7 +55,7 @@ import UpdateManager, {
     IMessageDBUpdated,
     IMessageIdDBUpdated
 } from '../../services/sdk/updateManager';
-import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
+import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
     UpdateDraftMessage,
@@ -169,6 +169,7 @@ import Smoother from "../../services/utilities/smoother";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
 
 import './style.scss';
+import {TopPeerCategory} from "../../services/sdk/messages/chat.api.contacts_pb";
 
 export let notifyOptions: any[] = [];
 
@@ -478,7 +479,7 @@ class Chat extends React.Component<IProps, IState> {
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Logout, this.electronLogoutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.SizeMode, this.electronSizeModeHandler));
 
-        if (localStorage.getItem('river.theme.bg') === C_CUSTOM_BG) {
+        if (localStorage.getItem(C_LOCALSTORAGE.ThemeBg) === C_CUSTOM_BG) {
             this.backgroundService.getBackground(C_CUSTOM_BG_ID, true);
         }
 
@@ -2315,8 +2316,18 @@ class Chat extends React.Component<IProps, IState> {
         this.apiManager.authRecall().then((res) => {
             if (res.timestamp) {
                 this.riverTime.setServerTime(res.timestamp);
-                this.userRepo.getAllContacts();
             }
+            this.userRepo.getAllContacts();
+            this.apiManager.getSystemConfig();
+            this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, 20).then((tp) => {
+                window.console.log(tp);
+            });
+            this.apiManager.getTopPeer(TopPeerCategory.USERS, 0, 20).then((tp) => {
+                window.console.log(tp);
+            });
+            this.apiManager.getTopPeer(TopPeerCategory.GROUPS, 0, 20).then((tp) => {
+                window.console.log(tp);
+            });
             if (this.firstTimeLoad) {
                 this.firstTimeLoad = false;
                 this.startSyncing(res.updateid || 0);
@@ -2798,7 +2809,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.props.enqueueSnackbar(i18n.t('message.unsupported_file'));
             }
         } else {
-            const peer = this.getPeerByDialogId(peerId)
+            const peer = this.getPeerByDialogId(peerId);
             if (peer && peer.peer && this.uploaderRef) {
                 const isFile = files.some((o) => getUploaderInput(o.type) === 'file');
                 this.uploaderRef.openDialog(peer.peer, files, {
