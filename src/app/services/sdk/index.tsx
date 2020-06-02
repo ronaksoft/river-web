@@ -195,7 +195,7 @@ export default class APIManager {
     public setConnInfo(info: IConnInfo) {
         this.connInfo = info;
         const s = JSON.stringify(info);
-        localStorage.setItem(C_LOCALSTORAGE.SystemConfig, s);
+        localStorage.setItem(C_LOCALSTORAGE.ConnInfo, s);
     }
 
     public resetConnInfo() {
