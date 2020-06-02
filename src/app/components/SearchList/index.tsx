@@ -22,6 +22,7 @@ import {
     PeopleOutlined,
     PhotoOutlined,
     RecordVoiceOverOutlined,
+    SearchRounded,
     VideocamOutlined,
 } from '@material-ui/icons';
 import {IDialog} from '../../repository/dialog/interface';
@@ -40,6 +41,7 @@ import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import TopPeer from "../TopPeer";
 import {TopPeerType} from "../../repository/topPeer";
 import {IGroup} from "../../repository/group/interface";
+import {InputAdornment} from "@material-ui/core";
 
 import './style.scss';
 
@@ -59,8 +61,10 @@ export interface IInputPeer {
 
 interface IProps {
     onChange?: (peerInputs: IInputPeer[]) => void;
-    onlyContact?: boolean;
+    contactOnly?: boolean;
     selectedIds?: string[];
+    enableTopPeer?: boolean;
+    topPeerType?: TopPeerType;
 }
 
 interface IState {
@@ -103,7 +107,7 @@ class SearchList extends React.Component<IProps, IState> {
         this.hasScrollbar = getScrollbarWidth() > 0;
 
         this.searchRepo = SearchRepo.getInstance();
-        if (props.onlyContact) {
+        if (props.contactOnly) {
             this.searchApi = this.searchRepo.searchUser;
         } else {
             this.searchApi = this.searchRepo.search;
@@ -137,6 +141,7 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     public render() {
+        const {topPeerType, enableTopPeer} = this.props;
         const {selectedInputPeers} = this.state;
         const ids: string[] = [];
         selectedInputPeers.forEach((peer) => {
@@ -148,18 +153,26 @@ class SearchList extends React.Component<IProps, IState> {
             <div className="search-list">
                 <div className="search-input-container">
                     <ChipInput
-                        label={i18n.t('chat.search')}
+                        placeholder={i18n.t('chat.search')}
                         value={selectedInputPeers}
                         chipRenderer={this.chipRenderer}
                         fullWidth={true}
                         onUpdateInput={this.searchChangeHandler}
                         onDelete={this.removeItemHandler}
+                        variant="outlined"
+                        margin="dense"
+                        InputProps={{
+                            startAdornment:
+                                <InputAdornment position="start" className="search-adornment">
+                                    <SearchRounded/>
+                                </InputAdornment>
+                        }}
                         // @ts-ignore
                         classes={{}}
                     />
                 </div>
-                <TopPeer type={this.props.onlyContact ? TopPeerType.Search : TopPeerType.Forward} noTitle={true}
-                         onlyUser={this.props.onlyContact} onSelect={this.topPeerSelectHandler} hideIds={ids}/>
+                {enableTopPeer && <TopPeer type={topPeerType || TopPeerType.Search} hideIds={ids}
+                                           onlyUser={this.props.contactOnly} onSelect={this.topPeerSelectHandler}/>}
                 <div className="search-list-container">
                     {this.getWrapper()}
                 </div>
@@ -306,7 +319,7 @@ class SearchList extends React.Component<IProps, IState> {
                 </div>
             );
         } else if (inputPeer.mode === 'label' && inputPeer.label) {
-            if (this.props.onlyContact) {
+            if (this.props.contactOnly) {
                 return null;
             } else {
                 return (<div style={style} key={index} className="category-item">{inputPeer.label}</div>);
@@ -496,8 +509,10 @@ class SearchList extends React.Component<IProps, IState> {
             } else {
                 return 64;
             }
+        } else if (inputPeer.mode === 'label') {
+            return 37;
         } else {
-            if (this.props.onlyContact) {
+            if (this.props.contactOnly) {
                 return 0;
             }
             return 64;

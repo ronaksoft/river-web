@@ -14,9 +14,9 @@
   }
 
   .top-peer-title {
-    font-size: 12px;
+    font-size: 16px;
     text-align: left;
-    padding: 4px 6px 6px;
+    padding: 8px 16px;
     border-bottom: 1px solid var(--light);
   }
 
@@ -36,18 +36,18 @@
       align-items: center;
       justify-content: center;
       width: 64px;
-      height: 86px;
+      height: 80px;
       padding: 0 4px;
       cursor: pointer;
 
-      .avatar-image, .text-avatar {
+      .avatar-image, .text-avatar, img {
         height: 48px;
         width: 48px;
       }
 
       .top-peer-avatar {
         line-height: 0;
-        margin: 0 0 8px;
+        margin: 0 0 4px;
       }
 
       .top-peer-name {
@@ -67,7 +67,7 @@ html[theme="dark-night"],
 html[theme="dark-blue"] {
   .top-peer {
     .top-peer-title {
-      color: var(--light);
+      color: var(--grey-low);
       border-color: var(--dark-low-op50);
     }
 

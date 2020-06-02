@@ -100,10 +100,10 @@ class LabelCreate extends React.Component<IProps, IState> {
                         })}
                     </div>
                     <div className="label-footer">
-                        <Button>{i18n.t('general.cancel')}</Button>
-                        <Button color="primary"
-                                disabled={Boolean((label.name || '').length === 0 || (label.colour || '').length === 0) || loading}
-                                onClick={this.createLabelHandler}
+                        <Button onClick={this.modalCloseHandler}>{i18n.t('general.cancel')}</Button>
+                        <Button
+                            disabled={Boolean((label.name || '').length === 0 || (label.colour || '').length === 0) || loading}
+                            onClick={this.createLabelHandler} color="primary"
                         >{i18n.t(label.id === 0 ? 'general.create' : 'general.apply')}</Button>
                     </div>
                 </div>

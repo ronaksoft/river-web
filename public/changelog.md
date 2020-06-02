@@ -1,3 +1,6 @@
+## 0.32.42
+* Bug fixes and performance improvements
+
 ## 0.32.41
 * 🎉 New TopPeer feature
 * Bug fixes and performance improvements

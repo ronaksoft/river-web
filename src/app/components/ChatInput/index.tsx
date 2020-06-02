@@ -324,6 +324,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private botKeyboard: IKeyboardBotData | undefined;
     private firstLoad: boolean = true;
     private microphonePermission: boolean = false;
+    private startPosHold: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -529,7 +530,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 return;
             }
             this.textarea.focus();
-            if (this.textarea.value) {
+            if (this.textarea.value && this.textarea.selectionStart === 0) {
                 this.textarea.setSelectionRange(this.textarea.value.length, this.textarea.value.length);
             }
         }, 100);
@@ -1251,6 +1252,7 @@ class ChatInput extends React.Component<IProps, IState> {
             }, 500);
         }
         this.mentions = mentions;
+        this.startPosHold = 0;
         this.setState({
             textareaValue: e.target.value,
         }, () => {
@@ -2152,7 +2154,11 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         let textVal: string = this.textarea.value;
-        let startPosHold = this.textarea.selectionStart;
+        if (!this.startPosHold) {
+            this.startPosHold = this.textarea.selectionStart;
+        } else {
+            this.textarea.setSelectionRange(this.startPosHold, this.startPosHold);
+        }
         // IE support
         // @ts-ignore
         if (document.selection) {
@@ -2175,12 +2181,6 @@ class ChatInput extends React.Component<IProps, IState> {
         this.textarea.value = textVal;
         this.setState({
             textareaValue: textVal,
-        }, () => {
-            if (startPosHold && this.textarea) {
-                startPosHold += text.length;
-                this.textarea.focus();
-                this.textarea.setSelectionRange(startPosHold, startPosHold);
-            }
         });
     }
 

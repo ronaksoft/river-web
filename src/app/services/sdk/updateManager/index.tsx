@@ -117,6 +117,7 @@ interface ITransactionPayload {
     live: boolean;
     messages: { [key: number]: IMessage };
     randomMessageIds: number[];
+    removedLabels: number[];
     removedMessages: { [key: string]: number[] };
     toCheckDialogIds: string[];
     updateId: number;
@@ -493,6 +494,7 @@ export default class UpdateManager {
             live,
             messages: {},
             randomMessageIds: [],
+            removedLabels: [],
             removedMessages: {},
             toCheckDialogIds: [],
             topPeers: [],
@@ -802,7 +804,7 @@ export default class UpdateManager {
                 this.callUpdateHandler(update.constructor, updateLabelDeleted);
                 // Remove label
                 updateLabelDeleted.labelidsList.forEach((id) => {
-                    this.removeLabel(transaction.labels, id);
+                    this.removeLabel(transaction.labels, transaction.removedLabels, id);
                 });
                 break;
             case C_MSG.UpdateLabelItemsAdded:
@@ -958,8 +960,9 @@ export default class UpdateManager {
         }
     }
 
-    private removeLabel(labels: { [key: number]: ILabel }, id: number) {
+    private removeLabel(labels: { [key: number]: ILabel }, removedLabels: number[], id: number) {
         delete labels[id];
+        removedLabels.push(id);
     }
 
     private queueTransaction(transaction: ITransactionPayload) {
@@ -1000,6 +1003,9 @@ export default class UpdateManager {
             });
             if (labelList.length > 0 && this.labelRepo) {
                 promises.push(this.labelRepo.importBulk(labelList));
+            }
+            if (transaction.removedLabels.length > 0 && this.labelRepo) {
+                promises.push(this.labelRepo.removeMany(transaction.removedLabels));
             }
             // Message list
             if (Object.keys(transaction.messages).length > 0) {

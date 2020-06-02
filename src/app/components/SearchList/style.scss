@@ -18,11 +18,30 @@
     padding: 10px;
     text-align: left;
 
+    > div {
+      margin: 0;
+    }
+
+    .MuiInputBase-root {
+      padding: 6px 6px 0;
+
+      input {
+        padding: 6px 6px 8px;
+      }
+    }
+
     .chip {
-      margin: 0 3px 3px 0;
+      margin: 0 6px 6px 0;
+      border-radius: 4px;
 
       .MuiChip-label {
         line-height: 1em;
+      }
+
+      .uac {
+        svg {
+          font-size: 18px;
+        }
       }
 
       .group-name {
@@ -145,12 +164,13 @@
       }
 
       .category-item {
-        color: var(--river);
-        font-size: 24px;
-        line-height: 24px;
-        height: 40px;
+        color: var(--grey-low);
+        font-size: 16px;
+        line-height: 21px;
+        height: 37px;
         text-align: left;
-        padding: 16px 8px 0;
+        padding: 8px 16px 8px;
+        border-bottom: 1px solid var(--light);
       }
     }
   }
@@ -211,9 +231,13 @@ html[theme="dark-blue"] {
 
     .search-list-container {
       .search-container {
+        .category-item {
+          border-color: var(--dark-low-op50);
+        }
+
         .search-item {
           &:after {
-            background-color: var(--dark-low);
+            background-color: var(--dark-low-op50);
           }
 
           .name {
@@ -235,9 +259,13 @@ html[theme="dark-blue"] {
 
     .search-list-container {
       .search-container {
+        .category-item {
+          border-color: var(--dark-blue-low-op50);
+        }
+
         .search-item {
           &:after {
-            background-color: var(--dark-blue-low);
+            background-color: var(--dark-blue-low-op50);
           }
         }
       }

@@ -11,28 +11,32 @@ import * as React from 'react';
 import SettingsModal from '../SettingsModal';
 import {PersonAddRounded, SendRounded} from '@material-ui/icons';
 import SearchList, {IInputPeer} from '../SearchList';
-import i18n from '../../services/i18n';
+import {TopPeerType} from "../../repository/topPeer";
 
 import './style.scss';
 
 interface IProps {
     onClose: () => void;
     onDone: (inputPeers: IInputPeer[]) => void;
+    title: string;
+    contactOnly?: boolean;
+    enableTopPeer?: boolean;
+    topPeerType?: TopPeerType;
 }
 
 interface IState {
-    forwardRecipients: IInputPeer[];
+    selectedPeers: IInputPeer[];
     open: boolean;
 }
 
-class ForwardDialog extends React.Component<IProps, IState> {
+class SelectPeerDialog extends React.Component<IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            forwardRecipients: [],
             open: false,
+            selectedPeers: [],
         };
     }
 
@@ -43,17 +47,18 @@ class ForwardDialog extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, forwardRecipients} = this.state;
+        const {open, selectedPeers} = this.state;
         return (
-            <SettingsModal open={open} title={i18n.t('general.recipient')}
+            <SettingsModal open={open} title={this.props.title}
                            icon={<PersonAddRounded/>}
                            onClose={this.modalCloseHandler}
                            height="500px"
                            noScrollbar={true}
             >
-                <div className="forward-dialog">
-                    <SearchList onChange={this.forwardRecipientChangeHandler}/>
-                    {Boolean(forwardRecipients.length > 0) && <div className="actions-bar">
+                <div className="select-peer-dialog">
+                    <SearchList onChange={this.forwardRecipientChangeHandler} enableTopPeer={this.props.enableTopPeer}
+                                topPeerType={this.props.topPeerType} contactOnly={this.props.contactOnly}/>
+                    {Boolean(selectedPeers.length > 0) && <div className="actions-bar">
                         <div className="add-action send" onClick={this.forwardHandler}>
                             <SendRounded/>
                         </div>
@@ -65,24 +70,24 @@ class ForwardDialog extends React.Component<IProps, IState> {
 
     private modalCloseHandler = () => {
         this.setState({
-            forwardRecipients: [],
             open: false,
+            selectedPeers: [],
         });
         this.props.onClose();
     }
 
     private forwardHandler = () => {
         if (this.props.onDone) {
-            this.props.onDone(this.state.forwardRecipients);
+            this.props.onDone(this.state.selectedPeers);
             this.modalCloseHandler();
         }
     }
 
     private forwardRecipientChangeHandler = (inputPeers: IInputPeer[]) => {
         this.setState({
-            forwardRecipients: inputPeers,
+            selectedPeers: inputPeers,
         });
     }
 }
 
-export default ForwardDialog;
+export default SelectPeerDialog;

@@ -1,3 +1,6 @@
+## 0.32.42
+* Code refactoring
+
 ## 0.32.41
 * 🎉 TopPeer implemented
 * Bug fixes and performance improvements

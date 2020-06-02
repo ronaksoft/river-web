@@ -61,7 +61,8 @@
     "ok": "OK",
     "send": "Send",
     "create": "Create",
-    "people": "People"
+    "people": "People",
+    "dialogs": "Dialogs"
   },
   "chat": {
     "search": "Search",

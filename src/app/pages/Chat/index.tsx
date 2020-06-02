@@ -132,7 +132,7 @@ import {C_CUSTOM_BG} from '../../components/SettingsMenu/vars/theme';
 import SearchMessage from '../../components/SearchMessage';
 import SettingsConfigManager from '../../services/settingsConfigManager';
 import * as Sentry from '@sentry/browser';
-import ForwardDialog from "../../components/ForwardDialog";
+import SelectPeerDialog from "../../components/SelectPeerDialog";
 import AboutDialog from "../../components/AboutModal";
 import StatusBar from "../../components/StatusBar";
 import i18n from "../../services/i18n";
@@ -224,7 +224,7 @@ class Chat extends React.Component<IProps, IState> {
     private readonly dialogsSortThrottle: any = null;
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
-    private forwardDialogRef: ForwardDialog | undefined;
+    private forwardDialogRef: SelectPeerDialog | undefined;
     private userDialogRef: UserDialog | undefined;
     private fileManager: FileManager;
     private electronService: ElectronService;
@@ -844,9 +844,9 @@ class Chat extends React.Component<IProps, IState> {
                         </DialogActions>
                     </>}
                 </OverlayDialog>
-                <ForwardDialog key="forward-dialog" ref={this.forwardDialogRefHandler}
-                               onDone={this.forwardDialogDoneHandler}
-                               onClose={this.forwardDialogCloseHandler}/>
+                <SelectPeerDialog key="forward-dialog" ref={this.forwardDialogRefHandler} enableTopPeer={true}
+                                  onDone={this.forwardDialogDoneHandler} topPeerType={TopPeerType.Forward}
+                                  onClose={this.forwardDialogCloseHandler} title={i18n.t('general.recipient')}/>
                 <UserDialog key="user-dialog" ref={this.userDialogRefHandler} onAction={this.userDialogActionHandler}/>
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
                                 onJumpOnMessage={this.documentViewerJumpOnMessageHandler}
@@ -2321,10 +2321,10 @@ class Chat extends React.Component<IProps, IState> {
             if (res.timestamp) {
                 this.riverTime.setServerTime(res.timestamp);
             }
-            this.userRepo.getAllContacts();
-            this.apiManager.getSystemConfig();
             if (this.firstTimeLoad) {
                 this.firstTimeLoad = false;
+                this.userRepo.getAllContacts();
+                this.apiManager.getSystemConfig();
                 this.startSyncing(res.updateid || 0);
             } else {
                 setTimeout(() => {
@@ -3667,7 +3667,7 @@ class Chat extends React.Component<IProps, IState> {
         this.userDialogRef = ref;
     }
 
-    /* ForwardDialog ref handler */
+    /* SelectPeerDialog ref handler */
     private forwardDialogRefHandler = (ref: any) => {
         this.forwardDialogRef = ref;
     }

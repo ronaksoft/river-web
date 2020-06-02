@@ -365,11 +365,12 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     private getContent() {
-        const {searchItems, searchAddedItems, searchMessageItems, appliedSelectedLabelIds} = this.state;
+        const {searchItems, searchAddedItems, searchMessageItems, appliedSelectedLabelIds, searchEnable} = this.state;
         if ((searchItems.length + searchAddedItems.length + searchMessageItems.length) === 0) {
             return this.noRowsRenderer();
         } else {
             return (<>
+                {searchEnable && <div className="search-label">{i18n.t('general.dialogs')}</div>}
                 {Boolean(appliedSelectedLabelIds.length === 0) && <>
                     {searchItems.map((dialog, index) => {
                         const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};

@@ -58,7 +58,7 @@ class UserListDialog extends React.Component<IProps, IState> {
                            noScrollbar={true}
             >
                 <div className="user-list-dialog">
-                    <SearchList selectedIds={selectedIds} onlyContact={true}
+                    <SearchList selectedIds={selectedIds} contactOnly={true}
                                 onChange={this.forwardRecipientChangeHandler}/>
                     {Boolean(userList.length > 0 || (selectedIds.length > 0 && userList.length === 0)) &&
                     <div className="actions-bar">
