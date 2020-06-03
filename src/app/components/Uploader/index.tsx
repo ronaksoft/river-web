@@ -801,13 +801,17 @@ class Uploader extends React.Component<IProps, IState> {
                 const height = Math.round(item.height || 0);
                 const width = Math.round(item.width || 0);
                 const maxSize = Math.max(height, width);
-                const config = {
-                    autoRotate: true,
-                    maxHeight: Math.min(1280, maxSize),
-                    maxWidth: Math.min(1280, maxSize),
-                    quality: 0.85,
-                };
-                promise.push(readAndCompressImage(item, config));
+                if (!isFile) {
+                    const config = {
+                        autoRotate: true,
+                        maxHeight: Math.min(1280, maxSize),
+                        maxWidth: Math.min(1280, maxSize),
+                        quality: 0.85,
+                    };
+                    promise.push(readAndCompressImage(item, config));
+                } else {
+                    promise.push(this.convertFileToBlob(item));
+                }
                 const thumbConfig = {
                     autoRotate: true,
                     maxHeight: Math.min(160, maxSize),

@@ -1,3 +1,6 @@
+## 0.32.43
+* Uploader send as file bug fixed
+
 ## 0.32.42
 * Bug fixes and performance improvements
 
