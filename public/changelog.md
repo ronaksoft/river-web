@@ -1,3 +1,6 @@
+## 0.32.44
+* Progress bug fixed
+
 ## 0.32.43
 * Uploader send as file bug fixed
 
