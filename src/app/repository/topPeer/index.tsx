@@ -74,6 +74,10 @@ export default class TopPeerRepo {
         return this.getDbByType(type).bulkPut(topPeers);
     }
 
+    public remove(type: TopPeerType, id: string) {
+        return this.getDbByType(type).delete(id);
+    }
+
     public insertFromRemote(type: TopPeerType, remoteTopPeers: TopPeer.AsObject[]) {
         const topPeers = (remoteTopPeers as ITopPeer[]).map((tp: ITopPeer) => {
             if (tp.peer) {

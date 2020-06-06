@@ -61,7 +61,8 @@
     "send": "ارسال",
     "create": "ساختن",
     "people": "پرتکرار",
-    "dialogs": "گفتگو"
+    "dialogs": "گفتگو",
+    "clear": "حذف"
   },
   "chat": {
     "search": "جستجو",

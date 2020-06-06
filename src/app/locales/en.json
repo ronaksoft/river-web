@@ -62,7 +62,8 @@
     "send": "Send",
     "create": "Create",
     "people": "People",
-    "dialogs": "Dialogs"
+    "dialogs": "Dialogs",
+    "clear": "Clear"
   },
   "chat": {
     "search": "Search",

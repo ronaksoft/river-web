@@ -220,10 +220,7 @@ class App extends React.Component<{}, IState> {
                     <SnackbarProvider maxSnack={3}>
                         {Routes}
                     </SnackbarProvider>
-                    <Dialog
-                        open={alertOpen}
-                        onClose={this.alertCloseHandler}
-                    >
+                    <Dialog open={alertOpen} onClose={this.alertCloseHandler}>
                         <DialogTitle>Critical Error</DialogTitle>
                         <DialogContent>
                             {!clearingSiteData && <DialogContentText>

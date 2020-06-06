@@ -14,10 +14,23 @@
   }
 
   .top-peer-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 16px;
-    text-align: left;
     padding: 8px 16px;
     border-bottom: 1px solid var(--light);
+
+    .text {
+      flex: 1;
+      text-align: left;
+    }
+
+    .clear {
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   }
 
   .scroll-bar {
@@ -31,6 +44,7 @@
     }
 
     .top-peer-item {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -39,6 +53,25 @@
       height: 80px;
       padding: 0 4px;
       cursor: pointer;
+
+      .remove {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        height: 16px;
+        width: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--red);
+        border-radius: 50%;
+        color: var(--white);
+        visibility: hidden;
+
+        svg {
+          font-size: 16px;
+        }
+      }
 
       .avatar-image, .text-avatar, img {
         height: 48px;
@@ -57,6 +90,16 @@
         max-width: 56px;
         font-size: 13px;
         color: var(--dark);
+      }
+    }
+  }
+
+  &.clear-mode {
+    .scroll-bar {
+      .top-peer-item {
+        .remove {
+          visibility: visible;
+        }
       }
     }
   }
@@ -92,7 +135,9 @@ html[theme="dark-blue"] {
 html[direction="rtl"] {
   .top-peer {
     .top-peer-title {
-      text-align: right;
+      .text {
+        text-align: right;
+      }
     }
   }
 }

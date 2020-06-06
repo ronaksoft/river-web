@@ -35,7 +35,7 @@ import {
     ContactsGetTopPeers,
     ContactsImport,
     ContactsImported,
-    ContactsMany,
+    ContactsMany, ContactsResetTopPeer,
     ContactsSearch, ContactsTopPeers,
     ContactsUnblock,
     TopPeerCategory
@@ -903,6 +903,13 @@ export default class APIManager {
         data.setOffset(offset);
         data.setLimit(limit);
         return this.server.send(C_MSG.ContactsGetTopPeers, data.serializeBinary(), false);
+    }
+
+    public removeTopPeer(category: TopPeerCategory, peer: InputPeer): Promise<Bool.AsObject> {
+        const data = new ContactsResetTopPeer();
+        data.setCategory(category);
+        data.setPeer(peer);
+        return this.server.send(C_MSG.ContactsResetTopPeer, data.serializeBinary(), true);
     }
 
     public getSystemConfig(): Promise<SystemConfig.AsObject> {

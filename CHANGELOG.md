@@ -1,5 +1,6 @@
 ## 0.32.44
 * Progress bug fixed
+* Reset top peer implemented
 
 ## 0.32.43
 * Uploader send as file bug fixed
