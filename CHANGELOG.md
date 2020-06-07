@@ -1,4 +1,5 @@
 ## 0.32.45
+* Few bugs related to the RandomId fixed
 * Bug fixes and performance improvements
 
 ## 0.32.44

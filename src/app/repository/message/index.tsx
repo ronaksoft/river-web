@@ -1044,6 +1044,7 @@ export default class MessageRepo {
     private trimMessage(msg: IMessage) {
         if (msg) {
             delete msg.avatar;
+            delete msg.random_id;
         }
     }
 }

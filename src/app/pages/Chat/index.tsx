@@ -1122,6 +1122,13 @@ class Chat extends React.Component<IProps, IState> {
         if (data.message) {
             this.updateDialogs(data.message, data.accesshash || '0');
         }
+        // RandomId Error helper
+        if (this.messages.length > 0 && this.messages[this.messages.length - 1] && (this.messages[this.messages.length - 1].id || 0) < 0) {
+            const index = findLastIndex(this.messages, {random_id: data.senderrefid});
+            if (index > -1) {
+                this.messages[index].id = data.message.id;
+            }
+        }
         if (this.messageRef) {
             this.messageRef.updateList();
         }
@@ -1789,6 +1796,7 @@ class Chat extends React.Component<IProps, IState> {
                 messagetype: C_MESSAGE_TYPE.Normal,
                 peerid: this.selectedDialogId,
                 peertype: peer.getType(),
+                random_id: randomId,
                 rtl: this.rtlDetector.direction(text || ''),
                 senderid: this.userId,
             };
@@ -1858,6 +1866,7 @@ class Chat extends React.Component<IProps, IState> {
         let gapNumber = 0;
         if (dialog && this.messages.length > 0) {
             const lastValid = this.getValidAfter();
+            window.console.log(lastValid, dialog.topmessageid);
             if (lastValid !== dialog.topmessageid && findLastIndex(this.messages, {id: dialog.topmessageid || 0}) === -1) {
                 this.messageRef.clearAll();
                 this.messages = [];
@@ -1902,8 +1911,8 @@ class Chat extends React.Component<IProps, IState> {
             if (id < 0) {
                 this.messageRepo.remove(id);
             }
-            const index = findIndex(this.messages, (o) => {
-                return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            const index = findLastIndex(this.messages, (o) => {
+                return o.id === id;
             });
             if (index > -1) {
                 this.messages[index].mark_as_sent = true;
@@ -2536,13 +2545,10 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private getValidAfter(offset?: number): number {
+    private getValidAfter(): number {
         const messages = this.messages;
         let after = 0;
-        let tries = 10;
-        if (offset && offset > 0) {
-            tries = messages.length - offset;
-        }
+        let tries = 1;
         if (messages.length > 0) {
             if (!messages[messages.length - tries]) {
                 return -1;
@@ -2554,7 +2560,7 @@ class Chat extends React.Component<IProps, IState> {
                     // Check if it is not pending message
                     while (true) {
                         tries++;
-                        if (!messages[messages.length - tries]) {
+                        if (!messages[messages.length - tries] || tries > 64) {
                             return -1;
                         }
                         after = messages[messages.length - tries].id || 0;
@@ -2900,7 +2906,7 @@ class Chat extends React.Component<IProps, IState> {
         const peerId = inputPeer.getId() || '';
         const dialog = this.getDialogById(peerId);
         if (msgId <= 0 && this.selectedDialogId === peerId) {
-            msgId = this.getValidAfter(endIndex);
+            msgId = this.getValidAfter();
         }
         if (dialog && msgId > 0) {
             if (showMoveDown !== undefined && this.moveDownRef) {
@@ -4237,6 +4243,7 @@ class Chat extends React.Component<IProps, IState> {
             messagetype: messageType,
             peerid: peer.getId(),
             peertype: peer.getType(),
+            random_id: randomId,
             senderid: this.userId,
             temp_file: tempImageFile,
         };
@@ -4586,6 +4593,7 @@ class Chat extends React.Component<IProps, IState> {
         message.createdon = now;
         message.peerid = peer.getId();
         message.peertype = peer.getType();
+        message.random_id = randomId;
         if (!message.mediadata) {
             message.mediadata = {};
         }

@@ -381,6 +381,9 @@ export default class Server {
         }
         try {
             const res = Presenter.getMessage(constructor, base64ToU8a(data));
+            if (constructor === C_MSG.MessagesSent && Math.random() > 0.5) {
+                return;
+            }
             if (constructor === C_MSG.Error) {
                 const errObj = res.toObject();
                 if (errObj.code === C_ERR.ErrCodeUnavailable && errObj.items === C_ERR_ITEM.ErrItemInputFile && this.messageListeners[reqId] && this.messageListeners[reqId].request.constructor === C_MSG.FileGetBySha256) {

@@ -11,25 +11,26 @@ import {InputMediaType, UserMessage} from '../../services/sdk/messages/chat.core
 
 interface IMessage extends UserMessage.AsObject {
     actiondata?: any;
+    added_labels?: number[];
     attributes?: any[];
     avatar?: boolean;
+    deleted_reply?: boolean;
     downloaded?: boolean;
+    em_le?: number;
     error?: boolean;
+    mark_as_sent?: boolean;
     me?: boolean;
     mediadata?: any;
     mention_me?: boolean;
     pmodified?: boolean;
+    random_id?: number;
+    removed_labels?: number[];
+    replydata?: any;
+    req_id?: number;
     rtl?: boolean;
     saved?: boolean;
     saved_path?: string;
     temp?: boolean;
-    deleted_reply?: boolean;
-    em_le?: number;
-    added_labels?: number[];
-    removed_labels?: number[];
-    req_id?: number;
-    mark_as_sent?: boolean;
-    replydata?: any;
     temp_file?: Blob;
 }
 
