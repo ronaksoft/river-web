@@ -936,7 +936,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div
-                            className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '')}
+                            className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '') + ((message.em_le || 0) > 0 ? ' large-emoji' : '')}
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
                             onDoubleClick={this.selectMessage(index)}
                         >
@@ -954,7 +954,8 @@ class Message extends React.Component<IProps, IState> {
                                 <div ref={parenElRefHandler}
                                      className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture) ? ' media-message' : '')}
                                      onContextMenu={this.messageContextMenuHandler(index)}>
-                                    {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
+                                    {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me && !message.em_le)
+                                        || (this.isSimplified && message.avatar)) &&
                                     <UserName className="name" uniqueColor={true} id={message.senderid || ''}
                                               noIcon={true} noDetail={this.state.selectable}
                                               onLoad={userNameLoadHandler}/>}

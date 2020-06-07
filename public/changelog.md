@@ -1,3 +1,6 @@
+## 0.32.46
+* Themes updated
+
 ## 0.32.45
 * Bug fixes and performance improvements
 

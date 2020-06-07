@@ -355,14 +355,14 @@
       }
 
       &.emoji_1 {
-        font-size: 25px !important;
+        font-size: 36px !important;
         line-height: 1.1em !important;
         letter-spacing: 3px;
         text-align: center;
       }
 
       &.emoji_2 {
-        font-size: 36px !important;
+        font-size: 48px !important;
         line-height: 1.1em;
         text-align: center;
       }
@@ -1326,7 +1326,7 @@ html[bubble="5"] {
 }
 
 html[gradient="1"]:not([bubble="5"]) {
-  .bubble-wrapper {
+  .bubble-wrapper:not(.large-emoji) {
     &.me {
       .arrow:after {
         background-image: var(--gradient-morning);
@@ -1351,7 +1351,7 @@ html[gradient="1"]:not([bubble="5"]) {
 }
 
 html[gradient="2"]:not([bubble="5"]) {
-  .bubble-wrapper {
+  .bubble-wrapper:not(.large-emoji) {
     &.me {
       .arrow:after {
         background-image: var(--gradient-venice);
@@ -1376,7 +1376,7 @@ html[gradient="2"]:not([bubble="5"]) {
 }
 
 html[gradient="3"]:not([bubble="5"]) {
-  .bubble-wrapper {
+  .bubble-wrapper:not(.large-emoji) {
     &.me {
       .arrow:after {
         background-image: var(--gradient-paradise);
@@ -1401,7 +1401,7 @@ html[gradient="3"]:not([bubble="5"]) {
 }
 
 html[gradient="4"]:not([bubble="5"]) {
-  .bubble-wrapper {
+  .bubble-wrapper:not(.large-emoji) {
     &.me {
       .arrow:after {
         background-image: var(--gradient-ocean);
@@ -1426,7 +1426,7 @@ html[gradient="4"]:not([bubble="5"]) {
 }
 
 html[gradient="5"]:not([bubble="5"]) {
-  .bubble-wrapper {
+  .bubble-wrapper:not(.large-emoji) {
     &.me {
       .arrow:after {
         background-image: var(--gradient-rainbow);
@@ -1493,6 +1493,51 @@ html[bubble="5"] .mobile-view .bubble-wrapper .message-container {
   max-width: 100% !important;
   width: 100% !important;
   margin-left: 0 !important;
+}
+
+.bubble-wrapper {
+  &.large-emoji {
+    .arrow {
+      display: none;
+    }
+
+    .bubble {
+      background: none !important;
+      box-shadow: none !important;
+      user-select: none;
+
+      .inner {
+        padding-top: 0 !important;
+        padding-bottom: 8px !important;
+      }
+
+      .message-status {
+        left: auto;
+        min-width: auto;
+        padding: 4px 6px;
+        height: auto;
+        border-radius: 3px;
+      }
+    }
+  }
+}
+
+html[theme="light"]:not([bubble="5"]) {
+  .bubble-wrapper.large-emoji {
+    .bubble .message-status {
+      background-color: var(--glass-dark-low);
+    }
+  }
+}
+
+html[theme="dark"]:not([bubble="5"]),
+html[theme="dark-night"]:not([bubble="5"]),
+html[theme="dark-blue"]:not([bubble="5"]) {
+  .bubble-wrapper.large-emoji {
+    .bubble .message-status {
+      background-color: var(--glass-dark-high);
+    }
+  }
 }
 
 //html[bubble="3"] {

@@ -105,7 +105,7 @@ a.dialog-a {
       display: inline-flex;
       min-width: 200px;
       width: calc(100% - 60px);
-      margin: 0 0 4px;
+      margin: 0 0 2px;
       align-items: center;
 
       .muted-wrapper {
@@ -216,6 +216,7 @@ a.dialog-a {
         width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: 1.5em;
       }
     }
 

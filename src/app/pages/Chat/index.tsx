@@ -1866,7 +1866,6 @@ class Chat extends React.Component<IProps, IState> {
         let gapNumber = 0;
         if (dialog && this.messages.length > 0) {
             const lastValid = this.getValidAfter();
-            window.console.log(lastValid, dialog.topmessageid);
             if (lastValid !== dialog.topmessageid && findLastIndex(this.messages, {id: dialog.topmessageid || 0}) === -1) {
                 this.messageRef.clearAll();
                 this.messages = [];
