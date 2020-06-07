@@ -252,7 +252,7 @@ class Uploader extends React.Component<IProps, IState> {
                                         {Boolean(!isFile) && <React.Fragment>
                                             {Boolean(items[selected].mediaType === 'image') && <React.Fragment>
                                                 <img ref={this.imageRefHandler} className="front"
-                                                     src={items[selected].preview} alt="preview"/>
+                                                     src={items[selected].preview} alt="preview" draggable={false}/>
                                                 <div ref={this.imageActionRefHandler} className="image-actions">
                                                     <BrushRounded
                                                         onClick={this.editImageHandler(items[selected].preview)}/>
@@ -269,17 +269,17 @@ class Uploader extends React.Component<IProps, IState> {
                                                 <source src={items[selected].preview}/>
                                             </video>}
                                             {Boolean(items[selected].mediaType === 'audio' && items[selected].preview) &&
-                                            <img ref={this.imageRefHandler} className="front"
+                                            <img ref={this.imageRefHandler} className="front" draggable={false}
                                                  src={items[selected].preview} alt="preview"/>}
                                             {Boolean(items[selected].mediaType === 'audio' && !items[selected].preview) &&
                                             <div className="front audio-preview">
                                                 <MusicNoteRounded/>
                                             </div>}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'image') && (
-                                                <img className="back" src={items[lastSelected].preview} alt="back"/>
+                                                <img className="back" src={items[lastSelected].preview} alt="back" draggable={false}/>
                                             )}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'audio' && items[lastSelected].preview) && (
-                                                <img className="back" src={items[lastSelected].preview} alt="back"/>
+                                                <img className="back" src={items[lastSelected].preview} alt="back" draggable={false}/>
                                             )}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'audio' && !items[lastSelected].preview) && (
                                                 <div className="back audio-preview">
@@ -291,7 +291,7 @@ class Uploader extends React.Component<IProps, IState> {
                                             <div className="file-container">
                                                 <div className="icon">
                                                     {items[selected].mediaType === 'image' &&
-                                                    <img src={items[selected].preview} alt="preview"/>}
+                                                    <img src={items[selected].preview} alt="preview" draggable={false}/>}
                                                     <InsertDriveFileRounded/>
                                                     <span className="extension">
                                                         {getFileExtension(items[selected].type, items[selected].name)}

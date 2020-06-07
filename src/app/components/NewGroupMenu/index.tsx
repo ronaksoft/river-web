@@ -76,7 +76,8 @@ class NewGroupMenu extends React.Component<IProps, IState> {
         const {page, selectedContacts, title, uploadingPhoto, avatarMenuAnchorEl} = this.state;
         return (
             <div className="new-group-menu">
-                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={C_AVATAR_SIZE}/>
+                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler}
+                               width={C_AVATAR_SIZE}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -107,8 +108,8 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                         </div>
                         <div className="avatar-container">
                             <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
-                                {this.profileTempPhoto ?
-                                    <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/> : TextAvatar(title)}
+                                {this.profileTempPhoto ? <img src={this.profileTempPhoto} className="avatar-image"
+                                                              alt="avatar" draggable={false}/> : TextAvatar(title)}
                                 <div className={'overlay' + (uploadingPhoto ? ' show' : '')}>
                                     {!uploadingPhoto && <React.Fragment>
                                         <PhotoCameraRounded/>
@@ -246,7 +247,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
 
     /* Context menu options */
     private avatarContextMenuItem() {
-        const menuItems: Array<{cmd: 'remove' | 'change'; title: string}> = [{
+        const menuItems: Array<{ cmd: 'remove' | 'change'; title: string }> = [{
             cmd: 'remove',
             title: i18n.t('settings.remove_photo'),
         }, {
@@ -316,7 +317,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                 reject();
                 return;
             }
-            this.fileManager.sendFile(this.fileId, this.photoBlob,(progress) => {
+            this.fileManager.sendFile(this.fileId, this.photoBlob, (progress) => {
                 this.progressBroadcaster.publish(id, progress);
             }).then(() => {
                 this.progressBroadcaster.remove(id);

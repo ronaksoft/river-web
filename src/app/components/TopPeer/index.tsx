@@ -25,6 +25,7 @@ import {CloseRounded} from "@material-ui/icons";
 import APIManager from "../../services/sdk";
 import {TopPeerCategory} from "../../services/sdk/messages/chat.api.contacts_pb";
 import {findIndex} from 'lodash';
+import i18n from '../../services/i18n';
 
 import './style.scss';
 
@@ -56,6 +57,7 @@ class TopPeer extends React.Component<IProps, IState> {
     private searchRepo: SearchRepo;
     private topPeerRepo: TopPeerRepo;
     private apiManager: APIManager;
+    private userId: string = '0';
 
     constructor(props: IProps) {
         super(props);
@@ -69,6 +71,7 @@ class TopPeer extends React.Component<IProps, IState> {
         this.searchRepo = SearchRepo.getInstance();
         this.topPeerRepo = TopPeerRepo.getInstance();
         this.apiManager = APIManager.getInstance();
+        this.userId = this.apiManager.getConnInfo().UserID || '0';
     }
 
     public componentDidMount(): void {
@@ -86,16 +89,15 @@ class TopPeer extends React.Component<IProps, IState> {
             className={'top-peer' + ((!visible && !clear) ? ' hidden' : '') + (noTitle ? ' no-title' : '') + (clear ? ' clear-mode' : '')}>
             {noTitle !== true && <div className="top-peer-title">
                 <div className="text">{I18n.t('general.people')}</div>
-                <div className="clear"
-                     onClick={this.toggleClearHandler}>{I18n.t(clear ? 'general.cancel' : 'general.clear')}</div>
+                <div className="clear" onClick={this.toggleClearHandler}
+                >{I18n.t(clear ? 'general.cancel' : 'general.clear')}</div>
             </div>}
             <Scrollbars autoHide={true} universal={true}>
                 <div className="scroll-bar" style={{width: `${list.length * 64}px`}}>
                     {list.map((item, index) => {
                         if (!hideIds || (hideIds && hideIds.indexOf(item.item.id || '') === -1)) {
                             return (
-                                <Link key={index} to={`/chat/${item.item.id}`}
-                                      onClick={this.clickHandler(item)}>
+                                <Link key={index} to={`/chat/${item.item.id}`} onClick={this.clickHandler(item)}>
                                     <div className="top-peer-item">
                                         <div className="remove" onClick={this.removeHandler(item)}><CloseRounded/></div>
                                         {this.getItem(item)}
@@ -115,9 +117,11 @@ class TopPeer extends React.Component<IProps, IState> {
         switch (item.type) {
             case PeerType.PEERUSER:
                 return <>
-                    <UserAvatar id={item.item.id || '0'} noDetail={true} className="top-peer-avatar"/>
+                    <UserAvatar id={item.item.id || '0'} noDetail={true} className="top-peer-avatar"
+                                savedMessages={item.item.id === this.userId}/>
                     <UserName id={item.item.id || '0'} noIcon={true} onlyFirstName={true} noDetail={true}
-                              className="top-peer-name"/>
+                              you={item.item.id === this.userId} className="top-peer-name"
+                              youPlaceholder={i18n.t('general.saved_messages')}/>
                 </>;
             case PeerType.PEERGROUP:
                 return <>
@@ -130,8 +134,11 @@ class TopPeer extends React.Component<IProps, IState> {
     }
 
     private clickHandler = (item: ITopPeerItem) => (e: any) => {
-        if (this.props.onSelect) {
+        if (this.props.onSelect || this.state.clear) {
             e.preventDefault();
+            e.stopPropagation();
+        }
+        if (this.props.onSelect) {
             this.props.onSelect(item.type, item.item);
         }
     }

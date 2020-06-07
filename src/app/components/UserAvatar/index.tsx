@@ -208,7 +208,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
         } else if (this.state.id === '2374') {
             return (
                 <span className={'uac avatar-official ' + className}>
-                    <img src={icon} alt="avatar"/>
+                    <img src={icon} alt="avatar" draggable={false}/>
                 </span>
             );
         } else if (user && user.deleted) {
@@ -222,7 +222,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
                 <>
                 <span className={'uac' + (className ? ` ${className}` : '')}
                       onClick={this.clickHandler}>{(user && photo) ?
-                    <img className="avatar-image" src={photo} alt="avatar"
+                    <img className="avatar-image" src={photo} alt="avatar" draggable={false}
                          onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}</span>
                     {this.getOnlineIndicator()}
                 </>

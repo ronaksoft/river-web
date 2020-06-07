@@ -147,7 +147,7 @@ class VideoFrameSelector extends React.Component<IProps, IState> {
                                                  onClick={this.setTimeHandler(frame ? frame.time : 0)}>
                                                 <div className="inner"
                                                      style={{width: `${this.videoInfo.frameWidth}px`}}>
-                                                    <img src={frame.url} alt=""/>
+                                                    <img src={frame.url} alt="" draggable={false}/>
                                                     <div className="frame-time">{getDuration(Math.floor(frame.time))}</div>
                                                 </div>
                                             </div>

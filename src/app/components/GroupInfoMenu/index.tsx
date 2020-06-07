@@ -216,7 +216,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                          onClick={this.avatarMenuAnchorOpenHandler}>
                                         {!uploadingPhoto && <GroupAvatar id={group.id || ''} forceReload={true}/>}
                                         {uploadingPhoto &&
-                                        <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
+                                        <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"
+                                             draggable={false}/>}
                                         {hasAccess &&
                                         <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
                                             {!uploadingPhoto && <React.Fragment>

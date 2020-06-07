@@ -1,3 +1,6 @@
+## 0.32.45
+* Bug fixes and performance improvements
+
 ## 0.32.44
 * Progress bug fixed
 * Now you can reset top peer

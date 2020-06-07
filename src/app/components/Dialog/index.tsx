@@ -865,9 +865,11 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     private blurHandler = () => {
-        this.setState({
-            focus: false,
-        });
+        setTimeout(() => {
+            this.setState({
+                focus: false,
+            });
+        }, 256);
     }
 }
 
