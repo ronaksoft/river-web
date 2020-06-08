@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
-import {BookmarkRounded} from '@material-ui/icons';
+import {BookmarkBorderRounded} from '@material-ui/icons';
 import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
 import Broadcaster from '../../services/broadcaster';
@@ -202,7 +202,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
         if (this.props.savedMessages) {
             return (
                 <span className={'uac saved-messages-avatar ' + className}>
-                    <BookmarkRounded/>
+                    <BookmarkBorderRounded/>
                 </span>
             );
         } else if (this.state.id === '2374') {

@@ -209,6 +209,7 @@ export default class APIManager {
         this.setConnInfo(info);
         localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
         localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
+        localStorage.removeItem(C_LOCALSTORAGE.TopPeerInit);
     }
 
     public loadConnInfo(): IConnInfo {
@@ -493,7 +494,7 @@ export default class APIManager {
 
     public logout(authId: string): Promise<Bool> {
         const data = new AuthLogout();
-        data.setAuthidsList([]);
+        data.setAuthidsList([authId]);
         return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true, {timeout: 5000});
     }
 

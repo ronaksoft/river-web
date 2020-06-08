@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {
-    BookmarkRounded,
+    BookmarkBorderRounded,
     Brightness2Rounded,
     ChatBubbleRounded,
     CheckRounded,
@@ -466,7 +466,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <div className="page-anchor">
                                         <Link to={`/chat/${this.userId}`}>
                                             <div className="icon color-saved-messages">
-                                                <BookmarkRounded/>
+                                                <BookmarkBorderRounded/>
                                             </div>
                                             <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
                                         </Link>

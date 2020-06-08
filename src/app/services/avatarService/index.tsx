@@ -176,7 +176,11 @@ export default class AvatarService {
                                     }
                                     this.broadcastEvent(AvatarSrcUpdated, {items: [{id, fileId}]});
                                     this.throttleBroadcast([{id, fileId}]);
-                                    resolve(this.avatars[id].src);
+                                    if (this.avatars[id]) {
+                                        resolve(this.avatars[id].src);
+                                    } else {
+                                        reject();
+                                    }
                                 } else {
                                     if (this.avatars[id]) {
                                         this.avatars[id].retries++;

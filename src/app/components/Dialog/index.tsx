@@ -97,7 +97,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
         this.state = {
             appliedSelectedLabelIds: [],
-            focus: false,
+            focus: true,
             ids: [],
             items: [],
             labelActive: false,
@@ -365,12 +365,12 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     private getContent() {
-        const {searchItems, searchAddedItems, searchMessageItems, appliedSelectedLabelIds, searchEnable, focus} = this.state;
+        const {searchItems, searchAddedItems, searchMessageItems, appliedSelectedLabelIds, searchEnable} = this.state;
         if ((searchItems.length + searchAddedItems.length + searchMessageItems.length) === 0) {
             return this.noRowsRenderer();
         } else {
             return (<>
-                {Boolean(searchEnable && focus) &&
+                {Boolean(searchEnable && (searchItems.length + searchAddedItems.length) > 0) &&
                 <div className="search-label">{i18n.t('general.dialogs')}</div>}
                 {Boolean(appliedSelectedLabelIds.length === 0) && <>
                     {searchItems.map((dialog, index) => {
@@ -859,17 +859,17 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     private focusHandler = () => {
-        this.setState({
-            focus: true,
-        });
+        // this.setState({
+        //     focus: true,
+        // });
     }
 
     private blurHandler = () => {
-        setTimeout(() => {
-            this.setState({
-                focus: false,
-            });
-        }, 256);
+        // setTimeout(() => {
+        //     this.setState({
+        //         focus: false,
+        //     });
+        // }, 256);
     }
 }
 

@@ -37,6 +37,7 @@
       top: 50%;
       right: 30px;
       transform: translateY(-50%);
+      border-bottom: 1px solid var(--light);
 
       button {
         padding: 3px;
@@ -126,6 +127,7 @@
         font-size: 13px;
         text-align: left;
         background-color: rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid var(--light);
       }
 
       .no-result {
@@ -227,6 +229,7 @@ html[theme="dark-night"] {
         .search-label {
           color: var(--message-chat);
           background-color: var(--dark-hover-light);
+          border-color: var(--dark-low-op50);
         }
       }
     }
@@ -268,6 +271,7 @@ html[theme="dark-blue"] {
         .search-label {
           color: var(--message-chat);
           background-color: var(--dark-hover-light);
+          border-color: var(--dark-blue-low-op50);
         }
       }
     }

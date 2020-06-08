@@ -884,6 +884,7 @@ export const C_LOCALSTORAGE = {
     ThemeColor: 'river.theme.color',
     ThemeFont: 'river.theme.font',
     ThemeGradient: 'river.theme.gradient',
+    TopPeerInit: 'river.init_top_peer',
     Version: 'river.version',
     WorkspaceFileUrl: 'river.workspace_url_file',
     WorkspaceUrl: 'river.workspace_url',

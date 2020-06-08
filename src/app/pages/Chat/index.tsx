@@ -2418,10 +2418,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getRemoteTopPeers() {
-        if (this.topPeerInitialized || localStorage.getItem('river.init_top_peer')) {
+        if (this.topPeerInitialized || localStorage.getItem(C_LOCALSTORAGE.TopPeerInit)) {
             return;
         }
-        localStorage.setItem('river.init_top_peer', 'true');
+        localStorage.setItem(C_LOCALSTORAGE.TopPeerInit, 'true');
         this.topPeerInitialized = true;
         this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, C_TOP_PEER_LEN).then((res) => {
             this.userRepo.importBulk(false, res.usersList);

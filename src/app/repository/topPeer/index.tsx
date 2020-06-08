@@ -193,7 +193,7 @@ export default class TopPeerRepo {
         const config = this.apiManager.getInstantSystemConfig();
         const lastTime = lastTopPeer ? lastTopPeer.lastupdate : (C_BASE_TIME + this.riverTime.getDiff());
         topPeer.rate = lastTopPeer ? lastTopPeer.rate : 0;
-        topPeer.rate += Math.min(Math.exp(topPeer.lastupdate - lastTime) / (config.toppeerdecayrate || 1), (config.toppeermaxstep || 320));
+        topPeer.rate += Math.min(Math.exp((topPeer.lastupdate - lastTime) / (config.toppeerdecayrate || 1)), (config.toppeermaxstep || 320));
         return topPeer;
     }
 
