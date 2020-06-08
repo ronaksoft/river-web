@@ -1,3 +1,6 @@
+## 0.32.48
+* Bug fixes and performance improvements
+
 ## 0.32.47
 * Bug fixes and performance improvements
 

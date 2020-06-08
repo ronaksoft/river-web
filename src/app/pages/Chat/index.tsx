@@ -1828,12 +1828,12 @@ class Chat extends React.Component<IProps, IState> {
                 message_id: id,
             });
 
+            // For double checking update message id
+            this.updateManager.setRandomId(randomId);
             this.apiManager.sendMessage(randomId, text, peer, replyTo, entities, (reqId: number) => {
                 message.req_id = reqId;
                 index = this.pushMessage(message);
             }).then((res) => {
-                // For double checking update message id
-                this.updateManager.setMessageId(res.messageid || 0);
                 message.id = res.messageid;
                 this.messageMapAppend(message);
                 this.messageRepo.lazyUpsert([message]);
@@ -2009,10 +2009,8 @@ class Chat extends React.Component<IProps, IState> {
             peer.setType(PeerType.PEERUSER);
             peer.setAccesshash(contact.accesshash || '');
             peer.setId(contact.id || '');
-            this.apiManager.sendMessage(randomId, text, peer).then((res) => {
-                // For double checking update message id
-                this.updateManager.setMessageId(res.messageid || 0);
-            });
+            this.updateManager.setRandomId(randomId);
+            this.apiManager.sendMessage(randomId, text, peer);
         });
     }
 
@@ -3774,10 +3772,9 @@ class Chat extends React.Component<IProps, IState> {
             });
         }
 
+        // For double checking update message id
+        this.updateManager.setRandomId(randomId);
         this.apiManager.sendMessage(randomId, message.body || '', peer, message.replyto, messageEntities).then((res) => {
-            // For double checking update message id
-            this.updateManager.setMessageId(res.messageid || 0);
-
             message.id = res.messageid;
             this.messageMapAppend(message);
 
@@ -3799,10 +3796,9 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         const fn = () => {
+            // For double checking update message id
+            this.updateManager.setRandomId(randomId);
             this.apiManager.sendMediaMessage(randomId, peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
-                // For double checking update message id
-                this.updateManager.setMessageId(res.messageid || 0);
-
                 message.id = res.messageid;
                 this.messageMapAppend(message);
                 message.downloaded = true;
@@ -4367,10 +4363,9 @@ class Chat extends React.Component<IProps, IState> {
                         type: inputMediaType,
                     });
                 }
+                // For double checking update message id
+                this.updateManager.setRandomId(randomId);
                 this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
-                    // For double checking update message id
-                    this.updateManager.setMessageId(res.messageid || 0);
-
                     message.id = res.messageid;
                     this.messageMapAppend(message);
                     message.downloaded = true;
@@ -4532,10 +4527,9 @@ class Chat extends React.Component<IProps, IState> {
             message_id: id,
         });
 
+        // For double checking update message id
+        this.updateManager.setRandomId(randomId);
         this.apiManager.sendMediaMessage(randomId, peer, mediaType, media, replyTo).then((res) => {
-            // For double checking update message id
-            this.updateManager.setMessageId(res.messageid || 0);
-
             message.id = res.messageid;
             this.messageMapAppend(message);
 
@@ -4617,10 +4611,9 @@ class Chat extends React.Component<IProps, IState> {
             message_id: id,
         });
 
+        // For double checking update message id
+        this.updateManager.setRandomId(randomId);
         this.apiManager.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEMESSAGEDOCUMENT, media.serializeBinary(), replyTo).then((res) => {
-            // For double checking update message id
-            this.updateManager.setMessageId(res.messageid || 0);
-
             message.id = res.messageid;
             this.messageMapAppend(message);
 

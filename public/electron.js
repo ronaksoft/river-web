@@ -197,6 +197,9 @@ const generateMenu = () => {
 };
 
 app.on('ready', () => {
+    if (process.platform === 'win32') {
+        app.setAppUserModelId('com.river.im');
+    }
     createWindow();
     generateMenu();
 });

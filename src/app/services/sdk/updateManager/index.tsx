@@ -151,7 +151,7 @@ export default class UpdateManager {
     private updateList: UpdateContainer.AsObject[] = [];
 
     // Random MessageID Map (for preventing double message)
-    private messageIdMap: { [key: number]: boolean } = {};
+    private randomIdMap: { [key: number]: boolean } = {};
 
     // Live update out of sync variables
     private outOfSync: boolean = false;
@@ -301,8 +301,8 @@ export default class UpdateManager {
     }
 
     /* Set message id from API */
-    public setMessageId(messageId: number) {
-        this.messageIdMap[messageId] = true;
+    public setRandomId(randomId: number) {
+        this.randomIdMap[randomId] = true;
     }
 
     public canSync(updateId?: number): Promise<any> {
@@ -475,7 +475,7 @@ export default class UpdateManager {
         const data: Uint8Array = update.update;
         if (update.constructor === C_MSG.UpdateMessageID) {
             const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
-            this.messageIdMap[updateMessageId.messageid || 0] = true;
+            this.randomIdMap[updateMessageId.messageid || 0] = true;
             this.callHandlers(C_MSG.UpdateMessageID, updateMessageId);
         }
     }
@@ -1353,9 +1353,9 @@ export default class UpdateManager {
     private callUpdateHandler(eventConstructor: number, data: any) {
         if (this.isLive) {
             try {
-                if (eventConstructor === C_MSG.UpdateNewMessage && this.messageIdMap.hasOwnProperty(data.message.id || 0)) {
+                if (eventConstructor === C_MSG.UpdateNewMessage && this.randomIdMap.hasOwnProperty((data as UpdateNewMessage.AsObject).senderrefid || 0)) {
                     this.callHandlers(C_MSG.UpdateNewMessageDrop, data);
-                    delete this.messageIdMap[data.message.id || 0];
+                    delete this.randomIdMap[(data as UpdateNewMessage.AsObject).senderrefid || 0];
                 } else {
                     this.callHandlers(eventConstructor, data);
                 }
