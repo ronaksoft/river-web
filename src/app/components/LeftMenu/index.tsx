@@ -24,7 +24,6 @@ import {
     MenuRounded,
     MenuOpenRounded
 } from "@material-ui/icons";
-import RiverLogo from "../RiverLogo";
 import Menu from "@material-ui/core/Menu";
 import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -34,6 +33,7 @@ import {omitBy, isNil, debounce} from "lodash";
 import LabelMenu from "../LabelMenu";
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {RiverTextLogo} from "../SVG/river";
 
 import './style.scss';
 
@@ -253,8 +253,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     </span>}
                     <span className="new-message">
                         {iframeActive &&
-                        <a href="/" target="_blank"><RiverLogo height={28} width={28}/></a>}
-                        {!iframeActive && <RiverLogo height={28} width={28}/>}
+                        <a href="/" target="_blank">
+                            <RiverTextLogo/>
+                        </a>}
+                        {!iframeActive && <RiverTextLogo/>}
                     </span>
                     <div className="actions">
                         {this.chatTopIcons.map((item, key) => {

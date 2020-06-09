@@ -110,21 +110,19 @@ class UserName extends React.PureComponent<IProps, IState> {
         }
         if (this.props.username === true) {
             return (
-                <span className={className}
-                      style={style}
-                      onClick={this.clickHandler}>{Boolean(noIcon !== true && user.official) &&
-                <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{Boolean(noIcon !== true && user.isbot) &&
-                <MemoryRounded/>}{(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}</span>
+                <span className={className} style={style} onClick={this.clickHandler}>
+                    {Boolean(noIcon !== true && user.isbot) && <MemoryRounded/>}
+                    {(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}
+                    {Boolean(noIcon !== true && user.official) && <VerifiedUserRounded style={{color: '#27AE60'}}/>}
+                </span>
             );
         } else {
             return (
-                <span className={className}
-                      style={style}
-                      onClick={this.clickHandler}>{Boolean(noIcon !== true && user.official) &&
-                <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{Boolean(noIcon !== true && user.isbot) &&
-                <MemoryRounded/>}{(user.id) ? (onlyFirstName ? `${prefix}${user.firstname}${postfix}` : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
+                <span className={className} style={style} onClick={this.clickHandler}>
+                    {Boolean(noIcon !== true && user.isbot) && <MemoryRounded/>}
+                    {(user.id) ? (onlyFirstName ? `${prefix}${user.firstname}${postfix}` : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}
+                    {Boolean(noIcon !== true && user.official) && <VerifiedUserRounded style={{color: '#27AE60'}}/>}
+                </span>
             );
         }
     }

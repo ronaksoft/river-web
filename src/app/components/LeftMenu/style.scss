@@ -13,7 +13,7 @@
     height: 48px;
     display: none;
     align-items: center;
-    padding: 0 17px 0 11px;
+    padding: 0 8px;
     background-color: var(--header-color);
 
     &:after {
@@ -60,18 +60,15 @@
     .new-message {
       color: #60BF70;
       cursor: pointer;
+      flex: 1;
 
-      .river-logo {
-        margin: 0 6px;
+      svg {
+        transform: translateX(24px);
       }
     }
 
     .actions {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 100px;
+      width: 96px;
     }
   }
 
@@ -315,13 +312,6 @@ html[direction="rtl"] {
     }
 
     .top-bar {
-      padding: 0 11px 0 17px;
-
-      .actions {
-        right: auto;
-        left: 0;
-      }
-
       .close-btn {
         margin-left: 6px;
         margin-right: -4px;
@@ -329,6 +319,12 @@ html[direction="rtl"] {
 
       .menu-btn button svg {
         transform: rotateY(-180deg);
+      }
+
+      .new-message {
+        svg {
+          transform: translateX(-24px);
+        }
       }
     }
 

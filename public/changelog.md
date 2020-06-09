@@ -1,3 +1,8 @@
+## 0.32.49
+* TopPeer bugs fixed
+* Themes updated
+* Bug fixes and performance improvements
+
 ## 0.32.48
 * Bug fixes and performance improvements
 

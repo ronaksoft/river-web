@@ -147,6 +147,8 @@ class SearchList extends React.Component<IProps, IState> {
         selectedInputPeers.forEach((peer) => {
             if (peer.mode === 'contact' && peer.contact) {
                 ids.push(peer.contact.id || '');
+            } else if (peer.mode === 'dialog' && peer.dialog) {
+                ids.push(peer.dialog.peerid || '');
             }
         });
         return (
@@ -560,6 +562,16 @@ class SearchList extends React.Component<IProps, IState> {
                 contact: item as IUser,
                 id: item.id,
                 mode: 'contact',
+            })();
+        } else if (type === PeerType.PEERGROUP) {
+            this.addItemHandler({
+                dialog: {
+                    accesshash: '0',
+                    peerid: item.id,
+                    peertype: PeerType.PEERGROUP,
+                },
+                id: item.id,
+                mode: 'dialog',
             })();
         }
     }

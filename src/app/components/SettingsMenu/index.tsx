@@ -69,7 +69,19 @@ import {
 } from '../../services/sdk/messages/chat.core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import AvatarCropper from '../AvatarCropper';
-import {CircularProgress, Slider, Radio, DialogActions, DialogTitle, MenuItem, Menu, IconButton, TextField, Switch, Button} from "@material-ui/core";
+import {
+    CircularProgress,
+    Slider,
+    Radio,
+    DialogActions,
+    DialogTitle,
+    MenuItem,
+    Menu,
+    IconButton,
+    TextField,
+    Switch,
+    Button
+} from "@material-ui/core";
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import Broadcaster from '../../services/broadcaster';
 import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/chat.api.accounts_pb';
@@ -1137,51 +1149,53 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </IconButton>
                                         <label>{i18n.t(`settings.${item.id}`)}</label>
                                     </div>
-                                    <div
-                                        className="sub-page-header-alt header-column">
-                                        <div className="header-label">{i18n.t(item.title)}</div>
-                                        <div className="header-hint">{i18n.t(item.hint)}</div>
+                                    <div>
+                                        <div
+                                            className="sub-page-header-alt header-column">
+                                            <div className="header-label">{i18n.t(item.title)}</div>
+                                            <div className="header-hint">{i18n.t(item.hint)}</div>
+                                        </div>
+                                        <div className="radio-item">
+                                            {privacyRuleItems.map((prItem) => {
+                                                return (
+                                                    <div
+                                                        key={prItem.id}
+                                                        className="pr-radio-wrapper"
+                                                    >
+                                                        <Radio
+                                                            checked={prItem.id === privacy[item.id].mode}
+                                                            value={prItem.id}
+                                                            color="primary"
+                                                            className="pr-radio"
+                                                            classes={{
+                                                                checked: 'pr-radio-checked',
+                                                            }}
+                                                            onChange={this.privacyRuleChangeHandler(item.id)}
+                                                        />
+                                                        <div className="pr-radio-label"
+                                                             onClick={this.privacyRuleChangeHandler(item.id, prItem.id)}>{i18n.t(prItem.title)}</div>
+                                                    </div>);
+                                            })}
+                                        </div>
+                                        {privacy[item.id].mode !== 'no_one' &&
+                                        <div className="sub-page-header-alt"
+                                             onClick={this.openPrivacyUsersHandler(`exclude:${item.id}`)}
+                                        >
+                                            <div className="header-label"
+                                            >{i18n.t('settings.privacy_never_share_with')}</div>
+                                            <div className="header-value"
+                                            >{privacy.hasOwnProperty(item.id) ? localize(privacy[item.id].excludeIds.length) : localize(0)}</div>
+                                        </div>}
+                                        {privacy[item.id].mode !== 'everyone' &&
+                                        <div className="sub-page-header-alt"
+                                             onClick={this.openPrivacyUsersHandler(`include:${item.id}`)}
+                                        >
+                                            <div className="header-label"
+                                            >{i18n.t('settings.privacy_always_share_with')}</div>
+                                            <div className="header-value"
+                                            >{privacy.hasOwnProperty(item.id) ? localize(privacy[item.id].includeIds.length) : localize(0)}</div>
+                                        </div>}
                                     </div>
-                                    <div className="radio-item">
-                                        {privacyRuleItems.map((prItem) => {
-                                            return (
-                                                <div
-                                                    key={prItem.id}
-                                                    className="pr-radio-wrapper"
-                                                >
-                                                    <Radio
-                                                        checked={prItem.id === privacy[item.id].mode}
-                                                        value={prItem.id}
-                                                        color="primary"
-                                                        className="pr-radio"
-                                                        classes={{
-                                                            checked: 'pr-radio-checked',
-                                                        }}
-                                                        onChange={this.privacyRuleChangeHandler(item.id)}
-                                                    />
-                                                    <div className="pr-radio-label"
-                                                         onClick={this.privacyRuleChangeHandler(item.id, prItem.id)}>{i18n.t(prItem.title)}</div>
-                                                </div>);
-                                        })}
-                                    </div>
-                                    {privacy[item.id].mode !== 'no_one' &&
-                                    <div className="sub-page-header-alt"
-                                         onClick={this.openPrivacyUsersHandler(`exclude:${item.id}`)}
-                                    >
-                                        <div className="header-label"
-                                        >{i18n.t('settings.privacy_never_share_with')}</div>
-                                        <div className="header-value"
-                                        >{privacy.hasOwnProperty(item.id) ? localize(privacy[item.id].excludeIds.length) : localize(0)}</div>
-                                    </div>}
-                                    {privacy[item.id].mode !== 'everyone' &&
-                                    <div className="sub-page-header-alt"
-                                         onClick={this.openPrivacyUsersHandler(`include:${item.id}`)}
-                                    >
-                                        <div className="header-label"
-                                        >{i18n.t('settings.privacy_always_share_with')}</div>
-                                        <div className="header-value"
-                                        >{privacy.hasOwnProperty(item.id) ? localize(privacy[item.id].includeIds.length) : localize(0)}</div>
-                                    </div>}
                                 </React.Fragment>
                             );
                         })}

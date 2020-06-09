@@ -57,7 +57,7 @@ class TopPeer extends React.Component<IProps, IState> {
     private searchRepo: SearchRepo;
     private topPeerRepo: TopPeerRepo;
     private apiManager: APIManager;
-    private userId: string = '0';
+    private readonly userId: string = '0';
 
     constructor(props: IProps) {
         super(props);
@@ -85,28 +85,28 @@ class TopPeer extends React.Component<IProps, IState> {
     public render() {
         const {noTitle, hideIds} = this.props;
         const {list, visible, clear} = this.state;
+        const filteredList = list.filter(item => !hideIds || (hideIds && hideIds.indexOf(item.item.id || '') === -1));
+        if (filteredList.length === 0) {
+            return null;
+        }
         return (<div
             className={'top-peer' + ((!visible && !clear) ? ' hidden' : '') + (noTitle ? ' no-title' : '') + (clear ? ' clear-mode' : '')}>
             {noTitle !== true && <div className="top-peer-title">
-                <div className="text">{I18n.t('general.people')}</div>
+                <div className="text">{I18n.t('general.frequently_contacted')}</div>
                 <div className="clear" onClick={this.toggleClearHandler}
                 >{I18n.t(clear ? 'general.cancel' : 'general.clear')}</div>
             </div>}
             <Scrollbars autoHide={true} universal={true}>
                 <div className="scroll-bar" style={{width: `${list.length * 64}px`}}>
-                    {list.map((item, index) => {
-                        if (!hideIds || (hideIds && hideIds.indexOf(item.item.id || '') === -1)) {
-                            return (
-                                <Link key={index} to={`/chat/${item.item.id}`} onClick={this.clickHandler(item)}>
-                                    <div className="top-peer-item">
-                                        <div className="remove" onClick={this.removeHandler(item)}><CloseRounded/></div>
-                                        {this.getItem(item)}
-                                    </div>
-                                </Link>
-                            );
-                        } else {
-                            return null;
-                        }
+                    {filteredList.map((item, index) => {
+                        return (
+                            <Link key={index} to={`/chat/${item.item.id}`} onClick={this.clickHandler(item)}>
+                                <div className="top-peer-item">
+                                    <div className="remove" onClick={this.removeHandler(item)}><CloseRounded/></div>
+                                    {this.getItem(item)}
+                                </div>
+                            </Link>
+                        );
                     })}
                 </div>
             </Scrollbars>
@@ -136,7 +136,6 @@ class TopPeer extends React.Component<IProps, IState> {
     private clickHandler = (item: ITopPeerItem) => (e: any) => {
         if (this.props.onSelect || this.state.clear) {
             e.preventDefault();
-            e.stopPropagation();
         }
         if (this.props.onSelect) {
             this.props.onSelect(item.type, item.item);
