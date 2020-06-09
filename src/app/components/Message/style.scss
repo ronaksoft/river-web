@@ -327,7 +327,7 @@
 
     > .name {
       display: block;
-      height: 20px;
+      min-height: 20px;
       padding: 2px 3px 2px;
       text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
       color: var(--dark-medium);
@@ -336,6 +336,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      line-height: 1.3em;
     }
 
     .inner {
