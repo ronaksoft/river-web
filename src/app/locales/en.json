@@ -424,7 +424,8 @@
     "share_location": "Share Location",
     "edit_photo": "Edit Photo",
     "select_video_frame": "Select Video Frame",
-    "add_it": "Add It"
+    "add_it": "Add It",
+    "animated": "Animated"
   },
   "label": {
     "labels": "Labels",

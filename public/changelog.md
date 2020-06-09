@@ -1,3 +1,6 @@
+## 0.32.50
+* Send as animated added
+
 ## 0.32.49
 * TopPeer bugs fixed
 * Themes updated

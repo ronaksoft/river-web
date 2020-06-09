@@ -99,7 +99,7 @@ import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
 import {
     Document,
-    DocumentAttribute,
+    DocumentAttribute, DocumentAttributeAnimated,
     DocumentAttributeAudio,
     DocumentAttributeFile,
     DocumentAttributePhoto,
@@ -4123,6 +4123,17 @@ class Chat extends React.Component<IProps, IState> {
 
                 attributesList.push(attrFile);
                 attributesDataList.push(attrFileData.toObject());
+
+                if (mediaItem.animated) {
+                    const attrAnimatedData = new DocumentAttributeAnimated();
+
+                    const attrAnimated = new DocumentAttribute();
+                    attrAnimated.setData(attrAnimatedData.serializeBinary());
+                    attrAnimated.setType(DocumentAttributeType.ATTRIBUTETYPEANIMATED);
+
+                    attributesList.push(attrAnimated);
+                    attributesDataList.push(attrAnimatedData.toObject());
+                }
 
                 if (mediaItem.thumb) {
                     tempImageFile = mediaItem.thumb.file;

@@ -329,6 +329,25 @@
                     font-family: 'CourierNewPSMT';
                     z-index: 100;
                   }
+
+                  .animated-options {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 32px;
+                    padding: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                    background-color: var(--glass-dark-ultra);
+
+                    .label {
+                      font-size: 12px;
+                      color: var(--white);
+                    }
+                  }
                 }
 
                 .file-info {

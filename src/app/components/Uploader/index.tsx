@@ -20,7 +20,7 @@ import Scrollbars from 'react-custom-scrollbars';
 import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
-import {IconButton, Tabs, Tab} from '@material-ui/core';
+import {IconButton, Tabs, Tab, Switch} from '@material-ui/core';
 import {IDimension} from '../Cropper';
 import i18n from '../../services/i18n';
 import RTLDetector from "../../services/utilities/rtl_detector";
@@ -56,6 +56,7 @@ interface IMediaThumb {
 
 export interface IMediaItem {
     album?: string;
+    animated?: boolean;
     caption?: string;
     duration?: number;
     entities?: MessageEntity[] | null;
@@ -71,6 +72,7 @@ export interface IMediaItem {
 
 export interface IUploaderFile extends FileWithPreview {
     album?: string;
+    animated?: boolean;
     caption?: string;
     duration?: number;
     height?: number;
@@ -276,10 +278,12 @@ class Uploader extends React.Component<IProps, IState> {
                                                 <MusicNoteRounded/>
                                             </div>}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'image') && (
-                                                <img className="back" src={items[lastSelected].preview} alt="back" draggable={false}/>
+                                                <img className="back" src={items[lastSelected].preview} alt="back"
+                                                     draggable={false}/>
                                             )}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'audio' && items[lastSelected].preview) && (
-                                                <img className="back" src={items[lastSelected].preview} alt="back" draggable={false}/>
+                                                <img className="back" src={items[lastSelected].preview} alt="back"
+                                                     draggable={false}/>
                                             )}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'audio' && !items[lastSelected].preview) && (
                                                 <div className="back audio-preview">
@@ -291,11 +295,22 @@ class Uploader extends React.Component<IProps, IState> {
                                             <div className="file-container">
                                                 <div className="icon">
                                                     {items[selected].mediaType === 'image' &&
-                                                    <img src={items[selected].preview} alt="preview" draggable={false}/>}
+                                                    <img src={items[selected].preview} alt="preview"
+                                                         draggable={false}/>}
                                                     <InsertDriveFileRounded/>
                                                     <span className="extension">
                                                         {getFileExtension(items[selected].type, items[selected].name)}
                                                     </span>
+                                                    {this.canAnimate(items[selected]) &&
+                                                    <div className="animated-options">
+                                                        <Switch
+                                                            checked={items[selected].animated || false}
+                                                            color="primary"
+                                                            size="small"
+                                                            onChange={this.animatedChangeHandler(selected)}
+                                                        />
+                                                        <div className="label">{i18n.t('uploader.animated')}</div>
+                                                    </div>}
                                                 </div>
                                                 <div className="file-info">
                                                     {items[selected].name}<br/>
@@ -856,6 +871,7 @@ class Uploader extends React.Component<IProps, IState> {
                 const {entities, text} = generateEntities(items[i].caption || '', items[i].mentionList || []);
                 output.push({
                     album: items[i].album,
+                    animated: items[i].animated,
                     caption: text,
                     duration: items[i].duration ? Math.round(items[i].duration || 0) : undefined,
                     entities,
@@ -973,6 +989,20 @@ class Uploader extends React.Component<IProps, IState> {
         }
         lines++;
         this.textarea.style.height = `${lines * 1.2}em`;
+    }
+
+    private canAnimate(item: IUploaderFile) {
+        return ['image/gif', 'image/webp', 'image/png'].indexOf(item.type) > -1;
+    }
+
+    private animatedChangeHandler = (index: number) => (e: any, checked: boolean) => {
+        const {items} = this.state;
+        if (items[index]) {
+            items[index].animated = checked;
+            this.setState({
+                items,
+            });
+        }
     }
 }
 
