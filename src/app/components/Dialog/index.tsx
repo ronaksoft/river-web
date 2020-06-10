@@ -353,6 +353,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     open={Boolean(moreAnchorPos)}
                     onClose={this.moreCloseHandler}
                     className="kk-context-menu"
+                    classes={{
+                        paper: 'kk-context-menu-paper'
+                    }}
                 >
                     {this.contextMenuItem()}
                 </Menu>

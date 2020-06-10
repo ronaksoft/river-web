@@ -37,7 +37,7 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 
-const thumbnailReadyMIMEs = 'image/png,image/jpeg,image/jpg,image/webp,video/webm,video/mp4,audio/mp4,audio/ogg,audio/mp3'.split(',');
+const thumbnailReadyMIMEs = 'image/png,image/jpeg,image/jpg,image/webp,image/gif,video/webm,video/mp4,audio/mp4,audio/ogg,audio/mp3'.split(',');
 
 export interface IUploaderOptions {
     accept?: string;
@@ -116,6 +116,7 @@ export const getUploaderInput = (mimeType: string) => {
         case 'image/jpeg':
         case 'image/jpg':
         case 'image/webp':
+        case 'image/gif':
         case 'video/webm':
         case 'video/mp4':
             return 'media';
@@ -774,6 +775,7 @@ class Uploader extends React.Component<IProps, IState> {
             case 'image/jpeg':
             case 'image/jpg':
             case 'image/webp':
+            case 'image/gif':
                 return 'image';
             case 'video/webm':
             case 'video/mp4':
@@ -992,7 +994,7 @@ class Uploader extends React.Component<IProps, IState> {
     }
 
     private canAnimate(item: IUploaderFile) {
-        return ['image/gif', 'image/webp', 'image/png'].indexOf(item.type) > -1;
+        return ['image/gif', 'image/webp', 'image/png', 'image/gif'].indexOf(item.type) > -1;
     }
 
     private animatedChangeHandler = (index: number) => (e: any, checked: boolean) => {

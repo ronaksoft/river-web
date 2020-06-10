@@ -63,7 +63,8 @@
     "create": "Create",
     "frequently_contacted": "Frequently Contacted",
     "dialogs": "Dialogs",
-    "clear": "Clear"
+    "clear": "Clear",
+    "open": "Open"
   },
   "chat": {
     "search": "Search",
@@ -129,6 +130,7 @@
     "photo_video": "Photo & Video",
     "audio": "Audio",
     "file": "File",
+    "gif": "GIF",
     "CHANGE": "CHANGE",
     "PROFILE": "PROFILE",
     "PHOTO": "PHOTO",

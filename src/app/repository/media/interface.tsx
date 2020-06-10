@@ -10,6 +10,7 @@
 const C_MEDIA_TYPE = {
     AUDIO: 3,
     FILE: 5,
+    GIF: 7,
     LOCATION: 6,
     Media: -2,
     Music: -3,

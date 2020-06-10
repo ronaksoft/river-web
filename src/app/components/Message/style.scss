@@ -177,7 +177,7 @@
     //height: 44px;
 
     .bubble {
-      padding: 3px !important;
+      padding: 1px !important;
 
       .bubble-body {
         padding: 3px !important;
@@ -195,7 +195,7 @@
   &.media, &.media_caption {
     .bubble {
       .bubble-body {
-        border-radius: 8px;
+        border-radius: 2px;
         overflow: hidden;
       }
     }
@@ -215,7 +215,7 @@
 
   &.media {
     .bubble {
-      padding: 3px !important;
+      padding: 1px !important;
     }
   }
 
@@ -318,7 +318,7 @@
     line-height: 1.22em;
     display: inline-block;
     clear: both;
-    padding: 3px 3px 15px 3px;
+    padding: 1px 1px 15px 1px;
     vertical-align: top;
     border-radius: 5px;
     min-width: 75px;
@@ -341,7 +341,7 @@
 
     .inner {
       direction: ltr;
-      padding: 4px 4px 0 4px;
+      padding: 6px 6px 0 6px;
       white-space: pre-wrap;
       word-break: break-word;
 
@@ -403,8 +403,8 @@
 
     .more {
       position: absolute;
-      top: 3px;
-      right: 3px;
+      top: 1px;
+      right: 1px;
       height: 20px;
       width: 16px;
       display: block;
@@ -590,7 +590,7 @@
         width: auto;
         left: 3px;
         padding: 6px 2px 0 0;
-        border-radius: 8px 8px 0 0;
+        border-radius: 4px 4px 0 0;
 
         &:before {
           content: '';
@@ -600,7 +600,7 @@
           top: 0;
           right: 0;
           background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.38) 75%, rgba(0, 0, 0, 0.5) 100%);
-          border-radius: 8px 8px 0 0;
+          border-radius: 4px 4px 0 0;
           z-index: 10;
           transition: opacity 0.2s;
           opacity: 0;
@@ -1155,8 +1155,8 @@ html[bubble="2"] {
       }
 
       .more {
-        top: 3px;
-        right: 3px;
+        top: 1px;
+        right: 1px;
         border-radius: 18px 18px 0 0 !important;
       }
     }
@@ -1176,8 +1176,8 @@ html[bubble="2"] {
     &.media {
       .bubble {
         .bubble-body {
-          border-bottom-left-radius: 18px;
-          border-bottom-right-radius: 18px;
+          border-bottom-left-radius: 19px;
+          border-bottom-right-radius: 19px;
         }
       }
     }
@@ -1216,8 +1216,18 @@ html[bubble="2"] {
   }
 }
 
-html[bubble="4"],
-html[bubble="5"] {
+html[bubble="4"] {
+  .user .bubble-wrapper:not(.related), .group .bubble-wrapper.me:not(.related), .group .bubble-wrapper.you:not(.avatar):not(.related) {
+    &.media,
+    &.media_caption {
+      .bubble {
+        .more {
+          border-radius: 9px 9px 0 0;
+        }
+      }
+    }
+  }
+
   .bubble-wrapper {
     padding-bottom: 4px;
 

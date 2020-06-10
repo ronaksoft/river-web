@@ -1,0 +1,30 @@
+/*
+    Creation Time: 2020 - June - 10
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.gif-picker {
+  height: 388px;
+  width: 338px;
+  display: flex;
+  flex-direction: column;
+
+  .gif-picker-list {
+    flex: 1;
+    background-color: var(--white);
+
+    .slider {
+      display: flex;
+      flex-wrap: wrap;
+
+      .gif-item {
+        height: 106px;
+        width: 106px;
+      }
+    }
+  }
+}

@@ -62,7 +62,8 @@
     "create": "ساختن",
     "frequently_contacted": "پرتکرار",
     "dialogs": "گفتگو",
-    "clear": "حذف"
+    "clear": "حذف",
+    "open": "بگشا"
   },
   "chat": {
     "search": "جستجو",
@@ -128,6 +129,7 @@
     "photo_video": "تصویر و ویدو",
     "audio": "پیام‌های صوتی",
     "file": "فایل",
+    "gif": "GIF",
     "CHANGE": "تغییر",
     "PROFILE": "تصویر",
     "PHOTO": "پروفایل",

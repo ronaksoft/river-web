@@ -16,7 +16,7 @@ import {
     DocumentAttributeType, DocumentAttributeVideo,
     MediaDocument
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
-import {CloseRounded, ArrowDownwardRounded, PlayArrowRounded} from '@material-ui/icons';
+import {CloseRounded, ArrowDownwardRounded, PlayArrowRounded, GifRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 import CachedPhoto from '../CachedPhoto';
@@ -52,6 +52,7 @@ export const initMediaSize = () => {
 
 export interface IMediaInfo {
     album?: string;
+    animated?: boolean;
     caption: string;
     duration?: number;
     entityList?: MessageEntity.AsObject[];
@@ -71,6 +72,7 @@ export interface IMediaInfo {
 
 export const getMediaInfo = (message: IMessage): IMediaInfo => {
     const info: IMediaInfo = {
+        animated: false,
         caption: '',
         file: {
             accesshash: '',
@@ -125,13 +127,19 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
     messageMediaDocument.doc.attributesList.forEach((attr, index) => {
         if (attr.type === DocumentAttributeType.ATTRIBUTETYPEPHOTO && message.attributes) {
             const docAttr: DocumentAttributePhoto.AsObject = message.attributes[index];
-            info.height = docAttr.height || 0;
-            info.width = docAttr.width || 0;
+            if (docAttr) {
+                info.height = docAttr.height || 0;
+                info.width = docAttr.width || 0;
+            }
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEVIDEO && message.attributes) {
             const docAttr: DocumentAttributeVideo.AsObject = message.attributes[index];
-            info.height = docAttr.height || 0;
-            info.width = docAttr.width || 0;
-            info.duration = docAttr.duration;
+            if (docAttr) {
+                info.height = docAttr.height || 0;
+                info.width = docAttr.width || 0;
+                info.duration = docAttr.duration;
+            }
+        } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEANIMATED && message.attributes) {
+            info.animated = true;
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEAUDIO && message.attributes) {
             const docAttr: DocumentAttributeAudio.AsObject = message.attributes[index];
             info.duration = docAttr.duration;
@@ -434,11 +442,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                          tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
             />}
             <CachedPhoto className="picture"
-                         fileLocation={((message.id || 0) < 0 || downloaded) && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
+                         fileLocation={((message.id || 0) < 0 || downloaded) && message.messagetype !== C_MESSAGE_TYPE.Video ? info.file : info.thumbFile}
                          style={this.pictureContentSize}
                          onLoad={this.cachedPhotoLoadHandler} blur={downloaded ? undefined : 10} searchTemp={true}
                          tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
             />
+            {info.animated && <div className="gif-badge">
+                <GifRounded/>
+            </div>}
             {this.getMediaAction()}
         </div>);
     }
@@ -729,14 +740,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 md5: info.md5,
                 mimeType: info.mimeType,
                 rtl: message.rtl,
-                thumbFileLocation: message.messagetype !== C_MESSAGE_TYPE.Picture ? info.thumbFile : undefined,
+                thumbFileLocation: message.messagetype === C_MESSAGE_TYPE.Video ? undefined : info.thumbFile,
                 userId: message.senderid || '',
                 width: info.width,
             }],
             peerId: message.peerid || '',
             rect: el.getBoundingClientRect(),
             stream: Boolean(streamReady && !message.downloaded),
-            type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
+            type: message.messagetype === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
         };
         this.documentViewerService.loadDocument(doc);
     }

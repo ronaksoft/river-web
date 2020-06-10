@@ -1846,7 +1846,7 @@ class Chat extends React.Component<IProps, IState> {
             }).catch((err) => {
                 if (!this.resolveRandomMessageIdError(err, randomId, id)) {
                     const messages = this.messages;
-                    if (index > -1) {
+                    if (index > -1 && messages[index]) {
                         messages[index].error = true;
                         this.messageRepo.importBulk([messages[index]], false);
                         if (this.messageRef) {
@@ -4112,19 +4112,8 @@ class Chat extends React.Component<IProps, IState> {
 
         switch (type) {
             case 'file':
-                messageType = C_MESSAGE_TYPE.File;
-
-                const attrFileData = new DocumentAttributeFile();
-                attrFileData.setFilename(mediaItem.name);
-
-                const attrFile = new DocumentAttribute();
-                attrFile.setData(attrFileData.serializeBinary());
-                attrFile.setType(DocumentAttributeType.ATTRIBUTETYPEFILE);
-
-                attributesList.push(attrFile);
-                attributesDataList.push(attrFileData.toObject());
-
                 if (mediaItem.animated) {
+                    messageType = C_MESSAGE_TYPE.Gif;
                     const attrAnimatedData = new DocumentAttributeAnimated();
 
                     const attrAnimated = new DocumentAttribute();
@@ -4133,6 +4122,33 @@ class Chat extends React.Component<IProps, IState> {
 
                     attributesList.push(attrAnimated);
                     attributesDataList.push(attrAnimatedData.toObject());
+
+                    const attrGifPhotoData = new DocumentAttributePhoto();
+                    if (mediaItem.thumb) {
+                        attrGifPhotoData.setHeight(mediaItem.thumb.height);
+                        attrGifPhotoData.setWidth(mediaItem.thumb.width);
+                    } else {
+                        attrGifPhotoData.setHeight(0);
+                        attrGifPhotoData.setWidth(0);
+                    }
+
+                    const attrGifPhoto = new DocumentAttribute();
+                    attrGifPhoto.setData(attrGifPhotoData.serializeBinary());
+                    attrGifPhoto.setType(DocumentAttributeType.ATTRIBUTETYPEPHOTO);
+
+                    attributesList.push(attrGifPhoto);
+                    attributesDataList.push(attrGifPhotoData.toObject());
+                } else {
+                    messageType = C_MESSAGE_TYPE.File;
+                    const attrFileData = new DocumentAttributeFile();
+                    attrFileData.setFilename(mediaItem.name);
+
+                    const attrFile = new DocumentAttribute();
+                    attrFile.setData(attrFileData.serializeBinary());
+                    attrFile.setType(DocumentAttributeType.ATTRIBUTETYPEFILE);
+
+                    attributesList.push(attrFile);
+                    attributesDataList.push(attrFileData.toObject());
                 }
 
                 if (mediaItem.thumb) {

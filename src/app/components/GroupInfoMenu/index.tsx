@@ -367,6 +367,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     open={Boolean(moreAnchorEl)}
                     onClose={this.moreCloseHandler}
                     className="kk-context-menu"
+                    classes={{
+                        paper: 'kk-context-menu-paper'
+                    }}
                 >
                     {this.contextMenuItem()}
                 </Menu>
@@ -426,6 +429,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     open={Boolean(avatarMenuAnchorEl)}
                     onClose={this.avatarMenuAnchorCloseHandler}
                     className="kk-context-menu"
+                    classes={{
+                        paper: 'kk-context-menu-paper'
+                    }}
                 >
                     {this.avatarContextMenuItem()}
                 </Menu>

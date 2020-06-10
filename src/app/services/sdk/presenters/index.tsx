@@ -36,6 +36,7 @@ import {SystemConfig, SystemInfo, SystemSalts, SystemServerTime} from '../messag
 import {UsersMany} from '../messages/chat.api.users_pb';
 import {LabelItems, LabelsListItems} from "../messages/chat.api.labels_pb";
 import {BotCallbackAnswer} from "../messages/bot.api_pb";
+import {FoundGifs, SavedGifs} from "../messages/chat.api.gif_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -120,6 +121,10 @@ export default class Presenter {
                 return ContactsTopPeers.deserializeBinary(data);
             case C_MSG.SystemConfig:
                 return SystemConfig.deserializeBinary(data);
+            case C_MSG.SavedGifs:
+                return SavedGifs.deserializeBinary(data);
+            case C_MSG.FoundGifs:
+                return FoundGifs.deserializeBinary(data);
             default:
                 return null;
         }

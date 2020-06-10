@@ -277,6 +277,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             open={Boolean(chatMoreAnchorEl)}
                             onClose={this.chatMoreCloseHandler}
                             className="kk-context-menu darker"
+                            classes={{
+                                paper: 'kk-context-menu-paper'
+                            }}
                         >
                             {this.chatMoreMenuItem.map((item, key) => {
                                 if (item.role === 'divider') {

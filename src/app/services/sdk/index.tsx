@@ -46,7 +46,7 @@ import {
     FileLocation,
     Group,
     GroupFull,
-    GroupPhoto,
+    GroupPhoto, InputDocument,
     InputFile,
     InputMediaType,
     InputPassword,
@@ -147,6 +147,7 @@ import {
 import UniqueId from "../uniqueId";
 import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/bot.api_pb";
 import {FileGetBySha256} from "./messages/chat.api.files_pb";
+import {FoundGifs, GifGetSaved, GifSave} from "./messages/chat.api.gif_pb";
 
 export default class APIManager {
     public static getInstance() {
@@ -923,6 +924,19 @@ export default class APIManager {
 
     public getInstantSystemConfig(): SystemConfig.AsObject {
         return this.server.getSystemConfig();
+    }
+
+    public getGif(): Promise<FoundGifs.AsObject> {
+        const data = new GifGetSaved();
+        data.setHash(0);
+        return this.server.send(C_MSG.GifGetSaved, data.serializeBinary(), false);
+    }
+
+    public saveGif(inputDocument: InputDocument, remove?: boolean): Promise<Bool.AsObject> {
+        const data = new GifSave();
+        data.setDoc(inputDocument);
+        data.setUnsave(remove || false);
+        return this.server.send(C_MSG.GifSave, data.serializeBinary(), false);
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {

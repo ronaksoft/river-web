@@ -19,8 +19,16 @@ import {DexieMessageDB} from '../../services/db/dexie/message';
 import {C_BUTTON_ACTION, C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from './consts';
 import GroupRepo from '../group';
 import {
-    DocumentAttribute, DocumentAttributeAudio, DocumentAttributeFile, DocumentAttributePhoto, DocumentAttributeType,
-    DocumentAttributeVideo, MediaContact, MediaDocument, MediaGeoLocation,
+    DocumentAttribute,
+    DocumentAttributeAnimated,
+    DocumentAttributeAudio,
+    DocumentAttributeFile,
+    DocumentAttributePhoto,
+    DocumentAttributeType,
+    DocumentAttributeVideo,
+    MediaContact,
+    MediaDocument,
+    MediaGeoLocation,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {
     MessageActionClearHistory, MessageActionContactRegistered, MessageActionGroupAddUser, MessageActionGroupCreated,
@@ -133,12 +141,19 @@ export default class MessageRepo {
                 case DocumentAttributeType.ATTRIBUTETYPEPHOTO:
                     // @ts-ignore
                     attrOut.push(DocumentAttributePhoto.deserializeBinary(attr.data).toObject());
-                    flags.type = C_MESSAGE_TYPE.Picture;
+                    if (flags.type !== C_MESSAGE_TYPE.Gif) {
+                        flags.type = C_MESSAGE_TYPE.Picture;
+                    }
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEVIDEO:
                     // @ts-ignore
                     attrOut.push(DocumentAttributeVideo.deserializeBinary(attr.data).toObject());
                     flags.type = C_MESSAGE_TYPE.Video;
+                    break;
+                case DocumentAttributeType.ATTRIBUTETYPEANIMATED:
+                    // @ts-ignore
+                    attrOut.push(DocumentAttributeAnimated.deserializeBinary(attr.data).toObject());
+                    flags.type = C_MESSAGE_TYPE.Gif;
                     break;
             }
             delete attr.data;
@@ -267,6 +282,9 @@ export default class MessageRepo {
                 break;
             case C_MESSAGE_TYPE.Location:
                 msgType = C_MEDIA_TYPE.LOCATION;
+                break;
+            case C_MESSAGE_TYPE.Gif:
+                msgType = C_MEDIA_TYPE.GIF;
                 break;
         }
         if (msgType && out.id && (out.id || 0) > 0) {

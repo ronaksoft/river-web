@@ -478,6 +478,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     open={Boolean(contextMenuAnchorEl)}
                     onClose={this.contextMenuCloseHandler}
                     className="kk-context-menu darker"
+                    classes={{
+                        paper: 'kk-context-menu-paper'
+                    }}
                 >
                     {contextMenuItems.map((item, key) => {
                         return (

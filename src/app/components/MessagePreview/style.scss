@@ -10,6 +10,7 @@
 .message-preview {
   height: 42px;
   cursor: pointer;
+  padding: 2px;
   max-width: calc(100vw - 447px);
 
   .preview-container {
@@ -133,7 +134,7 @@
 
 .messages-inner.large-mode {
   .message-preview {
-    max-width: calc(100vw - 606px);
+    max-width: calc(100vw - 603px);
   }
 }
 
@@ -163,9 +164,13 @@
   }
 }
 
-.media-message {
-  .message-preview .preview-container .preview-message-wrapper .preview-message {
-    max-width: 100%;
+.bubble.media-message {
+  .message-preview {
+    margin-bottom: 4px;
+
+    .preview-container .preview-message-wrapper .preview-message {
+      max-width: 100%;
+    }
   }
 }
 

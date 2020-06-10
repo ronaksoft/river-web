@@ -712,6 +712,26 @@
 
 .emoji-menu-paper {
   background-color: transparent !important;
+
+  .chat-input-popover-tabs {
+    background-color: var(--white);
+    min-height: 42px;
+
+    .MuiTabs-indicator {
+      transform: scaleX(0.76);
+    }
+
+    .chat-input-tab {
+      padding: 0 8px;
+      min-height: 42px;
+
+      &.gif {
+        svg {
+          font-size: 36px;
+        }
+      }
+    }
+  }
 }
 
 html[direction="rtl"] {
@@ -735,6 +755,24 @@ html[direction="rtl"] {
 
     .inputs .input-actions .send {
       transform: rotateY(180deg);
+    }
+  }
+}
+
+.emoji-mart {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+
+  .emoji-mart-bar {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .emoji-mart-preview {
+    height: 32px;
+
+    .emoji-mart-emoji, .emoji-mart-preview-data {
+      display: none;
     }
   }
 }
@@ -864,6 +902,12 @@ html[theme="dark-blue"] {
     }
   }
 
+  .emoji-menu-paper {
+    .chat-input-popover-tabs {
+      background-color: var(--dark-medium);
+    }
+  }
+
   .emoji-mart {
     background-color: var(--dark-medium);
     border-color: var(--dark-high);
@@ -937,6 +981,12 @@ html[theme="dark-blue"] {
       [disabled] svg {
         color: var(--grey);
       }
+    }
+  }
+
+  .emoji-menu-paper {
+    .chat-input-popover-tabs {
+      background-color: var(--dark-blue-medium);
     }
   }
 

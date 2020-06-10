@@ -108,6 +108,9 @@ class InfoBar extends React.Component<IProps, IState> {
                         open={Boolean(moreInfoAnchorEl)}
                         onClose={this.messageMoreCloseHandler}
                         className="kk-context-menu darker"
+                        classes={{
+                            paper: 'kk-context-menu-paper'
+                        }}
                     >
                         {messageMoreMenuItem.map((item, key) => {
                             return (

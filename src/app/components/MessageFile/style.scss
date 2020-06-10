@@ -182,12 +182,12 @@
 
       .file-thumbnail {
         position: absolute;
-        top: -1px;
-        left: -1px;
-        height: 64px;
+        top: 0;
+        left: 0;
+        height: 63px;
         width: 64px;
         overflow: hidden;
-        border-radius: 9px;
+        border-radius: 4px;
 
         &:after {
           position: absolute;
@@ -335,21 +335,22 @@ html[gradient="5"]:not([bubble="5"]) {
   }
 }
 
-html[bubble="1"] {
-  .message-file {
-    &.has-thumbnail {
-      .file-thumbnail {
-        border-radius: 3px;
-      }
-    }
-  }
-}
-
 html[bubble="2"] {
   .message-file {
     &.has-thumbnail {
       .file-thumbnail {
         border-radius: 18px;
+      }
+    }
+  }
+}
+
+html[bubble="4"] {
+  .message-file {
+    &.has-thumbnail {
+      .file-content .file-thumbnail {
+        height: 64px;
+        border-radius: 9px;
       }
     }
   }

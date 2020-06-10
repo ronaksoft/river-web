@@ -44,10 +44,15 @@
     margin: -8px 0 8px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 
+    .MuiTabs-scrollButtons {
+      width: 28px;
+    }
+
     .peer-media-tab-item {
       white-space: nowrap;
       flex-basis: unset;
       min-width: 75px;
+
       > span > span {
         padding: 6px;
       }
@@ -346,6 +351,12 @@ html[theme="dark-blue"] {
 
     .peer-media-tab {
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+      .MuiTabs-scrollButtons {
+        svg {
+          color: var(--white);
+        }
+      }
 
       button[aria-selected="false"] {
         color: var(--white);

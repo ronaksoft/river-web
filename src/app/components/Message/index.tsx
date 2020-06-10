@@ -656,6 +656,9 @@ class Message extends React.Component<IProps, IState> {
                         open={Boolean(moreAnchorEl || moreAnchorPos)}
                         onClose={this.moreCloseHandler}
                         className="kk-context-menu"
+                        classes={{
+                            paper: 'kk-context-menu-paper'
+                        }}
                     >
                         {this.contextMenuItem()}
                     </Menu>
@@ -952,7 +955,7 @@ class Message extends React.Component<IProps, IState> {
                             <span className="error" onClick={this.contextMenuHandler(index)}><ErrorRounded/></span>}
                             <div className="message-container">
                                 <div ref={parenElRefHandler}
-                                     className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture) ? ' media-message' : '')}
+                                     className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture || message.messagetype === C_MESSAGE_TYPE.Gif) ? ' media-message' : '')}
                                      onContextMenu={this.messageContextMenuHandler(index)}>
                                     {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me && !message.em_le)
                                         || (this.isSimplified && message.avatar)) &&
@@ -1270,6 +1273,7 @@ class Message extends React.Component<IProps, IState> {
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
                 case C_MESSAGE_TYPE.Video:
+                case C_MESSAGE_TYPE.Gif:
                     return (<MessageMedia key={message.id} ref={refBindHandler} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction} onBodyAction={this.bodyActionHandler}
                                           parentEl={parentEl} measureFn={measureFn}/>);
@@ -1298,6 +1302,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
             case C_MESSAGE_TYPE.Location:
+            case C_MESSAGE_TYPE.Gif:
                 type = 'media';
                 break;
             case C_MESSAGE_TYPE.File:

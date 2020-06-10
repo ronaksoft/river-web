@@ -23,15 +23,14 @@ import {
     SentimentSatisfiedRounded,
     StopRounded,
     ViewModuleRounded,
+    GifRounded,
+    PanoramaFishEyeRounded,
 } from '@material-ui/icons';
-import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import Popover, {PopoverPosition} from '@material-ui/core/Popover';
 import {
     DraftMessage,
     GroupFlags,
@@ -81,10 +80,13 @@ import {getMessageIcon} from "../DialogMessage";
 import {getMapLocation} from "../MessageLocation";
 import {MediaContact} from "../../services/sdk/messages/chat.core.message.medias_pb";
 import {getHumanReadableSize} from "../MessageFile";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import Fade from '@material-ui/core/Fade';
+import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@material-ui/core';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
-import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import GifPicker from "../GifPicker";
 
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
@@ -228,11 +230,12 @@ interface IState {
     botKeyboard: boolean;
     disableAuthority: number;
     droppedMessage: IMessage | null;
-    emojiAnchorPos: PopoverPosition | undefined;
     inputMode: 'voice' | 'text' | 'attachment' | 'default';
     isBot: boolean;
     mediaInputMode: 'media' | 'audio' | 'contact' | 'location' | 'file' | 'none';
     peer: InputPeer | null;
+    pickerAnchorPos: PopoverPosition | undefined;
+    pickerTab: number;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
     previewMessageMode: number;
@@ -335,11 +338,12 @@ class ChatInput extends React.Component<IProps, IState> {
             botKeyboard: false,
             disableAuthority: 0x0,
             droppedMessage: null,
-            emojiAnchorPos: undefined,
             inputMode: 'default',
             isBot: false,
             mediaInputMode: 'none',
             peer: props.peer,
+            pickerAnchorPos: undefined,
+            pickerTab: 0,
             previewMessage: props.previewMessage || null,
             previewMessageHeight: 0,
             previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
@@ -826,7 +830,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private getInputContent(isBot: boolean) {
-        const {inputMode, textareaValue, botKeyboard, voiceMode} = this.state;
+        const {inputMode, textareaValue, botKeyboard, voiceMode, pickerTab} = this.state;
         switch (inputMode) {
             default:
             case 'attachment':
@@ -856,14 +860,20 @@ class ChatInput extends React.Component<IProps, IState> {
                                 {botKeyboard ? <KeyboardRounded/> : <ViewModuleRounded/>}
                             </span>}
                             <span className="icon" onClick={this.emojiClickHandler}>
-                                <SentimentSatisfiedRounded/>
+                                <PanoramaFishEyeRounded/>
                             </span>
-                            <Popover open={Boolean(this.state.emojiAnchorPos)} anchorReference="anchorPosition"
-                                     anchorPosition={this.state.emojiAnchorPos} onClose={this.emojiCloseHandler}
-                                     classes={{paper: 'emoji-menu-paper'}}
+                            <Popover open={Boolean(this.state.pickerAnchorPos)} anchorReference="anchorPosition"
+                                     anchorPosition={this.state.pickerAnchorPos} onClose={this.emojiCloseHandler}
+                                     classes={{paper: 'emoji-menu-paper'}} TransitionComponent={Fade}
                             >
-                                <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
-                                             showPreview={false}/>
+                                <Tabs variant="fullWidth" indicatorColor="primary" textColor="primary" centered={true}
+                                      className="chat-input-popover-tabs" value={pickerTab}
+                                      onChange={this.tabChangeHandler}>
+                                    <Tab value={0} className="chat-input-tab emoji"
+                                         icon={<SentimentSatisfiedRounded/>}/>
+                                    <Tab value={1} className="chat-input-tab gif" icon={<GifRounded/>}/>
+                                </Tabs>
+                                {this.getPickerContent()}
                             </Popover>
                         </div>
                     </div>);
@@ -993,7 +1003,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.mentions = [];
         this.lastMentionsCount = 0;
         this.setState({
-            emojiAnchorPos: undefined,
+            pickerAnchorPos: undefined,
             textareaValue: '',
         }, () => {
             this.computeLines();
@@ -1056,7 +1066,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.mentions = [];
                 this.lastMentionsCount = 0;
                 this.setState({
-                    emojiAnchorPos: undefined,
+                    pickerAnchorPos: undefined,
                     textareaValue: '',
                 }, () => {
                     this.computeLines();
@@ -1113,9 +1123,9 @@ class ChatInput extends React.Component<IProps, IState> {
         e.preventDefault();
         const pos = e.target.getBoundingClientRect();
         this.setState({
-            emojiAnchorPos: {
+            pickerAnchorPos: {
                 left: pos.left - 318,
-                top: pos.top - 445,
+                top: pos.top - 446,
             },
         });
     }
@@ -1128,7 +1138,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private emojiCloseHandler = () => {
         this.setState({
-            emojiAnchorPos: undefined,
+            pickerAnchorPos: undefined,
         });
     }
 
@@ -1917,7 +1927,7 @@ class ChatInput extends React.Component<IProps, IState> {
         const {mediaInputMode} = this.state;
         switch (mediaInputMode) {
             case 'media':
-                return 'image/png,image/jpeg,image/jpg,image/webp,video/webm,video/mp4';
+                return 'image/png,image/jpeg,image/jpg,image/webp,image/gif,video/webm,video/mp4';
             case 'audio':
                 return "audio/mp4,audio/ogg,audio/mp3";
             case 'file':
@@ -1959,6 +1969,7 @@ class ChatInput extends React.Component<IProps, IState> {
         switch (previewMessage.messagetype) {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
+            case C_MESSAGE_TYPE.Gif:
                 const info = getMediaInfo(previewMessage);
                 return (
                     <div className="preview-thumbnail">
@@ -2217,6 +2228,28 @@ class ChatInput extends React.Component<IProps, IState> {
                 }
             });
         });
+    }
+
+    private tabChangeHandler = (e: any, val: any) => {
+        this.setState({
+            pickerTab: val,
+        });
+    }
+
+    private getPickerContent() {
+        const {pickerTab, pickerAnchorPos} = this.state;
+        if (!pickerAnchorPos) {
+            return null;
+        }
+        switch (pickerTab) {
+            default:
+            case 0:
+                const dark = (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') !== 'light';
+                return <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
+                                    showPreview={false} theme={dark ? 'dark' : 'light'}/>;
+            case 1:
+                return <GifPicker/>;
+        }
     }
 }
 

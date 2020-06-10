@@ -400,11 +400,12 @@
     .pagination-item {
       position: absolute;
       top: 50%;
-      width: 96px;
+      min-width: 128px;
+      min-height: 256px;
+      width: 33vw;
       height: 75%;
       display: flex;
       align-items: center;
-      justify-content: center;
       cursor: pointer;
       opacity: 0;
       transition: opacity 0.1s;
@@ -420,11 +421,15 @@
       &.prev {
         left: 0;
         transform: translate(-100%, -50%);
+        padding-right: 32px;
+        justify-content: flex-end;
       }
 
       &.next {
         right: 0;
         transform: translate(100%, -50%);
+        padding-left: 32px;
+        justify-content: flex-start;
       }
 
       svg {

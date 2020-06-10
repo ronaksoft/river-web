@@ -175,6 +175,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         switch (msg.messagetype) {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
+            case C_MESSAGE_TYPE.Gif:
                 cn += ' with-thumbnail';
                 break;
         }
@@ -232,6 +233,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
             case C_MESSAGE_TYPE.File:
+            case C_MESSAGE_TYPE.Gif:
                 if (mediaInfo.thumbFile && mediaInfo.thumbFile.fileid !== '') {
                     return (
                         <div className="preview-thumbnail">

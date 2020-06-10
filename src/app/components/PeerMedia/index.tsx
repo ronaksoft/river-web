@@ -21,8 +21,7 @@ import {
     PauseRounded,
 } from '@material-ui/icons';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import {Tabs, Tab} from '@material-ui/core';
 import {C_MEDIA_TYPE} from '../../repository/media/interface';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import Scrollbars from 'react-custom-scrollbars';
@@ -121,11 +120,12 @@ class PeerMedia extends React.Component<IProps, IState> {
                     <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>}
                 </div>}
                 {this.props.full && <div className="peer-media-tab">
-                    <Tabs indicatorColor="primary" textColor="primary" variant="fullWidth" centered={true} value={tab}
+                    <Tabs indicatorColor="primary" textColor="primary" variant="scrollable" centered={true} value={tab}
                           onChange={this.tabChangeHandler}>
-                        <Tab label={i18n.t('peer_info.photo_video')} className="peer-media-tab-item"/>
-                        <Tab label={i18n.t('peer_info.audio')} className="peer-media-tab-item"/>
-                        <Tab label={i18n.t('peer_info.file')} className="peer-media-tab-item"/>
+                        <Tab value={0} label={i18n.t('peer_info.photo_video')} className="peer-media-tab-item"/>
+                        <Tab value={1} label={i18n.t('peer_info.audio')} className="peer-media-tab-item"/>
+                        <Tab value={2} label={i18n.t('peer_info.file')} className="peer-media-tab-item"/>
+                        <Tab value={3} label={i18n.t('peer_info.gif')} className="peer-media-tab-item"/>
                     </Tabs>
                 </div>}
                 <div className="peer-media-container">
@@ -296,6 +296,9 @@ class PeerMedia extends React.Component<IProps, IState> {
             case 2:
                 mediaType = C_MEDIA_TYPE.FILE;
                 break;
+            case 3:
+                mediaType = C_MEDIA_TYPE.GIF;
+                break;
         }
         this.mediaRepo.getMany({
             limit: this.props.full ? 128 : 8,
@@ -325,7 +328,7 @@ class PeerMedia extends React.Component<IProps, IState> {
         try {
             const {items} = this.state;
             const item = items[i];
-            if (!(item.type === C_MESSAGE_TYPE.Picture || item.type === C_MESSAGE_TYPE.Video)) {
+            if (!(item.type === C_MESSAGE_TYPE.Picture || item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Gif)) {
                 return;
             }
             if (e.stopPropagation) {
@@ -350,7 +353,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 }],
                 peerId: item.peerId || '',
                 rect: (e.currentTarget || e).getBoundingClientRect(),
-                type: item.type === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
+                type: item.type === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
             };
             this.documentViewerService.loadDocument(doc);
         } catch (e) {
@@ -396,11 +399,11 @@ class PeerMedia extends React.Component<IProps, IState> {
                 default:
                     if (!item.saved) {
                         return (<div className="media-file-action">
-                            <span onClick={this.mediaActionClickHandler(item.id, 'view')}>SAVE</span>
+                            <span onClick={this.mediaActionClickHandler(item.id, 'view')}>{i18n.t('general.save')}</span>
                         </div>);
                     } else {
                         return (<div className="media-file-action">
-                            <span onClick={this.mediaActionClickHandler(item.id, 'open')}>OPEN</span>
+                            <span onClick={this.mediaActionClickHandler(item.id, 'open')}>{i18n.t('general.open')}</span>
                         </div>);
                     }
             }

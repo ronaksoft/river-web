@@ -14,6 +14,7 @@ export const C_MESSAGE_TYPE = {
     End: -4,
     File: -7,
     Gap: -5,
+    Gif: -13,
     Hole: -2,
     Location: -12,
     NewMessage: -3,
