@@ -10,7 +10,6 @@
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
 import UpdateManager from './../updateManager';
-import {Error as RiverError, InputPassword, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
 import {throttle, cloneDeep} from 'lodash';
 import Socket from './socket';
 import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
@@ -18,8 +17,10 @@ import MainRepo from "../../../repository";
 import MessageRepo from "../../../repository/message";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../App";
-import {SystemConfig} from "../messages/chat.api.system_pb";
 import {EventWebSocketClose, EventWebSocketOpen} from "../../events";
+import {SystemConfig} from "../messages/system_pb";
+import {InputPassword, MessageContainer, MessageEnvelope} from "../messages/core.types_pb";
+import {Error as RiverError} from "../messages/core.types_pb";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;

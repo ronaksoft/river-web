@@ -9,9 +9,9 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 import {C_REPLY_ACTION} from "../../repository/message/consts";
-import {ReplyInlineMarkup,} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {ReplyInlineMarkup,} from "../../services/sdk/messages/chat.messages.markups_pb";
 import BotLayout from "../BotLayout";
 
 import './style.scss';

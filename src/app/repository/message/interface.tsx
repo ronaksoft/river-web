@@ -7,9 +7,9 @@
     Copyright Ronak Software Group 2018
 */
 
-import {InputMediaType, UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputMediaType, UserMessage} from "../../services/sdk/messages/core.types_pb";
 
-interface IMessage extends UserMessage.AsObject {
+export interface IMessage extends UserMessage.AsObject {
     actiondata?: any;
     added_labels?: number[];
     attributes?: any[];
@@ -34,7 +34,7 @@ interface IMessage extends UserMessage.AsObject {
     temp_file?: Blob;
 }
 
-interface IPendingMessage {
+export interface IPendingMessage {
     id: number;
     message_id: number;
     file_ids?: string[];
@@ -42,16 +42,13 @@ interface IPendingMessage {
     type?: InputMediaType;
 }
 
-interface IMessageWithCount {
+export interface IMessageWithCount {
     count: number;
     lastId: number;
     messages: IMessage[];
 }
 
-interface IMessageBotCol {
+export interface IMessageBotCol {
     constructor?: number;
     buttondata?: any;
 }
-
-// @ts-ignore
-export {IMessage, IPendingMessage, IMessageWithCount, IMessageBotCol};

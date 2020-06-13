@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import CachedFileService from '../../services/cachedFileService';
-import {InputFileLocation} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputFileLocation} from '../../services/sdk/messages/core.types_pb';
 
 interface IProps {
     autoPlay?: boolean;

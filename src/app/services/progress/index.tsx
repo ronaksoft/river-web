@@ -31,7 +31,7 @@ export default class ProgressBroadcaster {
     private constructor() {
     }
 
-    public failed(id: number) {
+    public failed(id: number | string) {
         this.callHandlers(id, {
             active: true,
             download: 0,
@@ -43,13 +43,15 @@ export default class ProgressBroadcaster {
         });
     }
 
-    public publish(id: number, progress: IFileProgress) {
+    public publish(id: number | string, progress: IFileProgress) {
         progress.active = true;
-        progress.msgId = id;
+        if (typeof id === 'number') {
+            progress.msgId = id;
+        }
         this.callHandlers(id, progress);
     }
 
-    public listen(id: number, fn: any): (() => void) | null {
+    public listen(id: number | string, fn: any): (() => void) | null {
         if (!id) {
             return null;
         }
@@ -79,7 +81,7 @@ export default class ProgressBroadcaster {
     }
 
     /* Check if progress is active */
-    public isActive(id: number) {
+    public isActive(id: number | string) {
         if (!this.listeners.hasOwnProperty(id)) {
             return false;
         } else {
@@ -91,13 +93,13 @@ export default class ProgressBroadcaster {
         }
     }
 
-    public remove(id: number) {
+    public remove(id: number | string) {
         if (this.listeners.hasOwnProperty(id)) {
             delete this.listeners[id];
         }
     }
 
-    private callHandlers(id: number, progress: IFileProgress) {
+    private callHandlers(id: number | string, progress: IFileProgress) {
         if (!this.listeners.hasOwnProperty(id)) {
             return;
         }

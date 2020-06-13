@@ -12,7 +12,7 @@ import Dialog from '@material-ui/core/Dialog/Dialog';
 import {CheckRounded} from '@material-ui/icons';
 import {MapComponent} from './map';
 import i18n from '../../services/i18n';
-import {InputPeer, MessageEntity} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputPeer, MessageEntity} from "../../services/sdk/messages/core.types_pb";
 import MentionInput, {IMention} from "../MentionInput";
 import RTLDetector from "../../services/utilities/rtl_detector";
 import {throttle} from "lodash";

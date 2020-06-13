@@ -23,7 +23,7 @@ import {
     PeerNotifySettings,
     PeerType,
     PhoneContact
-} from '../../services/sdk/messages/chat.core.types_pb';
+} from '../../services/sdk/messages/core.types_pb';
 import APIManager from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';

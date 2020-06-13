@@ -13,7 +13,7 @@ import {differenceBy, find, throttle, uniq, uniqBy} from 'lodash';
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
-import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
 

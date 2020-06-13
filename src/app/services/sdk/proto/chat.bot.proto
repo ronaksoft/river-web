@@ -1,0 +1,313 @@
+syntax = "proto2";
+
+package msg;
+
+import "core.types.proto";
+import "chat.messages.medias.proto";
+import "chat.wallpaper.proto";
+
+service BotProxy {
+    rpc ServeBotRequest (stream MessageEnvelope) returns (stream MessageEnvelope) {
+    }
+}
+
+// BotStart
+// @Function (Client)
+// @Return: Bool
+message BotStart {
+    required InputPeer Bot = 1;
+    required int64 RandomID = 2;
+    required string StartParam = 3;
+}
+
+// BotRecall
+// @Function (BotOnly)
+// @Return: BotRecalled
+message BotRecall {
+    required int32 Version = 1;
+}
+
+// BotSetInfo
+// @Function (BotOnly)
+// @Return: Bool
+message BotSetInfo {
+    required int64 BotID = 1;
+    required int64 RandomID = 2;
+    required int64 Owner = 3;
+    repeated BotCommands BotCommands = 4;
+    required string Description = 5;
+    optional string InlinePlaceholder = 6;
+    optional bool InlineGeo = 7;
+}
+
+// BotGet
+// @Function (BotOnly)
+// @Return: BotInfo
+message BotGet {
+    required int64 UserID = 1 [jstype = JS_STRING];
+    optional int32 Limit = 2;
+}
+
+// BotSendMessage
+// @Function (BotOnly)
+// @Return: UserMessage
+message BotSendMessage {
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    optional InputTeam Team = 3;
+    required string Body = 5;
+    optional int64 ReplyTo = 6;
+    optional bool ClearDraft = 7;
+    repeated MessageEntity Entities = 8;
+    optional int64 ReplyMarkup = 9;
+    optional bytes ReplyMarkupData = 10;
+}
+
+// BotEditMessage
+// @Function (BotOnly)
+// @Return: UserMessage
+message BotEditMessage {
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    required string Body = 3;
+    required int64 MessageID = 4;
+    repeated MessageEntity Entities = 5;
+    optional int64 ReplyMarkup = 6;
+    optional bytes ReplyMarkupData = 7;
+    optional InputTeam Team = 8;
+}
+
+// BotSendMedia
+// @Function (BotOnly)
+// @Return: UserMessage
+message BotSendMedia {
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    required InputMediaType MediaType = 3;
+    required bytes MediaData = 4;
+    optional int64 ReplyTo = 5;
+    optional InputTeam Team = 6;
+}
+
+// BotSaveFilePart
+// @Function (BotOnly)
+// @Returns: Bool
+message BotSaveFilePart {
+    required int64 FileID = 1 [jstype = JS_STRING];
+    required int32 PartID = 2;
+    required int32 TotalParts = 3;
+    required bytes Bytes = 4;
+}
+
+// BotUpdateProfile
+// @Function (BotOnly)
+// @Return: Bool
+message BotUpdateProfile {
+    required int64 BotID = 1;
+    required string Name = 2;
+    optional string Bio = 4;
+}
+
+// BotUpdatePhoto
+// @Function (BotOnly)
+// @Returns: Bool
+message BotUpdatePhoto {
+    optional InputFileLocation File = 1;
+    required int64 BotID = 2;
+}
+
+// BotRevokeToken
+// @Function (BotOnly)
+// @Returns: BotToken
+message BotRevokeToken {
+    required int64 BotID = 1;
+    required bool GetNew = 2;
+}
+
+// BotDeleteMessage
+// @Function (BotOnly)
+// @Returns: Bool
+message BotDeleteMessage {
+    required InputPeer Peer = 1;
+    repeated int64 MessageIDs = 2;
+    optional InputTeam Team = 3;
+}
+
+// BotSetCallbackAnswer
+// @Function (BotOnly)
+// @Returns: Bool
+message BotSetCallbackAnswer {
+    required int64 QueryID = 1;
+    optional string Url = 2; // URL to open
+    optional string Message = 3; // Alert to show
+    required int32 CacheTime = 4; // For how long should this answer be cached (in seconds) [Default is  300]
+}
+
+// BotGetCallbackAnswer
+// @Function (Client)
+// @Returns: BotCallbackAnswer
+message BotGetCallbackAnswer {
+    required InputPeer Peer = 1;
+    optional int64 MessageID = 2; // ID of the Message if button is the inline keyboard
+    required bytes Data = 3; // Callback data
+    optional InputTeam Team = 4;
+}
+
+// BotGetInlineResults
+// @Function (Client)
+// @Returns: BotResults
+message BotGetInlineResults {
+    required InputUser Bot = 1; // The bot to query
+    required InputPeer Peer = 2; // The currently opened chat
+    required string Query = 3; // The query
+    required string Offset = 4; // The offset within the results, will be passed directly as-is to the bot.
+    optional InputGeoLocation Location = 5; // The geolocation, if requested
+    optional InputTeam Team = 6;
+}
+
+// BotSetInlineResults
+// @Function (BotOnly)
+// @Returns: Bool
+message BotSetInlineResults {
+    // Set this flag if the results are composed of media files
+    required bool Gallery = 1;
+    // Set this flag if results may be cached on the server side only for the user that sent the query.
+    // By default, results may be returned to any user who sends the same query
+    required bool Private = 2;
+    // The maximum amount of time in seconds that the result of the inline query may be cached on the server.
+    // Defaults to 300.
+    required int64 CacheTime = 3;
+    // Pass the offset that a client should send in the next query with the same text to receive more results.
+    // Pass an empty string if there are no more results or if you don‘t
+    // support pagination. Offset length can’t exceed 64 bytes.
+    optional string NextOffset = 4;
+    // Vector of results for the inline query
+    repeated InputBotInlineResult Results = 5;
+    // If passed, clients will display a button with specified text that switches the user to a private chat with
+    // the bot and sends the bot a start message with a certain parameter.
+    optional BotInlineSwitchPM SwitchPM = 6;
+    // Unique identifier for the answered query
+    required int64 QueryID = 7;
+}
+
+// BotSendInlineResults
+// @Function (Client)
+// @Returns: Bool + Updates
+message BotSendInlineResults {
+    required int64 RandomID = 1;
+    required int64 QueryID = 2; // Query ID from BotResults response of BotGetInlineResults
+    required string ResultID = 3; // Result ID from BotResults response of BotGetInlineResults
+    required bool ClearDraft = 4;
+    required InputPeer Peer = 5; // Destination
+    required int64 ReplyTo = 6;
+    optional bool Silent = 7; // Do not send notification
+    optional bool HideVia = 8; // Hid via bot
+    optional InputTeam Team = 9;
+}
+
+// BotUploadWallPaper
+// @Function (BotFather, AdminBot)
+// @Return: Bool
+message BotUploadWallPaper {
+    required InputFileLocation File = 1;
+    required bool Dark = 2;
+    required bool Pattern = 3;
+    required WallPaperSettings Settings = 4;
+}
+
+// BotResults
+message BotResults {
+    required bool Gallery = 1;
+    required int64 QueryID = 2;
+    optional string NextOffset = 3; // The next offset to use when navigating through results
+    optional BotInlineSwitchPM SwitchPM = 4; // Whether the bot requested the user to message him in private
+    repeated BotInlineResult Results = 5; // The results
+}
+
+// BotInlineSwitchPM
+message BotInlineSwitchPM {
+    // Text for the button that switches the user to a private chat with the bot
+    // and sends the bot a start message with the parameter start_parameter (can be empty)
+    required string Text = 1;
+    // The parameter for the /start parameter
+    required string StartParam = 2;
+}
+
+// BotInlineResult
+message BotInlineResult {
+    required string ID = 1;
+    required MediaType Type = 2;
+    optional string Title = 3;
+    optional string Description = 4;
+    optional string Url = 5;
+    optional MediaWebDocument Thumb = 6;
+    required BotInlineMessage Message = 7;
+}
+
+// InputBotInlineResult
+message InputBotInlineResult {
+    required string ID = 1;
+    required InputMediaType Type = 2;
+    optional string Title = 3;
+    optional string Description = 4;
+    optional string Url = 5;
+    optional InputMediaWebDocument Thumb = 6;
+    required InputBotInlineMessage Message = 8;
+}
+
+// BotInlineMessage
+message BotInlineMessage {
+    optional bytes MediaData = 1;
+    optional string Body = 10;
+    repeated MessageEntity Entities = 11;
+    optional int64 ReplyTo = 12;
+    optional int64 ReplyMarkup = 13;
+    optional bytes ReplyMarkupData = 14;
+}
+
+// InputBotInlineMessage
+message InputBotInlineMessage {
+    optional bytes InputMediaData = 1;
+    optional bool NoWebPage = 2;
+    optional string Body = 10;
+    repeated MessageEntity Entities = 11;
+    optional int64 ReplyTo = 12;
+    optional int64 ReplyMarkup = 13;
+    optional bytes ReplyMarkupData = 14;
+}
+
+// BotToken
+message BotToken {
+    required bytes Token = 1;
+}
+
+// BotRecalled
+message BotRecalled {
+    required int64 ID = 1;
+    required string Username = 2;
+}
+
+// BotCallbackAnswer
+message BotCallbackAnswer {
+    optional string Url = 1; // URL to open
+    optional string Message = 2; // Alert to show
+    required int32 CacheTime = 3; // For how long should this answer be cached (in seconds)
+}
+
+// BotsMany
+message BotsMany {
+    repeated BotInfo Bots = 1;
+}
+
+// BotGetCommands
+// @Function
+// @Return: BotCommandsMany
+message BotGetCommands {
+    required InputPeer Peer = 1;
+}
+
+// BotCommandsMany
+message BotCommandsMany {
+    repeated BotCommands Commands = 1;
+}
+

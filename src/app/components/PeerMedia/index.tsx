@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import MediaRepo from '../../repository/media';
-import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 import {getDuration, getMediaInfo, IMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
 import {

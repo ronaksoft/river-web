@@ -14,12 +14,12 @@ import Dexie from 'dexie';
 import {arrayBufferToBase64} from '../../services/sdk/fileManager/http/utils';
 import {sha256} from 'js-sha256';
 import md5 from "md5-webworker";
-import {InputFileLocation} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputFileLocation} from "../../services/sdk/messages/core.types_pb";
 import {find, differenceWith, uniq} from "lodash";
 import {kMerge} from "../../services/utilities/kDash";
 import {IMessage} from "../message/interface";
 import {getMediaDocument} from "../message";
-import {MediaDocument} from "../../services/sdk/messages/chat.core.message.medias_pb";
+import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
 
 export const md5FromBlob = (theBlob: Blob): Promise<string> => {
     const b: any = theBlob;

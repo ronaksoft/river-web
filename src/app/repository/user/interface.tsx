@@ -7,9 +7,9 @@
     Copyright Ronak Software Group 2018
 */
 
-import {ParticipantType, User} from '../../services/sdk/messages/chat.core.types_pb';
+import {ParticipantType, User} from "../../services/sdk/messages/core.types_pb";
 
-interface IUser extends User.AsObject {
+export interface IUser extends User.AsObject {
     accesshash?: string;
     category?: string;
     clientid?: string;
@@ -20,11 +20,8 @@ interface IUser extends User.AsObject {
     last_updated?: number;
 }
 
-interface IParticipant extends IUser {
+export interface IParticipant extends IUser {
     userid?: string;
     type?: ParticipantType;
     accesshash?: string;
 }
-
-// @ts-ignore
-export {IUser, IParticipant};

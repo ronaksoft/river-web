@@ -14,7 +14,7 @@ import {CheckRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons'
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import APIManager from '../../services/sdk';
-import {PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
+import {PhoneContact} from '../../services/sdk/messages/core.types_pb';
 import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
 import {IUser} from '../../repository/user/interface';

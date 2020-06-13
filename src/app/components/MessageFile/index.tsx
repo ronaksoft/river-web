@@ -9,10 +9,10 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
+import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/core.types_pb';
 import {
     DocumentAttributeFile, DocumentAttributeType, MediaDocument,
-} from '../../services/sdk/messages/chat.core.message.medias_pb';
+} from '../../services/sdk/messages/chat.messages.medias_pb';
 import {CloseRounded, ArrowDownwardRounded, InsertDriveFileRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';

@@ -8,8 +8,8 @@
 */
 
 import {C_MSG} from '../const';
-import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/chat.api.auth_pb';
-import {BlockedContactsMany, ContactsImported, ContactsMany, ContactsTopPeers} from '../messages/chat.api.contacts_pb';
+import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/auth_pb';
+import {BlockedContactsMany, ContactsImported, ContactsMany, ContactsTopPeers} from '../messages/contacts_pb';
 import {
     Bool,
     Error,
@@ -18,9 +18,9 @@ import {
     LabelsMany,
     MessageContainer,
     UserPhoto
-} from '../messages/chat.core.types_pb';
-import {MessagesDialogs, MessagesGetDialogs, MessagesMany, MessagesSent} from '../messages/chat.api.messages_pb';
-import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/chat.core.types_pb';
+} from '../messages/core.types_pb';
+import {MessagesDialogs, MessagesGetDialogs, MessagesMany, MessagesSent} from '../messages/chat.messages_pb';
+import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/core.types_pb';
 import {
     UpdateDifference,
     UpdateGetDifference,
@@ -29,14 +29,14 @@ import {
     UpdateReadHistoryOutbox,
     UpdateState,
     UpdateUserTyping,
-} from '../messages/chat.api.updates_pb';
-import {File} from '../messages/chat.api.files_pb';
-import {AccountAuthorizations, AccountPassword, AccountPrivacyRules} from '../messages/chat.api.accounts_pb';
-import {SystemConfig, SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
-import {UsersMany} from '../messages/chat.api.users_pb';
-import {LabelItems, LabelsListItems} from "../messages/chat.api.labels_pb";
-import {BotCallbackAnswer} from "../messages/bot.api_pb";
-import {FoundGifs, SavedGifs} from "../messages/chat.api.gif_pb";
+} from '../messages/updates_pb';
+import {File} from '../messages/files_pb';
+import {AccountAuthorizations, AccountPassword, AccountPrivacyRules} from '../messages/accounts_pb';
+import {SystemConfig, SystemInfo, SystemSalts, SystemServerTime} from '../messages/system_pb';
+import {UsersMany} from '../messages/users_pb';
+import {LabelItems, LabelsListItems} from "../messages/chat.labels_pb";
+import {BotCallbackAnswer} from "../messages/chat.bot_pb";
+import {FoundGifs, SavedGifs} from "../messages/gif_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {

@@ -16,7 +16,7 @@ import MessageRepo from "../message";
 import {differenceBy, find, uniqBy} from "lodash";
 import {ITopPeerItem} from "../topPeer/interface";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../topPeer";
-import {PeerType} from "../../services/sdk/messages/chat.core.types_pb";
+import {PeerType} from "../../services/sdk/messages/core.types_pb";
 
 export default class SearchRepo {
     public static getInstance() {

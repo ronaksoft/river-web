@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {GroupParticipant, InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
+import {GroupParticipant, InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';
 import {sortBy, uniqBy} from "lodash";

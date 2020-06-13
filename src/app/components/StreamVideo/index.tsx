@@ -11,7 +11,7 @@ import * as React from 'react';
 import {convertBlobToArrayBuffer, IFileBuffer} from "../../services/sdk/fileManager";
 import FileRepo from "../../repository/file";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
-import {InputFileLocation} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputFileLocation} from "../../services/sdk/messages/core.types_pb";
 import {transformMimeType} from "./helper";
 
 interface IProps {

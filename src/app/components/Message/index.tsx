@@ -14,7 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {
     GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntity, MessageEntityType, PeerType,
-} from '../../services/sdk/messages/chat.core.types_pb';
+} from '../../services/sdk/messages/core.types_pb';
 import {findLastIndex, throttle} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
 import TimeUtility from '../../services/utilities/time';
@@ -32,7 +32,7 @@ import MessageFile from '../MessageFile';
 import MessageContact from '../MessageContact';
 import CachedPhoto from '../CachedPhoto';
 import MessageMedia, {C_MEDIA_BREAKPOINT, getContentSize, initMediaSize} from '../MessageMedia';
-import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
+import {MediaDocument} from '../../services/sdk/messages/chat.messages.medias_pb';
 import MessageLocation from '../MessageLocation';
 import Broadcaster from '../../services/broadcaster';
 import UserRepo from '../../repository/user';
@@ -369,6 +369,10 @@ class Message extends React.Component<IProps, IState> {
             12: {
                 cmd: 'labels',
                 title: i18n.t('chat.labels'),
+            },
+            13: {
+                cmd: 'save_gif',
+                title: i18n.t('general.save_gif'),
             },
         };
     }
@@ -745,8 +749,8 @@ class Message extends React.Component<IProps, IState> {
             return null;
         }
         const menuTypes = {
-            1: [1, 2, 3, 4, 7, 12, 8, 9, 10, 11],
-            2: [1, 2, 4, 7, 12, 8, 9, 10, 11],
+            1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11],
+            2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11],
             3: [6, 5, 9, 10, 11],
         };
         const selection = window.getSelection();
@@ -798,6 +802,10 @@ class Message extends React.Component<IProps, IState> {
                     if (!hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
+                } else if (key === 13) {
+                    if (items[moreIndex].messagetype === C_MESSAGE_TYPE.Gif) {
+                        menuItems.push(this.menuItem[key]);
+                    }
                 } else {
                     menuItems.push(this.menuItem[key]);
                 }
@@ -818,6 +826,10 @@ class Message extends React.Component<IProps, IState> {
                     }
                 } else if (key === 11) {
                     if (!hasCopy) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 13) {
+                    if (items[moreIndex].messagetype === C_MESSAGE_TYPE.Gif) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {

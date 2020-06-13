@@ -16,7 +16,7 @@ import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import TextField from "@material-ui/core/TextField/TextField";
 import Select from "@material-ui/core/Select/Select";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
-import {SecurityQuestion} from "../../services/sdk/messages/chat.api.accounts_pb";
+import {SecurityQuestion} from "../../services/sdk/messages/accounts_pb";
 
 import './style.scss';
 

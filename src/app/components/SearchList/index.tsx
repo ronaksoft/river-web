@@ -28,7 +28,7 @@ import {
 import {IDialog} from '../../repository/dialog/interface';
 import SearchRepo from '../../repository/search';
 import {IDialogWithContact} from '../../repository/search/interface';
-import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
+import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
 import {categorizeContact} from '../ContactList';

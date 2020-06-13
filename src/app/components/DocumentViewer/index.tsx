@@ -28,7 +28,7 @@ import {ClickAwayListener} from "@material-ui/core";
 import i18n from '../../services/i18n';
 import {Loading} from "../Loading";
 import APIManager from "../../services/sdk";
-import {InputPeer, PeerType, UserPhoto} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputPeer, PeerType, UserPhoto} from "../../services/sdk/messages/core.types_pb";
 import UserRepo from "../../repository/user";
 import GroupRepo from "../../repository/group";
 import {IUser} from "../../repository/user/interface";

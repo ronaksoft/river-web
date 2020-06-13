@@ -1,5 +1,5 @@
 import {clone, uniq, orderBy} from 'lodash';
-import {MessageEntity} from "../sdk/messages/chat.core.types_pb";
+import {MessageEntity} from "../sdk/messages/core.types_pb";
 
 export interface ITypedRange {
     start: number;

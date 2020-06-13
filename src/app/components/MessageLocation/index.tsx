@@ -9,10 +9,10 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer, MediaType, MessageEntity} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer, MediaType, MessageEntity} from '../../services/sdk/messages/core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import {PlaceRounded} from '@material-ui/icons';
-import {MediaGeoLocation} from '../../services/sdk/messages/chat.core.message.medias_pb';
+import {MediaGeoLocation} from '../../services/sdk/messages/chat.messages.medias_pb';
 import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
 

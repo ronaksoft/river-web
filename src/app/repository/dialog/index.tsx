@@ -18,7 +18,7 @@ import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
 import {getMessageTitle} from '../../components/Dialog/utils';
 import {kMerge} from "../../services/utilities/kDash";
-import {PeerType} from "../../services/sdk/messages/chat.core.types_pb";
+import {PeerType} from "../../services/sdk/messages/core.types_pb";
 
 export default class DialogRepo {
     public static getInstance() {

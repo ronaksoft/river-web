@@ -1,6 +1,6 @@
 import {IMessage} from '../../repository/message/interface';
-import {MediaType} from '../../services/sdk/messages/chat.core.types_pb';
-import {DocumentAttributeType, MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
+import {MediaType} from '../../services/sdk/messages/core.types_pb';
+import {DocumentAttributeType, MediaDocument} from '../../services/sdk/messages/chat.messages.medias_pb';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import i18n from '../../services/i18n';
 import UserRepo from "../../repository/user";

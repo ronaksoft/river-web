@@ -13,7 +13,7 @@ import RiverTime from '../../services/utilities/river_time';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import {IUser} from '../../repository/user/interface';
-import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
+import {UserStatus} from '../../services/sdk/messages/core.types_pb';
 import Broadcaster from '../../services/broadcaster';
 import {IGroup} from '../../repository/group/interface';
 import i18n from "../../services/i18n";

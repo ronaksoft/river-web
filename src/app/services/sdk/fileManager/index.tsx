@@ -9,13 +9,13 @@
 
 import Http from './http';
 import {C_LOCALSTORAGE, C_MSG} from '../const';
-import {File, FileGet, FileSavePart} from '../messages/chat.api.files_pb';
-import {Bool, FileLocation, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
+import {File, FileGet, FileSavePart} from '../messages/files_pb';
+import {Bool, FileLocation, MessageContainer, MessageEnvelope} from '../messages/core.types_pb';
 import FileRepo, {md5FromBlob} from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
 import {findIndex, throttle} from 'lodash';
-import * as core_types_pb from '../messages/chat.core.types_pb';
+import * as core_types_pb from '../messages/core.types_pb';
 import * as Sentry from '@sentry/browser';
 import {isProd} from "../../../../App";
 import IframeService from "../../iframe";

@@ -41,7 +41,7 @@ import {
     MessageEntityType,
     PeerType,
     TypingAction,
-} from '../../services/sdk/messages/chat.core.types_pb';
+} from '../../services/sdk/messages/core.types_pb';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import APIManager from '../../services/sdk';
@@ -66,11 +66,11 @@ import {getDuration, getMediaInfo} from "../MessageMedia";
 import i18n from '../../services/i18n';
 import {IDialog} from "../../repository/dialog/interface";
 import MessageRepo from "../../repository/message";
-import {UpdateDraftMessageCleared} from "../../services/sdk/messages/chat.api.updates_pb";
+import {UpdateDraftMessageCleared} from "../../services/sdk/messages/updates_pb";
 import {emojiList} from "./emojis";
 import {isMobile} from "../../services/utilities/localize";
 import UniqueId from "../../services/uniqueId";
-import {ReplyKeyboardForceReply, ReplyKeyboardMarkup} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {ReplyKeyboardForceReply, ReplyKeyboardMarkup} from "../../services/sdk/messages/chat.messages.markups_pb";
 import BotLayout from "../BotLayout";
 import Scrollbars from "react-custom-scrollbars";
 import {ThemeChanged} from "../SettingsMenu";
@@ -78,7 +78,7 @@ import {EventKeyUp, EventMouseUp, EventPaste, EventResize} from "../../services/
 import MentionInput, {IMention, mentionize} from "../MentionInput";
 import {getMessageIcon} from "../DialogMessage";
 import {getMapLocation} from "../MessageLocation";
-import {MediaContact} from "../../services/sdk/messages/chat.core.message.medias_pb";
+import {MediaContact} from "../../services/sdk/messages/chat.messages.medias_pb";
 import {getHumanReadableSize} from "../MessageFile";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import Fade from '@material-ui/core/Fade';

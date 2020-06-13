@@ -15,9 +15,9 @@ import Button from '@material-ui/core/Button';
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import TextField from "@material-ui/core/TextField/TextField";
 import APIManager from "../../services/sdk";
-import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/chat.api.accounts_pb";
+import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/accounts_pb";
 import {C_ERR, C_ERR_ITEM, C_MSG} from "../../services/sdk/const";
-import {InputPassword} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputPassword} from "../../services/sdk/messages/core.types_pb";
 import RecoveryQuestionModal from "../RecoveryQuestionModal";
 
 import './style.scss';

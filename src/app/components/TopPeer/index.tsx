@@ -14,7 +14,6 @@ import {ITopPeerItem} from "../../repository/topPeer/interface";
 import Scrollbars from "react-custom-scrollbars";
 import UserName from "../UserName";
 import UserAvatar from "../UserAvatar";
-import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
 import GroupAvatar from "../GroupAvatar";
 import GroupName from "../GroupName";
 import I18n from "../../services/i18n";
@@ -23,9 +22,10 @@ import {IUser} from "../../repository/user/interface";
 import {IGroup} from "../../repository/group/interface";
 import {CloseRounded} from "@material-ui/icons";
 import APIManager from "../../services/sdk";
-import {TopPeerCategory} from "../../services/sdk/messages/chat.api.contacts_pb";
 import {findIndex} from 'lodash';
 import i18n from '../../services/i18n';
+import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
+import {TopPeerCategory} from "../../services/sdk/messages/contacts_pb";
 
 import './style.scss';
 

@@ -3,7 +3,7 @@ import {
     Button, ButtonBuy, ButtonCallback, ButtonRequestGeoLocation, ButtonRequestPhone, ButtonSwitchInline,
     ButtonUrl,
     KeyboardButtonRow
-} from "../../services/sdk/messages/chat.core.message.markups_pb";
+} from "../../services/sdk/messages/chat.messages.markups_pb";
 import {IMessageBotCol} from "../../repository/message/interface";
 import {C_BUTTON_ACTION} from "../../repository/message/consts";
 

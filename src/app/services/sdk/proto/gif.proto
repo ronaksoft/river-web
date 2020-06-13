@@ -1,0 +1,53 @@
+syntax = "proto2";
+package msg;
+
+import "chat.messages.medias.proto";
+import "core.types.proto";
+
+// GifGetSaved
+// @Function
+// @Return: SavedGifs
+message GifGetSaved {
+    required fixed32 Hash = 1;
+}
+
+// GifSave
+// @Function
+// @Return: Bool
+message GifSave {
+    required InputDocument Doc = 1;
+}
+
+// GifDelete
+message GifDelete {
+    required InputDocument Doc = 1;
+}
+
+// GifSearch
+// @Function
+// @Return: FoundGifs
+message GifSearch {
+    required string Query = 1;
+    required int64 Hash = 2;
+}
+
+// FoundGifs
+message FoundGifs {
+    required int32 NextOffset = 1;
+    repeated FoundGif Gifs = 2;
+}
+
+// FoundGif
+message FoundGif {
+    required string Url = 1;
+    required Document Doc = 2;
+    required Document Thumb = 3;
+}
+
+// SavedGifs
+message SavedGifs {
+    required fixed32 Hash = 1;
+    repeated MediaDocument Docs = 2;
+    required bool NotModified = 3;
+}
+

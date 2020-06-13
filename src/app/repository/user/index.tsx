@@ -16,7 +16,7 @@ import Dexie from 'dexie';
 import {Int64BE} from 'int64-buffer';
 // @ts-ignore
 import CRC from 'js-crc/build/crc.min';
-import {InputUser, User, UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputUser, User, UserStatus} from '../../services/sdk/messages/core.types_pb';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge, kUserMerge} from "../../services/utilities/kDash";

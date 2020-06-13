@@ -16,14 +16,14 @@ import Button from '@material-ui/core/Button';
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import TextField from "@material-ui/core/TextField/TextField";
 import APIManager from "../../services/sdk";
-import {AccountPassword} from "../../services/sdk/messages/chat.api.accounts_pb";
+import {AccountPassword} from "../../services/sdk/messages/accounts_pb";
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import {codeLen, codePlaceholder} from "../../pages/SignUp";
 import {modifyCode} from "../../pages/SignUp/utils";
 import UserRepo from "../../repository/user";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
-import {InputPassword} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputPassword} from "../../services/sdk/messages/core.types_pb";
 import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 
 import './style.scss';

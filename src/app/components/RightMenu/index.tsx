@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import GroupInfoMenu from "../GroupInfoMenu";
 import UserInfoMenu from "../UserInfoMenu";
 

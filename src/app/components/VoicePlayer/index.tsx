@@ -14,7 +14,7 @@ import {IMessage} from '../../repository/message/interface';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import AudioPlayer, {C_INSTANT_AUDIO, IAudioEvent} from '../../services/audioPlayer';
 import Broadcaster from '../../services/broadcaster';
-import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
+import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import SettingsConfigManager from '../../services/settingsConfigManager';
 import {ThemeChanged} from "../SettingsMenu";
@@ -23,7 +23,7 @@ import {
     DocumentAttributeAudio,
     DocumentAttributeType,
     MediaDocument
-} from "../../services/sdk/messages/chat.core.message.medias_pb";
+} from "../../services/sdk/messages/chat.messages.medias_pb";
 import {from4bitResolution} from "../ChatInput/utils";
 import {base64ToU8a} from "../../services/sdk/fileManager/http/utils";
 

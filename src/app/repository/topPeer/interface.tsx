@@ -7,9 +7,9 @@
     Copyright Ronak Software Group 2020
 */
 
-import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
 import {IUser} from "../user/interface";
 import {IGroup} from "../group/interface";
+import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 
 export interface ITopPeer {
     id: string;

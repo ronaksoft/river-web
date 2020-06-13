@@ -17,7 +17,7 @@ import {
     MusicNoteOutlined, NotificationsOffRounded, PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined, ScheduleRounded,
     VideocamOutlined, ForwardOutlined, ReplyOutlined,
 } from '@material-ui/icons';
-import {PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
+import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
 import {C_MESSAGE_ACTION} from '../../repository/message/consts';

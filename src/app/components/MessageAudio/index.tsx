@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 import {
     PlayArrowRounded,
     PauseRounded,

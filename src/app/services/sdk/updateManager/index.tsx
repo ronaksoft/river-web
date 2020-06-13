@@ -8,7 +8,7 @@
 */
 
 import {C_LOCALSTORAGE, C_MSG} from '../const';
-import {UpdateContainer, UpdateEnvelope, UserStatus} from '../messages/chat.core.types_pb';
+import {UpdateContainer, UpdateEnvelope, UserStatus} from '../messages/core.types_pb';
 import {
     UpdateDialogPinned,
     UpdateDifference,
@@ -33,7 +33,7 @@ import {
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping,
-} from '../messages/chat.api.updates_pb';
+} from '../messages/updates_pb';
 import {cloneDeep, uniq} from 'lodash';
 import MessageRepo, {getMediaDocument} from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';

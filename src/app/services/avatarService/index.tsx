@@ -9,7 +9,7 @@
 
 import FileManager from '../sdk/fileManager/index';
 import UserRepo from '../../repository/user/index';
-import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
+import {InputFileLocation} from '../sdk/messages/core.types_pb';
 import FileRepo from '../../repository/file/index';
 import GroupRepo from '../../repository/group';
 import Broadcaster from '../broadcaster';

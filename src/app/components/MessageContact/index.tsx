@@ -9,9 +9,9 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 import {PersonRounded} from '@material-ui/icons';
-import {MediaContact} from '../../services/sdk/messages/chat.core.message.medias_pb';
+import {MediaContact} from '../../services/sdk/messages/chat.messages.medias_pb';
 import {saveAs} from 'file-saver';
 
 import './style.scss';

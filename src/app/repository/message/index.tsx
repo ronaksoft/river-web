@@ -13,7 +13,7 @@ import {cloneDeep, differenceBy, find, throttle, uniq, difference, groupBy} from
 import APIManager from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
-import {InputPeer, MediaType, MessageEntityType, UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer, MediaType, MessageEntityType, UserMessage} from '../../services/sdk/messages/core.types_pb';
 import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
 import {C_BUTTON_ACTION, C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from './consts';
@@ -29,11 +29,11 @@ import {
     MediaContact,
     MediaDocument,
     MediaGeoLocation,
-} from '../../services/sdk/messages/chat.core.message.medias_pb';
+} from '../../services/sdk/messages/chat.messages.medias_pb';
 import {
     MessageActionClearHistory, MessageActionContactRegistered, MessageActionGroupAddUser, MessageActionGroupCreated,
     MessageActionGroupDeleteUser, MessageActionGroupPhotoChanged, MessageActionGroupTitleChanged,
-} from '../../services/sdk/messages/chat.core.message.actions_pb';
+} from '../../services/sdk/messages/chat.messages.actions_pb';
 import MediaRepo from '../media';
 import {C_MEDIA_TYPE} from '../media/interface';
 import {kMerge} from "../../services/utilities/kDash";
@@ -49,7 +49,7 @@ import {
     ButtonUrl,
     ReplyInlineMarkup, ReplyKeyboardForceReply, ReplyKeyboardHide,
     ReplyKeyboardMarkup
-} from "../../services/sdk/messages/chat.core.message.markups_pb";
+} from "../../services/sdk/messages/chat.messages.markups_pb";
 
 interface IMessageBundlePromise {
     reject: any;

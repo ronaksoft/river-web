@@ -12,7 +12,7 @@ import SettingsModal from '../SettingsModal';
 import {DeleteForeverRounded, DataUsageRounded} from '@material-ui/icons';
 import StorageUsageService, {IDialogInfo, IFileWithId, IStorageProgress} from '../../services/storageUsageService';
 import UserAvatar from '../UserAvatar';
-import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
+import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import UserName from '../UserName';
 import GroupName from '../GroupName';

@@ -15,7 +15,7 @@ import {
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
     GroupFlags, InputFile, InputPeer, InputUser, ParticipantType, PeerNotifySettings, PeerType,
-} from '../../services/sdk/messages/chat.core.types_pb';
+} from '../../services/sdk/messages/core.types_pb';
 import APIManager from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';

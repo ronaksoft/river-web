@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import i18n from "../../services/i18n";
 import {InfoOutlined, KeyboardArrowLeftRounded, CancelOutlined} from "@material-ui/icons";
 import StatusBar from "../StatusBar";

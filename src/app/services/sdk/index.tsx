@@ -20,7 +20,7 @@ import {
     AuthResendCode,
     AuthSendCode,
     AuthSentCode
-} from './messages/chat.api.auth_pb';
+} from './messages/auth_pb';
 import Server from './server';
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from './const';
 import {IConnInfo} from './interface';
@@ -39,7 +39,7 @@ import {
     ContactsSearch, ContactsTopPeers,
     ContactsUnblock,
     TopPeerCategory
-} from './messages/chat.api.contacts_pb';
+} from './messages/contacts_pb';
 import {
     Bool,
     Dialog,
@@ -63,7 +63,7 @@ import {
     TypingAction,
     User,
     UserPhoto
-} from './messages/chat.core.types_pb';
+} from './messages/core.types_pb';
 import {
     MessagesClearDraft,
     MessagesClearHistory,
@@ -84,8 +84,8 @@ import {
     MessagesSent,
     MessagesSetTyping,
     MessagesToggleDialogPin
-} from './messages/chat.api.messages_pb';
-import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/chat.api.updates_pb';
+} from './messages/chat.messages_pb';
+import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/updates_pb';
 import {
     AccountAuthorizations,
     AccountChangePhone,
@@ -111,7 +111,7 @@ import {
     AccountUploadPhoto,
     SecurityAnswer,
     SecurityQuestion
-} from './messages/chat.api.accounts_pb';
+} from './messages/accounts_pb';
 import {
     GroupsAddUser,
     GroupsCreate,
@@ -123,8 +123,8 @@ import {
     GroupsUpdateAdmin,
     GroupsUpdatePhoto,
     GroupsUploadPhoto
-} from './messages/chat.api.groups_pb';
-import {UsersGet, UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
+} from './messages/chat.groups_pb';
+import {UsersGet, UsersGetFull, UsersMany} from './messages/users_pb';
 import {
     SystemConfig,
     SystemGetConfig,
@@ -132,7 +132,7 @@ import {
     SystemGetSalts,
     SystemInfo,
     SystemSalts
-} from './messages/chat.api.system_pb';
+} from './messages/system_pb';
 import {parsePhoneNumberFromString} from 'libphonenumber-js';
 import {
     LabelItems,
@@ -143,11 +143,11 @@ import {
     LabelsGet,
     LabelsListItems,
     LabelsRemoveFromMessage
-} from "./messages/chat.api.labels_pb";
+} from "./messages/chat.labels_pb";
 import UniqueId from "../uniqueId";
-import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/bot.api_pb";
-import {FileGetBySha256} from "./messages/chat.api.files_pb";
-import {FoundGifs, GifGetSaved, GifSave} from "./messages/chat.api.gif_pb";
+import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/chat.bot_pb";
+import {FileGetBySha256} from "./messages/files_pb";
+import {GifDelete, GifGetSaved, GifSave, SavedGifs} from "./messages/gif_pb";
 
 export default class APIManager {
     public static getInstance() {
@@ -211,6 +211,7 @@ export default class APIManager {
         localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
         localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
         localStorage.removeItem(C_LOCALSTORAGE.TopPeerInit);
+        localStorage.removeItem(C_LOCALSTORAGE.GifHash);
     }
 
     public loadConnInfo(): IConnInfo {
@@ -926,17 +927,22 @@ export default class APIManager {
         return this.server.getSystemConfig();
     }
 
-    public getGif(): Promise<FoundGifs.AsObject> {
+    public getGif(hash: number): Promise<SavedGifs.AsObject> {
         const data = new GifGetSaved();
-        data.setHash(0);
+        data.setHash(hash);
         return this.server.send(C_MSG.GifGetSaved, data.serializeBinary(), false);
     }
 
-    public saveGif(inputDocument: InputDocument, remove?: boolean): Promise<Bool.AsObject> {
+    public saveGif(inputDocument: InputDocument): Promise<Bool.AsObject> {
         const data = new GifSave();
         data.setDoc(inputDocument);
-        data.setUnsave(remove || false);
         return this.server.send(C_MSG.GifSave, data.serializeBinary(), false);
+    }
+
+    public removeGif(inputDocument: InputDocument): Promise<Bool.AsObject> {
+        const data = new GifDelete();
+        data.setDoc(inputDocument);
+        return this.server.send(C_MSG.GifDelete, data.serializeBinary(), false);
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {

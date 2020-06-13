@@ -66,7 +66,7 @@ import {
     PrivacyKey,
     PrivacyRule,
     PrivacyType
-} from '../../services/sdk/messages/chat.core.types_pb';
+} from '../../services/sdk/messages/core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import AvatarCropper from '../AvatarCropper';
 import {
@@ -84,7 +84,7 @@ import {
 } from "@material-ui/core";
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import Broadcaster from '../../services/broadcaster';
-import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/chat.api.accounts_pb';
+import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/accounts_pb';
 import TimeUtility from '../../services/utilities/time';
 import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
 import FileRepo from '../../repository/file';

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-const C_MEDIA_TYPE = {
+export const C_MEDIA_TYPE = {
     AUDIO: 3,
     FILE: 5,
     GIF: 7,
@@ -19,12 +19,9 @@ const C_MEDIA_TYPE = {
     VOICE: 4,
 };
 
-interface IMedia {
+export interface IMedia {
     id: number;
     peerid: string;
     timestamp?: number;
     type: number;
 }
-
-// @ts-ignore
-export {IMedia, C_MEDIA_TYPE};

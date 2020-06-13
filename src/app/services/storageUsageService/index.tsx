@@ -10,7 +10,7 @@
 import FileRepo from '../../repository/file/index';
 import DialogRepo from '../../repository/dialog/index';
 import MediaRepo from '../../repository/media/index';
-import {PeerType} from '../sdk/messages/chat.core.types_pb';
+import {PeerType} from '../sdk/messages/core.types_pb';
 import MessageRepo from '../../repository/message';
 
 export interface IStorageProgress {

@@ -7,9 +7,9 @@
     Copyright Ronak Software Group 2018
 */
 
-import {Group, GroupParticipant, GroupPhoto} from '../../services/sdk/messages/chat.core.types_pb';
+import {Group, GroupParticipant, GroupPhoto} from "../../services/sdk/messages/core.types_pb";
 
-interface IGroup extends Group.AsObject {
+export interface IGroup extends Group.AsObject {
     avatar?: string;
     participantList?: GroupParticipant.AsObject[];
     photogalleryList?: GroupPhoto.AsObject[];
@@ -17,6 +17,3 @@ interface IGroup extends Group.AsObject {
     remove_photo?: boolean;
     last_updated?: number;
 }
-
-// @ts-ignore
-export {IGroup};

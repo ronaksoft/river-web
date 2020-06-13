@@ -28,7 +28,7 @@ import {throttle} from 'lodash';
 import ImageEditor from "../ImageEditor";
 import VideoFrameSelector from "../VideoFrameSelector";
 import {getCodec} from "../StreamVideo/helper";
-import {InputPeer, MessageEntity} from "../../services/sdk/messages/chat.core.types_pb";
+import {InputPeer, MessageEntity} from "../../services/sdk/messages/core.types_pb";
 import MentionInput, {IMention} from "../MentionInput";
 import {measureNodeHeight} from "../ChatInput/measureHeight";
 import {generateEntities} from "../ChatInput";

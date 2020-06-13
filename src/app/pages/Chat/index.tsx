@@ -30,23 +30,6 @@ import {
 } from 'lodash';
 import APIManager from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
-import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
-import {
-    Error,
-    FileLocation,
-    InputDocument,
-    InputFile,
-    InputFileLocation,
-    InputMediaType,
-    InputPeer,
-    InputUser,
-    MediaType,
-    MessageEntity,
-    MessageEntityType,
-    PeerNotifySettings,
-    PeerType,
-    TypingAction
-} from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {
@@ -56,27 +39,6 @@ import UpdateManager, {
     IMessageIdDBUpdated
 } from '../../services/sdk/updateManager';
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from '../../services/sdk/const';
-import {
-    UpdateDialogPinned,
-    UpdateDraftMessage,
-    UpdateDraftMessageCleared,
-    UpdateGroupPhoto,
-    UpdateLabelDeleted,
-    UpdateLabelItemsAdded,
-    UpdateLabelItemsRemoved,
-    UpdateLabelSet,
-    UpdateMessageEdited,
-    UpdateMessageID,
-    UpdateMessagesDeleted,
-    UpdateNewMessage,
-    UpdateNotifySettings,
-    UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents,
-    UpdateUsername,
-    UpdateUserPhoto,
-    UpdateUserTyping,
-} from '../../services/sdk/messages/chat.api.updates_pb';
 import UserName from '../../components/UserName';
 import UserRepo from '../../repository/user';
 import MainRepo from '../../repository';
@@ -97,23 +59,6 @@ import UserDialog from '../../components/UserDialog';
 import {IInputPeer} from '../../components/SearchList';
 import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
-import {
-    Document,
-    DocumentAttribute, DocumentAttributeAnimated,
-    DocumentAttributeAudio,
-    DocumentAttributeFile,
-    DocumentAttributePhoto,
-    DocumentAttributeType,
-    DocumentAttributeVideo,
-    InputMediaContact,
-    InputMediaDocument,
-    InputMediaGeoLocation,
-    InputMediaMessageDocument,
-    InputMediaUploadedDocument,
-    MediaContact,
-    MediaDocument,
-    MediaGeoLocation,
-} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo, {getFileLocation} from '../../repository/file';
 import ProgressBroadcaster from '../../services/progress';
@@ -154,7 +99,6 @@ import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
-import {Button as BotButton, ButtonCallback, ButtonUrl} from "../../services/sdk/messages/chat.core.message.markups_pb";
 import {
     EventBlur,
     EventFocus,
@@ -167,8 +111,48 @@ import {
 } from "../../services/events";
 import Smoother from "../../services/utilities/smoother";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
-import {TopPeerCategory} from "../../services/sdk/messages/chat.api.contacts_pb";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
+import {
+    InputPeer,
+    MessageEntity,
+    PeerType,
+    TypingAction,
+    Error as RiverError,
+    PeerNotifySettings,
+    InputUser,
+    InputFile,
+    MediaType,
+    FileLocation,
+    InputDocument,
+    InputFileLocation,
+    InputMediaType,
+    MessageEntityType
+} from "../../services/sdk/messages/core.types_pb";
+import {
+    UpdateDialogPinned,
+    UpdateDraftMessage,
+    UpdateDraftMessageCleared,
+    UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
+    UpdateMessageEdited, UpdateMessagesDeleted,
+    UpdateNewMessage, UpdateNotifySettings,
+    UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
+    UpdateUserTyping
+} from "../../services/sdk/messages/updates_pb";
+import {TopPeerCategory} from "../../services/sdk/messages/contacts_pb";
+import {ButtonUrl, Button as BotButton, ButtonCallback} from "../../services/sdk/messages/chat.messages.markups_pb";
+import {
+    Document,
+    DocumentAttribute,
+    DocumentAttributeAnimated, DocumentAttributeAudio,
+    DocumentAttributeFile,
+    DocumentAttributePhoto,
+    DocumentAttributeType,
+    DocumentAttributeVideo, InputMediaContact,
+    InputMediaDocument, InputMediaGeoLocation, InputMediaMessageDocument,
+    InputMediaUploadedDocument,
+    MediaContact, MediaDocument,
+    MediaGeoLocation
+} from "../../services/sdk/messages/chat.messages.medias_pb";
 
 import './style.scss';
 
@@ -401,9 +385,6 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: Message Dropped (internal)
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageDrop, this.updateMessageDropHandler));
-
-        // Update: MessageId
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageID, this.updateMessageIDHandler));
 
         // Update: Message Edited
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageEdited, this.updateMessageEditHandler));
@@ -1660,7 +1641,7 @@ class Chat extends React.Component<IProps, IState> {
             // date breakpoint
             if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
                 || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
-                const t = {
+                const t: IMessage = {
                     createdon: msg.createdon,
                     id: msg.id,
                     messagetype: C_MESSAGE_TYPE.Date,
@@ -1758,7 +1739,7 @@ class Chat extends React.Component<IProps, IState> {
 
             let entities;
             if (param && param.entities) {
-                message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
+                message.entitiesList = param.entities.map((entity: MessageEntity) => {
                     return entity.toObject();
                 });
                 entities = param.entities;
@@ -1815,7 +1796,7 @@ class Chat extends React.Component<IProps, IState> {
 
             let entities;
             if (param.entities) {
-                message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
+                message.entitiesList = param.entities.map((entity: MessageEntity) => {
                     return entity.toObject();
                 });
                 entities = param.entities;
@@ -1904,7 +1885,7 @@ class Chat extends React.Component<IProps, IState> {
         return this.messages.length - 1;
     }
 
-    private resolveRandomMessageIdError(err: Error.AsObject, randomId: number, id: number) {
+    private resolveRandomMessageIdError(err: RiverError.AsObject, randomId: number, id: number) {
         if (err && err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemRandomID) {
             this.messageRepo.removePending(randomId);
             if (id < 0) {
@@ -3045,6 +3026,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.labelDialogRef.openDialog([message.id || 0], [message.labelidsList || []]);
                 }
                 break;
+            case 'save_gif':
+                this.saveGifHandler(message);
+                break;
         }
     }
 
@@ -3847,13 +3831,6 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    /* update message id */
-    private updateMessageIDHandler = (data: UpdateMessageID.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
-    }
-
     /* Resend message */
     private resendMessage(message: IMessage) {
         this.messageRepo.getPendingByMessageId(message.id || 0).then((res) => {
@@ -4277,7 +4254,7 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         if (mediaItem.entities && mediaItem.entities.length > 0) {
-            message.entitiesList = mediaItem.entities.map((entity: core_types_pb.MessageEntity) => {
+            message.entitiesList = mediaItem.entities.map((entity: MessageEntity) => {
                 return entity.toObject();
             });
             mediaDocument.setEntitiesList(mediaItem.entities);
@@ -5319,6 +5296,20 @@ class Chat extends React.Component<IProps, IState> {
         }
         this.messageMapAppend(message);
         return false;
+    }
+
+    private saveGifHandler(message: IMessage) {
+        if (!message.mediadata || !message.mediadata.doc) {
+            return;
+        }
+        const mediaDoc: MediaDocument.AsObject = message.mediadata;
+        const inputDocument = new InputDocument();
+        inputDocument.setId(mediaDoc.doc.id || '0');
+        inputDocument.setClusterid(mediaDoc.doc.clusterid || 0);
+        inputDocument.setAccesshash(mediaDoc.doc.accesshash || '0');
+        this.apiManager.saveGif(inputDocument).then((res) => {
+            window.console.log(res);
+        });
     }
 }
 

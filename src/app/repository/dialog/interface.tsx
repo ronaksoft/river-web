@@ -7,10 +7,10 @@
     Copyright Ronak Software Group 2018
 */
 
-import {Dialog} from '../../services/sdk/messages/chat.core.types_pb';
 import {IMessage} from '../message/interface';
+import {Dialog} from "../../services/sdk/messages/core.types_pb";
 
-interface IDialog extends Dialog.AsObject {
+export interface IDialog extends Dialog.AsObject {
     action_code?: number;
     action_data?: any;
     force?: boolean;
@@ -26,17 +26,14 @@ interface IDialog extends Dialog.AsObject {
     only_contact?: boolean;
 }
 
-interface IDialogWithUpdateId {
+export interface IDialogWithUpdateId {
     dialogs: IDialog[];
     updateid: number;
 }
 
-interface IDraft {
+export interface IDraft {
     peerid: string;
     text: string;
     mode?: number;
     message?: IMessage;
 }
-
-// @ts-ignore
-export {IDialog, IDialogWithUpdateId, IDraft};

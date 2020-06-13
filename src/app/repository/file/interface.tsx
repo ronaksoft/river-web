@@ -7,9 +7,9 @@
     Copyright Ronak Software Group 2019
 */
 
-import {FileType} from '../../services/sdk/messages/chat.api.files_pb';
+import {FileType} from "../../services/sdk/messages/files_pb";
 
-interface IFile {
+export interface IFile {
     id: string;
     data: Blob;
     hash: string;
@@ -17,7 +17,7 @@ interface IFile {
     size: number;
 }
 
-interface ITempFile {
+export interface ITempFile {
     id: string;
     part: number;
     data: Blob;
@@ -25,13 +25,10 @@ interface ITempFile {
     modifiedtime?: number;
 }
 
-interface IFileMap {
+export interface IFileMap {
     id: string;
     clusterid: number;
     saved?: boolean;
     saved_path?: string;
     msg_ids?: number[];
 }
-
-// @ts-ignore
-export {IFile, ITempFile, IFileMap};

@@ -12,10 +12,10 @@ import {CloseRounded, ArrowDownwardRounded} from '@material-ui/icons';
 import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import {getHumanReadableSize} from '../MessageFile';
-import {FileLocation} from "../../services/sdk/messages/chat.core.types_pb";
+import {FileLocation} from "../../services/sdk/messages/core.types_pb";
+import CachedPhoto from "../CachedPhoto";
 
 import './style.scss';
-import CachedPhoto from "../CachedPhoto";
 
 interface IProps {
     className?: string;

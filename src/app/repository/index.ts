@@ -21,6 +21,8 @@ import MediaDB from "../services/db/media";
 import LabelDB from "../services/db/label";
 import {DexieTopPeerDB} from "../services/db/dexie/top_peer";
 import TopPeerDB from "../services/db/top_peer";
+import {DexieGifDB} from "../services/db/dexie/gif";
+import GifDB from "../services/db/gif";
 
 export default class MainRepo {
     public static getInstance() {
@@ -40,6 +42,7 @@ export default class MainRepo {
     private mediaDB: DexieMediaDB;
     private labelDB: DexieLabelDB;
     private topPeerDB: DexieTopPeerDB;
+    private gifDB: DexieGifDB;
 
     private constructor() {
         this.userDB = UserDB.getInstance().getDB();
@@ -49,6 +52,7 @@ export default class MainRepo {
         this.mediaDB = MediaDB.getInstance().getDB();
         this.labelDB = LabelDB.getInstance().getDB();
         this.topPeerDB = TopPeerDB.getInstance().getDB();
+        this.gifDB = GifDB.getInstance().getDB();
     }
 
     public destroyDB(): Promise<any> {
@@ -67,6 +71,8 @@ export default class MainRepo {
         promises.push(this.labelDB.delete());
         // @ts-ignore
         promises.push(this.topPeerDB.delete());
+        // @ts-ignore
+        promises.push(this.gifDB.delete());
         return Promise.all(promises);
     }
 }

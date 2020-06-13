@@ -13,7 +13,7 @@ import {differenceBy, find, groupBy} from 'lodash';
 import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
 import {DexieTopPeerDB} from "../../services/db/dexie/top_peer";
-import {TopPeer} from "../../services/sdk/messages/chat.api.contacts_pb";
+import {TopPeer} from "../../services/sdk/messages/contacts_pb";
 import Dexie from "dexie";
 
 export const C_TOP_PEER_LEN = 20;

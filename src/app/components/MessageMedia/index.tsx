@@ -9,13 +9,13 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
+import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/core.types_pb';
 import {
     DocumentAttributeAudio,
     DocumentAttributePhoto,
     DocumentAttributeType, DocumentAttributeVideo,
     MediaDocument
-} from '../../services/sdk/messages/chat.core.message.medias_pb';
+} from '../../services/sdk/messages/chat.messages.medias_pb';
 import {CloseRounded, ArrowDownwardRounded, PlayArrowRounded, GifRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';

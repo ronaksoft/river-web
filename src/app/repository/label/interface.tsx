@@ -7,16 +7,16 @@
     Copyright Ronak Software Group 2018
 */
 
-import {Label} from '../../services/sdk/messages/chat.core.types_pb';
 import {IMessage} from "../message/interface";
+import {Label} from "../../services/sdk/messages/core.types_pb";
 
-interface ILabel extends Label.AsObject {
+export interface ILabel extends Label.AsObject {
     increase_counter?: number;
     min?: number;
     max?: number;
 }
 
-interface ILabelItem {
+export interface ILabelItem {
     id?: number;
     lid?: number;
     mid?: number;
@@ -24,10 +24,7 @@ interface ILabelItem {
     peerid?: string;
 }
 
-interface ILabelItemList {
+export interface ILabelItemList {
     labelCount: number;
     messageList: IMessage[];
 }
-
-// @ts-ignore
-export {ILabel, ILabelItem, ILabelItemList};
