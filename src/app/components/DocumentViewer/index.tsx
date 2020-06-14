@@ -874,7 +874,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 width: info.width,
             }],
             peerId: message.peerid || '',
-            type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
+            type: message.messagetype === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
         };
         this.documentViewerService.loadDocument(doc);
     }

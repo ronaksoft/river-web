@@ -77,46 +77,48 @@ export default class MediaRepo {
                 mode = mode | 0x2;
             }
             limit = limit || 30;
-            let typeMin: any = Dexie.minKey;
-            let typeMax: any = Dexie.maxKey;
+            const typeRangeArr: any[] = [];
             if (type === C_MEDIA_TYPE.Media) {
-                typeMin = C_MEDIA_TYPE.PHOTO;
-                typeMax = C_MEDIA_TYPE.VIDEO;
+                typeRangeArr.push([C_MEDIA_TYPE.PHOTO, C_MEDIA_TYPE.VIDEO]);
+                typeRangeArr.push([C_MEDIA_TYPE.GIF, C_MEDIA_TYPE.GIF]);
             } else if (type === C_MEDIA_TYPE.Music) {
-                typeMin = C_MEDIA_TYPE.AUDIO;
-                typeMax = C_MEDIA_TYPE.VOICE;
+                typeRangeArr.push([C_MEDIA_TYPE.AUDIO, C_MEDIA_TYPE.VOICE]);
             } else if (type) {
-                typeMin = type;
-                typeMax = type;
+                typeRangeArr.push([type, type]);
+            } else {
+                typeRangeArr.push([Dexie.minKey, Dexie.maxKey]);
             }
+
             switch (mode) {
                 // none
                 default:
                 case 0x0:
-                    pipe2 = pipe.between([peerId, Dexie.minKey, 1], [peerId, Dexie.maxKey, 1], true, true);
+                    pipe2 = pipe.between([peerId, Dexie.minKey, Dexie.minKey], [peerId, Dexie.maxKey, Dexie.maxKey], true, true);
                     break;
                 // before
                 case 0x1:
-                    pipe2 = pipe.between([peerId, Dexie.minKey, typeMin], [peerId, before, typeMax], true, true);
+                    pipe2 = pipe.between([peerId, Dexie.minKey, Dexie.minKey], [peerId, before, Dexie.maxKey], true, true);
                     break;
                 // after
                 case 0x2:
-                    pipe2 = pipe.between([peerId, after, typeMin], [peerId, Dexie.maxKey, typeMax], true, true);
+                    pipe2 = pipe.between([peerId, after, Dexie.minKey], [peerId, Dexie.maxKey, Dexie.maxKey], true, true);
                     break;
                 // between
                 case 0x3:
-                    pipe2 = pipe.between([peerId, after, typeMin], [peerId, before, typeMax], true, true);
+                    pipe2 = pipe.between([peerId, after, Dexie.minKey], [peerId, before, Dexie.maxKey], true, true);
                     break;
             }
             if (mode !== 0x2) {
                 pipe2 = pipe2.reverse();
             }
             if (type) {
-                pipe2 = pipe2.filter((item) => {
-                    return item.type >= typeMin && item.type <= typeMax;
+                pipe2 = pipe2.filter((item: IMedia) => {
+                    return typeRangeArr.some((typeRange) => {
+                        return item.type >= typeRange[0] && item.type <= typeRange[1];
+                    });
                 });
             }
-            pipe2.limit(limit).toArray().then((list) => {
+            pipe2.limit(limit).toArray().then((list: IMedia[]) => {
                 if (list.length === 0) {
                     resolve({
                         count: 0,
@@ -139,7 +141,7 @@ export default class MediaRepo {
                         reject(err);
                     });
                 }
-            }).catch((err) => {
+            }).catch((err: any) => {
                 reject(err);
             });
         });

@@ -2250,8 +2250,13 @@ class ChatInput extends React.Component<IProps, IState> {
                 return <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
                                     showPreview={false} theme={dark ? 'dark' : 'light'}/>;
             case 1:
-                return <GifPicker onSelect={this.props.onGifSelect}/>;
+                return <GifPicker onSelect={this.gifPickerSelectHandler}/>;
         }
+    }
+
+    private gifPickerSelectHandler = (item: IGif) => {
+        this.emojiCloseHandler();
+        this.props.onGifSelect(item);
     }
 }
 
