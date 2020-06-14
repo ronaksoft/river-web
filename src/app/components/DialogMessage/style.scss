@@ -209,6 +209,11 @@ a.dialog-a {
         font-size: 14px;
         margin: 0 4px 3px 0;
         vertical-align: bottom;
+
+        &.gif {
+          transform: scale(2.6);
+          margin-left: 8px;
+        }
       }
 
       .preview-message {
@@ -353,6 +358,10 @@ html[direction="rtl"] {
     .preview {
       .preview-icon {
         margin: 0 0 3px 4px;
+
+        &.gif {
+          margin-right: 8px;
+        }
       }
 
       .system-message {

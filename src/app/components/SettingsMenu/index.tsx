@@ -318,11 +318,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
             storageValues: {
                 auto_save_files: false,
                 chat_files: false,
+                chat_gifs: false,
                 chat_photos: false,
                 chat_videos: false,
                 chat_voices: false,
                 download_all: false,
                 group_files: false,
+                group_gifs: false,
                 group_photos: false,
                 group_videos: false,
                 group_voices: false,

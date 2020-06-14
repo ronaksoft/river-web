@@ -21,16 +21,19 @@ import {InputDocument, InputFileLocation} from "../../services/sdk/messages/core
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import {findIndex} from 'lodash';
-
-import './style.scss';
 import FileDownloadProgress from "../FileDownloadProgress";
 
+import './style.scss';
+
+const C_LIMIT = 18;
+
 interface IProps {
-    test?: boolean;
+    onSelect: (item: IGif) => void;
 }
 
 interface IState {
     list: IGif[];
+    loading: boolean;
     keyword: string;
     moreAnchorEl: any;
     moreAnchorPos: any;
@@ -38,14 +41,10 @@ interface IState {
 }
 
 class GifPicker extends React.Component<IProps, IState> {
-    // public static getDerivedStateFromProps(props: IProps, state: IState) {
-    //     return {
-    //         selected: props.selected,
-    //     };
-    // }
-
     private gifRepo: GifRepo;
+    private scrollbarRef: Scrollbars | undefined;
     private readonly searchThrottle: any;
+    private hasMore: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -53,6 +52,7 @@ class GifPicker extends React.Component<IProps, IState> {
         this.state = {
             keyword: '',
             list: [],
+            loading: false,
             moreAnchorEl: null,
             moreAnchorPos: null,
             moreIndex: -1,
@@ -87,15 +87,21 @@ class GifPicker extends React.Component<IProps, IState> {
                     />
                 </div>
                 <div className="gif-picker-list">
-                    <Scrollbars hideTracksWhenNotNeeded={false} universal={true}>
+                    <Scrollbars
+                        hideTracksWhenNotNeeded={false}
+                        universal={true}
+                        onScroll={this.scrollHandler}
+                        ref={this.scrollbarRefHandler}
+                    >
                         <div className="slider" style={this.getHeight()}>
                             {list.map((item, index) => {
                                 return <div key={index} className="gif-item"
-                                            onContextMenu={this.messageContextMenuHandler(index)}>
+                                            onContextMenu={this.gifContextMenuHandler(index)}
+                                            onClick={this.gifClickHandler(index)}>
                                     <div className="more">
                                         <MoreVert onClick={this.contextMenuHandler(index)}/>
                                     </div>
-                                    {this.getGifContent(item)}
+                                    {this.getGifContent(item, index)}
                                 </div>;
                             })}
                         </div>
@@ -119,35 +125,62 @@ class GifPicker extends React.Component<IProps, IState> {
         );
     }
 
-    private getGifContent(gif: IGif) {
+    private scrollbarRefHandler = (ref: any) => {
+        this.scrollbarRef = ref;
+    }
+
+    private getGifContent(item: IGif, index: number) {
         const fileInput: InputFileLocation.AsObject = {
-            accesshash: gif.doc.accesshash,
-            clusterid: gif.doc.clusterid,
-            fileid: gif.doc.id,
+            accesshash: item.doc.accesshash,
+            clusterid: item.doc.clusterid,
+            fileid: item.doc.id,
         };
-        if (gif.downloaded) {
-            return <CachedPhoto className="gif" blur={10} fileLocation={fileInput}/>;
-        } else if (gif.doc.thumbnail) {
+        if (item.downloaded) {
+            return <CachedPhoto className="gif" fileLocation={fileInput}/>;
+        } else if (item.doc.thumbnail) {
             return <>
                 <CachedPhoto className="blurred-gif" blur={10}
-                             fileLocation={gif.doc.thumbnail}
+                             fileLocation={item.doc.thumbnail}
                 />
-                <FileDownloadProgress fileLocation={fileInput}/>
+                <FileDownloadProgress fileLocation={fileInput} onAction={this.progressActionHandler(index)}
+                                      fileSize={item.doc.filesize || 0}/>
             </>;
         } else {
             return null;
         }
     }
 
-    private getList() {
-        this.gifRepo.list(0, 32, (list) => {
-            this.setState({
-                list,
-            });
-        }).then((list) => {
-            if (list.length > 0) {
+    private getList(offset?: number) {
+        if (this.state.loading) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
+        this.gifRepo.list(offset || 0, C_LIMIT, (res) => {
+            this.hasMore = res.length >= C_LIMIT;
+            if (offset) {
+                const {list} = this.state;
+                list.push(...res);
                 this.setState({
                     list,
+                    loading: false,
+                });
+            } else {
+                this.setState({
+                    list: res,
+                });
+            }
+        }).then((list) => {
+            if (!offset && list.length > 0) {
+                this.hasMore = list.length >= C_LIMIT;
+                this.setState({
+                    list,
+                    loading: false,
+                });
+            } else if (!offset) {
+                this.setState({
+                    loading: false,
                 });
             }
         });
@@ -181,7 +214,7 @@ class GifPicker extends React.Component<IProps, IState> {
         //
     }
 
-    private messageContextMenuHandler = (index: number) => (e: any) => {
+    private gifContextMenuHandler = (index: number) => (e: any) => {
         if (index === -1) {
             return;
         }
@@ -238,6 +271,54 @@ class GifPicker extends React.Component<IProps, IState> {
                     });
                 }
                 break;
+        }
+    }
+
+    private progressActionHandler = (index: number) => (action: 'cancel' | 'download') => {
+        const {list} = this.state;
+        const item = list[index];
+        if (!item) {
+            return;
+        }
+        if (action === 'download') {
+            const inputFile = new InputFileLocation();
+            inputFile.setAccesshash(item.doc.accesshash || '0');
+            inputFile.setClusterid(item.doc.clusterid || 0);
+            inputFile.setFileid(item.doc.id || '0');
+            inputFile.setVersion(item.doc.version || 0);
+            this.gifRepo.download(inputFile, item.doc.md5checksum || '', item.doc.filesize || 0, item.doc.mimetype || 'image/gif').then((res) => {
+                list[index].downloaded = true;
+                this.setState({
+                    list,
+                });
+            });
+        }
+    }
+
+    private gifClickHandler = (index: number) => () => {
+        if (this.props.onSelect) {
+            const {list} = this.state;
+            const item = list[index];
+            if (!item) {
+                return;
+            }
+            this.props.onSelect(item);
+            const inputDocument = new InputDocument();
+            inputDocument.setId(item.doc.id || '0');
+            inputDocument.setClusterid(item.doc.clusterid || 0);
+            inputDocument.setAccesshash(item.doc.accesshash || '0');
+            this.gifRepo.useGif(inputDocument);
+        }
+    }
+
+    private scrollHandler = (e: any) => {
+        if (!this.state.loading && this.hasMore && this.scrollbarRef) {
+            const {scrollTop} = e.target;
+            const {list} = this.state;
+            const pos = (this.scrollbarRef.getScrollHeight() - this.scrollbarRef.getClientHeight() - 64);
+            if (pos < scrollTop && list.length > 0) {
+                this.getList(list.length);
+            }
         }
     }
 }

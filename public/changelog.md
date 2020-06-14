@@ -1,3 +1,6 @@
+## 0.33.0
+* 🎉 Brand new GIF feature
+
 ## 0.32.50
 * Send as animated added
 

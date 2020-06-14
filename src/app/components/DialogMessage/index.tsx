@@ -15,7 +15,7 @@ import LiveDate from '../LiveDate';
 import {
     AlternateEmailRounded, DoneAllRounded, DoneRounded, InsertDriveFileOutlined, LocationOnOutlined, MoreVert,
     MusicNoteOutlined, NotificationsOffRounded, PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined, ScheduleRounded,
-    VideocamOutlined, ForwardOutlined, ReplyOutlined,
+    VideocamOutlined, ForwardOutlined, ReplyOutlined, GifOutlined,
 } from '@material-ui/icons';
 import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -47,6 +47,8 @@ export const getMessageIcon = (icon?: number) => {
             return (<PhotoOutlined className="preview-icon"/>);
         case C_MESSAGE_ICON.Audio:
             return (<MusicNoteOutlined className="preview-icon"/>);
+        case C_MESSAGE_ICON.GIF:
+            return (<GifOutlined className="preview-icon gif"/>);
         case C_MESSAGE_ICON.Forwarded:
             return (<ForwardOutlined className="preview-icon"/>);
         case C_MESSAGE_ICON.Reply:
@@ -86,7 +88,8 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                               noDetail={true} noIcon={true} postfix=":"/>&nbsp;
                 </span>}
                 {getMessageIcon(dialog.preview_icon)}
-                <span className="preview-inner">{dialog.preview}</span>
+                {dialog.preview_icon !== C_MESSAGE_ICON.GIF &&
+                <span className="preview-inner">{dialog.preview}</span>}
             </span>
         );
     }
@@ -174,8 +177,11 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                                   noDetail={true}/> {i18n.t('message.changed_the_group_photo')}</span>);
             }
         default:
-            return (<span className="preview-message">{getMessageIcon(dialog.preview_icon)}<span
-                className="preview-inner">{dialog.preview}</span></span>);
+            return (<span className="preview-message">
+                {getMessageIcon(dialog.preview_icon)}
+                {dialog.preview_icon !== C_MESSAGE_ICON.GIF &&
+                <span className="preview-inner">{dialog.preview}</span>}
+            </span>);
     }
 };
 

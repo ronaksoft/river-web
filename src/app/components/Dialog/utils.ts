@@ -82,6 +82,9 @@ export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean): { t
                 } else if (message.messagetype === C_MESSAGE_TYPE.File) {
                     messageIcon.icon = C_MESSAGE_ICON.File;
                     messageIcon.text = i18n.t('message.file');
+                } else if (message.messagetype === C_MESSAGE_TYPE.Gif) {
+                    messageIcon.icon = C_MESSAGE_ICON.GIF;
+                    messageIcon.text = i18n.t('message.gif');
                 } else {
                     if (messageMediaDocument.doc && messageMediaDocument.doc.attributesList) {
                         for (let i = 0; i < messageMediaDocument.doc.attributesList.length; i++) {

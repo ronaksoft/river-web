@@ -905,6 +905,12 @@ html[theme="dark-blue"] {
   .emoji-menu-paper {
     .chat-input-popover-tabs {
       background-color: var(--dark-medium);
+
+      button:not(.Mui-selected) {
+        svg {
+          color: var(--light);
+        }
+      }
     }
   }
 

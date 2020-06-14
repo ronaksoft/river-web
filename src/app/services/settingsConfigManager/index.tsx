@@ -16,11 +16,13 @@ export interface IDownloadSettings {
     chat_photos: boolean;
     chat_videos: boolean;
     chat_voices: boolean;
+    chat_gifs: boolean;
     download_all: boolean;
     group_files: boolean;
     group_photos: boolean;
     group_videos: boolean;
     group_voices: boolean;
+    group_gifs: boolean;
 }
 
 export interface INotificationSettings {
@@ -32,11 +34,13 @@ const notificationSettingsKey = C_LOCALSTORAGE.SettingsNotification;
 const defaultDownloadValues: IDownloadSettings = {
     auto_save_files: true,
     chat_files: false,
+    chat_gifs: true,
     chat_photos: true,
     chat_videos: false,
     chat_voices: true,
     download_all: false,
     group_files: false,
+    group_gifs: true,
     group_photos: true,
     group_videos: false,
     group_voices: false,

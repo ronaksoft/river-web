@@ -126,7 +126,7 @@ import {
     InputDocument,
     InputFileLocation,
     InputMediaType,
-    MessageEntityType
+    MessageEntityType,
 } from "../../services/sdk/messages/core.types_pb";
 import {
     UpdateDialogPinned,
@@ -153,6 +153,8 @@ import {
     MediaContact, MediaDocument,
     MediaGeoLocation
 } from "../../services/sdk/messages/chat.messages.medias_pb";
+import GifRepo from "../../repository/gif";
+import {IGif} from "../../repository/gif/interface";
 
 import './style.scss';
 
@@ -200,6 +202,7 @@ class Chat extends React.Component<IProps, IState> {
     private mainRepo: MainRepo;
     private labelRepo: LabelRepo;
     private topPeerRepo: TopPeerRepo;
+    private gifRepo: GifRepo;
     private isLoading: boolean = false;
     private apiManager: APIManager;
     private updateManager: UpdateManager;
@@ -295,6 +298,7 @@ class Chat extends React.Component<IProps, IState> {
         this.mainRepo = MainRepo.getInstance();
         this.labelRepo = LabelRepo.getInstance();
         this.topPeerRepo = TopPeerRepo.getInstance();
+        this.gifRepo = GifRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 256);
         this.isInChat = (document.visibilityState === 'visible');
@@ -623,6 +627,8 @@ class Chat extends React.Component<IProps, IState> {
                                           onClick={this.moveDownClickHandler}/>
                             </div>
                             <ChatInput key="chat-input" ref={this.chatInputRefHandler}
+                                       peer={this.peer}
+                                       userId={this.userId}
                                        onTextSend={this.chatInputTextSendHandler}
                                        onTyping={this.chatInputTypingHandler}
                                        onBulkAction={this.chatInputBulkActionHandler}
@@ -637,8 +643,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onFocus={this.chatInputFocusHandler}
                                        onBotButtonAction={this.messageBotButtonActionHandler}
                                        onMessageDrop={this.chatInputMessageDropHandler}
-                                       peer={this.peer}
-                                       userId={this.userId}
+                                       onGifSelect={this.chatInputGifSelectHandler}
                             />
                         </div>}
                         {this.selectedDialogId === 'null' && <div className="column-center">
@@ -4439,6 +4444,101 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private chatInputGifSelectHandler = (item: IGif) => {
+        const peer = cloneDeep(this.peer);
+        if (!peer) {
+            return;
+        }
+
+        const now = this.riverTime.now();
+        const randomId = UniqueId.getRandomId();
+        const id = -this.riverTime.milliNow();
+        const message: IMessage = {
+            attributes: item.attributes,
+            createdon: now,
+            downloaded: item.downloaded,
+            id,
+            me: true,
+            mediadata: {
+                caption: item.caption,
+                doc: item.doc,
+                entitiesList: item.entitiesList,
+                ttlinseconds: item.ttlinseconds,
+            },
+            mediatype: MediaType.MEDIATYPEDOCUMENT,
+            messageaction: C_MESSAGE_ACTION.MessageActionNope,
+            messagetype: item.messagetype,
+            peerid: peer.getId(),
+            peertype: peer.getType(),
+            random_id: randomId,
+            senderid: this.userId,
+        };
+
+        let replyTo;
+        if (this.chatInputRef) {
+            const options = this.chatInputRef.getUploaderOptions();
+            if (options.mode === C_MSG_MODE.Reply && options.message) {
+                replyTo = options.message.id;
+                message.replyto = replyTo;
+            }
+            this.chatInputRef.clearPreviewMessage(true)();
+        }
+
+        this.pushMessage(message);
+
+        const inputMediaDocument = new InputMediaDocument();
+        inputMediaDocument.setCaption(item.caption || '');
+        const inputDocument = new InputDocument();
+        inputDocument.setAccesshash(item.doc.accesshash || '0');
+        inputDocument.setClusterid(item.doc.clusterid || 0);
+        inputDocument.setId(item.doc.id || '0');
+        inputMediaDocument.setDocument(inputDocument);
+
+        const inputMediaType = InputMediaType.INPUTMEDIATYPEDOCUMENT;
+        const data = inputMediaDocument.serializeBinary();
+
+        this.messageRepo.addPending({
+            data,
+            file_ids: [],
+            id: randomId,
+            message_id: id,
+            type: inputMediaType,
+        });
+
+        // For double checking update message id
+        this.updateManager.setRandomId(randomId);
+        this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
+            message.id = res.messageid;
+            this.messageMapAppend(message);
+            this.messageRepo.lazyUpsert([message]);
+            this.updateDialogs(message, '0');
+
+            if (this.selectedDialogId === peer.getId()) {
+                this.checkMessageOrder(message);
+                // Force update messages
+                if (this.messageRef) {
+                    this.messageRef.updateList();
+                }
+                this.newMessageLoadThrottle();
+            }
+        }).catch((err) => {
+            window.console.warn(err);
+            if (!this.resolveRandomMessageIdError(err, randomId, id) && this.selectedDialogId === peer.getId()) {
+                const messages = this.messages;
+                const index = findLastIndex(messages, (o) => {
+                    return o.id === id && o.messagetype === item.messagetype;
+                });
+                if (index > -1) {
+                    messages[index].error = true;
+                    this.messageRepo.importBulk([messages[index]], false);
+                    if (this.messageRef) {
+                        this.messageRef.updateList();
+                    }
+                }
+            }
+        });
+    }
+
     /* ChatInput contact select handler */
     private chatInputContactSelectHandler = (users: IUser[], caption: string, params: IMessageParam) => {
         if (this.chatInputRef) {
@@ -5308,7 +5408,17 @@ class Chat extends React.Component<IProps, IState> {
         inputDocument.setClusterid(mediaDoc.doc.clusterid || 0);
         inputDocument.setAccesshash(mediaDoc.doc.accesshash || '0');
         this.apiManager.saveGif(inputDocument).then((res) => {
-            window.console.log(res);
+            this.gifRepo.upsert([{
+                attributes: message.attributes,
+                caption: mediaDoc.caption,
+                doc: mediaDoc.doc,
+                downloaded: message.downloaded,
+                entitiesList: mediaDoc.entitiesList,
+                id: mediaDoc.doc.id,
+                last_used: this.riverTime.now(),
+                messagetype: message.messagetype,
+                ttlinseconds: mediaDoc.ttlinseconds,
+            }]);
         });
     }
 }

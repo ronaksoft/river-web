@@ -28,7 +28,6 @@
 
   .gif-picker-list {
     flex: 1;
-    background-color: var(--white);
 
     .slider {
       display: flex;
@@ -41,6 +40,7 @@
         width: 107px;
         margin: 0 3px 3px 0;
         background-color: var(--light);
+        cursor: pointer;
 
         .more {
           position: absolute;
@@ -100,6 +100,31 @@
             object-position: center center;
           }
         }
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .gif-picker {
+    background-color: var(--dark-medium);
+
+    .gif-search {
+      input {
+        color: var(--white);
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .gif-picker {
+    background-color: var(--dark-blue-medium);
+
+    .gif-search {
+      input {
+        color: var(--white);
       }
     }
   }

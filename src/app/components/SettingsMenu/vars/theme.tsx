@@ -265,6 +265,10 @@ export const storageItems = [{
     title: 'settings.voices',
     type: 'item',
 }, {
+    id: 'chat_gifs',
+    title: 'settings.gifs',
+    type: 'item',
+}, {
     id: 'chat_files',
     title: 'settings.files',
     type: 'item',
@@ -283,6 +287,10 @@ export const storageItems = [{
 }, {
     id: 'group_voices',
     title: 'settings.voices',
+    type: 'item',
+}, {
+    id: 'group_gifs',
+    title: 'settings.gifs',
     type: 'item',
 }, {
     id: 'group_files',

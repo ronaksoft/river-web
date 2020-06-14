@@ -20,7 +20,7 @@ interface IProps {
     fileLocation: InputFileLocation.AsObject;
     className?: string;
     fileSize?: number;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download') => void;
+    onAction?: (cmd: 'cancel' | 'download') => void;
     onComplete?: () => void;
     hideSizeIndicator?: boolean;
 }
@@ -31,6 +31,10 @@ interface IState {
 }
 
 class FileDownloadProgress extends React.PureComponent<IProps, IState> {
+    public static getUid(fileLocation: InputFileLocation.AsObject) {
+        return `${fileLocation.fileid}_${fileLocation.clusterid}`;
+    }
+
     private circleProgressRef: any = null;
     private mediaSizeRef: any = null;
     private progressBroadcaster: ProgressBroadcaster;
@@ -46,7 +50,7 @@ class FileDownloadProgress extends React.PureComponent<IProps, IState> {
         };
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
-        this.uid = `${props.fileLocation.fileid}_${props.fileLocation.clusterid}`;
+        this.uid = FileDownloadProgress.getUid(props.fileLocation);
     }
 
     public componentDidMount() {
@@ -120,12 +124,12 @@ class FileDownloadProgress extends React.PureComponent<IProps, IState> {
     private downloadFileHandler = () => {
         if (this.props.onAction) {
             this.props.onAction('download');
+            this.setState({
+                fileState: 'progress',
+            }, () => {
+                this.initProgress();
+            });
         }
-        this.setState({
-            fileState: 'progress',
-        }, () => {
-            this.initProgress();
-        });
     }
 
     /* Cancel file download/upload */
@@ -137,7 +141,6 @@ class FileDownloadProgress extends React.PureComponent<IProps, IState> {
 
     /* Initialize progress bar */
     private initProgress = () => {
-        window.console.log(this.state.fileState);
         if (this.state.fileState === 'progress') {
             this.removeAllListeners();
             this.eventReferences.push(this.progressBroadcaster.listen(this.uid, this.downloadProgressHandler));

@@ -87,6 +87,7 @@ import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@materia
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
 import GifPicker from "../GifPicker";
+import {IGif} from "../../repository/gif/interface";
 
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
@@ -224,6 +225,7 @@ interface IProps {
     previewMessageMode?: number;
     userId?: string;
     onFocus?: () => void;
+    onGifSelect: (item: IGif) => void;
 }
 
 interface IState {
@@ -2248,7 +2250,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 return <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
                                     showPreview={false} theme={dark ? 'dark' : 'light'}/>;
             case 1:
-                return <GifPicker/>;
+                return <GifPicker onSelect={this.props.onGifSelect}/>;
         }
     }
 }
