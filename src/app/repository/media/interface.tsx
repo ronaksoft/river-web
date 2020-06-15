@@ -12,9 +12,10 @@ export const C_MEDIA_TYPE = {
     FILE: 5,
     GIF: 7,
     LOCATION: 6,
-    Media: -2,
-    Music: -3,
+    MEDIA: -2,
+    MUSIC: -3,
     PHOTO: 1,
+    PHOTOVIDEO: -4,
     VIDEO: 2,
     VOICE: 4,
 };

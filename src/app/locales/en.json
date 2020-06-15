@@ -450,5 +450,8 @@
     "alert": "Bot Alert",
     "bot_wants_your_phone": "wants your phone",
     "bot_wants_your_location": "wants your location"
+  },
+  "picker": {
+    "there_is_no_gif": "There is no saved GIFs"
   }
 }

@@ -710,7 +710,7 @@
   }
 }
 
-.emoji-menu-paper {
+.picker-menu-paper {
   background-color: transparent !important;
 
   .chat-input-popover-tabs {
@@ -731,6 +731,11 @@
         }
       }
     }
+  }
+
+  .picker-placeholder {
+    height: 388px;
+    background-color: var(--white);
   }
 }
 
@@ -902,7 +907,7 @@ html[theme="dark-blue"] {
     }
   }
 
-  .emoji-menu-paper {
+  .picker-menu-paper {
     .chat-input-popover-tabs {
       background-color: var(--dark-medium);
 
@@ -911,6 +916,10 @@ html[theme="dark-blue"] {
           color: var(--light);
         }
       }
+    }
+
+    .picker-placeholder {
+      background-color: var(--dark-medium);
     }
   }
 
@@ -990,8 +999,12 @@ html[theme="dark-blue"] {
     }
   }
 
-  .emoji-menu-paper {
+  .picker-menu-paper {
     .chat-input-popover-tabs {
+      background-color: var(--dark-blue-medium);
+    }
+
+    .picker-placeholder {
       background-color: var(--dark-blue-medium);
     }
   }

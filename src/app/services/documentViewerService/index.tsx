@@ -87,7 +87,7 @@ export default class DocumentViewerService {
         this.mediaRepo.getMany({
             before: (doc.items[0].id || 0) - 1,
             limit: 1,
-            type: C_MEDIA_TYPE.Media
+            type: C_MEDIA_TYPE.MEDIA
         }, doc.peerId).then((res) => {
             if (this.onDocumentPrev && res.messages.length > 0) {
                 this.onDocumentPrev(res.messages[0]);
@@ -98,7 +98,7 @@ export default class DocumentViewerService {
         this.mediaRepo.getMany({
             after: (doc.items[0].id || 0) + 1,
             limit: 1,
-            type: C_MEDIA_TYPE.Media
+            type: C_MEDIA_TYPE.MEDIA
         }, doc.peerId).then((res) => {
             if (this.onDocumentNext && res.messages.length > 0) {
                 this.onDocumentNext(res.messages[0]);

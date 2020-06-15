@@ -1,3 +1,7 @@
+## 0.33.1
+* GIF updated
+* Bug fixes and performance improvements
+
 ## 0.33.0
 * 🎉 Brand new GIF feature
 

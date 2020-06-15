@@ -24,7 +24,6 @@ import {
     StopRounded,
     ViewModuleRounded,
     GifRounded,
-    PanoramaFishEyeRounded,
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -81,13 +80,13 @@ import {getMapLocation} from "../MessageLocation";
 import {MediaContact} from "../../services/sdk/messages/chat.messages.medias_pb";
 import {getHumanReadableSize} from "../MessageFile";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
-import Fade from '@material-ui/core/Fade';
 import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@material-ui/core';
+import GifPicker from "../GifPicker";
+import {IGif} from "../../repository/gif/interface";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
-import GifPicker from "../GifPicker";
-import {IGif} from "../../repository/gif/interface";
+import {Sticker} from "../SVG/sticker";
 
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
@@ -862,11 +861,11 @@ class ChatInput extends React.Component<IProps, IState> {
                                 {botKeyboard ? <KeyboardRounded/> : <ViewModuleRounded/>}
                             </span>}
                             <span className="icon" onClick={this.emojiClickHandler}>
-                                <PanoramaFishEyeRounded/>
+                                <Sticker/>
                             </span>
                             <Popover open={Boolean(this.state.pickerAnchorPos)} anchorReference="anchorPosition"
                                      anchorPosition={this.state.pickerAnchorPos} onClose={this.emojiCloseHandler}
-                                     classes={{paper: 'emoji-menu-paper'}} TransitionComponent={Fade}
+                                     classes={{paper: 'picker-menu-paper'}} transitionDuration={0}
                             >
                                 <Tabs variant="fullWidth" indicatorColor="primary" textColor="primary" centered={true}
                                       className="chat-input-popover-tabs" value={pickerTab}
@@ -2241,7 +2240,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private getPickerContent() {
         const {pickerTab, pickerAnchorPos} = this.state;
         if (!pickerAnchorPos) {
-            return null;
+            return <div className="picker-placeholder"/>;
         }
         switch (pickerTab) {
             default:
@@ -2255,7 +2254,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private gifPickerSelectHandler = (item: IGif) => {
-        this.emojiCloseHandler();
+        setTimeout(this.emojiCloseHandler, 100);
         this.props.onGifSelect(item);
     }
 }

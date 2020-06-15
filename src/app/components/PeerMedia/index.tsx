@@ -139,7 +139,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     private getContent() {
         const {items, tab, loading} = this.state;
         if (loading) {
-            return (<div className="media-loading">Loading</div>);
+            return (<div className="media-loading">{i18n.t('general.loading')}</div>);
         }
         if (!this.props.full) {
             if (items.length > 0) {
@@ -285,13 +285,13 @@ class PeerMedia extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        let mediaType = C_MEDIA_TYPE.Media;
+        let mediaType = C_MEDIA_TYPE.MEDIA;
         switch (this.state.tab) {
             case 0:
-                mediaType = C_MEDIA_TYPE.Media;
+                mediaType = C_MEDIA_TYPE.PHOTOVIDEO;
                 break;
             case 1:
-                mediaType = C_MEDIA_TYPE.Music;
+                mediaType = C_MEDIA_TYPE.MUSIC;
                 break;
             case 2:
                 mediaType = C_MEDIA_TYPE.FILE;
@@ -444,10 +444,10 @@ class PeerMedia extends React.Component<IProps, IState> {
         if (this.props.full) {
             switch (this.state.tab) {
                 case 0:
-                    mediaType = C_MEDIA_TYPE.Media;
+                    mediaType = C_MEDIA_TYPE.MEDIA;
                     break;
                 case 1:
-                    mediaType = C_MEDIA_TYPE.Music;
+                    mediaType = C_MEDIA_TYPE.MUSIC;
                     break;
                 case 2:
                     mediaType = C_MEDIA_TYPE.FILE;

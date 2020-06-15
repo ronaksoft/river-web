@@ -11,9 +11,7 @@ import * as React from 'react';
 import i18n from '../../services/i18n';
 import Scrollbars from "react-custom-scrollbars";
 import {throttle} from "lodash";
-import {InputAdornment} from "@material-ui/core";
-import {MoreVert, SearchRounded} from "@material-ui/icons";
-import TextField from "@material-ui/core/TextField";
+import {MoreVert} from "@material-ui/icons";
 import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 import CachedPhoto from "../CachedPhoto";
@@ -22,6 +20,8 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import {findIndex} from 'lodash';
 import FileDownloadProgress from "../FileDownloadProgress";
+import SettingsConfigManager from "../../services/settingsConfigManager";
+import {Loading} from "../Loading";
 
 import './style.scss';
 
@@ -45,6 +45,8 @@ class GifPicker extends React.Component<IProps, IState> {
     private scrollbarRef: Scrollbars | undefined;
     private readonly searchThrottle: any;
     private hasMore: boolean = false;
+    private downloadList: string[] = [];
+    private settingsConfigManager: SettingsConfigManager;
 
     constructor(props: IProps) {
         super(props);
@@ -60,6 +62,7 @@ class GifPicker extends React.Component<IProps, IState> {
 
         this.gifRepo = GifRepo.getInstance();
         this.searchThrottle = throttle(this.search, 512);
+        this.settingsConfigManager = SettingsConfigManager.getInstance();
     }
 
     public componentDidMount() {
@@ -67,27 +70,31 @@ class GifPicker extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {list, keyword, moreAnchorEl, moreAnchorPos, moreIndex} = this.state;
+        const {list, keyword, moreAnchorEl, moreAnchorPos, moreIndex, loading} = this.state;
         return (
             <div className="gif-picker">
                 <div className="gif-search">
-                    <TextField
-                        placeholder={i18n.t('dialog.search')}
-                        fullWidth={true}
-                        InputProps={{
-                            startAdornment:
-                                <InputAdornment position="start" className="search-gif-adornment">
-                                    <SearchRounded/>
-                                </InputAdornment>
-                        }}
-                        value={keyword}
-                        variant="outlined"
-                        margin="dense"
-                        onChange={this.searchChangeHandler}
-                    />
+                    <section className="emoji-mart-search" aria-label="Search">
+                        <input type="search" placeholder="Search" value={keyword} onChange={this.searchChangeHandler}/>
+                        <label className="emoji-mart-sr-only"
+                               htmlFor="emoji-mart-search-1">{i18n.t('dialog.search')}</label>
+                        <button className="emoji-mart-search-icon" aria-label="Clear">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 20 20"
+                                 opacity="0.5">
+                                <path
+                                    d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
+                            </svg>
+                        </button>
+                    </section>
                 </div>
                 <div className="gif-picker-list">
-                    <Scrollbars
+                    {list.length === 0 && <div className="gif-placeholder">
+                        {loading ? <Loading/> : <>
+                            <div className="gif-text">¯\_(ツ)_/¯</div>
+                            <div className="gif-desc">{i18n.t('picker.there_is_no_gif')}</div>
+                        </>}
+                    </div>}
+                    {list.length > 0 && <Scrollbars
                         hideTracksWhenNotNeeded={false}
                         universal={true}
                         onScroll={this.scrollHandler}
@@ -105,7 +112,7 @@ class GifPicker extends React.Component<IProps, IState> {
                                 </div>;
                             })}
                         </div>
-                    </Scrollbars>
+                    </Scrollbars>}
                 </div>
                 <Menu
                     anchorEl={moreAnchorEl}
@@ -165,7 +172,7 @@ class GifPicker extends React.Component<IProps, IState> {
                 this.setState({
                     list,
                     loading: false,
-                });
+                }, this.checkAutoDownload);
             } else {
                 this.setState({
                     list: res,
@@ -177,11 +184,11 @@ class GifPicker extends React.Component<IProps, IState> {
                 this.setState({
                     list,
                     loading: false,
-                });
+                }, this.checkAutoDownload);
             } else if (!offset) {
                 this.setState({
                     loading: false,
-                });
+                }, this.checkAutoDownload);
             }
         });
     }
@@ -275,24 +282,32 @@ class GifPicker extends React.Component<IProps, IState> {
     }
 
     private progressActionHandler = (index: number) => (action: 'cancel' | 'download') => {
+        if (action === 'download') {
+            this.download(index);
+        }
+    }
+
+    private download(index: number) {
         const {list} = this.state;
         const item = list[index];
         if (!item) {
             return;
         }
-        if (action === 'download') {
-            const inputFile = new InputFileLocation();
-            inputFile.setAccesshash(item.doc.accesshash || '0');
-            inputFile.setClusterid(item.doc.clusterid || 0);
-            inputFile.setFileid(item.doc.id || '0');
-            inputFile.setVersion(item.doc.version || 0);
-            this.gifRepo.download(inputFile, item.doc.md5checksum || '', item.doc.filesize || 0, item.doc.mimetype || 'image/gif').then((res) => {
-                list[index].downloaded = true;
-                this.setState({
-                    list,
-                });
+        const inputFile = new InputFileLocation();
+        inputFile.setAccesshash(item.doc.accesshash || '0');
+        inputFile.setClusterid(item.doc.clusterid || 0);
+        inputFile.setFileid(item.doc.id || '0');
+        inputFile.setVersion(item.doc.version || 0);
+        this.gifRepo.download(inputFile, item.doc.md5checksum || '', item.doc.filesize || 0, item.doc.mimetype || 'image/gif').then((res) => {
+            list[index].downloaded = true;
+            this.setState({
+                list,
             });
-        }
+            const idx = this.downloadList.indexOf(item.id || '0');
+            if (idx > -1) {
+                this.downloadList.splice(idx, 1);
+            }
+        });
     }
 
     private gifClickHandler = (index: number) => () => {
@@ -319,6 +334,19 @@ class GifPicker extends React.Component<IProps, IState> {
             if (pos < scrollTop && list.length > 0) {
                 this.getList(list.length);
             }
+        }
+    }
+
+    private checkAutoDownload = () => {
+        const ds = this.settingsConfigManager.getDownloadSettings();
+        if (ds.chat_gifs || ds.group_gifs) {
+            const {list} = this.state;
+            list.forEach((item, index) => {
+                if (!item.downloaded && this.downloadList.indexOf(item.id || '0') === -1) {
+                    this.downloadList.push(item.id || '0');
+                    this.download(index);
+                }
+            });
         }
     }
 }

@@ -54,6 +54,7 @@ class FileDownloadProgress extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
+        this.eventReferences.push(this.progressBroadcaster.listen(this.uid, this.downloadProgressHandler));
         this.initProgress();
         if (this.props.hideSizeIndicator !== true) {
             this.displayFileSize(-1);
@@ -93,6 +94,11 @@ class FileDownloadProgress extends React.PureComponent<IProps, IState> {
 
     /* Download progress handler */
     private downloadProgressHandler = (progress: IFileProgress) => {
+        if (this.state.fileState !== 'progress' && progress.active === true && progress.state === 'loading') {
+            this.setState({
+                fileState: 'progress',
+            });
+        }
         if (this.props.hideSizeIndicator !== true) {
             this.displayFileSize(progress.download);
         }
@@ -141,16 +147,10 @@ class FileDownloadProgress extends React.PureComponent<IProps, IState> {
 
     /* Initialize progress bar */
     private initProgress = () => {
-        if (this.state.fileState === 'progress') {
-            this.removeAllListeners();
-            this.eventReferences.push(this.progressBroadcaster.listen(this.uid, this.downloadProgressHandler));
-        } else {
+        if (this.state.fileState !== 'progress') {
             if (this.progressBroadcaster.isActive(this.uid)) {
                 this.setState({
                     fileState: 'progress',
-                }, () => {
-                    this.removeAllListeners();
-                    this.eventReferences.push(this.progressBroadcaster.listen(this.uid, this.downloadProgressHandler));
                 });
             }
         }

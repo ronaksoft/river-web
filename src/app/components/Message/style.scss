@@ -363,6 +363,7 @@
       }
 
       &.emoji_2 {
+        padding-top: 8px;
         font-size: 48px !important;
         line-height: 1.1em;
         text-align: center;
@@ -1518,7 +1519,7 @@ html[bubble="5"] .mobile-view .bubble-wrapper .message-container {
       user-select: none;
 
       .inner {
-        padding-top: 0 !important;
+        padding-top: 4px !important;
         padding-bottom: 8px !important;
       }
 

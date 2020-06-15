@@ -116,7 +116,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                             <div className="preview-message">
                                 <span className="preview-message-user">{i18n.t('general.error')}</span>
                                 <div className="preview-message-body">
-                                    <div className="inner ltr">{i18n.t('message.replied_message')}</div>
+                                    <div className="preview-inner ltr">{i18n.t('message.replied_message')}</div>
                                 </div>
                             </div>
                         </div>
@@ -132,7 +132,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                         <div className="preview-message">
                             <span className="preview-message-user">&nbsp;</span>
                             <div className="preview-message-body">
-                                <div className="inner ltr">&nbsp;</div>
+                                <div className="preview-inner ltr">&nbsp;</div>
                             </div>
                         </div>
                     </div>
@@ -218,9 +218,9 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     /* Get message body */
     private getMessageBody(msg: IMessage) {
         if ((msg.body || '').length > 0) {
-            return (<div className={'inner ' + (msg.rtl ? 'rtl' : 'ltr')}>{msg.body}</div>);
+            return (<div className={'preview-inner ' + (msg.rtl ? 'rtl' : 'ltr')}>{msg.body}</div>);
         } else {
-            return (<div className={'inner'}>{getMessageTitle(msg).text}</div>);
+            return (<div className={'preview-inner'}>{getMessageTitle(msg).text}</div>);
         }
     }
 

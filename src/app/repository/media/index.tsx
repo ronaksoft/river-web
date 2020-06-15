@@ -78,10 +78,12 @@ export default class MediaRepo {
             }
             limit = limit || 30;
             const typeRangeArr: any[] = [];
-            if (type === C_MEDIA_TYPE.Media) {
+            if (type === C_MEDIA_TYPE.MEDIA) {
                 typeRangeArr.push([C_MEDIA_TYPE.PHOTO, C_MEDIA_TYPE.VIDEO]);
                 typeRangeArr.push([C_MEDIA_TYPE.GIF, C_MEDIA_TYPE.GIF]);
-            } else if (type === C_MEDIA_TYPE.Music) {
+            } else if (type === C_MEDIA_TYPE.PHOTOVIDEO) {
+                typeRangeArr.push([C_MEDIA_TYPE.PHOTO, C_MEDIA_TYPE.VIDEO]);
+            } else if (type === C_MEDIA_TYPE.MUSIC) {
                 typeRangeArr.push([C_MEDIA_TYPE.AUDIO, C_MEDIA_TYPE.VOICE]);
             } else if (type) {
                 typeRangeArr.push([type, type]);

@@ -211,7 +211,7 @@ a.dialog-a {
         vertical-align: bottom;
 
         &.gif {
-          transform: scale(2.6);
+          transform: translateY(-1px) scale(2.6);
           margin-left: 8px;
         }
       }

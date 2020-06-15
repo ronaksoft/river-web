@@ -15,7 +15,7 @@
   background-color: var(--white);
 
   .gif-search {
-    padding: 8px 12px;
+    padding: 6px 3px;
 
     .search-gif-adornment {
       color: var(--light);
@@ -28,6 +28,25 @@
 
   .gif-picker-list {
     flex: 1;
+
+    .gif-placeholder {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+
+      .gif-text {
+        font-size: 42px;
+        font-weight: 100;
+      }
+
+      .gif-desc {
+        padding-top: 12px;
+        font-size: 20px;
+        color: var(--grey-low);
+      }
+    }
 
     .slider {
       display: flex;
@@ -110,9 +129,23 @@ html[theme="dark-night"] {
   .gif-picker {
     background-color: var(--dark-medium);
 
+    .gif-picker-list {
+      .gif-placeholder {
+        color: var(--light);
+      }
+    }
+
     .gif-search {
-      input {
-        color: var(--white);
+      .emoji-mart-search {
+        input {
+          background-color: var(--dark-low);
+          border-color: var(--dark-high);
+          color: var(--light);
+        }
+
+        svg {
+          fill: var(--light);
+        }
       }
     }
   }
@@ -122,9 +155,23 @@ html[theme="dark-blue"] {
   .gif-picker {
     background-color: var(--dark-blue-medium);
 
+    .gif-picker-list {
+      .gif-placeholder {
+        color: var(--light);
+      }
+    }
+
     .gif-search {
-      input {
-        color: var(--white);
+      .emoji-mart-search {
+        input {
+          background-color: var(--dark-low);
+          border-color: var(--dark-high);
+          color: var(--light);
+        }
+
+        svg {
+          fill: var(--light);
+        }
       }
     }
   }

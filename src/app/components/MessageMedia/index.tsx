@@ -11,7 +11,7 @@ import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/core.types_pb';
 import {
-    DocumentAttributeAudio,
+    DocumentAttributeAudio, DocumentAttributeFile,
     DocumentAttributePhoto,
     DocumentAttributeType, DocumentAttributeVideo,
     MediaDocument
@@ -138,6 +138,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
                 info.width = docAttr.width || 0;
                 info.duration = docAttr.duration;
             }
+        } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
+            const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
+            info.fileName = docAttr.filename || '';
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEANIMATED && message.attributes) {
             info.animated = true;
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEAUDIO && message.attributes) {
@@ -625,12 +628,12 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (peer.getType()) {
                         case PeerType.PEERUSER:
-                            if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.chat_photos) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.chat_videos)) {
+                            if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.chat_photos) || (message.messagetype === C_MESSAGE_TYPE.Gif && ds.chat_gifs) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.chat_videos)) {
                                 this.downloadFileHandler(false)();
                             }
                             break;
                         case PeerType.PEERGROUP:
-                            if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.group_photos) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.group_videos)) {
+                            if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.group_photos) || (message.messagetype === C_MESSAGE_TYPE.Gif && ds.group_gifs) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.group_videos)) {
                                 this.downloadFileHandler(false)();
                             }
                             break;

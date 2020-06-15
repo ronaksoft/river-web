@@ -446,5 +446,8 @@
     "alert": "Bot اعلان",
     "bot_wants_your_phone": "شماره تلفن شما را می‌خواهد",
     "bot_wants_your_location": "مختصات جغرافیایی شما را می‌خواهد"
+  },
+  "picker": {
+    "there_is_no_gif": "GIF ذخیزه شده‌ای وجود ندارد"
   }
 }
