@@ -210,9 +210,9 @@
         }
       }
 
-      .emoji-wrapper {
+      .picker-anchor {
         position: absolute;
-        right: 6px;
+        right: 8px;
         top: 50%;
         height: 32px;
         transform: translateY(-50%);
@@ -236,7 +236,7 @@
 
           svg {
             color: var(--grey);
-            font-size: 22px;
+            font-size: 20px;
           }
 
           &:hover {
@@ -827,7 +827,7 @@ html[theme="dark-blue"] {
           }
         }
 
-        .emoji-wrapper {
+        .picker-anchor {
           .icon:hover {
             svg {
               color: var(--light);

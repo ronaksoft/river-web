@@ -856,7 +856,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 onFocus={this.props.onFocus}
                             />
                         </div>
-                        <div className={'emoji-wrapper' + (isBot ? ' is-bot' : '')}>
+                        <div className={'picker-anchor' + (isBot ? ' is-bot' : '')}>
                             {isBot && <span className="icon" onClick={this.toggleBotKeyboardHandler}>
                                 {botKeyboard ? <KeyboardRounded/> : <ViewModuleRounded/>}
                             </span>}
