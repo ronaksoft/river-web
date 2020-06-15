@@ -236,8 +236,7 @@
 
           svg {
             color: var(--grey);
-            font-size: 24px;
-            height: 24px;
+            font-size: 22px;
           }
 
           &:hover {
@@ -716,6 +715,7 @@
   .chat-input-popover-tabs {
     background-color: var(--white);
     min-height: 42px;
+    border-bottom: 1px solid var(--light);
 
     .MuiTabs-indicator {
       transform: scaleX(0.76);
@@ -767,6 +767,7 @@ html[direction="rtl"] {
 .emoji-mart {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+  border: none;
 
   .emoji-mart-bar {
     border-top-left-radius: 0;
@@ -910,6 +911,7 @@ html[theme="dark-blue"] {
   .picker-menu-paper {
     .chat-input-popover-tabs {
       background-color: var(--dark-medium);
+      border-color: var(--dark-low);
 
       button:not(.Mui-selected) {
         svg {
@@ -925,7 +927,6 @@ html[theme="dark-blue"] {
 
   .emoji-mart {
     background-color: var(--dark-medium);
-    border-color: var(--dark-high);
 
     .emoji-mart-bar {
       border-color: var(--dark-low);
@@ -1002,6 +1003,7 @@ html[theme="dark-blue"] {
   .picker-menu-paper {
     .chat-input-popover-tabs {
       background-color: var(--dark-blue-medium);
+      border-color: var(--dark-blue-low);
     }
 
     .picker-placeholder {
@@ -1011,7 +1013,6 @@ html[theme="dark-blue"] {
 
   .emoji-mart {
     background-color: var(--dark-blue-medium);
-    border-color: var(--dark-blue-high);
 
     .emoji-mart-bar {
       border-color: var(--dark-blue-low);

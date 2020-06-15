@@ -1,3 +1,6 @@
+## 0.33.2
+* Know bugs fixed
+
 ## 0.33.1
 * GIF updated
 * Bug fixes and performance improvements
