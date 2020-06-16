@@ -39,7 +39,7 @@ export const getGifsCrc = (list: IGif[]) => {
         };
     });
     ids.sort((i1, i2) => {
-        return i1.wid < i2.wid ? 1 : -1;
+        return i1.wid < i2.wid ? -1 : 1;
     });
     const data: number[] = [];
     ids.forEach((id) => {
@@ -103,7 +103,6 @@ export default class GifRepo {
         if (!skip) {
             const hash = this.getHash();
             return this.apiManager.getGif(hash).then((res) => {
-                window.console.log(res);
                 if (!res.notmodified) {
                     res.docsList = GifRepo.parseGifMany(res.docsList || []);
                     this.setHash(res.hash || 0);
