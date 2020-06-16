@@ -56,7 +56,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.GifSave = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.GifSave.repeatedFields_, null);
 };
 goog.inherits(proto.msg.GifSave, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -320,6 +320,13 @@ proto.msg.GifGetSaved.prototype.hasHash = function() {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.GifSave.repeatedFields_ = [2];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -351,7 +358,9 @@ proto.msg.GifSave.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.GifSave.toObject = function(includeInstance, msg) {
   var f, obj = {
-    doc: (f = msg.getDoc()) && core_types_pb.InputDocument.toObject(includeInstance, f)
+    doc: (f = msg.getDoc()) && core_types_pb.InputDocument.toObject(includeInstance, f),
+    attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
+    chat_messages_medias_pb.DocumentAttribute.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -393,6 +402,11 @@ proto.msg.GifSave.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,core_types_pb.InputDocument.deserializeBinaryFromReader);
       msg.setDoc(value);
       break;
+    case 2:
+      var value = new chat_messages_medias_pb.DocumentAttribute;
+      reader.readMessage(value,chat_messages_medias_pb.DocumentAttribute.deserializeBinaryFromReader);
+      msg.addAttributes(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -428,6 +442,14 @@ proto.msg.GifSave.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       core_types_pb.InputDocument.serializeBinaryToWriter
+    );
+  }
+  f = message.getAttributesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      2,
+      f,
+      chat_messages_medias_pb.DocumentAttribute.serializeBinaryToWriter
     );
   }
 };
@@ -467,6 +489,44 @@ proto.msg.GifSave.prototype.clearDoc = function() {
  */
 proto.msg.GifSave.prototype.hasDoc = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * repeated DocumentAttribute Attributes = 2;
+ * @return {!Array<!proto.msg.DocumentAttribute>}
+ */
+proto.msg.GifSave.prototype.getAttributesList = function() {
+  return /** @type{!Array<!proto.msg.DocumentAttribute>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_messages_medias_pb.DocumentAttribute, 2));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.DocumentAttribute>} value
+ * @return {!proto.msg.GifSave} returns this
+*/
+proto.msg.GifSave.prototype.setAttributesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 2, value);
+};
+
+
+/**
+ * @param {!proto.msg.DocumentAttribute=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.DocumentAttribute}
+ */
+proto.msg.GifSave.prototype.addAttributes = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.msg.DocumentAttribute, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.GifSave} returns this
+ */
+proto.msg.GifSave.prototype.clearAttributesList = function() {
+  return this.setAttributesList([]);
 };
 
 

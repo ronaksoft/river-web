@@ -16,11 +16,6 @@ export class AccountSetNotifySettings extends jspb.Message {
   getSettings(): core_types_pb.PeerNotifySettings;
   setSettings(value?: core_types_pb.PeerNotifySettings): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountSetNotifySettings.AsObject;
   static toObject(includeInstance: boolean, msg: AccountSetNotifySettings): AccountSetNotifySettings.AsObject;
@@ -35,7 +30,6 @@ export namespace AccountSetNotifySettings {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     settings: core_types_pb.PeerNotifySettings.AsObject,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -44,11 +38,6 @@ export class AccountGetNotifySettings extends jspb.Message {
   clearPeer(): void;
   getPeer(): core_types_pb.InputPeer;
   setPeer(value?: core_types_pb.InputPeer): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountGetNotifySettings.AsObject;
@@ -63,7 +52,6 @@ export class AccountGetNotifySettings extends jspb.Message {
 export namespace AccountGetNotifySettings {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 

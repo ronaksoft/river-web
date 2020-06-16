@@ -431,8 +431,7 @@ proto.msg.ContactsImport.toObject = function(includeInstance, msg) {
   var f, obj = {
     contactsList: jspb.Message.toObjectList(msg.getContactsList(),
     core_types_pb.PhoneContact.toObject, includeInstance),
-    replace: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    replace: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -478,11 +477,6 @@ proto.msg.ContactsImport.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setReplace(value);
       break;
-    case 3:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -525,14 +519,6 @@ proto.msg.ContactsImport.serializeBinaryToWriter = function(message, writer) {
     writer.writeBool(
       2,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -612,43 +598,6 @@ proto.msg.ContactsImport.prototype.hasReplace = function() {
 };
 
 
-/**
- * optional InputTeam Team = 3;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.ContactsImport.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 3));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.ContactsImport} returns this
-*/
-proto.msg.ContactsImport.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.ContactsImport} returns this
- */
-proto.msg.ContactsImport.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsImport.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
 
 
 
@@ -684,8 +633,7 @@ proto.msg.ContactsAdd.toObject = function(includeInstance, msg) {
     user: (f = msg.getUser()) && core_types_pb.InputUser.toObject(includeInstance, f),
     firstname: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     lastname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    phone: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    phone: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -738,11 +686,6 @@ proto.msg.ContactsAdd.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setPhone(value);
-      break;
-    case 5:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -800,14 +743,6 @@ proto.msg.ContactsAdd.serializeBinaryToWriter = function(message, writer) {
     writer.writeString(
       4,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -958,43 +893,6 @@ proto.msg.ContactsAdd.prototype.hasPhone = function() {
 };
 
 
-/**
- * optional InputTeam Team = 5;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.ContactsAdd.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 5));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.ContactsAdd} returns this
-*/
-proto.msg.ContactsAdd.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.ContactsAdd} returns this
- */
-proto.msg.ContactsAdd.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsAdd.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
 
 
 
@@ -1027,8 +925,7 @@ proto.msg.ContactsGet.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsGet.toObject = function(includeInstance, msg) {
   var f, obj = {
-    crc32hash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    crc32hash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1069,11 +966,6 @@ proto.msg.ContactsGet.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint32());
       msg.setCrc32hash(value);
       break;
-    case 3:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1108,14 +1000,6 @@ proto.msg.ContactsGet.serializeBinaryToWriter = function(message, writer) {
     writer.writeUint32(
       2,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1154,43 +1038,6 @@ proto.msg.ContactsGet.prototype.clearCrc32hash = function() {
  */
 proto.msg.ContactsGet.prototype.hasCrc32hash = function() {
   return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * optional InputTeam Team = 3;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.ContactsGet.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 3));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.ContactsGet} returns this
-*/
-proto.msg.ContactsGet.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.ContactsGet} returns this
- */
-proto.msg.ContactsGet.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsGet.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 3) != null;
 };
 
 
@@ -1233,8 +1080,7 @@ proto.msg.ContactsDelete.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsDelete.toObject = function(includeInstance, msg) {
   var f, obj = {
-    useridsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    useridsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1275,11 +1121,6 @@ proto.msg.ContactsDelete.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readInt64String());
       msg.addUserids(value);
       break;
-    case 3:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1314,14 +1155,6 @@ proto.msg.ContactsDelete.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedInt64String(
       1,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1364,43 +1197,6 @@ proto.msg.ContactsDelete.prototype.clearUseridsList = function() {
 };
 
 
-/**
- * optional InputTeam Team = 3;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.ContactsDelete.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 3));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.ContactsDelete} returns this
-*/
-proto.msg.ContactsDelete.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.ContactsDelete} returns this
- */
-proto.msg.ContactsDelete.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsDelete.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
 
 
 
@@ -1433,7 +1229,7 @@ proto.msg.ContactsDeleteAll.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsDeleteAll.toObject = function(includeInstance, msg) {
   var f, obj = {
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+
   };
 
   if (includeInstance) {
@@ -1470,11 +1266,6 @@ proto.msg.ContactsDeleteAll.deserializeBinaryFromReader = function(msg, reader) 
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 3:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1504,51 +1295,6 @@ proto.msg.ContactsDeleteAll.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsDeleteAll.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional InputTeam Team = 3;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.ContactsDeleteAll.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 3));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.ContactsDeleteAll} returns this
-*/
-proto.msg.ContactsDeleteAll.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.ContactsDeleteAll} returns this
- */
-proto.msg.ContactsDeleteAll.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsDeleteAll.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 3) != null;
 };
 
 
@@ -2082,8 +1828,7 @@ proto.msg.ContactsSearch.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsSearch.toObject = function(includeInstance, msg) {
   var f, obj = {
-    q: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    q: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2124,11 +1869,6 @@ proto.msg.ContactsSearch.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setQ(value);
       break;
-    case 3:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -2163,14 +1903,6 @@ proto.msg.ContactsSearch.serializeBinaryToWriter = function(message, writer) {
     writer.writeString(
       1,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -2212,43 +1944,6 @@ proto.msg.ContactsSearch.prototype.hasQ = function() {
 };
 
 
-/**
- * optional InputTeam Team = 3;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.ContactsSearch.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 3));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.ContactsSearch} returns this
-*/
-proto.msg.ContactsSearch.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.ContactsSearch} returns this
- */
-proto.msg.ContactsSearch.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsSearch.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
 
 
 
@@ -2283,8 +1978,7 @@ proto.msg.ContactsGetTopPeers.toObject = function(includeInstance, msg) {
   var f, obj = {
     offset: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     limit: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    category: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    category: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2332,11 +2026,6 @@ proto.msg.ContactsGetTopPeers.deserializeBinaryFromReader = function(msg, reader
     case 3:
       var value = /** @type {!proto.msg.TopPeerCategory} */ (reader.readEnum());
       msg.setCategory(value);
-      break;
-    case 4:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -2386,14 +2075,6 @@ proto.msg.ContactsGetTopPeers.serializeBinaryToWriter = function(message, writer
     writer.writeEnum(
       3,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -2507,43 +2188,6 @@ proto.msg.ContactsGetTopPeers.prototype.hasCategory = function() {
 };
 
 
-/**
- * optional InputTeam Team = 4;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.ContactsGetTopPeers.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 4));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.ContactsGetTopPeers} returns this
-*/
-proto.msg.ContactsGetTopPeers.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 4, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.ContactsGetTopPeers} returns this
- */
-proto.msg.ContactsGetTopPeers.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsGetTopPeers.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
 
 
 
@@ -2577,8 +2221,7 @@ proto.msg.ContactsResetTopPeer.prototype.toObject = function(opt_includeInstance
 proto.msg.ContactsResetTopPeer.toObject = function(includeInstance, msg) {
   var f, obj = {
     category: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2624,11 +2267,6 @@ proto.msg.ContactsResetTopPeer.deserializeBinaryFromReader = function(msg, reade
       reader.readMessage(value,core_types_pb.InputPeer.deserializeBinaryFromReader);
       msg.setPeer(value);
       break;
-    case 3:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -2671,14 +2309,6 @@ proto.msg.ContactsResetTopPeer.serializeBinaryToWriter = function(message, write
       2,
       f,
       core_types_pb.InputPeer.serializeBinaryToWriter
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -2754,43 +2384,6 @@ proto.msg.ContactsResetTopPeer.prototype.clearPeer = function() {
  */
 proto.msg.ContactsResetTopPeer.prototype.hasPeer = function() {
   return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * optional InputTeam Team = 3;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.ContactsResetTopPeer.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 3));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.ContactsResetTopPeer} returns this
-*/
-proto.msg.ContactsResetTopPeer.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.ContactsResetTopPeer} returns this
- */
-proto.msg.ContactsResetTopPeer.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsResetTopPeer.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 3) != null;
 };
 
 

@@ -121,11 +121,6 @@ export class LabelsAddToMessage extends jspb.Message {
   setMessageidsList(value: Array<number>): void;
   addMessageids(value: number, index?: number): number;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LabelsAddToMessage.AsObject;
   static toObject(includeInstance: boolean, msg: LabelsAddToMessage): LabelsAddToMessage.AsObject;
@@ -141,7 +136,6 @@ export namespace LabelsAddToMessage {
     peer: core_types_pb.InputPeer.AsObject,
     labelidsList: Array<number>,
     messageidsList: Array<number>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -161,11 +155,6 @@ export class LabelsRemoveFromMessage extends jspb.Message {
   setMessageidsList(value: Array<number>): void;
   addMessageids(value: number, index?: number): number;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LabelsRemoveFromMessage.AsObject;
   static toObject(includeInstance: boolean, msg: LabelsRemoveFromMessage): LabelsRemoveFromMessage.AsObject;
@@ -181,7 +170,6 @@ export namespace LabelsRemoveFromMessage {
     peer: core_types_pb.InputPeer.AsObject,
     labelidsList: Array<number>,
     messageidsList: Array<number>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -206,11 +194,6 @@ export class LabelsListItems extends jspb.Message {
   getLimit(): number | undefined;
   setLimit(value: number): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LabelsListItems.AsObject;
   static toObject(includeInstance: boolean, msg: LabelsListItems): LabelsListItems.AsObject;
@@ -227,7 +210,6 @@ export namespace LabelsListItems {
     minid?: number,
     maxid?: number,
     limit?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 

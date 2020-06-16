@@ -752,8 +752,7 @@ proto.msg.AccountSetNotifySettings.prototype.toObject = function(opt_includeInst
 proto.msg.AccountSetNotifySettings.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    settings: (f = msg.getSettings()) && core_types_pb.PeerNotifySettings.toObject(includeInstance, f),
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    settings: (f = msg.getSettings()) && core_types_pb.PeerNotifySettings.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -800,11 +799,6 @@ proto.msg.AccountSetNotifySettings.deserializeBinaryFromReader = function(msg, r
       reader.readMessage(value,core_types_pb.PeerNotifySettings.deserializeBinaryFromReader);
       msg.setSettings(value);
       break;
-    case 3:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -848,14 +842,6 @@ proto.msg.AccountSetNotifySettings.serializeBinaryToWriter = function(message, w
       2,
       f,
       core_types_pb.PeerNotifySettings.serializeBinaryToWriter
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -935,43 +921,6 @@ proto.msg.AccountSetNotifySettings.prototype.hasSettings = function() {
 };
 
 
-/**
- * optional InputTeam Team = 3;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.AccountSetNotifySettings.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 3));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.AccountSetNotifySettings} returns this
-*/
-proto.msg.AccountSetNotifySettings.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.AccountSetNotifySettings} returns this
- */
-proto.msg.AccountSetNotifySettings.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AccountSetNotifySettings.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
 
 
 
@@ -1004,8 +953,7 @@ proto.msg.AccountGetNotifySettings.prototype.toObject = function(opt_includeInst
  */
 proto.msg.AccountGetNotifySettings.toObject = function(includeInstance, msg) {
   var f, obj = {
-    peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1047,11 +995,6 @@ proto.msg.AccountGetNotifySettings.deserializeBinaryFromReader = function(msg, r
       reader.readMessage(value,core_types_pb.InputPeer.deserializeBinaryFromReader);
       msg.setPeer(value);
       break;
-    case 2:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1087,14 +1030,6 @@ proto.msg.AccountGetNotifySettings.serializeBinaryToWriter = function(message, w
       1,
       f,
       core_types_pb.InputPeer.serializeBinaryToWriter
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1134,43 +1069,6 @@ proto.msg.AccountGetNotifySettings.prototype.clearPeer = function() {
  */
 proto.msg.AccountGetNotifySettings.prototype.hasPeer = function() {
   return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional InputTeam Team = 2;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.AccountGetNotifySettings.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 2));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.AccountGetNotifySettings} returns this
-*/
-proto.msg.AccountGetNotifySettings.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.AccountGetNotifySettings} returns this
- */
-proto.msg.AccountGetNotifySettings.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AccountGetNotifySettings.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 2) != null;
 };
 
 

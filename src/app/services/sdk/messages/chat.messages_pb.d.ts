@@ -36,11 +36,6 @@ export class MessagesSend extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSend.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesSend): MessagesSend.AsObject;
@@ -59,7 +54,6 @@ export namespace MessagesSend {
     replyto?: number,
     cleardraft?: boolean,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -130,11 +124,6 @@ export class MessagesSendMedia extends jspb.Message {
   getCleardraft(): boolean | undefined;
   setCleardraft(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSendMedia.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesSendMedia): MessagesSendMedia.AsObject;
@@ -153,7 +142,6 @@ export namespace MessagesSendMedia {
     mediadata: Uint8Array | string,
     replyto?: number,
     cleardraft?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -183,11 +171,6 @@ export class MessagesEdit extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesEdit.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesEdit): MessagesEdit.AsObject;
@@ -205,7 +188,6 @@ export namespace MessagesEdit {
     body?: string,
     messageid?: number,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -219,11 +201,6 @@ export class MessagesReadHistory extends jspb.Message {
   clearMaxid(): void;
   getMaxid(): number | undefined;
   setMaxid(value: number): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesReadHistory.AsObject;
@@ -239,7 +216,6 @@ export namespace MessagesReadHistory {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     maxid?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -253,11 +229,6 @@ export class MessagesGet extends jspb.Message {
   getMessagesidsList(): Array<number>;
   setMessagesidsList(value: Array<number>): void;
   addMessagesids(value: number, index?: number): number;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesGet.AsObject;
@@ -273,7 +244,6 @@ export namespace MessagesGet {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     messagesidsList: Array<number>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -298,11 +268,6 @@ export class MessagesGetHistory extends jspb.Message {
   getMinid(): number | undefined;
   setMinid(value: number): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesGetHistory.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesGetHistory): MessagesGetHistory.AsObject;
@@ -319,7 +284,6 @@ export namespace MessagesGetHistory {
     limit?: number,
     maxid?: number,
     minid?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -339,11 +303,6 @@ export class MessagesGetDialogs extends jspb.Message {
   getExcludepinned(): boolean | undefined;
   setExcludepinned(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesGetDialogs.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesGetDialogs): MessagesGetDialogs.AsObject;
@@ -359,16 +318,10 @@ export namespace MessagesGetDialogs {
     limit?: number,
     offset?: number,
     excludepinned?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
 export class MessagesGetPinnedDialogs extends jspb.Message {
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesGetPinnedDialogs.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesGetPinnedDialogs): MessagesGetPinnedDialogs.AsObject;
@@ -381,7 +334,6 @@ export class MessagesGetPinnedDialogs extends jspb.Message {
 
 export namespace MessagesGetPinnedDialogs {
   export type AsObject = {
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -390,11 +342,6 @@ export class MessagesGetDialog extends jspb.Message {
   clearPeer(): void;
   getPeer(): core_types_pb.InputPeer;
   setPeer(value?: core_types_pb.InputPeer): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesGetDialog.AsObject;
@@ -409,7 +356,6 @@ export class MessagesGetDialog extends jspb.Message {
 export namespace MessagesGetDialog {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -423,11 +369,6 @@ export class MessagesSetTyping extends jspb.Message {
   clearAction(): void;
   getAction(): core_types_pb.TypingAction | undefined;
   setAction(value: core_types_pb.TypingAction): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSetTyping.AsObject;
@@ -443,7 +384,6 @@ export namespace MessagesSetTyping {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     action?: core_types_pb.TypingAction,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -463,11 +403,6 @@ export class MessagesClearHistory extends jspb.Message {
   getDelete(): boolean | undefined;
   setDelete(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesClearHistory.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesClearHistory): MessagesClearHistory.AsObject;
@@ -483,7 +418,6 @@ export namespace MessagesClearHistory {
     peer: core_types_pb.InputPeer.AsObject,
     maxid?: number,
     pb_delete?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -503,11 +437,6 @@ export class MessagesDelete extends jspb.Message {
   getRevoke(): boolean | undefined;
   setRevoke(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesDelete.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesDelete): MessagesDelete.AsObject;
@@ -523,7 +452,6 @@ export namespace MessagesDelete {
     peer: core_types_pb.InputPeer.AsObject,
     messageidsList: Array<number>,
     revoke?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -553,11 +481,6 @@ export class MessagesForward extends jspb.Message {
   getRandomid(): number | undefined;
   setRandomid(value: number): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesForward.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesForward): MessagesForward.AsObject;
@@ -575,7 +498,6 @@ export namespace MessagesForward {
     silence?: boolean,
     messageidsList: Array<number>,
     randomid?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -589,11 +511,6 @@ export class MessagesReadContents extends jspb.Message {
   getMessageidsList(): Array<number>;
   setMessageidsList(value: Array<number>): void;
   addMessageids(value: number, index?: number): number;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesReadContents.AsObject;
@@ -609,7 +526,6 @@ export namespace MessagesReadContents {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     messageidsList: Array<number>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -639,11 +555,6 @@ export class MessagesSaveDraft extends jspb.Message {
   getEditedid(): number | undefined;
   setEditedid(value: number): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSaveDraft.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesSaveDraft): MessagesSaveDraft.AsObject;
@@ -661,7 +572,6 @@ export namespace MessagesSaveDraft {
     body?: string,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
     editedid?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -670,11 +580,6 @@ export class MessagesClearDraft extends jspb.Message {
   clearPeer(): void;
   getPeer(): core_types_pb.InputPeer;
   setPeer(value?: core_types_pb.InputPeer): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesClearDraft.AsObject;
@@ -689,7 +594,6 @@ export class MessagesClearDraft extends jspb.Message {
 export namespace MessagesClearDraft {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -703,11 +607,6 @@ export class MessagesToggleDialogPin extends jspb.Message {
   clearPin(): void;
   getPin(): boolean | undefined;
   setPin(value: boolean): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesToggleDialogPin.AsObject;
@@ -723,7 +622,6 @@ export namespace MessagesToggleDialogPin {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     pin?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -732,11 +630,6 @@ export class MessagesReorderPinnedDialogs extends jspb.Message {
   getPeersList(): Array<core_types_pb.InputPeer>;
   setPeersList(value: Array<core_types_pb.InputPeer>): void;
   addPeers(value?: core_types_pb.InputPeer, index?: number): core_types_pb.InputPeer;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesReorderPinnedDialogs.AsObject;
@@ -751,7 +644,6 @@ export class MessagesReorderPinnedDialogs extends jspb.Message {
 export namespace MessagesReorderPinnedDialogs {
   export type AsObject = {
     peersList: Array<core_types_pb.InputPeer.AsObject>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -781,11 +673,6 @@ export class MessagesSendScreenShotNotification extends jspb.Message {
   getMaxid(): number | undefined;
   setMaxid(value: number): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSendScreenShotNotification.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesSendScreenShotNotification): MessagesSendScreenShotNotification.AsObject;
@@ -803,7 +690,6 @@ export namespace MessagesSendScreenShotNotification {
     replyto?: number,
     minid?: number,
     maxid?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 

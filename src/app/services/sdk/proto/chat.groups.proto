@@ -8,7 +8,6 @@ import "core.types.proto";
 message GroupsCreate {
     repeated InputUser Users = 1;
     required string Title = 2;
-    optional InputTeam Team = 9;
 }
 
 // GroupsAddUser
@@ -18,7 +17,6 @@ message GroupsAddUser {
     required int64 GroupID = 1 [jstype = JS_STRING];
     required InputUser User = 2;
     required int32 ForwardLimit = 3;
-    optional InputTeam Team = 9;
 }
 
 // GroupsEditTitle
@@ -27,7 +25,6 @@ message GroupsAddUser {
 message GroupsEditTitle {
     required int64 GroupID = 1 [jstype = JS_STRING];
     required string Title = 2;
-    optional InputTeam Team = 9;
 }
 
 // GroupsDeleteUser
@@ -36,7 +33,6 @@ message GroupsEditTitle {
 message GroupsDeleteUser {
     required int64 GroupID = 1 [jstype = JS_STRING];
     required InputUser User = 2;
-    optional InputTeam Team = 9;
 }
 
 // GroupsGetFull
@@ -44,7 +40,6 @@ message GroupsDeleteUser {
 // @Return: GroupFull
 message GroupsGetFull {
     required int64 GroupID = 1 [jstype = JS_STRING];
-    optional InputTeam Team = 9;
 }
 
 // GroupsToggleAdmins
@@ -53,7 +48,6 @@ message GroupsGetFull {
 message GroupsToggleAdmins {
     required int64 GroupID = 1 [jstype = JS_STRING];
     required bool AdminEnabled = 2;
-    optional InputTeam Team = 9;
 }
 
 // GroupsUpdateAdmin
@@ -63,7 +57,6 @@ message GroupsUpdateAdmin {
     required int64 GroupID = 1 [jstype = JS_STRING];
     required InputUser User = 2;
     required bool Admin = 3;
-    optional InputTeam Team = 9;
 }
 
 // GroupsUploadPhoto
@@ -73,7 +66,6 @@ message GroupsUploadPhoto {
     required int64 GroupID = 1 [jstype = JS_STRING];
     required InputFile File = 2;
     optional bool ReturnObject = 3;
-    optional InputTeam Team = 9;
 }
 
 // GroupsRemovePhoto
@@ -82,7 +74,6 @@ message GroupsUploadPhoto {
 message GroupsRemovePhoto {
     required int64 GroupID = 1 [jstype = JS_STRING];
     optional int64 PhotoID = 2 [jstype = JS_STRING];
-    optional InputTeam Team = 9;
 }
 
 // GroupsUpdatePhoto
@@ -91,6 +82,5 @@ message GroupsRemovePhoto {
 message GroupsUpdatePhoto {
     required int64 PhotoID = 1 [jstype = JS_STRING];
     required int64 GroupID = 2 [jstype = JS_STRING];
-    optional InputTeam Team = 9;
 }
 

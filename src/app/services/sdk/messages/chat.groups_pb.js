@@ -276,8 +276,7 @@ proto.msg.GroupsCreate.toObject = function(includeInstance, msg) {
   var f, obj = {
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     core_types_pb.InputUser.toObject, includeInstance),
-    title: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    title: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -323,11 +322,6 @@ proto.msg.GroupsCreate.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setTitle(value);
       break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -370,14 +364,6 @@ proto.msg.GroupsCreate.serializeBinaryToWriter = function(message, writer) {
     writer.writeString(
       2,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -457,43 +443,6 @@ proto.msg.GroupsCreate.prototype.hasTitle = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsCreate.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsCreate} returns this
-*/
-proto.msg.GroupsCreate.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsCreate} returns this
- */
-proto.msg.GroupsCreate.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsCreate.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -528,8 +477,7 @@ proto.msg.GroupsAddUser.toObject = function(includeInstance, msg) {
   var f, obj = {
     groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     user: (f = msg.getUser()) && core_types_pb.InputUser.toObject(includeInstance, f),
-    forwardlimit: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    forwardlimit: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -578,11 +526,6 @@ proto.msg.GroupsAddUser.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setForwardlimit(value);
-      break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -633,14 +576,6 @@ proto.msg.GroupsAddUser.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt32(
       3,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -755,43 +690,6 @@ proto.msg.GroupsAddUser.prototype.hasForwardlimit = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsAddUser.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsAddUser} returns this
-*/
-proto.msg.GroupsAddUser.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsAddUser} returns this
- */
-proto.msg.GroupsAddUser.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsAddUser.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -825,8 +723,7 @@ proto.msg.GroupsEditTitle.prototype.toObject = function(opt_includeInstance) {
 proto.msg.GroupsEditTitle.toObject = function(includeInstance, msg) {
   var f, obj = {
     groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    title: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    title: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -871,11 +768,6 @@ proto.msg.GroupsEditTitle.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setTitle(value);
       break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -917,14 +809,6 @@ proto.msg.GroupsEditTitle.serializeBinaryToWriter = function(message, writer) {
     writer.writeString(
       2,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1002,43 +886,6 @@ proto.msg.GroupsEditTitle.prototype.hasTitle = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsEditTitle.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsEditTitle} returns this
-*/
-proto.msg.GroupsEditTitle.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsEditTitle} returns this
- */
-proto.msg.GroupsEditTitle.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsEditTitle.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -1072,8 +919,7 @@ proto.msg.GroupsDeleteUser.prototype.toObject = function(opt_includeInstance) {
 proto.msg.GroupsDeleteUser.toObject = function(includeInstance, msg) {
   var f, obj = {
     groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    user: (f = msg.getUser()) && core_types_pb.InputUser.toObject(includeInstance, f),
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    user: (f = msg.getUser()) && core_types_pb.InputUser.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1119,11 +965,6 @@ proto.msg.GroupsDeleteUser.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,core_types_pb.InputUser.deserializeBinaryFromReader);
       msg.setUser(value);
       break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1166,14 +1007,6 @@ proto.msg.GroupsDeleteUser.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       core_types_pb.InputUser.serializeBinaryToWriter
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1252,43 +1085,6 @@ proto.msg.GroupsDeleteUser.prototype.hasUser = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsDeleteUser.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsDeleteUser} returns this
-*/
-proto.msg.GroupsDeleteUser.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsDeleteUser} returns this
- */
-proto.msg.GroupsDeleteUser.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsDeleteUser.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -1321,8 +1117,7 @@ proto.msg.GroupsGetFull.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.GroupsGetFull.toObject = function(includeInstance, msg) {
   var f, obj = {
-    groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1363,11 +1158,6 @@ proto.msg.GroupsGetFull.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setGroupid(value);
       break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1402,14 +1192,6 @@ proto.msg.GroupsGetFull.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt64String(
       1,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1451,43 +1233,6 @@ proto.msg.GroupsGetFull.prototype.hasGroupid = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsGetFull.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsGetFull} returns this
-*/
-proto.msg.GroupsGetFull.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsGetFull} returns this
- */
-proto.msg.GroupsGetFull.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsGetFull.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -1521,8 +1266,7 @@ proto.msg.GroupsToggleAdmins.prototype.toObject = function(opt_includeInstance) 
 proto.msg.GroupsToggleAdmins.toObject = function(includeInstance, msg) {
   var f, obj = {
     groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    adminenabled: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    adminenabled: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1567,11 +1311,6 @@ proto.msg.GroupsToggleAdmins.deserializeBinaryFromReader = function(msg, reader)
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAdminenabled(value);
       break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1613,14 +1352,6 @@ proto.msg.GroupsToggleAdmins.serializeBinaryToWriter = function(message, writer)
     writer.writeBool(
       2,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1698,43 +1429,6 @@ proto.msg.GroupsToggleAdmins.prototype.hasAdminenabled = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsToggleAdmins.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsToggleAdmins} returns this
-*/
-proto.msg.GroupsToggleAdmins.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsToggleAdmins} returns this
- */
-proto.msg.GroupsToggleAdmins.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsToggleAdmins.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -1769,8 +1463,7 @@ proto.msg.GroupsUpdateAdmin.toObject = function(includeInstance, msg) {
   var f, obj = {
     groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     user: (f = msg.getUser()) && core_types_pb.InputUser.toObject(includeInstance, f),
-    admin: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    admin: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1819,11 +1512,6 @@ proto.msg.GroupsUpdateAdmin.deserializeBinaryFromReader = function(msg, reader) 
     case 3:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAdmin(value);
-      break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -1874,14 +1562,6 @@ proto.msg.GroupsUpdateAdmin.serializeBinaryToWriter = function(message, writer) 
     writer.writeBool(
       3,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1996,43 +1676,6 @@ proto.msg.GroupsUpdateAdmin.prototype.hasAdmin = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsUpdateAdmin.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsUpdateAdmin} returns this
-*/
-proto.msg.GroupsUpdateAdmin.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsUpdateAdmin} returns this
- */
-proto.msg.GroupsUpdateAdmin.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsUpdateAdmin.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -2067,8 +1710,7 @@ proto.msg.GroupsUploadPhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
     groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     file: (f = msg.getFile()) && core_types_pb.InputFile.toObject(includeInstance, f),
-    returnobject: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    returnobject: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2117,11 +1759,6 @@ proto.msg.GroupsUploadPhoto.deserializeBinaryFromReader = function(msg, reader) 
     case 3:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setReturnobject(value);
-      break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -2172,14 +1809,6 @@ proto.msg.GroupsUploadPhoto.serializeBinaryToWriter = function(message, writer) 
     writer.writeBool(
       3,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -2294,43 +1923,6 @@ proto.msg.GroupsUploadPhoto.prototype.hasReturnobject = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsUploadPhoto.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsUploadPhoto} returns this
-*/
-proto.msg.GroupsUploadPhoto.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsUploadPhoto} returns this
- */
-proto.msg.GroupsUploadPhoto.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsUploadPhoto.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -2364,8 +1956,7 @@ proto.msg.GroupsRemovePhoto.prototype.toObject = function(opt_includeInstance) {
 proto.msg.GroupsRemovePhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
     groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    photoid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    photoid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2410,11 +2001,6 @@ proto.msg.GroupsRemovePhoto.deserializeBinaryFromReader = function(msg, reader) 
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setPhotoid(value);
       break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -2456,14 +2042,6 @@ proto.msg.GroupsRemovePhoto.serializeBinaryToWriter = function(message, writer) 
     writer.writeInt64String(
       2,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -2541,43 +2119,6 @@ proto.msg.GroupsRemovePhoto.prototype.hasPhotoid = function() {
 };
 
 
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsRemovePhoto.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsRemovePhoto} returns this
-*/
-proto.msg.GroupsRemovePhoto.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsRemovePhoto} returns this
- */
-proto.msg.GroupsRemovePhoto.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsRemovePhoto.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
 
 
 
@@ -2611,8 +2152,7 @@ proto.msg.GroupsUpdatePhoto.prototype.toObject = function(opt_includeInstance) {
 proto.msg.GroupsUpdatePhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
     photoid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    groupid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    team: (f = msg.getTeam()) && core_types_pb.InputTeam.toObject(includeInstance, f)
+    groupid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2657,11 +2197,6 @@ proto.msg.GroupsUpdatePhoto.deserializeBinaryFromReader = function(msg, reader) 
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setGroupid(value);
       break;
-    case 9:
-      var value = new core_types_pb.InputTeam;
-      reader.readMessage(value,core_types_pb.InputTeam.deserializeBinaryFromReader);
-      msg.setTeam(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -2703,14 +2238,6 @@ proto.msg.GroupsUpdatePhoto.serializeBinaryToWriter = function(message, writer) 
     writer.writeInt64String(
       2,
       f
-    );
-  }
-  f = message.getTeam();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      core_types_pb.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -2785,43 +2312,6 @@ proto.msg.GroupsUpdatePhoto.prototype.clearGroupid = function() {
  */
 proto.msg.GroupsUpdatePhoto.prototype.hasGroupid = function() {
   return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * optional InputTeam Team = 9;
- * @return {?proto.msg.InputTeam}
- */
-proto.msg.GroupsUpdatePhoto.prototype.getTeam = function() {
-  return /** @type{?proto.msg.InputTeam} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputTeam, 9));
-};
-
-
-/**
- * @param {?proto.msg.InputTeam|undefined} value
- * @return {!proto.msg.GroupsUpdatePhoto} returns this
-*/
-proto.msg.GroupsUpdatePhoto.prototype.setTeam = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.msg.GroupsUpdatePhoto} returns this
- */
-proto.msg.GroupsUpdatePhoto.prototype.clearTeam = function() {
-  return this.setTeam(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GroupsUpdatePhoto.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 9) != null;
 };
 
 

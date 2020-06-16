@@ -16,11 +16,6 @@ export class ContactsImport extends jspb.Message {
   getReplace(): boolean | undefined;
   setReplace(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsImport.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsImport): ContactsImport.AsObject;
@@ -35,7 +30,6 @@ export namespace ContactsImport {
   export type AsObject = {
     contactsList: Array<core_types_pb.PhoneContact.AsObject>,
     replace?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -60,11 +54,6 @@ export class ContactsAdd extends jspb.Message {
   getPhone(): string | undefined;
   setPhone(value: string): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsAdd.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsAdd): ContactsAdd.AsObject;
@@ -81,7 +70,6 @@ export namespace ContactsAdd {
     firstname?: string,
     lastname?: string,
     phone?: string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -90,11 +78,6 @@ export class ContactsGet extends jspb.Message {
   clearCrc32hash(): void;
   getCrc32hash(): number | undefined;
   setCrc32hash(value: number): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsGet.AsObject;
@@ -109,7 +92,6 @@ export class ContactsGet extends jspb.Message {
 export namespace ContactsGet {
   export type AsObject = {
     crc32hash?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -118,11 +100,6 @@ export class ContactsDelete extends jspb.Message {
   getUseridsList(): Array<string>;
   setUseridsList(value: Array<string>): void;
   addUserids(value: string, index?: number): string;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsDelete.AsObject;
@@ -137,16 +114,10 @@ export class ContactsDelete extends jspb.Message {
 export namespace ContactsDelete {
   export type AsObject = {
     useridsList: Array<string>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
 export class ContactsDeleteAll extends jspb.Message {
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsDeleteAll.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsDeleteAll): ContactsDeleteAll.AsObject;
@@ -159,7 +130,6 @@ export class ContactsDeleteAll extends jspb.Message {
 
 export namespace ContactsDeleteAll {
   export type AsObject = {
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -241,11 +211,6 @@ export class ContactsSearch extends jspb.Message {
   getQ(): string | undefined;
   setQ(value: string): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsSearch.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsSearch): ContactsSearch.AsObject;
@@ -259,7 +224,6 @@ export class ContactsSearch extends jspb.Message {
 export namespace ContactsSearch {
   export type AsObject = {
     q?: string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -279,11 +243,6 @@ export class ContactsGetTopPeers extends jspb.Message {
   getCategory(): TopPeerCategory | undefined;
   setCategory(value: TopPeerCategory): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsGetTopPeers.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsGetTopPeers): ContactsGetTopPeers.AsObject;
@@ -299,7 +258,6 @@ export namespace ContactsGetTopPeers {
     offset?: number,
     limit?: number,
     category?: TopPeerCategory,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -313,11 +271,6 @@ export class ContactsResetTopPeer extends jspb.Message {
   clearPeer(): void;
   getPeer(): core_types_pb.InputPeer;
   setPeer(value?: core_types_pb.InputPeer): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsResetTopPeer.AsObject;
@@ -333,7 +286,6 @@ export namespace ContactsResetTopPeer {
   export type AsObject = {
     category?: TopPeerCategory,
     peer: core_types_pb.InputPeer.AsObject,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 

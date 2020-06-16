@@ -16,6 +16,7 @@ message GifGetSaved {
 // @Return: Bool
 message GifSave {
     required InputDocument Doc = 1;
+    repeated DocumentAttribute Attributes = 2;
 }
 
 // GifDelete

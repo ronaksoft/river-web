@@ -8,7 +8,6 @@ import "core.types.proto";
 message ContactsImport {
     repeated PhoneContact Contacts = 1;
     required bool Replace = 2;
-    optional InputTeam Team = 3;
 }
 
 // ContactsAdd
@@ -19,7 +18,6 @@ message ContactsAdd {
     required string FirstName = 2;
     optional string LastName = 3;
     optional string Phone = 4;
-    optional InputTeam Team = 5;
 }
 
 // ContactsGet
@@ -27,7 +25,6 @@ message ContactsAdd {
 // @Return: ContactsMany
 message ContactsGet {
     required uint32 Crc32Hash = 2;
-    optional InputTeam Team = 3;
 }
 
 // ContactsDelete
@@ -35,14 +32,13 @@ message ContactsGet {
 // @Return: Bool
 message ContactsDelete {
     repeated int64 UserIDs = 1 [jstype = JS_STRING];
-    optional InputTeam Team = 3;
 }
 
 // ContactsDeleteAll
 // @Function: ContactsDeleteAll
 // @Return: Bool
 message ContactsDeleteAll {
-    optional InputTeam Team = 3;
+
 }
 
 // ContactsBlock
@@ -72,7 +68,6 @@ message ContactsGetBlocked {
 // @Returns: UsersMany
 message ContactsSearch {
     required string Q = 1;
-    optional InputTeam Team = 3;
 }
 
 // ContactsGetTopPeers
@@ -82,7 +77,6 @@ message ContactsGetTopPeers {
     required int32 Offset = 1;
     required int32 Limit = 2;
     required TopPeerCategory Category = 3;
-    optional InputTeam Team = 4;
 }
 
 // ContactsResetTopPeer
@@ -91,7 +85,6 @@ message ContactsGetTopPeers {
 message ContactsResetTopPeer {
     required TopPeerCategory Category = 1;
     required InputPeer Peer = 2;
-    optional InputTeam Team = 3;
 }
 
 // ContactsTopPeer

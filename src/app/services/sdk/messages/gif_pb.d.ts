@@ -34,6 +34,11 @@ export class GifSave extends jspb.Message {
   getDoc(): core_types_pb.InputDocument;
   setDoc(value?: core_types_pb.InputDocument): void;
 
+  clearAttributesList(): void;
+  getAttributesList(): Array<chat_messages_medias_pb.DocumentAttribute>;
+  setAttributesList(value: Array<chat_messages_medias_pb.DocumentAttribute>): void;
+  addAttributes(value?: chat_messages_medias_pb.DocumentAttribute, index?: number): chat_messages_medias_pb.DocumentAttribute;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GifSave.AsObject;
   static toObject(includeInstance: boolean, msg: GifSave): GifSave.AsObject;
@@ -47,6 +52,7 @@ export class GifSave extends jspb.Message {
 export namespace GifSave {
   export type AsObject = {
     doc: core_types_pb.InputDocument.AsObject,
+    attributesList: Array<chat_messages_medias_pb.DocumentAttribute.AsObject>,
   }
 }
 

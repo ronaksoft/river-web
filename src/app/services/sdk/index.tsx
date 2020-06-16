@@ -148,6 +148,7 @@ import UniqueId from "../uniqueId";
 import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/chat.bot_pb";
 import {FileGetBySha256} from "./messages/files_pb";
 import {GifDelete, GifGetSaved, GifSave, SavedGifs} from "./messages/gif_pb";
+import {DocumentAttribute} from "./messages/chat.messages.medias_pb";
 
 export default class APIManager {
     public static getInstance() {
@@ -933,9 +934,10 @@ export default class APIManager {
         return this.server.send(C_MSG.GifGetSaved, data.serializeBinary(), false);
     }
 
-    public saveGif(inputDocument: InputDocument): Promise<Bool.AsObject> {
+    public saveGif(inputDocument: InputDocument, attributeList: DocumentAttribute[]): Promise<Bool.AsObject> {
         const data = new GifSave();
         data.setDoc(inputDocument);
+        data.setAttributesList(attributeList);
         return this.server.send(C_MSG.GifSave, data.serializeBinary(), false);
     }
 

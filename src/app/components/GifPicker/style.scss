@@ -133,6 +133,12 @@ html[theme="dark-night"] {
       .gif-placeholder {
         color: var(--light);
       }
+
+      .slider {
+        .gif-item {
+          background-color: var(--dark-low);
+        }
+      }
     }
 
     .gif-search {
@@ -159,13 +165,19 @@ html[theme="dark-blue"] {
       .gif-placeholder {
         color: var(--light);
       }
+
+      .slider {
+        .gif-item {
+          background-color: var(--dark-blue-low);
+        }
+      }
     }
 
     .gif-search {
       .emoji-mart-search {
         input {
-          background-color: var(--dark-low);
-          border-color: var(--dark-high);
+          background-color: var(--dark-blue-low);
+          border-color: var(--dark-blue-high);
           color: var(--light);
         }
 

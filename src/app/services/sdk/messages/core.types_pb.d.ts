@@ -66,6 +66,11 @@ export class MessageEnvelope extends jspb.Message {
   getMessage_asB64(): string;
   setMessage(value: Uint8Array | string): void;
 
+  hasTeam(): boolean;
+  clearTeam(): void;
+  getTeam(): InputTeam | undefined;
+  setTeam(value?: InputTeam): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageEnvelope.AsObject;
   static toObject(includeInstance: boolean, msg: MessageEnvelope): MessageEnvelope.AsObject;
@@ -81,6 +86,7 @@ export namespace MessageEnvelope {
     constructor?: number,
     requestid?: number,
     message: Uint8Array | string,
+    team?: InputTeam.AsObject,
   }
 }
 

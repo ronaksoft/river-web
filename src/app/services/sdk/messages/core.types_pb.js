@@ -1322,7 +1322,8 @@ proto.msg.MessageEnvelope.toObject = function(includeInstance, msg) {
   var f, obj = {
     constructor: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     requestid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    message: msg.getMessage_asB64()
+    message: msg.getMessage_asB64(),
+    team: (f = msg.getTeam()) && proto.msg.InputTeam.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1370,6 +1371,11 @@ proto.msg.MessageEnvelope.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setMessage(value);
+      break;
+    case 5:
+      var value = new proto.msg.InputTeam;
+      reader.readMessage(value,proto.msg.InputTeam.deserializeBinaryFromReader);
+      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -1419,6 +1425,14 @@ proto.msg.MessageEnvelope.serializeBinaryToWriter = function(message, writer) {
     writer.writeBytes(
       4,
       f
+    );
+  }
+  f = message.getTeam();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      proto.msg.InputTeam.serializeBinaryToWriter
     );
   }
 };
@@ -1553,6 +1567,43 @@ proto.msg.MessageEnvelope.prototype.clearMessage = function() {
  */
 proto.msg.MessageEnvelope.prototype.hasMessage = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional InputTeam Team = 5;
+ * @return {?proto.msg.InputTeam}
+ */
+proto.msg.MessageEnvelope.prototype.getTeam = function() {
+  return /** @type{?proto.msg.InputTeam} */ (
+    jspb.Message.getWrapperField(this, proto.msg.InputTeam, 5));
+};
+
+
+/**
+ * @param {?proto.msg.InputTeam|undefined} value
+ * @return {!proto.msg.MessageEnvelope} returns this
+*/
+proto.msg.MessageEnvelope.prototype.setTeam = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.msg.MessageEnvelope} returns this
+ */
+proto.msg.MessageEnvelope.prototype.clearTeam = function() {
+  return this.setTeam(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.MessageEnvelope.prototype.hasTeam = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

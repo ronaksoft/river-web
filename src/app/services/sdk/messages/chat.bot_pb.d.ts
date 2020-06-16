@@ -160,11 +160,6 @@ export class BotSendMessage extends jspb.Message {
   getPeer(): core_types_pb.InputPeer;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   hasBody(): boolean;
   clearBody(): void;
   getBody(): string | undefined;
@@ -211,7 +206,6 @@ export namespace BotSendMessage {
   export type AsObject = {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
-    team?: core_types_pb.InputTeam.AsObject,
     body?: string,
     replyto?: number,
     cleardraft?: boolean,
@@ -259,11 +253,6 @@ export class BotEditMessage extends jspb.Message {
   getReplymarkupdata_asB64(): string;
   setReplymarkupdata(value: Uint8Array | string): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotEditMessage.AsObject;
   static toObject(includeInstance: boolean, msg: BotEditMessage): BotEditMessage.AsObject;
@@ -283,7 +272,6 @@ export namespace BotEditMessage {
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
     replymarkup?: number,
     replymarkupdata: Uint8Array | string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -315,11 +303,6 @@ export class BotSendMedia extends jspb.Message {
   getReplyto(): number | undefined;
   setReplyto(value: number): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotSendMedia.AsObject;
   static toObject(includeInstance: boolean, msg: BotSendMedia): BotSendMedia.AsObject;
@@ -337,7 +320,6 @@ export namespace BotSendMedia {
     mediatype?: core_types_pb.InputMediaType,
     mediadata: Uint8Array | string,
     replyto?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -484,11 +466,6 @@ export class BotDeleteMessage extends jspb.Message {
   setMessageidsList(value: Array<number>): void;
   addMessageids(value: number, index?: number): number;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotDeleteMessage.AsObject;
   static toObject(includeInstance: boolean, msg: BotDeleteMessage): BotDeleteMessage.AsObject;
@@ -503,7 +480,6 @@ export namespace BotDeleteMessage {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     messageidsList: Array<number>,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -565,11 +541,6 @@ export class BotGetCallbackAnswer extends jspb.Message {
   getData_asB64(): string;
   setData(value: Uint8Array | string): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotGetCallbackAnswer.AsObject;
   static toObject(includeInstance: boolean, msg: BotGetCallbackAnswer): BotGetCallbackAnswer.AsObject;
@@ -585,7 +556,6 @@ export namespace BotGetCallbackAnswer {
     peer: core_types_pb.InputPeer.AsObject,
     messageid?: number,
     data: Uint8Array | string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -615,11 +585,6 @@ export class BotGetInlineResults extends jspb.Message {
   getLocation(): core_types_pb.InputGeoLocation | undefined;
   setLocation(value?: core_types_pb.InputGeoLocation): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotGetInlineResults.AsObject;
   static toObject(includeInstance: boolean, msg: BotGetInlineResults): BotGetInlineResults.AsObject;
@@ -637,7 +602,6 @@ export namespace BotGetInlineResults {
     query?: string,
     offset?: string,
     location?: core_types_pb.InputGeoLocation.AsObject,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -740,11 +704,6 @@ export class BotSendInlineResults extends jspb.Message {
   getHidevia(): boolean | undefined;
   setHidevia(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotSendInlineResults.AsObject;
   static toObject(includeInstance: boolean, msg: BotSendInlineResults): BotSendInlineResults.AsObject;
@@ -765,7 +724,6 @@ export namespace BotSendInlineResults {
     replyto?: number,
     silent?: boolean,
     hidevia?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 

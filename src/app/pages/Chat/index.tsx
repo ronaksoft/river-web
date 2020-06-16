@@ -113,44 +113,59 @@ import Smoother from "../../services/utilities/smoother";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
 import {
-    InputPeer,
-    MessageEntity,
-    PeerType,
-    TypingAction,
     Error as RiverError,
-    PeerNotifySettings,
-    InputUser,
-    InputFile,
-    MediaType,
     FileLocation,
     InputDocument,
+    InputFile,
     InputFileLocation,
     InputMediaType,
+    InputPeer,
+    InputUser,
+    MediaType,
+    MessageEntity,
     MessageEntityType,
+    PeerNotifySettings,
+    PeerType,
+    TypingAction,
 } from "../../services/sdk/messages/core.types_pb";
 import {
     UpdateDialogPinned,
     UpdateDraftMessage,
     UpdateDraftMessageCleared,
-    UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
-    UpdateMessageEdited, UpdateMessagesDeleted,
-    UpdateNewMessage, UpdateNotifySettings,
-    UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
+    UpdateGroupPhoto,
+    UpdateLabelDeleted,
+    UpdateLabelItemsAdded,
+    UpdateLabelItemsRemoved,
+    UpdateLabelSet,
+    UpdateMessageEdited,
+    UpdateMessagesDeleted,
+    UpdateNewMessage,
+    UpdateNotifySettings,
+    UpdateReadHistoryInbox,
+    UpdateReadHistoryOutbox,
+    UpdateReadMessagesContents,
+    UpdateUsername,
+    UpdateUserPhoto,
     UpdateUserTyping
 } from "../../services/sdk/messages/updates_pb";
 import {TopPeerCategory} from "../../services/sdk/messages/contacts_pb";
-import {ButtonUrl, Button as BotButton, ButtonCallback} from "../../services/sdk/messages/chat.messages.markups_pb";
+import {Button as BotButton, ButtonCallback, ButtonUrl} from "../../services/sdk/messages/chat.messages.markups_pb";
 import {
     Document,
     DocumentAttribute,
-    DocumentAttributeAnimated, DocumentAttributeAudio,
+    DocumentAttributeAnimated,
+    DocumentAttributeAudio,
     DocumentAttributeFile,
     DocumentAttributePhoto,
     DocumentAttributeType,
-    DocumentAttributeVideo, InputMediaContact,
-    InputMediaDocument, InputMediaGeoLocation, InputMediaMessageDocument,
+    DocumentAttributeVideo,
+    InputMediaContact,
+    InputMediaDocument,
+    InputMediaGeoLocation,
+    InputMediaMessageDocument,
     InputMediaUploadedDocument,
-    MediaContact, MediaDocument,
+    MediaContact,
+    MediaDocument,
     MediaGeoLocation
 } from "../../services/sdk/messages/chat.messages.medias_pb";
 import GifRepo from "../../repository/gif";
@@ -4248,6 +4263,7 @@ class Chat extends React.Component<IProps, IState> {
             peerid: peer.getId(),
             peertype: peer.getType(),
             random_id: randomId,
+            rtl: this.rtlDetector.direction(mediaItem.caption || ''),
             senderid: this.userId,
             temp_file: tempImageFile,
         };
@@ -4471,6 +4487,7 @@ class Chat extends React.Component<IProps, IState> {
             peerid: peer.getId(),
             peertype: peer.getType(),
             random_id: randomId,
+            rtl: this.rtlDetector.direction(item.caption || ''),
             senderid: this.userId,
         };
 
@@ -5407,7 +5424,39 @@ class Chat extends React.Component<IProps, IState> {
         inputDocument.setId(mediaDoc.doc.id || '0');
         inputDocument.setClusterid(mediaDoc.doc.clusterid || 0);
         inputDocument.setAccesshash(mediaDoc.doc.accesshash || '0');
-        this.apiManager.saveGif(inputDocument).then((res) => {
+        const attributeList: DocumentAttribute[] = [];
+        mediaDoc.doc.attributesList.forEach((attr, index) => {
+            if (!message.attributes) {
+                return;
+            }
+            const attribute = message.attributes[index];
+            if (!attribute) {
+                return;
+            }
+            const documentAttribute = new DocumentAttribute();
+            if (attr.type === DocumentAttributeType.ATTRIBUTETYPEANIMATED) {
+                const attrAnimated = new DocumentAttributeAnimated();
+                documentAttribute.setType(attr.type);
+                documentAttribute.setData(attrAnimated.serializeBinary());
+                attributeList.push(documentAttribute);
+            } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEPHOTO) {
+                const attrPhoto = new DocumentAttributePhoto();
+                attrPhoto.setHeight((attribute as DocumentAttributePhoto.AsObject).height || 0);
+                attrPhoto.setWidth((attribute as DocumentAttributePhoto.AsObject).width || 0);
+                documentAttribute.setType(attr.type);
+                documentAttribute.setData(attrPhoto.serializeBinary());
+                attributeList.push(documentAttribute);
+            } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEVIDEO) {
+                const attrVideo = new DocumentAttributeVideo();
+                attrVideo.setHeight((attribute as DocumentAttributeVideo.AsObject).height || 0);
+                attrVideo.setWidth((attribute as DocumentAttributeVideo.AsObject).width || 0);
+                attrVideo.setDuration((attribute as DocumentAttributeVideo.AsObject).duration || 0);
+                documentAttribute.setType(attr.type);
+                documentAttribute.setData(attrVideo.serializeBinary());
+                attributeList.push(documentAttribute);
+            }
+        });
+        this.apiManager.saveGif(inputDocument, attributeList).then((res) => {
             this.gifRepo.upsert([{
                 attributes: message.attributes,
                 caption: mediaDoc.caption,

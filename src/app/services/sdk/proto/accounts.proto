@@ -8,7 +8,6 @@ import "core.types.proto";
 message AccountSetNotifySettings {
     required InputPeer Peer = 1;
     required PeerNotifySettings Settings = 2;
-    optional InputTeam Team = 3;
 }
 
 // AccountGetNotifySettings
@@ -16,7 +15,6 @@ message AccountSetNotifySettings {
 // @Return: NotifySettings
 message AccountGetNotifySettings {
     required InputPeer Peer = 1;
-    optional InputTeam Team = 2;
 }
 
 // AccountRegisterDevice

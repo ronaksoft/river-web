@@ -16,11 +16,6 @@ export class GroupsCreate extends jspb.Message {
   getTitle(): string | undefined;
   setTitle(value: string): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsCreate.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsCreate): GroupsCreate.AsObject;
@@ -35,7 +30,6 @@ export namespace GroupsCreate {
   export type AsObject = {
     usersList: Array<core_types_pb.InputUser.AsObject>,
     title?: string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -55,11 +49,6 @@ export class GroupsAddUser extends jspb.Message {
   getForwardlimit(): number | undefined;
   setForwardlimit(value: number): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsAddUser.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsAddUser): GroupsAddUser.AsObject;
@@ -75,7 +64,6 @@ export namespace GroupsAddUser {
     groupid?: string,
     user: core_types_pb.InputUser.AsObject,
     forwardlimit?: number,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -89,11 +77,6 @@ export class GroupsEditTitle extends jspb.Message {
   clearTitle(): void;
   getTitle(): string | undefined;
   setTitle(value: string): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsEditTitle.AsObject;
@@ -109,7 +92,6 @@ export namespace GroupsEditTitle {
   export type AsObject = {
     groupid?: string,
     title?: string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -123,11 +105,6 @@ export class GroupsDeleteUser extends jspb.Message {
   clearUser(): void;
   getUser(): core_types_pb.InputUser;
   setUser(value?: core_types_pb.InputUser): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsDeleteUser.AsObject;
@@ -143,7 +120,6 @@ export namespace GroupsDeleteUser {
   export type AsObject = {
     groupid?: string,
     user: core_types_pb.InputUser.AsObject,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -152,11 +128,6 @@ export class GroupsGetFull extends jspb.Message {
   clearGroupid(): void;
   getGroupid(): string | undefined;
   setGroupid(value: string): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsGetFull.AsObject;
@@ -171,7 +142,6 @@ export class GroupsGetFull extends jspb.Message {
 export namespace GroupsGetFull {
   export type AsObject = {
     groupid?: string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -185,11 +155,6 @@ export class GroupsToggleAdmins extends jspb.Message {
   clearAdminenabled(): void;
   getAdminenabled(): boolean | undefined;
   setAdminenabled(value: boolean): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsToggleAdmins.AsObject;
@@ -205,7 +170,6 @@ export namespace GroupsToggleAdmins {
   export type AsObject = {
     groupid?: string,
     adminenabled?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -225,11 +189,6 @@ export class GroupsUpdateAdmin extends jspb.Message {
   getAdmin(): boolean | undefined;
   setAdmin(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsUpdateAdmin.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsUpdateAdmin): GroupsUpdateAdmin.AsObject;
@@ -245,7 +204,6 @@ export namespace GroupsUpdateAdmin {
     groupid?: string,
     user: core_types_pb.InputUser.AsObject,
     admin?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -265,11 +223,6 @@ export class GroupsUploadPhoto extends jspb.Message {
   getReturnobject(): boolean | undefined;
   setReturnobject(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsUploadPhoto.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsUploadPhoto): GroupsUploadPhoto.AsObject;
@@ -285,7 +238,6 @@ export namespace GroupsUploadPhoto {
     groupid?: string,
     file: core_types_pb.InputFile.AsObject,
     returnobject?: boolean,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -299,11 +251,6 @@ export class GroupsRemovePhoto extends jspb.Message {
   clearPhotoid(): void;
   getPhotoid(): string | undefined;
   setPhotoid(value: string): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsRemovePhoto.AsObject;
@@ -319,7 +266,6 @@ export namespace GroupsRemovePhoto {
   export type AsObject = {
     groupid?: string,
     photoid?: string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 
@@ -333,11 +279,6 @@ export class GroupsUpdatePhoto extends jspb.Message {
   clearGroupid(): void;
   getGroupid(): string | undefined;
   setGroupid(value: string): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): core_types_pb.InputTeam | undefined;
-  setTeam(value?: core_types_pb.InputTeam): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsUpdatePhoto.AsObject;
@@ -353,7 +294,6 @@ export namespace GroupsUpdatePhoto {
   export type AsObject = {
     photoid?: string,
     groupid?: string,
-    team?: core_types_pb.InputTeam.AsObject,
   }
 }
 

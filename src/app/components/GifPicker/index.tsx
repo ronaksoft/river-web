@@ -18,7 +18,6 @@ import CachedPhoto from "../CachedPhoto";
 import {InputDocument, InputFileLocation} from "../../services/sdk/messages/core.types_pb";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import {findIndex} from 'lodash';
 import FileDownloadProgress from "../FileDownloadProgress";
 import SettingsConfigManager from "../../services/settingsConfigManager";
 import {Loading} from "../Loading";
@@ -70,7 +69,7 @@ class GifPicker extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {list, keyword, moreAnchorEl, moreAnchorPos, moreIndex, loading} = this.state;
+        const {list, keyword, moreAnchorEl, moreAnchorPos, loading} = this.state;
         return (
             <div className="gif-picker">
                 <div className="gif-search">
@@ -102,7 +101,7 @@ class GifPicker extends React.Component<IProps, IState> {
                     >
                         <div className="slider" style={this.getHeight()}>
                             {list.map((item, index) => {
-                                return <div key={index} className="gif-item"
+                                return <div key={item.id} className="gif-item"
                                             onContextMenu={this.gifContextMenuHandler(index)}
                                             onClick={this.gifClickHandler(index)}>
                                     <div className="more">
@@ -125,7 +124,7 @@ class GifPicker extends React.Component<IProps, IState> {
                         paper: 'kk-context-menu-paper'
                     }}
                 >
-                    <MenuItem onClick={this.moreCmdHandler('remove', moreIndex)}
+                    <MenuItem onClick={this.moreCmdHandler('remove')}
                               className="context-item">{i18n.t('general.remove')}</MenuItem>
                 </Menu>
             </div>
@@ -256,9 +255,9 @@ class GifPicker extends React.Component<IProps, IState> {
         });
     }
 
-    private moreCmdHandler = (cmd: string, index: number) => () => {
-        const {list} = this.state;
-        const item = list[index];
+    private moreCmdHandler = (cmd: string) => () => {
+        const {list, moreIndex} = this.state;
+        const item = list[moreIndex];
         this.moreCloseHandler();
         if (!item) {
             return;
@@ -270,9 +269,8 @@ class GifPicker extends React.Component<IProps, IState> {
                 inputDocument.setClusterid(item.doc.clusterid || 0);
                 inputDocument.setAccesshash(item.doc.accesshash || '0');
                 this.gifRepo.remove(inputDocument);
-                const idx = findIndex(list, {id: item.id || '0'});
-                if (idx > -1) {
-                    list.splice(idx, 1);
+                if (moreIndex > -1) {
+                    list.splice(moreIndex, 1);
                     this.setState({
                         list,
                     });
