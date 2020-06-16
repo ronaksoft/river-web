@@ -1,3 +1,6 @@
+## 0.33.3
+* Know bugs fixed
+
 ## 0.33.2
 * Know bugs fixed
 

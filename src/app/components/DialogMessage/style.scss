@@ -207,17 +207,19 @@ a.dialog-a {
       .preview-icon {
         display: inline-block;
         font-size: 14px;
-        margin: 0 4px 3px 0;
+        margin: 0 4px 0 0;
         vertical-align: bottom;
+        transform: translateY(-1px);
 
         &.gif {
-          transform: translateY(-1px) scale(2.6);
-          margin-left: 8px;
+          margin-left: 4px;
+          transform: scale(2.6);
         }
       }
 
       .preview-message {
-        display: block;
+        display: inline-flex;
+        align-items: center;
         width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -357,10 +359,10 @@ html[direction="rtl"] {
 
     .preview {
       .preview-icon {
-        margin: 0 0 3px 4px;
+        margin: 0 0 0 4px;
 
         &.gif {
-          margin-right: 8px;
+          margin-right: 4px;
         }
       }
 
