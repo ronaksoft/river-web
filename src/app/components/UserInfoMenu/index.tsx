@@ -94,6 +94,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private callerId: number = UniqueId.getRandomId();
+    private me: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -124,6 +125,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
         // Broadcaster singleton
         this.broadcaster = Broadcaster.getInstance();
+
+        this.me = Boolean(props.peer && props.peer.getId() === this.apiManager.getConnInfo().UserID);
     }
 
     public componentDidMount() {
@@ -135,6 +138,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         if (this.state.peer === newProps.peer) {
             return;
         }
+        this.me = Boolean(newProps.peer && newProps.peer.getId() === this.apiManager.getConnInfo().UserID);
         this.setState({
             peer: newProps.peer,
         }, () => {
@@ -181,8 +185,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     <div className="line">
                                         {!edit && <div className="form-control">
                                             <label>{i18n.t('general.first_name')}</label>
-                                            <div className="inner">{user && user.official &&
-                                            <VerifiedUserRounded style={{color: '#27AE60'}}/>}{user.firstname}</div>
+                                            <div className="inner">{user.firstname}{user && user.official &&
+                                            <VerifiedUserRounded style={{color: '#27AE60'}}/>}</div>
                                             {isInContact && <div className="action">
                                                 <IconButton
                                                     onClick={this.onEditHandler}
@@ -232,11 +236,9 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     {Boolean(edit || (isInContact && user && (user.phone || '').length > 0)) &&
                                     <div className="line">
                                         {!edit && isInContact && user && (user.phone || '').length > 0 &&
-                                        <div className="line">
-                                            <div className="form-control">
-                                                <label>{i18n.t('general.phone')}</label>
-                                                <div className="inner">{user.phone}</div>
-                                            </div>
+                                        <div className="form-control">
+                                            <label>{i18n.t('general.phone')}</label>
+                                            <div className="inner">{user.phone}</div>
                                         </div>}
                                         {Boolean(edit && !isInContact) &&
                                         <TextField
@@ -268,12 +270,13 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <CheckRounded/>
                                         </div>
                                     </div>}
-                                    {Boolean(!isInContact && !edit) &&
+                                    {Boolean(!this.me && !isInContact && !edit) &&
                                     <div className="add-as-contact" onClick={this.addAsContactHandler}>
                                         <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                                     </div>}
-                                    {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
-                                                                       onClick={this.blockUserHandler(user)}>
+                                    {Boolean(!this.me && !edit && user) &&
+                                    <Button key="block" color="secondary" fullWidth={true}
+                                            onClick={this.blockUserHandler(user)}>
                                         {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
                                     {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
                                     <Button color="secondary" fullWidth={true}

@@ -1,3 +1,6 @@
+## 0.33.4
+* Bug fixes and performance improvements
+
 ## 0.33.3
 * Know bugs fixed
 

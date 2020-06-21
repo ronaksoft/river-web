@@ -290,7 +290,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {group && <React.Fragment>
-                                    {isAdmin && <div className="kk-card notify-settings">
+                                    {Boolean(group && group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) &&
+                                    <div className="kk-card notify-settings">
                                         <div className="label">{i18n.t('peer_info.all_member_admin')}</div>
                                         <div className="value switch">
                                             <Switch

@@ -323,7 +323,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 <div className="left-content" onMouseEnter={this.contentMouseEnterHandler}
                      onMouseLeave={this.contentMouseLeaveHandler}>
                     {this.connectionStatus()}
-                    {this.leftMenuRender()}
+                    {this.getContent()}
                 </div>
                 {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
                                            selected={this.state.leftMenu}/>}
@@ -338,23 +338,25 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         );
     }
 
-    private leftMenuRender = () => {
+    private getContent() {
         const {leftMenu} = this.state;
-        if (leftMenu === 'settings') {
-            return (<SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
-                                  onUpdateMessages={this.props.onUpdateMessages}
-                                  onClose={this.props.onSettingsClose}
-                                  onAction={this.props.onSettingsAction}
-                                  onError={this.props.onError}
-                                  onReloadDialog={this.props.onReloadDialog}
-                                  onSubPlaceChange={this.settingsSubPlaceChangeHandler}
-            />);
-        } else if (leftMenu === 'contacts') {
-            return (<ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}/>);
-        } else {
-            return (<Dialog key="dialog-menu" ref={this.dialogRefHandler} cancelIsTyping={this.props.cancelIsTyping}
-                            onContextMenu={this.props.onContextMenu} onDrop={this.props.onDrop}/>);
-        }
+        return <div className={'left-content-inner ' + leftMenu}>
+            <Dialog key="dialog-menu" ref={this.dialogRefHandler} cancelIsTyping={this.props.cancelIsTyping}
+                    onContextMenu={this.props.onContextMenu} onDrop={this.props.onDrop}/>
+            <div className="left-content-overlay">
+                {leftMenu === 'settings' &&
+                <SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
+                              onUpdateMessages={this.props.onUpdateMessages}
+                              onClose={this.props.onSettingsClose}
+                              onAction={this.props.onSettingsAction}
+                              onError={this.props.onError}
+                              onReloadDialog={this.props.onReloadDialog}
+                              onSubPlaceChange={this.settingsSubPlaceChangeHandler}
+                />}
+                {leftMenu === 'contacts' && <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler}
+                                                          onError={this.props.onError}/>}
+            </div>
+        </div>;
     }
 
     private dialogRefHandler = (ref: any) => {

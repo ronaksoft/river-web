@@ -69,6 +69,7 @@ class UserDialog extends React.Component<IProps, IState> {
     private documentViewerService: DocumentViewerService;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private me: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -115,6 +116,7 @@ class UserDialog extends React.Component<IProps, IState> {
         if (this.state.peer === peer) {
             return;
         }
+        this.me = Boolean(peer.getId() === this.apiManager.getConnInfo().UserID);
         this.setState({
             edit: false,
             firstname: '',
@@ -156,8 +158,8 @@ class UserDialog extends React.Component<IProps, IState> {
                         <div className="line">
                             {!edit && <div className="form-control">
                                 <label>{i18n.t('general.first_name')}</label>
-                                <div className="inner">{user && user.official &&
-                                <VerifiedUserRounded style={{color: '#27AE60'}}/>}{user.firstname}</div>
+                                <div className="inner">{user.firstname}{user && user.official &&
+                                <VerifiedUserRounded style={{color: '#27AE60'}}/>}</div>
                                 {isInContact && <div className="action">
                                     <IconButton
                                         onClick={this.onEditHandler}
@@ -206,11 +208,10 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>}
                         {Boolean(edit || (isInContact && (user.phone || '').length > 0)) &&
                         <div className="line">
-                            {Boolean(isInContact && !edit && (user.phone || '').length > 0) && <div className="line">
-                                <div className="form-control">
-                                    <label>{i18n.t('general.phone')}</label>
-                                    <div className="inner">{user.phone}</div>
-                                </div>
+                            {Boolean(isInContact && !edit && (user.phone || '').length > 0) &&
+                            <div className="form-control">
+                                <label>{i18n.t('general.phone')}</label>
+                                <div className="inner">{user.phone}</div>
                             </div>}
                             {Boolean(edit && !isInContact) &&
                             <TextField
@@ -236,7 +237,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <div className="inner">{user.bio}</div>
                             </div>
                         </div>}
-                        {Boolean(!isInContact && !edit) &&
+                        {Boolean(!this.me && !isInContact && !edit) &&
                         <div className="add-as-contact" onClick={this.addAsContactHandler}>
                             <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                         </div>}
@@ -249,8 +250,8 @@ class UserDialog extends React.Component<IProps, IState> {
                         {Boolean(edit) && <div className="actions-bar cancel" onClick={this.cancelHandler}>
                             {i18n.t('general.cancel')}
                         </div>}
-                        {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
-                                                           onClick={this.blockUserHandler(user)}>
+                        {Boolean(!this.me && !edit && user) && <Button key="block" color="secondary" fullWidth={true}
+                                                                       onClick={this.blockUserHandler(user)}>
                             {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
                         {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
                         <Button key="start" color="secondary" fullWidth={true}
