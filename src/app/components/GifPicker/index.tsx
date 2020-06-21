@@ -305,6 +305,8 @@ class GifPicker extends React.Component<IProps, IState> {
             if (idx > -1) {
                 this.downloadList.splice(idx, 1);
             }
+        }).catch((err) => {
+            window.console.warn(err);
         });
     }
 

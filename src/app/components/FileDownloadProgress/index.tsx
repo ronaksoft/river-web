@@ -127,7 +127,8 @@ class FileDownloadProgress extends React.PureComponent<IProps, IState> {
     }
 
     /* Download file handler */
-    private downloadFileHandler = () => {
+    private downloadFileHandler = (e: any) => {
+        e.stopPropagation();
         if (this.props.onAction) {
             this.props.onAction('download');
             this.setState({
@@ -171,9 +172,9 @@ class FileDownloadProgress extends React.PureComponent<IProps, IState> {
             return;
         }
         if (loaded <= 0) {
-            this.mediaSizeRef.innerText = `${getHumanReadableSize(fileSize)}`;
+            this.mediaSizeRef.innerHTML = `<div class="media-size-inner">${getHumanReadableSize(fileSize)}</div>`;
         } else {
-            this.mediaSizeRef.innerText = `${getHumanReadableSize(loaded)} / ${getHumanReadableSize(fileSize)}`;
+            this.mediaSizeRef.innerHTML = `<div class="media-size-inner">${getHumanReadableSize(loaded)}</div><div class="media-size-inner">${getHumanReadableSize(fileSize)}</div>`;
         }
     }
 

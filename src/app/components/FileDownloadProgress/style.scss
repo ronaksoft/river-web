@@ -10,7 +10,7 @@
 .file-download-progress-container {
   .media-action {
     position: absolute;
-    top: 50%;
+    top: 40%;
     left: 50%;
     height: 36px;
     width: 36px;
@@ -62,17 +62,19 @@
 
   .media-size {
     position: absolute;
-    top: calc(50% + 30px);
+    top: calc(40% + 40px);
     left: 50%;
-    height: 16px;
-    line-height: 16px;
-    font-size: 12px;
     background-color: rgba(0, 0, 0, 0.32);
     padding: 1px 4px 0;
     border-radius: 4px;
-    white-space: nowrap;
     color: var(--white);
     transform: translate(-50%, -50%);
     z-index: 920;
+
+    .media-size-inner {
+      line-height: 14px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
   }
 }

@@ -243,7 +243,6 @@ export default class GifRepo {
     }
 
     private setHash(hash: number) {
-        window.console.log(hash);
         localStorage.setItem(C_LOCALSTORAGE.GifHash, String(hash));
     }
 }
