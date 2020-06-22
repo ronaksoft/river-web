@@ -182,6 +182,7 @@ class Uploader extends React.Component<IProps, IState> {
         inputItems.forEach((item) => {
             item.ready = false;
         });
+        window.console.log(options.accept);
         this.setState({
             accept: options.accept || undefined,
             dialogOpen: true,

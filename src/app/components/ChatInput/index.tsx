@@ -1930,10 +1930,10 @@ class ChatInput extends React.Component<IProps, IState> {
             case 'media':
                 return 'image/png,image/jpeg,image/jpg,image/webp,image/gif,video/webm,video/mp4';
             case 'audio':
-                return "audio/mp4,audio/ogg,audio/mp3";
+                return 'audio/mp4,audio/ogg,audio/mp3';
             case 'file':
             default:
-                return '*';
+                return undefined;
         }
     }
 

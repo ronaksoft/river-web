@@ -3097,6 +3097,9 @@ class Chat extends React.Component<IProps, IState> {
                 options = this.chatInputRef.getUploaderOptions();
             }
             options.isFile = files.some((o) => getUploaderInput(o.type) === 'file');
+            if (!options.isFile) {
+                options.accept = 'image/png,image/jpeg,image/jpg,image/webp,image/gif,video/webm,video/mp4,audio/mp4,audio/ogg,audio/mp3';
+            }
             this.uploaderRef.openDialog(this.peer, files, options);
         }
     }

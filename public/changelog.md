@@ -1,3 +1,6 @@
+## 0.33.5
+* Drag and drop bug fixed
+
 ## 0.33.4
 * Bug fixes and performance improvements
 
