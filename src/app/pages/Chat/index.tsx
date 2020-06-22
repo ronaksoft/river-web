@@ -4285,7 +4285,9 @@ class Chat extends React.Component<IProps, IState> {
 
         }
 
-        this.pushMessage(message);
+        if (peer.getId() === this.selectedDialogId) {
+            this.pushMessage(message);
+        }
 
         const sendDocument = (sha256FileLocation: FileLocation.AsObject | null) => {
             const inputMediaUploadedDocument = new InputMediaUploadedDocument();
