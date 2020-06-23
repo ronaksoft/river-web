@@ -1,3 +1,9 @@
+## 0.33.6
+* Theme updated
+* Contacts updated
+* Icons updated
+* Bug fixes and performance improvements
+
 ## 0.33.5
 * Drag and drop bug fixed
 

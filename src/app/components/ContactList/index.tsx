@@ -15,7 +15,7 @@ import TextField from '@material-ui/core/TextField';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
-import {MoreVert, PersonRounded} from '@material-ui/icons';
+import {MoreVert, PersonRounded, SearchRounded} from '@material-ui/icons';
 import XRegExp from 'xregexp';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
@@ -34,6 +34,7 @@ import SearchRepo from "../../repository/search";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
+import {InputAdornment} from "@material-ui/core";
 
 interface IProps {
     className?: string;
@@ -216,12 +217,21 @@ class ContactList extends React.Component<IProps, IState> {
                         classes={{}}
                         className="contact-chips-container"
                     />}
-                    {Boolean(this.props.mode === 'link') && <TextField
-                        label={i18n.t('contact.search')}
+                    {Boolean(this.props.mode === 'link') &&
+                    <TextField
+                        placeholder={i18n.t('dialog.search')}
                         fullWidth={true}
                         inputProps={{
                             maxLength: 32,
                         }}
+                        InputProps={{
+                            startAdornment:
+                                <InputAdornment position="start" className="dialog-adornment">
+                                    <SearchRounded/>
+                                </InputAdornment>
+                        }}
+                        variant="outlined"
+                        margin="dense"
                         onChange={this.searchChangeHandler}
                     />}
                 </div>
@@ -539,7 +549,7 @@ class ContactList extends React.Component<IProps, IState> {
         if (this.state.contacts.length > index) {
             const contact = this.state.contacts[index];
             if (contact.category) {
-                return 40;
+                return 20;
             } else {
                 return 64;
             }

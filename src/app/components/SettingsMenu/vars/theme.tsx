@@ -241,7 +241,7 @@ export const bgPics = [{
 }, {
     id: '8',
     src: bg8
-},];
+}];
 
 export const storageItems = [{
     className: 'bold',

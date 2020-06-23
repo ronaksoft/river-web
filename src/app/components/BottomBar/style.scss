@@ -46,13 +46,23 @@
       font-size: 24px;
     }
 
-    &.active, &:hover {
+    &:hover {
       .title {
-        color: var(--dark);
+        color: var(--river-dark);
       }
 
       svg {
-        fill: var(--dark);
+        fill: var(--river-dark);
+      }
+    }
+
+    &.active {
+      .title {
+        color: var(--river);
+      }
+
+      svg {
+        fill: var(--river);
       }
     }
   }

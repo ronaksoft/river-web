@@ -27,6 +27,7 @@ import FileRepo from "../file";
 import {Int64BE} from "int64-buffer";
 // @ts-ignore
 import CRC from 'js-crc/build/crc.min';
+import {IGifUse} from "../../services/sdk/updateManager";
 
 export const getGifsCrc = (list: IGif[]) => {
     const ids = list.map((item) => {
@@ -120,6 +121,24 @@ export default class GifRepo {
 
     public createMany(gifs: IGif[]) {
         return this.db.gifs.bulkPut(gifs);
+    }
+
+    public updateGifUseBulk(list: IGifUse[]) {
+        const timeList: number[] = [];
+        const ids: string[] = [];
+        list.forEach((o) => {
+            timeList[o.doc.id || ''] = o.time;
+            ids.push(o.doc.id || '');
+        });
+        return this.db.gifs.where('id').anyOf(ids).toArray().then((result) => {
+            const ls: IGif[] = result.map((item) => {
+                if (timeList[item.id || 0]) {
+                    item.last_used = timeList[item.id || 0];
+                }
+                return item;
+            });
+            return this.createMany(ls);
+        });
     }
 
     public download(inputFile: InputFileLocation, md5: string, size: number, mimeType: string) {

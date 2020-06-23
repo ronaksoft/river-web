@@ -40,7 +40,7 @@ import {base64ToU8a} from '../fileManager/http/utils';
 import {IDialog} from "../../../repository/dialog/interface";
 import {IMessage} from "../../../repository/message/interface";
 import {IUser} from "../../../repository/user/interface";
-import {C_MESSAGE_ACTION} from "../../../repository/message/consts";
+import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../../repository/message/consts";
 import {getMessageTitle} from "../../../components/Dialog/utils";
 import {kMerge} from "../../utilities/kDash";
 import APIManager from "../index";
@@ -54,6 +54,8 @@ import FileRepo from "../../../repository/file";
 import CachedFileService from "../../cachedFileService";
 import {IFileMap} from "../../../repository/file/interface";
 import TopPeerRepo, {ITopPeerWithType, TopPeerType} from "../../../repository/topPeer";
+import {Document, MediaDocument} from "../messages/chat.messages.medias_pb";
+import GifRepo from "../../../repository/gif";
 
 const C_MAX_UPDATE_DIFF = 5000;
 const C_DIFF_AMOUNT = 100;
@@ -79,6 +81,11 @@ export interface IMessageDBRemoved {
     ids: number[];
     listPeer: { [key: string]: number[] };
     peerIds: string[];
+}
+
+export interface IGifUse {
+    doc: Document.AsObject;
+    time: number;
 }
 
 interface IUpdateContainer extends UpdateContainer.AsObject {
@@ -109,6 +116,7 @@ interface ITransactionPayload {
     dialogs: { [key: string]: IDialog };
     editedMessageIds: number[];
     flushDb: boolean;
+    gifs: IGifUse[];
     groups: { [key: string]: IGroup };
     incomingIds: { [key: string]: number[] };
     labelRanges: ILabelRange[];
@@ -120,9 +128,9 @@ interface ITransactionPayload {
     removedLabels: number[];
     removedMessages: { [key: string]: number[] };
     toCheckDialogIds: string[];
+    topPeers: ITopPeerWithType[];
     updateId: number;
     users: { [key: string]: IUser };
-    topPeers: ITopPeerWithType[];
 }
 
 export default class UpdateManager {
@@ -168,6 +176,7 @@ export default class UpdateManager {
     private labelRepo: LabelRepo | undefined;
     private fileRepo: FileRepo | undefined;
     private topPeerRepo: TopPeerRepo | undefined;
+    private gifRepo: GifRepo | undefined;
 
     // Cached File Service
     private cachedFileService: CachedFileService | undefined;
@@ -189,6 +198,7 @@ export default class UpdateManager {
             this.labelRepo = LabelRepo.getInstance();
             this.fileRepo = FileRepo.getInstance();
             this.topPeerRepo = TopPeerRepo.getInstance();
+            this.gifRepo = GifRepo.getInstance();
 
             // Initialize cached file service
             this.cachedFileService = CachedFileService.getInstance();
@@ -486,6 +496,7 @@ export default class UpdateManager {
             dialogs: {},
             editedMessageIds: [],
             flushDb: false,
+            gifs: [],
             groups: {},
             incomingIds: {},
             labelRanges: [],
@@ -616,6 +627,12 @@ export default class UpdateManager {
                     } else {
                         tp.type = TopPeerType.Search;
                         transaction.topPeers.push(tp);
+                    }
+                    if (message.messagetype === C_MESSAGE_TYPE.Gif) {
+                        transaction.gifs.push({
+                            doc: (message.mediadata as MediaDocument.AsObject).doc,
+                            time: message.createdon || 0,
+                        });
                     }
                 }
                 break;
@@ -1037,6 +1054,10 @@ export default class UpdateManager {
                     }
                     return keys;
                 }));
+            }
+            // Gif list
+            if (this.gifRepo && transaction.gifs.length > 0) {
+                promises.push(this.gifRepo.updateGifUseBulk(transaction.gifs));
             }
             // Top Peers
             if (this.topPeerRepo && transaction.topPeers.length > 0) {

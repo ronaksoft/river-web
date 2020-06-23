@@ -324,7 +324,7 @@ class SearchList extends React.Component<IProps, IState> {
             if (this.props.contactOnly) {
                 return null;
             } else {
-                return (<div style={style} key={index} className="category-item">{inputPeer.label}</div>);
+                return (<div style={style} key={index} className="category-item label">{inputPeer.label}</div>);
             }
         }
     }
@@ -507,7 +507,7 @@ class SearchList extends React.Component<IProps, IState> {
             return 64;
         } else if (inputPeer.mode === 'contact' && inputPeer.contact) {
             if (inputPeer.contact.category) {
-                return 40;
+                return 20;
             } else {
                 return 64;
             }

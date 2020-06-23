@@ -4,7 +4,6 @@ const isDev = require('electron-is-dev');
 const {download} = require('electron-dl');
 const contextMenu = require('electron-context-menu');
 const unusedFilename = require('unused-filename');
-const fs = require('fs');
 const Store = require('electron-store');
 const store = new Store();
 

@@ -8,9 +8,8 @@
 */
 
 import * as React from 'react';
-import {SettingsOutlined, ChatOutlined, AccountCircleOutlined} from "@material-ui/icons";
+import {PersonRounded, QuestionAnswerRounded, SettingsRounded} from "@material-ui/icons";
 import Badge from '@material-ui/core/Badge';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import i18n from '../../services/i18n';
 import {localize} from '../../services/utilities/localize';
 import {menuItems} from "../LeftMenu";
@@ -34,7 +33,7 @@ class BottomBar extends React.Component<IProps, IState> {
         };
     }
 
-    private items: Array<{badge?: boolean, icon: any, page: menuItems, title: string}>;
+    private items: Array<{ badge?: boolean, icon: any, page: menuItems, title: string }>;
 
     constructor(props: IProps) {
         super(props);
@@ -45,16 +44,16 @@ class BottomBar extends React.Component<IProps, IState> {
         };
 
         this.items = [{
-            icon: <AccountCircleOutlined/>,
+            icon: <PersonRounded/>,
             page: 'contacts',
             title: i18n.t('general.contacts'),
         }, {
             badge: true,
-            icon: <ChatOutlined/>,
+            icon: <QuestionAnswerRounded/>,
             page: 'chat',
             title: i18n.t('general.chats'),
         }, {
-            icon: <SettingsOutlined/>,
+            icon: <SettingsRounded/>,
             page: 'settings',
             title: i18n.t('general.settings'),
         }];
@@ -71,22 +70,13 @@ class BottomBar extends React.Component<IProps, IState> {
         return (
             <div className="chat-bottom-bar">
                 {this.items.map((item, index) => {
-                    return (
-                        <Tooltip
-                            key={index}
-                            title={item.title}
-                            placement="top"
-                            enterDelay={1000}
-                        >
-                            <div onClick={this.onClickHandler(item.page)}
-                               className={'a ' + (item.page === selected ? 'active' : '')}>
-
-                                {Boolean(item.badge) && <Badge color="primary" badgeContent={localize(unreadCounter)}
-                                                               invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
-                                {!Boolean(item.badge) && <span>{item.icon}</span>}
-                                <span className="title">{item.title}</span>
-                            </div>
-                        </Tooltip>);
+                    return (<div key={index} onClick={this.onClickHandler(item.page)}
+                                 className={'a ' + (item.page === selected ? 'active' : '')}>
+                        {Boolean(item.badge) && <Badge color="primary" badgeContent={localize(unreadCounter)}
+                                                       invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
+                        {!Boolean(item.badge) && <span>{item.icon}</span>}
+                        <span className="title">{item.title}</span>
+                    </div>);
                 })}
             </div>
         );

@@ -14,7 +14,7 @@ import {
     CheckRounded,
     CloseRounded,
     EditRounded,
-    KeyboardBackspaceRounded, VerifiedUserRounded,
+    KeyboardBackspaceRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
@@ -47,6 +47,7 @@ import PeerMedia from '../PeerMedia';
 import i18n from "../../services/i18n";
 import {notifyOptions} from "../../pages/Chat";
 import Broadcaster from "../../services/broadcaster";
+import {OfficialIcon} from "../SVG/official";
 
 import './style.scss';
 
@@ -186,7 +187,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         {!edit && <div className="form-control">
                                             <label>{i18n.t('general.first_name')}</label>
                                             <div className="inner">{user.firstname}{user && user.official &&
-                                            <VerifiedUserRounded style={{color: '#27AE60'}}/>}</div>
+                                            <OfficialIcon/>}</div>
                                             {isInContact && <div className="action">
                                                 <IconButton
                                                     onClick={this.onEditHandler}

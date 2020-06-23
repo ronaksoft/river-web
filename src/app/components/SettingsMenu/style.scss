@@ -1070,9 +1070,10 @@
       color: var(--light);
     }
 
-    .settings-switch-checked {
-      .settings-switch-thumb {
-        color: var(--river-light);
+    &.root-settings-switch-checked {
+      .settings-switch-track {
+        background-color: var(--river);
+        opacity: 0.9;
       }
     }
   }
@@ -1397,13 +1398,7 @@ html[theme="dark-blue"] {
   .settings-menu {
     .settings-switch {
       .settings-switch-thumb {
-        color: var(--grey);
-      }
-
-      .settings-switch-checked {
-        .settings-switch-thumb {
-          color: var(--river);
-        }
+        color: var(--light);
       }
     }
 

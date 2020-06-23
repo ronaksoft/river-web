@@ -70,6 +70,7 @@ interface IState {
     leftMenu: menuItems;
     overlayMode: number;
     shrunkMenu: boolean;
+    anchorFrom: 'chat' | 'settings';
 }
 
 class LeftMenu extends React.PureComponent<IProps, IState> {
@@ -102,6 +103,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         super(props);
 
         this.state = {
+            anchorFrom: 'chat',
             chatMoreAnchorEl: null,
             connectionStatus: false,
             connectionStatusHide: false,
@@ -353,8 +355,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                               onReloadDialog={this.props.onReloadDialog}
                               onSubPlaceChange={this.settingsSubPlaceChangeHandler}
                 />}
-                {leftMenu === 'contacts' && <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler}
-                                                          onError={this.props.onError}/>}
+                {leftMenu === 'contacts' &&
+                <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}
+                              onClose={this.contactsCloseHandler}/>}
             </div>
         </div>;
     }
@@ -428,7 +431,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
     }
 
-    private chatMoreActionHandler = (cmd: string | undefined) => (e?: any) => {
+    private chatMoreActionHandler = (cmd: string | undefined, anchor?: 'chat' | 'settings') => (e?: any) => {
         this.chatMoreCloseHandler();
         switch (cmd) {
             case 'new_group':
@@ -438,6 +441,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 break;
             case 'labels':
                 this.setState({
+                    anchorFrom: anchor || 'chat',
                     overlayMode: 2,
                     shrunkMenu: true,
                 });
@@ -462,6 +466,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private overlayCloseHandler = () => {
         this.setState({
+            leftMenu: this.state.anchorFrom,
             overlayMode: 0,
             shrunkMenu: false,
         });
@@ -538,9 +543,15 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             this.setState({
                 leftMenu: 'chat',
             }, () => {
-                this.chatMoreActionHandler('labels')();
+                this.chatMoreActionHandler('labels', 'settings')();
             });
         }
+    }
+
+    private contactsCloseHandler = () => {
+        this.setState({
+            leftMenu: 'chat',
+        });
     }
 }
 

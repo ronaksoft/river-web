@@ -125,7 +125,6 @@
         padding: 8px;
         font-size: 13px;
         text-align: left;
-        background-color: rgba(0, 0, 0, 0.1);
         border-bottom: 1px solid var(--light);
       }
 
@@ -227,7 +226,6 @@ html[theme="dark-night"] {
       .dialog-container {
         .search-label {
           color: var(--message-chat);
-          background-color: var(--dark-hover-light);
           border-color: var(--dark-low-op50);
         }
       }
@@ -269,7 +267,6 @@ html[theme="dark-blue"] {
       .dialog-container {
         .search-label {
           color: var(--message-chat);
-          background-color: var(--dark-hover-light);
           border-color: var(--dark-blue-low-op50);
         }
       }

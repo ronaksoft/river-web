@@ -11,10 +11,11 @@ import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import {GetUniqueColor, TextColors} from '../UserAvatar';
-import {VerifiedUserRounded, MemoryRounded} from '@material-ui/icons';
 import Broadcaster from '../../services/broadcaster';
 import i18n from '../../services/i18n';
 import {ThemeChanged} from "../SettingsMenu";
+import {BotIcon} from "../SVG/bot";
+import {OfficialIcon} from "../SVG/official";
 
 interface IProps {
     className?: string;
@@ -111,17 +112,17 @@ class UserName extends React.PureComponent<IProps, IState> {
         if (this.props.username === true) {
             return (
                 <span className={className} style={style} onClick={this.clickHandler}>
-                    {Boolean(noIcon !== true && user.isbot) && <MemoryRounded/>}
+                    {Boolean(noIcon !== true && user.isbot) && <BotIcon/>}
                     {(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}
-                    {Boolean(noIcon !== true && user.official) && <VerifiedUserRounded style={{color: '#27AE60'}}/>}
+                    {Boolean(noIcon !== true && user.official) && <OfficialIcon/>}
                 </span>
             );
         } else {
             return (
                 <span className={className} style={style} onClick={this.clickHandler}>
-                    {Boolean(noIcon !== true && user.isbot) && <MemoryRounded/>}
+                    {Boolean(noIcon !== true && user.isbot) && <BotIcon/>}
                     {(user.id) ? (onlyFirstName ? `${prefix}${user.firstname !== '' ? user.firstname : user.lastname}${postfix}` : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}
-                    {Boolean(noIcon !== true && user.official) && <VerifiedUserRounded style={{color: '#27AE60'}}/>}
+                    {Boolean(noIcon !== true && user.official) && <OfficialIcon/>}
                 </span>
             );
         }

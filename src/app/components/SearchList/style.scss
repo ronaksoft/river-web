@@ -164,13 +164,26 @@
       }
 
       .category-item {
-        color: var(--grey-low);
-        font-size: 16px;
-        line-height: 21px;
-        height: 37px;
+        color: var(--river);
+        font-size: 14px;
+        line-height: 16px;
+        font-weight: bold;
+        height: 20px;
         text-align: left;
-        padding: 8px 16px 8px;
-        border-bottom: 1px solid var(--light);
+        padding: 3px 16px 1px;
+        user-select: none;
+        background-color: var(--bg);
+
+
+        &.label {
+          font-size: 16px;
+          line-height: 21px;
+          font-weight: normal;
+          height: 37px;
+          padding: 8px 16px 8px;
+          background-color: var(--bg);
+          border-bottom: 1px solid var(--light);
+        }
       }
     }
   }
@@ -233,6 +246,7 @@ html[theme="dark-blue"] {
       .search-container {
         .category-item {
           border-color: var(--dark-low-op50);
+          background-color: var(--dark-high);
         }
 
         .search-item {
@@ -261,6 +275,7 @@ html[theme="dark-blue"] {
       .search-container {
         .category-item {
           border-color: var(--dark-blue-low-op50);
+          background-color: var(--dark-blue-low-op50);
         }
 
         .search-item {

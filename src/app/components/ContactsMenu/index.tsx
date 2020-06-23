@@ -10,7 +10,7 @@
 import * as React from 'react';
 import UserRepo from '../../repository/user';
 import TextField from '@material-ui/core/TextField/TextField';
-import {CheckRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
+import {CheckRounded, KeyboardBackspaceRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import APIManager from '../../services/sdk';
@@ -26,6 +26,7 @@ import './style.scss';
 
 interface IProps {
     id?: number;
+    onClose?: () => void;
     onError?: (text: string) => void;
 }
 
@@ -73,19 +74,22 @@ class ContactMenus extends React.Component<IProps, IState> {
         return (
             <div className="contacts">
                 <div className="menu-header">
+                    <IconButton
+                        onClick={this.props.onClose}
+                    >
+                        <KeyboardBackspaceRounded/>
+                    </IconButton>
                     <label>{i18n.t('contact.contacts')}</label>
-                    <span className="actions">
-                        <Tooltip
-                            title={i18n.t('contact.new_contact')}
-                            placement="bottom"
+                    <Tooltip
+                        title={i18n.t('contact.new_contact')}
+                        placement="bottom"
+                    >
+                        <IconButton
+                            onClick={this.newContactOpenHandler}
                         >
-                            <IconButton
-                                onClick={this.newContactOpenHandler}
-                            >
-                                <PersonAddRounded/>
-                            </IconButton>
-                        </Tooltip>
-                    </span>
+                            <PersonAddRounded/>
+                        </IconButton>
+                    </Tooltip>
                 </div>
                 <div className="contact-box">
                     <ContactList ref={this.contactListRefHandler} className="contacts-menu" mode="link"

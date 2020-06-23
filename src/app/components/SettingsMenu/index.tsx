@@ -533,6 +533,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 color="default"
                                                 onChange={this.nightModeHandler}
                                                 classes={this.switchClasses}
+                                                className={Boolean(this.state.selectedTheme !== 'light') ? 'root-settings-switch-checked' : ''}
                                             />
                                         </div>
                                     </div>
@@ -991,16 +992,18 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <div>
                                         {storageItems.map((item) => {
                                             if (item.type === 'item') {
+                                                const checked = Boolean(this.state.storageValues[item.id] || false);
                                                 return (
                                                     <div key={item.id}
                                                          className={'switch-item ' + (item.className || '')}>
                                                         <div className="switch-label">{i18n.t(item.title)}</div>
                                                         <div className="switch">
                                                             <Switch
-                                                                checked={Boolean(this.state.storageValues[item.id] || false)}
+                                                                checked={checked}
                                                                 color="default"
                                                                 onChange={this.storageToggleHandler(item.id)}
                                                                 classes={this.switchClasses}
+                                                                className={checked ? 'root-settings-switch-checked' : ''}
                                                             />
                                                         </div>
                                                     </div>
@@ -1008,7 +1011,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             } else if (item.type === 'header') {
                                                 return (
                                                     <div key={item.id}
-                                                         className={'sub-page-header ' + (item.className || '')}
+                                                         className={'sub-page-header-alt ' + (item.className || '')}
                                                     >{i18n.t(item.title)}</div>
                                                 );
                                             } else {
@@ -1069,6 +1072,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             color="default"
                                             onChange={this.notificationMuteCountToggleHandler}
                                             classes={this.switchClasses}
+                                            className={this.state.notificationValues.count_muted ? 'root-settings-switch-checked' : ''}
                                         />
                                     </div>
                                 </div>

@@ -240,8 +240,12 @@ export default class CachedFileService {
                     if (fileRes) {
                         if (blurRadius && fileRes.data.size > 0) {
                             this.getBlurredImage(id, fileRes.data, blurRadius).then((blurredBlob) => {
-                                this.files[id].blurSrc[blurRadius] = URL.createObjectURL(blurredBlob);
-                                resolve(this.files[id].blurSrc[blurRadius]);
+                                if (this.files[id]) {
+                                    this.files[id].blurSrc[blurRadius] = URL.createObjectURL(blurredBlob);
+                                    resolve(this.files[id].blurSrc[blurRadius]);
+                                } else {
+                                    reject();
+                                }
                             });
                         } else {
                             this.files[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);

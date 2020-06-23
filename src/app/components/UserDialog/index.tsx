@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
-import {AddRounded, CheckRounded, EditRounded, SendRounded, VerifiedUserRounded} from '@material-ui/icons';
+import {AddRounded, CheckRounded, EditRounded, SendRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
     InputPeer,
@@ -41,6 +41,7 @@ import i18n from '../../services/i18n';
 import {notifyOptions} from "../../pages/Chat";
 
 import './style.scss';
+import {OfficialIcon} from "../SVG/official";
 
 interface IProps {
     onClose?: () => void;
@@ -159,7 +160,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             {!edit && <div className="form-control">
                                 <label>{i18n.t('general.first_name')}</label>
                                 <div className="inner">{user.firstname}{user && user.official &&
-                                <VerifiedUserRounded style={{color: '#27AE60'}}/>}</div>
+                                <OfficialIcon/>}</div>
                                 {isInContact && <div className="action">
                                     <IconButton
                                         onClick={this.onEditHandler}

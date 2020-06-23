@@ -177,8 +177,10 @@ export const getContentSize = (message: IMessage): null | { height: number, widt
     messageMediaDocument.doc.attributesList.forEach((attr, index) => {
         if (attr.type === DocumentAttributeType.ATTRIBUTETYPEPHOTO && message.attributes) {
             const docAttr: DocumentAttributePhoto.AsObject = message.attributes[index];
-            info.height = docAttr.height || 0;
-            info.width = docAttr.width || 0;
+            if (docAttr) {
+                info.height = docAttr.height || 0;
+                info.width = docAttr.width || 0;
+            }
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEVIDEO && message.attributes) {
             const docAttr: DocumentAttributeVideo.AsObject = message.attributes[index];
             info.height = docAttr.height || 0;
