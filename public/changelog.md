@@ -1,5 +1,6 @@
 ## 0.33.7
 * Database updated
+* Use `Esc` to close current conversation
 
 ## 0.33.6
 * Theme updated

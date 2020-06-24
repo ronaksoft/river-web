@@ -225,6 +225,7 @@ interface IProps {
     userId?: string;
     onFocus?: () => void;
     onGifSelect: (item: IGif) => void;
+    onChatClose: () => void;
 }
 
 interface IState {
@@ -1019,8 +1020,12 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private inputKeyUpHandler = (e: any) => {
-        const {previewMessage, previewMessageMode} = this.state;
         const textVal = e.target.value;
+        if (e.key === 'Escape' && textVal.length === 0 && this.props.onChatClose) {
+            this.props.onChatClose();
+            return;
+        }
+        const {previewMessage, previewMessageMode} = this.state;
         this.rtlDetectorThrottle(textVal);
         let cancelTyping = false;
         const droppedMessage = cloneDeep(this.state.droppedMessage);

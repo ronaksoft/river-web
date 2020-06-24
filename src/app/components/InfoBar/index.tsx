@@ -10,15 +10,13 @@
 import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import i18n from "../../services/i18n";
-import {InfoOutlined, KeyboardArrowLeftRounded, CancelOutlined} from "@material-ui/icons";
+import {InfoOutlined, KeyboardArrowLeftRounded, CancelOutlined, SearchRounded} from "@material-ui/icons";
 import StatusBar from "../StatusBar";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import {IconButton, Tooltip} from "@material-ui/core";
 import {omitBy, isNil} from "lodash";
+import UserRepo from "../../repository/user";
 
 import './style.scss';
-import UserRepo from "../../repository/user";
 
 interface IProps {
     onBack: () => void;
@@ -29,7 +27,6 @@ interface IProps {
 }
 
 interface IState {
-    moreInfoAnchorEl: any;
     peer: InputPeer | null;
     isConnecting: boolean;
     isOnline: boolean;
@@ -47,7 +44,6 @@ class InfoBar extends React.Component<IProps, IState> {
             isConnecting: false,
             isOnline: false,
             isUpdating: false,
-            moreInfoAnchorEl: null,
             peer: null,
             selectedDialogId: 'null',
         };
@@ -72,14 +68,7 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {moreInfoAnchorEl, selectedDialogId, isConnecting, isOnline, isUpdating, peer} = this.state;
-        const messageMoreMenuItem = [{
-            cmd: 'info',
-            title: (peer && peer.getType() === PeerType.PEERGROUP) ? i18n.t('chat.group_info') : i18n.t('chat.contact_info'),
-        }, {
-            cmd: 'search',
-            title: i18n.t('chat.search_messages'),
-        }];
+        const {selectedDialogId, isConnecting, isOnline, isUpdating, peer} = this.state;
         return (
             <div className="info-bar">
                 {this.props.isMobileView ?
@@ -100,47 +89,23 @@ class InfoBar extends React.Component<IProps, IState> {
                            currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
-                    <IconButton
-                        onClick={this.messageMoreOpenHandler}
-                    ><InfoOutlined/></IconButton>
-                    <Menu
-                        anchorEl={moreInfoAnchorEl}
-                        open={Boolean(moreInfoAnchorEl)}
-                        onClose={this.messageMoreCloseHandler}
-                        className="kk-context-menu darker"
-                        classes={{
-                            paper: 'kk-context-menu-paper'
-                        }}
+                    <Tooltip
+                        title={i18n.t('chat.search_messages')}
                     >
-                        {messageMoreMenuItem.map((item, key) => {
-                            return (
-                                <MenuItem key={key}
-                                          onClick={this.actionHandler(item.cmd)}
-                                          className="context-item"
-                                >{item.title}</MenuItem>
-                            );
-                        })}
-                    </Menu>
+                        <IconButton
+                            onClick={this.props.onAction('search')}
+                        ><SearchRounded/></IconButton>
+                    </Tooltip>
+                    <Tooltip
+                        title={(peer && peer.getType() === PeerType.PEERGROUP) ? i18n.t('chat.group_info') : i18n.t('chat.contact_info')}
+                    >
+                        <IconButton
+                            onClick={this.props.onAction('info')}
+                        ><InfoOutlined/></IconButton>
+                    </Tooltip>
                 </div>
             </div>
         );
-    }
-
-    private messageMoreOpenHandler = (event: any) => {
-        this.setState({
-            moreInfoAnchorEl: event.currentTarget,
-        });
-    }
-
-    private messageMoreCloseHandler = () => {
-        this.setState({
-            moreInfoAnchorEl: null,
-        });
-    }
-
-    private actionHandler = (cmd: string) => (e: any) => {
-        this.messageMoreCloseHandler();
-        this.props.onAction(cmd)(e);
     }
 }
 

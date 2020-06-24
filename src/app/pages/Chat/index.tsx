@@ -659,6 +659,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onBotButtonAction={this.messageBotButtonActionHandler}
                                        onMessageDrop={this.chatInputMessageDropHandler}
                                        onGifSelect={this.chatInputGifSelectHandler}
+                                       onChatClose={this.closePeerHandler}
                             />
                         </div>}
                         {this.selectedDialogId === 'null' && <div className="column-center">
