@@ -121,7 +121,7 @@ const C_MAX_DOWNLOAD_QUEUE_SIZE = 4;
 const C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE = 20;
 const C_MAX_DOWNLOAD_PIPELINE_SIZE = 8;
 const C_DOWNLOAD_CHUNK_SIZE = 256 * 1024;
-const C_MAX_RETRIES = 10;
+const C_MAX_RETRIES = 63;
 const C_USER_THROTTLE = true;
 
 export default class FileManager {

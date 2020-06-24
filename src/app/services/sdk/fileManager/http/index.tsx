@@ -34,6 +34,7 @@ interface IMessageListener {
 
 const C_TIMEOUT = 60000;
 const C_TIMEOUT_SAMPLE = 10;
+const C_TIMEOUT_MIN = 5000;
 
 export default class Http {
     private worker: Worker;
@@ -290,8 +291,8 @@ export default class Http {
     }
 
     private setTimeout(time: number) {
-        if (time < 2000) {
-            time = 2000;
+        if (time < C_TIMEOUT_MIN) {
+            time = C_TIMEOUT_MIN;
         }
         this.executionTimes.push(time);
         if (this.executionTimes.length > C_TIMEOUT_SAMPLE) {
