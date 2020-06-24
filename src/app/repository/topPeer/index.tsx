@@ -88,7 +88,7 @@ export default class TopPeerRepo {
         return this.createMany(type, topPeers);
     }
 
-    public get(type: TopPeerType, id: string): Promise<ITopPeer> {
+    public get(type: TopPeerType, id: string): Promise<ITopPeer | undefined> {
         return this.getDbByType(type).get(id);
     }
 

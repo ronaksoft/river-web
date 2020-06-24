@@ -64,7 +64,7 @@ export default class LabelRepo {
         return this.db.labels.bulkPut(labels);
     }
 
-    public get(id: number): Promise<ILabel> {
+    public get(id: number): Promise<ILabel | undefined> {
         const label = this.dbService.getLabel(id);
         if (label) {
             return Promise.resolve(label);

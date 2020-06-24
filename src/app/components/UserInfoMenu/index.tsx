@@ -370,7 +370,9 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
         if (data) {
             this.userRepo.get(peer.getId() || '').then((res) => {
-                fn(res);
+                if (res) {
+                    fn(res);
+                }
             });
         } else {
             this.userRepo.getFull(peer.getId() || '', fn, this.callerId).then((res) => {
@@ -379,9 +381,11 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         }
 
         this.dialogRepo.get(peer.getId() || '').then((dialog) => {
-            this.setState({
-                dialog,
-            });
+            if (dialog) {
+                this.setState({
+                    dialog,
+                });
+            }
         });
     }
 

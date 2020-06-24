@@ -1332,8 +1332,10 @@ class DocumentViewer extends React.Component<IProps, IState> {
             this.hasAccess = (doc.peer.getId() === this.userId);
         } else if (doc.peer.getType() === PeerType.PEERGROUP) {
             this.groupRepo.get(doc.peer.getId() || '').then((group) => {
-                this.hasAccess = hasAuthority(group, true);
-                this.forceUpdate();
+                if (group) {
+                    this.hasAccess = hasAuthority(group, true);
+                    this.forceUpdate();
+                }
             }).catch(() => {
                 this.hasAccess = false;
             });

@@ -1204,7 +1204,9 @@ export default class UpdateManager {
             }
         });
         if (myMessageList.length > 0) {
-            this.modifyPendingMessages(randomMessageIds, myMessageList);
+            setTimeout(() => {
+                this.modifyPendingMessages(randomMessageIds, myMessageList);
+            }, 511);
         }
         if (messageList.length > 0 && this.messageRepo) {
             return this.messageRepo.importBulk(messageList).then(() => {
@@ -1238,13 +1240,10 @@ export default class UpdateManager {
             });
             messageRepo.getPendingByIds(randomMessageIds).then((pendingArr) => {
                 messageRepo.removePendingByIds(randomMessageIds);
+                messageRepo.removeManyByRandomId(randomMessageIds);
                 if (pendingArr) {
-                    const toRemoveIds: number[] = [];
                     const toModifyTempList: IModifyTempFile[] = [];
                     pendingArr.forEach((pending) => {
-                        if (pending.message_id < 0) {
-                            toRemoveIds.push(pending.message_id);
-                        }
                         if (pending.file_ids && pending.file_ids.length > 0 && messageMap.hasOwnProperty(pending.id)) {
                             toModifyTempList.push({
                                 fileIds: pending.file_ids,
@@ -1252,9 +1251,6 @@ export default class UpdateManager {
                             });
                         }
                     });
-                    if (toRemoveIds.length > 0) {
-                        messageRepo.removeMany(toRemoveIds);
-                    }
                     if (toModifyTempList.length > 0) {
                         this.modifyTempFiles(toModifyTempList);
                     }

@@ -95,7 +95,7 @@ class GroupName extends React.PureComponent<IProps, IState> {
         }
 
         this.groupRepo.get(this.state.id).then((group) => {
-            if (!this.mounted) {
+            if (!this.mounted || !group) {
                 return;
             }
             this.setState({

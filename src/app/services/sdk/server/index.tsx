@@ -457,7 +457,9 @@ export default class Server {
 
     private flushSentQueue() {
         this.sentQueue.forEach((reqId) => {
-            this.sendRequest(this.messageListeners[reqId].request);
+            if (this.messageListeners[reqId]) {
+                this.sendRequest(this.messageListeners[reqId].request);
+            }
         });
     }
 

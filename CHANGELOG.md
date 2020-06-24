@@ -1,3 +1,6 @@
+## 0.33.7
+* Database updated
+
 ## 0.33.6
 * Theme updated
 * Contacts updated

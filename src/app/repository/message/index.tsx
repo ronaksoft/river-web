@@ -432,6 +432,12 @@ export default class MessageRepo {
         });
     }
 
+    public removeManyByRandomId(ids: number[]) {
+        return this.db.messages.where('id').between(Dexie.minKey, 0, true, true).filter((o) => {
+            return ids.indexOf(o.random_id || 0) > -1;
+        }).delete();
+    }
+
     public list({peer, limit, before, after, withPending}: { peer: InputPeer, limit?: number, before?: number, after?: number, withPending?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMessage[]> {
         let fnEarlyCallback = earlyCallback;
         if (withPending && earlyCallback) {
@@ -1062,7 +1068,6 @@ export default class MessageRepo {
     private trimMessage(msg: IMessage) {
         if (msg) {
             delete msg.avatar;
-            delete msg.random_id;
         }
     }
 }

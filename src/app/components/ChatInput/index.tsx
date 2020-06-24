@@ -409,9 +409,11 @@ class ChatInput extends React.Component<IProps, IState> {
             });
             if (peer.getType() === PeerType.PEERUSER && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
-                    this.setState({
-                        user: res,
-                    });
+                    if (res) {
+                        this.setState({
+                            user: res,
+                        });
+                    }
                 });
             }
             if (this.state.selectable) {
@@ -478,9 +480,11 @@ class ChatInput extends React.Component<IProps, IState> {
             });
             if (peer.getType() === PeerType.PEERUSER && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
-                    this.setState({
-                        user: res,
-                    });
+                    if (res) {
+                        this.setState({
+                            user: res,
+                        });
+                    }
                 });
             }
             if (this.state.selectable) {
@@ -2095,9 +2099,11 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         this.userRepo.get(user.id || '').then((res) => {
-            this.setState({
-                user: res,
-            });
+            if (res) {
+                this.setState({
+                    user: res,
+                });
+            }
         });
     }
 

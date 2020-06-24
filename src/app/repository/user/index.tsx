@@ -105,7 +105,7 @@ export default class UserRepo {
         return this.db.users.bulkPut(users);
     }
 
-    public get(id: string): Promise<IUser> {
+    public get(id: string): Promise<IUser | undefined> {
         const user = this.dbService.getUser(id);
         if (user) {
             return Promise.resolve(user);

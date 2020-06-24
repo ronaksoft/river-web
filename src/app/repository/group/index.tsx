@@ -64,7 +64,7 @@ export default class GroupRepo {
         return this.db.groups.bulkPut(group);
     }
 
-    public get(id: string): Promise<IGroup> {
+    public get(id: string): Promise<IGroup | undefined> {
         const group = this.dbService.getGroup(id);
         if (group) {
             return Promise.resolve(group);

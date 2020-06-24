@@ -451,16 +451,20 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return;
         }
         this.groupRepo.get(peer.getId() || '').then((res) => {
-            this.setState({
-                group: res,
-                title: res.title || '',
-            });
+            if (res) {
+                this.setState({
+                    group: res,
+                    title: res.title || '',
+                });
+            }
         });
 
         this.dialogRepo.get(peer.getId() || '').then((dialog) => {
-            this.setState({
-                dialog,
-            });
+            if (dialog) {
+                this.setState({
+                    dialog,
+                });
+            }
         });
 
         if (this.loading) {

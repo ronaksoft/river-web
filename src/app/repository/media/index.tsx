@@ -59,7 +59,7 @@ export default class MediaRepo {
         return this.db.medias.bulkDelete(ids);
     }
 
-    public get(id: number): Promise<IMedia> {
+    public get(id: number): Promise<IMedia | undefined> {
         return this.db.medias.get(id).then((g: IMedia | undefined) => {
             return g;
         });

@@ -166,6 +166,8 @@ export default class APIManager {
     private clientId: number = 0;
     private systemInfoCache: any = null;
 
+    private typingList: {[key: string]: boolean} = {};
+
     public constructor() {
         this.server = Server.getInstance();
 
@@ -457,11 +459,26 @@ export default class APIManager {
         return this.server.send(C_MSG.MessagesGet, data.serializeBinary(), true);
     }
 
-    public typing(peer: InputPeer, type: TypingAction): Promise<MessagesMany.AsObject> {
+    public typing(peer: InputPeer, type: TypingAction): Promise<Bool.AsObject> {
+        const key = `${peer.getId()}_${peer.getType()}_${type}`;
+        if (this.typingList.hasOwnProperty(key)) {
+            return Promise.resolve({result: true});
+        }
+        this.typingList[key] = true;
+        const timeout = setTimeout(() => {
+            delete this.typingList[key];
+        }, 10000);
         const data = new MessagesSetTyping();
         data.setPeer(peer);
         data.setAction(type);
-        return this.server.send(C_MSG.MessagesSetTyping, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesSetTyping, data.serializeBinary(), true).then((res) => {
+            clearTimeout(timeout);
+            delete this.typingList[key];
+            return res;
+        }).catch(() => {
+            clearTimeout(timeout);
+            delete this.typingList[key];
+        });
     }
 
     public setMessagesReadHistory(peer: InputPeer, maxId: number): Promise<Bool> {
