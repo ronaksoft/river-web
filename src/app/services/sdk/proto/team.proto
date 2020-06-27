@@ -77,3 +77,9 @@ message TeamMember {
     required User User = 3;
 }
 
+// TeamsMany
+message TeamsMany {
+    repeated Team Teams = 1;
+    repeated User Users = 2;
+    required bool Empty = 3;
+}

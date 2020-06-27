@@ -37,6 +37,7 @@ import {UsersMany} from '../messages/users_pb';
 import {LabelItems, LabelsListItems} from "../messages/chat.labels_pb";
 import {BotCallbackAnswer} from "../messages/chat.bot_pb";
 import {FoundGifs, SavedGifs} from "../messages/gif_pb";
+import {TeamsMany} from "../messages/team_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -125,6 +126,8 @@ export default class Presenter {
                 return SavedGifs.deserializeBinary(data);
             case C_MSG.FoundGifs:
                 return FoundGifs.deserializeBinary(data);
+            case C_MSG.TeamsMany:
+                return TeamsMany.deserializeBinary(data);
             default:
                 return null;
         }

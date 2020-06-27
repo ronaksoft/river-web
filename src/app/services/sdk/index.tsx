@@ -50,7 +50,7 @@ import {
     InputFile,
     InputMediaType,
     InputPassword,
-    InputPeer,
+    InputPeer, InputTeam,
     InputUser,
     Label,
     LabelsMany,
@@ -93,7 +93,7 @@ import {
     AccountGetAuthorizations,
     AccountGetNotifySettings,
     AccountGetPassword,
-    AccountGetPrivacy,
+    AccountGetPrivacy, AccountGetTeams,
     AccountPassword,
     AccountPrivacyRules,
     AccountRecoverPassword,
@@ -149,6 +149,8 @@ import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/chat
 import {FileGetBySha256} from "./messages/files_pb";
 import {GifDelete, GifGetSaved, GifSave, SavedGifs} from "./messages/gif_pb";
 import {DocumentAttribute} from "./messages/chat.messages.medias_pb";
+import FileManager from "./fileManager";
+import {TeamsMany} from "./messages/team_pb";
 
 export default class APIManager {
     public static getInstance() {
@@ -166,7 +168,7 @@ export default class APIManager {
     private clientId: number = 0;
     private systemInfoCache: any = null;
 
-    private typingList: {[key: string]: boolean} = {};
+    private typingList: { [key: string]: boolean } = {};
 
     public constructor() {
         this.server = Server.getInstance();
@@ -190,6 +192,11 @@ export default class APIManager {
         if (id) {
             this.clientId = parseInt(id, 10);
         }
+    }
+
+    public setTeam(team: InputTeam.AsObject) {
+        this.server.setTeam(team);
+        FileManager.getInstance().setTeam(team);
     }
 
     public getConnInfo(): IConnInfo {
@@ -962,6 +969,11 @@ export default class APIManager {
         const data = new GifDelete();
         data.setDoc(inputDocument);
         return this.server.send(C_MSG.GifDelete, data.serializeBinary(), false);
+    }
+
+    public accountGetTeams(): Promise<TeamsMany.AsObject> {
+        const data = new AccountGetTeams();
+        return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true);
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {

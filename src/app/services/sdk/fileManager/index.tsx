@@ -10,7 +10,7 @@
 import Http from './http';
 import {C_LOCALSTORAGE, C_MSG} from '../const';
 import {File, FileGet, FileSavePart} from '../messages/files_pb';
-import {Bool, FileLocation, MessageContainer, MessageEnvelope} from '../messages/core.types_pb';
+import {Bool, FileLocation, InputTeam, MessageContainer, MessageEnvelope} from '../messages/core.types_pb';
 import FileRepo, {md5FromBlob} from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
@@ -171,6 +171,12 @@ export default class FileManager {
     public setUrl(url: string) {
         this.httpWorkers.forEach((file) => {
             file.setUrl(url);
+        });
+    }
+
+    public setTeam(team: InputTeam.AsObject) {
+        this.httpWorkers.forEach((worker) => {
+            worker.setTeam(team);
         });
     }
 

@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"fmt"
-	"git.ronaksoftware.com/river/msg/chat"
+	"git.ronaksoftware.com/river/msg/msg"
 	"github.com/monnand/dhkx"
 	"math/big"
 	"syscall/js"
@@ -92,6 +92,7 @@ func (r *River) CreateAuthKey(callback Callback) (err error) {
 		_RandomUint64(),
 		msg.C_InitConnect,
 		&req1Bytes,
+		nil,
 		func(res *msg.MessageEnvelope) {
 			fmt.Println("Success Callback Called")
 			AuthProgress(12)
@@ -199,6 +200,7 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 		_RandomUint64(),
 		msg.C_InitCompleteAuth,
 		&req2Bytes,
+		nil,
 		func(res *msg.MessageEnvelope) {
 			switch res.Constructor {
 			case msg.C_InitAuthCompleted:
@@ -256,12 +258,13 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 	return
 }
 
-func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, commandBytes *[]byte, successCB MessageHandler) {
+func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, commandBytes *[]byte, inputTeam *msg.InputTeam, successCB MessageHandler) {
 	//r.queueCtrl.executeCommand(requestID, constructor, commandBytes, timeoutCB, successCB)
 	_msg := new(msg.MessageEnvelope)
 	_msg.RequestID = requestID
 	_msg.Constructor = constructor
 	_msg.Message = *commandBytes
+	_msg.Team = inputTeam
 
 	if successCB != nil {
 		r.MessageQueue[requestID] = &successCB
@@ -269,11 +272,12 @@ func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, comman
 	r.send(_msg, true)
 }
 
-func (r *River) ExecuteEncrypt(requestID uint64, constructor int64, commandBytes *[]byte) {
+func (r *River) ExecuteEncrypt(requestID uint64, constructor int64, inputTeam *msg.InputTeam, commandBytes *[]byte) {
 	_msg := new(msg.MessageEnvelope)
 	_msg.RequestID = requestID
 	_msg.Constructor = constructor
 	_msg.Message = *commandBytes
+	_msg.Team = inputTeam
 
 	r.send(_msg, false)
 }
@@ -427,6 +431,7 @@ func (r *River) SetServerTime(callback Callback) (err error) {
 		_RandomUint64(),
 		msg.C_SystemGetServerTime,
 		&reqBytes,
+		nil,
 		func(res *msg.MessageEnvelope) {
 			var time int64 = 0
 			switch res.Constructor {

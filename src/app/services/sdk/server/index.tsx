@@ -19,7 +19,7 @@ import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../App";
 import {EventWebSocketClose, EventWebSocketOpen} from "../../events";
 import {SystemConfig} from "../messages/system_pb";
-import {InputPassword, MessageContainer, MessageEnvelope} from "../messages/core.types_pb";
+import {InputPassword, InputTeam, MessageContainer, MessageEnvelope} from "../messages/core.types_pb";
 import {Error as RiverError} from "../messages/core.types_pb";
 
 const C_IDLE_TIME = 300;
@@ -142,6 +142,10 @@ export default class Server {
             }
             this.executeSendThrottledRequestThrottle = throttle(this.executeSendThrottledRequest, throttleInterval);
         }
+    }
+
+    public setTeam(team: InputTeam.AsObject) {
+        this.socket.setTeam(team);
     }
 
     /* Send a request to WASM worker over CustomEvent in window object */

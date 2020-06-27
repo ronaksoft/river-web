@@ -12,6 +12,7 @@ import {IServerRequest, serverKeys} from '../index';
 import ElectronService from '../../../electron';
 import {EventWasmInit, EventWebSocketClose, EventWebSocketOpen} from "../../../events";
 import {C_LOCALSTORAGE} from "../../const";
+import {InputTeam} from "../../messages/core.types_pb";
 
 export const defaultGateway = 'cyrus.river.im';
 
@@ -59,11 +60,12 @@ export default class Socket {
     private resolveDecryptFn: any | undefined;
     private resolveGenSrpHashFn: any | undefined;
     private resolveGenInputPasswordFn: any | undefined;
+    private inputTeam: InputTeam.AsObject | undefined;
 
     public constructor() {
         this.testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
 
-        this.worker = new Worker('/bin/worker.js?v21');
+        this.worker = new Worker('/bin/worker.js?v22');
 
         setTimeout(() => {
             this.workerMessage('init', {});
@@ -220,11 +222,16 @@ export default class Socket {
     }
 
     public send(data: IServerRequest) {
-        this.workerMessage('fnCall', {
+        const payload: any = {
             constructor: data.constructor,
             payload: uint8ToBase64(data.data),
             reqId: data.reqId,
-        });
+        };
+        if (this.inputTeam) {
+            payload.teamId = this.inputTeam.id;
+            payload.teamAccessHash = this.inputTeam.accesshash;
+        }
+        this.workerMessage('fnCall', payload);
     }
 
     public setCallback(fn: any) {
@@ -256,6 +263,10 @@ export default class Socket {
     public tryAgain() {
         this.tryCounter = 0;
         this.closeWire(true);
+    }
+
+    public setTeam(inputTeam: InputTeam.AsObject) {
+        this.inputTeam = inputTeam;
     }
 
     private initWebSocket() {

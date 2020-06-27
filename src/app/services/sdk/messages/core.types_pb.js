@@ -982,7 +982,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.Team = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.Team.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.msg.Team, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -3708,6 +3708,7 @@ proto.msg.Dialog.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.Dialog.toObject = function(includeInstance, msg) {
   var f, obj = {
+    teamid: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     peerid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     peertype: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     topmessageid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
@@ -3755,6 +3756,10 @@ proto.msg.Dialog.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 100:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
+      break;
     case 1:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setPeerid(value);
@@ -3830,6 +3835,13 @@ proto.msg.Dialog.prototype.serializeBinary = function() {
  */
 proto.msg.Dialog.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt64String(
+      100,
+      f
+    );
+  }
   f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
     writer.writeInt64String(
@@ -3909,6 +3921,42 @@ proto.msg.Dialog.serializeBinaryToWriter = function(message, writer) {
       proto.msg.DraftMessage.serializeBinaryToWriter
     );
   }
+};
+
+
+/**
+ * optional int64 TeamID = 100;
+ * @return {string}
+ */
+proto.msg.Dialog.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.Dialog} returns this
+ */
+proto.msg.Dialog.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 100, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.Dialog} returns this
+ */
+proto.msg.Dialog.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.Dialog.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 100) != null;
 };
 
 
@@ -9975,6 +10023,7 @@ proto.msg.UserMessage.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.UserMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
+    teamid: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     peerid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     peertype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
@@ -10036,6 +10085,10 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 100:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
+      break;
     case 1:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setId(value);
@@ -10162,6 +10215,13 @@ proto.msg.UserMessage.prototype.serializeBinary = function() {
  */
 proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt64String(
+      100,
+      f
+    );
+  }
   f = /** @type {number} */ (jspb.Message.getField(message, 1));
   if (f != null) {
     writer.writeInt64(
@@ -10331,6 +10391,42 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+};
+
+
+/**
+ * optional int64 TeamID = 100;
+ * @return {string}
+ */
+proto.msg.UserMessage.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UserMessage} returns this
+ */
+proto.msg.UserMessage.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 100, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UserMessage} returns this
+ */
+proto.msg.UserMessage.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UserMessage.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 100) != null;
 };
 
 
@@ -11312,6 +11408,7 @@ proto.msg.DraftMessage.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.DraftMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
+    teamid: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     peerid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     peertype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
     date: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
@@ -11356,6 +11453,10 @@ proto.msg.DraftMessage.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 100:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
+      break;
     case 2:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setPeerid(value);
@@ -11414,6 +11515,13 @@ proto.msg.DraftMessage.prototype.serializeBinary = function() {
  */
 proto.msg.DraftMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt64String(
+      100,
+      f
+    );
+  }
   f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
     writer.writeInt64String(
@@ -11464,6 +11572,42 @@ proto.msg.DraftMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+};
+
+
+/**
+ * optional int64 TeamID = 100;
+ * @return {string}
+ */
+proto.msg.DraftMessage.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.DraftMessage} returns this
+ */
+proto.msg.DraftMessage.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 100, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.DraftMessage} returns this
+ */
+proto.msg.DraftMessage.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.DraftMessage.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 100) != null;
 };
 
 
@@ -14866,13 +15010,6 @@ proto.msg.InputTeam.prototype.hasAccesshash = function() {
 
 
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.msg.Team.repeatedFields_ = [4,5];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -14907,8 +15044,7 @@ proto.msg.Team.toObject = function(includeInstance, msg) {
     id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     creatorid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    managersList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
-    membersList: (f = jspb.Message.getRepeatedField(msg, 5)) == null ? undefined : f
+    accesshash: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -14946,7 +15082,7 @@ proto.msg.Team.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setId(value);
       break;
     case 2:
@@ -14954,16 +15090,12 @@ proto.msg.Team.deserializeBinaryFromReader = function(msg, reader) {
       msg.setName(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setCreatorid(value);
       break;
-    case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.addManagers(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.addMembers(value);
+    case 6:
+      var value = /** @type {string} */ (reader.readFixed64String());
+      msg.setAccesshash(value);
       break;
     default:
       reader.skipField();
@@ -14994,9 +15126,9 @@ proto.msg.Team.prototype.serializeBinary = function() {
  */
 proto.msg.Team.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -15008,24 +15140,17 @@ proto.msg.Team.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       3,
       f
     );
   }
-  f = message.getManagersList();
-  if (f.length > 0) {
-    writer.writeRepeatedInt64(
-      4,
-      f
-    );
-  }
-  f = message.getMembersList();
-  if (f.length > 0) {
-    writer.writeRepeatedInt64(
-      5,
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeFixed64String(
+      6,
       f
     );
   }
@@ -15034,15 +15159,15 @@ proto.msg.Team.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 ID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.Team.prototype.getId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.Team} returns this
  */
 proto.msg.Team.prototype.setId = function(value) {
@@ -15106,15 +15231,15 @@ proto.msg.Team.prototype.hasName = function() {
 
 /**
  * required int64 CreatorID = 3;
- * @return {number}
+ * @return {string}
  */
 proto.msg.Team.prototype.getCreatorid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.Team} returns this
  */
 proto.msg.Team.prototype.setCreatorid = function(value) {
@@ -15141,76 +15266,38 @@ proto.msg.Team.prototype.hasCreatorid = function() {
 
 
 /**
- * repeated int64 Managers = 4;
- * @return {!Array<number>}
+ * required fixed64 AccessHash = 6;
+ * @return {string}
  */
-proto.msg.Team.prototype.getManagersList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 4));
+proto.msg.Team.prototype.getAccesshash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, "0"));
 };
 
 
 /**
- * @param {!Array<number>} value
+ * @param {string} value
  * @return {!proto.msg.Team} returns this
  */
-proto.msg.Team.prototype.setManagersList = function(value) {
-  return jspb.Message.setField(this, 4, value || []);
+proto.msg.Team.prototype.setAccesshash = function(value) {
+  return jspb.Message.setField(this, 6, value);
 };
 
 
 /**
- * @param {number} value
- * @param {number=} opt_index
+ * Clears the field making it undefined.
  * @return {!proto.msg.Team} returns this
  */
-proto.msg.Team.prototype.addManagers = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 4, value, opt_index);
+proto.msg.Team.prototype.clearAccesshash = function() {
+  return jspb.Message.setField(this, 6, undefined);
 };
 
 
 /**
- * Clears the list making it empty but non-null.
- * @return {!proto.msg.Team} returns this
+ * Returns whether this field is set.
+ * @return {boolean}
  */
-proto.msg.Team.prototype.clearManagersList = function() {
-  return this.setManagersList([]);
-};
-
-
-/**
- * repeated int64 Members = 5;
- * @return {!Array<number>}
- */
-proto.msg.Team.prototype.getMembersList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 5));
-};
-
-
-/**
- * @param {!Array<number>} value
- * @return {!proto.msg.Team} returns this
- */
-proto.msg.Team.prototype.setMembersList = function(value) {
-  return jspb.Message.setField(this, 5, value || []);
-};
-
-
-/**
- * @param {number} value
- * @param {number=} opt_index
- * @return {!proto.msg.Team} returns this
- */
-proto.msg.Team.prototype.addMembers = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 5, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.msg.Team} returns this
- */
-proto.msg.Team.prototype.clearMembersList = function() {
-  return this.setMembersList([]);
+proto.msg.Team.prototype.hasAccesshash = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 

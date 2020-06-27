@@ -172,6 +172,7 @@ import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 
 import './style.scss';
+import {ITeam} from "../../repository/team/interface";
 
 export let notifyOptions: any[] = [];
 
@@ -597,6 +598,7 @@ class Chat extends React.Component<IProps, IState> {
                                   mobileView={this.isMobileView}
                                   onDrop={this.leftMenuDropHandler}
                                   onMediaAction={this.messageAttachmentActionHandler}
+                                  onTeamChange={this.leftMenuTeamChangeHandler}
                         />
                         {this.selectedDialogId !== 'null' &&
                         <div
@@ -5475,6 +5477,10 @@ class Chat extends React.Component<IProps, IState> {
                 ttlinseconds: mediaDoc.ttlinseconds,
             }]);
         });
+    }
+
+    private leftMenuTeamChangeHandler = (team: ITeam) => {
+        window.console.log(team);
     }
 }
 

@@ -275,3 +275,37 @@ export namespace TeamMember {
   }
 }
 
+export class TeamsMany extends jspb.Message {
+  clearTeamsList(): void;
+  getTeamsList(): Array<core_types_pb.Team>;
+  setTeamsList(value: Array<core_types_pb.Team>): void;
+  addTeams(value?: core_types_pb.Team, index?: number): core_types_pb.Team;
+
+  clearUsersList(): void;
+  getUsersList(): Array<core_types_pb.User>;
+  setUsersList(value: Array<core_types_pb.User>): void;
+  addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
+
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TeamsMany.AsObject;
+  static toObject(includeInstance: boolean, msg: TeamsMany): TeamsMany.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: TeamsMany, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TeamsMany;
+  static deserializeBinaryFromReader(message: TeamsMany, reader: jspb.BinaryReader): TeamsMany;
+}
+
+export namespace TeamsMany {
+  export type AsObject = {
+    teamsList: Array<core_types_pb.Team.AsObject>,
+    usersList: Array<core_types_pb.User.AsObject>,
+    empty?: boolean,
+  }
+}
+

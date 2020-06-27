@@ -37,7 +37,7 @@ self.onmessage = function (e) {
     switch (d.cmd) {
         case 'init':
             console.time('init');
-            fetch('river.wasm?v28').then((response) => {
+            fetch('river.wasm?v29').then((response) => {
                 WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
                     console.timeEnd('init');
                     run = go.run(res.instance);
@@ -69,12 +69,12 @@ self.onmessage = function (e) {
             break;
         case 'fnCall':
             if (fnCall) {
-                fnCall(d.data.reqId, d.data.constructor, d.data.payload);
+                fnCall(d.data.reqId, d.data.constructor, d.data.payload, d.data.teamId, d.data.teamAccessHash);
             }
             break;
         case 'fnEncrypt':
             if (fnEncrypt) {
-                fnEncrypt(d.data.reqId, d.data.constructor, d.data.payload);
+                fnEncrypt(d.data.reqId, d.data.constructor, d.data.payload, d.data.teamId, d.data.teamAccessHash);
             }
             break;
         case 'fnDecrypt':

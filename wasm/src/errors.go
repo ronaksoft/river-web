@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"git.ronaksoftware.com/river/msg/chat"
+	"git.ronaksoftware.com/river/msg/msg"
 )
 
 var (

@@ -67,6 +67,7 @@ message UpdateMessageEdited {
 message UpdateMessagesDeleted {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     repeated int64 MessageIDs = 1;
     optional Peer Peer = 2;
 }
@@ -75,6 +76,7 @@ message UpdateMessagesDeleted {
 message UpdateReadHistoryInbox {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     required Peer Peer = 1;
     required int64 MaxID = 2;
 }
@@ -83,6 +85,7 @@ message UpdateReadHistoryInbox {
 message UpdateReadHistoryOutbox {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     required Peer Peer = 1;
     required int64 MaxID = 2;
 }
@@ -90,6 +93,7 @@ message UpdateReadHistoryOutbox {
 // UpdateUserTyping
 message UpdateUserTyping {
     required int32 UCount = 100;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     required int64 UserID = 1 [jstype = JS_STRING];
     required TypingAction Action = 2;
     required int64 PeerID = 3 [jstype = JS_STRING];
@@ -181,6 +185,7 @@ message UpdateGroupPhoto {
 message UpdateReadMessagesContents {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     repeated int64 MessageIDs = 1;
     required Peer Peer = 2;
 }
@@ -202,6 +207,7 @@ message UpdateDraftMessage {
 message UpdateDraftMessageCleared {
     required int32 UCount = 100;
     optional int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     required Peer Peer = 1;
 }
 
@@ -209,6 +215,7 @@ message UpdateDraftMessageCleared {
 message UpdateDialogPinned {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     required Peer Peer = 1;
     required bool Pinned = 2;
 }
@@ -236,6 +243,7 @@ message UpdateAccountPrivacy {
 message UpdateLabelItemsAdded {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     required Peer Peer = 1;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;
@@ -246,6 +254,7 @@ message UpdateLabelItemsAdded {
 message UpdateLabelItemsRemoved {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     required Peer Peer = 1;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;

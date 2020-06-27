@@ -449,5 +449,8 @@
   },
   "picker": {
     "there_is_no_gif": "GIF ذخیزه شده‌ای وجود ندارد"
+  },
+  "team": {
+    "private": "شخصی"
   }
 }

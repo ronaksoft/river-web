@@ -679,6 +679,22 @@ export namespace AccountRecoverPassword {
   }
 }
 
+export class AccountGetTeams extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountGetTeams.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountGetTeams): AccountGetTeams.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountGetTeams, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountGetTeams;
+  static deserializeBinaryFromReader(message: AccountGetTeams, reader: jspb.BinaryReader): AccountGetTeams;
+}
+
+export namespace AccountGetTeams {
+  export type AsObject = {
+  }
+}
+
 export class AccountPasswordSettings extends jspb.Message {
   hasHint(): boolean;
   clearHint(): void;

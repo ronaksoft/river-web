@@ -90,6 +90,7 @@ enum TypingAction {
 
 // Dialog
 message Dialog {
+    optional int64 TeamID = 100 [jstype = JS_STRING];
     required int64 PeerID = 1 [jstype = JS_STRING];
     required int32 PeerType = 2;
     required int64 TopMessageID = 3;
@@ -322,6 +323,7 @@ enum MediaType {
 
 // UserMessage
 message UserMessage {
+    optional int64 TeamID = 100 [jstype = JS_STRING];
     required int64 ID = 1;
     required int64 PeerID = 2 [jstype = JS_STRING];
     required int32 PeerType = 3;
@@ -350,6 +352,7 @@ message UserMessage {
 
 // DraftMessage
 message DraftMessage {
+    optional int64 TeamID = 100 [jstype = JS_STRING];
     required int64 PeerID = 2 [jstype = JS_STRING];
     required int32 PeerType = 3;
     required int64 Date = 4;
@@ -503,9 +506,9 @@ message InputTeam {
 
 // Team
 message Team {
-    required int64 ID = 1;
+    required int64 ID = 1 [jstype = JS_STRING];
     required string Name = 2;
-    required int64 CreatorID = 3;
-    repeated int64 Managers = 4;
-    repeated int64 Members = 5;
+    required int64 CreatorID = 3 [jstype = JS_STRING];
+    required fixed64 AccessHash = 6 [jstype = JS_STRING];
 }
+

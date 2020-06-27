@@ -16,6 +16,7 @@ import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
 import Socket, {serverTime} from '../../server/socket';
 import {EventWebSocketOpen} from "../../../events";
+import {InputTeam} from "../../messages/core.types_pb";
 
 export interface IHttpRequest {
     constructor: number;
@@ -49,13 +50,14 @@ export default class Http {
     private readonly shareWorker: any = null;
     private socket: Socket | undefined;
     private executionTimes: number[] = [];
+    private inputTeam: InputTeam.AsObject | undefined;
 
     public constructor(shareWorker: boolean, id: number) {
         const fileUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || '';
         this.shareWorker = shareWorker;
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v21');
+        this.worker = new Worker('/bin/worker.js?v22');
         this.workerId = id;
 
         if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0 || fileUrl.indexOf('localhost') > -1)) {
@@ -150,6 +152,10 @@ export default class Http {
         return promise;
     }
 
+    public setTeam(inputTeam: InputTeam.AsObject) {
+        this.inputTeam = inputTeam;
+    }
+
     private cancelRequest(id: number) {
         if (!this.messageListeners.hasOwnProperty(id)) {
             return;
@@ -208,11 +214,16 @@ export default class Http {
 
     /* Send http request */
     private sendRequest(request: IHttpRequest) {
-        this.workerMessage('fnEncrypt', {
+        const payload: any = {
             constructor: request.constructor,
             payload: uint8ToBase64(request.data),
             reqId: request.reqId,
-        });
+        };
+        if (this.inputTeam) {
+            payload.teamId = this.inputTeam.id;
+            payload.teamAccessHash = this.inputTeam.accesshash;
+        }
+        this.workerMessage('fnEncrypt', payload);
     }
 
     private resolveEncrypt = (reqId: number, base64: string) => {

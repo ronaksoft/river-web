@@ -943,10 +943,12 @@ export default class MessageRepo {
         if (newMessage.added_labels) {
             message.labelidsList = uniq([...(message.labelidsList || []), ...newMessage.added_labels]);
             delete newMessage.added_labels;
+            delete newMessage.labelidsList;
         }
         if (newMessage.removed_labels) {
             message.labelidsList = difference(message.labelidsList || [], newMessage.removed_labels);
             delete newMessage.removed_labels;
+            delete newMessage.labelidsList;
         }
         const d = kMerge(message, newMessage);
         return d;

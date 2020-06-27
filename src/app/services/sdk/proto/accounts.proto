@@ -192,6 +192,11 @@ message AccountRecoverPassword {
     required int64 SrpID = 4 [jstype = JS_STRING];
 }
 
+// AccountGetTeams
+// @Function
+// @Returns: TeamsMany
+message AccountGetTeams {}
+
 // AccountPasswordSettings
 // Private info associated to the password info (recovery email and so on)
 message AccountPasswordSettings {

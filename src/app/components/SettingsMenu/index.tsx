@@ -36,6 +36,7 @@ import {
     SyncDisabledRounded,
     KeyboardArrowLeftRounded,
     KeyboardArrowRightRounded,
+    ArrowDropDownRounded,
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
@@ -80,7 +81,7 @@ import {
     IconButton,
     TextField,
     Switch,
-    Button
+    Button,
 } from "@material-ui/core";
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import Broadcaster from '../../services/broadcaster';
@@ -109,6 +110,8 @@ import IsMobile from "../../services/isMobile";
 import AvatarService from "../../services/avatarService";
 import {C_VERSION} from "../../../App";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import TeamRepo from "../../repository/team";
+import {ITeam} from "../../repository/team/interface";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -190,6 +193,7 @@ interface IProps {
     onUpdateMessages?: (keep?: boolean) => void;
     onReloadDialog?: (peerIds: string[]) => void;
     onSubPlaceChange?: (sub: string, subChild: string) => void;
+    onTeamChange?: (team: ITeam) => void;
 }
 
 interface IState {
@@ -210,6 +214,7 @@ interface IState {
     page: string;
     pageContent: string;
     pageSubContent: string;
+    passwordMode: number;
     phone: string;
     privacy: { [key: string]: IPrivacy };
     profileCropperOpen: boolean;
@@ -226,12 +231,16 @@ interface IState {
     selectedTheme: string;
     sessions?: AccountAuthorization.AsObject[];
     storageValues: IDownloadSettings;
+    teamLoading: boolean;
+    teamList: ITeam[];
+    teamMoreAnchorEl: any;
+    teamSelectedId: string;
+    teamSelectedName: string;
     uploadingPhoto: boolean;
     user: IUser | null;
     username: string;
     usernameAvailable: boolean;
     usernameValid: boolean;
-    passwordMode: number;
 }
 
 class SettingsMenu extends React.Component<IProps, IState> {
@@ -242,6 +251,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private readonly usernameCheckDebounce: any;
     private fileManager: FileManager;
     private fileRepo: FileRepo;
+    private teamRepo: TeamRepo;
     private progressBroadcaster: ProgressBroadcaster;
     private riverTime: RiverTime;
     private profileTempPhoto: string = '';
@@ -329,6 +339,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 group_videos: false,
                 group_voices: false,
             },
+            teamList: [],
+            teamLoading: false,
+            teamMoreAnchorEl: null,
+            teamSelectedId: localStorage.getItem(C_LOCALSTORAGE.TeamId) || '0',
+            teamSelectedName: '',
             uploadingPhoto: false,
             user: null,
             username: '',
@@ -339,6 +354,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.usernameCheckDebounce = debounce(this.checkUsername, 256);
         this.fileManager = FileManager.getInstance();
         this.fileRepo = FileRepo.getInstance();
+        this.teamRepo = TeamRepo.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.riverTime = RiverTime.getInstance();
 
@@ -397,6 +413,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 riverGroupName: res.workgroupname || '',
             });
         });
+        this.getTeamList();
     }
 
     public navigateToPage(pageContent: string, pageSubContent: string) {
@@ -429,6 +446,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
             lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, sessions,
             confirmDialogMode, confirmDialogOpen, customBackgroundSrc, loading, privacy, passwordMode,
+            teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName,
         } = this.state;
         return (
             <div className="settings-menu">
@@ -475,6 +493,43 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                              onClick={this.selectPageHandler('account')}>
                                             <UserName className="username" id={this.userId} noDetail={true}/>
                                             <div className="account-phone">{phone}</div>
+                                        </div>
+                                        <div className="team-select">
+                                            <div className="select-input" onClick={this.teamOpenHandler}>
+                                                <div className="select-label">{teamSelectedName}</div>
+                                                <div className="select-icon"><ArrowDropDownRounded/></div>
+                                            </div>
+                                            <Menu
+                                                anchorEl={teamMoreAnchorEl}
+                                                anchorOrigin={{
+                                                    horizontal: 'center',
+                                                    vertical: 'top',
+                                                }}
+                                                transformOrigin={{
+                                                    horizontal: 'center',
+                                                    vertical: 'top',
+                                                }}
+                                                open={Boolean(teamMoreAnchorEl)}
+                                                onClose={this.teamCloseHandler}
+                                                className="kk-context-menu darker"
+                                                classes={{
+                                                    paper: 'kk-context-menu-paper'
+                                                }}
+                                            >
+                                                {teamLoading ? <div style={{
+                                                        alignItems: 'center',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                        <CircularProgress size={16}/>
+                                                    </div> :
+                                                    teamList.map((item) => {
+                                                        return (<MenuItem key={item.id} className="context-item"
+                                                                          onClick={this.teamSelectHandler(item)}
+                                                                          selected={teamSelectedId === item.id}>{item.name}</MenuItem>);
+                                                    })
+                                                }
+                                            </Menu>
                                         </div>
                                     </div>
                                     <div className="page-anchor">
@@ -2528,6 +2583,55 @@ class SettingsMenu extends React.Component<IProps, IState> {
             if (this.props.onError) {
                 this.props.onError(i18n.t('settings.synced_contacts_removed_successfully'));
             }
+        });
+    }
+
+    private getTeamList() {
+        this.setState({
+            teamLoading: true,
+        });
+        this.teamRepo.getCachedTeam().then((res) => {
+            res.unshift({
+                accesshash: '0',
+                creatorid: '0',
+                id: '0',
+                name: i18n.t('team.private'),
+                unread_counter: 0,
+            });
+            const q: any = {
+                teamList: res,
+                teamLoading: false,
+            };
+            const item = find(res, {id: this.state.teamSelectedId});
+            if (item) {
+                q.teamSelectedId = item.id;
+                q.teamSelectedName = item.name;
+            }
+            this.setState(q);
+        }).catch(() => {
+            this.setState({
+                teamLoading: false,
+            });
+        });
+    }
+
+    private teamOpenHandler = (e: any) => {
+        this.setState({
+            teamMoreAnchorEl: e.currentTarget,
+        });
+    }
+
+    private teamCloseHandler = () => {
+        this.setState({
+            teamMoreAnchorEl: null,
+        });
+    }
+
+    private teamSelectHandler = (item: ITeam) => () => {
+        localStorage.setItem(C_LOCALSTORAGE.TeamId, item.id || '0');
+        this.setState({
+            teamSelectedId: item.id || '0',
+            teamSelectedName: item.name || '',
         });
     }
 }

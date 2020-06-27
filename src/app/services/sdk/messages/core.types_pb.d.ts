@@ -369,6 +369,11 @@ export namespace Bool {
 }
 
 export class Dialog extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasPeerid(): boolean;
   clearPeerid(): void;
   getPeerid(): string | undefined;
@@ -436,6 +441,7 @@ export class Dialog extends jspb.Message {
 
 export namespace Dialog {
   export type AsObject = {
+    teamid?: string,
     peerid?: string,
     peertype?: number,
     topmessageid?: number,
@@ -1197,6 +1203,11 @@ export namespace GroupParticipant {
 }
 
 export class UserMessage extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasId(): boolean;
   clearId(): void;
   getId(): number | undefined;
@@ -1335,6 +1346,7 @@ export class UserMessage extends jspb.Message {
 
 export namespace UserMessage {
   export type AsObject = {
+    teamid?: string,
     id?: number,
     peerid?: string,
     peertype?: number,
@@ -1363,6 +1375,11 @@ export namespace UserMessage {
 }
 
 export class DraftMessage extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasPeerid(): boolean;
   clearPeerid(): void;
   getPeerid(): string | undefined;
@@ -1410,6 +1427,7 @@ export class DraftMessage extends jspb.Message {
 
 export namespace DraftMessage {
   export type AsObject = {
+    teamid?: string,
     peerid?: string,
     peertype?: number,
     date?: number,
@@ -1859,8 +1877,8 @@ export namespace InputTeam {
 export class Team extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
-  getId(): number | undefined;
-  setId(value: number): void;
+  getId(): string | undefined;
+  setId(value: string): void;
 
   hasName(): boolean;
   clearName(): void;
@@ -1869,18 +1887,13 @@ export class Team extends jspb.Message {
 
   hasCreatorid(): boolean;
   clearCreatorid(): void;
-  getCreatorid(): number | undefined;
-  setCreatorid(value: number): void;
+  getCreatorid(): string | undefined;
+  setCreatorid(value: string): void;
 
-  clearManagersList(): void;
-  getManagersList(): Array<number>;
-  setManagersList(value: Array<number>): void;
-  addManagers(value: number, index?: number): number;
-
-  clearMembersList(): void;
-  getMembersList(): Array<number>;
-  setMembersList(value: Array<number>): void;
-  addMembers(value: number, index?: number): number;
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Team.AsObject;
@@ -1894,11 +1907,10 @@ export class Team extends jspb.Message {
 
 export namespace Team {
   export type AsObject = {
-    id?: number,
+    id?: string,
     name?: string,
-    creatorid?: number,
-    managersList: Array<number>,
-    membersList: Array<number>,
+    creatorid?: string,
+    accesshash?: string,
   }
 }
 

@@ -278,6 +278,11 @@ export class UpdateMessagesDeleted extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   clearMessageidsList(): void;
   getMessageidsList(): Array<number>;
   setMessageidsList(value: Array<number>): void;
@@ -302,6 +307,7 @@ export namespace UpdateMessagesDeleted {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     messageidsList: Array<number>,
     peer?: core_types_pb.Peer.AsObject,
   }
@@ -317,6 +323,11 @@ export class UpdateReadHistoryInbox extends jspb.Message {
   clearUpdateid(): void;
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
@@ -342,6 +353,7 @@ export namespace UpdateReadHistoryInbox {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     peer: core_types_pb.Peer.AsObject,
     maxid?: number,
   }
@@ -357,6 +369,11 @@ export class UpdateReadHistoryOutbox extends jspb.Message {
   clearUpdateid(): void;
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
@@ -382,6 +399,7 @@ export namespace UpdateReadHistoryOutbox {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     peer: core_types_pb.Peer.AsObject,
     maxid?: number,
   }
@@ -392,6 +410,11 @@ export class UpdateUserTyping extends jspb.Message {
   clearUcount(): void;
   getUcount(): number | undefined;
   setUcount(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   hasUserid(): boolean;
   clearUserid(): void;
@@ -421,6 +444,7 @@ export class UpdateUserTyping extends jspb.Message {
 export namespace UpdateUserTyping {
   export type AsObject = {
     ucount?: number,
+    teamid?: string,
     userid?: string,
     action?: core_types_pb.TypingAction,
     peerid?: string,
@@ -858,6 +882,11 @@ export class UpdateReadMessagesContents extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   clearMessageidsList(): void;
   getMessageidsList(): Array<number>;
   setMessageidsList(value: Array<number>): void;
@@ -882,6 +911,7 @@ export namespace UpdateReadMessagesContents {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     messageidsList: Array<number>,
     peer: core_types_pb.Peer.AsObject,
   }
@@ -960,6 +990,11 @@ export class UpdateDraftMessageCleared extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasPeer(): boolean;
   clearPeer(): void;
   getPeer(): core_types_pb.Peer;
@@ -979,6 +1014,7 @@ export namespace UpdateDraftMessageCleared {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     peer: core_types_pb.Peer.AsObject,
   }
 }
@@ -993,6 +1029,11 @@ export class UpdateDialogPinned extends jspb.Message {
   clearUpdateid(): void;
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
@@ -1018,6 +1059,7 @@ export namespace UpdateDialogPinned {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     peer: core_types_pb.Peer.AsObject,
     pinned?: boolean,
   }
@@ -1132,6 +1174,11 @@ export class UpdateLabelItemsAdded extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasPeer(): boolean;
   clearPeer(): void;
   getPeer(): core_types_pb.Peer;
@@ -1166,6 +1213,7 @@ export namespace UpdateLabelItemsAdded {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     peer: core_types_pb.Peer.AsObject,
     messageidsList: Array<number>,
     labelidsList: Array<number>,
@@ -1183,6 +1231,11 @@ export class UpdateLabelItemsRemoved extends jspb.Message {
   clearUpdateid(): void;
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
@@ -1218,6 +1271,7 @@ export namespace UpdateLabelItemsRemoved {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     peer: core_types_pb.Peer.AsObject,
     messageidsList: Array<number>,
     labelidsList: Array<number>,

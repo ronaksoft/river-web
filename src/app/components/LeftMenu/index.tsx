@@ -36,6 +36,7 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {RiverTextLogo} from "../SVG/river";
 
 import './style.scss';
+import {ITeam} from "../../repository/team/interface";
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -56,6 +57,7 @@ interface IProps {
     onError?: (text: string) => void;
     onDrop: (peerId: string, files: File[], hasData: boolean) => void;
     onMediaAction?: (cmd: 'download', message: IMessage) => void;
+    onTeamChange?: (team: ITeam) => void;
 }
 
 interface IState {
@@ -354,6 +356,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                               onError={this.props.onError}
                               onReloadDialog={this.props.onReloadDialog}
                               onSubPlaceChange={this.settingsSubPlaceChangeHandler}
+                              onTeamChange={this.props.onTeamChange}
                 />}
                 {leftMenu === 'contacts' &&
                 <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}

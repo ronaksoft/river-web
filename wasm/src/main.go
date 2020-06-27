@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"git.ronaksoftware.com/river/msg/msg"
 	"math/rand"
+	"strconv"
 	"syscall/js"
 	"time"
 )
@@ -93,8 +95,19 @@ func fnCall(this js.Value, inps []js.Value) interface{} {
 		reqId := uint64(args[0].Int())
 		constructor := int64(args[1].Int())
 		enc, err := base64.StdEncoding.DecodeString(args[2].String())
+		var inputTeam *msg.InputTeam
+		if len(args) > 4 {
+			teamId, _ := strconv.ParseInt(args[3].String(), 10, 0)
+			teamAccessHash, _ := strconv.ParseUint(args[4].String(), 10, 0)
+			if teamId != 0 && teamAccessHash != 0 {
+				inputTeam = &msg.InputTeam{
+					ID:         teamId,
+					AccessHash: teamAccessHash,
+				}
+			}
+		}
 		if err == nil {
-			river.ExecuteRemoteCommand(reqId, constructor, &enc, nil)
+			river.ExecuteRemoteCommand(reqId, constructor, &enc, inputTeam, nil)
 		}
 	}(inps)
 	return nil
@@ -120,8 +133,19 @@ func fnEncrypt(this js.Value, inps []js.Value) interface{} {
 		reqId := uint64(args[0].Int())
 		constructor := int64(args[1].Int())
 		enc, err := base64.StdEncoding.DecodeString(args[2].String())
+		var inputTeam *msg.InputTeam
+		if len(args) > 4 {
+			teamId, _ := strconv.ParseInt(args[3].String(), 10, 0)
+			teamAccessHash, _ := strconv.ParseUint(args[4].String(), 10, 0)
+			if teamId != 0 && teamAccessHash != 0 {
+				inputTeam = &msg.InputTeam{
+					ID:         teamId,
+					AccessHash: teamAccessHash,
+				}
+			}
+		}
 		if err == nil {
-			river.ExecuteEncrypt(reqId, constructor, &enc)
+			river.ExecuteEncrypt(reqId, constructor, inputTeam, &enc)
 		}
 	}(inps)
 	return nil

@@ -2917,6 +2917,7 @@ proto.msg.UpdateMessagesDeleted.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     messageidsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f)
   };
@@ -2962,6 +2963,10 @@ proto.msg.UpdateMessagesDeleted.deserializeBinaryFromReader = function(msg, read
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = /** @type {number} */ (reader.readInt64());
@@ -3012,6 +3017,13 @@ proto.msg.UpdateMessagesDeleted.serializeBinaryToWriter = function(message, writ
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -3102,6 +3114,42 @@ proto.msg.UpdateMessagesDeleted.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateMessagesDeleted.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateMessagesDeleted.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateMessagesDeleted} returns this
+ */
+proto.msg.UpdateMessagesDeleted.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateMessagesDeleted} returns this
+ */
+proto.msg.UpdateMessagesDeleted.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateMessagesDeleted.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 
@@ -3213,6 +3261,7 @@ proto.msg.UpdateReadHistoryInbox.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
     maxid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
@@ -3258,6 +3307,10 @@ proto.msg.UpdateReadHistoryInbox.deserializeBinaryFromReader = function(msg, rea
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = new core_types_pb.Peer;
@@ -3308,6 +3361,13 @@ proto.msg.UpdateReadHistoryInbox.serializeBinaryToWriter = function(message, wri
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -3398,6 +3458,42 @@ proto.msg.UpdateReadHistoryInbox.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateReadHistoryInbox.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateReadHistoryInbox.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateReadHistoryInbox} returns this
+ */
+proto.msg.UpdateReadHistoryInbox.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateReadHistoryInbox} returns this
+ */
+proto.msg.UpdateReadHistoryInbox.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateReadHistoryInbox.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 
@@ -3508,6 +3604,7 @@ proto.msg.UpdateReadHistoryOutbox.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
     maxid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
@@ -3553,6 +3650,10 @@ proto.msg.UpdateReadHistoryOutbox.deserializeBinaryFromReader = function(msg, re
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = new core_types_pb.Peer;
@@ -3603,6 +3704,13 @@ proto.msg.UpdateReadHistoryOutbox.serializeBinaryToWriter = function(message, wr
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -3693,6 +3801,42 @@ proto.msg.UpdateReadHistoryOutbox.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateReadHistoryOutbox.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateReadHistoryOutbox.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateReadHistoryOutbox} returns this
+ */
+proto.msg.UpdateReadHistoryOutbox.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateReadHistoryOutbox} returns this
+ */
+proto.msg.UpdateReadHistoryOutbox.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateReadHistoryOutbox.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 
@@ -3802,6 +3946,7 @@ proto.msg.UpdateUserTyping.prototype.toObject = function(opt_includeInstance) {
 proto.msg.UpdateUserTyping.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     userid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     action: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     peerid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
@@ -3844,6 +3989,10 @@ proto.msg.UpdateUserTyping.deserializeBinaryFromReader = function(msg, reader) {
     case 100:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setUcount(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = /** @type {string} */ (reader.readInt64String());
@@ -3890,6 +4039,13 @@ proto.msg.UpdateUserTyping.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt32(
       100,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -3950,6 +4106,42 @@ proto.msg.UpdateUserTyping.prototype.clearUcount = function() {
  */
 proto.msg.UpdateUserTyping.prototype.hasUcount = function() {
   return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateUserTyping.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateUserTyping} returns this
+ */
+proto.msg.UpdateUserTyping.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateUserTyping} returns this
+ */
+proto.msg.UpdateUserTyping.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateUserTyping.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 
@@ -7230,6 +7422,7 @@ proto.msg.UpdateReadMessagesContents.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     messageidsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f)
   };
@@ -7275,6 +7468,10 @@ proto.msg.UpdateReadMessagesContents.deserializeBinaryFromReader = function(msg,
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = /** @type {number} */ (reader.readInt64());
@@ -7325,6 +7522,13 @@ proto.msg.UpdateReadMessagesContents.serializeBinaryToWriter = function(message,
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -7415,6 +7619,42 @@ proto.msg.UpdateReadMessagesContents.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateReadMessagesContents.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateReadMessagesContents.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateReadMessagesContents} returns this
+ */
+proto.msg.UpdateReadMessagesContents.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateReadMessagesContents} returns this
+ */
+proto.msg.UpdateReadMessagesContents.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateReadMessagesContents.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 
@@ -7969,6 +8209,7 @@ proto.msg.UpdateDraftMessageCleared.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f)
   };
 
@@ -8013,6 +8254,10 @@ proto.msg.UpdateDraftMessageCleared.deserializeBinaryFromReader = function(msg, 
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = new core_types_pb.Peer;
@@ -8059,6 +8304,13 @@ proto.msg.UpdateDraftMessageCleared.serializeBinaryToWriter = function(message, 
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -8146,6 +8398,42 @@ proto.msg.UpdateDraftMessageCleared.prototype.hasUpdateid = function() {
 
 
 /**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateDraftMessageCleared.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateDraftMessageCleared} returns this
+ */
+proto.msg.UpdateDraftMessageCleared.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateDraftMessageCleared} returns this
+ */
+proto.msg.UpdateDraftMessageCleared.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateDraftMessageCleared.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
+};
+
+
+/**
  * required Peer Peer = 1;
  * @return {!proto.msg.Peer}
  */
@@ -8216,6 +8504,7 @@ proto.msg.UpdateDialogPinned.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
     pinned: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
   };
@@ -8261,6 +8550,10 @@ proto.msg.UpdateDialogPinned.deserializeBinaryFromReader = function(msg, reader)
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = new core_types_pb.Peer;
@@ -8311,6 +8604,13 @@ proto.msg.UpdateDialogPinned.serializeBinaryToWriter = function(message, writer)
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -8401,6 +8701,42 @@ proto.msg.UpdateDialogPinned.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateDialogPinned.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateDialogPinned.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateDialogPinned} returns this
+ */
+proto.msg.UpdateDialogPinned.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateDialogPinned} returns this
+ */
+proto.msg.UpdateDialogPinned.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateDialogPinned.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 
@@ -9295,6 +9631,7 @@ proto.msg.UpdateLabelItemsAdded.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
     messageidsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
     labelidsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
@@ -9343,6 +9680,10 @@ proto.msg.UpdateLabelItemsAdded.deserializeBinaryFromReader = function(msg, read
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = new core_types_pb.Peer;
@@ -9402,6 +9743,13 @@ proto.msg.UpdateLabelItemsAdded.serializeBinaryToWriter = function(message, writ
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -9507,6 +9855,42 @@ proto.msg.UpdateLabelItemsAdded.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateLabelItemsAdded.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateLabelItemsAdded.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateLabelItemsAdded} returns this
+ */
+proto.msg.UpdateLabelItemsAdded.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateLabelItemsAdded} returns this
+ */
+proto.msg.UpdateLabelItemsAdded.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateLabelItemsAdded.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 
@@ -9700,6 +10084,7 @@ proto.msg.UpdateLabelItemsRemoved.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
     messageidsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
     labelidsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
@@ -9748,6 +10133,10 @@ proto.msg.UpdateLabelItemsRemoved.deserializeBinaryFromReader = function(msg, re
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = new core_types_pb.Peer;
@@ -9807,6 +10196,13 @@ proto.msg.UpdateLabelItemsRemoved.serializeBinaryToWriter = function(message, wr
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -9912,6 +10308,42 @@ proto.msg.UpdateLabelItemsRemoved.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateLabelItemsRemoved.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateLabelItemsRemoved.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateLabelItemsRemoved} returns this
+ */
+proto.msg.UpdateLabelItemsRemoved.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateLabelItemsRemoved} returns this
+ */
+proto.msg.UpdateLabelItemsRemoved.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateLabelItemsRemoved.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 
