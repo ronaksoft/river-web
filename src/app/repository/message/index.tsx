@@ -438,7 +438,7 @@ export default class MessageRepo {
         }).delete();
     }
 
-    public list({peer, limit, before, after, withPending}: { peer: InputPeer, limit?: number, before?: number, after?: number, withPending?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMessage[]> {
+    public list({peer, limit, before, after, withPending, localOnly}: { peer: InputPeer, limit?: number, before?: number, after?: number, withPending?: boolean, localOnly?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMessage[]> {
         let fnEarlyCallback = earlyCallback;
         if (withPending && earlyCallback) {
             fnEarlyCallback = this.getPeerPendingMessage(peer, earlyCallback);
@@ -511,37 +511,19 @@ export default class MessageRepo {
                 }
                 if (fnEarlyCallback && res.length > 0) {
                     fnEarlyCallback(res);
-                    return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit - res.length);
+                    return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit - res.length, localOnly);
                 } else {
                     if (fnEarlyCallback) {
                         fnEarlyCallback([]);
                     }
-                    return this.completeMessagesLimitFromRemote(peer, res, lastId, asc, safeLimit - res.length);
+                    return this.completeMessagesLimitFromRemote(peer, res, lastId, asc, safeLimit - res.length, localOnly);
                 }
             } else {
                 if (fnEarlyCallback) {
                     fnEarlyCallback([]);
                 }
-                return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit);
+                return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit, localOnly);
             }
-        });
-    }
-
-    public completeMessagesLimitFromRemote(peer: InputPeer, messages: IMessage[], id: number, asc: boolean, limit: number): Promise<IMessage[]> {
-        if (id === -1) {
-            return Promise.reject('bad message id');
-        }
-        if (limit === 0) {
-            return Promise.resolve(messages);
-        }
-
-        return this.checkHoles(peer, id, asc, limit).then((remoteMessages) => {
-            this.userRepo.importBulk(false, remoteMessages.usersList);
-            this.groupRepo.importBulk(remoteMessages.groupsList);
-            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, this.userId);
-            return this.importBulk(remoteMessages.messagesList, true).then(() => {
-                return [...messages, ...remoteMessages.messagesList];
-            });
         });
     }
 
@@ -904,6 +886,27 @@ export default class MessageRepo {
             id: id - 0.5,
             messagetype: C_MESSAGE_TYPE.End,
             peerid: peerId,
+        });
+    }
+
+    private completeMessagesLimitFromRemote(peer: InputPeer, messages: IMessage[], id: number, asc: boolean, limit: number, localOnly?: boolean): Promise<IMessage[]> {
+        if (id === -1) {
+            return Promise.reject('bad message id');
+        }
+        if (limit === 0) {
+            return Promise.resolve(messages);
+        }
+        if (localOnly) {
+            return Promise.resolve(messages);
+        }
+
+        return this.checkHoles(peer, id, asc, limit).then((remoteMessages) => {
+            this.userRepo.importBulk(false, remoteMessages.usersList);
+            this.groupRepo.importBulk(remoteMessages.groupsList);
+            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, this.userId);
+            return this.importBulk(remoteMessages.messagesList, true).then(() => {
+                return [...messages, ...remoteMessages.messagesList];
+            });
         });
     }
 

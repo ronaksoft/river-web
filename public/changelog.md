@@ -1,3 +1,8 @@
+## 0.33.8
+* Load more bugs fixed
+* GIF sort updated
+* Minor bugs fixed
+
 ## 0.33.7
 * Database updated
 * Use `Esc` to close current conversation

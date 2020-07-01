@@ -494,7 +494,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <UserName className="username" id={this.userId} noDetail={true}/>
                                             <div className="account-phone">{phone}</div>
                                         </div>
-                                        <div className="team-select">
+                                        {Boolean(teamList.length > 0) && <div className="team-select">
                                             <div className="select-input" onClick={this.teamOpenHandler}>
                                                 <div className="select-label">{teamSelectedName}</div>
                                                 <div className="select-icon"><ArrowDropDownRounded/></div>
@@ -530,7 +530,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     })
                                                 }
                                             </Menu>
-                                        </div>
+                                        </div>}
                                     </div>
                                     <div className="page-anchor">
                                         <Link to={`/chat/${this.userId}`}>

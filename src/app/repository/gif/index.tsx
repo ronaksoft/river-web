@@ -175,7 +175,7 @@ export default class GifRepo {
         const ids = gifs.map((gif, index) => {
             gif.id = gif.doc.id;
             if (fromRemote) {
-                gif.last_used = gifs.length - index;
+                gif.last_used = this.riverTime.now();
             }
             return gif.id || '';
         });
@@ -191,6 +191,9 @@ export default class GifRepo {
                 }
                 const t = find(gifs, {id: gif.id});
                 if (t) {
+                    if (fromRemote && gif.last_used) {
+                        t.last_used = gif.last_used;
+                    }
                     return this.mergeCheck(gif, t);
                 } else {
                     return gif;
