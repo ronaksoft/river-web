@@ -569,6 +569,7 @@ class UserDialog extends React.Component<IProps, IState> {
                 thumbFileLocation: user.photo.photosmall,
             }],
             peer,
+            teamId: '0',
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);

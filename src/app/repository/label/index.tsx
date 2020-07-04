@@ -115,7 +115,7 @@ export default class LabelRepo {
         });
     }
 
-    public getMessageByItem(id: number, {max, limit}: { min?: number, max?: number, limit?: number }, cacheCallback?: (cacheList: IMessage[]) => void): Promise<ILabelItemList> {
+    public getMessageByItem(teamId: string, id: number, {max, limit}: { min?: number, max?: number, limit?: number }, cacheCallback?: (cacheList: IMessage[]) => void): Promise<ILabelItemList> {
         let lim = limit || 1000;
         return new Promise((resolve, reject) => {
             this.getCachedMessageByItem(id, {max, limit: lim}).then((cacheRes) => {
@@ -128,7 +128,7 @@ export default class LabelRepo {
                         max = (cacheRes.messageList[cacheRes.messageList.length - 1].id || 0) - 1;
                     }
                     if (lim !== 0) {
-                        this.getRemoteMessageByItem(id, {max: max || 0, limit: lim}).then((remoteRes) => {
+                        this.getRemoteMessageByItem(teamId, id, {max: max || 0, limit: lim}).then((remoteRes) => {
                             resolve({
                                 labelCount: cacheRes.labelCount + remoteRes.length,
                                 messageList: [...cacheRes.messageList, ...MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId())],
@@ -172,11 +172,11 @@ export default class LabelRepo {
         });
     }
 
-    public getRemoteMessageByItem(id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
+    public getRemoteMessageByItem(teamId: string, id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
         return this.apiManager.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
             remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
             this.insertManyLabelItem(id, remoteRes.messagesList);
-            this.messageRepo.insertDiscrete(remoteRes.messagesList);
+            this.messageRepo.insertDiscrete(teamId, remoteRes.messagesList);
             this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);
             return remoteRes.messagesList;

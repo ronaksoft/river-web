@@ -46,6 +46,7 @@ interface IMedia {
     saved: boolean;
     type: number;
     userId: string;
+    teamId: string;
 }
 
 interface IProps {
@@ -54,6 +55,7 @@ interface IProps {
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onMore?: () => void;
     peer: InputPeer;
+    teamId: string;
 }
 
 interface IState {
@@ -300,10 +302,10 @@ class PeerMedia extends React.Component<IProps, IState> {
                 mediaType = C_MEDIA_TYPE.GIF;
                 break;
         }
-        this.mediaRepo.getMany({
+        this.mediaRepo.getMany(this.props.teamId, this.peerId, {
             limit: this.props.full ? 128 : 8,
             type: this.props.full ? mediaType : undefined,
-        }, this.peerId).then((result) => {
+        }).then((result) => {
             if (!this.props.full) {
                 result.messages = result.messages.slice(0, 4);
             }
@@ -353,6 +355,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 }],
                 peerId: item.peerId || '',
                 rect: (e.currentTarget || e).getBoundingClientRect(),
+                teamId: item.teamId,
                 type: item.type === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
             };
             this.documentViewerService.loadDocument(doc);
@@ -399,11 +402,13 @@ class PeerMedia extends React.Component<IProps, IState> {
                 default:
                     if (!item.saved) {
                         return (<div className="media-file-action">
-                            <span onClick={this.mediaActionClickHandler(item.id, 'view')}>{i18n.t('general.save')}</span>
+                            <span
+                                onClick={this.mediaActionClickHandler(item.id, 'view')}>{i18n.t('general.save')}</span>
                         </div>);
                     } else {
                         return (<div className="media-file-action">
-                            <span onClick={this.mediaActionClickHandler(item.id, 'open')}>{i18n.t('general.open')}</span>
+                            <span
+                                onClick={this.mediaActionClickHandler(item.id, 'open')}>{i18n.t('general.open')}</span>
                         </div>);
                     }
             }
@@ -454,12 +459,12 @@ class PeerMedia extends React.Component<IProps, IState> {
                     break;
             }
         }
-        this.mediaRepo.getMany({
+        this.mediaRepo.getMany(this.props.teamId, this.peerId, {
             after: !append ? breakPoint : undefined,
             before: append ? breakPoint : undefined,
             limit,
             type: mediaType,
-        }, this.peerId).then((result) => {
+        }).then((result) => {
             if (result.messages.length === 0) {
                 this.setState({
                     loading: false,
@@ -503,6 +508,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     info: getMediaInfo(item),
                     peerId: item.peerid || '',
                     saved: item.saved || false,
+                    teamId: item.teamid || '0',
                     type: item.messagetype || C_MESSAGE_TYPE.Normal,
                     userId: item.senderid || '',
                 });

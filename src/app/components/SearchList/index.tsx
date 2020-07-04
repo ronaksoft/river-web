@@ -60,6 +60,7 @@ export interface IInputPeer {
 }
 
 interface IProps {
+    teamId: string;
     onChange?: (peerInputs: IInputPeer[]) => void;
     contactOnly?: boolean;
     selectedIds?: string[];
@@ -173,8 +174,9 @@ class SearchList extends React.Component<IProps, IState> {
                         classes={{}}
                     />
                 </div>
-                {enableTopPeer && <TopPeer type={topPeerType || TopPeerType.Search} hideIds={ids}
-                                           onlyUser={this.props.contactOnly} onSelect={this.topPeerSelectHandler}/>}
+                {enableTopPeer &&
+                <TopPeer teamId={this.props.teamId} type={topPeerType || TopPeerType.Search} hideIds={ids}
+                         onlyUser={this.props.contactOnly} onSelect={this.topPeerSelectHandler}/>}
                 <div className="search-list-container">
                     {this.getWrapper()}
                 </div>
@@ -268,9 +270,12 @@ class SearchList extends React.Component<IProps, IState> {
                                                          noIcon={true}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
             } else if (value.dialog.peertype === PeerType.PEERGROUP) {
-                return (<Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid}/>} tabIndex={-1}
-                              label={<GroupName id={value.dialog.peerid} className="group-name"/>}
-                              onDelete={this.removeItemHandler(value)} className="chip"/>);
+                return (
+                    <Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid} teamId={value.dialog.teamid || '0'}/>}
+                          tabIndex={-1}
+                          label={<GroupName id={value.dialog.peerid} teamId={value.dialog.teamid || '0'}
+                                            className="group-name"/>}
+                          onDelete={this.removeItemHandler(value)} className="chip"/>);
             } else {
                 return (<span/>);
             }
@@ -313,9 +318,11 @@ class SearchList extends React.Component<IProps, IState> {
                               you={this.userId === inputPeer.dialog.peerid}
                               youPlaceholder={i18n.t('general.saved_messages')}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&
-                    <GroupAvatar className="avatar" id={inputPeer.dialog.peerid || ''}/>}
+                    <GroupAvatar className="avatar" id={inputPeer.dialog.peerid || ''}
+                                 teamId={inputPeer.dialog.teamid || '0'}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&
-                    <GroupName className="name" id={inputPeer.dialog.peerid || ''}/>}
+                    <GroupName className="name" id={inputPeer.dialog.peerid || ''}
+                               teamId={inputPeer.dialog.teamid || '0'}/>}
                     <span
                         className="phone">{this.getIcon(inputPeer.dialog.preview_icon)}{inputPeer.dialog.preview}</span>
                 </div>
@@ -341,7 +348,7 @@ class SearchList extends React.Component<IProps, IState> {
 
     /* Get all contacts */
     private getDefault() {
-        this.searchApi({}).then((res: IDialogWithContact) => {
+        this.searchApi(this.props.teamId, {}).then((res: IDialogWithContact) => {
             this.defaultInputPeer = res;
             this.inputPeerRes = clone(res);
             if (this.list) {

@@ -752,6 +752,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             peerId: message.peerid || '',
             rect: el.getBoundingClientRect(),
             stream: Boolean(streamReady && !message.downloaded),
+            teamId: message.teamid || '0',
             type: message.messagetype === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
         };
         this.documentViewerService.loadDocument(doc);

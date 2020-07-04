@@ -55,7 +55,7 @@ export default class AvatarService {
     }
 
     /* Get avatar picture */
-    public getAvatar(id: string, fileId: string, retires?: number): Promise<string> {
+    public getAvatar(teamId: string, id: string, fileId: string, retires?: number): Promise<string> {
         return new Promise((resolve, reject) => {
             if (this.avatars.hasOwnProperty(id)) {
                 if (this.avatars[id].retries > C_MAX_RETRY) {
@@ -76,7 +76,7 @@ export default class AvatarService {
                 this.getLocalFile(id, fileId).then((res) => {
                     resolve(res);
                 }).catch(() => {
-                    this.getRemoteFile(id, fileId).then((res) => {
+                    this.getRemoteFile(teamId, id, fileId).then((res) => {
                         resolve(res);
                     }).catch(() => {
                         remoteRetryFn();
@@ -93,7 +93,7 @@ export default class AvatarService {
                         if (retires <= C_MAX_RETRY || !this.avatars[id].retryRemote) {
                             this.avatars[id].retryRemote = true;
                             setTimeout(() => {
-                                this.getAvatar(id, fileId, retires).then((getAvatarRes) => {
+                                this.getAvatar(teamId, id, fileId, retires).then((getAvatarRes) => {
                                     resolve(getAvatarRes);
                                 }).catch(() => {
                                     remoteRetryFn();
@@ -134,9 +134,9 @@ export default class AvatarService {
     }
 
     /* Get photo location */
-    private getPhotoLocation(id: string) {
+    private getPhotoLocation(teamId: string, id: string) {
         if (id.indexOf('-') === 0) {
-            return this.groupRepo.get(id).then((res) => {
+            return this.groupRepo.get(teamId, id).then((res) => {
                 if (res) {
                     return res.photo;
                 } else {
@@ -155,10 +155,10 @@ export default class AvatarService {
     }
 
     /* Get remote file */
-    private getRemoteFile(id: string, fileId: string): Promise<string> {
+    private getRemoteFile(teamId: string, id: string, fileId: string): Promise<string> {
         return new Promise((resolve, reject) => {
             if (this.avatars.hasOwnProperty(id)) {
-                this.getPhotoLocation(id).then((res) => {
+                this.getPhotoLocation(teamId, id).then((res) => {
                     if (res) {
                         const fileLocation = new InputFileLocation();
                         fileLocation.setAccesshash(res.photosmall.accesshash || '');

@@ -26,6 +26,7 @@ interface IProps {
     isUpdating: boolean;
     onAction: (cmd: string) => (e?: any) => void;
     peer: InputPeer | null;
+    teamId: string;
     selectedDialogId: string;
 }
 
@@ -90,7 +91,7 @@ class StatusBar extends React.Component<IProps, IState> {
                 <UserName id={selectedDialogId} className="name" you={true}
                           youPlaceholder={i18n.t('general.saved_messages')} noDetail={true}/>}
                 {isGroup &&
-                <GroupName id={selectedDialogId} className="name"/>}
+                <GroupName id={selectedDialogId} teamId={this.props.teamId} className="name"/>}
                 {this.getChatStatus(savedMessages)}
             </span>
         );
@@ -118,7 +119,7 @@ class StatusBar extends React.Component<IProps, IState> {
         } else if (ids > 0) {
             return (isTypingRender(typingList, peer.getType() || PeerType.PEERUSER));
         } else if (!hideStatus) {
-            return (<LastSeen id={selectedDialogId} withLastSeen={true}/>);
+            return (<LastSeen id={selectedDialogId} teamId={this.props.teamId} withLastSeen={true}/>);
         } else {
             return null;
         }

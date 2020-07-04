@@ -27,6 +27,7 @@ interface IState {
 }
 
 class RightMenu extends React.PureComponent<IProps, IState> {
+    private teamId: string = '0';
     private ref: any;
 
     constructor(props: IProps) {
@@ -38,7 +39,8 @@ class RightMenu extends React.PureComponent<IProps, IState> {
         };
     }
 
-    public setPeer(peer: InputPeer | null) {
+    public setPeer(teamId: string, peer: InputPeer | null) {
+        this.teamId = teamId;
         this.setState({
             peer,
         });
@@ -98,11 +100,11 @@ class RightMenu extends React.PureComponent<IProps, IState> {
         return (
             <div ref={this.refHandler} className="right-menu">
                 {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
-                <GroupInfoMenu key="group-info" peer={peer} onClose={this.closeHandler}
+                <GroupInfoMenu key="group-info" peer={peer} teamId={this.teamId} onClose={this.closeHandler}
                                onAction={this.props.onMessageAttachmentAction}
                                onDeleteAndExitGroup={this.props.onDeleteAndExitGroup}/>}
                 {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERUSER) &&
-                <UserInfoMenu key="user-info" peer={peer} onClose={this.closeHandler}
+                <UserInfoMenu key="user-info" peer={peer} teamId={this.teamId} onClose={this.closeHandler}
                               onAction={this.props.onMessageAttachmentAction}/>}
             </div>
         );

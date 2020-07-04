@@ -27,6 +27,7 @@ interface IProps {
     onClick?: (id: number, e: any) => void;
     onDoubleClick?: (e: any) => void;
     peer: InputPeer | null;
+    teamId: string;
 }
 
 interface IState {
@@ -183,9 +184,9 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     private getMessage() {
-        const {peer} = this.props;
+        const {teamId, peer} = this.props;
         const {message} = this.state;
-        this.messageRepo.get(message.replyto || 0, peer).then((res) => {
+        this.messageRepo.get(message.replyto || 0, peer, teamId).then((res) => {
             if (!this.mounted) {
                 return;
             }

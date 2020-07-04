@@ -46,6 +46,7 @@ interface IProps {
     onChange?: (contacts: IUser[]) => void;
     onContextMenuAction?: (cmd: string, contact: IUser) => void;
     globalSearch?: boolean;
+    teamId: string;
 }
 
 interface IState {
@@ -374,7 +375,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 </span>
                                 <span className="name">
                                     <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
-                                    <LastSeen className="last-seen" id={contact.id || ''}/>
+                                    <LastSeen className="last-seen" id={contact.id || ''} teamId={this.props.teamId}/>
                                 </span>
                                 <span
                                     className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
@@ -400,7 +401,7 @@ class ContactList extends React.Component<IProps, IState> {
                         </span>
                         <span className="name">
                             <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
-                            <LastSeen className="last-seen" id={contact.id || ''}/>
+                            <LastSeen className="last-seen" id={contact.id || ''} teamId={this.props.teamId}/>
                         </span>
                         <span
                             className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
@@ -446,7 +447,7 @@ class ContactList extends React.Component<IProps, IState> {
                 });
             }
         };
-        this.userRepo.getAllContacts(fn).then(fn);
+        this.userRepo.getAllContacts(this.props.teamId, fn).then(fn);
     }
 
     /* Searches the given string */
@@ -468,7 +469,7 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
-        this.userRepo.getManyCache(true, {keyword: text, limit: 12}).then((res) => {
+        this.userRepo.getManyCache(this.props.teamId, true, {keyword: text, limit: 12}).then((res) => {
             this.contactsRes = clone(res || []);
             if (this.list) {
                 this.list.resetAfterIndex(0, false);
@@ -478,7 +479,7 @@ class ContactList extends React.Component<IProps, IState> {
             });
         });
         if (this.props.globalSearch && text.length > 0) {
-            this.searchRepo.globalSearch(text, this.contactsRes, (users) => {
+            this.searchRepo.globalSearch(this.props.teamId, text, this.contactsRes, (users) => {
                 if (this.list) {
                     this.list.resetAfterIndex(this.state.contacts.length, false);
                 }

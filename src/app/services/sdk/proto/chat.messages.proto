@@ -14,13 +14,6 @@ message MessagesSend {
     repeated MessageEntity Entities = 8;
 }
 
-// MessageBroadcast
-message MessagesBroadcast {
-    required string Body = 1;
-    repeated int64 ReceiverIDs = 2;
-    repeated MessageEntity Entities = 3;
-}
-
 // MessageSendMedia
 // @Function
 // @Return: Messages

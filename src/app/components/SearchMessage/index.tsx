@@ -32,10 +32,10 @@ import LabelPopover from "../LabelPopover";
 import GroupRepo from "../../repository/group";
 import {IUser} from "../../repository/user/interface";
 import UserPopover from "../UserPopover";
-
-import './style.scss';
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
+
+import './style.scss';
 
 const searchLimit: number = 10;
 
@@ -67,6 +67,7 @@ interface IState {
 }
 
 class SearchMessage extends React.PureComponent<IProps, IState> {
+    private teamId: string = '0';
     private ref: any = null;
     private searchRef: any = null;
     private labelPopoverRef: LabelPopover | undefined;
@@ -144,7 +145,8 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         }
     }
 
-    public setPeer(peer: InputPeer | null) {
+    public setPeer(teamId: string, peer: InputPeer | null) {
+        this.teamId = teamId;
         this.peer = peer;
         if (peer && peer.getType() === PeerType.PEERGROUP) {
             this.setState({
@@ -329,7 +331,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             this.reset();
             return;
         }
-        this.messageRepo.search(peer.getId() || '', {
+        this.messageRepo.search(this.teamId, peer.getId() || '', {
             keyword: text,
             labelIds: this.state.appliedSelectedLabelIds,
             limit: searchLimit,
@@ -362,7 +364,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         if (!peer) {
             return;
         }
-        this.messageRepo.search(peer.getId() || '', {
+        this.messageRepo.search(this.teamId, peer.getId() || '', {
             before,
             keyword: this.text,
             labelIds: this.state.appliedSelectedLabelIds,
@@ -532,7 +534,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         if (!this.peer) {
             return;
         }
-        this.groupRepo.getFull(this.peer.getId() || '', undefined, true).then((res) => {
+        this.groupRepo.getFull(this.teamId, this.peer.getId() || '', undefined, true).then((res) => {
             if (!res.participantList) {
                 return;
             }

@@ -221,7 +221,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         this.setState({
             loading: true
         });
-        this.storageUsageService.compute(this.computeProgress).then((list) => {
+        this.storageUsageService.compute('all', this.computeProgress).then((list) => {
             let totalSize: number = 0;
             const selectedDialogs: { [key: number]: boolean } = {};
             list.forEach((item) => {
@@ -262,7 +262,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
             case PeerType.PEERUSER:
                 return <UserName className="name" id={info.peerId}/>;
             case PeerType.PEERGROUP:
-                return <GroupName className="name" id={info.peerId}/>;
+                return <GroupName className="name" id={info.peerId} teamId={info.teamId}/>;
             default:
                 return null;
         }
@@ -273,7 +273,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
             case PeerType.PEERUSER:
                 return <UserAvatar className="avatar" id={info.peerId}/>;
             case PeerType.PEERGROUP:
-                return <GroupAvatar className="avatar" id={info.peerId}/>;
+                return <GroupAvatar className="avatar" id={info.peerId} teamId={info.teamId}/>;
             default:
                 return null;
         }

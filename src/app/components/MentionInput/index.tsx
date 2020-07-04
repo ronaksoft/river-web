@@ -44,6 +44,7 @@ interface IProps {
     value: string;
     peer: InputPeer | null;
     isBot: boolean;
+    teamId: string;
 }
 
 interface IState {
@@ -181,11 +182,11 @@ class MentionInput extends React.Component<IProps, IState> {
             }
             callback(uniqBy(users, 'id'));
         };
-        this.groupRepo.getFull(peer.getId() || '', undefined, true).then((group) => {
+        this.groupRepo.getFull(this.props.teamId, peer.getId() || '', undefined, true).then((group) => {
             if (group && group.participantList && group.participantList.length > 0) {
                 searchParticipant(keyword, group.participantList);
             } else {
-                this.groupRepo.getFull(peer.getId() || '').then((remoteGroup) => {
+                this.groupRepo.getFull(this.props.teamId, peer.getId() || '').then((remoteGroup) => {
                     if (remoteGroup && remoteGroup.participantList && remoteGroup.participantList.length > 0) {
                         searchParticipant(keyword, remoteGroup.participantList);
                     } else {

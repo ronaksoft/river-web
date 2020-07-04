@@ -18,6 +18,7 @@ import './style.scss';
 interface IProps {
     onClose?: () => void;
     onDone: (target: string, inputPeers: IInputPeer[]) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -58,7 +59,7 @@ class UserListDialog extends React.Component<IProps, IState> {
                            noScrollbar={true}
             >
                 <div className="user-list-dialog">
-                    <SearchList selectedIds={selectedIds} contactOnly={true}
+                    <SearchList selectedIds={selectedIds} contactOnly={true} teamId={this.props.teamId}
                                 onChange={this.forwardRecipientChangeHandler}/>
                     {Boolean(userList.length > 0 || (selectedIds.length > 0 && userList.length === 0)) &&
                     <div className="actions-bar">

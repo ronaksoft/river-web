@@ -66,9 +66,9 @@ const LabelHeader = ({message}: IProps) => {
         <div
             className={'label-message-item-header' + (message.peertype === PeerType.PEERGROUP && id !== '' ? ' with-sender' : '')}>
             {message.peertype === PeerType.PEERGROUP ? <>
-                <GroupAvatar id={message.peerid || ''} className="label-user-avatar"/>
+                <GroupAvatar id={message.peerid || ''} teamId={message.teamid || '0'} className="label-user-avatar"/>
                 <div className="label-user">
-                    <GroupName id={message.peerid || ''} className="label-user-name"/>
+                    <GroupName id={message.peerid || ''} teamId={message.teamid || '0'} className="label-user-name"/>
                     {id !== '' && <UserName id={id} noDetail={true} noIcon={true} className="label-user-sender"/>}
                 </div>
             </> : <>
@@ -196,6 +196,7 @@ const viewDocumentHandler = (message: IMessage) => (e: any) => {
         peerId: message.peerid || '',
         rect: el ? el.getBoundingClientRect() : undefined,
         stream: false,
+        teamId: message.teamid || '0',
         type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
     };
     DocumentViewerService.getInstance().loadDocument(doc);

@@ -194,7 +194,7 @@ export default class APIManager {
         }
     }
 
-    public setTeam(team: InputTeam.AsObject) {
+    public setTeam(team: InputTeam.AsObject | undefined) {
         this.server.setTeam(team);
         FileManager.getInstance().setTeam(team);
     }

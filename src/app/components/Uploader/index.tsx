@@ -142,6 +142,7 @@ const mentionInputStyle = {
 };
 
 class Uploader extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private dropzoneRef: Dropzone | undefined;
     private imageRef: any;
     private imageActionRef: any;
@@ -175,7 +176,8 @@ class Uploader extends React.Component<IProps, IState> {
         this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
     }
 
-    public openDialog(peer: InputPeer, items: File[], options: IUploaderOptions) {
+    public openDialog(teamId: string, peer: InputPeer, items: File[], options: IUploaderOptions) {
+        this.teamId = teamId;
         this.reset();
         this.options = options;
         const inputItems: IUploaderFile[] = items;
@@ -348,6 +350,7 @@ class Uploader extends React.Component<IProps, IState> {
                                         value={(items[selected] ? (items[selected].textarea || '') : '')}
                                         onChange={this.captionChangeHandler}
                                         placeholder={i18n.t('uploader.write_a_caption')}
+                                        teamId={this.teamId}
                                     />
                                 </div>
                             </div>

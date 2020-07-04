@@ -40,6 +40,7 @@ export interface IDocument {
     photoId?: string;
     type: 'avatar' | 'picture' | 'video' | 'location' | 'code';
     stream?: boolean;
+    teamId: string;
 }
 
 export default class DocumentViewerService {
@@ -84,22 +85,22 @@ export default class DocumentViewerService {
         if ((doc.type !== 'video' && doc.type !== 'picture') || !doc.peerId) {
             return;
         }
-        this.mediaRepo.getMany({
+        this.mediaRepo.getMany(doc.teamId, doc.peerId, {
             before: (doc.items[0].id || 0) - 1,
             limit: 1,
             type: C_MEDIA_TYPE.MEDIA
-        }, doc.peerId).then((res) => {
+        }).then((res) => {
             if (this.onDocumentPrev && res.messages.length > 0) {
                 this.onDocumentPrev(res.messages[0]);
             } else {
                 this.onDocumentPrev(null);
             }
         });
-        this.mediaRepo.getMany({
+        this.mediaRepo.getMany(doc.teamId, doc.peerId, {
             after: (doc.items[0].id || 0) + 1,
             limit: 1,
             type: C_MEDIA_TYPE.MEDIA
-        }, doc.peerId).then((res) => {
+        }).then((res) => {
             if (this.onDocumentNext && res.messages.length > 0) {
                 this.onDocumentNext(res.messages[0]);
             } else {

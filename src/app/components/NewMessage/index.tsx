@@ -23,6 +23,7 @@ interface IProps {
     onMessage?: (contacts: IUser[], text: string) => void;
     open: boolean;
     onClose: () => void;
+    teamId: string;
 }
 
 interface IState {
@@ -78,7 +79,8 @@ class NewMessage extends React.Component<IProps, IState> {
                                     </IconButton>
                                     {i18n.t('general.choose_recipients')}
                                 </div>
-                                <ContactList onChange={this.addRecipientChangeHandler} mode="chip"/>
+                                <ContactList onChange={this.addRecipientChangeHandler} mode="chip"
+                                             teamId={this.props.teamId}/>
                                 {Boolean(recipients.length > 0) && <div className="actions-bar">
                                     <div className="add-action" onClick={this.nextStepHandler}>
                                         <ArrowForwardRounded/>

@@ -174,7 +174,7 @@ export default class FileManager {
         });
     }
 
-    public setTeam(team: InputTeam.AsObject) {
+    public setTeam(team: InputTeam.AsObject | undefined) {
         this.httpWorkers.forEach((worker) => {
             worker.setTeam(team);
         });

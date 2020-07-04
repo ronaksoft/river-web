@@ -61,6 +61,7 @@ import {C_AVATAR_SIZE} from "../SettingsMenu";
 import './style.scss';
 
 interface IProps {
+    teamId: string;
     peer: InputPeer | null;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onClose?: (e: any) => void;
@@ -214,7 +215,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 {group && <div className="info kk-card">
                                     <div className={'avatar' + (Boolean(group && group.photo) ? ' pointer-cursor' : '')}
                                          onClick={this.avatarMenuAnchorOpenHandler}>
-                                        {!uploadingPhoto && <GroupAvatar id={group.id || ''} forceReload={true}/>}
+                                        {!uploadingPhoto &&
+                                        <GroupAvatar id={group.id || ''} teamId={group.teamid || '0'}
+                                                     forceReload={true}/>}
                                         {uploadingPhoto &&
                                         <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"
                                              draggable={false}/>}
@@ -311,7 +314,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     </div>}
                                 </React.Fragment>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false}
+                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.props.teamId}
                                            onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
                                 {group && <div className="participant kk-card">
                                     <label>{i18n.tf('peer_info.participants', String(group.participants))} </label>
@@ -360,7 +363,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia className="kk-card" peer={peer} full={true} onAction={this.props.onAction}/>}
+                        <PeerMedia className="kk-card" peer={peer} teamId={this.props.teamId} full={true}
+                                   onAction={this.props.onAction}/>}
                     </div>
                 </div>
                 <Menu
@@ -386,7 +390,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         <div className="dialog-header">
                             <PersonAddRounded/> {i18n.t('peer_info.add_member')}
                         </div>
-                        <ContactList hiddenContacts={participants} onChange={this.addMemberChangeHandler} mode="chip"/>
+                        <ContactList hiddenContacts={participants} onChange={this.addMemberChangeHandler} mode="chip"
+                                     teamId={this.props.teamId}/>
                         {Boolean(this.state.newMembers.length > 0) && <div className="actions-bar">
                             <div className="add-action" onClick={this.addMemberHandler}>
                                 <CheckRounded/>
@@ -447,10 +452,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return;
         }
 
-        if (data && (data.callerId === this.callerId || data.ids.indexOf(peer.getId()) === -1)) {
+        if (data && (data.callerId === this.callerId || data.ids.indexOf(`${this.props.teamId}_${peer.getId()}`) === -1)) {
             return;
         }
-        this.groupRepo.get(peer.getId() || '').then((res) => {
+        this.groupRepo.get(this.props.teamId, peer.getId() || '').then((res) => {
             if (res) {
                 this.setState({
                     group: res,
@@ -459,7 +464,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             }
         });
 
-        this.dialogRepo.get(peer.getId() || '').then((dialog) => {
+        this.dialogRepo.get(this.props.teamId, peer.getId() || '').then((dialog) => {
             if (dialog) {
                 this.setState({
                     dialog,
@@ -1010,6 +1015,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 thumbFileLocation: group.photo.photosmall,
             }],
             peer,
+            teamId: '0',
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);

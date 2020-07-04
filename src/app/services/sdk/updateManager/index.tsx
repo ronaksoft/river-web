@@ -102,6 +102,7 @@ interface ILabelRange {
 
 interface IClearDialog {
     maxId: number;
+    teamId: string;
     peerId: string;
     remove: boolean;
 }
@@ -109,6 +110,11 @@ interface IClearDialog {
 interface IModifyTempFile {
     fileIds: string[];
     message: IMessage;
+}
+
+interface IToCheckDialog {
+    peerid: string;
+    teamid: string;
 }
 
 interface ITransactionPayload {
@@ -127,7 +133,7 @@ interface ITransactionPayload {
     randomMessageIds: number[];
     removedLabels: number[];
     removedMessages: { [key: string]: number[] };
-    toCheckDialogIds: string[];
+    toCheckDialogIds: IToCheckDialog[];
     topPeers: ITopPeerWithType[];
     updateId: number;
     users: { [key: string]: IUser };
@@ -574,6 +580,7 @@ export default class UpdateManager {
                         maxId: message.actiondata.maxid || 0,
                         peerId: message.peerid || '',
                         remove: message.actiondata.pb_delete || false,
+                        teamId: message.teamid || '0',
                     });
                     if (transaction.users.hasOwnProperty(message.peerid || '') && transaction.users[message.peerid || ''].isbot) {
                         this.mergeUser(transaction.users, {
@@ -645,7 +652,10 @@ export default class UpdateManager {
                 // Update edited message list
                 transaction.editedMessageIds.push(updateMessageEdited.message.id || 0);
                 // Update to check list
-                transaction.toCheckDialogIds.push(updateMessageEdited.message.peerid || '');
+                transaction.toCheckDialogIds.push({
+                    peerid: updateMessageEdited.message.peerid || '',
+                    teamid: updateMessageEdited.message.teamid || '0',
+                });
                 break;
             case C_MSG.UpdateMessagesDeleted:
                 const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
@@ -663,7 +673,10 @@ export default class UpdateManager {
                 });
                 // Update to check list
                 if (updateMessagesDeleted.peer) {
-                    transaction.toCheckDialogIds.push(updateMessagesDeleted.peer.id || '');
+                    transaction.toCheckDialogIds.push({
+                        peerid: updateMessagesDeleted.peer.id || '',
+                        teamid: updateMessagesDeleted.teamid || '0',
+                    });
                 }
                 break;
             case C_MSG.UpdateReadMessagesContents:
@@ -1093,9 +1106,9 @@ export default class UpdateManager {
     private processTransactionStep3(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         if (transaction.toCheckDialogIds.length > 0) {
             const lastMessagePromise: any[] = [];
-            transaction.toCheckDialogIds.forEach((peerId) => {
+            transaction.toCheckDialogIds.forEach((toCheck) => {
                 if (this.messageRepo) {
-                    lastMessagePromise.push(this.messageRepo.getLastMessage(peerId));
+                    lastMessagePromise.push(this.messageRepo.getLastMessage(toCheck.teamid, toCheck.peerid));
                 }
             });
             Promise.all(lastMessagePromise).then((arr) => {
@@ -1151,10 +1164,10 @@ export default class UpdateManager {
         const promises: any[] = [];
         list.forEach((item) => {
             if (item.remove && this.dialogRepo) {
-                promises.push(this.dialogRepo.remove(item.peerId));
+                promises.push(this.dialogRepo.remove(item.teamId, item.peerId));
             }
             if (item.maxId > 0 && this.messageRepo) {
-                promises.push(this.messageRepo.clearHistory(item.peerId, item.maxId));
+                promises.push(this.messageRepo.clearHistory(item.teamId, item.peerId, item.maxId));
             }
         });
         return Promise.all(promises);

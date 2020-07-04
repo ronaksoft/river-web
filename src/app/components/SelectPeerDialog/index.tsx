@@ -22,6 +22,7 @@ interface IProps {
     contactOnly?: boolean;
     enableTopPeer?: boolean;
     topPeerType?: TopPeerType;
+    teamId: string;
 }
 
 interface IState {
@@ -30,7 +31,6 @@ interface IState {
 }
 
 class SelectPeerDialog extends React.Component<IProps, IState> {
-
     constructor(props: IProps) {
         super(props);
 
@@ -57,7 +57,8 @@ class SelectPeerDialog extends React.Component<IProps, IState> {
             >
                 <div className="select-peer-dialog">
                     <SearchList onChange={this.forwardRecipientChangeHandler} enableTopPeer={this.props.enableTopPeer}
-                                topPeerType={this.props.topPeerType} contactOnly={this.props.contactOnly}/>
+                                topPeerType={this.props.topPeerType} contactOnly={this.props.contactOnly}
+                                teamId={this.props.teamId}/>
                     {Boolean(selectedPeers.length > 0) && <div className="actions-bar">
                         <div className="add-action send" onClick={this.forwardHandler}>
                             <SendRounded/>

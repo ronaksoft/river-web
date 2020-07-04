@@ -248,6 +248,7 @@ message GroupPhoto {
 
 // Group
 message Group {
+    optional int64 TeamID = 100 [jstype = JS_STRING];
     required int64 ID = 1 [jstype = JS_STRING];
     required string Title = 2;
     required int64 CreatedOn = 3;

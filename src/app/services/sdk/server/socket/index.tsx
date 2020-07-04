@@ -12,7 +12,6 @@ import {IServerRequest, serverKeys} from '../index';
 import ElectronService from '../../../electron';
 import {EventWasmInit, EventWebSocketClose, EventWebSocketOpen} from "../../../events";
 import {C_LOCALSTORAGE} from "../../const";
-import {InputTeam} from "../../messages/core.types_pb";
 
 export const defaultGateway = 'cyrus.river.im';
 
@@ -60,7 +59,6 @@ export default class Socket {
     private resolveDecryptFn: any | undefined;
     private resolveGenSrpHashFn: any | undefined;
     private resolveGenInputPasswordFn: any | undefined;
-    private inputTeam: InputTeam.AsObject | undefined;
 
     public constructor() {
         this.testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
@@ -111,7 +109,10 @@ export default class Socket {
                     localStorage.setItem(C_LOCALSTORAGE.ConnInfo, d.data);
                     break;
                 case 'loadConnInfo':
-                    this.workerMessage('loadConnInfo', {connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo), serverKeys});
+                    this.workerMessage('loadConnInfo', {
+                        connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo),
+                        serverKeys
+                    });
                     this.initWebSocket();
                     this.workerMessage('initSDK', 0);
                     setTimeout(() => {
@@ -227,9 +228,9 @@ export default class Socket {
             payload: uint8ToBase64(data.data),
             reqId: data.reqId,
         };
-        if (this.inputTeam) {
-            payload.teamId = this.inputTeam.id;
-            payload.teamAccessHash = this.inputTeam.accesshash;
+        if (data.inputTeam) {
+            payload.teamId = data.inputTeam.id;
+            payload.teamAccessHash = data.inputTeam.accesshash;
         }
         this.workerMessage('fnCall', payload);
     }
@@ -263,10 +264,6 @@ export default class Socket {
     public tryAgain() {
         this.tryCounter = 0;
         this.closeWire(true);
-    }
-
-    public setTeam(inputTeam: InputTeam.AsObject) {
-        this.inputTeam = inputTeam;
     }
 
     private initWebSocket() {

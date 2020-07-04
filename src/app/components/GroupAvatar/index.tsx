@@ -21,6 +21,7 @@ interface IProps {
     className?: string;
     id: string;
     forceReload?: boolean;
+    teamId: string;
 }
 
 interface IState {
@@ -95,11 +96,11 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
             return;
         }
 
-        if (data && data.ids.indexOf(this.state.id) === -1) {
+        if (data && data.ids.indexOf(`${this.props.teamId}_${this.state.id}`) === -1) {
             return;
         }
 
-        this.groupRepo.get(this.state.id).then((group) => {
+        this.groupRepo.get(this.props.teamId, this.state.id).then((group) => {
             if (!this.mounted) {
                 return;
             }
@@ -134,7 +135,7 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
             if (this.state.group && group.id !== this.state.group.id) {
                 this.avatarService.resetRetries(group.id || '');
             }
-            this.getAvatar(group.id || '', group.photo.photosmall.fileid);
+            this.getAvatar(group.teamid || '0', group.id || '', group.photo.photosmall.fileid);
         } else {
             this.setState({
                 photo: undefined,
@@ -152,13 +153,13 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
             item = find(data.items, {id: this.state.id});
         }
         if (item) {
-            this.getAvatar(item.id, item.fileId);
+            this.getAvatar(item.teamid, item.id, item.fileId);
         }
     }
 
     /* Get avatar */
-    private getAvatar(id: string, fileId: string) {
-        this.avatarService.getAvatar(id, fileId).then((photo) => {
+    private getAvatar(teamId: string, id: string, fileId: string) {
+        this.avatarService.getAvatar(teamId, id, fileId).then((photo) => {
             if (photo !== '') {
                 this.setState({
                     photo,
@@ -175,7 +176,7 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
         if (group && group.photo && group.photo.photosmall.fileid && group.photo.photosmall.fileid !== '0') {
             const fileId = group.photo.photosmall.fileid;
             this.avatarService.remove(group.id || '', fileId).then(() => {
-                this.getAvatar(group.id || '', fileId);
+                this.getAvatar(group.teamid || '0', group.id || '', fileId);
             });
         }
     }

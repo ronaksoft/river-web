@@ -35,6 +35,7 @@ interface IState {
 }
 
 class InfoBar extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private currentUserId: string = UserRepo.getInstance().getCurrentUserId();
 
     constructor(props: IProps) {
@@ -49,7 +50,8 @@ class InfoBar extends React.Component<IProps, IState> {
         };
     }
 
-    public setPeer(peer: InputPeer | null, selectedDialogId: string) {
+    public setPeer(teamId: string, peer: InputPeer | null, selectedDialogId: string) {
+        this.teamId = teamId;
         this.setState({
             peer,
             selectedDialogId,
@@ -85,7 +87,7 @@ class InfoBar extends React.Component<IProps, IState> {
                            isOnline={isOnline}
                            isUpdating={isUpdating}
                            onAction={this.props.onAction}
-                           peer={peer} selectedDialogId={selectedDialogId}
+                           peer={peer} teamId={this.teamId} selectedDialogId={selectedDialogId}
                            currentUserId={this.currentUserId}
                 />
                 <div className="buttons">

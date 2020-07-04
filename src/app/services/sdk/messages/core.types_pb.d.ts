@@ -1041,6 +1041,11 @@ export namespace GroupPhoto {
 }
 
 export class Group extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasId(): boolean;
   clearId(): void;
   getId(): string | undefined;
@@ -1088,6 +1093,7 @@ export class Group extends jspb.Message {
 
 export namespace Group {
   export type AsObject = {
+    teamid?: string,
     id?: string,
     title?: string,
     createdon?: number,

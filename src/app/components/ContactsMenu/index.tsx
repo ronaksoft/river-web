@@ -28,6 +28,7 @@ interface IProps {
     id?: number;
     onClose?: () => void;
     onError?: (text: string) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -92,7 +93,8 @@ class ContactMenus extends React.Component<IProps, IState> {
                     </Tooltip>
                 </div>
                 <div className="contact-box">
-                    <ContactList ref={this.contactListRefHandler} className="contacts-menu" mode="link"
+                    <ContactList ref={this.contactListRefHandler} className="contacts-menu"
+                                 teamId={this.props.teamId} mode="link"
                                  noRowsRenderer={this.noRowsRenderer} disableCheckSelected={true}
                                  onContextMenuAction={this.contextMenuActionHandler} globalSearch={true}/>
                 </div>

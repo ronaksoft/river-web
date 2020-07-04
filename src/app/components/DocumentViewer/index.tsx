@@ -874,6 +874,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 width: info.width,
             }],
             peerId: message.peerid || '',
+            teamId: message.teamid || '0',
             type: message.messagetype === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
         };
         this.documentViewerService.loadDocument(doc);
@@ -1058,7 +1059,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.initUserAvatar(doc.peer);
                 break;
             case PeerType.PEERGROUP:
-                this.initGroupAvatar(doc.peer, id);
+                this.initGroupAvatar(doc.teamId, doc.peer, id);
                 break;
         }
     }
@@ -1074,7 +1075,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     /* Init group avatar */
-    private initGroupAvatar(peer: InputPeer, id?: string) {
+    private initGroupAvatar(teamId: string, peer: InputPeer, id?: string) {
         const fn = (group: IGroup) => {
             let index = 0;
             if (id) {
@@ -1085,7 +1086,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 gallerySelect: index === -1 ? 0 : index,
             });
         };
-        this.groupRepo.getFull(peer.getId() || '', fn).then(fn);
+        this.groupRepo.getFull(teamId, peer.getId() || '', fn).then(fn);
     }
 
     /* Init slide show */
@@ -1331,7 +1332,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (doc.peer.getType() === PeerType.PEERUSER) {
             this.hasAccess = (doc.peer.getId() === this.userId);
         } else if (doc.peer.getType() === PeerType.PEERGROUP) {
-            this.groupRepo.get(doc.peer.getId() || '').then((group) => {
+            this.groupRepo.get(doc.teamId, doc.peer.getId() || '').then((group) => {
                 if (group) {
                     this.hasAccess = hasAuthority(group, true);
                     this.forceUpdate();

@@ -22,6 +22,7 @@ export const C_MEDIA_TYPE = {
 
 export interface IMedia {
     id: number;
+    teamid: string;
     peerid: string;
     timestamp?: number;
     type: number;

@@ -152,7 +152,7 @@ export default class Http {
         return promise;
     }
 
-    public setTeam(inputTeam: InputTeam.AsObject) {
+    public setTeam(inputTeam: InputTeam.AsObject | undefined) {
         this.inputTeam = inputTeam;
     }
 

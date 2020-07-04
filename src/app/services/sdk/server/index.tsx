@@ -36,11 +36,13 @@ interface IRequestOptions {
     retryErrors?: IErrorPair[];
     retryWait?: number;
     timeout?: number;
+    inputTeam?: InputTeam.AsObject;
 }
 
 export interface IServerRequest {
     constructor: number;
     data: Uint8Array;
+    inputTeam?: InputTeam.AsObject;
     options?: IRequestOptions;
     reqId: number;
     retry: number;
@@ -89,6 +91,7 @@ export default class Server {
     private cancelList: number[] = [];
     private updateInterval: any = null;
     private systemConfig: SystemConfig.AsObject = {dcsList: []};
+    private inputTeam: InputTeam.AsObject | undefined;
 
     public constructor() {
         this.socket = Socket.getInstance();
@@ -144,8 +147,9 @@ export default class Server {
         }
     }
 
-    public setTeam(team: InputTeam.AsObject) {
-        this.socket.setTeam(team);
+    public setTeam(team: InputTeam.AsObject | undefined) {
+        this.inputTeam = team;
+        this.executeSendThrottledRequest();
     }
 
     /* Send a request to WASM worker over CustomEvent in window object */
@@ -179,6 +183,7 @@ export default class Server {
         const request: IServerRequest = {
             constructor,
             data,
+            inputTeam: options.inputTeam || this.inputTeam,
             options,
             reqId,
             retry: 0,
@@ -525,9 +530,9 @@ export default class Server {
         const v = localStorage.getItem(C_LOCALSTORAGE.Version);
         if (v === null) {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                v: 4,
+                v: 5,
             }));
-            return 4;
+            return 5;
         }
         const pv = JSON.parse(v);
         switch (pv.v) {
@@ -536,8 +541,9 @@ export default class Server {
             case 1:
             case 2:
             case 3:
-                return pv.v;
             case 4:
+                return pv.v;
+            case 5:
                 return false;
         }
     }
@@ -554,6 +560,9 @@ export default class Server {
                 return;
             case 3:
                 this.migrate3();
+                return;
+            case 4:
+                this.migrate4();
                 return;
         }
     }
@@ -605,7 +614,7 @@ export default class Server {
                 });
                 const promises: any[] = [];
                 promises.push(messageRepo.upsert(msgs));
-                promises.push(messageRepo.insertDiscrete(msgs));
+                promises.push(messageRepo.insertDiscrete('0', msgs));
                 Promise.all(promises).then(() => {
                     localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
                         v: 4,
@@ -614,6 +623,24 @@ export default class Server {
                 });
             });
         }, 100);
+    }
+
+    private migrate4() {
+        if (this.updateManager) {
+            this.updateManager.disableLiveUpdate();
+        }
+        setTimeout(() => {
+            MainRepo.getInstance().destroyDB().then(() => {
+                localStorage.removeItem(C_LOCALSTORAGE.LastUpdateId);
+                localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
+                localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+                    v: 5,
+                }));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+            });
+        }, 1000);
     }
 
     private getTime() {

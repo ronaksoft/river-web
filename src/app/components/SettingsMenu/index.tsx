@@ -194,6 +194,7 @@ interface IProps {
     onReloadDialog?: (peerIds: string[]) => void;
     onSubPlaceChange?: (sub: string, subChild: string) => void;
     onTeamChange?: (team: ITeam) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -465,7 +466,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                   onDone={this.changePhoneModalDoneHandler}/>
                 <TwoStepVerificationModal ref={this.twoStepVerificationModalRefHandler} onError={this.props.onError}
                                           onDone={this.twoStepVerificationModalDoneHandler}/>
-                <UserListDialog ref={this.userListDialogRefHandler} onDone={this.userListDialogDoneHandler}/>
+                <UserListDialog ref={this.userListDialogRefHandler} onDone={this.userListDialogDoneHandler}
+                                teamId={this.props.teamId}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -494,7 +496,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <UserName className="username" id={this.userId} noDetail={true}/>
                                             <div className="account-phone">{phone}</div>
                                         </div>
-                                        {Boolean(teamList.length > 0) && <div className="team-select">
+                                        {Boolean(teamList.length > 1) && <div className="team-select">
                                             <div className="select-input" onClick={this.teamOpenHandler}>
                                                 <div className="select-label">{teamSelectedName}</div>
                                                 <div className="select-icon"><ArrowDropDownRounded/></div>
@@ -1921,6 +1923,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 thumbFileLocation: user.photo.photosmall,
             }],
             peer,
+            teamId: '0',
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);
@@ -2629,10 +2632,18 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     private teamSelectHandler = (item: ITeam) => () => {
         localStorage.setItem(C_LOCALSTORAGE.TeamId, item.id || '0');
+        localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
+            accesshash: item.accesshash,
+            id: item.id,
+        }));
         this.setState({
+            teamMoreAnchorEl: null,
             teamSelectedId: item.id || '0',
             teamSelectedName: item.name || '',
         });
+        if (this.props.onTeamChange) {
+            this.props.onTeamChange(item);
+        }
     }
 }
 

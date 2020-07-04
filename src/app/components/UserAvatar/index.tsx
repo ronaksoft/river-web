@@ -300,7 +300,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
 
     /* Get avatar from service */
     private getAvatar(id: string, fileId: string) {
-        this.avatarService.getAvatar(id, fileId).then((photo) => {
+        this.avatarService.getAvatar('0', id, fileId).then((photo) => {
             if (!this.mounted) {
                 return;
             }

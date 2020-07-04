@@ -40,6 +40,7 @@ interface IStorageInfo {
 export interface IDialogInfo {
     mediaTypes: { [key: number]: IStorageInfo };
     peerId: string;
+    teamId: string;
     peerType: PeerType;
     totalFile: number;
     totalSize: number;
@@ -75,7 +76,7 @@ export default class StorageUsageService {
         this.messageRepo = MessageRepo.getInstance();
     }
 
-    public compute(progress?: (e: IStorageProgress) => void) {
+    public compute(teamId: string, progress?: (e: IStorageProgress) => void) {
         this.progressFn = progress;
         const promise = new Promise<IDialogInfo[]>((res, rej) => {
             this.promise.resolve = res;
@@ -88,7 +89,7 @@ export default class StorageUsageService {
         this.progressFn = progress;
         this.dialogInfo = {};
         this.computeQueue = [];
-        this.dialogRepo.getManyCache({}).then((dialogs) => {
+        this.dialogRepo.getManyCache(teamId, {}).then((dialogs) => {
             dialogs.forEach((dialog) => {
                 this.computeQueue.push(dialog.peerid || '');
             });
@@ -147,9 +148,9 @@ export default class StorageUsageService {
         });
     }
 
-    private getMediaFiles(peerId: string, before?: number) {
+    private getMediaFiles(teamId: string, peerId: string, before?: number) {
         const limit = 50;
-        return this.mediaRepo.getMany({limit, before}, peerId).then((res) => {
+        return this.mediaRepo.getMany(teamId, peerId, {limit, before}).then((res) => {
             const fileMap: any = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;
@@ -194,47 +195,49 @@ export default class StorageUsageService {
         });
     }
 
-    private getMediaListPart(peerId: string, before?: number) {
-        return this.getMediaFiles(peerId, before).then((res) => {
-            if (!this.dialogInfo.hasOwnProperty(peerId)) {
-                this.dialogInfo[peerId] = {
+    private getMediaListPart(teamId: string, peerId: string, before?: number) {
+        return this.getMediaFiles(teamId, peerId, before).then((res) => {
+            const mapId = `${teamId}_${peerId}`;
+            if (!this.dialogInfo.hasOwnProperty(mapId)) {
+                this.dialogInfo[mapId] = {
                     mediaTypes: {},
                     peerId,
                     peerType: res.peerType,
+                    teamId,
                     totalFile: 0,
                     totalSize: 0,
                 };
             }
             res.infoList.forEach((list) => {
-                this.dialogInfo[peerId].totalFile++;
-                this.dialogInfo[peerId].totalSize += list.size;
-                if (!this.dialogInfo[peerId].mediaTypes[list.mediaType]) {
-                    this.dialogInfo[peerId].mediaTypes[list.mediaType] = {
+                this.dialogInfo[mapId].totalFile++;
+                this.dialogInfo[mapId].totalSize += list.size;
+                if (!this.dialogInfo[mapId].mediaTypes[list.mediaType]) {
+                    this.dialogInfo[mapId].mediaTypes[list.mediaType] = {
                         fileIds: [],
                         totalFile: 0,
                         totalSize: 0,
                     };
                 }
-                this.dialogInfo[peerId].mediaTypes[list.mediaType].fileIds.push({fileId: list.fileId, id: list.id});
-                this.dialogInfo[peerId].mediaTypes[list.mediaType].totalFile++;
-                this.dialogInfo[peerId].mediaTypes[list.mediaType].totalSize += list.size;
+                this.dialogInfo[mapId].mediaTypes[list.mediaType].fileIds.push({fileId: list.fileId, id: list.id});
+                this.dialogInfo[mapId].mediaTypes[list.mediaType].totalFile++;
+                this.dialogInfo[mapId].mediaTypes[list.mediaType].totalSize += list.size;
             });
             return res;
         });
     }
 
-    private startComputing(peerId?: string, before?: number, total?: number) {
+    private startComputing(teamId?: string, peerId?: string, before?: number, total?: number) {
         if (!peerId) {
             peerId = this.computeQueue.shift();
         }
-        if (peerId) {
-            this.getMediaListPart(peerId, before).then((res) => {
+        if (teamId && peerId) {
+            this.getMediaListPart(teamId, peerId, before).then((res) => {
                 if (!total) {
                     total = 0;
                 }
                 total += res.infoList.length;
                 if (res.more) {
-                    this.startComputing(peerId, res.minId - 1, total);
+                    this.startComputing(teamId, peerId, res.minId - 1, total);
                 } else {
                     this.startComputing(undefined, undefined, total);
                 }

@@ -43,11 +43,11 @@ export default class SearchRepo {
         this.topPeerRepo = TopPeerRepo.getInstance();
     }
 
-    public searchIds({skip, limit, keyword}: any): Promise<string[]> {
+    public searchIds(teamId: string, {skip, limit, keyword}: any): Promise<string[]> {
         const promises: any[] = [];
         limit = limit || 12;
-        promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
-        promises.push(this.groupRepo.getManyCache({limit, keyword}));
+        promises.push(this.userRepo.getManyCache(teamId, false, {limit, keyword}));
+        promises.push(this.groupRepo.getManyCache(teamId, {limit, keyword}));
         return new Promise<string[]>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
             Promise.all(promises).then((arrRes) => {
@@ -63,12 +63,12 @@ export default class SearchRepo {
         });
     }
 
-    public search = ({skip, limit, keyword}: any): Promise<IDialogWithContact> => {
+    public search = (teamId: string, {skip, limit, keyword}: any): Promise<IDialogWithContact> => {
         const promises: any[] = [];
         limit = limit || 128;
         skip = skip || 0;
-        promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
-        promises.push(this.groupRepo.getManyCache({limit, keyword}));
+        promises.push(this.userRepo.getManyCache(teamId, false, {limit, keyword}));
+        promises.push(this.groupRepo.getManyCache(teamId, {limit, keyword}));
         return new Promise<IDialogWithContact>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
             Promise.all(promises).then((arrRes) => {
@@ -79,7 +79,7 @@ export default class SearchRepo {
                         }
                     });
                 });
-                this.dialogRepo.findInArray(Object.keys(ids), skip, limit).then((res) => {
+                this.dialogRepo.findInArray(teamId, Object.keys(ids), skip, limit).then((res) => {
                     resolve({
                         contacts: (arrRes[0] || []).filter((user: IUser) => {
                             return user.is_contact === 1;
@@ -104,8 +104,8 @@ export default class SearchRepo {
         });
     }
 
-    public searchUser = ({skip, limit, keyword}: any): Promise<IDialogWithContact> => {
-        return this.userRepo.getManyCache(false, {limit, keyword}).then((res) => {
+    public searchUser = (teamId: string, {limit, keyword}: {limit?: number, keyword?: string}): Promise<IDialogWithContact> => {
+        return this.userRepo.getManyCache(teamId, false, {limit, keyword}).then((res) => {
             return ({
                 contacts: res.filter((user: IUser) => {
                     return user.lastname !== undefined || user.firstname !== undefined;
@@ -131,18 +131,18 @@ export default class SearchRepo {
         return this.userRepo.contactSearch(username);
     }
 
-    public globalSearch(keyword: string, ignoreUsers: IUser[], callback: (users: IUser[]) => void) {
+    public globalSearch(teamId: string, keyword: string, ignoreUsers: IUser[], callback: (users: IUser[]) => void) {
         const limit = 128;
         const skip = 0;
         let users: IUser[] = [];
-        this.userRepo.getManyCache(false, {limit, keyword}).then((userRes) => {
+        this.userRepo.getManyCache(teamId, false, {limit, keyword}).then((userRes) => {
             const ids: { [key: string]: IUser } = {};
             userRes.forEach((item: IUser) => {
                 if (!ids.hasOwnProperty(item.id || '')) {
                     ids[item.id || ''] = item;
                 }
             });
-            return this.dialogRepo.findInArray(Object.keys(ids), skip, limit).then((res) => {
+            return this.dialogRepo.findInArray(teamId, Object.keys(ids), skip, limit).then((res) => {
                 return res.map((d) => {
                     return ids[d.peerid || ''] || null;
                 }).filter(o => o !== null);
@@ -160,7 +160,7 @@ export default class SearchRepo {
         };
     }
 
-    public getSearchTopPeers(type: TopPeerType, limit: number, onlyUser?: boolean): Promise<ITopPeerItem[]> {
+    public getSearchTopPeers(teamId: string, type: TopPeerType, limit: number, onlyUser?: boolean): Promise<ITopPeerItem[]> {
         return this.topPeerRepo.list(type, limit).then((res) => {
             const promises: any[] = [];
             const userIds: string[] = [];
@@ -176,7 +176,7 @@ export default class SearchRepo {
                 }
             });
             promises.push(this.userRepo.findInArray(userIds, 0, C_TOP_PEER_LEN));
-            promises.push(this.groupRepo.findInArray(groupIds, 0, C_TOP_PEER_LEN));
+            promises.push(this.groupRepo.findInArray(teamId, groupIds, 0, C_TOP_PEER_LEN));
             return Promise.all(promises).then((data) => {
                 const list: ITopPeerItem[] = [];
                 res.forEach((item) => {

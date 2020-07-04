@@ -55,6 +55,7 @@ interface IProps {
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
     onClose: (e: any) => void;
     peer: InputPeer | null;
+    teamId: string;
 }
 
 interface IState {
@@ -293,7 +294,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false}
+                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.props.teamId}
                                            onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
                             </div>
                         </Scrollbars>
@@ -310,7 +311,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia className="kk-card" peer={peer} full={true} onAction={this.props.onAction}/>}
+                        <PeerMedia className="kk-card" peer={peer} teamId={this.props.teamId} full={true}
+                                   onAction={this.props.onAction}/>}
                     </div>
                 </div>
                 <Dialog
@@ -380,7 +382,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             });
         }
 
-        this.dialogRepo.get(peer.getId() || '').then((dialog) => {
+        this.dialogRepo.get(this.props.teamId, peer.getId() || '').then((dialog) => {
             if (dialog) {
                 this.setState({
                     dialog,
@@ -566,6 +568,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 thumbFileLocation: user.photo.photosmall,
             }],
             peer,
+            teamId: '0',
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);

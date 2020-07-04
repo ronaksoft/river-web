@@ -18,7 +18,7 @@ import Test from './../pages/Test2';
 /* tslint:disable:jsx-no-lambda */
 export default (
     <Switch>
-        <Route path="/chat/:id/:mid?" component={(props: any) => (
+        <Route path="/chat/:tid/:id/:mid?" component={(props: any) => (
             <Chat {...props}/>
         )}/>
         <Route path="/signup/:mode" component={(props: any) => (

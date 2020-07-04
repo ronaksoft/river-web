@@ -47,6 +47,7 @@ interface IProps {
     cancelIsTyping: (id: string) => void;
     onContextMenu?: (cmd: string, dialog: IDialog) => void;
     onDrop: (peerId: string, files: File[], hasData: boolean) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -319,7 +320,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                                    onApply={this.labelPopoverApplyHandler} closeAfterSelect={true}
                                                    onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
-                {searchEnable && <TopPeer type={TopPeerType.Search} visible={focus}/>}
+                {searchEnable && <TopPeer teamId={this.props.teamId} type={TopPeerType.Search} visible={focus}/>}
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
                     <AutoSizer>
@@ -669,7 +670,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             let ids: string[] = [];
             let contacts: IUser[] = [];
             // Search local db
-            this.searchRepo.search({keyword, limit: 100}).then((res) => {
+            this.searchRepo.search(this.props.teamId, {keyword, limit: 100}).then((res) => {
                 ids.push(...res.dialogs.map(o => (o.peerid || '')));
                 ids = uniq(ids);
                 contacts.push(...res.contacts);

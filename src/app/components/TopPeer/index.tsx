@@ -32,6 +32,7 @@ import './style.scss';
 interface IProps {
     onSelect?: (type: PeerType, item: IUser | IGroup) => void;
     type: TopPeerType;
+    teamId: string;
     visible?: boolean;
     noTitle?: boolean;
     onlyUser?: boolean;
@@ -75,7 +76,7 @@ class TopPeer extends React.Component<IProps, IState> {
     }
 
     public componentDidMount(): void {
-        this.searchRepo.getSearchTopPeers(this.props.type, C_TOP_PEER_LEN, this.props.onlyUser).then((list) => {
+        this.searchRepo.getSearchTopPeers(this.props.teamId, this.props.type, C_TOP_PEER_LEN, this.props.onlyUser).then((list) => {
             this.setState({
                 list,
             });
@@ -124,9 +125,11 @@ class TopPeer extends React.Component<IProps, IState> {
                               youPlaceholder={i18n.t('general.saved_messages')}/>
                 </>;
             case PeerType.PEERGROUP:
+                const group = item.item as IGroup;
                 return <>
-                    <GroupAvatar id={item.item.id || '0'} className="top-peer-avatar"/>
-                    <GroupName id={item.item.id || '0'} noIcon={true} className="top-peer-name"/>
+                    <GroupAvatar id={group.id || '0'} teamId={group.teamid || '0'} className="top-peer-avatar"/>
+                    <GroupName id={group.id || '0'} teamId={group.teamid || '0'} noIcon={true}
+                               className="top-peer-name"/>
                 </>;
             default:
                 return null;

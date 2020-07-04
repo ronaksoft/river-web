@@ -250,7 +250,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
 
     return (
         <Link className="dialog-a" onClick={onClick} data-peerid={dialog.peerid}
-              to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}
+              to={messageId ? `/chat/${dialog.teamid}/${dialog.peerid}/${messageId}` : `/chat/${dialog.teamid}/${dialog.peerid}`}
               onDrop={dropHandler}
         >
             <div
@@ -262,7 +262,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                     <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
                                 savedMessages={dialog.saved_messages} onlineIndicator={selectedId !== ''}/>}
                     {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                    <GroupAvatar className="avatar" id={dialog.peerid || ''}/>}
+                    <GroupAvatar className="avatar" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
                     <div className="dialog-top-bar">
                         {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
                         {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
@@ -270,7 +270,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                                   you={dialog.saved_messages} onLoad={userNameLoadHandler}
                                   youPlaceholder={i18n.t('general.saved_messages')}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                        <GroupName className="name" id={dialog.peerid || ''}/>}
+                        <GroupName className="name" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
                         {dialog.preview_me && <span
                             className="status"><GetStatus id={dialog.topmessageid || 0} isBot={isBot}
                                                           readId={dialog.readoutboxmaxid || 0} userId={userId}

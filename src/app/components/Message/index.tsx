@@ -975,7 +975,7 @@ class Message extends React.Component<IProps, IState> {
                                               noIcon={true} noDetail={this.state.selectable}
                                               onLoad={userNameLoadHandler}/>}
                                     {Boolean(message.replyto && message.replyto !== 0 && message.deleted_reply !== true) &&
-                                    <MessagePreview message={message} peer={peer}
+                                    <MessagePreview message={message} peer={peer} teamId={message.teamid || '0'}
                                                     onDoubleClick={this.moreCmdHandler('reply', index)}
                                                     onClick={this.props.onJumpToMessage}
                                                     disableClick={this.state.selectable}
@@ -1410,6 +1410,7 @@ class Message extends React.Component<IProps, IState> {
             }],
             peer: this.peer ? this.peer : undefined,
             photoId: photo.photoid,
+            teamId: '0',
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);

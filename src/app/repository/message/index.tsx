@@ -64,6 +64,7 @@ interface IMessageBundleReq {
 interface IMessageBundle {
     peer: InputPeer;
     reqs: { [key: string]: IMessageBundleReq };
+    teamId: string;
 }
 
 export const getMediaDocument = (msg: IMessage) => {
@@ -291,6 +292,7 @@ export default class MessageRepo {
             MediaRepo.getInstance().lazyUpsert([{
                 id: out.id,
                 peerid: out.peerid || '',
+                teamid: out.teamid || '0',
                 type: msgType,
             }]);
         }
@@ -438,12 +440,12 @@ export default class MessageRepo {
         }).delete();
     }
 
-    public list({peer, limit, before, after, withPending, localOnly}: { peer: InputPeer, limit?: number, before?: number, after?: number, withPending?: boolean, localOnly?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMessage[]> {
+    public list(teamId: string, {peer, limit, before, after, withPending, localOnly}: { peer: InputPeer, limit?: number, before?: number, after?: number, withPending?: boolean, localOnly?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMessage[]> {
         let fnEarlyCallback = earlyCallback;
         if (withPending && earlyCallback) {
-            fnEarlyCallback = this.getPeerPendingMessage(peer, earlyCallback);
+            fnEarlyCallback = this.getPeerPendingMessage(teamId, peer, earlyCallback);
         }
-        const pipe = this.db.messages.where('[peerid+id]');
+        const pipe = this.db.messages.where('[teamid+peerid+id]');
         let pipe2: Dexie.Collection<IMessage, number>;
         let mode = 0x0;
         if (before !== undefined) {
@@ -460,19 +462,19 @@ export default class MessageRepo {
             // none
             default:
             case 0x0:
-                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true);
+                pipe2 = pipe.between([teamId, peerId, Dexie.minKey], [teamId, peerId, Dexie.maxKey], true, true);
                 break;
             // before
             case 0x1:
-                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, safeBefore], true, false);
+                pipe2 = pipe.between([teamId, peerId, Dexie.minKey], [teamId, peerId, safeBefore], true, false);
                 break;
             // after
             case 0x2:
-                pipe2 = pipe.between([peerId, safeAfter], [peerId, Dexie.maxKey], false, true);
+                pipe2 = pipe.between([teamId, peerId, safeAfter], [teamId, peerId, Dexie.maxKey], false, true);
                 break;
             // between
             case 0x3:
-                pipe2 = pipe.between([peerId, safeAfter], [peerId, safeBefore], false, false);
+                pipe2 = pipe.between([teamId, peerId, safeAfter], [teamId, peerId, safeBefore], false, false);
                 break;
         }
         // not before
@@ -498,6 +500,9 @@ export default class MessageRepo {
             window.console.debug('has hole:', hasHole);
             let lastId: number = (mode === 0x2 ? safeAfter : safeBefore);
             const asc = (mode === 0x2);
+            if (localOnly && hasHole) {
+                localOnly = false;
+            }
             if (!hasHole) {
                 if (res.length > 0) {
                     lastId = (res[res.length - 1].id || -1);
@@ -511,18 +516,18 @@ export default class MessageRepo {
                 }
                 if (fnEarlyCallback && res.length > 0) {
                     fnEarlyCallback(res);
-                    return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit - res.length, localOnly);
+                    return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit - res.length, localOnly);
                 } else {
                     if (fnEarlyCallback) {
                         fnEarlyCallback([]);
                     }
-                    return this.completeMessagesLimitFromRemote(peer, res, lastId, asc, safeLimit - res.length, localOnly);
+                    return this.completeMessagesLimitFromRemote(teamId, peer, res, lastId, asc, safeLimit - res.length, localOnly);
                 }
             } else {
                 if (fnEarlyCallback) {
                     fnEarlyCallback([]);
                 }
-                return this.completeMessagesLimitFromRemote(peer, [], lastId, asc, safeLimit, localOnly);
+                return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit, localOnly);
             }
         });
     }
@@ -536,22 +541,22 @@ export default class MessageRepo {
         }
     }
 
-    public getLastMessage(peerId: string) {
-        return this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true)
+    public getLastMessage(teamId: string, peerId: string) {
+        return this.db.messages.where('[teamid+peerid+id]').between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true)
             .filter((item: IMessage) => {
                 return (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
             }).last();
     }
 
-    public get(id: number, peer?: InputPeer | null): Promise<IMessage | null> {
+    public get(id: number, peer?: InputPeer | null, teamId?: string): Promise<IMessage | null> {
         return new Promise((resolve, reject) => {
             if (this.lazyMap.hasOwnProperty(id)) {
                 resolve(this.lazyMap[id]);
                 return;
             }
             const fn = () => {
-                if (peer) {
-                    this.getBundleMessage(peer, id).then((remoteRes) => {
+                if (peer && teamId) {
+                    this.getBundleMessage(teamId, peer, id).then((remoteRes) => {
                         resolve(remoteRes);
                     }).catch((err) => {
                         reject(err);
@@ -572,7 +577,7 @@ export default class MessageRepo {
         });
     }
 
-    public getBundleMessage(peer: InputPeer, id: number): Promise<IMessage> {
+    public getBundleMessage(teamId: string, peer: InputPeer, id: number): Promise<IMessage> {
         let internalResolve = null;
         let internalReject = null;
 
@@ -582,24 +587,26 @@ export default class MessageRepo {
         });
 
         const peerId = peer.getId() || '';
+        const mapId = `${teamId}_${peerId}`;
 
-        if (!this.messageBundle.hasOwnProperty(peerId)) {
-            this.messageBundle[peerId] = {
+        if (!this.messageBundle.hasOwnProperty(mapId)) {
+            this.messageBundle[mapId] = {
                 peer,
                 reqs: {},
+                teamId,
             };
         }
 
         const idStr = String(id);
 
-        if (!this.messageBundle[peerId].reqs.hasOwnProperty(idStr)) {
-            this.messageBundle[peerId].reqs[idStr] = {
+        if (!this.messageBundle[mapId].reqs.hasOwnProperty(idStr)) {
+            this.messageBundle[mapId].reqs[idStr] = {
                 id,
                 promises: [],
             };
         }
 
-        this.messageBundle[peerId].reqs[idStr].promises.push({
+        this.messageBundle[mapId].reqs[idStr].promises.push({
             reject: internalReject,
             resolve: internalResolve,
         });
@@ -612,7 +619,7 @@ export default class MessageRepo {
     }
 
     // Search message bodies
-    public search(peerId: string, {keyword, labelIds, senderIds, before, after, limit}: { keyword: string, labelIds?: number[], senderIds?: string[], before?: number, after?: number, limit?: number }) {
+    public search(teamId: string, peerId: string, {keyword, labelIds, senderIds, before, after, limit}: { keyword: string, labelIds?: number[], senderIds?: string[], before?: number, after?: number, limit?: number }) {
         let mode = 0x0;
         if (before !== null && before !== undefined) {
             mode = mode | 0x1;
@@ -620,25 +627,25 @@ export default class MessageRepo {
         if (after !== null && after !== undefined) {
             mode = mode | 0x2;
         }
-        const pipe = this.db.messages.where('[peerid+id]');
+        const pipe = this.db.messages.where('[teamid+peerid+id]');
         let pipe2: Dexie.Collection<IMessage, number>;
         switch (mode) {
             // none
             default:
             case 0x0:
-                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true);
+                pipe2 = pipe.between([teamId, peerId, Dexie.minKey], [teamId, peerId, Dexie.maxKey], true, true);
                 break;
             // before
             case 0x1:
-                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, before || 0], true, true);
+                pipe2 = pipe.between([teamId, peerId, Dexie.minKey], [teamId, peerId, before || 0], true, true);
                 break;
             // after
             case 0x2:
-                pipe2 = pipe.between([peerId, after || 0], [peerId, Dexie.maxKey], true, true);
+                pipe2 = pipe.between([teamId, peerId, after || 0], [teamId, peerId, Dexie.maxKey], true, true);
                 break;
             // between
             case 0x3:
-                pipe2 = pipe.between([peerId, (after || 0) + 1], [peerId, (before || 0) - 1], true, true);
+                pipe2 = pipe.between([teamId, peerId, (after || 0) + 1], [teamId, peerId, (before || 0) - 1], true, true);
                 break;
         }
         if (mode !== 0x2) {
@@ -766,7 +773,7 @@ export default class MessageRepo {
         });
     }
 
-    public getUnreadCount(peerId: string, minId: number, topMessageId: number): Promise<{ message: number, mention: number }> {
+    public getUnreadCount(teamId: string, peerId: string, minId: number, topMessageId: number): Promise<{ message: number, mention: number }> {
         if (topMessageId === 0) {
             // @ts-ignore
             topMessageId = Dexie.maxKey;
@@ -782,8 +789,8 @@ export default class MessageRepo {
         }
         return new Promise((resolve, reject) => {
             let mention = 0;
-            this.db.messages.where('[peerid+id]')
-                .between([peerId, minId + 1], [peerId, topMessageId], true, true).filter((item) => {
+            this.db.messages.where('[teamid+peerid+id]')
+                .between([teamId, peerId, minId + 1], [teamId, peerId, topMessageId], true, true).filter((item) => {
                 if (item.me !== true && ((item.id || 0) >= minId) && item.mention_me === true) {
                     mention += 1;
                 }
@@ -798,15 +805,15 @@ export default class MessageRepo {
         });
     }
 
-    public getLastIncomingMessage(peerId: string): Promise<IMessage | undefined> {
-        return this.db.messages.where('[peerid+id]')
-            .between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true).filter((item) => {
+    public getLastIncomingMessage(teamId: string, peerId: string): Promise<IMessage | undefined> {
+        return this.db.messages.where('[teamid+peerid+id]')
+            .between([teamId, peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true).filter((item) => {
                 return (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0 && item.senderid !== this.userId);
             }).reverse().first();
     }
 
-    public clearHistory(peerId: string, id: number): Promise<any> {
-        return this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, id], true, true).delete();
+    public clearHistory(teamId: string, peerId: string, id: number): Promise<any> {
+        return this.db.messages.where('[teamid+peerid+id]').between([teamId, peerId, Dexie.minKey], [teamId, peerId, id], true, true).delete();
     }
 
     public flush() {
@@ -825,7 +832,7 @@ export default class MessageRepo {
         return this.upsert(msgs);
     }
 
-    public insertDiscrete(messages: IMessage[]) {
+    public insertDiscrete(teamId: string, messages: IMessage[]) {
         const peerGroups = groupBy(messages, (o => o.peerid || ''));
         const edgeIds: any[] = [];
         const holeIds: { [key: number]: { lower: boolean, peerId: string } } = {};
@@ -833,16 +840,16 @@ export default class MessageRepo {
             msgs.sort((a, b) => (a.id || 0) - (b.id || 0)).forEach((msg, index) => {
                 const id = msg.id || 0;
                 if (id > 1 && (index === 0 || (index > 0 && ((msgs[index - 1].id || 0) + 1) !== msg.id))) {
-                    edgeIds.push([peerId, id - 1]);
+                    edgeIds.push([teamId, peerId, id - 1]);
                     holeIds[id - 1] = {lower: true, peerId};
                 }
                 if ((msgs.length - 1 === index) || (msgs.length - 1 > index && ((msgs[index + 1].id || 0) - 1) !== msg.id)) {
-                    edgeIds.push([peerId, id + 1]);
+                    edgeIds.push([teamId, peerId, id + 1]);
                     holeIds[id + 1] = {lower: false, peerId};
                 }
             });
         }
-        return this.db.messages.where('[peerid+id]').anyOf(edgeIds).toArray().then((msgs) => {
+        return this.db.messages.where('[teamid+peerid+id]').anyOf(edgeIds).toArray().then((msgs) => {
             const holes: IMessage[] = [];
             msgs.forEach((msg) => {
                 const id = msg.id || 0;
@@ -851,7 +858,7 @@ export default class MessageRepo {
                 }
             });
             for (const [id, data] of Object.entries(holeIds)) {
-                holes.push(this.getHoleMessage(data.peerId, parseInt(id, 10), data.lower));
+                holes.push(this.getHoleMessage(teamId, data.peerId, parseInt(id, 10), data.lower));
             }
             return this.db.messages.bulkPut([...messages, ...holes]);
         });
@@ -865,23 +872,25 @@ export default class MessageRepo {
         }).toArray();
     }
 
-    public insertHole(peerId: string, id: number, asc: boolean) {
+    public insertHole(teamId: string, peerId: string, id: number, asc: boolean) {
         return this.db.messages.put({
             id: id + (asc ? 0.5 : -0.5),
             messagetype: C_MESSAGE_TYPE.Hole,
             peerid: peerId,
+            teamid: teamId,
         });
     }
 
-    public getHoleMessage(peerId: string, id: number, asc: boolean): IMessage {
+    public getHoleMessage(teamId: string, peerId: string, id: number, asc: boolean): IMessage {
         return {
             id: id + (asc ? 0.5 : -0.5),
             messagetype: C_MESSAGE_TYPE.Hole,
             peerid: peerId,
+            teamid: teamId,
         };
     }
 
-    public insertEnd(peerId: string, id: number) {
+    public insertEnd(teamId: string, peerId: string, id: number) {
         return this.db.messages.put({
             id: id - 0.5,
             messagetype: C_MESSAGE_TYPE.End,
@@ -889,7 +898,7 @@ export default class MessageRepo {
         });
     }
 
-    private completeMessagesLimitFromRemote(peer: InputPeer, messages: IMessage[], id: number, asc: boolean, limit: number, localOnly?: boolean): Promise<IMessage[]> {
+    private completeMessagesLimitFromRemote(teamId: string, peer: InputPeer, messages: IMessage[], id: number, asc: boolean, limit: number, localOnly?: boolean): Promise<IMessage[]> {
         if (id === -1) {
             return Promise.reject('bad message id');
         }
@@ -900,7 +909,7 @@ export default class MessageRepo {
             return Promise.resolve(messages);
         }
 
-        return this.checkHoles(peer, id, asc, limit).then((remoteMessages) => {
+        return this.checkHoles(teamId, peer, id, asc, limit).then((remoteMessages) => {
             this.userRepo.importBulk(false, remoteMessages.usersList);
             this.groupRepo.importBulk(remoteMessages.groupsList);
             remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, this.userId);
@@ -910,10 +919,10 @@ export default class MessageRepo {
         });
     }
 
-    private getPeerPendingMessage(peer: InputPeer, fnCallback: (resMsgs: IMessage[]) => void) {
+    private getPeerPendingMessage(teamId: string, peer: InputPeer, fnCallback: (resMsgs: IMessage[]) => void) {
         const peerId = peer.getId() || '';
         const fn = (msg: IMessage[]) => {
-            this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, -1], true, true).filter((o) => {
+            this.db.messages.where('[teamid+peerid+id]').between([teamId, peerId, Dexie.minKey], [teamId, peerId, -1], true, true).filter((o) => {
                 return !Boolean(o.pmodified);
             }).toArray().then((items) => {
                 fnCallback(items.concat(msg));
@@ -958,18 +967,18 @@ export default class MessageRepo {
     }
 
     private getMessageForBundle = () => {
-        Object.keys(this.messageBundle).forEach((peerid) => {
-            const data = this.messageBundle[peerid];
+        Object.keys(this.messageBundle).forEach((mapId) => {
+            const data = this.messageBundle[mapId];
             const peer = data.peer;
             const ids: number[] = [];
             Object.keys(data.reqs).forEach((idStr) => {
                 ids.push(data.reqs[idStr].id);
             });
             if (ids.length === 0) {
-                delete this.messageBundle[peerid];
+                delete this.messageBundle[mapId];
                 return;
             }
-            delete this.messageBundle[peerid];
+            delete this.messageBundle[mapId];
             this.apiManager.getManyMessage(peer, ids).then((res) => {
                 const messages: IMessage[] = [];
                 const dataIds = Object.keys(data.reqs);
@@ -992,7 +1001,7 @@ export default class MessageRepo {
                         promise.reject();
                     });
                 });
-                this.insertDiscrete(messages);
+                this.insertDiscrete(data.teamId, messages);
                 this.userRepo.importBulk(false, res.usersList);
                 this.groupRepo.importBulk(res.groupsList);
             }).catch((err) => {
@@ -1007,7 +1016,7 @@ export default class MessageRepo {
         });
     }
 
-    private checkHoles(peer: InputPeer, id: number, asc: boolean, limit: number) {
+    private checkHoles(teamId: string, peer: InputPeer, id: number, asc: boolean, limit: number) {
         let query: any = {};
         limit += 1;
         if (asc) {
@@ -1022,13 +1031,13 @@ export default class MessageRepo {
             };
         }
         return this.apiManager.getMessageHistory(peer, query).then((remoteRes) => {
-            return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc, limit - 1).then(() => {
+            return this.modifyHoles(teamId, peer.getId() || '', remoteRes.messagesList, asc, limit - 1).then(() => {
                 return remoteRes;
             });
         });
     }
 
-    private modifyHoles(peerId: string, res: UserMessage.AsObject[], asc: boolean, limit: number) {
+    private modifyHoles(teamId: string, peerId: string, res: UserMessage.AsObject[], asc: boolean, limit: number) {
         let max = 0;
         let min = Infinity;
         res.forEach((item) => {
@@ -1043,14 +1052,14 @@ export default class MessageRepo {
         if (res.length === limit + 1) {
             edgeMessage = res.pop();
         }
-        return this.db.messages.where('[peerid+id]').between([peerId, min - 1], [peerId, max + 1], true, true).filter((item) => {
+        return this.db.messages.where('[teamid+peerid+id]').between([teamId, peerId, min - 1], [teamId, peerId, max + 1], true, true).filter((item) => {
             return (item.messagetype === C_MESSAGE_TYPE.Hole);
         }).delete().then((dres) => {
             if (edgeMessage) {
                 const messages: IMessage[] = [];
-                return this.db.messages.where('[peerid+id]').equals([peerId, edgeMessage.id || 0]).first().then((edgeRes) => {
+                return this.db.messages.where('[teamid+peerid+id]').equals([teamId, peerId, edgeMessage.id || 0]).first().then((edgeRes) => {
                     if (!edgeRes && edgeMessage) {
-                        messages.push(this.getHoleMessage(peerId, edgeMessage.id || 0, !asc));
+                        messages.push(this.getHoleMessage(teamId, peerId, edgeMessage.id || 0, !asc));
                         // window.console.log('insert hole at', edgeMessage.id);
                     }
                     messages.push(...MessageRepo.parseMessageMany(res, this.userId));

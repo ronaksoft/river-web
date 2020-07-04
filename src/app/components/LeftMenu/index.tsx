@@ -90,6 +90,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         };
     }
 
+    private teamId: string = '0';
     private bottomBarRef: BottomBar | undefined;
     private dialogRef: Dialog | undefined;
     private settingsMenuRef: SettingsMenu | undefined;
@@ -157,6 +158,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
         this.mouseEnterDebounce = debounce(this.mouseEnterDebounceHandler, 320);
         this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
+    }
+
+    public setTeam(teamId: string) {
+        this.teamId = teamId;
+        this.forceUpdate();
     }
 
     public componentDidMount(): void {
@@ -332,11 +338,12 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
                                            selected={this.state.leftMenu}/>}
                 <div className="left-overlay">
-                    {Boolean(overlayMode === 1) && <NewGroupMenu onClose={this.overlayCloseHandler}
-                                                                 onCreate={this.props.onGroupCreate}/>}
+                    {Boolean(overlayMode === 1) &&
+                    <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
+                                  teamId={this.teamId}/>}
                     {Boolean(overlayMode === 2) &&
                     <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
-                               onAction={this.props.onMediaAction}/>}
+                               onAction={this.props.onMediaAction} teamId={this.teamId}/>}
                 </div>
             </div>
         );
@@ -346,7 +353,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         const {leftMenu} = this.state;
         return <div className={'left-content-inner ' + leftMenu}>
             <Dialog key="dialog-menu" ref={this.dialogRefHandler} cancelIsTyping={this.props.cancelIsTyping}
-                    onContextMenu={this.props.onContextMenu} onDrop={this.props.onDrop}/>
+                    onContextMenu={this.props.onContextMenu} onDrop={this.props.onDrop} teamId={this.teamId}/>
             <div className="left-content-overlay">
                 {leftMenu === 'settings' &&
                 <SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
@@ -357,10 +364,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                               onReloadDialog={this.props.onReloadDialog}
                               onSubPlaceChange={this.settingsSubPlaceChangeHandler}
                               onTeamChange={this.props.onTeamChange}
+                              teamId={this.teamId}
                 />}
                 {leftMenu === 'contacts' &&
                 <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}
-                              onClose={this.contactsCloseHandler}/>}
+                              onClose={this.contactsCloseHandler} teamId={this.teamId}/>}
             </div>
         </div>;
     }
