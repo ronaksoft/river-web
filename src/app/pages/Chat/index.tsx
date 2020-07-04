@@ -2987,7 +2987,6 @@ class Chat extends React.Component<IProps, IState> {
         const msgId = this.dialogReadMap[peerId].id;
         // Recompute dialog counter
         this.messageRepo.getUnreadCount(this.teamId, peerId, msgId, topMessageId).then((count) => {
-            window.console.log(msgId);
             this.updateDialogsCounter(peerId, {
                 maxInbox: msgId,
                 mentionCounter: count.mention,
