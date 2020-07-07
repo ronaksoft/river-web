@@ -369,7 +369,7 @@ class ContactList extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div style={style} key={contact.id || ''} className="contact-item">
-                            <Link to={`/chat/${contact.id}`}>
+                            <Link to={`/chat/${this.props.teamId}/${contact.id}`}>
                                 <span className="avatar">
                                     <UserAvatar id={contact.id || ''}/>
                                 </span>
@@ -395,7 +395,7 @@ class ContactList extends React.Component<IProps, IState> {
             const contact = this.state.globalUsers[index - (this.state.contacts.length + 1)];
             return (
                 <div style={style} key={contact.id || ''} className="contact-item">
-                    <Link to={`/chat/${contact.id}`}>
+                    <Link to={`/chat/${this.props.teamId}/${contact.id}`}>
                         <span className="avatar">
                             <UserAvatar id={contact.id || ''}/>
                         </span>
@@ -447,6 +447,7 @@ class ContactList extends React.Component<IProps, IState> {
                 });
             }
         };
+        window.console.log(this.props.teamId);
         this.userRepo.getAllContacts(this.props.teamId, fn).then(fn);
     }
 

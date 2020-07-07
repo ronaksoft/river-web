@@ -597,7 +597,7 @@ class ChatInput extends React.Component<IProps, IState> {
     public setBot(peer: InputPeer | null, isBot: boolean, data: IKeyboardBotData | undefined) {
         if (this.firstLoad && peer) {
             this.firstLoad = false;
-            this.messageRepo.getLastIncomingMessage(this.teamId, peer.getId() || '').then((msg) => {
+            this.messageRepo.getLastIncomingMessage(this.teamId, peer.getId() || '', peer.getType() || 0).then((msg) => {
                 if (msg) {
                     if ((!this.botKeyboard || (this.botKeyboard && this.botKeyboard.msgId < (msg.id || 0))) && msg.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
                         this.botKeyboard = {

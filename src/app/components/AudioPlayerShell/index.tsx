@@ -29,6 +29,7 @@ import {findIndex} from 'lodash';
 import i18n from '../../services/i18n';
 
 import './style.scss';
+import {IPeer} from "../../repository/dialog/interface";
 
 const C_CELL_HEIGHT = 54;
 const C_MAX_LIST_HEIGHT = 288;
@@ -46,7 +47,7 @@ interface IState {
     mediaInfo?: IMediaInfo;
     messageId: number;
     openPlaylist: boolean;
-    peerId: string;
+    peer: IPeer;
     playState: 'play' | 'pause' | 'seek_play' | 'seek_pause';
     playlist: IPlaylistItem[];
     seekProgress: number;
@@ -73,7 +74,10 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             isVoice: true,
             messageId: 0,
             openPlaylist: false,
-            peerId: '',
+            peer: {
+                id: '',
+                peerType: 0,
+            },
             playState: 'pause',
             playlist: [],
             seekProgress: 0,
@@ -135,7 +139,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     }
 
     private getView() {
-        const {fast, isVoice, messageId, mediaInfo, peerId, playState, userId} = this.state;
+        const {fast, isVoice, messageId, mediaInfo, peer, playState, userId} = this.state;
         if (isVoice) {
             return (
                 <div className="shell">
@@ -147,7 +151,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                     </div>
                     <div className="audio-player-content">
                         {Boolean(userId !== '') && <div className="audio-player-anchor">
-                            <Link to={`/chat/${peerId}/${messageId}`}>
+                            <Link to={`/chat/${peer.id}_${peer.peerType}/${messageId}`}>
                                 {i18n.t('media.playing_from')} <UserName className="user" id={userId} unsafe={true}
                                                                          noDetail={true}/>
                             </Link>
@@ -360,35 +364,27 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
 
     private audioProgressHandler = (info: IAudioInfo, e: IAudioEvent, mediaInfo?: IMediaInfo) => {
         this.messageId = info.messageId;
+        const q: any = {};
         if (info.userId !== '' && this.state.userId !== info.userId) {
-            this.setState({
-                isVoice: !e.music,
-                userId: info.userId,
-            });
+            q.isVoice = !e.music;
+            q.userId = info.userId;
         }
-        if (info.peerId !== '' && this.state.peerId !== info.peerId) {
-            this.setState({
-                isVoice: !e.music,
-                peerId: info.peerId,
-            });
+        if ((info.peer.id !== '' && this.state.peer.id !== info.peer.id) || this.state.peer.peerType !== info.peer.peerType) {
+            q.isVoice = !e.music;
+            q.peer = info.peer;
         }
         if (info.messageId !== 0 && this.state.messageId !== info.messageId) {
-            this.setState({
-                isVoice: !e.music,
-                messageId: info.messageId,
-            });
+            q.isVoice = !e.music;
+            q.messageId = info.messageId;
         }
         if (this.state.fast !== info.fast) {
-            this.setState({
-                fast: info.fast,
-                isVoice: !e.music,
-            });
+            q.fast = info.fast;
+            q.isVoice = !e.music;
         }
         if (mediaInfo) {
-            this.setState({
-                mediaInfo,
-            });
+            q.mediaInfo = mediaInfo;
         }
+        this.setState(q);
         this.setPlayState(e);
         if (this.progressRef) {
             const progress = e.progress * 100;

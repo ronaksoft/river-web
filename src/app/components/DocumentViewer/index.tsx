@@ -873,7 +873,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 userId: message.senderid || '',
                 width: info.width,
             }],
-            peerId: message.peerid || '',
+            peer: {id: message.peerid || '', peerType: message.peertype || 0},
             teamId: message.teamid || '0',
             type: message.messagetype === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
         };
@@ -1051,15 +1051,15 @@ class DocumentViewer extends React.Component<IProps, IState> {
     /* Init Avatar */
     private initAvatar(id?: string) {
         const {doc} = this.state;
-        if (!doc || !doc.peer) {
+        if (!doc || !doc.inputPeer) {
             return;
         }
-        switch (doc.peer.getType()) {
+        switch (doc.inputPeer.getType()) {
             case PeerType.PEERUSER:
-                this.initUserAvatar(doc.peer);
+                this.initUserAvatar(doc.inputPeer);
                 break;
             case PeerType.PEERGROUP:
-                this.initGroupAvatar(doc.teamId, doc.peer, id);
+                this.initGroupAvatar(doc.teamId, doc.inputPeer, id);
                 break;
         }
     }
@@ -1222,7 +1222,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     /* Update photo handler */
     private updatePhotoHandler = (index: number) => {
         const {galleryList, gallerySelect, doc} = this.state;
-        if (!doc || !doc.peer || !galleryList[index]) {
+        if (!doc || !doc.inputPeer || !galleryList[index]) {
             return;
         }
         const asPicture = galleryList[index];
@@ -1237,8 +1237,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 doc.items[0].thumbFileLocation = galleryList[0].photosmall;
             }
             galleryList.unshift(asPicture);
-            if (doc.peer) {
-                const id = doc.peer.getId() || '';
+            if (doc.inputPeer) {
+                const id = doc.inputPeer.getId() || '';
                 if (group) {
                     this.groupRepo.importBulk([{
                         id,
@@ -1257,14 +1257,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 gallerySelect: gallerySelect + offset,
             });
         };
-        switch (doc.peer.getType()) {
+        switch (doc.inputPeer.getType()) {
             case PeerType.PEERUSER:
                 this.apiManager.updateProfilePicture(galleryList[index].photoid || '0').then(() => {
                     fn(false);
                 });
                 break;
             case PeerType.PEERGROUP:
-                this.apiManager.groupUpdatePicture(doc.peer.getId() || '', galleryList[index].photoid || '0').then(() => {
+                this.apiManager.groupUpdatePicture(doc.inputPeer.getId() || '', galleryList[index].photoid || '0').then(() => {
                     fn(true);
                 });
                 break;
@@ -1275,7 +1275,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private removePhotoHandler = () => {
         const index = this.state.confirmDialogIndex;
         const {galleryList, gallerySelect, doc} = this.state;
-        if (!doc || !doc.peer || !galleryList[index]) {
+        if (!doc || !doc.inputPeer || !galleryList[index]) {
             return;
         }
         const fn = (group: boolean) => {
@@ -1288,8 +1288,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 doc.items[0].fileLocation = galleryList[0].photobig;
                 doc.items[0].thumbFileLocation = galleryList[0].photosmall;
             }
-            if (doc.peer) {
-                const id = doc.peer.getId() || '';
+            if (doc.inputPeer) {
+                const id = doc.inputPeer.getId() || '';
                 if (group) {
                     this.groupRepo.importBulk([{
                         id,
@@ -1309,14 +1309,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
             });
             this.confirmDialogCloseHandler();
         };
-        switch (doc.peer.getType()) {
+        switch (doc.inputPeer.getType()) {
             case PeerType.PEERUSER:
                 this.apiManager.removeProfilePicture(galleryList[index].photoid || '0').then(() => {
                     fn(false);
                 });
                 break;
             case PeerType.PEERGROUP:
-                this.apiManager.groupRemovePicture(doc.peer.getId() || '', galleryList[index].photoid || '0').then(() => {
+                this.apiManager.groupRemovePicture(doc.inputPeer.getId() || '', galleryList[index].photoid || '0').then(() => {
                     fn(true);
                 });
                 break;
@@ -1325,14 +1325,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private checkAccess() {
         const {doc} = this.state;
-        if (!doc || !doc.peer) {
+        if (!doc || !doc.inputPeer) {
             this.hasAccess = false;
             return;
         }
-        if (doc.peer.getType() === PeerType.PEERUSER) {
-            this.hasAccess = (doc.peer.getId() === this.userId);
-        } else if (doc.peer.getType() === PeerType.PEERGROUP) {
-            this.groupRepo.get(doc.teamId, doc.peer.getId() || '').then((group) => {
+        if (doc.inputPeer.getType() === PeerType.PEERUSER) {
+            this.hasAccess = (doc.inputPeer.getId() === this.userId);
+        } else if (doc.inputPeer.getType() === PeerType.PEERGROUP) {
+            this.groupRepo.get(doc.teamId, doc.inputPeer.getId() || '').then((group) => {
                 if (group) {
                     this.hasAccess = hasAuthority(group, true);
                     this.forceUpdate();

@@ -34,6 +34,7 @@ import {IFileProgress} from '../../services/sdk/fileManager';
 import i18n from '../../services/i18n';
 
 import './style.scss';
+import {IPeer} from "../../repository/dialog/interface";
 
 interface IMedia {
     _modified?: boolean;
@@ -42,6 +43,7 @@ interface IMedia {
     id: number;
     info: IMediaInfo;
     peerId: string;
+    peerType: number;
     playing?: boolean;
     saved: boolean;
     type: number;
@@ -68,7 +70,7 @@ interface IState {
 class PeerMedia extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private downloadEventReferences: any[] = [];
-    private peerId: string = '';
+    private peer: IPeer = {peerType: 0, id: ''};
     private mediaRepo: MediaRepo;
     private documentViewerService: DocumentViewerService;
     private itemMap: { [key: number]: number } = {};
@@ -85,7 +87,10 @@ class PeerMedia extends React.Component<IProps, IState> {
             tab: 0,
         };
 
-        this.peerId = props.peer.getId() || '';
+        this.peer = {
+            id: props.peer.getId() || '',
+            peerType: props.peer.getType() || 0,
+        };
         this.mediaRepo = MediaRepo.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
         this.audioPlayer = AudioPlayer.getInstance();
@@ -100,8 +105,11 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.peerId !== (newProps.peer.getId() || '')) {
-            this.peerId = newProps.peer.getId() || '';
+        if (this.peer.id !== (newProps.peer.getId() || '') || this.peer.peerType !== (newProps.peer.getType() || 0)) {
+            this.peer = {
+                id: newProps.peer.getId() || '',
+                peerType: newProps.peer.getType() || 0,
+            };
             this.getMedias();
         }
     }
@@ -302,7 +310,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 mediaType = C_MEDIA_TYPE.GIF;
                 break;
         }
-        this.mediaRepo.getMany(this.props.teamId, this.peerId, {
+        this.mediaRepo.getMany(this.props.teamId, this.peer, {
             limit: this.props.full ? 128 : 8,
             type: this.props.full ? mediaType : undefined,
         }).then((result) => {
@@ -353,7 +361,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     userId: item.userId || '',
                     width: item.info.width,
                 }],
-                peerId: item.peerId || '',
+                peer: {id: item.peerId || '', peerType: item.peerType || 0},
                 rect: (e.currentTarget || e).getBoundingClientRect(),
                 teamId: item.teamId,
                 type: item.type === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
@@ -459,7 +467,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     break;
             }
         }
-        this.mediaRepo.getMany(this.props.teamId, this.peerId, {
+        this.mediaRepo.getMany(this.props.teamId, this.peer, {
             after: !append ? breakPoint : undefined,
             before: append ? breakPoint : undefined,
             limit,
@@ -507,6 +515,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     id: item.id || 0,
                     info: getMediaInfo(item),
                     peerId: item.peerid || '',
+                    peerType: item.peertype || 0,
                     saved: item.saved || false,
                     teamId: item.teamid || '0',
                     type: item.messagetype || C_MESSAGE_TYPE.Normal,
@@ -524,7 +533,7 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     /* Audio player handler */
     private audioPlayerHandler = (info: IAudioInfo, e: IAudioEvent) => {
-        if (info.peerId !== this.peerId || !this.itemMap.hasOwnProperty(info.messageId)) {
+        if (info.peer.id !== this.peer.id || !this.itemMap.hasOwnProperty(info.messageId)) {
             return;
         }
         const index = this.itemMap[info.messageId];
@@ -551,7 +560,7 @@ class PeerMedia extends React.Component<IProps, IState> {
         const {items} = this.state;
         const item = items[index];
         if (!items[index].playing) {
-            this.audioPlayer.addToPlaylist(id, this.peerId, item.info.file.fileid || '', item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
+            this.audioPlayer.addToPlaylist(id, this.peer, item.info.file.fileid || '', item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
             this.audioPlayer.play(id);
         } else {
             this.audioPlayer.pause(id);

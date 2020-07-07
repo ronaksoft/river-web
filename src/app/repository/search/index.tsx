@@ -71,15 +71,23 @@ export default class SearchRepo {
         promises.push(this.groupRepo.getManyCache(teamId, {limit, keyword}));
         return new Promise<IDialogWithContact>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
+            const peers: Array<[string, number]> = [];
             Promise.all(promises).then((arrRes) => {
                 arrRes.forEach((res) => {
                     res.forEach((item: any) => {
                         if (!ids.hasOwnProperty(item.id)) {
                             ids[item.id] = true;
+                            if (item.title) {
+                                peers.push([item.id, PeerType.PEERGROUP]);
+                            } else {
+                                peers.push([item.id, PeerType.PEERUSER]);
+                                peers.push([item.id, PeerType.PEEREXTERNALUSER]);
+                                peers.push([item.id, PeerType.PEERSELF]);
+                            }
                         }
                     });
                 });
-                this.dialogRepo.findInArray(teamId, Object.keys(ids), skip, limit).then((res) => {
+                this.dialogRepo.findInArray(teamId, peers, skip, limit).then((res) => {
                     resolve({
                         contacts: (arrRes[0] || []).filter((user: IUser) => {
                             return user.is_contact === 1;
@@ -104,7 +112,7 @@ export default class SearchRepo {
         });
     }
 
-    public searchUser = (teamId: string, {limit, keyword}: {limit?: number, keyword?: string}): Promise<IDialogWithContact> => {
+    public searchUser = (teamId: string, {limit, keyword}: { limit?: number, keyword?: string }): Promise<IDialogWithContact> => {
         return this.userRepo.getManyCache(teamId, false, {limit, keyword}).then((res) => {
             return ({
                 contacts: res.filter((user: IUser) => {
@@ -137,12 +145,16 @@ export default class SearchRepo {
         let users: IUser[] = [];
         this.userRepo.getManyCache(teamId, false, {limit, keyword}).then((userRes) => {
             const ids: { [key: string]: IUser } = {};
+            const peers: Array<[string, number]> = [];
             userRes.forEach((item: IUser) => {
                 if (!ids.hasOwnProperty(item.id || '')) {
                     ids[item.id || ''] = item;
+                    peers.push([item.id || '', PeerType.PEERUSER]);
+                    peers.push([item.id || '', PeerType.PEEREXTERNALUSER]);
+                    peers.push([item.id || '', PeerType.PEERSELF]);
                 }
             });
-            return this.dialogRepo.findInArray(teamId, Object.keys(ids), skip, limit).then((res) => {
+            return this.dialogRepo.findInArray(teamId, peers, skip, limit).then((res) => {
                 return res.map((d) => {
                     return ids[d.peerid || ''] || null;
                 }).filter(o => o !== null);

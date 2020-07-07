@@ -12,6 +12,7 @@ import DialogRepo from '../../repository/dialog/index';
 import MediaRepo from '../../repository/media/index';
 import {PeerType} from '../sdk/messages/core.types_pb';
 import MessageRepo from '../../repository/message';
+import {IPeer} from "../../repository/dialog/interface";
 
 export interface IStorageProgress {
     done: number;
@@ -39,7 +40,7 @@ interface IStorageInfo {
 
 export interface IDialogInfo {
     mediaTypes: { [key: number]: IStorageInfo };
-    peerId: string;
+    peer: IPeer;
     teamId: string;
     peerType: PeerType;
     totalFile: number;
@@ -62,7 +63,7 @@ export default class StorageUsageService {
     private dialogRepo: DialogRepo;
     private mediaRepo: MediaRepo;
     private messageRepo: MessageRepo;
-    private computeQueue: string[] = [];
+    private computeQueue: IPeer[] = [];
     private dialogInfo: { [key: string]: IDialogInfo } = {};
     private totalComputations: number = 0;
     // Progress and promise
@@ -91,7 +92,7 @@ export default class StorageUsageService {
         this.computeQueue = [];
         this.dialogRepo.getManyCache(teamId, {}).then((dialogs) => {
             dialogs.forEach((dialog) => {
-                this.computeQueue.push(dialog.peerid || '');
+                this.computeQueue.push({id: dialog.peerid || '', peerType: dialog.peertype || 0});
             });
             this.totalComputations = dialogs.length;
             this.startComputing();
@@ -148,9 +149,9 @@ export default class StorageUsageService {
         });
     }
 
-    private getMediaFiles(teamId: string, peerId: string, before?: number) {
+    private getMediaFiles(teamId: string, peer: IPeer, before?: number) {
         const limit = 50;
-        return this.mediaRepo.getMany(teamId, peerId, {limit, before}).then((res) => {
+        return this.mediaRepo.getMany(teamId, peer, {limit, before}).then((res) => {
             const fileMap: any = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;
@@ -186,7 +187,7 @@ export default class StorageUsageService {
                     }),
                     minId: res.minId,
                     more,
-                    peerId,
+                    peerId: peer.id,
                     peerType,
                 };
             });
@@ -195,13 +196,13 @@ export default class StorageUsageService {
         });
     }
 
-    private getMediaListPart(teamId: string, peerId: string, before?: number) {
-        return this.getMediaFiles(teamId, peerId, before).then((res) => {
-            const mapId = `${teamId}_${peerId}`;
+    private getMediaListPart(teamId: string, peer: IPeer, before?: number) {
+        return this.getMediaFiles(teamId, peer, before).then((res) => {
+            const mapId = `${teamId}_${peer.id}_${peer.peerType}`;
             if (!this.dialogInfo.hasOwnProperty(mapId)) {
                 this.dialogInfo[mapId] = {
                     mediaTypes: {},
-                    peerId,
+                    peer,
                     peerType: res.peerType,
                     teamId,
                     totalFile: 0,
@@ -226,18 +227,18 @@ export default class StorageUsageService {
         });
     }
 
-    private startComputing(teamId?: string, peerId?: string, before?: number, total?: number) {
-        if (!peerId) {
-            peerId = this.computeQueue.shift();
+    private startComputing(teamId?: string, peer?: IPeer, before?: number, total?: number) {
+        if (!peer) {
+            peer = this.computeQueue.shift();
         }
-        if (teamId && peerId) {
-            this.getMediaListPart(teamId, peerId, before).then((res) => {
+        if (teamId && peer) {
+            this.getMediaListPart(teamId, peer, before).then((res) => {
                 if (!total) {
                     total = 0;
                 }
                 total += res.infoList.length;
                 if (res.more) {
-                    this.startComputing(teamId, peerId, res.minId - 1, total);
+                    this.startComputing(teamId, peer, res.minId - 1, total);
                 } else {
                     this.startComputing(undefined, undefined, total);
                 }

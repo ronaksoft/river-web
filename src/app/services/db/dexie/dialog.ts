@@ -12,9 +12,9 @@ import {IDialog, IDraft} from '../../../repository/dialog/interface';
 
 export class DexieDialogDB extends Dexie {
     // @ts-ignore
-    public dialogs: Dexie.Table<IDialog, [string, string]>;
+    public dialogs: Dexie.Table<IDialog, [string, string, number]>;
     // @ts-ignore
-    public drafts: Dexie.Table<IDraft, [string, string]>;
+    public drafts: Dexie.Table<IDraft, [string, string, number]>;
 
     constructor() {
         super('dialog_db');
@@ -24,8 +24,8 @@ export class DexieDialogDB extends Dexie {
         // (Here's where the implicit table props are dynamically created)
         //
         this.version(1).stores({
-            dialogs: `[teamid+peerid],[teamid+last_update]`,
-            drafts: `[teamid+peerid]`,
+            dialogs: `[teamid+peerid+peertype],[teamid+last_update]`,
+            drafts: `[teamid+peerid+peertype]`,
         });
 
         this.dialogs = this.table('dialogs');

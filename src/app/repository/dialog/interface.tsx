@@ -37,3 +37,8 @@ export interface IDraft {
     mode?: number;
     message?: IMessage;
 }
+
+export interface IPeer {
+    id: string;
+    peerType: number;
+}

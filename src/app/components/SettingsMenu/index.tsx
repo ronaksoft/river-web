@@ -112,6 +112,7 @@ import {C_VERSION} from "../../../App";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import TeamRepo from "../../repository/team";
 import {ITeam} from "../../repository/team/interface";
+import {IPeer} from "../../repository/dialog/interface";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -191,7 +192,7 @@ interface IProps {
     onAction?: (cmd: 'logout' | 'count_dialog') => void;
     onError?: (message: string) => void;
     onUpdateMessages?: (keep?: boolean) => void;
-    onReloadDialog?: (peerIds: string[]) => void;
+    onReloadDialog?: (peerIds: IPeer[]) => void;
     onSubPlaceChange?: (sub: string, subChild: string) => void;
     onTeamChange?: (team: ITeam) => void;
     teamId: string;
@@ -1909,20 +1910,20 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (!user || !user.photo) {
             return;
         }
-        let peer: InputPeer | undefined;
+        let inputPeer: InputPeer | undefined;
         if (user.accesshash) {
-            peer = new InputPeer();
-            peer.setAccesshash(user.accesshash);
-            peer.setId(user.id || '');
-            peer.setType(PeerType.PEERUSER);
+            inputPeer = new InputPeer();
+            inputPeer.setAccesshash(user.accesshash);
+            inputPeer.setId(user.id || '');
+            inputPeer.setType(PeerType.PEERUSER);
         }
         const doc: IDocument = {
+            inputPeer,
             items: [{
                 caption: '',
                 fileLocation: user.photo.photobig,
                 thumbFileLocation: user.photo.photosmall,
             }],
-            peer,
             teamId: '0',
             type: 'avatar',
         };

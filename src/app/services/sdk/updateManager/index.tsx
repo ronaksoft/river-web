@@ -37,7 +37,7 @@ import {
 import {cloneDeep, uniq} from 'lodash';
 import MessageRepo, {getMediaDocument} from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';
-import {IDialog} from "../../../repository/dialog/interface";
+import {IDialog, IPeer} from "../../../repository/dialog/interface";
 import {IMessage} from "../../../repository/message/interface";
 import {IUser} from "../../../repository/user/interface";
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../../repository/message/consts";
@@ -46,7 +46,7 @@ import {kMerge} from "../../utilities/kDash";
 import APIManager from "../index";
 import {ILabel} from "../../../repository/label/interface";
 import {IGroup} from "../../../repository/group/interface";
-import DialogRepo from "../../../repository/dialog";
+import DialogRepo, {GetPeerName} from "../../../repository/dialog";
 import UserRepo from "../../../repository/user";
 import GroupRepo from "../../../repository/group";
 import LabelRepo from "../../../repository/label";
@@ -62,7 +62,7 @@ const C_DIFF_AMOUNT = 100;
 
 export interface IDialogDBUpdated {
     counters: boolean;
-    ids: string[];
+    peers: IPeer[];
     incomingIds: { [key: string]: number[] };
 }
 
@@ -70,17 +70,18 @@ export interface IMessageDBUpdated {
     editedIds: number[];
     ids: number[];
     minIds: { [key: string]: number };
-    peerIds: string[];
+    peers: IPeer[];
+    peerNames: string[];
 }
 
 export interface IMessageIdDBUpdated {
-    peerIds: { [key: string]: number[] };
+    peerNames: { [key: string]: number[] };
 }
 
 export interface IMessageDBRemoved {
     ids: number[];
     listPeer: { [key: string]: number[] };
-    peerIds: string[];
+    peerNames: string[];
 }
 
 export interface IGifUse {
@@ -104,6 +105,7 @@ interface IClearDialog {
     maxId: number;
     teamId: string;
     peerId: string;
+    peerType: number;
     remove: boolean;
 }
 
@@ -115,6 +117,7 @@ interface IModifyTempFile {
 interface IToCheckDialog {
     peerid: string;
     teamid: string;
+    peertype: number;
 }
 
 interface ITransactionPayload {
@@ -579,6 +582,7 @@ export default class UpdateManager {
                     transaction.clearDialogs.push({
                         maxId: message.actiondata.maxid || 0,
                         peerId: message.peerid || '',
+                        peerType: message.peertype || 0,
                         remove: message.actiondata.pb_delete || false,
                         teamId: message.teamid || '0',
                     });
@@ -607,6 +611,7 @@ export default class UpdateManager {
                     preview_rtl: message.rtl,
                     saved_messages: this.userId === message.peerid,
                     sender_id: message.senderid,
+                    teamid: message.teamid || '0',
                     topmessageid: message.id,
                 });
                 // Update user status
@@ -654,6 +659,7 @@ export default class UpdateManager {
                 // Update to check list
                 transaction.toCheckDialogIds.push({
                     peerid: updateMessageEdited.message.peerid || '',
+                    peertype: updateMessageEdited.message.peertype || 0,
                     teamid: updateMessageEdited.message.teamid || '0',
                 });
                 break;
@@ -664,10 +670,11 @@ export default class UpdateManager {
                 updateMessagesDeleted.messageidsList.forEach((id) => {
                     this.removeMessage(transaction.messages, id);
                     if (updateMessagesDeleted.peer) {
-                        if (!transaction.removedMessages.hasOwnProperty(updateMessagesDeleted.peer.id || '')) {
-                            transaction.removedMessages[updateMessagesDeleted.peer.id || ''] = [id];
+                        const peerName = GetPeerName(updateMessagesDeleted.peer.id || '', updateMessagesDeleted.peer.type || 0);
+                        if (!transaction.removedMessages.hasOwnProperty(peerName)) {
+                            transaction.removedMessages[peerName] = [id];
                         } else {
-                            transaction.removedMessages[updateMessagesDeleted.peer.id || ''].push(id);
+                            transaction.removedMessages[peerName].push(id);
                         }
                     }
                 });
@@ -675,6 +682,7 @@ export default class UpdateManager {
                 if (updateMessagesDeleted.peer) {
                     transaction.toCheckDialogIds.push({
                         peerid: updateMessagesDeleted.peer.id || '',
+                        peertype: updateMessagesDeleted.peer.type || 0,
                         teamid: updateMessagesDeleted.teamid || '0',
                     });
                 }
@@ -698,6 +706,7 @@ export default class UpdateManager {
                 this.mergeDialog(transaction.dialogs, {
                     peerid: updateReadHistoryInbox.peer.id,
                     readinboxmaxid: updateReadHistoryInbox.maxid,
+                    teamid: updateReadHistoryInbox.teamid || '0',
                 });
                 break;
             case C_MSG.UpdateReadHistoryOutbox:
@@ -706,7 +715,8 @@ export default class UpdateManager {
                 // Update dialog readoutboxmaxid
                 this.mergeDialog(transaction.dialogs, {
                     peerid: updateReadHistoryOutbox.peer.id,
-                    readoutboxmaxid: updateReadHistoryOutbox.maxid
+                    readoutboxmaxid: updateReadHistoryOutbox.maxid,
+                    teamid: updateReadHistoryOutbox.teamid || '0',
                 });
                 // Update user status
                 if (this.isLive) {
@@ -719,11 +729,13 @@ export default class UpdateManager {
             case C_MSG.UpdateNotifySettings:
                 const updateNotifySettings = UpdateNotifySettings.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateNotifySettings);
+                // TODO: teamid
                 // Update dialog notification
                 this.mergeDialog(transaction.dialogs, {
                     accesshash: updateNotifySettings.notifypeer.accesshash,
                     notifysettings: updateNotifySettings.settings,
                     peerid: updateNotifySettings.notifypeer.id,
+                    teamid: updateNotifySettings.teamid || '0',
                 });
                 break;
             case C_MSG.UpdateDialogPinned:
@@ -733,15 +745,18 @@ export default class UpdateManager {
                 this.mergeDialog(transaction.dialogs, {
                     peerid: updateDialogPinned.peer.id,
                     pinned: updateDialogPinned.pinned,
+                    teamid: updateDialogPinned.teamid || '0',
                 });
                 break;
             case C_MSG.UpdateDraftMessage:
                 const updateDraftMessage = UpdateDraftMessage.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateDraftMessage);
+                // TODO: teamid
                 // Update dialog's draft
                 this.mergeDialog(transaction.dialogs, {
                     draft: updateDraftMessage.message,
                     peerid: updateDraftMessage.message.peerid,
+                    teamid: updateDraftMessage.message.teamid || '0',
                 });
                 break;
             case C_MSG.UpdateDraftMessageCleared:
@@ -751,6 +766,7 @@ export default class UpdateManager {
                 this.mergeDialog(transaction.dialogs, {
                     draft: {},
                     peerid: updateDraftMessageCleared.peer.id,
+                    teamid: updateDraftMessageCleared.teamid || '0',
                 });
                 break;
             /** Users **/
@@ -901,7 +917,8 @@ export default class UpdateManager {
     }
 
     private mergeDialog(dialogs: { [key: string]: IDialog }, dialog: IDialog) {
-        const d = dialogs[dialog.peerid || ''];
+        const dialogId = `${dialog.teamid || '0'}_${dialog.peerid || '0'}_${dialog.peertype || '0'}`;
+        const d = dialogs[dialogId];
         if (d) {
             if ((d.readinboxmaxid || 0) > (dialog.readinboxmaxid || 0)) {
                 dialog.readinboxmaxid = (d.readinboxmaxid || 0);
@@ -911,13 +928,13 @@ export default class UpdateManager {
             }
             if (dialog.topmessageid) {
                 if (dialog.force || dialog.topmessageid > (d.topmessageid || 0)) {
-                    dialogs[d.peerid || ''] = kMerge(d, dialog);
+                    dialogs[dialogId] = kMerge(d, dialog);
                 }
             } else {
-                dialogs[d.peerid || ''] = kMerge(d, dialog);
+                dialogs[dialogId] = kMerge(d, dialog);
             }
         } else {
-            dialogs[dialog.peerid || ''] = dialog;
+            dialogs[dialogId] = dialog;
         }
     }
 
@@ -939,10 +956,11 @@ export default class UpdateManager {
             messages[message.id || 0] = message;
         }
         if (incomingIds && !message.me) {
-            if (!incomingIds.hasOwnProperty(message.peerid || '')) {
-                incomingIds[message.peerid || ''] = [];
+            const peerName = GetPeerName(message.peerid, message.peertype);
+            if (!incomingIds.hasOwnProperty(peerName)) {
+                incomingIds[peerName] = [];
             }
-            incomingIds[message.peerid || ''].push(message.id || 0);
+            incomingIds[peerName].push(message.id || 0);
         }
     }
 
@@ -1057,15 +1075,15 @@ export default class UpdateManager {
             }
             // Dialog list (conditional)
             if (transaction.toCheckDialogIds.length === 0) {
-                promises.push(this.applyDialogs(transaction.dialogs).then((keys) => {
+                promises.push(this.applyDialogs(transaction.dialogs).then((peers) => {
                     if (!transaction.live) {
                         this.callHandlers(C_MSG.UpdateDialogDB, {
                             counters: transaction.lastOne,
-                            ids: keys,
                             incomingIds: transaction.incomingIds,
+                            peers,
                         });
                     }
-                    return keys;
+                    return peers;
                 }));
             }
             // Gif list
@@ -1108,11 +1126,11 @@ export default class UpdateManager {
             const lastMessagePromise: any[] = [];
             transaction.toCheckDialogIds.forEach((toCheck) => {
                 if (this.messageRepo) {
-                    lastMessagePromise.push(this.messageRepo.getLastMessage(toCheck.teamid, toCheck.peerid));
+                    lastMessagePromise.push(this.messageRepo.getLastMessage(toCheck.teamid, toCheck.peerid, toCheck.peertype));
                 }
             });
             Promise.all(lastMessagePromise).then((arr) => {
-                arr.forEach((msg) => {
+                arr.forEach((msg: IMessage | undefined) => {
                     if (msg) {
                         const messageTitle = getMessageTitle(msg);
                         this.mergeDialog(transaction.dialogs, {
@@ -1128,15 +1146,16 @@ export default class UpdateManager {
                             preview_rtl: msg.rtl,
                             saved_messages: (this.userId === msg.peerid),
                             sender_id: msg.senderid,
+                            teamid: msg.teamid || '0',
                             topmessageid: msg.id,
                         });
                     }
                 });
-                this.applyDialogs(transaction.dialogs).then((keys) => {
+                this.applyDialogs(transaction.dialogs).then((peers) => {
                     this.callHandlers(C_MSG.UpdateDialogDB, {
                         counters: transaction.live ? true : transaction.lastOne,
-                        ids: keys,
                         incomingIds: transaction.incomingIds,
+                        peers,
                     });
                     this.processTransactionStep4(transaction, transactionResolve, doneFn);
                 });
@@ -1164,51 +1183,61 @@ export default class UpdateManager {
         const promises: any[] = [];
         list.forEach((item) => {
             if (item.remove && this.dialogRepo) {
-                promises.push(this.dialogRepo.remove(item.teamId, item.peerId));
+                promises.push(this.dialogRepo.remove(item.teamId, item.peerId, item.peerType));
             }
             if (item.maxId > 0 && this.messageRepo) {
-                promises.push(this.messageRepo.clearHistory(item.teamId, item.peerId, item.maxId));
+                promises.push(this.messageRepo.clearHistory(item.teamId, item.peerId, item.peerType, item.maxId));
             }
         });
         return Promise.all(promises);
     }
 
-    private applyDialogs(dialogs: { [key: string]: IDialog }): Promise<string[]> {
+    private applyDialogs(dialogs: { [key: string]: IDialog }): Promise<IPeer[]> {
         const dialogList: IDialog[] = [];
-        const keys = Object.keys(dialogs);
+        const peers: IPeer[] = [];
         Object.values(dialogs).forEach((dialog) => {
+            peers.push({
+                id: dialog.peerid || '',
+                peerType: dialog.peertype || 0,
+            });
             dialogList.push(dialog);
         });
         if (dialogList.length > 0 && this.dialogRepo) {
             return this.dialogRepo.importBulk(dialogList).then(() => {
-                return keys;
+                return peers;
             });
         } else {
-            return Promise.resolve(keys);
+            return Promise.resolve(peers);
         }
     }
 
     private applyMessages(messages: { [key: number]: IMessage }, editedMessageIds: number[], randomMessageIds: number[]): Promise<IMessageDBUpdated> {
         const messageList: IMessage[] = [];
         const keys: number[] = [];
-        const peerIds: string[] = [];
+        const peerNames: string[] = [];
+        const peers: IPeer[] = [];
         const minIdPerPeer: { [key: string]: number } = {};
         const myMessageList: IMessage[] = [];
         Object.values(messages).forEach((message) => {
             if (!message.id) {
                 return;
             }
+            const peerName = GetPeerName(message.peerid, message.peertype);
             messageList.push(message);
             keys.push(message.id);
-            if (!peerIds[message.peerid || '']) {
-                peerIds.push(message.peerid || '');
+            if (!peerNames[peerName]) {
+                peerNames.push(peerName);
+                peers.push({
+                    id: message.peerid || '',
+                    peerType: message.peertype || 0,
+                });
             }
             if (message && message.id) {
-                if (minIdPerPeer.hasOwnProperty(message.peerid || '')) {
-                    minIdPerPeer[message.peerid || ''] = message.id;
+                if (minIdPerPeer.hasOwnProperty(peerName)) {
+                    minIdPerPeer[peerName] = message.id;
                 } else {
-                    if (minIdPerPeer[message.peerid || ''] > message.id) {
-                        minIdPerPeer[message.peerid || ''] = message.id;
+                    if (minIdPerPeer[peerName] > message.id) {
+                        minIdPerPeer[peerName] = message.id;
                     }
                 }
                 if (message.senderid === this.userId) {
@@ -1227,7 +1256,8 @@ export default class UpdateManager {
                     editedIds: uniq(editedMessageIds),
                     ids: keys,
                     minIds: minIdPerPeer,
-                    peerIds,
+                    peerNames,
+                    peers,
                 };
             });
         } else {
@@ -1235,7 +1265,8 @@ export default class UpdateManager {
                 editedIds: uniq(editedMessageIds),
                 ids: keys,
                 minIds: minIdPerPeer,
-                peerIds,
+                peerNames,
+                peers,
             });
         }
     }
@@ -1316,13 +1347,14 @@ export default class UpdateManager {
             if (messages.length > 0) {
                 messageRepo.upsert(messages).then(() => {
                     const data: IMessageIdDBUpdated = {
-                        peerIds: {},
+                        peerNames: {},
                     };
                     messages.forEach((message) => {
-                        if (data.peerIds && data.peerIds.hasOwnProperty(message.peerid || '')) {
-                            data.peerIds[message.peerid || ''].push(message.id || 0);
+                        const peerName = GetPeerName(message.peerid, message.peertype);
+                        if (data.peerNames && data.peerNames.hasOwnProperty(peerName)) {
+                            data.peerNames[peerName].push(message.id || 0);
                         } else {
-                            data.peerIds[message.peerid || ''] = [message.id || 0];
+                            data.peerNames[peerName] = [message.id || 0];
                         }
                     });
                     this.callHandlers(C_MSG.UpdateMessageIdDB, data);
@@ -1335,7 +1367,7 @@ export default class UpdateManager {
     }
 
     private applyRemovedMessages(removedMessages: { [key: string]: number[] }): Promise<IMessageDBRemoved> {
-        const peerIds = Object.keys(removedMessages);
+        const peerNames = Object.keys(removedMessages);
         const ids: number[] = [];
         Object.values(removedMessages).forEach((removedMessage) => {
             ids.push(...removedMessage);
@@ -1345,14 +1377,14 @@ export default class UpdateManager {
                 return {
                     ids,
                     listPeer: removedMessages,
-                    peerIds,
+                    peerNames,
                 };
             });
         } else {
             return Promise.resolve({
                 ids,
                 listPeer: {},
-                peerIds,
+                peerNames,
             });
         }
     }

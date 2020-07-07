@@ -254,7 +254,7 @@ export const highlightMessageText = (id: number, text: string) => {
 class Message extends React.Component<IProps, IState> {
     public list: KKWindow | undefined;
     private containerRef: any = null;
-    private peer: InputPeer | null = null;
+    private inputPeer: InputPeer | null = null;
     private listCount: number = 0;
     private loadingTimeout: any = null;
     // @ts-ignore
@@ -388,8 +388,8 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public setPeer(peer: InputPeer | null) {
-        if (this.peer !== peer) {
-            this.peer = peer;
+        if (this.inputPeer !== peer) {
+            this.inputPeer = peer;
             this.savedMessages = Boolean(peer && this.props.userId === peer.getId());
         }
     }
@@ -630,7 +630,7 @@ class Message extends React.Component<IProps, IState> {
         return (
             <div className="main-messages">
                 <div
-                    className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '') + (this.isLarge ? ' large-mode' : '')}
+                    className={'messages-inner ' + (((this.inputPeer && this.inputPeer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '') + (this.isLarge ? ' large-mode' : '')}
                     style={{height: `${containerSize.height}px`, width: `${containerSize.width}px`}}
                     onDragEnter={this.enableDragHandler}
                 >
@@ -728,7 +728,7 @@ class Message extends React.Component<IProps, IState> {
                 }
                 break;
         }
-        if (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) && message.avatar) {
+        if (((this.inputPeer && this.inputPeer.getType() === PeerType.PEERGROUP) || this.isSimplified) && message.avatar) {
             height += 20;
         }
         if (message.replyto && message.replyto !== 0 && message.deleted_reply !== true) {
@@ -877,7 +877,7 @@ class Message extends React.Component<IProps, IState> {
         if (!message) {
             return null;
         }
-        const peer = this.peer;
+        const peer = this.inputPeer;
         const readId = this.readId;
         const measureFn = () => {
             if (this.list) {
@@ -1403,12 +1403,12 @@ class Message extends React.Component<IProps, IState> {
 
     private openAvatar = (photo: GroupPhoto.AsObject) => (e: any) => {
         const doc: IDocument = {
+            inputPeer: this.inputPeer ? this.inputPeer : undefined,
             items: [{
                 caption: '',
                 fileLocation: photo.photobig,
                 thumbFileLocation: photo.photosmall,
             }],
-            peer: this.peer ? this.peer : undefined,
             photoId: photo.photoid,
             teamId: '0',
             type: 'avatar',

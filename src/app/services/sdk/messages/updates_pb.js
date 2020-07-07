@@ -5414,6 +5414,7 @@ proto.msg.UpdateNotifySettings.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
+    teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     userid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     notifypeer: (f = msg.getNotifypeer()) && core_types_pb.Peer.toObject(includeInstance, f),
     settings: (f = msg.getSettings()) && core_types_pb.PeerNotifySettings.toObject(includeInstance, f)
@@ -5460,6 +5461,10 @@ proto.msg.UpdateNotifySettings.deserializeBinaryFromReader = function(msg, reade
     case 101:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 102:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
       break;
     case 1:
       var value = /** @type {string} */ (reader.readInt64String());
@@ -5515,6 +5520,13 @@ proto.msg.UpdateNotifySettings.serializeBinaryToWriter = function(message, write
   if (f != null) {
     writer.writeInt64(
       101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 102));
+  if (f != null) {
+    writer.writeInt64String(
+      102,
       f
     );
   }
@@ -5613,6 +5625,42 @@ proto.msg.UpdateNotifySettings.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateNotifySettings.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * optional int64 TeamID = 102;
+ * @return {string}
+ */
+proto.msg.UpdateNotifySettings.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 102, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateNotifySettings} returns this
+ */
+proto.msg.UpdateNotifySettings.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 102, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateNotifySettings} returns this
+ */
+proto.msg.UpdateNotifySettings.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 102, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateNotifySettings.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 102) != null;
 };
 
 

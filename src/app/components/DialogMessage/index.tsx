@@ -250,7 +250,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
 
     return (
         <Link className="dialog-a" onClick={onClick} data-peerid={dialog.peerid}
-              to={messageId ? `/chat/${dialog.teamid}/${dialog.peerid}/${messageId}` : `/chat/${dialog.teamid}/${dialog.peerid}`}
+              to={messageId ? `/chat/${dialog.teamid || '0'}/${dialog.peerid}_${dialog.peertype || 0}/${messageId}` : `/chat/${dialog.teamid}/${dialog.peerid}`}
               onDrop={dropHandler}
         >
             <div

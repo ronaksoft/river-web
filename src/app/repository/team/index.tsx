@@ -37,6 +37,10 @@ export default class TeamRepo {
         this.apiManager = APIManager.getInstance();
     }
 
+    public get(id: string): Promise<ITeam | undefined> {
+        return this.db.teams.get(id);
+    }
+
     public getCachedTeam(): Promise<ITeam[]> {
         const d = Date.now() - this.teamTtl;
         if (d < C_TEAM_TTL) {

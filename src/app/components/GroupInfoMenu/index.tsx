@@ -1003,18 +1003,18 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (!group || !group.photo) {
             return;
         }
-        let peer: InputPeer | undefined;
-        peer = new InputPeer();
-        peer.setAccesshash('0');
-        peer.setId(group.id || '');
-        peer.setType(PeerType.PEERGROUP);
+        let inputPeer: InputPeer | undefined;
+        inputPeer = new InputPeer();
+        inputPeer.setAccesshash('0');
+        inputPeer.setId(group.id || '');
+        inputPeer.setType(PeerType.PEERGROUP);
         const doc: IDocument = {
+            inputPeer,
             items: [{
                 caption: '',
                 fileLocation: group.photo.photobig,
                 thumbFileLocation: group.photo.photosmall,
             }],
-            peer,
             teamId: '0',
             type: 'avatar',
         };

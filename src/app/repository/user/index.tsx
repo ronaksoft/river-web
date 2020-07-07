@@ -265,6 +265,7 @@ export default class UserRepo {
     }
 
     public getAllContacts(teamId: string, cb?: (users: IUser[]) => void): Promise<IUser[]> {
+        window.console.log(teamId);
         if (cb) {
             this.getManyCache(teamId, true, {}).then((res) => {
                 cb(res);
@@ -281,6 +282,7 @@ export default class UserRepo {
             } else {
                 const crc32 = this.getContactsCrc(teamId);
                 this.apiManager.getContacts(crc32).then((remoteRes) => {
+                    window.console.log(remoteRes, teamId);
                     if (remoteRes.modified) {
                         this.importBulk(true, remoteRes.contactusersList);
                         this.importBulk(false, remoteRes.usersList);

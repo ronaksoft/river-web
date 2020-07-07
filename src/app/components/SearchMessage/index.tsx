@@ -331,7 +331,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             this.reset();
             return;
         }
-        this.messageRepo.search(this.teamId, peer.getId() || '', {
+        this.messageRepo.search(this.teamId, peer.getId() || '', peer.getType() || 0, {
             keyword: text,
             labelIds: this.state.appliedSelectedLabelIds,
             limit: searchLimit,
@@ -364,7 +364,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         if (!peer) {
             return;
         }
-        this.messageRepo.search(this.teamId, peer.getId() || '', {
+        this.messageRepo.search(this.teamId, peer.getId() || '', peer.getType() || 0, {
             before,
             keyword: this.text,
             labelIds: this.state.appliedSelectedLabelIds,

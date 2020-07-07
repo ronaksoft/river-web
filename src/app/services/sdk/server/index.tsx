@@ -180,6 +180,10 @@ export default class Server {
                 }
             }
         }
+
+        // if (this.inputTeam) {
+        //     this.inputTeam.accesshash = '5675765';
+        // }
         const request: IServerRequest = {
             constructor,
             data,
@@ -322,7 +326,7 @@ export default class Server {
                 return;
             }
         }
-        window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
+        window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId} ${request.inputTeam && request.inputTeam.id !== '0' ? ('teamId: ' + request.inputTeam.id) : ''}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, request.options ? (request.options.timeout || C_TIMEOUT) : C_TIMEOUT);
@@ -330,7 +334,7 @@ export default class Server {
     }
 
     private sendThrottledRequest(request: IServerRequest) {
-        window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d74e');
+        window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId} ${request.inputTeam && request.inputTeam.id !== '0' ? ('teamId: ' + request.inputTeam.id) : ''}`, 'color: #f9d74e');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, request.options ? (request.options.timeout || C_TIMEOUT) : C_TIMEOUT);
@@ -338,6 +342,12 @@ export default class Server {
         data.setConstructor(request.constructor);
         data.setMessage(request.data);
         data.setRequestid(request.reqId);
+        if (request.inputTeam && request.inputTeam.id !== '0') {
+            const inputTeam = new InputTeam();
+            inputTeam.setAccesshash(request.inputTeam.accesshash || '0');
+            inputTeam.setId(request.inputTeam.id || '0');
+            data.setTeam(inputTeam);
+        }
         this.requestQueue.push(data);
         this.executeSendThrottledRequestThrottle();
     }

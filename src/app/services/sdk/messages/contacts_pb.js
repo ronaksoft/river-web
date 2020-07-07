@@ -3760,7 +3760,8 @@ proto.msg.ContactsMany.toObject = function(includeInstance, msg) {
     modified: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     core_types_pb.User.toObject, includeInstance),
-    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
+    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f,
+    hash: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -3819,6 +3820,10 @@ proto.msg.ContactsMany.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setEmpty(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setHash(value);
       break;
     default:
       reader.skipField();
@@ -3884,6 +3889,13 @@ proto.msg.ContactsMany.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeBool(
       5,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeUint32(
+      6,
       f
     );
   }
@@ -4073,6 +4085,42 @@ proto.msg.ContactsMany.prototype.clearEmpty = function() {
  */
 proto.msg.ContactsMany.prototype.hasEmpty = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional uint32 Hash = 6;
+ * @return {number}
+ */
+proto.msg.ContactsMany.prototype.getHash = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.ContactsMany} returns this
+ */
+proto.msg.ContactsMany.prototype.setHash = function(value) {
+  return jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.ContactsMany} returns this
+ */
+proto.msg.ContactsMany.prototype.clearHash = function() {
+  return jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.ContactsMany.prototype.hasHash = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 

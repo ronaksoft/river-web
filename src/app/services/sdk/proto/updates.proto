@@ -132,6 +132,7 @@ message UpdateUserPhoto {
 message UpdateNotifySettings {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
     required int64 UserID = 1 [jstype = JS_STRING];
     required Peer NotifyPeer = 2;
     required PeerNotifySettings Settings = 3;
@@ -209,6 +210,7 @@ message UpdateDraftMessageCleared {
     optional int64 UpdateID = 101;
     optional int64 TeamID = 102 [jstype = JS_STRING];
     required Peer Peer = 1;
+
 }
 
 // UpdateDialogPinned

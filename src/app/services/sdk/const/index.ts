@@ -937,6 +937,7 @@ export const C_LOCALSTORAGE = {
     SettingsDownload: 'river.settings.download',
     SettingsNotification: 'river.settings.notification',
     ShrunkMenu: 'river.shrunk_menu',
+    SnapshotRecord: 'river.snapshot_record',
     SystemConfig: 'river.config.system',
     TeamData: 'river.team_data',
     TeamId: 'river.team_id',

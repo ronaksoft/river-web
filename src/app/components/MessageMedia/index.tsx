@@ -749,7 +749,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 userId: message.senderid || '',
                 width: info.width,
             }],
-            peerId: message.peerid || '',
+            peer: {id: message.peerid || '', peerType: message.peertype || 0},
             rect: el.getBoundingClientRect(),
             stream: Boolean(streamReady && !message.downloaded),
             teamId: message.teamid || '0',

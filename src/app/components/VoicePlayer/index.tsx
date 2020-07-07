@@ -183,7 +183,10 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         if (data.fileId) {
             this.voiceId = data.fileId;
             if (message) {
-                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
+                this.audioPlayer.addToPlaylist(message.id || 0, {
+                    id: message.peerid || '',
+                    peerType: message.peertype || 0
+                }, this.voiceId, message.senderid || '', message.downloaded || false);
                 this.removeAllListeners();
                 this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
                 this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
@@ -236,7 +239,10 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             this.removeAllListeners();
             this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
             if (this.voiceId) {
-                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
+                this.audioPlayer.addToPlaylist(message.id || 0, {
+                    id: message.peerid || '',
+                    peerType: message.peertype || 0,
+                }, this.voiceId, message.senderid || '', message.downloaded || false);
             }
         }
     }

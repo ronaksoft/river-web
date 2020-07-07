@@ -555,20 +555,20 @@ class UserDialog extends React.Component<IProps, IState> {
         if (!user || !user.photo) {
             return;
         }
-        let peer: InputPeer | undefined;
+        let inputPeer: InputPeer | undefined;
         if (user.accesshash) {
-            peer = new InputPeer();
-            peer.setAccesshash(user.accesshash);
-            peer.setId(user.id || '');
-            peer.setType(PeerType.PEERUSER);
+            inputPeer = new InputPeer();
+            inputPeer.setAccesshash(user.accesshash);
+            inputPeer.setId(user.id || '');
+            inputPeer.setType(PeerType.PEERUSER);
         }
         const doc: IDocument = {
+            inputPeer,
             items: [{
                 caption: '',
                 fileLocation: user.photo.photobig,
                 thumbFileLocation: user.photo.photosmall,
             }],
-            peer,
             teamId: '0',
             type: 'avatar',
         };

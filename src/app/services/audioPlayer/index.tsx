@@ -11,6 +11,7 @@ import FileRepo from '../../repository/file';
 import {clone} from 'lodash';
 import {IMediaInfo} from '../../components/MessageMedia';
 import MessageRepo from "../../repository/message";
+import {IPeer} from "../../repository/dialog/interface";
 
 export interface IAudioEvent {
     currentTime: number;
@@ -23,7 +24,7 @@ export interface IAudioEvent {
 export interface IAudioInfo {
     fast: boolean;
     messageId: number;
-    peerId: string;
+    peer: IPeer;
     userId: string;
 }
 
@@ -34,7 +35,7 @@ interface IAudioItem {
     fileId: string;
     fnQueue: { [key: number]: any };
     music?: IMediaInfo;
-    peerId?: string;
+    peer: IPeer;
     userId: string;
 }
 
@@ -45,7 +46,7 @@ export interface IPlaylistItem {
     fileId: string;
     id: number;
     music: IMediaInfo;
-    peerId?: string;
+    peer: IPeer;
     userId: string;
 }
 
@@ -118,7 +119,7 @@ export default class AudioPlayer {
                         fileId: t.fileId,
                         id,
                         music: t.music,
-                        peerId: t.peerId,
+                        peer: t.peer,
                         userId: t.userId,
                     });
                 }
@@ -143,14 +144,14 @@ export default class AudioPlayer {
     }
 
     /* Add audio to playlist */
-    public addToPlaylist(messageId: number, peerId: string, fileId: string, userId: string, downloaded: boolean, mediaInfo?: IMediaInfo) {
+    public addToPlaylist(messageId: number, peer: IPeer, fileId: string, userId: string, downloaded: boolean, mediaInfo?: IMediaInfo) {
         if (messageId < 0) {
             return;
         }
-        if (this.playingFromPeerId && this.playingFromPeerId !== peerId) {
-            if (this.backUpPeerId !== peerId) {
+        if (this.playingFromPeerId && this.playingFromPeerId !== peer.id) {
+            if (this.backUpPeerId !== peer.id) {
                 this.backUpTracks = {};
-                this.backUpPeerId = peerId;
+                this.backUpPeerId = peer.id;
             }
             if (!this.backUpTracks.hasOwnProperty(messageId)) {
                 this.backUpTracks[messageId] = {
@@ -166,21 +167,21 @@ export default class AudioPlayer {
                     fileId,
                     fnQueue: [],
                     music: mediaInfo,
-                    peerId,
+                    peer,
                     userId,
                 };
             } else {
                 this.backUpTracks[messageId].downloaded = downloaded;
-                this.backUpTracks[messageId].peerId = peerId;
+                this.backUpTracks[messageId].peer = peer;
                 this.backUpTracks[messageId].fileId = fileId;
                 this.backUpTracks[messageId].userId = userId;
                 this.backUpTracks[messageId].music = mediaInfo;
                 this.backUpTracks[messageId].event.music = Boolean(mediaInfo);
             }
         } else {
-            if (this.tracksPeerId !== peerId) {
+            if (this.tracksPeerId !== peer.id) {
                 this.tracks = {};
-                this.tracksPeerId = peerId;
+                this.tracksPeerId = peer.id;
                 this.voicePlaylist = [];
                 this.musicPlaylist = [];
             }
@@ -198,7 +199,7 @@ export default class AudioPlayer {
                     fileId,
                     fnQueue: [],
                     music: mediaInfo,
-                    peerId,
+                    peer,
                     userId,
                 };
                 if (Boolean(mediaInfo)) {
@@ -215,7 +216,7 @@ export default class AudioPlayer {
                 }
             } else {
                 this.tracks[messageId].downloaded = downloaded;
-                this.tracks[messageId].peerId = peerId;
+                this.tracks[messageId].peer = peer;
                 this.tracks[messageId].fileId = fileId;
                 this.tracks[messageId].userId = userId;
                 this.tracks[messageId].music = mediaInfo;
@@ -433,6 +434,10 @@ export default class AudioPlayer {
                 },
                 fileId: '',
                 fnQueue: [],
+                peer: {
+                    id: '',
+                    peerType: 0,
+                },
                 userId: '',
             };
             this.voicePlaylist.push(messageId);
@@ -517,7 +522,7 @@ export default class AudioPlayer {
                                 this.updateDurationFn({
                                     fast: false,
                                     messageId,
-                                    peerId: track.peerId || '',
+                                    peer: track.peer,
                                     userId: track.userId,
                                 }, this.audio.duration);
                                 setTimeout(() => {
@@ -541,7 +546,7 @@ export default class AudioPlayer {
                             this.errFn({
                                 fast: false,
                                 messageId,
-                                peerId: track.peerId || '',
+                                peer: track.peer,
                                 userId: track.userId,
                             }, err);
                         }
@@ -569,7 +574,7 @@ export default class AudioPlayer {
                         this.errFn({
                             fast: false,
                             messageId,
-                            peerId: track.peerId || '',
+                            peer: track.peer,
                             userId: track.userId,
                         }, Error('not found'));
                     }
@@ -619,7 +624,7 @@ export default class AudioPlayer {
             }
             this.tracks[messageId].event.currentTrack = this.currentTrack;
             if (state === 'play') {
-                this.playingFromPeerId = this.tracks[messageId].peerId;
+                this.playingFromPeerId = this.tracks[messageId].peer.id;
             }
             this.callHandlers(messageId, this.tracks[messageId].event, Boolean(state === 'play' || state === 'seek_play'));
         }
@@ -637,7 +642,7 @@ export default class AudioPlayer {
                 fn({
                     fast: this.fastEnable,
                     messageId,
-                    peerId: this.tracks[messageId].peerId,
+                    peerId: this.tracks[messageId].peer.id,
                     userId: this.tracks[messageId].userId,
                 }, event, opt ? this.tracks[messageId].music : undefined);
             }

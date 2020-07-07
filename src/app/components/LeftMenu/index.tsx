@@ -11,7 +11,7 @@ import * as React from 'react';
 import Dialog from "../Dialog";
 import SettingsMenu from "../SettingsMenu";
 import ContactsMenu from "../ContactsMenu";
-import {IDialog} from "../../repository/dialog/interface";
+import {IDialog, IPeer} from "../../repository/dialog/interface";
 import BottomBar from "../BottomBar";
 import Tooltip from "@material-ui/core/Tooltip";
 import i18n from "../../services/i18n";
@@ -34,9 +34,10 @@ import LabelMenu from "../LabelMenu";
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {RiverTextLogo} from "../SVG/river";
+import {ITeam} from "../../repository/team/interface";
+import TeamName from "../TeamName";
 
 import './style.scss';
-import {ITeam} from "../../repository/team/interface";
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -49,7 +50,7 @@ interface IProps {
     onAction: (cmd: menuAction) => void;
     onContextMenu: (cmd: string, dialog: IDialog) => void;
     onGroupCreate: (contacts: IUser[], title: string, fileId: string) => void;
-    onReloadDialog: (peerIds: string[]) => void;
+    onReloadDialog: (peerIds: IPeer[]) => void;
     onSettingsAction: (cmd: 'logout' | 'count_dialog') => void;
     onSettingsClose: (e: any) => void;
     onUpdateMessages: (keep?: boolean) => void;
@@ -262,11 +263,15 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                         </Tooltip>
                     </span>}
                     <span className="new-message">
-                        {iframeActive &&
-                        <a href="/" target="_blank">
-                            <RiverTextLogo/>
-                        </a>}
-                        {!iframeActive && <RiverTextLogo/>}
+                        <div className="text-logo">
+                            {iframeActive &&
+                            <a href="/" target="_blank">
+                                <RiverTextLogo/>
+                            </a>}
+                            {!iframeActive && <RiverTextLogo/>}
+                            {this.teamId !== '0' &&
+                            <TeamName id={this.teamId} className="team-name" prefix="(" postfix=")"/>}
+                        </div>
                     </span>
                     <div className="actions">
                         {this.chatTopIcons.map((item, key) => {

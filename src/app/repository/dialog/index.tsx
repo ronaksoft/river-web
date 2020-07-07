@@ -8,7 +8,7 @@
 */
 
 import DB from '../../services/db/dialog';
-import {IDialog, IDialogWithUpdateId, IDraft} from './interface';
+import {IDialog, IDialogWithUpdateId, IDraft, IPeer} from './interface';
 import {throttle, differenceBy, find, uniqBy, cloneDeep} from 'lodash';
 import APIManager from '../../services/sdk';
 import UserRepo from '../user';
@@ -69,8 +69,8 @@ export default class DialogRepo {
         return this.db.drafts.get([teamId, peerId]);
     }
 
-    public removeDraft(teamId: string, peerId: string) {
-        return this.db.drafts.delete([teamId, peerId]);
+    public removeDraft(teamId: string, peerId: string, peerType: number) {
+        return this.db.drafts.delete([teamId, peerId, peerType]);
     }
 
     /* Drafts End */
@@ -79,9 +79,9 @@ export default class DialogRepo {
         return this.db.dialogs.put(dialog);
     }
 
-    public remove(teamId: string, id: string) {
+    public remove(teamId: string, id: string, peerType: number) {
         delete this.lazyMap[`${teamId}_${id}`];
-        return this.db.dialogs.delete([teamId, id]);
+        return this.db.dialogs.delete([teamId, id, peerType]);
     }
 
     public createMany(dialogs: IDialog[]) {
@@ -185,11 +185,13 @@ export default class DialogRepo {
         });
     }
 
-    public findInArray(teamId: string, peerIds: string[], skip: number, limit: number) {
-        const query: any = peerIds.map((p) => {
-            return [teamId, p];
+    public findInArray(teamId: string, peers: Array<[string, number]>, skip: number, limit: number) {
+        const peerIds: string[] = [];
+        const query: any = peers.map((p) => {
+            peerIds.push(p[0]);
+            return [teamId, ...p];
         });
-        return this.db.dialogs.where(`[teamid+peerid]`).anyOf(query).offset(skip || 0).limit(limit).toArray().then((res) => {
+        return this.db.dialogs.where(`[teamid+peerid+peertype]`).anyOf(query).offset(skip || 0).limit(limit).toArray().then((res) => {
             if (peerIds.indexOf(this.userId) > -1 && !find(res, {peerid: this.userId})) {
                 res.unshift({
                     accesshash: '0',
@@ -233,12 +235,12 @@ export default class DialogRepo {
         const tempDialogs = uniqBy(dialogs, 'peerid');
         const queries = dialogs.map((dialog) => {
             dialog.teamid = dialog.teamid || '0';
-            return [dialog.teamid || 0, dialog.peerid || ''];
+            return [dialog.teamid || '0', dialog.peerid || '', dialog.peertype || 0];
         });
-        return this.db.dialogs.where('[teamid+peerid]').anyOf(queries).toArray().then((result) => {
+        return this.db.dialogs.where('[teamid+peerid+peertype]').anyOf(queries).toArray().then((result) => {
             const createItems: IDialog[] = differenceBy(tempDialogs, result, 'peerid');
             const updateItems: IDialog[] = result.map((dialog: IDialog) => {
-                const t = find(tempDialogs, {teamid: dialog.teamid, peerid: dialog.peerid});
+                const t = find(tempDialogs, {teamid: dialog.teamid, peerid: dialog.peerid, peertype: dialog.peertype});
                 if (t) {
                     return this.mergeCheck(dialog, t);
                 } else {
@@ -296,12 +298,12 @@ export default class DialogRepo {
                 dialog = this.applyMessage(dialog, msg);
             }
         }
-        const mapId = `${dialog.teamid || '0'}_${dialog.peerid}`;
-        if (this.lazyMap.hasOwnProperty(mapId)) {
-            const t = this.lazyMap[mapId];
-            this.lazyMap[mapId] = this.mergeCheck(t, dialog);
+        const dialogId = `${dialog.teamid || '0'}_${dialog.peerid || '0'}_${dialog.peertype || '0'}`;
+        if (this.lazyMap.hasOwnProperty(dialogId)) {
+            const t = this.lazyMap[dialogId];
+            this.lazyMap[dialogId] = this.mergeCheck(t, dialog);
         } else {
-            this.lazyMap[mapId] = dialog;
+            this.lazyMap[dialogId] = dialog;
         }
     }
 
@@ -339,4 +341,12 @@ export default class DialogRepo {
         dialog.saved_messages = (msg.peerid === this.userId);
         return dialog;
     }
+}
+
+export function GetPeerName(peerId: string | undefined, peerType: number | undefined) {
+    return `${peerId || ''}_${peerType || 0}`;
+}
+
+export function GetPeerNameByPeer(peer: IPeer) {
+    return `${peer.id}_${peer.peerType}`;
 }

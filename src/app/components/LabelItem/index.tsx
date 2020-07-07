@@ -193,7 +193,7 @@ const viewDocumentHandler = (message: IMessage) => (e: any) => {
             userId: message.senderid || '',
             width: info.width,
         }],
-        peerId: message.peerid || '',
+        peer: {id: message.peerid || '', peerType: message.peertype || 0},
         rect: el ? el.getBoundingClientRect() : undefined,
         stream: false,
         teamId: message.teamid || '0',

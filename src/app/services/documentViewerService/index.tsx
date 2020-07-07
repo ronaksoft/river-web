@@ -10,6 +10,7 @@
 import {InputFileLocation, InputPeer, MessageEntity} from '../sdk/messages/core.types_pb';
 import MediaRepo from '../../repository/media';
 import {C_MEDIA_TYPE} from '../../repository/media/interface';
+import {IPeer} from "../../repository/dialog/interface";
 
 interface IDocumentItem {
     caption: string;
@@ -34,9 +35,9 @@ interface IDocumentItem {
 export interface IDocument {
     anchor?: 'message' | 'shared_media' | 'shared_media_full' | 'label';
     items: IDocumentItem[];
-    peerId?: string;
+    peer?: IPeer;
     rect?: ClientRect;
-    peer?: InputPeer;
+    inputPeer?: InputPeer;
     photoId?: string;
     type: 'avatar' | 'picture' | 'video' | 'location' | 'code';
     stream?: boolean;
@@ -82,10 +83,10 @@ export default class DocumentViewerService {
     }
 
     private initPagination(doc: IDocument) {
-        if ((doc.type !== 'video' && doc.type !== 'picture') || !doc.peerId) {
+        if ((doc.type !== 'video' && doc.type !== 'picture') || !doc.peer) {
             return;
         }
-        this.mediaRepo.getMany(doc.teamId, doc.peerId, {
+        this.mediaRepo.getMany(doc.teamId, doc.peer, {
             before: (doc.items[0].id || 0) - 1,
             limit: 1,
             type: C_MEDIA_TYPE.MEDIA
@@ -96,7 +97,7 @@ export default class DocumentViewerService {
                 this.onDocumentPrev(null);
             }
         });
-        this.mediaRepo.getMany(doc.teamId, doc.peerId, {
+        this.mediaRepo.getMany(doc.teamId, doc.peer, {
             after: (doc.items[0].id || 0) + 1,
             limit: 1,
             type: C_MEDIA_TYPE.MEDIA

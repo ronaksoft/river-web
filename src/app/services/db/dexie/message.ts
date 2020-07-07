@@ -25,7 +25,7 @@ export class DexieMessageDB extends Dexie {
         //
 
         this.version(1).stores({
-            messages: `id,[teamid+peerid+id]`,
+            messages: `id,[teamid+peerid+peertype+id]`,
             pendingMessages: `id,message_id`,
         });
 

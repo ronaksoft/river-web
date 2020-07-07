@@ -612,6 +612,11 @@ export class UpdateNotifySettings extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasUserid(): boolean;
   clearUserid(): void;
   getUserid(): string | undefined;
@@ -641,6 +646,7 @@ export namespace UpdateNotifySettings {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     userid?: string,
     notifypeer: core_types_pb.Peer.AsObject,
     settings: core_types_pb.PeerNotifySettings.AsObject,

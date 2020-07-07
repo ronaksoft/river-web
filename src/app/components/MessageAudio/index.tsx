@@ -63,7 +63,10 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
     public componentDidMount() {
         const {message, mediaInfo} = this.state;
         if (this.props.peer) {
-            this.audioPlayer.addToPlaylist(message.id || 0, this.props.peer.getId() || '', mediaInfo.file.fileid || '', message.senderid || '', message.downloaded || false, mediaInfo);
+            this.audioPlayer.addToPlaylist(message.id || 0, {
+                id: this.props.peer.getId() || '',
+                peerType: this.props.peer.getType() || 0
+            }, mediaInfo.file.fileid || '', message.senderid || '', message.downloaded || false, mediaInfo);
         }
         this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
     }
@@ -85,7 +88,10 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                 }, () => {
                     const {message, mediaInfo} = this.state;
                     if (this.props.peer) {
-                        this.audioPlayer.addToPlaylist(message.id || 0, this.props.peer.getId() || '', mediaInfo.file.fileid || '', message.senderid || '', message.downloaded || false, mediaInfo);
+                        this.audioPlayer.addToPlaylist(message.id || 0, {
+                            id: this.props.peer.getId() || '',
+                            peerType: this.props.peer.getType() || 0
+                        }, mediaInfo.file.fileid || '', message.senderid || '', message.downloaded || false, mediaInfo);
                     }
                 });
             }

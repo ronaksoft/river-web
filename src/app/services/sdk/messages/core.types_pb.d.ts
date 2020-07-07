@@ -1932,7 +1932,7 @@ export enum PeerType {
   PEERSELF = 0,
   PEERUSER = 1,
   PEERGROUP = 2,
-  PEERSUPERGROUP = 3,
+  PEEREXTERNALUSER = 3,
   PEERCHANNEL = 4,
 }
 
