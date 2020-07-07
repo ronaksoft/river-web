@@ -30,6 +30,7 @@ import {Link} from "react-router-dom";
 import {IUser} from "../../repository/user/interface";
 
 import './style.scss';
+import {GetPeerName} from "../../repository/dialog";
 
 export const getMessageIcon = (icon?: number) => {
     switch (icon) {
@@ -64,7 +65,7 @@ interface IProps {
     isTyping: { [key: string]: { fn: any, action: TypingAction } };
     onContextMenuOpen?: (e: any) => void;
     onClick?: (e: any) => void;
-    selectedId: string;
+    selectedPeerName: string;
     messageId?: number;
     onDrop?: (peerId: string, files: File[], hasData: boolean) => void;
 }
@@ -208,7 +209,7 @@ const GetStatus = ({id, readId, peerId, isBot, userId}: { id: number, readId: nu
     }
 };
 
-export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOpen, onClick, selectedId, messageId, onDrop}: IProps) => {
+export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOpen, onClick, selectedPeerName, messageId, onDrop}: IProps) => {
     const [isBot, setIsBot] = useState<boolean>(false);
 
     const userId: string = sdk.getInstance().getConnInfo().UserID || '';
@@ -247,20 +248,20 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
     const muted = isMuted(dialog.notifysettings);
     const hasCounter = Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
     const hasMention = Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
-
+    const peerName = GetPeerName(dialog.peerid, dialog.peertype);
     return (
         <Link className="dialog-a" onClick={onClick} data-peerid={dialog.peerid}
-              to={messageId ? `/chat/${dialog.teamid || '0'}/${dialog.peerid}_${dialog.peertype || 0}/${messageId}` : `/chat/${dialog.teamid}/${dialog.peerid}`}
+              to={messageId ? `/chat/${dialog.teamid || '0'}/${peerName}/${messageId}` : `/chat/${dialog.teamid}/${dialog.peerid}_${dialog.peertype || 0}`}
               onDrop={dropHandler}
         >
             <div
-                className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}
+                className={'dialog' + (peerName === selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}
             >
                 <div
                     className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
                     {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                     <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
-                                savedMessages={dialog.saved_messages} onlineIndicator={selectedId !== ''}/>}
+                                savedMessages={dialog.saved_messages} onlineIndicator={selectedPeerName !== ''}/>}
                     {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupAvatar className="avatar" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
                     <div className="dialog-top-bar">

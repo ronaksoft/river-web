@@ -17,13 +17,13 @@ import UserAvatar from "../UserAvatar";
 import GroupAvatar from "../GroupAvatar";
 import GroupName from "../GroupName";
 import I18n from "../../services/i18n";
+import i18n from "../../services/i18n";
 import {Link} from "react-router-dom";
 import {IUser} from "../../repository/user/interface";
 import {IGroup} from "../../repository/group/interface";
 import {CloseRounded} from "@material-ui/icons";
 import APIManager from "../../services/sdk";
 import {findIndex} from 'lodash';
-import i18n from '../../services/i18n';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import {TopPeerCategory} from "../../services/sdk/messages/contacts_pb";
 
@@ -101,7 +101,7 @@ class TopPeer extends React.Component<IProps, IState> {
                 <div className="scroll-bar" style={{width: `${list.length * 64}px`}}>
                     {filteredList.map((item, index) => {
                         return (
-                            <Link key={index} to={`/chat/${item.item.id}`} onClick={this.clickHandler(item)}>
+                            <Link key={index} to={`/chat/${this.props.teamId}/${item.item.id}_${item.type}`} onClick={this.clickHandler(item)}>
                                 <div className="top-peer-item">
                                     <div className="remove" onClick={this.removeHandler(item)}><CloseRounded/></div>
                                     {this.getItem(item)}

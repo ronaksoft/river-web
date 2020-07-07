@@ -292,6 +292,7 @@ export default class MessageRepo {
             MediaRepo.getInstance().lazyUpsert([{
                 id: out.id,
                 peerid: out.peerid || '',
+                peertype: out.peertype || 0,
                 teamid: out.teamid || '0',
                 type: msgType,
             }]);

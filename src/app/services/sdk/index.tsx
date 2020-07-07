@@ -224,6 +224,7 @@ export default class APIManager {
         localStorage.removeItem(C_LOCALSTORAGE.GifHash);
         localStorage.removeItem(C_LOCALSTORAGE.TeamId);
         localStorage.removeItem(C_LOCALSTORAGE.TeamData);
+        localStorage.removeItem(C_LOCALSTORAGE.SnapshotRecord);
     }
 
     public loadConnInfo(): IConnInfo {

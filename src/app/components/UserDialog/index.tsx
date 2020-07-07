@@ -39,13 +39,14 @@ import {isMuted} from '../UserInfoMenu';
 import Broadcaster from '../../services/broadcaster';
 import i18n from '../../services/i18n';
 import {notifyOptions} from "../../pages/Chat";
+import {OfficialIcon} from "../SVG/official";
 
 import './style.scss';
-import {OfficialIcon} from "../SVG/official";
 
 interface IProps {
     onClose?: () => void;
     onAction: (cmd: string, user?: IUser) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -268,7 +269,8 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     {sendMessageEnable && <div className="kk-card">
-                        <Link className="send-message" to={`/chat/${user ? user.id : 'null'}`}
+                        <Link className="send-message"
+                              to={`/chat/${this.props.teamId}/${user ? `${user.id}_${PeerType.PEERUSER}` : 'null'}`}
                               onClick={this.close}>
                             <SendRounded/> {i18n.t('general.send_message')}
                         </Link>
@@ -569,7 +571,7 @@ class UserDialog extends React.Component<IProps, IState> {
                 fileLocation: user.photo.photobig,
                 thumbFileLocation: user.photo.photosmall,
             }],
-            teamId: '0',
+            teamId: this.props.teamId,
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);

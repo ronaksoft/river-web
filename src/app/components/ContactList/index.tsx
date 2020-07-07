@@ -35,6 +35,7 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 import {InputAdornment} from "@material-ui/core";
+import {PeerType} from "../../services/sdk/messages/core.types_pb";
 
 interface IProps {
     className?: string;
@@ -369,7 +370,7 @@ class ContactList extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div style={style} key={contact.id || ''} className="contact-item">
-                            <Link to={`/chat/${this.props.teamId}/${contact.id}`}>
+                            <Link to={`/chat/${this.props.teamId}/${contact.id}_${PeerType.PEERUSER}`}>
                                 <span className="avatar">
                                     <UserAvatar id={contact.id || ''}/>
                                 </span>
@@ -395,7 +396,7 @@ class ContactList extends React.Component<IProps, IState> {
             const contact = this.state.globalUsers[index - (this.state.contacts.length + 1)];
             return (
                 <div style={style} key={contact.id || ''} className="contact-item">
-                    <Link to={`/chat/${this.props.teamId}/${contact.id}`}>
+                    <Link to={`/chat/${this.props.teamId}/${contact.id}_${PeerType.PEERUSER}`}>
                         <span className="avatar">
                             <UserAvatar id={contact.id || ''}/>
                         </span>

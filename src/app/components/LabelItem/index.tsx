@@ -38,6 +38,7 @@ import {IconButton} from '@material-ui/core';
 import './style.scss';
 
 interface IProps {
+    teamId: string;
     message: IMessage;
     onAction?: (cmd: 'download', message: IMessage) => void;
 }
@@ -286,36 +287,37 @@ const LabelBodyDefault = ({message}: IProps) => {
     </div>;
 };
 
-const LabelBody = ({message, onAction}: IProps) => {
+const LabelBody = ({teamId, message, onAction}: IProps) => {
     switch (message.messagetype) {
         case C_MESSAGE_TYPE.Audio:
-            return <LabelBodyAudio message={message}/>;
+            return <LabelBodyAudio message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Contact:
-            return <LabelBodyContact message={message}/>;
+            return <LabelBodyContact message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.File:
-            return <LabelBodyFile message={message}/>;
+            return <LabelBodyFile message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Location:
-            return <LabelBodyLocation message={message}/>;
+            return <LabelBodyLocation message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Picture:
         case C_MESSAGE_TYPE.Video:
-            return <LabelBodyMedia message={message} onAction={onAction}/>;
+            return <LabelBodyMedia message={message} onAction={onAction} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Voice:
-            return <LabelBodyVoice message={message}/>;
+            return <LabelBodyVoice message={message} teamId={teamId}/>;
         default:
-            return <LabelBodyDefault message={message}/>;
+            return <LabelBodyDefault message={message} teamId={teamId}/>;
     }
 };
 
-export const LabelMessageItem = ({message, onAction}: IProps) => {
+export const LabelMessageItem = ({teamId, message, onAction}: IProps) => {
     const dragStart = (e: any) => {
         e.dataTransfer.setData("message/id", message.id || '');
     };
 
     return (
-        <Link className="label-message-item-href" to={`/chat/${message.peerid}/${message.id}`}>
+        <Link className="label-message-item-href"
+              to={`/chat/${teamId}/${message.peerid}_${message.peertype}/${message.id}`}>
             <div className="label-message-item" draggable={true} onDragStart={dragStart}>
-                <LabelHeader message={message}/>
-                <LabelBody message={message} onAction={onAction}/>
+                <LabelHeader message={message} teamId={teamId}/>
+                <LabelBody message={message} teamId={teamId} onAction={onAction}/>
                 <LabelIndicator labelIds={message.labelidsList || []}/>
             </div>
         </Link>

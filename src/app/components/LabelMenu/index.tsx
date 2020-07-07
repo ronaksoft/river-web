@@ -427,7 +427,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                                     <CircularProgress size={32} thickness={3} color="inherit"/>
                                 </div>}
                                 {labelList.map((message, index) => {
-                                    return (<LabelMessageItem key={message.id || 0} message={message}
+                                    return (<LabelMessageItem key={message.id || 0} message={message} teamId={this.props.teamId}
                                                               onAction={this.props.onAction}/>);
                                 })}
                                 {labelLoading && <div key="label-item-loading" className="label-item-loading">

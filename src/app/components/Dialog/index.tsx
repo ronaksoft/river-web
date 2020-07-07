@@ -63,7 +63,7 @@ interface IState {
     searchEnable: boolean;
     searchItems: IDialog[];
     searchMessageItems: IDialog[];
-    selectedId: string;
+    selectedPeerName: string;
 }
 
 const listStyle: React.CSSProperties = {
@@ -109,7 +109,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             searchEnable: false,
             searchItems: [],
             searchMessageItems: [],
-            selectedId: 'null',
+            selectedPeerName: 'null',
         };
 
         this.searchRepo = SearchRepo.getInstance();
@@ -183,9 +183,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
         });
     }
 
-    public setSelectedId(id: string) {
+    public setSelectedPeerName(name: string) {
         this.setState({
-            selectedId: id,
+            selectedPeerName: name,
         }, () => {
             this.filterItem();
         });
@@ -381,7 +381,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                         const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
                         return (
                             <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                           isTyping={isTyping} selectedId={this.state.selectedId}
+                                           isTyping={isTyping} selectedPeerName={this.state.selectedPeerName}
                                            onContextMenuOpen={this.contextMenuOpenHandler(index)}
                                            onDrop={this.props.onDrop}
                             />
@@ -390,7 +390,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     {searchAddedItems.map((dialog, index) => {
                         return (
                             <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                           isTyping={{}} selectedId={this.state.selectedId}
+                                           isTyping={{}} selectedPeerName={this.state.selectedPeerName}
                                            onClick={this.closeSearchHandler}
                                            onDrop={this.props.onDrop}
                             />
@@ -402,7 +402,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 {searchMessageItems.map((dialog, index) => {
                     return (
                         <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
-                                       dialog={dialog} isTyping={{}} selectedId=""
+                                       dialog={dialog} isTyping={{}} selectedPeerName=""
                                        messageId={dialog.topmessageid}
                         />
                     );
@@ -503,11 +503,11 @@ class Dialog extends React.PureComponent<IProps, IState> {
             const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
             return (
                 <div style={style} key={dialog.peerid || key}>
-                    <Link to={`/chat/${dialog.peerid}`}>
+                    <Link to={`/chat/${this.props.teamId}/${dialog.peerid}_${dialog.peertype}`}>
                         <div
-                            className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
+                            className={'dialog' + (dialog.peerid === this.state.selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
                             <DialogMessage dialog={dialog} isTyping={isTyping} onDrop={this.props.onDrop}
-                                           onContextMenuOpen={this.contextMenuOpenHandler(index)} selectedId=""/>
+                                           onContextMenuOpen={this.contextMenuOpenHandler(index)} selectedPeerName=""/>
                         </div>
                     </Link>
                 </div>
@@ -517,9 +517,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
             if (dialog) {
                 return (
                     <div style={style} key={dialog.peerid || key} onClick={this.closeSearchHandler}>
-                        <Link to={`/chat/${dialog.peerid}`}>
+                        <Link to={`/chat/${this.props.teamId}/${dialog.peerid}_${dialog.peertype}`}>
                             <div className="dialog">
-                                <DialogMessage dialog={dialog} isTyping={{}} selectedId="" onDrop={this.props.onDrop}/>
+                                <DialogMessage dialog={dialog} isTyping={{}} selectedPeerName=""
+                                               onDrop={this.props.onDrop}/>
                             </div>
                         </Link>
                     </div>
@@ -846,7 +847,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
     private initScrollPos() {
         setTimeout(() => {
-            const index = findIndex(this.state.items, {peerid: this.state.selectedId});
+            const index = findIndex(this.state.items, {peerid: this.state.selectedPeerName});
             if (this.scrollbarsRef && index > -1) {
                 const scrollTop = index * 64;
                 const containerHeight = this.scrollbarsRef.getClientHeight();

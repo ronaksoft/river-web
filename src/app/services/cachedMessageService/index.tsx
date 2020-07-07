@@ -8,10 +8,11 @@
 */
 
 import {IMessage} from "../../repository/message/interface";
+import {GetPeerName} from "../../repository/dialog";
 
 interface ICachedMessage {
     message: IMessage;
-    peerId: string;
+    peerName: string;
     timeout: any;
 }
 
@@ -38,13 +39,13 @@ export default class CachedMessageService {
     private static instance: CachedMessageService;
 
     private messages: { [key: number]: ICachedMessage } = {};
-    private peerIds: { [key: string]: number[] } = {};
+    private peerNames: { [key: string]: number[] } = {};
 
     private fnIndex: number = 0;
     private listeners: { [key: string]: IBroadcastItem } = {};
 
     /* Get message */
-    public getMessage(peerId: string, id: number): IMessage | null {
+    public getMessage(peerName: string, id: number): IMessage | null {
         if (this.messages.hasOwnProperty(id)) {
             if (this.messages[id].timeout !== null) {
                 clearTimeout(this.messages[id].timeout);
@@ -57,7 +58,7 @@ export default class CachedMessageService {
     /* Set message */
     public setMessage(message: IMessage) {
         const id = message.id || 0;
-        const peerId = message.peerid || '';
+        const peerName = GetPeerName(message.peerid || '', message.peertype || 0);
         if (this.messages.hasOwnProperty(id)) {
             if (this.messages[id].timeout !== null) {
                 clearTimeout(this.messages[id].timeout);
@@ -65,28 +66,28 @@ export default class CachedMessageService {
         }
         this.messages[id] = {
             message,
-            peerId,
+            peerName,
             timeout: null,
         };
-        if (!this.peerIds.hasOwnProperty(peerId)) {
-            this.peerIds[peerId] = [];
+        if (!this.peerNames.hasOwnProperty(peerName)) {
+            this.peerNames[peerName] = [];
         }
-        const index = this.peerIds[peerId].indexOf(id);
+        const index = this.peerNames[peerName].indexOf(id);
         if (index === -1) {
-            this.peerIds[peerId].push(id);
+            this.peerNames[peerName].push(id);
         }
     }
 
     /* Update message */
     public updateMessage(message: IMessage) {
         const id = message.id || 0;
-        const peerId = message.peerid || '';
-        if (!this.peerIds.hasOwnProperty(peerId)) {
+        const peerName = GetPeerName(message.peerid || '', message.peertype || 0);
+        if (!this.peerNames.hasOwnProperty(peerName)) {
             return;
         }
         this.messages[id] = {
             message,
-            peerId,
+            peerName,
             timeout: null,
         };
         this.callHandlers(id, {
@@ -98,10 +99,10 @@ export default class CachedMessageService {
     /* Remove message */
     public removeMessage(id: number) {
         if (this.messages.hasOwnProperty(id)) {
-            if (this.peerIds.hasOwnProperty(this.messages[id].peerId)) {
-                const index = this.peerIds[this.messages[id].peerId].indexOf(id);
+            if (this.peerNames.hasOwnProperty(this.messages[id].peerName)) {
+                const index = this.peerNames[this.messages[id].peerName].indexOf(id);
                 if (index > -1) {
-                    this.peerIds[this.messages[id].peerId].splice(index);
+                    this.peerNames[this.messages[id].peerName].splice(index);
                 }
             }
             clearTimeout(this.messages[id].timeout);
@@ -116,10 +117,10 @@ export default class CachedMessageService {
     /* Start cache clear timeout */
     public unmountCache(id: number, ttl?: number) {
         if (this.messages.hasOwnProperty(id)) {
-            if (this.peerIds.hasOwnProperty(this.messages[id].peerId)) {
-                const index = this.peerIds[this.messages[id].peerId].indexOf(id);
+            if (this.peerNames.hasOwnProperty(this.messages[id].peerName)) {
+                const index = this.peerNames[this.messages[id].peerName].indexOf(id);
                 if (index > -1) {
-                    this.peerIds[this.messages[id].peerId].splice(index);
+                    this.peerNames[this.messages[id].peerName].splice(index);
                 }
             }
             this.messages[id].timeout = setTimeout(() => {
@@ -131,9 +132,9 @@ export default class CachedMessageService {
     }
 
     /* Clear peer id messages */
-    public clearPeerId(peerId: string) {
-        if (this.peerIds.hasOwnProperty(peerId)) {
-            this.peerIds[peerId].forEach((id) => {
+    public clearPeerId(name: string) {
+        if (this.peerNames.hasOwnProperty(name)) {
+            this.peerNames[name].forEach((id) => {
                 if (this.messages.hasOwnProperty(id)) {
                     if (this.messages[id].timeout) {
                         clearTimeout(this.messages[id].timeout);
@@ -141,7 +142,7 @@ export default class CachedMessageService {
                     delete this.messages[id];
                 }
             });
-            delete this.peerIds[peerId];
+            delete this.peerNames[name];
         }
     }
 

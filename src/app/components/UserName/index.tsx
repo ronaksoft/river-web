@@ -33,6 +33,7 @@ interface IProps {
     onLoad?: (user?: IUser) => void;
     noIcon?: boolean;
     onClick?: (id: string) => void;
+    peerName?: boolean;
 }
 
 interface IState {
@@ -58,7 +59,7 @@ class UserName extends React.PureComponent<IProps, IState> {
         this.state = {
             className: props.className || '',
             forceColor: this.userRepo.getBubbleMode() === '5',
-            id: props.id,
+            id: props.peerName ? (props.id.split('_')[0] || '') : props.id,
             user: {},
         };
 
@@ -76,7 +77,7 @@ class UserName extends React.PureComponent<IProps, IState> {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);
             this.setState({
-                id: newProps.id,
+                id: newProps.peerName ? (newProps.id.split('_')[0] || '') : newProps.id,
             }, () => {
                 this.getUser();
             });
