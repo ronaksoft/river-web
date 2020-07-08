@@ -1,3 +1,10 @@
+## 0.34.0
+* 🎉 New Team Feature
+* Database version 5
+* FileManager updated with clusterId
+* All repositories modified for team
+* Bug fixes and performance improvements
+
 ## 0.33.8
 * Load more bugs fixed
 * GIF sort updated

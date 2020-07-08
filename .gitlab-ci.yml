@@ -11,6 +11,7 @@ build:app:
   stage: build
   only:
       - master
+      - feature/team
   script:
     - cp -a ./. /var/lib/app
     - cd /var/lib/app
@@ -36,6 +37,22 @@ deploy:production:
     - docker:dind
   variables:
     IMAGE_TAG: "2.5"
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build --pull -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
+  dependencies:
+    - build:app
+
+deploy:staging:
+  image: gitlab/dind
+  stage: deploy
+  only:
+    - feature/team
+  services:
+    - docker:dind
+  variables:
+    IMAGE_TAG: "3.0"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build --pull -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
