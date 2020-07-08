@@ -3861,7 +3861,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Resend media message */
-    private resendMediaMessage(randomId: number, message: IMessage, fileIds: string[], data: any, inputMediaType?: InputMediaType) {
+    private resendMediaMessage(randomId: number, message: IMessage, fileNames: string[], data: any, inputMediaType?: InputMediaType) {
         const peer = this.peer;
         if (peer === null) {
             return;
@@ -3886,13 +3886,13 @@ class Chat extends React.Component<IProps, IState> {
         };
 
         const promises: any[] = [];
-        fileIds.forEach((id, key) => {
+        fileNames.forEach((name, key) => {
             if (key === 0) {
-                promises.push(this.fileManager.retry(id, (progress) => {
+                promises.push(this.fileManager.retry(name, (progress) => {
                     this.progressBroadcaster.publish(message.id || 0, progress);
                 }));
             } else {
-                promises.push(this.fileManager.retry(id));
+                promises.push(this.fileManager.retry(name));
             }
         });
         Promise.all(promises).then(() => {
@@ -3947,7 +3947,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview' | 'start_bot', message: IMessage | number, fileId?: string) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview' | 'start_bot', message: IMessage | number, fileName?: string) => {
         const execute = (msg: IMessage) => {
             switch (cmd) {
                 case 'cancel':
@@ -3973,8 +3973,8 @@ class Chat extends React.Component<IProps, IState> {
                     this.readMessageContent(msg);
                     break;
                 case 'save_as':
-                    if (fileId) {
-                        this.fileRepo.get(fileId).then((res) => {
+                    if (fileName) {
+                        this.fileRepo.get(fileName).then((res) => {
                             if (res) {
                                 saveAs(res.data, `downloaded_file_${Date.now()}.${getFileExtension(res.data.type)}`);
                             }
@@ -4157,6 +4157,7 @@ class Chat extends React.Component<IProps, IState> {
 
         const fileIds: string[] = [];
         fileIds.push(String(UniqueId.getRandomId()));
+
         let messageType: number = C_MESSAGE_TYPE.File;
 
         const inputFile = new InputFile();
@@ -4860,7 +4861,7 @@ class Chat extends React.Component<IProps, IState> {
     private saveFile(msg: IMessage) {
         const mediaDocument = getMediaDocument(msg);
         if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-            this.fileRepo.get(mediaDocument.doc.id).then((res) => {
+            this.fileRepo.get(GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid)).then((res) => {
                 if (res) {
                     if (ElectronService.isElectron()) {
                         this.downloadWithElectron(res.data, msg);

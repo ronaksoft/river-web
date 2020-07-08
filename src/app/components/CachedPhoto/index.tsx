@@ -11,6 +11,7 @@ import * as React from 'react';
 import CachedFileService from '../../services/cachedFileService';
 import {InputFileLocation} from '../../services/sdk/messages/core.types_pb';
 import {CSSProperties} from 'react';
+import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     blur?: number;
@@ -71,7 +72,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         this.mounted = false;
         clearTimeout(this.tryTimeout);
         if (this.props.fileLocation) {
-            this.cachedFileService.unmountCache(this.props.fileLocation.fileid || '');
+            this.cachedFileService.unmountCache(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid));
         }
         if (this.tempFileSrc) {
             URL.revokeObjectURL(this.tempFileSrc);
@@ -141,7 +142,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
 
     /* Img error handler */
     private imgErrorHandler = () => {
-        this.cachedFileService.remove(this.props.fileLocation.fileid || '').then(() => {
+        this.cachedFileService.remove(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid)).then(() => {
             if (!this.mounted) {
                 return;
             }

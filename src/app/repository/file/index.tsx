@@ -142,8 +142,8 @@ export default class FileRepo {
         return this.db.files.delete(name);
     }
 
-    public removeMany(ids: string[]) {
-        return this.db.files.bulkDelete(ids);
+    public removeMany(names: string[]) {
+        return this.db.files.bulkDelete(names);
     }
 
     public upsertFile(name: string, blob: Blob) {
@@ -193,7 +193,7 @@ export default class FileRepo {
         });
     }
 
-    public getFileMap(inputFile: InputFileLocation.AsObject): Promise<IFileMap | undefined> {
+    private getFileMap(inputFile: InputFileLocation.AsObject): Promise<IFileMap | undefined> {
         return this.db.fileMap.get(GetDbFileName(inputFile.fileid, inputFile.clusterid ));
     }
 

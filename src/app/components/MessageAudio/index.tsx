@@ -22,6 +22,7 @@ import './style.scss';
 import CachedPhoto from "../CachedPhoto";
 import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
+import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     measureFn: any;
@@ -39,7 +40,7 @@ interface IState {
 
 class MessageAudio extends React.PureComponent<IProps, IState> {
     private lastId: number = 0;
-    private fileId: string = '';
+    private dbFileName: string = '';
     private eventReferences: any[] = [];
     private downloaded: boolean = false;
     private audioPlayer: AudioPlayer;
@@ -56,7 +57,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
 
         this.downloaded = props.message.downloaded || false;
         this.lastId = props.message.id || 0;
-        this.fileId = this.state.mediaInfo.file.fileid || '';
+        this.dbFileName = GetDbFileName(this.state.mediaInfo.file.fileid, this.state.mediaInfo.file.clusterid);
         this.audioPlayer = AudioPlayer.getInstance();
     }
 
@@ -66,7 +67,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
             this.audioPlayer.addToPlaylist(message.id || 0, {
                 id: this.props.peer.getId() || '',
                 peerType: this.props.peer.getType() || 0
-            }, mediaInfo.file.fileid || '', message.senderid || '', message.downloaded || false, mediaInfo);
+            }, GetDbFileName(mediaInfo.file.fileid, mediaInfo.file.clusterid), message.senderid || '', message.downloaded || false, mediaInfo);
         }
         this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
     }
@@ -74,14 +75,15 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
     public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (newProps.message) {
             const mInfo = getMediaInfo(newProps.message);
-            if (this.lastId !== newProps.message.id || this.fileId !== mInfo.file.fileid) {
+            const dbFileName = GetDbFileName(mInfo.file.fileid, mInfo.file.clusterid);
+            if (this.lastId !== newProps.message.id || this.dbFileName !== dbFileName) {
                 if (this.lastId !== newProps.message.id && this.lastId < 0) {
                     this.audioPlayer.removeFromPlaylist(this.lastId);
                     this.removeAllListeners();
                     this.eventReferences.push(this.audioPlayer.listen(newProps.message.id || 0, this.audioPlayerHandler));
                 }
                 this.lastId = newProps.message.id || 0;
-                this.fileId = mInfo.file.fileid || '';
+                this.dbFileName = dbFileName;
                 this.setState({
                     mediaInfo: mInfo,
                     message: newProps.message,
@@ -91,7 +93,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                         this.audioPlayer.addToPlaylist(message.id || 0, {
                             id: this.props.peer.getId() || '',
                             peerType: this.props.peer.getType() || 0
-                        }, mediaInfo.file.fileid || '', message.senderid || '', message.downloaded || false, mediaInfo);
+                        }, GetDbFileName(mediaInfo.file.fileid, mediaInfo.file.clusterid), message.senderid || '', message.downloaded || false, mediaInfo);
                     }
                 });
             }

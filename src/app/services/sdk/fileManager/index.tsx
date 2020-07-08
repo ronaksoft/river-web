@@ -11,7 +11,7 @@ import Http from './http';
 import {C_LOCALSTORAGE, C_MSG} from '../const';
 import {File, FileGet, FileSavePart} from '../messages/files_pb';
 import {Bool, FileLocation, InputTeam, MessageContainer, MessageEnvelope} from '../messages/core.types_pb';
-import FileRepo, {md5FromBlob} from '../../../repository/file';
+import FileRepo, {GetDbFileName, md5FromBlob} from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
 import {findIndex, throttle} from 'lodash';
@@ -239,7 +239,8 @@ export default class FileManager {
 
     /* Receive the whole file */
     public receiveFile(location: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, onProgress?: (e: IFileProgress) => void) {
-        if (this.fileDownloadQueue.hasOwnProperty(location.getFileid() || '')) {
+        const fileName = GetDbFileName(location.getFileid(), location.getClusterid());
+        if (this.fileDownloadQueue.hasOwnProperty(fileName)) {
             return Promise.reject({
                 code: C_FILE_ERR_CODE.ALREADY_IN_QUEUE,
                 message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.ALREADY_IN_QUEUE],
@@ -265,7 +266,7 @@ export default class FileManager {
             }, onProgress);
         };
 
-        this.fileRepo.get(location.getFileid() || '').then((res) => {
+        this.fileRepo.get(fileName).then((res) => {
             if (res) {
                 if (onProgress) {
                     onProgress({
@@ -312,7 +313,7 @@ export default class FileManager {
             }, onProgress, onBuffer);
         };
 
-        this.fileRepo.get(location.getFileid() || '').then((res) => {
+        this.fileRepo.get(GetDbFileName(location.getFileid(), location.getClusterid())).then((res) => {
             if (res) {
                 if (onProgress) {
                     onProgress({
@@ -341,7 +342,7 @@ export default class FileManager {
     }
 
     /* Retry uploading/downloading file */
-    public retry(id: string, onProgress?: (e: IFileProgress) => void): Promise<any> {
+    public retry(name: string, onProgress?: (e: IFileProgress) => void): Promise<any> {
         let internalResolve: any = null;
         let internalReject: any = null;
 
@@ -350,7 +351,7 @@ export default class FileManager {
             internalReject = rej;
         });
 
-        this.fileRepo.getTempsById(id).then((temps) => {
+        this.fileRepo.getTempsById(name).then((temps) => {
             if (temps && temps.length > 0) {
                 let size = 0;
                 const blobs = temps.map((temp) => {
@@ -358,7 +359,7 @@ export default class FileManager {
                     return temp.data;
                 });
 
-                this.prepareUploadTransfer(id, '', blobs, size, internalResolve, internalReject, onProgress);
+                this.prepareUploadTransfer(name, '', blobs, size, internalResolve, internalReject, onProgress);
 
                 this.startUploadQueue();
             } else {
@@ -548,112 +549,112 @@ export default class FileManager {
     }
 
     /* Start download for selected queue */
-    private startDownloading(id: string) {
-        if (this.fileDownloadQueue.hasOwnProperty(id)) {
-            if (this.fileDownloadQueue[id].retry > C_MAX_RETRIES) {
-                this.clearDownloadQueueById(id);
-                this.fileDownloadQueue[id].reject({
+    private startDownloading(name: string) {
+        if (this.fileDownloadQueue.hasOwnProperty(name)) {
+            if (this.fileDownloadQueue[name].retry > C_MAX_RETRIES) {
+                this.clearDownloadQueueById(name);
+                this.fileDownloadQueue[name].reject({
                     code: C_FILE_ERR_CODE.MAX_TRY,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
                 });
-                if (this.fileDownloadQueue[id].size === 0) {
+                if (this.fileDownloadQueue[name].size === 0) {
                     this.startInstanceDownloadQueue();
                 } else {
                     this.startDownloadQueue();
                 }
-                this.cancel(id);
+                this.cancel(name);
                 return;
             }
-            const chunkInfo = this.fileDownloadQueue[id];
+            const chunkInfo = this.fileDownloadQueue[name];
             if (chunkInfo.receiveChunks.length > 0) {
                 const chunk = chunkInfo.receiveChunks.shift();
                 if (chunk) {
                     const part = chunk.part;
                     const uploadProgress = (e: any) => {
-                        if (this.fileDownloadQueue.hasOwnProperty(id) && this.fileDownloadQueue[id].updates[part - 1]) {
+                        if (this.fileDownloadQueue.hasOwnProperty(name) && this.fileDownloadQueue[name].updates[part - 1]) {
                             const index = part - 1;
-                            this.fileDownloadQueue[id].updates[index].upload = e.loaded;
-                            this.fileDownloadQueue[id].updates[index].uploadSize = e.total;
+                            this.fileDownloadQueue[name].updates[index].upload = e.loaded;
+                            this.fileDownloadQueue[name].updates[index].uploadSize = e.total;
                         }
                     };
                     const downloadProgress = (e: any) => {
-                        if (this.fileDownloadQueue.hasOwnProperty(id) && this.fileDownloadQueue[id].updates[part - 1]) {
+                        if (this.fileDownloadQueue.hasOwnProperty(name) && this.fileDownloadQueue[name].updates[part - 1]) {
                             const index = part - 1;
-                            this.fileDownloadQueue[id].updates[index].download = e.loaded;
-                            this.fileDownloadQueue[id].updates[index].downloadSize = e.total;
+                            this.fileDownloadQueue[name].updates[index].download = e.loaded;
+                            this.fileDownloadQueue[name].updates[index].downloadSize = e.total;
                         }
                     };
                     const cancelHandler = (fn: any) => {
-                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                            const index = findIndex(this.fileDownloadQueue[id].receiveChunks, {part});
+                        if (this.fileDownloadQueue.hasOwnProperty(name)) {
+                            const index = findIndex(this.fileDownloadQueue[name].receiveChunks, {part});
                             if (index > -1) {
-                                this.fileDownloadQueue[id].receiveChunks[index].cancel = fn;
+                                this.fileDownloadQueue[name].receiveChunks[index].cancel = fn;
                             }
                         }
                     };
                     if (chunkInfo.fileLocation) {
-                        this.fileDownloadQueue[id].pipelines++;
+                        this.fileDownloadQueue[name].pipelines++;
                         this.download(chunkInfo.fileLocation, chunk.part, chunk.offset, chunk.limit, cancelHandler, uploadProgress, downloadProgress, chunkInfo.onBuffer !== undefined).then((res) => {
                             if (chunk.limit !== 0 && chunk.limit !== res && chunkInfo.fileLocation && isProd) {
                                 Sentry.captureMessage(`Files' size are not match, offset: ${chunk.offset}, limit: ${chunk.limit}, size: ${res}, parts: ${chunk.part}/${chunkInfo.totalParts}, location: ${JSON.stringify(chunkInfo.fileLocation.toObject())}`, Sentry.Severity.Warning);
                             }
-                            if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                                this.fileDownloadQueue[id].doneParts++;
-                                this.fileDownloadQueue[id].pipelines--;
+                            if (this.fileDownloadQueue.hasOwnProperty(name)) {
+                                this.fileDownloadQueue[name].doneParts++;
+                                this.fileDownloadQueue[name].pipelines--;
                             }
-                            this.startDownloading(id);
+                            this.startDownloading(name);
                             if (chunk) {
                                 window.console.debug(`${chunk.part}/${chunkInfo.totalParts} downloaded, size: ${res}`);
                             }
                         }).catch((err) => {
                             window.console.log(err);
-                            if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                                this.fileDownloadQueue[id].pipelines--;
+                            if (this.fileDownloadQueue.hasOwnProperty(name)) {
+                                this.fileDownloadQueue[name].pipelines--;
                                 if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
-                                    this.fileDownloadQueue[id].receiveChunks.unshift(chunk);
+                                    this.fileDownloadQueue[name].receiveChunks.unshift(chunk);
                                     setTimeout(() => {
-                                        this.startDownloading(id);
+                                        this.startDownloading(name);
                                     }, 1000);
                                 } else if (err.code === 'E00' && err.items === 'not found') {
-                                    this.cancel(id);
+                                    this.cancel(name);
                                 } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
-                                    this.fileDownloadQueue[id].receiveChunks.push(chunk);
-                                    this.fileDownloadQueue[id].retry++;
-                                    this.startDownloading(id);
+                                    this.fileDownloadQueue[name].receiveChunks.push(chunk);
+                                    this.fileDownloadQueue[name].retry++;
+                                    this.startDownloading(name);
                                 }
                             } else {
-                                this.startDownloading(id);
+                                this.startDownloading(name);
                             }
                         });
                     }
                 }
             } else if (chunkInfo.doneParts === chunkInfo.totalParts) {
-                if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                    const downloadInfo = this.fileDownloadQueue[id];
+                if (this.fileDownloadQueue.hasOwnProperty(name)) {
+                    const downloadInfo = this.fileDownloadQueue[name];
                     if (downloadInfo.completed) {
                         return;
                     }
                     const instant = downloadInfo.size === 0;
-                    this.fileDownloadQueue[id].completed = true;
-                    this.clearDownloadQueueById(id);
-                    this.fileRepo.persistTempFiles(id, id, downloadInfo.mimeType || 'application/octet-stream', downloadInfo.onBuffer !== undefined).then((res) => {
-                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                            const downloadInfo2 = this.fileDownloadQueue[id];
+                    this.fileDownloadQueue[name].completed = true;
+                    this.clearDownloadQueueById(name);
+                    this.fileRepo.persistTempFiles(name, name, downloadInfo.mimeType || 'application/octet-stream', downloadInfo.onBuffer !== undefined).then((res) => {
+                        if (this.fileDownloadQueue.hasOwnProperty(name)) {
+                            const downloadInfo2 = this.fileDownloadQueue[name];
                             if (res && downloadInfo2.md5 && downloadInfo2.md5 !== '' && downloadInfo2.md5 !== res.md5) {
-                                this.fileRepo.remove(id).finally(() => {
+                                this.fileRepo.remove(name).finally(() => {
                                     downloadInfo2.reject(`md5 hashes are not match. ${downloadInfo2.md5}, ${res.md5}`);
-                                    delete this.fileDownloadQueue[id];
+                                    delete this.fileDownloadQueue[name];
                                 });
                             } else {
-                                this.dispatchDownloadProgress(id, 'complete');
+                                this.dispatchDownloadProgress(name, 'complete');
                                 downloadInfo2.resolve();
-                                delete this.fileDownloadQueue[id];
+                                delete this.fileDownloadQueue[name];
                             }
                         }
                     }).catch((err) => {
-                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                            this.fileDownloadQueue[id].reject(err);
-                            delete this.fileDownloadQueue[id];
+                        if (this.fileDownloadQueue.hasOwnProperty(name)) {
+                            this.fileDownloadQueue[name].reject(err);
+                            delete this.fileDownloadQueue[name];
                         }
                     });
                     if (instant) {
@@ -667,9 +668,9 @@ export default class FileManager {
                 }
             }
         }
-        if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileDownloadQueue.hasOwnProperty(id)) {
-            if (this.fileDownloadQueue[id].receiveChunks.length > 0 && this.fileDownloadQueue[id].pipelines < C_MAX_DOWNLOAD_PIPELINE_SIZE) {
-                this.startDownloading(id);
+        if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileDownloadQueue.hasOwnProperty(name)) {
+            if (this.fileDownloadQueue[name].receiveChunks.length > 0 && this.fileDownloadQueue[name].pipelines < C_MAX_DOWNLOAD_PIPELINE_SIZE) {
+                this.startDownloading(name);
             }
         }
     }
@@ -733,19 +734,19 @@ export default class FileManager {
     /* Download parts */
     private download(fileLocation: core_types_pb.InputFileLocation, part: number, offset: number, limit: number, cancel: any, onUploadProgress: (e: any) => void, onDownloadProgress: (e: any) => void, useBuffer: boolean): Promise<number> {
         return this.receiveFileChunk(fileLocation, offset, limit, cancel, onUploadProgress, onDownloadProgress).then((res) => {
-            const id = fileLocation.getFileid() || '';
+            const fileName = GetDbFileName(fileLocation.getFileid(), fileLocation.getClusterid());
             return this.fileRepo.setTemp({
                 data: new Blob([res.getBytes_asU8()]),
-                id,
+                id: fileName,
                 modifiedtime: res.getModifiedtime(),
                 part,
                 type: res.getType(),
             }).then(() => {
                 if (useBuffer) {
-                    if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                        this.fileDownloadQueue[id].bufferedParts.push(part);
+                    if (this.fileDownloadQueue.hasOwnProperty(fileName)) {
+                        this.fileDownloadQueue[fileName].bufferedParts.push(part);
                     }
-                    this.dispatchBuffer(id);
+                    this.dispatchBuffer(fileName);
                 }
                 return res.getBytes_asU8().byteLength;
             });
@@ -795,11 +796,11 @@ export default class FileManager {
     }
 
     /* Dispatch download progress */
-    private dispatchDownloadProgress(id: string, state: 'loading' | 'complete') {
-        if (!this.fileDownloadQueue.hasOwnProperty(id)) {
+    private dispatchDownloadProgress(name: string, state: 'loading' | 'complete') {
+        if (!this.fileDownloadQueue.hasOwnProperty(name)) {
             return;
         }
-        const queue = this.fileDownloadQueue[id];
+        const queue = this.fileDownloadQueue[name];
         if (!queue.onProgress) {
             return;
         }
@@ -814,9 +815,9 @@ export default class FileManager {
 
         queue.onProgress({
             download,
-            progress: download / this.fileDownloadQueue[id].size,
+            progress: download / this.fileDownloadQueue[name].size,
             state,
-            totalDownload: this.fileDownloadQueue[id].size,
+            totalDownload: this.fileDownloadQueue[name].size,
             totalUpload,
             upload,
         });
@@ -879,12 +880,13 @@ export default class FileManager {
 
     /* Prepare download transfer */
     private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress: ((e: IFileProgress) => void) | undefined, onBuffer?: (e: IFileBuffer) => void) {
-        const id = file.getFileid() || '';
-        if (this.fileDownloadQueue.hasOwnProperty(id)) {
-            this.fileDownloadQueue[id].onProgress = onProgress;
-            this.fileDownloadQueue[id].onBuffer = onBuffer;
-            this.fileDownloadQueue[id].reject = reject;
-            this.fileDownloadQueue[id].resolve = resolve;
+        // const id = file.getFileid() || '';
+        const fileName = GetDbFileName(file.getFileid(), file.getClusterid());
+        if (this.fileDownloadQueue.hasOwnProperty(fileName)) {
+            this.fileDownloadQueue[fileName].onProgress = onProgress;
+            this.fileDownloadQueue[fileName].onBuffer = onBuffer;
+            this.fileDownloadQueue[fileName].reject = reject;
+            this.fileDownloadQueue[fileName].resolve = resolve;
             return;
         }
         const chunkSize = C_DOWNLOAD_CHUNK_SIZE;
@@ -926,7 +928,7 @@ export default class FileManager {
                 });
             }
         }
-        this.fileDownloadQueue[id] = {
+        this.fileDownloadQueue[fileName] = {
             bufferCurrentPart: 0,
             bufferedParts: [],
             completed: false,
@@ -947,50 +949,50 @@ export default class FileManager {
             totalParts,
             updates,
         };
-        this.fileRepo.getTempsById(id).then((res) => {
+        this.fileRepo.getTempsById(fileName).then((res) => {
             res.forEach((temp) => {
-                const index = findIndex(this.fileDownloadQueue[id].receiveChunks, {part: temp.part});
+                const index = findIndex(this.fileDownloadQueue[fileName].receiveChunks, {part: temp.part});
                 if (index > -1) {
-                    this.fileDownloadQueue[id].receiveChunks.splice(index, 1);
-                    this.fileDownloadQueue[id].updates[temp.part - 1] = {
+                    this.fileDownloadQueue[fileName].receiveChunks.splice(index, 1);
+                    this.fileDownloadQueue[fileName].updates[temp.part - 1] = {
                         download: temp.data.size,
                         downloadSize: temp.data.size,
                         upload: 100,
                         uploadSize: 100,
                     };
-                    this.fileDownloadQueue[id].doneParts++;
-                    if (this.fileDownloadQueue[id].onBuffer !== undefined) {
-                        this.fileDownloadQueue[id].bufferedParts.push(temp.part);
+                    this.fileDownloadQueue[fileName].doneParts++;
+                    if (this.fileDownloadQueue[fileName].onBuffer !== undefined) {
+                        this.fileDownloadQueue[fileName].bufferedParts.push(temp.part);
                     }
                 }
             });
             if (size === 0) {
-                if (this.instantDownloadQueue.indexOf(id) === -1) {
-                    this.instantDownloadQueue.push(id);
+                if (this.instantDownloadQueue.indexOf(fileName) === -1) {
+                    this.instantDownloadQueue.push(fileName);
                 }
             } else {
-                if (this.downloadQueue.indexOf(id) === -1) {
-                    this.downloadQueue.push(id);
+                if (this.downloadQueue.indexOf(fileName) === -1) {
+                    this.downloadQueue.push(fileName);
                 }
             }
-            if (this.fileDownloadQueue[id].onBuffer !== undefined && res.length > 0) {
-                this.dispatchBuffer(id);
+            if (this.fileDownloadQueue[fileName].onBuffer !== undefined && res.length > 0) {
+                this.dispatchBuffer(fileName);
             }
             doneCallback();
         }).catch(() => {
             if (size === 0) {
-                if (this.instantDownloadQueue.indexOf(id) === -1) {
-                    this.instantDownloadQueue.push(id);
+                if (this.instantDownloadQueue.indexOf(fileName) === -1) {
+                    this.instantDownloadQueue.push(fileName);
                 }
             } else {
-                if (this.downloadQueue.indexOf(id) === -1) {
-                    this.downloadQueue.push(id);
+                if (this.downloadQueue.indexOf(fileName) === -1) {
+                    this.downloadQueue.push(fileName);
                 }
             }
             doneCallback();
         });
-        this.fileDownloadQueue[id].interval = setInterval(() => {
-            this.dispatchDownloadProgress(id, 'loading');
+        this.fileDownloadQueue[fileName].interval = setInterval(() => {
+            this.dispatchDownloadProgress(fileName, 'loading');
         }, 500);
     }
 
@@ -1152,9 +1154,9 @@ export default class FileManager {
         }, 110);
     }
 
-    private dispatchBuffer(id: string) {
-        if (this.fileDownloadQueue.hasOwnProperty(id)) {
-            const fileInfo = this.fileDownloadQueue[id];
+    private dispatchBuffer(name: string) {
+        if (this.fileDownloadQueue.hasOwnProperty(name)) {
+            const fileInfo = this.fileDownloadQueue[name];
             const parts = fileInfo.bufferedParts.sort((i1, i2) => i1 - i2);
             if (parts.length > 0) {
                 while (true) {
@@ -1167,8 +1169,8 @@ export default class FileManager {
                                 part,
                             });
                         }
-                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
-                            this.fileDownloadQueue[id].bufferCurrentPart = part;
+                        if (this.fileDownloadQueue.hasOwnProperty(name)) {
+                            this.fileDownloadQueue[name].bufferCurrentPart = part;
                         }
                         fileInfo.bufferedParts.shift();
                         if (fileInfo.bufferedParts.length === 0) {

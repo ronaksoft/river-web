@@ -21,14 +21,14 @@ export interface IStorageProgress {
 }
 
 interface IFileInfo {
-    fileId: string;
+    fileName: string;
     id: number;
     mediaType: number;
     size: number;
 }
 
 export interface IFileWithId {
-    fileId: string;
+    fileName: string;
     id: number;
 }
 
@@ -134,11 +134,11 @@ export default class StorageUsageService {
 
     private clearChunk(infoList: IFileWithId[], skip?: number, limit?: number) {
         const items = infoList.slice(skip, limit);
-        const fileIds: string[] = [];
+        const fileNames: string[] = [];
         items.forEach((file) => {
-            fileIds.push(file.fileId);
+            fileNames.push(file.fileName);
         });
-        return this.fileRepo.removeMany(fileIds).then(() => {
+        return this.fileRepo.removeMany(fileNames).then(() => {
             return this.messageRepo.lazyUpsert(items.map((item) => {
                 return {
                     downloaded: false,
@@ -155,7 +155,7 @@ export default class StorageUsageService {
             const fileMap: any = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;
-            const ids: string[] = [];
+            const names: string[] = [];
             res.messages.filter((o) => {
                 peerType = o.peertype || PeerType.PEERUSER;
                 return (o.mediadata && o.mediadata.doc && (o.mediadata.doc.id || (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid)));
@@ -165,21 +165,21 @@ export default class StorageUsageService {
                         id: o.id,
                         mediaType: o.messagetype,
                     };
-                    ids.push(GetDbFileName(o.mediadata.doc.id, o.mediadata.doc.clusterid));
+                    names.push(GetDbFileName(o.mediadata.doc.id, o.mediadata.doc.clusterid));
                 }
                 if (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid) {
                     fileMap[o.mediadata.doc.thumbnail.fileid] = {
                         id: o.id,
                         mediaType: o.messagetype,
                     };
-                    ids.push(GetDbFileName(o.mediadata.doc.thumbnail.fileid, o.mediadata.doc.thumbnail.clusterid));
+                    names.push(GetDbFileName(o.mediadata.doc.thumbnail.fileid, o.mediadata.doc.thumbnail.clusterid));
                 }
             });
-            return this.fileRepo.getIn(ids).then((files) => {
+            return this.fileRepo.getIn(names).then((files) => {
                 return {
                     infoList: files.map((o) => {
                         return {
-                            fileId: o.id,
+                            fileName: o.id,
                             id: fileMap[o.id].id,
                             mediaType: fileMap[o.id].mediaType,
                             size: o.size,
@@ -219,7 +219,7 @@ export default class StorageUsageService {
                         totalSize: 0,
                     };
                 }
-                this.dialogInfo[mapId].mediaTypes[list.mediaType].fileIds.push({fileId: list.fileId, id: list.id});
+                this.dialogInfo[mapId].mediaTypes[list.mediaType].fileIds.push({fileName: list.fileName, id: list.id});
                 this.dialogInfo[mapId].mediaTypes[list.mediaType].totalFile++;
                 this.dialogInfo[mapId].mediaTypes[list.mediaType].totalSize += list.size;
             });

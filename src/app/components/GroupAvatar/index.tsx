@@ -11,12 +11,12 @@ import * as React from 'react';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import {IGroup} from '../../repository/group/interface';
 import {TextAvatar} from '../UserAvatar';
-import AvatarService from '../../services/avatarService';
+import AvatarService, {AvatarSrcUpdated} from '../../services/avatarService';
 import {find} from 'lodash';
-
-import './style.scss';
 import Broadcaster from '../../services/broadcaster';
 import {GetDbFileName} from "../../repository/file";
+
+import './style.scss';
 
 interface IProps {
     className?: string;
@@ -58,7 +58,7 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
     public componentDidMount() {
         this.getGroup();
         this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.getGroup));
-        this.eventReferences.push(this.broadcaster.listen('Avatar_SRC_Updated', this.getGroupPhoto));
+        this.eventReferences.push(this.broadcaster.listen(AvatarSrcUpdated, this.getGroupPhoto));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -136,7 +136,7 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
             if (this.state.group && group.id !== this.state.group.id) {
                 this.avatarService.resetRetries(group.id || '');
             }
-            this.getAvatar(group.teamid || '0', group.id || '', group.photo.photosmall.fileid);
+            this.getAvatar(group.teamid || '0', group.id || '', GetDbFileName(group.photo.photosmall.fileid, group.photo.photosmall.clusterid));
         } else {
             this.setState({
                 photo: undefined,
@@ -154,13 +154,13 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
             item = find(data.items, {id: this.state.id});
         }
         if (item) {
-            this.getAvatar(item.teamid, item.id, item.fileId);
+            this.getAvatar(item.teamid, item.id, item.fileName);
         }
     }
 
     /* Get avatar */
-    private getAvatar(teamId: string, id: string, fileId: string) {
-        this.avatarService.getAvatar(teamId, id, fileId).then((photo) => {
+    private getAvatar(teamId: string, id: string, fileName: string) {
+        this.avatarService.getAvatar(teamId, id, fileName).then((photo) => {
             if (photo !== '') {
                 this.setState({
                     photo,

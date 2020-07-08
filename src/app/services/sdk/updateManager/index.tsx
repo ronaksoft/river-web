@@ -111,7 +111,7 @@ interface IClearDialog {
 }
 
 interface IModifyTempFile {
-    fileIds: string[];
+    fileNames: string[];
     message: IMessage;
 }
 
@@ -1307,7 +1307,7 @@ export default class UpdateManager {
                     pendingArr.forEach((pending) => {
                         if (pending.file_ids && pending.file_ids.length > 0 && messageMap.hasOwnProperty(pending.id)) {
                             toModifyTempList.push({
-                                fileIds: pending.file_ids,
+                                fileNames: pending.file_ids,
                                 message: messageMap[pending.id],
                             });
                         }
@@ -1338,17 +1338,17 @@ export default class UpdateManager {
             const mediaDocument = getMediaDocument(item.message);
             if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                 const mediaDocName = GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid);
-                persistFilePromises.push(fileRepo.persistTempFiles(item.fileIds[0], mediaDocName, mediaDocument.doc.mimetype || 'application/octet-stream'));
-                cachedFileService.swap(item.fileIds[0], {
+                persistFilePromises.push(fileRepo.persistTempFiles(item.fileNames[0], mediaDocName, mediaDocument.doc.mimetype || 'application/octet-stream'));
+                cachedFileService.swap(item.fileNames[0], {
                     accesshash: mediaDocument.doc.accesshash,
                     clusterid: mediaDocument.doc.clusterid,
                     fileid: mediaDocument.doc.id,
                     version: 0,
                 });
                 // Check thumbnail
-                if (item.fileIds.length > 1 && mediaDocument.doc.thumbnail) {
-                    persistFilePromises.push(fileRepo.persistTempFiles(item.fileIds[1], GetDbFileName(mediaDocument.doc.thumbnail.fileid, mediaDocument.doc.thumbnail.clusterid), 'image/jpeg'));
-                    cachedFileService.swap(item.fileIds[0], mediaDocument.doc.thumbnail);
+                if (item.fileNames.length > 1 && mediaDocument.doc.thumbnail) {
+                    persistFilePromises.push(fileRepo.persistTempFiles(item.fileNames[1], GetDbFileName(mediaDocument.doc.thumbnail.fileid, mediaDocument.doc.thumbnail.clusterid), 'image/jpeg'));
+                    cachedFileService.swap(item.fileNames[0], mediaDocument.doc.thumbnail);
                 }
                 item.message.downloaded = true;
                 messages.push(item.message);

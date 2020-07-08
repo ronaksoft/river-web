@@ -11,16 +11,16 @@ import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import {BookmarkBorderRounded} from '@material-ui/icons';
-import AvatarService from '../../services/avatarService';
+import AvatarService, {AvatarSrcUpdated} from '../../services/avatarService';
 import {find} from 'lodash';
 import Broadcaster from '../../services/broadcaster';
 import icon from '../../../asset/image/icon.png';
 import {UserStatus} from "../../services/sdk/messages/core.types_pb";
 import RiverTime from "../../services/utilities/river_time";
 import {DeletedUserLight} from "./svg";
+import {GetDbFileName} from "../../repository/file";
 
 import './style.scss';
-import {GetDbFileName} from "../../repository/file";
 
 const DefaultColors = [
     '#30496B',
@@ -170,7 +170,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
         if (!this.props.savedMessages) {
             this.getUser();
             this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
-            this.eventReferences.push(this.broadcaster.listen('Avatar_SRC_Updated', this.getUserPhoto));
+            this.eventReferences.push(this.broadcaster.listen(AvatarSrcUpdated, this.getUserPhoto));
         }
     }
 
@@ -277,7 +277,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
             if (user.id !== this.state.user.id) {
                 this.avatarService.resetRetries(user.id || '');
             }
-            this.getAvatar(user.id || '', user.photo.photosmall.fileid);
+            this.getAvatar(user.id || '', GetDbFileName(user.photo.photosmall.fileid, user.photo.photosmall.clusterid));
         } else {
             this.setState({
                 photo: undefined,
@@ -295,13 +295,13 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
             item = find(data.items, {id: this.state.id});
         }
         if (item) {
-            this.getAvatar(item.id, item.fileId);
+            this.getAvatar(item.id, item.fileName);
         }
     }
 
     /* Get avatar from service */
-    private getAvatar(id: string, fileId: string) {
-        this.avatarService.getAvatar('0', id, fileId).then((photo) => {
+    private getAvatar(id: string, fileName: string) {
+        this.avatarService.getAvatar('0', id, fileName).then((photo) => {
             if (!this.mounted) {
                 return;
             }

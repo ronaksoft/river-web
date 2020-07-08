@@ -35,6 +35,7 @@ import i18n from '../../services/i18n';
 import {IPeer} from "../../repository/dialog/interface";
 
 import './style.scss';
+import {GetDbFileName} from "../../repository/file";
 
 interface IMedia {
     _modified?: boolean;
@@ -560,7 +561,7 @@ class PeerMedia extends React.Component<IProps, IState> {
         const {items} = this.state;
         const item = items[index];
         if (!items[index].playing) {
-            this.audioPlayer.addToPlaylist(id, this.peer, item.info.file.fileid || '', item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
+            this.audioPlayer.addToPlaylist(id, this.peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
             this.audioPlayer.play(id);
         } else {
             this.audioPlayer.pause(id);

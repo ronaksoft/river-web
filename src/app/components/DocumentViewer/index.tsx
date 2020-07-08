@@ -50,6 +50,7 @@ import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
 
 import './style.scss';
+import {GetDbFileName} from "../../repository/file";
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -84,7 +85,7 @@ interface ISize {
 
 interface IProps {
     className?: string;
-    onAction?: (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileId?: string) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileName?: string) => void;
     onJumpOnMessage?: (id: number) => void;
     onError: (text: string) => void;
 }
@@ -1020,10 +1021,11 @@ class DocumentViewer extends React.Component<IProps, IState> {
         switch (cmd) {
             case 'download':
                 if (this.props.onAction && doc && doc.items && doc.items.length > 0) {
+                    const fileName = GetDbFileName(doc.items[0].fileLocation.fileid, doc.items[0].fileLocation.clusterid);
                     if (doc.items[0].downloaded) {
-                        this.props.onAction('save_as', doc.items[0].id || 0, doc.items[0].fileLocation.fileid);
+                        this.props.onAction('save_as', doc.items[0].id || 0, fileName);
                     } else {
-                        this.props.onAction('save_as', 0, doc.items[0].fileLocation.fileid);
+                        this.props.onAction('save_as', 0, fileName);
                     }
                 }
                 break;

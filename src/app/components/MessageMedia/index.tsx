@@ -30,6 +30,7 @@ import ElectronService from "../../services/electron";
 import {transformMimeType} from "../StreamVideo/helper";
 
 import './style.scss';
+import {GetDbFileName} from "../../repository/file";
 
 export const C_MEDIA_BREAKPOINT = 1116;
 const C_MIN_HEIGHT_TINY = 102;
@@ -254,7 +255,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private ref: any;
     private messageMediaClass: string = '';
     private lastId: number = 0;
-    private fileId: string = '';
+    private dbFileName: string = '';
     private downloaded: boolean = false;
     private saved: boolean = false;
     private circleProgressRef: any = null;
@@ -320,7 +321,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             return;
         }
         this.displayFileSize(0);
-        this.fileId = messageMediaDocument.doc.id || '';
+        this.dbFileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
         this.initProgress();
     }
 
@@ -343,11 +344,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             });
         }
         const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
-        if (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.fileId) {
-            this.fileId = messageMediaDocument.doc.id || '';
-            this.setState({
-                message: newProps.message,
-            });
+        if (messageMediaDocument && messageMediaDocument.doc) {
+            const fileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
+            if (fileName !== this.dbFileName) {
+                this.dbFileName = fileName;
+                this.setState({
+                    message: newProps.message,
+                });
+            }
         }
         if ((newProps.message.downloaded || false) !== this.downloaded) {
             this.downloaded = (newProps.message.downloaded || false);

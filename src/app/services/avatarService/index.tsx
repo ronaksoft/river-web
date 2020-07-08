@@ -22,6 +22,11 @@ interface IAvatar {
     src: string;
 }
 
+interface IBroadCastItem {
+    id: string;
+    fileName: string;
+}
+
 const C_MAX_RETRY = 3;
 
 export const AvatarSrcUpdated = 'Avatar_SRC_Updated';
@@ -42,7 +47,7 @@ export default class AvatarService {
     private groupRepo: GroupRepo;
     private avatars: { [key: string]: IAvatar } = {};
     private broadcaster: Broadcaster;
-    private throttleBroadcastList: any[] = [];
+    private throttleBroadcastList: IBroadCastItem[] = [];
     private readonly throttleBroadcastExecute: any = undefined;
 
     public constructor() {
@@ -240,7 +245,7 @@ export default class AvatarService {
     private throttleBroadcast(idPairs: any[]) {
         if (idPairs.length > 0) {
             this.throttleBroadcastList.push(...idPairs);
-            this.throttleBroadcastList = uniqWith(this.throttleBroadcastList, (i1, i2) => i1.id === i2 && i1.fileId === i2.fileId);
+            this.throttleBroadcastList = uniqWith(this.throttleBroadcastList, (i1, i2) => i1.id === i2.id && i1.fileName === i2.fileName);
         }
         setTimeout(() => {
             this.throttleBroadcastExecute();

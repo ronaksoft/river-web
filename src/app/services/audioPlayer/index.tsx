@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import FileRepo from '../../repository/file';
+import FileRepo, {GetDbFileName} from '../../repository/file';
 import {clone} from 'lodash';
 import {IMediaInfo} from '../../components/MessageMedia';
 import MessageRepo from "../../repository/message";
@@ -32,7 +32,7 @@ interface IAudioItem {
     downloaded: boolean;
     duration: number;
     event: IAudioEvent;
-    fileId: string;
+    fileName: string;
     fnQueue: { [key: number]: any };
     music?: IMediaInfo;
     peer: IPeer;
@@ -43,7 +43,7 @@ export interface IPlaylistItem {
     downloaded: boolean;
     duration: number;
     event: IAudioEvent;
-    fileId: string;
+    fileName: string;
     id: number;
     music: IMediaInfo;
     peer: IPeer;
@@ -116,7 +116,7 @@ export default class AudioPlayer {
                         downloaded: t.downloaded,
                         duration: t.duration,
                         event: t.event,
-                        fileId: t.fileId,
+                        fileName: t.fileName,
                         id,
                         music: t.music,
                         peer: t.peer,
@@ -144,7 +144,7 @@ export default class AudioPlayer {
     }
 
     /* Add audio to playlist */
-    public addToPlaylist(messageId: number, peer: IPeer, fileId: string, userId: string, downloaded: boolean, mediaInfo?: IMediaInfo) {
+    public addToPlaylist(messageId: number, peer: IPeer, fileName: string, userId: string, downloaded: boolean, mediaInfo?: IMediaInfo) {
         if (messageId < 0) {
             return;
         }
@@ -164,7 +164,7 @@ export default class AudioPlayer {
                         progress: 0,
                         state: 'pause',
                     },
-                    fileId,
+                    fileName,
                     fnQueue: [],
                     music: mediaInfo,
                     peer,
@@ -173,7 +173,7 @@ export default class AudioPlayer {
             } else {
                 this.backUpTracks[messageId].downloaded = downloaded;
                 this.backUpTracks[messageId].peer = peer;
-                this.backUpTracks[messageId].fileId = fileId;
+                this.backUpTracks[messageId].fileName = fileName;
                 this.backUpTracks[messageId].userId = userId;
                 this.backUpTracks[messageId].music = mediaInfo;
                 this.backUpTracks[messageId].event.music = Boolean(mediaInfo);
@@ -196,7 +196,7 @@ export default class AudioPlayer {
                         progress: 0,
                         state: 'pause',
                     },
-                    fileId,
+                    fileName,
                     fnQueue: [],
                     music: mediaInfo,
                     peer,
@@ -217,7 +217,7 @@ export default class AudioPlayer {
             } else {
                 this.tracks[messageId].downloaded = downloaded;
                 this.tracks[messageId].peer = peer;
-                this.tracks[messageId].fileId = fileId;
+                this.tracks[messageId].fileName = fileName;
                 this.tracks[messageId].userId = userId;
                 this.tracks[messageId].music = mediaInfo;
                 this.tracks[messageId].event.music = Boolean(mediaInfo);
@@ -283,7 +283,7 @@ export default class AudioPlayer {
                 if (err === 'not found') {
                     return this.messageRepo.get(messageId).then((res) => {
                         if (res && this.tracks[messageId] && res.mediadata && res.mediadata.doc && res.mediadata.doc.id) {
-                            this.tracks[messageId].fileId = res.mediadata.doc.id;
+                            this.tracks[messageId].fileName = GetDbFileName(res.mediadata.doc.id, res.mediadata.doc.clusterid);
                             return this.prepareTrack(messageId);
                         } else {
                             throw Error('not found');
@@ -432,7 +432,7 @@ export default class AudioPlayer {
                     progress: 0,
                     state: 'pause',
                 },
-                fileId: '',
+                fileName: '',
                 fnQueue: [],
                 peer: {
                     id: '',
@@ -508,8 +508,7 @@ export default class AudioPlayer {
         }
         return new Promise((resolve, reject) => {
             const track = this.tracks[messageId];
-            const fileId = track.fileId;
-            this.fileRepo.get(fileId).then((res) => {
+            this.fileRepo.get(track.fileName).then((res) => {
                 if (res) {
                     if (!this.audio) {
                         return;
