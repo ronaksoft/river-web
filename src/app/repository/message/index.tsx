@@ -196,7 +196,6 @@ export default class MessageRepo {
                                     }]);
                                 }, 1000);
                                 FileRepo.getInstance().upsertFileMap([{
-                                    clusterid: res.clusterid,
                                     id: res.id,
                                     msg_ids: [msg.id || 0],
                                 }]);

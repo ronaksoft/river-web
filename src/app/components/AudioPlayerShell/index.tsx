@@ -369,7 +369,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             q.isVoice = !e.music;
             q.userId = info.userId;
         }
-        if ((info.peer.id !== '' && this.state.peer.id !== info.peer.id) || this.state.peer.peerType !== info.peer.peerType) {
+        if (info.peer && ((info.peer.id !== '' && this.state.peer.id !== info.peer.id) || this.state.peer.peerType !== info.peer.peerType)) {
             q.isVoice = !e.music;
             q.peer = info.peer;
         }

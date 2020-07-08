@@ -16,6 +16,7 @@ import {find} from 'lodash';
 
 import './style.scss';
 import Broadcaster from '../../services/broadcaster';
+import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     className?: string;
@@ -174,9 +175,9 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
     private imgErrorHandler = () => {
         const {group} = this.state;
         if (group && group.photo && group.photo.photosmall.fileid && group.photo.photosmall.fileid !== '0') {
-            const fileId = group.photo.photosmall.fileid;
-            this.avatarService.remove(group.id || '', fileId).then(() => {
-                this.getAvatar(group.teamid || '0', group.id || '', fileId);
+            const fileName = GetDbFileName(group.photo.photosmall.fileid, group.photo.photosmall.clusterid);
+            this.avatarService.remove(group.id || '', fileName).then(() => {
+                this.getAvatar(group.teamid || '0', group.id || '', fileName);
             });
         }
     }

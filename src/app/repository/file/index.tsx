@@ -82,13 +82,13 @@ export default class FileRepo {
         return this.db.temps.put(tempFile);
     }
 
-    public getIn(ids: string[]) {
-        const pipe = this.db.files.where('id').anyOf(ids);
+    public getIn(names: string[]) {
+        const pipe = this.db.files.where('id').anyOf(names);
         return pipe.toArray();
     }
 
-    public persistTempFiles(id: string, docId: string, mimeType: string, useBuffer?: boolean) {
-        return this.get(docId).then((file) => {
+    public persistTempFiles(id: string, docName: string, mimeType: string, useBuffer?: boolean) {
+        return this.get(docName).then((file) => {
             if (file) {
                 return {
                     md5: file.md5,
@@ -110,18 +110,18 @@ export default class FileRepo {
                     setTimeout(() => {
                         this.removeTempsById(id);
                     }, useBuffer ? 10000 : 1000);
-                    return this.createWithHash(docId, blob);
+                    return this.createWithHash(docName, blob);
                 });
             }
         });
     }
 
-    public createWithHash(id: string, blob: Blob) {
+    public createWithHash(name: string, blob: Blob) {
         return this.createHash(blob).then((res) => {
             const file: IFile = {
                 data: blob,
                 hash: res.sha256,
-                id,
+                id: name,
                 md5: res.md5,
                 size: blob.size,
             };
@@ -138,20 +138,20 @@ export default class FileRepo {
         return this.db.files.add(file);
     }
 
-    public remove(id: string) {
-        return this.db.files.delete(id);
+    public remove(name: string) {
+        return this.db.files.delete(name);
     }
 
     public removeMany(ids: string[]) {
         return this.db.files.bulkDelete(ids);
     }
 
-    public upsertFile(id: string, blob: Blob) {
+    public upsertFile(name: string, blob: Blob) {
         return this.createHash(blob).then((res) => {
             const file: IFile = {
                 data: blob,
                 hash: res.sha256,
-                id,
+                id: name,
                 md5: res.md5,
                 size: blob.size,
             };
@@ -159,18 +159,18 @@ export default class FileRepo {
         });
     }
 
-    public get(id: string) {
-        return this.db.files.get(id);
+    public get(name: string) {
+        return this.db.files.get(name);
     }
 
     public upsertFileMap(fileMaps: IFileMap[]) {
-        const indexList: any[] = fileMaps.map((f) => {
-            return [f.id, f.clusterid];
+        const ids: any[] = fileMaps.map((f) => {
+            return f.id;
         });
-        return this.db.fileMap.where('[id+clusterid]').anyOf(indexList).toArray().then((result) => {
-            const createItems: IFileMap[] = differenceWith(fileMaps, result, (i1, i2) => i1.id === i2.id && i1.clusterid === i2.clusterid);
+        return this.db.fileMap.where('id').anyOf(ids).toArray().then((result) => {
+            const createItems: IFileMap[] = differenceWith(fileMaps, result, 'id');
             const updateItems: IFileMap[] = result.map((fileMap: IFileMap) => {
-                const t = find(fileMaps, {id: fileMap.id, clusterid: fileMap.clusterid});
+                const t = find(fileMaps, {id: fileMap.id,});
                 if (t) {
                     if (t.msg_ids && fileMap.msg_ids) {
                         t.msg_ids = uniq([...t.msg_ids, ...fileMap.msg_ids]);
@@ -194,13 +194,7 @@ export default class FileRepo {
     }
 
     public getFileMap(inputFile: InputFileLocation.AsObject): Promise<IFileMap | undefined> {
-        return this.db.fileMap.where('[id+clusterid]').equals([inputFile.fileid || '', inputFile.clusterid || 0]).toArray().then((res) => {
-            if (res.length > 0) {
-                return res[0];
-            } else {
-                return undefined;
-            }
-        });
+        return this.db.fileMap.get(GetDbFileName(inputFile.fileid, inputFile.clusterid ));
     }
 
     private createSha256(blob: Blob): Promise<string> {
@@ -234,4 +228,8 @@ export default class FileRepo {
             }).catch(reject);
         });
     }
+}
+
+export function GetDbFileName(id: string | undefined, clusterId: number | undefined) {
+    return `${id || ''}_${clusterId || 0}`;
 }

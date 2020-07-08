@@ -45,7 +45,7 @@ import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import APIManager from '../../services/sdk';
 import {IUser} from '../../repository/user/interface';
-import DialogRepo from '../../repository/dialog';
+import DialogRepo, {GetPeerName} from '../../repository/dialog';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
 import VoicePlayer from '../VoicePlayer';
@@ -205,7 +205,7 @@ export interface IMessageParam {
 }
 
 interface IProps {
-    getDialog: (id: string) => IDialog | null;
+    getDialog: (peerName: string) => IDialog | null;
     onAction: (cmd: string, message?: IMessage) => (e?: any) => void;
     onBulkAction: (cmd: string) => (e?: any) => void;
     onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
@@ -568,7 +568,7 @@ class ChatInput extends React.Component<IProps, IState> {
         }
         // @ts-ignore
         const newPeerObj = newPeer ? newPeer.toObject() : this.state.peer.toObject();
-        const dialog = cloneDeep(this.props.getDialog(newPeerObj.id || ''));
+        const dialog = cloneDeep(this.props.getDialog(GetPeerName(newPeerObj.id, newPeerObj.type)));
         if (!dialog || !dialog.draft || !dialog.draft.peerid) {
             this.changePreviewMessage('', C_MSG_MODE.Normal, null);
             return;
@@ -1173,7 +1173,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private removeDraft(removeDraft?: boolean) {
         if (removeDraft && this.state.peer) {
-            const dialog = this.props.getDialog(this.state.peer.getId() || '');
+            const dialog = this.props.getDialog(GetPeerName(this.state.peer.getId(), this.state.peer.getType()));
             if (dialog && dialog.draft && dialog.draft.peerid) {
                 if (this.props.onClearDraft && this.state.peer) {
                     this.props.onClearDraft({
@@ -1186,6 +1186,8 @@ class ChatInput extends React.Component<IProps, IState> {
                         return this.dialogRepo.upsert([{
                             draft: {},
                             peerid: this.state.peer.getId() || '',
+                            peertype: this.state.peer.getType() || 0,
+                            teamid: this.teamId,
                         }]);
                     } else {
                         return Promise.resolve();
@@ -1355,10 +1357,12 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.dialogRepo.lazyUpsert([{
                     draft: draftMessage,
                     peerid: oldPeerObj.id || '',
+                    peertype: oldPeerObj.type || 0,
+                    teamid: this.teamId,
                 }]);
             });
         } else {
-            const oldDialog = cloneDeep(this.props.getDialog(oldPeerObj.id || ''));
+            const oldDialog = cloneDeep(this.props.getDialog(GetPeerName(oldPeerObj.id, oldPeerObj.type)));
             if (oldDialog && oldDialog.draft && oldDialog.draft.peerid) {
                 if (this.props.onClearDraft && this.state.peer) {
                     this.props.onClearDraft({
@@ -1370,6 +1374,8 @@ class ChatInput extends React.Component<IProps, IState> {
                     this.dialogRepo.lazyUpsert([{
                         draft: {},
                         peerid: oldPeerObj.id || '',
+                        peertype: oldPeerObj.type || 0,
+                        teamid: this.teamId,
                     }]);
                 });
             }

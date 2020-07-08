@@ -31,7 +31,6 @@ interface IState {
     isConnecting: boolean;
     isOnline: boolean;
     isUpdating: boolean;
-    selectedPeerName: string;
 }
 
 class InfoBar extends React.Component<IProps, IState> {
@@ -46,15 +45,13 @@ class InfoBar extends React.Component<IProps, IState> {
             isOnline: false,
             isUpdating: false,
             peer: null,
-            selectedPeerName: 'null',
         };
     }
 
-    public setPeer(teamId: string, peer: InputPeer | null, selectedPeerName: string) {
+    public setPeer(teamId: string, peer: InputPeer | null) {
         this.teamId = teamId;
         this.setState({
             peer,
-            selectedPeerName,
         });
     }
 
@@ -70,7 +67,7 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {selectedPeerName, isConnecting, isOnline, isUpdating, peer} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer} = this.state;
         return (
             <div className="info-bar">
                 {this.props.isMobileView ?
@@ -87,7 +84,8 @@ class InfoBar extends React.Component<IProps, IState> {
                            isOnline={isOnline}
                            isUpdating={isUpdating}
                            onAction={this.props.onAction}
-                           peer={peer} teamId={this.teamId} selectedPeerName={selectedPeerName}
+                           peer={peer}
+                           teamId={this.teamId}
                            currentUserId={this.currentUserId}
                 />
                 <div className="buttons">

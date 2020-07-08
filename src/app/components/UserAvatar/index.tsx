@@ -20,6 +20,7 @@ import RiverTime from "../../services/utilities/river_time";
 import {DeletedUserLight} from "./svg";
 
 import './style.scss';
+import {GetDbFileName} from "../../repository/file";
 
 const DefaultColors = [
     '#30496B',
@@ -336,9 +337,9 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
     private imgErrorHandler = () => {
         const {user} = this.state;
         if (user && user.photo && user.photo.photosmall.fileid && user.photo.photosmall.fileid !== '0') {
-            const fileId = user.photo.photosmall.fileid;
-            this.avatarService.remove(user.id || '', fileId).then(() => {
-                this.getAvatar(user.id || '', fileId);
+            const fileName = GetDbFileName(user.photo.photosmall.fileid, user.photo.photosmall.clusterid);
+            this.avatarService.remove(user.id || '', fileName).then(() => {
+                this.getAvatar(user.id || '', fileName);
             });
         }
     }

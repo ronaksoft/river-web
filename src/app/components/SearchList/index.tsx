@@ -571,11 +571,14 @@ class SearchList extends React.Component<IProps, IState> {
                 mode: 'contact',
             })();
         } else if (type === PeerType.PEERGROUP) {
+            // @ts-ignore
+            const teamId = item.teamid || '0';
             this.addItemHandler({
                 dialog: {
                     accesshash: '0',
-                    peerid: item.id,
+                    peerid: item.id || '0',
                     peertype: PeerType.PEERGROUP,
+                    teamid: teamId,
                 },
                 id: item.id,
                 mode: 'dialog',

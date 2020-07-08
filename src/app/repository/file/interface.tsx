@@ -27,7 +27,6 @@ export interface ITempFile {
 
 export interface IFileMap {
     id: string;
-    clusterid: number;
     saved?: boolean;
     saved_path?: string;
     msg_ids?: number[];

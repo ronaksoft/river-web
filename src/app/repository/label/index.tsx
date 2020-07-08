@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/label';
 import {ILabel, ILabelItem, ILabelItemList} from './interface';
-import {differenceBy, find, uniqBy} from 'lodash';
+import {differenceBy, find, groupBy, uniqBy} from 'lodash';
 import {DexieLabelDB} from '../../services/db/dexie/label';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
@@ -118,7 +118,7 @@ export default class LabelRepo {
     public getMessageByItem(teamId: string, id: number, {max, limit}: { min?: number, max?: number, limit?: number }, cacheCallback?: (cacheList: IMessage[]) => void): Promise<ILabelItemList> {
         let lim = limit || 1000;
         return new Promise((resolve, reject) => {
-            this.getCachedMessageByItem(id, {max, limit: lim}).then((cacheRes) => {
+            this.getCachedMessageByItem(teamId, id, {max, limit: lim}).then((cacheRes) => {
                 if (cacheRes.labelCount < lim) {
                     if (cacheCallback) {
                         cacheCallback(cacheRes.messageList);
@@ -151,13 +151,13 @@ export default class LabelRepo {
         });
     }
 
-    public getCachedMessageByItem(id: number, {max, limit}: { min?: number, max?: number, limit?: number }): Promise<ILabelItemList> {
-        const pipe = this.db.labelItems.where('[lid+mid]');
+    public getCachedMessageByItem(teamId: string, id: number, {max, limit}: { min?: number, max?: number, limit?: number }): Promise<ILabelItemList> {
+        const pipe = this.db.labelItems.where('[teamid+lid+mid]');
         let pipe2: Dexie.Collection<ILabelItem, number>;
         if (max) {
-            pipe2 = pipe.between([id, Dexie.minKey], [id, (max || 0) - 1], true, true);
+            pipe2 = pipe.between([teamId, id, Dexie.minKey], [teamId, id, (max || 0) - 1], true, true);
         } else {
-            pipe2 = pipe.between([id, Dexie.minKey], [id, Dexie.maxKey], true, true);
+            pipe2 = pipe.between([teamId, id, Dexie.minKey], [teamId, id, Dexie.maxKey], true, true);
         }
         return pipe2.limit(limit || 100).reverse().toArray().then((res) => {
             const ids = res.map((item) => {
@@ -175,11 +175,14 @@ export default class LabelRepo {
     public getRemoteMessageByItem(teamId: string, id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
         return this.apiManager.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
             remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
-            this.insertManyLabelItem(id, remoteRes.messagesList);
-            this.messageRepo.insertDiscrete(teamId, remoteRes.messagesList);
+            const labelGroup = groupBy(remoteRes.messagesList, (o => o.teamid));
+            for (const [team, messages] of Object.entries(labelGroup)) {
+                this.insertManyLabelItem(team || '0', id, messages);
+                this.messageRepo.insertDiscrete(teamId, messages);
+            }
             this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);
-            return remoteRes.messagesList;
+            return remoteRes.messagesList.filter(o => o.teamid === teamId);
         });
     }
 
@@ -213,7 +216,7 @@ export default class LabelRepo {
         });
     }
 
-    public insertInRange(labelId: number, peerid: string, peertype: number, msgIds: number[]): Promise<any> {
+    public insertInRange(teamId: string, labelId: number, peerid: string, peertype: number, msgIds: number[]): Promise<any> {
         const label = this.dbService.getLabel(labelId);
         if (!label) {
             return Promise.resolve();
@@ -226,6 +229,7 @@ export default class LabelRepo {
                     mid: id,
                     peerid,
                     peertype,
+                    teamid: teamId,
                 });
             }
         });
@@ -235,7 +239,7 @@ export default class LabelRepo {
         return Promise.resolve();
     }
 
-    public removeFromRange(labelId: number, msgIds: number[]): Promise<any> {
+    public removeFromRange(teamId: string, labelId: number, msgIds: number[]): Promise<any> {
         const label = this.dbService.getLabel(labelId);
         if (!label) {
             return Promise.resolve();
@@ -243,16 +247,16 @@ export default class LabelRepo {
         const labelItems: any[] = [];
         msgIds.forEach((id) => {
             if ((!label.min && !label.max) || ((label.min || 0) <= id && id <= (label.max || 0))) {
-                labelItems.push([labelId, id]);
+                labelItems.push([teamId, labelId, id]);
             }
         });
         if (labelItems.length > 0) {
-            return this.db.labelItems.where('[lid+mid]').anyOf(labelItems).delete();
+            return this.db.labelItems.where('[teamid+lid+mid]').anyOf(labelItems).delete();
         }
         return Promise.resolve();
     }
 
-    private insertManyLabelItem(labelId: number, messageList: IMessage[]) {
+    private insertManyLabelItem(teamId: string, labelId: number, messageList: IMessage[]) {
         if (messageList.length > 0) {
             this.db.labels.get(labelId).then((label) => {
                 if (!label) {
@@ -284,6 +288,7 @@ export default class LabelRepo {
                 mid: message.id,
                 peerid: message.peerid,
                 peertype: message.peertype,
+                teamid: teamId,
             };
         }));
     }

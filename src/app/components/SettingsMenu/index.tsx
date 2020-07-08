@@ -88,7 +88,7 @@ import Broadcaster from '../../services/broadcaster';
 import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/accounts_pb';
 import TimeUtility from '../../services/utilities/time';
 import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
-import FileRepo from '../../repository/file';
+import FileRepo, {GetDbFileName} from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
 import SettingsConfigManager, {IDownloadSettings, INotificationSettings} from '../../services/settingsConfigManager';
 import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
@@ -519,19 +519,18 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     paper: 'kk-context-menu-paper'
                                                 }}
                                             >
-                                                {teamLoading ? <div style={{
-                                                        alignItems: 'center',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                        <CircularProgress size={16}/>
-                                                    </div> :
-                                                    teamList.map((item) => {
-                                                        return (<MenuItem key={item.id} className="context-item"
-                                                                          onClick={this.teamSelectHandler(item)}
-                                                                          selected={teamSelectedId === item.id}>{item.name}</MenuItem>);
-                                                    })
-                                                }
+                                                {teamList.map((item) => {
+                                                    return (<MenuItem key={item.id} className="context-item"
+                                                                      onClick={this.teamSelectHandler(item)}
+                                                                      selected={teamSelectedId === item.id}>{item.name}</MenuItem>);
+                                                })}
+                                                {teamLoading && <div style={{
+                                                    alignItems: 'center',
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                    <CircularProgress size={16}/>
+                                                </div>}
                                             </Menu>
                                         </div>}
                                     </div>
@@ -1881,8 +1880,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     const {user} = this.state;
                     if (user) {
                         if (user.photo) {
-                            this.avatarService.remove(user.id || '', user.photo.photosmall.fileid);
-                            this.avatarService.remove(user.id || '', user.photo.photobig.fileid);
+                            this.avatarService.remove(user.id || '', GetDbFileName(user.photo.photosmall.fileid, user.photo.photosmall.clusterid));
+                            this.avatarService.remove(user.id || '', GetDbFileName(user.photo.photobig.fileid, user.photo.photobig.clusterid));
                         }
                         user.photo = undefined;
                         this.profileTempPhoto = '';
@@ -2594,7 +2593,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.setState({
             teamLoading: true,
         });
-        this.teamRepo.getCachedTeam().then((res) => {
+        const fn = (loading: boolean) => (res: ITeam[]) => {
             res.unshift({
                 accesshash: '0',
                 creatorid: '0',
@@ -2604,7 +2603,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             });
             const q: any = {
                 teamList: res,
-                teamLoading: false,
+                teamLoading: loading,
             };
             const item = find(res, {id: this.state.teamSelectedId});
             if (item) {
@@ -2612,7 +2611,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 q.teamSelectedName = item.name;
             }
             this.setState(q);
-        }).catch(() => {
+        };
+        this.teamRepo.getCachedTeam(fn(true)).then(fn(false)).catch(() => {
             this.setState({
                 teamLoading: false,
             });
@@ -2631,7 +2631,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private teamSelectHandler = (item: ITeam) => () => {
+    private teamSelectHandler = (item: ITeam) => (e: any) => {
         localStorage.setItem(C_LOCALSTORAGE.TeamId, item.id || '0');
         localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
             accesshash: item.accesshash,
@@ -2644,6 +2644,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
         if (this.props.onTeamChange) {
             this.props.onTeamChange(item);
+        }
+        if (this.props.onClose) {
+            this.props.onClose(e);
         }
     }
 }

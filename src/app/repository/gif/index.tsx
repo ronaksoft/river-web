@@ -23,7 +23,7 @@ import {InputDocument, InputFileLocation} from "../../services/sdk/messages/core
 import FileManager from "../../services/sdk/fileManager";
 import ProgressBroadcaster from "../../services/progress";
 import FileDownloadProgress from "../../components/FileDownloadProgress";
-import FileRepo from "../file";
+import FileRepo, {GetDbFileName} from "../file";
 import {Int64BE} from "int64-buffer";
 // @ts-ignore
 import CRC from 'js-crc/build/crc.min';
@@ -57,6 +57,7 @@ export default class GifRepo {
             out.attributes = MessageRepo.parseAttributes(gifDoc.doc.attributesList, flags);
             out.messagetype = flags.type;
         }
+        out.id = GetDbFileName(gifDoc.doc.id, gifDoc.doc.clusterid);
         delete out.entitiesList;
         return out;
     }
@@ -173,7 +174,6 @@ export default class GifRepo {
 
     public upsert(gifs: IGif[], fromRemote?: boolean): Promise<any> {
         const ids = gifs.map((gif, index) => {
-            gif.id = gif.doc.id;
             if (fromRemote) {
                 gif.last_used = this.riverTime.now();
             }

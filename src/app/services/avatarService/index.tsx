@@ -16,7 +16,7 @@ import Broadcaster from '../broadcaster';
 import {throttle, uniqWith} from "lodash";
 
 interface IAvatar {
-    fileId: string;
+    fileName: string;
     retries: number;
     retryRemote?: boolean;
     src: string;
@@ -55,28 +55,28 @@ export default class AvatarService {
     }
 
     /* Get avatar picture */
-    public getAvatar(teamId: string, id: string, fileId: string, retires?: number): Promise<string> {
+    public getAvatar(teamId: string, id: string, fileName: string, retires?: number): Promise<string> {
         return new Promise((resolve, reject) => {
             if (this.avatars.hasOwnProperty(id)) {
                 if (this.avatars[id].retries > C_MAX_RETRY) {
                     reject();
                     return;
                 }
-                if (this.avatars[id].fileId === fileId && this.avatars[id].src !== '') {
+                if (this.avatars[id].fileName === fileName && this.avatars[id].src !== '') {
                     resolve(this.avatars[id].src);
                     return;
                 }
             }
-            if (fileId !== '0') {
+            if (fileName !== '0_0') {
                 this.avatars[id] = {
-                    fileId,
+                    fileName,
                     retries: 0,
                     src: '',
                 };
-                this.getLocalFile(id, fileId).then((res) => {
+                this.getLocalFile(id, fileName).then((res) => {
                     resolve(res);
                 }).catch(() => {
-                    this.getRemoteFile(teamId, id, fileId).then((res) => {
+                    this.getRemoteFile(teamId, id, fileName).then((res) => {
                         resolve(res);
                     }).catch(() => {
                         remoteRetryFn();
@@ -93,14 +93,14 @@ export default class AvatarService {
                         if (retires <= C_MAX_RETRY || !this.avatars[id].retryRemote) {
                             this.avatars[id].retryRemote = true;
                             setTimeout(() => {
-                                this.getAvatar(teamId, id, fileId, retires).then((getAvatarRes) => {
+                                this.getAvatar(teamId, id, fileName, retires).then((getAvatarRes) => {
                                     resolve(getAvatarRes);
                                 }).catch(() => {
                                     remoteRetryFn();
                                 });
                             }, 255 * retires);
                         } else {
-                            this.remove(id, fileId);
+                            this.remove(id, fileName);
                             reject('not found');
                         }
                     } else {
@@ -119,15 +119,15 @@ export default class AvatarService {
     }
 
     /* Remove image */
-    public remove(id: string, fileId?: string) {
+    public remove(id: string, fileName?: string) {
         if (this.avatars.hasOwnProperty(id)) {
-            if (!fileId) {
-                fileId = this.avatars[id].fileId;
+            if (!fileName) {
+                fileName = this.avatars[id].fileName;
             }
             delete this.avatars[id];
         }
-        if (fileId) {
-            return this.fileRepo.remove(fileId);
+        if (fileName) {
+            return this.fileRepo.remove(fileName);
         } else {
             return Promise.resolve();
         }
@@ -155,7 +155,7 @@ export default class AvatarService {
     }
 
     /* Get remote file */
-    private getRemoteFile(teamId: string, id: string, fileId: string): Promise<string> {
+    private getRemoteFile(teamId: string, id: string, fileName: string): Promise<string> {
         return new Promise((resolve, reject) => {
             if (this.avatars.hasOwnProperty(id)) {
                 this.getPhotoLocation(teamId, id).then((res) => {
@@ -166,16 +166,16 @@ export default class AvatarService {
                         fileLocation.setFileid(res.photosmall.fileid || '');
                         fileLocation.setVersion(0);
                         this.fileManager.receiveFile(fileLocation, '', 0, 'image/jpeg').then(() => {
-                            this.fileRepo.get(fileId).then((fileRes) => {
+                            this.fileRepo.get(fileName).then((fileRes) => {
                                 if (fileRes) {
-                                    this.removeCache(id, fileId);
+                                    this.removeCache(id, fileName);
                                     if (this.avatars[id]) {
-                                        this.avatars[id].fileId = fileId;
+                                        this.avatars[id].fileName = fileName;
                                         this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
                                         this.avatars[id].retries = 0;
                                     }
-                                    this.broadcastEvent(AvatarSrcUpdated, {items: [{id, fileId}]});
-                                    this.throttleBroadcast([{id, fileId}]);
+                                    this.broadcastEvent(AvatarSrcUpdated, {items: [{id, fileName}]});
+                                    this.throttleBroadcast([{id, fileName}]);
                                     if (this.avatars[id]) {
                                         resolve(this.avatars[id].src);
                                     } else {
@@ -208,13 +208,13 @@ export default class AvatarService {
     }
 
     /* Get local file */
-    private getLocalFile(id: string, fileId: string): Promise<string> {
+    private getLocalFile(id: string, fileName: string): Promise<string> {
         return new Promise((resolve, reject) => {
             if (this.avatars.hasOwnProperty(id)) {
-                this.fileRepo.get(fileId).then((fileRes) => {
+                this.fileRepo.get(fileName).then((fileRes) => {
                     if (fileRes) {
                         this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
-                        this.throttleBroadcast([{id, fileId}]);
+                        this.throttleBroadcast([{id, fileName}]);
                         resolve(this.avatars[id].src);
                     } else {
                         reject();
@@ -229,9 +229,9 @@ export default class AvatarService {
     }
 
     /* Remove URL cache */
-    private removeCache(id: string, fileId: string) {
+    private removeCache(id: string, fileName: string) {
         if (this.avatars.hasOwnProperty(id)) {
-            if (this.avatars[id].fileId !== fileId && this.avatars[id].src !== '') {
+            if (this.avatars[id].fileName !== fileName && this.avatars[id].src !== '') {
                 URL.revokeObjectURL(this.avatars[id].src);
             }
         }

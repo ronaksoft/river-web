@@ -50,7 +50,7 @@ import DialogRepo, {GetPeerName} from "../../../repository/dialog";
 import UserRepo from "../../../repository/user";
 import GroupRepo from "../../../repository/group";
 import LabelRepo from "../../../repository/label";
-import FileRepo from "../../../repository/file";
+import FileRepo, {GetDbFileName} from "../../../repository/file";
 import CachedFileService from "../../cachedFileService";
 import {IFileMap} from "../../../repository/file/interface";
 import TopPeerRepo, {ITopPeerWithType, TopPeerType} from "../../../repository/topPeer";
@@ -97,6 +97,7 @@ interface ILabelRange {
     labelId: number;
     peerid: string;
     peertype: number;
+    teamId: string;
     msgIds: number[];
     mode: 'add' | 'remove';
 }
@@ -152,6 +153,9 @@ export default class UpdateManager {
     }
 
     private static instance: UpdateManager;
+
+    // TeamId
+    private teamId: string = '0';
 
     // Flags and counters
     private isLive: boolean = true;
@@ -215,6 +219,10 @@ export default class UpdateManager {
             // Initialize SDK
             this.apiManager = APIManager.getInstance();
         }, 100);
+    }
+
+    public setTeamId(teamId: string) {
+        this.teamId = teamId;
     }
 
     /* Loads last update id form localStorage */
@@ -308,7 +316,7 @@ export default class UpdateManager {
     }
 
     public forceLogOut() {
-        this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
+        this.callHandlers('all', C_MSG.UpdateAuthorizationReset, {});
     }
 
     public disableLiveUpdate() {
@@ -365,21 +373,21 @@ export default class UpdateManager {
                 window.console.warn(err2);
                 this.enableLiveUpdate();
                 this.isDiffUpdating = false;
-                this.callHandlers(C_MSG.UpdateManagerStatus, {
+                this.callHandlers('all', C_MSG.UpdateManagerStatus, {
                     isUpdating: false,
                 });
                 if (err2.code === -1) {
                     this.canSync().then(() => {
                         this.disableLiveUpdate();
                         this.isDiffUpdating = true;
-                        this.callHandlers(C_MSG.UpdateManagerStatus, {
+                        this.callHandlers('all', C_MSG.UpdateManagerStatus, {
                             isUpdating: true,
                         });
                     }).catch(() => {
                         this.enableLiveUpdate();
                         if (this.isDiffUpdating) {
                             this.isDiffUpdating = false;
-                            this.callHandlers(C_MSG.UpdateManagerStatus, {
+                            this.callHandlers('all', C_MSG.UpdateManagerStatus, {
                                 isUpdating: false,
                             });
                         }
@@ -495,7 +503,7 @@ export default class UpdateManager {
         if (update.constructor === C_MSG.UpdateMessageID) {
             const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
             this.randomIdMap[updateMessageId.messageid || 0] = true;
-            this.callHandlers(C_MSG.UpdateMessageID, updateMessageId);
+            this.callHandlers('all', C_MSG.UpdateMessageID, updateMessageId);
         }
     }
 
@@ -542,10 +550,11 @@ export default class UpdateManager {
             switch (update.constructor) {
                 /** System **/
                 case C_MSG.UpdateUserTyping:
-                    this.callHandlers(C_MSG.UpdateUserTyping, UpdateUserTyping.deserializeBinary(update.update as Uint8Array).toObject());
+                    const updateUserTyping = UpdateUserTyping.deserializeBinary(update.update as Uint8Array).toObject();
+                    this.callHandlers(updateUserTyping.teamid || '0', C_MSG.UpdateUserTyping, updateUserTyping);
                     break;
                 case C_MSG.UpdateAuthorizationReset:
-                    this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
+                    this.callHandlers('all', C_MSG.UpdateAuthorizationReset, {});
                     break;
             }
         });
@@ -557,20 +566,21 @@ export default class UpdateManager {
         switch (update.constructor) {
             /** System **/
             case C_MSG.UpdateUserTyping:
-                this.callHandlers(C_MSG.UpdateUserTyping, UpdateUserTyping.deserializeBinary(data).toObject());
+                const updateUserTyping = UpdateUserTyping.deserializeBinary(data).toObject();
+                this.callHandlers(updateUserTyping.teamid || '0', C_MSG.UpdateUserTyping, updateUserTyping);
                 break;
             case C_MSG.UpdateTooLong:
                 this.callOutOfSync();
                 break;
             case C_MSG.UpdateAuthorizationReset:
-                this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
+                this.callHandlers('all', C_MSG.UpdateAuthorizationReset, {});
                 break;
             /** Messages **/
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                 const message = MessageRepo.parseMessage(updateNewMessage.message, this.userId);
                 updateNewMessage.message = message;
-                this.callUpdateHandler(update.constructor, updateNewMessage);
+                this.callUpdateHandler(message.teamid || '0', update.constructor, updateNewMessage);
                 // Add message
                 this.mergeMessage(transaction.messages, transaction.incomingIds, message);
                 // Add random message
@@ -603,8 +613,8 @@ export default class UpdateManager {
                     action_code: message.messageaction,
                     action_data: message.actiondata,
                     last_update: message.createdon,
-                    peerid: message.peerid,
-                    peertype: message.peertype,
+                    peerid: message.peerid || '',
+                    peertype: message.peertype || 0,
                     preview: messageTitle.text,
                     preview_icon: messageTitle.icon,
                     preview_me: this.userId === message.senderid,
@@ -651,7 +661,7 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
                 updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, this.userId);
-                this.callUpdateHandler(update.constructor, updateMessageEdited);
+                this.callUpdateHandler(updateMessageEdited.message.teamid || '0', update.constructor, updateMessageEdited);
                 // Update message
                 this.mergeMessage(transaction.messages, undefined, updateMessageEdited.message);
                 // Update edited message list
@@ -665,7 +675,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateMessagesDeleted:
                 const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateMessagesDeleted);
+                this.callUpdateHandler(updateMessagesDeleted.teamid || '0', update.constructor, updateMessagesDeleted);
                 // Delete message(s)
                 updateMessagesDeleted.messageidsList.forEach((id) => {
                     this.removeMessage(transaction.messages, id);
@@ -689,7 +699,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateReadMessagesContents:
                 const updateReadMessagesContents = UpdateReadMessagesContents.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateReadMessagesContents);
+                this.callUpdateHandler(updateReadMessagesContents.teamid || '0', update.constructor, updateReadMessagesContents);
                 // Set messages content read
                 updateReadMessagesContents.messageidsList.forEach((id) => {
                     this.mergeMessage(transaction.messages, undefined, {
@@ -701,20 +711,22 @@ export default class UpdateManager {
             /** Dialogs **/
             case C_MSG.UpdateReadHistoryInbox:
                 const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateReadHistoryInbox);
+                this.callUpdateHandler(updateReadHistoryInbox.teamid || '0', update.constructor, updateReadHistoryInbox);
                 // Update dialog readinboxmaxid
                 this.mergeDialog(transaction.dialogs, {
-                    peerid: updateReadHistoryInbox.peer.id,
+                    peerid: updateReadHistoryInbox.peer.id || '',
+                    peertype: updateReadHistoryInbox.peer.type || 0,
                     readinboxmaxid: updateReadHistoryInbox.maxid,
                     teamid: updateReadHistoryInbox.teamid || '0',
                 });
                 break;
             case C_MSG.UpdateReadHistoryOutbox:
                 const updateReadHistoryOutbox = UpdateReadHistoryOutbox.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateReadHistoryOutbox);
+                this.callUpdateHandler(updateReadHistoryOutbox.teamid || '0', update.constructor, updateReadHistoryOutbox);
                 // Update dialog readoutboxmaxid
                 this.mergeDialog(transaction.dialogs, {
-                    peerid: updateReadHistoryOutbox.peer.id,
+                    peerid: updateReadHistoryOutbox.peer.id || '',
+                    peertype: updateReadHistoryOutbox.peer.type || 0,
                     readoutboxmaxid: updateReadHistoryOutbox.maxid,
                     teamid: updateReadHistoryOutbox.teamid || '0',
                 });
@@ -728,51 +740,54 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateNotifySettings:
                 const updateNotifySettings = UpdateNotifySettings.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateNotifySettings);
+                this.callUpdateHandler(updateNotifySettings.teamid || '0', update.constructor, updateNotifySettings);
                 // TODO: teamid
                 // Update dialog notification
                 this.mergeDialog(transaction.dialogs, {
                     accesshash: updateNotifySettings.notifypeer.accesshash,
                     notifysettings: updateNotifySettings.settings,
-                    peerid: updateNotifySettings.notifypeer.id,
+                    peerid: updateNotifySettings.notifypeer.id || '',
+                    peertype: updateNotifySettings.notifypeer.type || 0,
                     teamid: updateNotifySettings.teamid || '0',
                 });
                 break;
             case C_MSG.UpdateDialogPinned:
                 const updateDialogPinned = UpdateDialogPinned.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateDialogPinned);
+                this.callUpdateHandler(updateDialogPinned.teamid || '0', update.constructor, updateDialogPinned);
                 // Update pinned dialog
                 this.mergeDialog(transaction.dialogs, {
-                    peerid: updateDialogPinned.peer.id,
+                    peerid: updateDialogPinned.peer.id || '',
+                    peertype: updateDialogPinned.peer.type || 0,
                     pinned: updateDialogPinned.pinned,
                     teamid: updateDialogPinned.teamid || '0',
                 });
                 break;
             case C_MSG.UpdateDraftMessage:
                 const updateDraftMessage = UpdateDraftMessage.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateDraftMessage);
-                // TODO: teamid
+                this.callUpdateHandler(updateDraftMessage.message.teamid || '0', update.constructor, updateDraftMessage);
                 // Update dialog's draft
                 this.mergeDialog(transaction.dialogs, {
                     draft: updateDraftMessage.message,
-                    peerid: updateDraftMessage.message.peerid,
+                    peerid: updateDraftMessage.message.peerid || '',
+                    peertype: updateDraftMessage.message.peertype || 0,
                     teamid: updateDraftMessage.message.teamid || '0',
                 });
                 break;
             case C_MSG.UpdateDraftMessageCleared:
                 const updateDraftMessageCleared = UpdateDraftMessageCleared.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateDraftMessageCleared);
+                this.callUpdateHandler(updateDraftMessageCleared.teamid || '0', update.constructor, updateDraftMessageCleared);
                 // Remove dialog's draft
                 this.mergeDialog(transaction.dialogs, {
                     draft: {},
-                    peerid: updateDraftMessageCleared.peer.id,
+                    peerid: updateDraftMessageCleared.peer.id || '',
+                    peertype: updateDraftMessageCleared.peer.type || 0,
                     teamid: updateDraftMessageCleared.teamid || '0',
                 });
                 break;
             /** Users **/
             case C_MSG.UpdateUsername:
                 const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateUsername);
+                this.callUpdateHandler('all', update.constructor, updateUsername);
                 // Update user
                 this.mergeUser(transaction.users, {
                     bio: updateUsername.bio,
@@ -790,7 +805,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateUserPhoto:
                 const updateUserPhoto = UpdateUserPhoto.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateUserPhoto);
+                this.callUpdateHandler('all', update.constructor, updateUserPhoto);
                 // Update user's photo
                 this.mergeUser(transaction.users, {
                     id: updateUserPhoto.userid,
@@ -800,7 +815,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateUserBlocked:
                 const updateUserBlocked = UpdateUserBlocked.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateUserBlocked);
+                this.callUpdateHandler('all', update.constructor, updateUserBlocked);
                 // Update user block status
                 this.mergeUser(transaction.users, {
                     blocked: updateUserBlocked.blocked,
@@ -810,7 +825,7 @@ export default class UpdateManager {
             /** Groups **/
             case C_MSG.UpdateGroupPhoto:
                 const updateGroupPhoto = UpdateGroupPhoto.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateGroupPhoto);
+                this.callUpdateHandler('all', update.constructor, updateGroupPhoto);
                 // Update group's photo
                 this.mergeGroup(transaction.groups, {
                     id: updateGroupPhoto.groupid,
@@ -820,7 +835,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateGroupParticipantAdd:
                 const updateGroupParticipantAdd = UpdateGroupParticipantAdd.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateGroupParticipantAdd);
+                this.callUpdateHandler('all', update.constructor, updateGroupParticipantAdd);
                 // Set groups's need updated flag
                 this.mergeGroup(transaction.groups, {
                     hasUpdate: true,
@@ -829,7 +844,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateGroupParticipantDeleted:
                 const updateGroupParticipantDeleted = UpdateGroupParticipantDeleted.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateGroupParticipantDeleted);
+                this.callUpdateHandler('all', update.constructor, updateGroupParticipantDeleted);
                 // Set groups's need updated flag
                 this.mergeGroup(transaction.groups, {
                     hasUpdate: true,
@@ -839,7 +854,7 @@ export default class UpdateManager {
             /** Labels **/
             case C_MSG.UpdateLabelSet:
                 const updateLabelSet = UpdateLabelSet.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateLabelSet);
+                this.callUpdateHandler('all', update.constructor, updateLabelSet);
                 // Add label
                 updateLabelSet.labelsList.forEach((label) => {
                     this.mergeLabel(transaction.labels, label);
@@ -847,7 +862,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateLabelDeleted:
                 const updateLabelDeleted = UpdateLabelDeleted.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateLabelDeleted);
+                this.callUpdateHandler('all', update.constructor, updateLabelDeleted);
                 // Remove label
                 updateLabelDeleted.labelidsList.forEach((id) => {
                     this.removeLabel(transaction.labels, transaction.removedLabels, id);
@@ -855,7 +870,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateLabelItemsAdded:
                 const updateLabelItemsAdded = UpdateLabelItemsAdded.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateLabelItemsAdded);
+                this.callUpdateHandler(updateLabelItemsAdded.teamid || '0', update.constructor, updateLabelItemsAdded);
                 // Update message label list
                 updateLabelItemsAdded.messageidsList.forEach((id) => {
                     this.mergeMessage(transaction.messages, undefined, {
@@ -875,6 +890,7 @@ export default class UpdateManager {
                         msgIds: updateLabelItemsAdded.messageidsList,
                         peerid: updateLabelItemsAdded.peer.id || '',
                         peertype: updateLabelItemsAdded.peer.type || 0,
+                        teamId: updateLabelItemsAdded.teamid || '0',
                     });
                 });
                 // Add label
@@ -884,7 +900,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateLabelItemsRemoved:
                 const updateLabelItemsRemoved = UpdateLabelItemsRemoved.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateLabelItemsRemoved);
+                this.callUpdateHandler(updateLabelItemsRemoved.teamid || '0', update.constructor, updateLabelItemsRemoved);
                 // Update message label list
                 updateLabelItemsRemoved.messageidsList.forEach((id) => {
                     this.mergeMessage(transaction.messages, undefined, {
@@ -904,6 +920,7 @@ export default class UpdateManager {
                         msgIds: updateLabelItemsRemoved.messageidsList,
                         peerid: updateLabelItemsRemoved.peer.id || '',
                         peertype: updateLabelItemsRemoved.peer.type || 0,
+                        teamId: updateLabelItemsRemoved.teamid || '0',
                     });
                 });
                 // Add label
@@ -1059,7 +1076,7 @@ export default class UpdateManager {
             if (Object.keys(transaction.messages).length > 0) {
                 promises.push(this.applyMessages(transaction.messages, transaction.editedMessageIds, transaction.randomMessageIds).then((res) => {
                     if (!transaction.live) {
-                        this.callHandlers(C_MSG.UpdateMessageDB, res);
+                        this.callHandlers('all', C_MSG.UpdateMessageDB, res);
                     }
                     return res;
                 }));
@@ -1068,7 +1085,7 @@ export default class UpdateManager {
             if (Object.keys(transaction.removedMessages).length > 0) {
                 promises.push(this.applyRemovedMessages(transaction.removedMessages).then((res) => {
                     if (!transaction.live) {
-                        this.callHandlers(C_MSG.UpdateMessageDBRemoved, res);
+                        this.callHandlers('all', C_MSG.UpdateMessageDBRemoved, res);
                     }
                     return res;
                 }));
@@ -1077,7 +1094,7 @@ export default class UpdateManager {
             if (transaction.toCheckDialogIds.length === 0) {
                 promises.push(this.applyDialogs(transaction.dialogs).then((peers) => {
                     if (!transaction.live) {
-                        this.callHandlers(C_MSG.UpdateDialogDB, {
+                        this.callHandlers('all', C_MSG.UpdateDialogDB, {
                             counters: transaction.lastOne,
                             incomingIds: transaction.incomingIds,
                             peers,
@@ -1138,8 +1155,8 @@ export default class UpdateManager {
                             action_data: msg.actiondata,
                             force: true,
                             last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
-                            peerid: msg.peerid,
-                            peertype: msg.peertype,
+                            peerid: msg.peerid || '',
+                            peertype: msg.peertype || 0,
                             preview: messageTitle.text,
                             preview_icon: messageTitle.icon,
                             preview_me: (this.userId === msg.senderid),
@@ -1152,7 +1169,7 @@ export default class UpdateManager {
                     }
                 });
                 this.applyDialogs(transaction.dialogs).then((peers) => {
-                    this.callHandlers(C_MSG.UpdateDialogDB, {
+                    this.callHandlers('all', C_MSG.UpdateDialogDB, {
                         counters: transaction.live ? true : transaction.lastOne,
                         incomingIds: transaction.incomingIds,
                         peers,
@@ -1320,7 +1337,8 @@ export default class UpdateManager {
         list.forEach((item) => {
             const mediaDocument = getMediaDocument(item.message);
             if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                persistFilePromises.push(fileRepo.persistTempFiles(item.fileIds[0], mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream'));
+                const mediaDocName = GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid);
+                persistFilePromises.push(fileRepo.persistTempFiles(item.fileIds[0], mediaDocName, mediaDocument.doc.mimetype || 'application/octet-stream'));
                 cachedFileService.swap(item.fileIds[0], {
                     accesshash: mediaDocument.doc.accesshash,
                     clusterid: mediaDocument.doc.clusterid,
@@ -1329,15 +1347,14 @@ export default class UpdateManager {
                 });
                 // Check thumbnail
                 if (item.fileIds.length > 1 && mediaDocument.doc.thumbnail) {
-                    persistFilePromises.push(fileRepo.persistTempFiles(item.fileIds[1], mediaDocument.doc.thumbnail.fileid || '', 'image/jpeg'));
+                    persistFilePromises.push(fileRepo.persistTempFiles(item.fileIds[1], GetDbFileName(mediaDocument.doc.thumbnail.fileid, mediaDocument.doc.thumbnail.clusterid), 'image/jpeg'));
                     cachedFileService.swap(item.fileIds[0], mediaDocument.doc.thumbnail);
                 }
                 item.message.downloaded = true;
                 messages.push(item.message);
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                     fileMapList.push({
-                        clusterid: mediaDocument.doc.clusterid || 0,
-                        id: mediaDocument.doc.id || '',
+                        id: mediaDocName,
                         msg_ids: [item.message.id || 0],
                     });
                 }
@@ -1357,7 +1374,7 @@ export default class UpdateManager {
                             data.peerNames[peerName] = [message.id || 0];
                         }
                     });
-                    this.callHandlers(C_MSG.UpdateMessageIdDB, data);
+                    this.callHandlers('all', C_MSG.UpdateMessageIdDB, data);
                 });
             }
             if (fileMapList.length > 0) {
@@ -1395,11 +1412,11 @@ export default class UpdateManager {
             const item = newList.shift();
             if (item && this.labelRepo) {
                 if (item.mode === 'add') {
-                    this.labelRepo.insertInRange(item.labelId, item.peerid, item.peertype, item.msgIds).then(() => {
+                    this.labelRepo.insertInRange(item.teamId, item.labelId, item.peerid, item.peertype, item.msgIds).then(() => {
                         fn(resolve, resolve);
                     }).catch(reject);
                 } else {
-                    this.labelRepo.removeFromRange(item.labelId, item.msgIds).then(() => {
+                    this.labelRepo.removeFromRange(item.teamId, item.labelId, item.msgIds).then(() => {
                         fn(resolve, resolve);
                     }).catch(reject);
                 }
@@ -1412,14 +1429,14 @@ export default class UpdateManager {
         });
     }
 
-    private callUpdateHandler(eventConstructor: number, data: any) {
-        if (this.isLive) {
+    private callUpdateHandler(teamId: string, eventConstructor: number, data: any) {
+        if (this.isLive && (this.teamId === teamId || teamId === 'all')) {
             try {
                 if (eventConstructor === C_MSG.UpdateNewMessage && this.randomIdMap.hasOwnProperty((data as UpdateNewMessage.AsObject).senderrefid || 0)) {
-                    this.callHandlers(C_MSG.UpdateNewMessageDrop, data);
+                    this.callHandlers(teamId, C_MSG.UpdateNewMessageDrop, data);
                     delete this.randomIdMap[(data as UpdateNewMessage.AsObject).senderrefid || 0];
                 } else {
-                    this.callHandlers(eventConstructor, data);
+                    this.callHandlers(teamId, eventConstructor, data);
                 }
             } catch (e) {
                 window.console.warn(e);
@@ -1427,8 +1444,8 @@ export default class UpdateManager {
         }
     }
 
-    private callHandlers(eventConstructor: number, data: any) {
-        if (!this.listenerList[eventConstructor]) {
+    private callHandlers(teamId: string, eventConstructor: number, data: any) {
+        if ((this.teamId !== teamId && teamId !== 'all') || !this.listenerList[eventConstructor]) {
             return;
         }
         Object.values(this.listenerList[eventConstructor]).forEach((fn) => {

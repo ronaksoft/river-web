@@ -32,9 +32,9 @@ import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
 import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import i18n from '../../services/i18n';
+import {IPeer} from "../../repository/dialog/interface";
 
 import './style.scss';
-import {IPeer} from "../../repository/dialog/interface";
 
 interface IMedia {
     _modified?: boolean;
@@ -130,7 +130,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>}
                 </div>}
                 {this.props.full && <div className="peer-media-tab">
-                    <Tabs indicatorColor="primary" textColor="primary" variant="scrollable" centered={true} value={tab}
+                    <Tabs indicatorColor="primary" textColor="primary" variant="scrollable" value={tab}
                           onChange={this.tabChangeHandler}>
                         <Tab value={0} label={i18n.t('peer_info.photo_video')} className="peer-media-tab-item"/>
                         <Tab value={1} label={i18n.t('peer_info.audio')} className="peer-media-tab-item"/>

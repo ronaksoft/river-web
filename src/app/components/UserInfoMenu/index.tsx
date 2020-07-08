@@ -382,7 +382,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             });
         }
 
-        this.dialogRepo.get(this.props.teamId, peer.getId() || '').then((dialog) => {
+        this.dialogRepo.get(this.props.teamId, peer.getId() || '', peer.getType() || 0).then((dialog) => {
             if (dialog) {
                 this.setState({
                     dialog,

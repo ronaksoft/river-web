@@ -80,7 +80,7 @@ export default class DialogRepo {
     }
 
     public remove(teamId: string, id: string, peerType: number) {
-        delete this.lazyMap[`${teamId}_${id}`];
+        delete this.lazyMap[`${teamId}_${id}_${peerType}`];
         return this.db.dialogs.delete([teamId, id, peerType]);
     }
 
@@ -88,9 +88,9 @@ export default class DialogRepo {
         return this.db.dialogs.bulkPut(dialogs);
     }
 
-    public get(teamId: string, id: string): Promise<IDialog | undefined> {
-        return this.db.dialogs.get([teamId, id]).then((dialog) => {
-            const mapId = `${teamId}_${id}`;
+    public get(teamId: string, peerId: string, peerType: number): Promise<IDialog | undefined> {
+        return this.db.dialogs.get([teamId, peerId, peerType]).then((dialog) => {
+            const mapId = `${teamId}_${peerId}_${peerType}`;
             if (this.lazyMap.hasOwnProperty(mapId) && dialog) {
                 return this.mergeCheck(dialog, this.lazyMap[mapId]);
             } else {
@@ -298,7 +298,7 @@ export default class DialogRepo {
                 dialog = this.applyMessage(dialog, msg);
             }
         }
-        const dialogId = `${dialog.teamid || '0'}_${dialog.peerid || '0'}_${dialog.peertype || '0'}`;
+        const dialogId = `${dialog.teamid || '0'}_${dialog.peerid || '0'}_${dialog.peertype || 0}`;
         if (this.lazyMap.hasOwnProperty(dialogId)) {
             const t = this.lazyMap[dialogId];
             this.lazyMap[dialogId] = this.mergeCheck(t, dialog);

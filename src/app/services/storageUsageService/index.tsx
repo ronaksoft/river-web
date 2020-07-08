@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import FileRepo from '../../repository/file/index';
+import FileRepo, {GetDbFileName} from '../../repository/file/index';
 import DialogRepo from '../../repository/dialog/index';
 import MediaRepo from '../../repository/media/index';
 import {PeerType} from '../sdk/messages/core.types_pb';
@@ -165,14 +165,14 @@ export default class StorageUsageService {
                         id: o.id,
                         mediaType: o.messagetype,
                     };
-                    ids.push(o.mediadata.doc.id);
+                    ids.push(GetDbFileName(o.mediadata.doc.id, o.mediadata.doc.clusterid));
                 }
                 if (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid) {
                     fileMap[o.mediadata.doc.thumbnail.fileid] = {
                         id: o.id,
                         mediaType: o.messagetype,
                     };
-                    ids.push(o.mediadata.doc.thumbnail.fileid);
+                    ids.push(GetDbFileName(o.mediadata.doc.thumbnail.fileid, o.mediadata.doc.thumbnail.clusterid));
                 }
             });
             return this.fileRepo.getIn(ids).then((files) => {

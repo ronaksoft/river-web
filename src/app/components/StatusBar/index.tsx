@@ -18,6 +18,7 @@ import Socket from "../../services/sdk/server/socket";
 
 import './style.scss';
 import Smoother from "../../services/utilities/smoother";
+import {GetPeerName} from "../../repository/dialog";
 
 interface IProps {
     currentUserId: string;
@@ -27,7 +28,6 @@ interface IProps {
     onAction: (cmd: string) => (e?: any) => void;
     peer: InputPeer | null;
     teamId: string;
-    selectedPeerName: string;
 }
 
 interface IState {
@@ -46,7 +46,7 @@ class StatusBar extends React.Component<IProps, IState> {
             isOnline: props.isOnline,
             isUpdating: props.isUpdating,
             peer: props.peer,
-            selectedId: props.selectedPeerName.split('_')[0] || 'null',
+            selectedId: props.peer ? (props.peer.getId() || '') : '',
         };
     }
 
@@ -62,7 +62,7 @@ class StatusBar extends React.Component<IProps, IState> {
             isTypingList: {},
             isUpdating: props.isUpdating,
             peer: null,
-            selectedId: props.selectedPeerName.split('_')[0] || 'null',
+            selectedId: props.peer ? (props.peer.getId() || '') : '',
         };
 
         this.smoother = new Smoother(2000, this.updateFunctionHandler);
@@ -98,16 +98,16 @@ class StatusBar extends React.Component<IProps, IState> {
     }
 
     private getChatStatus(hideStatus: boolean) {
-        const {selectedPeerName} = this.props;
         const {peer, isConnecting, selectedId} = this.state;
         if (!peer) {
             return null;
         }
+        const peerName = GetPeerName(peer.getId(), peer.getType());
         const showIsConnecting = this.smoother.getState(isConnecting);
         let typingList: { [key: string]: { fn: any, action: TypingAction } } = {};
         let ids: number = 0;
-        if (this.state.isTypingList.hasOwnProperty(selectedPeerName)) {
-            typingList = this.state.isTypingList[selectedPeerName];
+        if (this.state.isTypingList.hasOwnProperty(peerName)) {
+            typingList = this.state.isTypingList[peerName];
             ids = Object.keys(typingList).length;
         }
         if (!this.state.isOnline) {

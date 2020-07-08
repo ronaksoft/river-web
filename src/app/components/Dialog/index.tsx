@@ -191,13 +191,16 @@ class Dialog extends React.PureComponent<IProps, IState> {
         });
     }
 
-    public setDialogs(dialogs: IDialog[], callback?: () => void) {
+    public setDialogs(dialogs: IDialog[], callback?: () => void, resetFirstTime?: boolean) {
         this.setState({
             items: dialogs,
         }, () => {
             this.filterItem();
             if (callback) {
                 callback();
+            }
+            if (resetFirstTime) {
+                this.firstTimeLoad = true;
             }
             if (dialogs.length > 0) {
                 this.firstTimeLoad = false;
@@ -705,14 +708,15 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     label_ids: msg.labelidsList,
                     last_update: msg.createdon,
                     only_contact: true,
-                    peerid: msg.peerid,
-                    peertype: msg.peertype,
+                    peerid: msg.peerid || '',
+                    peertype: msg.peertype || 0,
                     preview: messageTitle.text,
                     preview_icon: messageTitle.icon,
                     preview_me: msg.me,
                     preview_rtl: msg.rtl,
                     saved_messages: msg.peerid === this.userId,
                     sender_id: msg.senderid,
+                    teamid: msg.teamid || '0',
                     topmessageid: msg.id,
                 };
             });
@@ -734,16 +738,17 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     peerid: id,
                 };
             });
-            searchItems = intersectionBy(items, peerIds, 'peerid');
+            searchItems = intersectionBy(items, peerIds, ['peerid', 'peertype']);
             const noMessageText = i18n.t('general.no_message');
             searchAddedItems = (users ? users.map((u) => {
                 return {
                     accesshash: u.accesshash,
                     only_contact: true,
-                    peerid: u.id,
+                    peerid: u.id || '',
                     peertype: PeerType.PEERUSER,
                     preview: noMessageText,
                     preview_me: false,
+                    teamid: this.props.teamId,
                 };
             }) : []);
             searchAddedItems = differenceBy(searchAddedItems, searchItems, 'peerid');
