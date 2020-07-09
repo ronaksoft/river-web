@@ -83,6 +83,7 @@ export default class TopPeerRepo {
             if (tp.peer) {
                 tp.id = tp.peer.id || '';
             }
+            tp.teamid = tp.teamid || teamId;
             return tp;
         });
         return this.createMany(type, topPeers);
