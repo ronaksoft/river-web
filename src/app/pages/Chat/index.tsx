@@ -281,7 +281,6 @@ class Chat extends React.Component<IProps, IState> {
     private isBot: boolean = false;
     private smoother: Smoother;
     private uploaderRef: Uploader | undefined;
-    private topPeerInitialized: boolean = false;
     private readonly userId: string = '0';
 
     constructor(props: IProps) {
@@ -2475,10 +2474,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getRemoteTopPeers() {
-        if (this.topPeerInitialized || localStorage.getItem(C_LOCALSTORAGE.TopPeerInit)) {
-            return;
-        }
-        localStorage.setItem(C_LOCALSTORAGE.TopPeerInit, 'true');
         this.topPeerInitialized = true;
         this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, C_TOP_PEER_LEN).then((res) => {
             this.userRepo.importBulk(false, res.usersList);

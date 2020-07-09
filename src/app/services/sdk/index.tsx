@@ -220,11 +220,12 @@ export default class APIManager {
         this.setConnInfo(info);
         localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
         localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
-        localStorage.removeItem(C_LOCALSTORAGE.TopPeerInit);
         localStorage.removeItem(C_LOCALSTORAGE.GifHash);
         localStorage.removeItem(C_LOCALSTORAGE.TeamId);
         localStorage.removeItem(C_LOCALSTORAGE.TeamData);
         localStorage.removeItem(C_LOCALSTORAGE.SnapshotRecord);
+        localStorage.removeItem(C_LOCALSTORAGE.ThemeBg);
+        localStorage.removeItem(C_LOCALSTORAGE.ThemeBgPic);
     }
 
     public loadConnInfo(): IConnInfo {

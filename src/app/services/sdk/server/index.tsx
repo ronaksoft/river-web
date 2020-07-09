@@ -645,8 +645,14 @@ export default class Server {
         }
         setTimeout(() => {
             MainRepo.getInstance().destroyDB().then(() => {
-                localStorage.removeItem(C_LOCALSTORAGE.LastUpdateId);
                 localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
+                localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
+                localStorage.removeItem(C_LOCALSTORAGE.GifHash);
+                localStorage.removeItem(C_LOCALSTORAGE.TeamId);
+                localStorage.removeItem(C_LOCALSTORAGE.TeamData);
+                localStorage.removeItem(C_LOCALSTORAGE.SnapshotRecord);
+                localStorage.removeItem(C_LOCALSTORAGE.ThemeBg);
+                localStorage.removeItem(C_LOCALSTORAGE.ThemeBgPic);
                 localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
                     v: 6,
                 }));
