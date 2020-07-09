@@ -1,3 +1,6 @@
+## 0.33.9
+* Scroll bug patched
+
 ## 0.33.8
 * Load more bugs fixed
 * GIF sort updated

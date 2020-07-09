@@ -498,6 +498,9 @@ export default class MessageRepo {
             window.console.debug('has hole:', hasHole);
             let lastId: number = (mode === 0x2 ? safeAfter : safeBefore);
             const asc = (mode === 0x2);
+            if (localOnly && hasHole) {
+                localOnly = false;
+            }
             if (!hasHole) {
                 if (res.length > 0) {
                     lastId = (res[res.length - 1].id || -1);
