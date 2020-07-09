@@ -28,9 +28,9 @@ import SettingsConfigManager from '../../services/settingsConfigManager';
 import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
 import {transformMimeType} from "../StreamVideo/helper";
+import {GetDbFileName} from "../../repository/file";
 
 import './style.scss';
-import {GetDbFileName} from "../../repository/file";
 
 export const C_MEDIA_BREAKPOINT = 1116;
 const C_MIN_HEIGHT_TINY = 102;
@@ -326,6 +326,11 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
+        // @ts-ignore
+        const state: IState = {};
+        let updateState: boolean = false;
+        let forceUpdate: boolean = false;
+        let initProgress: boolean = false;
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
             this.downloaded = newProps.message.downloaded || false;
@@ -334,47 +339,50 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             const info = getMediaInfo(newProps.message);
             this.fileSize = info.size;
             this.displayFileSize(0);
-            this.setState({
-                fileState: this.getFileState(newProps.message),
-                info,
-                message: newProps.message,
-                streamReady: this.isStreamReady(info.mimeType || ''),
-            }, () => {
-                this.initProgress();
-            });
+            state.fileState = this.getFileState(newProps.message);
+            state.info = info;
+            state.message = newProps.message;
+            state.streamReady = this.isStreamReady(info.mimeType || '');
+            updateState = true;
+            initProgress = true;
         }
         const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
         if (messageMediaDocument && messageMediaDocument.doc) {
             const fileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
             if (fileName !== this.dbFileName) {
                 this.dbFileName = fileName;
-                this.setState({
-                    message: newProps.message,
-                });
+                state.info = getMediaInfo(newProps.message);
+                state.message = newProps.message;
+                updateState = true;
             }
         }
         if ((newProps.message.downloaded || false) !== this.downloaded) {
             this.downloaded = (newProps.message.downloaded || false);
-            this.setState({
-                fileState: this.getFileState(newProps.message),
-                message: newProps.message,
-            }, () => {
-                this.forceUpdate();
-            });
+            state.fileState = this.getFileState(newProps.message);
+            state.message = newProps.message;
+            updateState = true;
+            forceUpdate = true;
         }
         if ((newProps.message.saved || false) !== this.saved) {
             this.saved = (newProps.message.saved || false);
-            this.setState({
-                fileState: this.getFileState(newProps.message),
-                message: newProps.message,
-            });
+            state.fileState = this.getFileState(newProps.message);
+            state.message = newProps.message;
+            updateState = true;
         }
         if ((newProps.message.contentread || false) !== this.contentRead) {
             this.contentRead = (newProps.message.contentread || false);
-            this.setState({
-                message: newProps.message,
-            }, () => {
-                this.forceUpdate();
+            state.message = newProps.message;
+            forceUpdate = true;
+            updateState = true;
+        }
+        if (updateState) {
+            this.setState(state, () => {
+                if (initProgress) {
+                    this.initProgress();
+                }
+                if (forceUpdate) {
+                    this.forceUpdate();
+                }
             });
         }
     }

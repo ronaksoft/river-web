@@ -164,13 +164,13 @@ export default class FileRepo {
     }
 
     public upsertFileMap(fileMaps: IFileMap[]) {
-        const ids: any[] = fileMaps.map((f) => {
+        const ids: string[] = fileMaps.map((f) => {
             return f.id;
         });
         return this.db.fileMap.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IFileMap[] = differenceWith(fileMaps, result, 'id');
             const updateItems: IFileMap[] = result.map((fileMap: IFileMap) => {
-                const t = find(fileMaps, {id: fileMap.id,});
+                const t = find(fileMaps, {id: fileMap.id});
                 if (t) {
                     if (t.msg_ids && fileMap.msg_ids) {
                         t.msg_ids = uniq([...t.msg_ids, ...fileMap.msg_ids]);

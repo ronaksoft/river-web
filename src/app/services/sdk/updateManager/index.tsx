@@ -1337,8 +1337,8 @@ export default class UpdateManager {
         list.forEach((item) => {
             const mediaDocument = getMediaDocument(item.message);
             if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                const mediaDocName = GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid);
-                persistFilePromises.push(fileRepo.persistTempFiles(item.fileNames[0], mediaDocName, mediaDocument.doc.mimetype || 'application/octet-stream'));
+                const mediaFileName = GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid);
+                persistFilePromises.push(fileRepo.persistTempFiles(item.fileNames[0], mediaFileName, mediaDocument.doc.mimetype || 'application/octet-stream'));
                 cachedFileService.swap(item.fileNames[0], {
                     accesshash: mediaDocument.doc.accesshash,
                     clusterid: mediaDocument.doc.clusterid,
@@ -1354,7 +1354,7 @@ export default class UpdateManager {
                 messages.push(item.message);
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                     fileMapList.push({
-                        id: mediaDocName,
+                        id: mediaFileName,
                         msg_ids: [item.message.id || 0],
                     });
                 }

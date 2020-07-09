@@ -1,3 +1,8 @@
+## 0.34.1
+* GIF bug fixed
+* Upload bug fixed
+* Overall performance improvements
+
 ## 0.34.0
 * 🎉 New Team Feature
 * Database version 5
