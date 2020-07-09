@@ -2474,7 +2474,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getRemoteTopPeers() {
-        this.topPeerInitialized = true;
         this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, C_TOP_PEER_LEN).then((res) => {
             this.userRepo.importBulk(false, res.usersList);
             this.userRepo.importBulk(false, res.groupsList);
