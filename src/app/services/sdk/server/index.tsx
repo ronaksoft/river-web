@@ -653,6 +653,7 @@ export default class Server {
                 localStorage.removeItem(C_LOCALSTORAGE.SnapshotRecord);
                 localStorage.removeItem(C_LOCALSTORAGE.ThemeBg);
                 localStorage.removeItem(C_LOCALSTORAGE.ThemeBgPic);
+                localStorage.removeItem(C_LOCALSTORAGE.LastUpdateId);
                 localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
                     v: 6,
                 }));
