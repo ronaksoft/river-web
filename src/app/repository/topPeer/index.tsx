@@ -172,6 +172,7 @@ export default class TopPeerRepo {
         const ids: Array<[string, string]> = topPeers.map((topPeer) => {
             // @ts-ignore
             delete topPeer.type;
+            topPeer.teamid = topPeer.teamid || '0';
             return [topPeer.teamid, topPeer.id || ''];
         });
         return this.getDbByType(type).where('[teamid+id]').anyOf(ids).toArray().then((result) => {
