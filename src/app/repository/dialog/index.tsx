@@ -248,8 +248,6 @@ export default class DialogRepo {
                 }
             });
             return this.createMany([...createItems, ...updateItems]);
-        }).catch((err: any) => {
-            window.console.debug('dialog upsert', err);
         });
     }
 

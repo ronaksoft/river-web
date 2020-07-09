@@ -1,3 +1,6 @@
+## 0.34.2
+* TopPeer for team implemented
+
 ## 0.34.1
 * GIF bug fixed
 * Upload bug fixed

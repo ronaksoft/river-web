@@ -2400,7 +2400,6 @@ class Chat extends React.Component<IProps, IState> {
             this.snapshot();
             return;
         }
-        this.getRemoteTopPeers();
         // Normal syncing
         this.updateManager.canSync(updateId).then(() => {
             this.updateManager.disableLiveUpdate();
@@ -2484,15 +2483,15 @@ class Chat extends React.Component<IProps, IState> {
         this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, C_TOP_PEER_LEN).then((res) => {
             this.userRepo.importBulk(false, res.usersList);
             this.userRepo.importBulk(false, res.groupsList);
-            this.topPeerRepo.insertFromRemote(TopPeerType.Forward, res.peersList);
+            this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Forward, res.peersList);
         });
         this.apiManager.getTopPeer(TopPeerCategory.USERS, 0, C_TOP_PEER_LEN).then((res) => {
             this.userRepo.importBulk(false, res.usersList);
-            this.topPeerRepo.insertFromRemote(TopPeerType.Search, res.peersList);
+            this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Search, res.peersList);
         });
         this.apiManager.getTopPeer(TopPeerCategory.GROUPS, 0, C_TOP_PEER_LEN).then((res) => {
             this.userRepo.importBulk(false, res.groupsList);
-            this.topPeerRepo.insertFromRemote(TopPeerType.Search, res.peersList);
+            this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Search, res.peersList);
         });
     }
 

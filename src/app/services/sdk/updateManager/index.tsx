@@ -641,6 +641,7 @@ export default class UpdateManager {
                             type: message.peertype,
                         },
                         rate: 0,
+                        teamid: message.teamid || '0',
                         type: TopPeerType.Search,
                     };
                     if (message.fwdsenderid !== '0') {

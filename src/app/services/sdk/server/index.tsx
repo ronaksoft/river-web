@@ -130,7 +130,9 @@ export default class Server {
             window.addEventListener(EventWebSocketOpen, () => {
                 this.isConnected = true;
                 this.flushSentQueue();
-                this.executeSendThrottledRequestThrottle();
+                if (this.executeSendThrottledRequestThrottle) {
+                    this.executeSendThrottledRequestThrottle();
+                }
             });
 
             window.addEventListener(EventWebSocketClose, () => {
@@ -540,9 +542,9 @@ export default class Server {
         const v = localStorage.getItem(C_LOCALSTORAGE.Version);
         if (v === null) {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                v: 5,
+                v: 6,
             }));
-            return 5;
+            return 6;
         }
         const pv = JSON.parse(v);
         switch (pv.v) {
@@ -552,8 +554,9 @@ export default class Server {
             case 2:
             case 3:
             case 4:
-                return pv.v;
             case 5:
+                return pv.v;
+            case 6:
                 return false;
         }
     }
@@ -572,6 +575,7 @@ export default class Server {
                 this.migrate3();
                 return;
             case 4:
+            case 5:
                 this.migrate4();
                 return;
         }
@@ -644,7 +648,7 @@ export default class Server {
                 localStorage.removeItem(C_LOCALSTORAGE.LastUpdateId);
                 localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
                 localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                    v: 5,
+                    v: 6,
                 }));
                 setTimeout(() => {
                     window.location.reload();

@@ -74,11 +74,11 @@ export default class TopPeerRepo {
         return this.getDbByType(type).bulkPut(topPeers);
     }
 
-    public remove(type: TopPeerType, id: string) {
-        return this.getDbByType(type).delete(id);
+    public remove(teamId: string, type: TopPeerType, id: string) {
+        return this.getDbByType(type).delete([teamId, id]);
     }
 
-    public insertFromRemote(type: TopPeerType, remoteTopPeers: TopPeer.AsObject[]) {
+    public insertFromRemote(teamId: string, type: TopPeerType, remoteTopPeers: TopPeer.AsObject[]) {
         const topPeers = (remoteTopPeers as ITopPeer[]).map((tp: ITopPeer) => {
             if (tp.peer) {
                 tp.id = tp.peer.id || '';
@@ -88,12 +88,12 @@ export default class TopPeerRepo {
         return this.createMany(type, topPeers);
     }
 
-    public get(type: TopPeerType, id: string): Promise<ITopPeer | undefined> {
-        return this.getDbByType(type).get(id);
+    public get(teamId: string, type: TopPeerType, id: string): Promise<ITopPeer | undefined> {
+        return this.getDbByType(type).get([teamId, id]);
     }
 
-    public list(type: TopPeerType, limit: number): Promise<ITopPeer[]> {
-        return this.getDbByType(type).where('[rate+id]').between([Dexie.minKey, Dexie.minKey], [Dexie.maxKey, Dexie.maxKey]).reverse().limit(limit).toArray();
+    public list(teamId: string, type: TopPeerType, limit: number): Promise<ITopPeer[]> {
+        return this.getDbByType(type).where('[teamid+rate]').between([teamId, Dexie.minKey], [teamId, Dexie.maxKey]).reverse().limit(limit).toArray();
     }
 
     public importBulkEmbedType(topPeers: ITopPeerWithType[]): Promise<any> {
@@ -169,15 +169,15 @@ export default class TopPeerRepo {
         if (topPeers.length === 0) {
             return Promise.resolve();
         }
-        const ids = topPeers.map((topPeer) => {
+        const ids: Array<[string, string]> = topPeers.map((topPeer) => {
             // @ts-ignore
             delete topPeer.type;
-            return topPeer.id || '';
+            return [topPeer.teamid, topPeer.id || ''];
         });
-        return this.getDbByType(type).where('id').anyOf(ids).toArray().then((result) => {
-            const createItems: ITopPeer[] = differenceBy(topPeers, result, 'id').map((t) => this.computeRate(t));
+        return this.getDbByType(type).where('[teamid+id]').anyOf(ids).toArray().then((result) => {
+            const createItems: ITopPeer[] = differenceBy(topPeers, result, ['teamid','id']).map((t) => this.computeRate(t));
             const updateItems: ITopPeer[] = result.map((topPeer: ITopPeer) => {
-                const t = find(topPeers, {id: topPeer.id});
+                const t = find(topPeers, {teamid: topPeer.teamid,id: topPeer.id});
                 if (t) {
                     return this.computeRate(t, topPeer);
                 } else {

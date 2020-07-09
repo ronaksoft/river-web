@@ -15,7 +15,7 @@ import {arrayBufferToBase64} from '../../services/sdk/fileManager/http/utils';
 import {sha256} from 'js-sha256';
 import md5 from "md5-webworker";
 import {InputFileLocation} from "../../services/sdk/messages/core.types_pb";
-import {find, differenceWith, uniq} from "lodash";
+import {find, differenceBy, uniq} from "lodash";
 import {kMerge} from "../../services/utilities/kDash";
 import {IMessage} from "../message/interface";
 import {getMediaDocument} from "../message";
@@ -168,7 +168,7 @@ export default class FileRepo {
             return f.id;
         });
         return this.db.fileMap.where('id').anyOf(ids).toArray().then((result) => {
-            const createItems: IFileMap[] = differenceWith(fileMaps, result, 'id');
+            const createItems: IFileMap[] = differenceBy(fileMaps, result, 'id');
             const updateItems: IFileMap[] = result.map((fileMap: IFileMap) => {
                 const t = find(fileMaps, {id: fileMap.id});
                 if (t) {
@@ -181,8 +181,6 @@ export default class FileRepo {
                 }
             });
             return this.db.fileMap.bulkPut([...createItems, ...updateItems]);
-        }).catch((err: any) => {
-            window.console.debug('fileMap upsert', err);
         });
     }
 

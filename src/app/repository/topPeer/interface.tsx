@@ -12,6 +12,7 @@ import {IGroup} from "../group/interface";
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 
 export interface ITopPeer {
+    teamid: string;
     id: string;
     rate: number;
     lastupdate: number;

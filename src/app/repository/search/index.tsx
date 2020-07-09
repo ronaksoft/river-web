@@ -173,7 +173,7 @@ export default class SearchRepo {
     }
 
     public getSearchTopPeers(teamId: string, type: TopPeerType, limit: number, onlyUser?: boolean): Promise<ITopPeerItem[]> {
-        return this.topPeerRepo.list(type, limit).then((res) => {
+        return this.topPeerRepo.list(teamId, type, limit).then((res) => {
             const promises: any[] = [];
             const userIds: string[] = [];
             const groupIds: string[] = [];
