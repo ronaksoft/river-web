@@ -336,6 +336,11 @@ export namespace ContactsTopPeers {
 }
 
 export class TopPeer extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasPeer(): boolean;
   clearPeer(): void;
   getPeer(): core_types_pb.Peer;
@@ -363,6 +368,7 @@ export class TopPeer extends jspb.Message {
 
 export namespace TopPeer {
   export type AsObject = {
+    teamid?: string,
     peer: core_types_pb.Peer.AsObject,
     rate?: number,
     lastupdate?: number,

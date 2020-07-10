@@ -14,6 +14,7 @@ import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 export interface ITopPeer {
     teamid: string;
     id: string;
+    peertype: number;
     rate: number;
     lastupdate: number;
     peer?: InputPeer.AsObject;

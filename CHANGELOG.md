@@ -1,3 +1,7 @@
+## 0.34.3
+* TypeAction for team implemented
+* Bug fixes and performance improvements
+
 ## 0.34.2
 * TopPeer for team implemented
 

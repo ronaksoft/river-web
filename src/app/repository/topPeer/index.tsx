@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/top_peer';
 import {ITopPeer} from './interface';
-import {differenceBy, find, groupBy} from 'lodash';
+import {differenceWith, find, groupBy} from 'lodash';
 import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
 import {DexieTopPeerDB} from "../../services/db/dexie/top_peer";
@@ -74,14 +74,15 @@ export default class TopPeerRepo {
         return this.getDbByType(type).bulkPut(topPeers);
     }
 
-    public remove(teamId: string, type: TopPeerType, id: string) {
-        return this.getDbByType(type).delete([teamId, id]);
+    public remove(teamId: string, type: TopPeerType, id: string, peerType: number) {
+        return this.getDbByType(type).delete([teamId, id, peerType]);
     }
 
     public insertFromRemote(teamId: string, type: TopPeerType, remoteTopPeers: TopPeer.AsObject[]) {
         const topPeers = (remoteTopPeers as ITopPeer[]).map((tp: ITopPeer) => {
             if (tp.peer) {
                 tp.id = tp.peer.id || '';
+                tp.peertype = tp.peer.type || 0;
             }
             tp.teamid = tp.teamid || teamId;
             return tp;
@@ -170,16 +171,16 @@ export default class TopPeerRepo {
         if (topPeers.length === 0) {
             return Promise.resolve();
         }
-        const ids: Array<[string, string]> = topPeers.map((topPeer) => {
+        const ids: Array<[string, string, number]> = topPeers.map((topPeer) => {
             // @ts-ignore
             delete topPeer.type;
             topPeer.teamid = topPeer.teamid || '0';
-            return [topPeer.teamid, topPeer.id || ''];
+            return [topPeer.teamid, topPeer.id || '', topPeer.peertype || 0];
         });
-        return this.getDbByType(type).where('[teamid+id]').anyOf(ids).toArray().then((result) => {
-            const createItems: ITopPeer[] = differenceBy(topPeers, result, ['teamid','id']).map((t) => this.computeRate(t));
+        return this.getDbByType(type).where('[teamid+id+peertype]').anyOf(ids).toArray().then((result) => {
+            const createItems: ITopPeer[] = differenceWith(topPeers, result, (i1, i2) => i1.teamid === i2.teamid && i1.id === i2.id && i1.peertype === i2.peertype).map((t) => this.computeRate(t));
             const updateItems: ITopPeer[] = result.map((topPeer: ITopPeer) => {
-                const t = find(topPeers, {teamid: topPeer.teamid,id: topPeer.id});
+                const t = find(topPeers, {teamid: topPeer.teamid, id: topPeer.id, peertype: topPeer.peertype});
                 if (t) {
                     return this.computeRate(t, topPeer);
                 } else {

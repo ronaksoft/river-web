@@ -19,11 +19,11 @@ import {
     clone,
     cloneDeep,
     difference,
-    differenceBy,
+    differenceWith,
     find,
     findIndex,
     findLastIndex,
-    intersectionBy,
+    intersectionWith,
     throttle,
     trimStart,
     uniq,
@@ -250,7 +250,7 @@ class Chat extends React.Component<IProps, IState> {
     private labelDialogRef: LabelDialog | undefined;
     private dialogMap: { [key: string]: number } = {};
     private dialogs: IDialog[] = [];
-    private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
+    private isTypingList: { [key: string]: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } } = {};
     private iframeService: IframeService;
     private readonly newMessageLoadThrottle: any = null;
     private scrollInfo: {
@@ -1193,12 +1193,15 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update user typing */
     private updateUserTypeHandler = (data: UpdateUserTyping.AsObject) => {
+        const teamId = data.teamid || '0';
+        const peerName = GetPeerName(data.peerid, PeerType.PEERUSER);
+        const userId = data.userid || '0';
         const isTypingList = this.isTypingList;
         if (data.action !== TypingAction.TYPINGACTIONCANCEL) {
             const fn = setTimeout(() => {
-                if (isTypingList.hasOwnProperty(data.peerid || '')) {
-                    if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
-                        delete isTypingList[data.peerid || ''][data.userid || 0];
+                if (isTypingList.hasOwnProperty(teamId) && isTypingList[teamId].hasOwnProperty(peerName)) {
+                    if (isTypingList[teamId][peerName].hasOwnProperty(userId)) {
+                        delete isTypingList[teamId][peerName][userId];
                         if (this.dialogRef) {
                             this.dialogRef.setIsTypingList(isTypingList);
                         }
@@ -1208,17 +1211,20 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 }
             }, C_TYPING_INTERVAL + C_TYPING_INTERVAL_OFFSET);
-            if (!isTypingList.hasOwnProperty(data.peerid || '')) {
-                isTypingList[data.peerid || ''] = {};
-                isTypingList[data.peerid || ''][data.userid || 0] = {
+            if (!isTypingList.hasOwnProperty(teamId)) {
+                isTypingList[teamId] = {};
+            }
+            if (!isTypingList[teamId].hasOwnProperty(peerName)) {
+                isTypingList[teamId][peerName] = {};
+                isTypingList[teamId][peerName][userId] = {
                     action: data.action || TypingAction.TYPINGACTIONTYPING,
                     fn,
                 };
             } else {
-                if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
-                    clearTimeout(isTypingList[data.peerid || ''][data.userid || 0].fn);
+                if (isTypingList[teamId][peerName].hasOwnProperty(userId)) {
+                    clearTimeout(isTypingList[teamId][peerName][userId].fn);
                 }
-                isTypingList[data.peerid || ''][data.userid || 0] = {
+                isTypingList[teamId][peerName][userId] = {
                     action: data.action || TypingAction.TYPINGACTIONTYPING,
                     fn,
                 };
@@ -1230,10 +1236,10 @@ class Chat extends React.Component<IProps, IState> {
                 this.statusBarRef.setIsTypingList(isTypingList);
             }
         } else if (data.action === TypingAction.TYPINGACTIONCANCEL) {
-            if (isTypingList.hasOwnProperty(data.peerid || '')) {
-                if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
-                    clearTimeout(isTypingList[data.peerid || ''][data.userid || 0].fn);
-                    delete isTypingList[data.peerid || ''][data.userid || 0];
+            if (isTypingList.hasOwnProperty(teamId) && isTypingList[teamId].hasOwnProperty(peerName)) {
+                if (isTypingList[teamId][peerName].hasOwnProperty(userId)) {
+                    clearTimeout(isTypingList[teamId][peerName][userId].fn);
+                    delete isTypingList[teamId][peerName][userId];
                     if (this.dialogRef) {
                         this.dialogRef.setIsTypingList(isTypingList);
                     }
@@ -2427,8 +2433,8 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogRepo.getManyCache(this.teamId, {}).then((oldDialogs) => {
                 this.dialogRepo.getSnapshot(this.teamId, {}).then((res) => {
                     // Insert holes on snapshot if it has difference
-                    const sameItems: IDialog[] = intersectionBy(cloneDeep(oldDialogs), res.dialogs, ['peerid', 'peertype']);
-                    const newItems: IDialog[] = differenceBy(cloneDeep(res.dialogs), oldDialogs, ['peerid', 'peertype']);
+                    const sameItems: IDialog[] = intersectionWith(cloneDeep(oldDialogs), res.dialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
+                    const newItems: IDialog[] = differenceWith(cloneDeep(res.dialogs), oldDialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
                     sameItems.forEach((dialog) => {
                         const d = find(res.dialogs, {peerid: dialog.peerid, peertype: dialog.peertype});
                         if (d) {

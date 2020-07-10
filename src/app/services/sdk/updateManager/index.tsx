@@ -640,6 +640,7 @@ export default class UpdateManager {
                             id: message.peerid || '0',
                             type: message.peertype,
                         },
+                        peertype: message.peertype || 0,
                         rate: 0,
                         teamid: message.teamid || '0',
                         type: TopPeerType.Search,

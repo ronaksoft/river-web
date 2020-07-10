@@ -441,9 +441,9 @@ export class Dialog extends jspb.Message {
 
 export namespace Dialog {
   export type AsObject = {
-    teamid: string,
-    peerid: string,
-    peertype: number,
+    teamid?: string,
+    peerid?: string,
+    peertype?: number,
     topmessageid?: number,
     readinboxmaxid?: number,
     readoutboxmaxid?: number,

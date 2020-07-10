@@ -186,7 +186,7 @@ class TopPeer extends React.Component<IProps, IState> {
             });
         }
         this.apiManager.removeTopPeer(this.getTopPeerCategory(item.type), inputPeer).then((res) => {
-            this.topPeerRepo.remove(this.props.teamId, this.props.type, item.item.id || '0');
+            this.topPeerRepo.remove(this.props.teamId, this.props.type, item.item.id || '0', item.type);
         });
     }
 }

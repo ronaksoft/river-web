@@ -2781,6 +2781,7 @@ proto.msg.TopPeer.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TopPeer.toObject = function(includeInstance, msg) {
   var f, obj = {
+    teamid: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
     rate: (f = jspb.Message.getOptionalFloatingPointField(msg, 2)) == null ? undefined : f,
     lastupdate: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
@@ -2820,6 +2821,10 @@ proto.msg.TopPeer.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 100:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
+      break;
     case 1:
       var value = new core_types_pb.Peer;
       reader.readMessage(value,core_types_pb.Peer.deserializeBinaryFromReader);
@@ -2862,6 +2867,13 @@ proto.msg.TopPeer.prototype.serializeBinary = function() {
  */
 proto.msg.TopPeer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt64String(
+      100,
+      f
+    );
+  }
   f = message.getPeer();
   if (f != null) {
     writer.writeMessage(
@@ -2884,6 +2896,42 @@ proto.msg.TopPeer.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+};
+
+
+/**
+ * optional int64 TeamID = 100;
+ * @return {string}
+ */
+proto.msg.TopPeer.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.TopPeer} returns this
+ */
+proto.msg.TopPeer.prototype.setTeamid = function(value) {
+  return jspb.Message.setField(this, 100, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.TopPeer} returns this
+ */
+proto.msg.TopPeer.prototype.clearTeamid = function() {
+  return jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.TopPeer.prototype.hasTeamid = function() {
+  return jspb.Message.getField(this, 100) != null;
 };
 
 

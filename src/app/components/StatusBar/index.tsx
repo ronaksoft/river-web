@@ -33,7 +33,7 @@ interface IProps {
 interface IState {
     isConnecting: boolean;
     isOnline: boolean;
-    isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
+    isTypingList: { [key: string]: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } };
     isUpdating: boolean;
     peer: InputPeer | null;
     selectedId: string;
@@ -72,7 +72,7 @@ class StatusBar extends React.Component<IProps, IState> {
         this.smoother.destroy();
     }
 
-    public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
+    public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } }) {
         this.setState({
             isTypingList,
         });
@@ -98,16 +98,17 @@ class StatusBar extends React.Component<IProps, IState> {
     }
 
     private getChatStatus(hideStatus: boolean) {
-        const {peer, isConnecting, selectedId} = this.state;
+        const {peer, isConnecting, selectedId, isTypingList} = this.state;
         if (!peer) {
             return null;
         }
+        const {teamId} = this.props;
         const peerName = GetPeerName(peer.getId(), peer.getType());
         const showIsConnecting = this.smoother.getState(isConnecting);
         let typingList: { [key: string]: { fn: any, action: TypingAction } } = {};
         let ids: number = 0;
-        if (this.state.isTypingList.hasOwnProperty(peerName)) {
-            typingList = this.state.isTypingList[peerName];
+        if (isTypingList.hasOwnProperty(teamId) && isTypingList[teamId].hasOwnProperty(peerName)) {
+            typingList = this.state.isTypingList[teamId][peerName];
             ids = Object.keys(typingList).length;
         }
         if (!this.state.isOnline) {
