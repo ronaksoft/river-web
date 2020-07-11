@@ -1194,7 +1194,7 @@ class Chat extends React.Component<IProps, IState> {
     /* Update user typing */
     private updateUserTypeHandler = (data: UpdateUserTyping.AsObject) => {
         const teamId = data.teamid || '0';
-        const peerName = GetPeerName(data.peerid, PeerType.PEERUSER);
+        const peerName = GetPeerName(data.peerid, data.peertype);
         const userId = data.userid || '0';
         const isTypingList = this.isTypingList;
         if (data.action !== TypingAction.TYPINGACTIONCANCEL) {

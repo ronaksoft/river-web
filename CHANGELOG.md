@@ -1,3 +1,6 @@
+## 0.34.4
+* TypeAction updated
+
 ## 0.34.3
 * TypeAction for team implemented
 * Bug fixes and performance improvements

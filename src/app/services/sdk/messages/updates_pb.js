@@ -3949,7 +3949,8 @@ proto.msg.UpdateUserTyping.toObject = function(includeInstance, msg) {
     teamid: (f = jspb.Message.getField(msg, 102)) == null ? undefined : f,
     userid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     action: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    peerid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    peerid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    peertype: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -4005,6 +4006,10 @@ proto.msg.UpdateUserTyping.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setPeerid(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setPeertype(value);
       break;
     default:
       reader.skipField();
@@ -4067,6 +4072,13 @@ proto.msg.UpdateUserTyping.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt64String(
       3,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeInt32(
+      4,
       f
     );
   }
@@ -4250,6 +4262,42 @@ proto.msg.UpdateUserTyping.prototype.clearPeerid = function() {
  */
 proto.msg.UpdateUserTyping.prototype.hasPeerid = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional int32 PeerType = 4;
+ * @return {number}
+ */
+proto.msg.UpdateUserTyping.prototype.getPeertype = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.UpdateUserTyping} returns this
+ */
+proto.msg.UpdateUserTyping.prototype.setPeertype = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateUserTyping} returns this
+ */
+proto.msg.UpdateUserTyping.prototype.clearPeertype = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateUserTyping.prototype.hasPeertype = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
