@@ -260,7 +260,7 @@ class SearchList extends React.Component<IProps, IState> {
                                                          youPlaceholder={i18n.t('general.saved_messages')}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
         } else if (value.mode === 'dialog' && value.dialog) {
-            if (value.dialog.peertype === PeerType.PEERUSER || value.dialog.peertype === PeerType.PEERSELF) {
+            if (value.dialog.peertype === PeerType.PEERUSER || value.dialog.peertype === PeerType.PEERSELF || value.dialog.peertype === PeerType.PEEREXTERNALUSER) {
                 return (
                     <Chip key={key} avatar={<UserAvatar id={value.dialog.peerid} noDetail={true}
                                                         savedMessages={this.userId === value.dialog.peerid}/>}
@@ -310,10 +310,10 @@ class SearchList extends React.Component<IProps, IState> {
             return (
                 <div style={style} key={index} className="search-item"
                      onClick={this.addItemHandler(inputPeer)}>
-                    {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF) &&
+                    {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF || inputPeer.dialog.peertype === PeerType.PEEREXTERNALUSER) &&
                     <UserAvatar className="avatar" id={inputPeer.dialog.peerid || ''} noDetail={true}
                                 savedMessages={this.userId === inputPeer.dialog.peerid}/>}
-                    {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF) &&
+                    {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF || inputPeer.dialog.peertype === PeerType.PEEREXTERNALUSER) &&
                     <UserName className="name" id={inputPeer.dialog.peerid || ''} noDetail={true}
                               you={this.userId === inputPeer.dialog.peerid}
                               youPlaceholder={i18n.t('general.saved_messages')}/>}

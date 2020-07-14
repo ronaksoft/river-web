@@ -1058,6 +1058,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         }
         switch (doc.inputPeer.getType()) {
             case PeerType.PEERUSER:
+            case PeerType.PEEREXTERNALUSER:
                 this.initUserAvatar(doc.inputPeer);
                 break;
             case PeerType.PEERGROUP:
@@ -1261,6 +1262,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         };
         switch (doc.inputPeer.getType()) {
             case PeerType.PEERUSER:
+            case PeerType.PEEREXTERNALUSER:
                 this.apiManager.updateProfilePicture(galleryList[index].photoid || '0').then(() => {
                     fn(false);
                 });
@@ -1313,6 +1315,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         };
         switch (doc.inputPeer.getType()) {
             case PeerType.PEERUSER:
+            case PeerType.PEEREXTERNALUSER:
                 this.apiManager.removeProfilePicture(galleryList[index].photoid || '0').then(() => {
                     fn(false);
                 });
@@ -1331,7 +1334,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             this.hasAccess = false;
             return;
         }
-        if (doc.inputPeer.getType() === PeerType.PEERUSER) {
+        if (doc.inputPeer.getType() === PeerType.PEERUSER || doc.inputPeer.getType() === PeerType.PEEREXTERNALUSER) {
             this.hasAccess = (doc.inputPeer.getId() === this.userId);
         } else if (doc.inputPeer.getType() === PeerType.PEERGROUP) {
             this.groupRepo.get(doc.teamId, doc.inputPeer.getId() || '').then((group) => {

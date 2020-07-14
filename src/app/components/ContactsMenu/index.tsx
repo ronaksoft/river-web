@@ -81,7 +81,7 @@ class ContactMenus extends React.Component<IProps, IState> {
                         <KeyboardBackspaceRounded/>
                     </IconButton>
                     <label>{i18n.t('contact.contacts')}</label>
-                    <Tooltip
+                    {this.props.teamId === '0' && <Tooltip
                         title={i18n.t('contact.new_contact')}
                         placement="bottom"
                     >
@@ -90,7 +90,7 @@ class ContactMenus extends React.Component<IProps, IState> {
                         >
                             <PersonAddRounded/>
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip>}
                 </div>
                 <div className="contact-box">
                     <ContactList ref={this.contactListRefHandler} className="contacts-menu"

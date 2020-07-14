@@ -742,6 +742,8 @@ class SignUp extends React.Component<IProps, IState> {
                 }
                 if (err.code === C_ERR.ErrCodeInvalid && (err.items === C_ERR_ITEM.ErrItemSecurityAnswer || err.items === C_ERR_ITEM.ErrItemSecurityQuestion)) {
                     this.props.enqueueSnackbar(i18n.t('settings.2fa.security_answer_are_wrong'));
+                } else if (err.code === C_ERR.ErrCodeTooFew && err.items === C_ERR_ITEM.ErrItemSecurityAnswer) {
+                    this.props.enqueueSnackbar(i18n.t('settings.2fa.security_answer_are_wrong'));
                 }
             });
         }

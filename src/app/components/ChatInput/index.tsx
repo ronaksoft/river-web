@@ -356,7 +356,7 @@ class ChatInput extends React.Component<IProps, IState> {
             selectableDisable: false,
             textareaValue: '',
             uploadPreviewOpen: false,
-            user: props.peer && props.peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(props.peer.getId() || '') : null,
+            user: props.peer && (props.peer.getType() === PeerType.PEERUSER && props.peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(props.peer.getId() || '') : null,
             voiceMode: 'up',
         };
 
@@ -403,7 +403,7 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
-            const user = peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(peer.getId() || '') : null;
+            const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 disableAuthority: 0x0,
                 peer,
@@ -411,7 +411,7 @@ class ChatInput extends React.Component<IProps, IState> {
             }, () => {
                 this.checkAuthority();
             });
-            if (peer.getType() === PeerType.PEERUSER && !user) {
+            if ((peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     if (res) {
                         this.setState({
@@ -476,14 +476,14 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
-            const user = peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(peer.getId() || '') : null;
+            const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 peer,
                 user,
             }, () => {
                 this.checkAuthority();
             });
-            if (peer.getType() === PeerType.PEERUSER && !user) {
+            if ((peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     if (res) {
                         this.setState({

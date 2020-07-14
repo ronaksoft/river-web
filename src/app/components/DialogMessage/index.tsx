@@ -13,9 +13,22 @@ import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 import {
-    AlternateEmailRounded, DoneAllRounded, DoneRounded, InsertDriveFileOutlined, LocationOnOutlined, MoreVert,
-    MusicNoteOutlined, NotificationsOffRounded, PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined, ScheduleRounded,
-    VideocamOutlined, ForwardOutlined, ReplyOutlined, GifOutlined,
+    AlternateEmailRounded,
+    DoneAllRounded,
+    DoneRounded,
+    ForwardOutlined,
+    GifOutlined,
+    InsertDriveFileOutlined,
+    LocationOnOutlined,
+    MoreVert,
+    MusicNoteOutlined,
+    NotificationsOffRounded,
+    PeopleOutlined,
+    PhotoOutlined,
+    RecordVoiceOverOutlined,
+    ReplyOutlined,
+    ScheduleRounded,
+    VideocamOutlined,
 } from '@material-ui/icons';
 import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -259,15 +272,15 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
             >
                 <div
                     className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
-                    {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                    <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
+                    {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF || dialog.peertype === PeerType.PEEREXTERNALUSER) &&
+                    <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true} peerType={dialog.peertype}
                                 savedMessages={dialog.saved_messages} onlineIndicator={selectedPeerName !== ''}/>}
                     {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupAvatar className="avatar" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
                     <div className="dialog-top-bar">
                         {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
-                        {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                        <UserName className="name" id={dialog.peerid || ''} noDetail={true}
+                        {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF || dialog.peertype === PeerType.PEEREXTERNALUSER) &&
+                        <UserName className="name" id={dialog.peerid || ''} noDetail={true} peerType={dialog.peertype}
                                   you={dialog.saved_messages} onLoad={userNameLoadHandler}
                                   youPlaceholder={i18n.t('general.saved_messages')}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
@@ -312,7 +325,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 return i18n.t('status.uploading_file');
         }
     };
-    if (peerType === PeerType.PEERUSER) {
+    if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
         return (<span className="preview">{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}</span>);
     } else {
         const types = {};
@@ -327,9 +340,10 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
         });
         return (<span className="preview">
                 {ids.slice(0, 2).map((id, index) => {
+                    const peerId = id.split('_')[0];
                     return (<span key={index}>
                         {index !== 0 ? (ids.length - 1 === index ? ' & ' : ', ') : ''}
-                        <UserName id={id} onlyFirstName={true} noIcon={true}/>
+                        <UserName id={peerId} onlyFirstName={true} noIcon={true}/>
                     </span>);
                 })}
             {Boolean(ids.length > 2) && <span> & {ids.length - 2} more</span>}

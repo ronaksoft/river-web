@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import React from "react";
+import React, {useState} from "react";
 import {IMessage} from "../../repository/message/interface";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -101,7 +101,21 @@ const LabelIndicator = ({labelIds}: { labelIds: number[] }) => {
 };
 
 const LabelBodyAudio = ({message}: IProps) => {
+    const [mode, setMode] = useState(0);
     const info = getMediaInfo(message);
+    const refHandler = (ref: any) => {
+        if (ref && !mode && (info.caption || '').length > 10) {
+            if (ref.scrollHeight > ref.clientHeight + 3) {
+                setMode(1);
+            }
+        }
+    };
+    const toggleShowMoreHandler = (e: any) => {
+        e.preventDefault();
+        if (mode) {
+            setMode(mode === 1 ? 2 : 1);
+        }
+    };
     return <>
         {Boolean(info.thumbFile && info.thumbFile.fileid !== '') ? <div className="label-message-media">
             <CachedPhoto className="thumbnail audio" fileLocation={info.thumbFile}/>
@@ -123,10 +137,14 @@ const LabelBodyAudio = ({message}: IProps) => {
         </div>}
         {Boolean((info.caption || '').length > 0) &&
         <div className="label-message-body">
-            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr')}>
+            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr') + (mode === 2 ? ' show-all' : '')}
+                 ref={refHandler}>
                 {message.peertype === PeerType.PEERGROUP &&
                 <UserName id={message.senderid || ''} noDetail={true} noIcon={true} postfix=": " className="_bold"/>}
                 {renderBody(info.caption || '', info.entityList || [], 1)}
+                {Boolean(mode > 0) &&
+                <span className="show-more"
+                      onClick={toggleShowMoreHandler}>{i18n.t(mode === 1 ? 'label.show_more' : 'label.show_less')}</span>}
             </div>
         </div>}
     </>;
@@ -146,7 +164,21 @@ const LabelBodyContact = ({message}: IProps) => {
 };
 
 const LabelBodyFile = ({message}: IProps) => {
+    const [mode, setMode] = useState(0);
     const info = getFileInfo(message);
+    const refHandler = (ref: any) => {
+        if (ref && !mode && (info.caption || '').length > 10) {
+            if (ref.scrollHeight > ref.clientHeight + 3) {
+                setMode(1);
+            }
+        }
+    };
+    const toggleShowMoreHandler = (e: any) => {
+        e.preventDefault();
+        if (mode) {
+            setMode(mode === 1 ? 2 : 1);
+        }
+    };
     return <>
         <div className="label-message-info">
             <div className="icon">
@@ -160,10 +192,14 @@ const LabelBodyFile = ({message}: IProps) => {
         </div>
         {Boolean((info.caption || '').length > 0) &&
         <div className="label-message-body">
-            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr')}>
+            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr') + (mode === 2 ? ' show-all' : '')}
+                 ref={refHandler}>
                 {message.peertype === PeerType.PEERGROUP &&
                 <UserName id={message.senderid || ''} noDetail={true} noIcon={true} postfix=": " className="_bold"/>}
                 {renderBody(info.caption || '', info.entityList || [], 1)}
+                {Boolean(mode > 0) &&
+                <span className="show-more"
+                      onClick={toggleShowMoreHandler}>{i18n.t(mode === 1 ? 'label.show_more' : 'label.show_less')}</span>}
             </div>
         </div>}
     </>;
@@ -208,7 +244,21 @@ const showHandler = (e: any) => {
 };
 
 const LabelBodyMedia = ({message, onAction}: IProps) => {
+    const [mode, setMode] = useState(0);
     const info = getMediaInfo(message);
+    const refHandler = (ref: any) => {
+        if (ref && !mode && (info.caption || '').length > 10) {
+            if (ref.scrollHeight > ref.clientHeight + 3) {
+                setMode(1);
+            }
+        }
+    };
+    const toggleShowMoreHandler = (e: any) => {
+        e.preventDefault();
+        if (mode) {
+            setMode(mode === 1 ? 2 : 1);
+        }
+    };
     const withBlur = (info.height / info.width) > 1 || Math.max(info.width, info.height) < 96;
     const ratio = info.height / info.width;
     let height = 96;
@@ -244,10 +294,14 @@ const LabelBodyMedia = ({message, onAction}: IProps) => {
         </div>
         {Boolean((info.caption || '').length > 0) &&
         <div className="label-message-body">
-            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr')}>
+            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr') + (mode === 2 ? ' show-all' : '')}
+                 ref={refHandler}>
                 {message.peertype === PeerType.PEERGROUP &&
                 <UserName id={message.senderid || ''} noDetail={true} noIcon={true} postfix=": " className="_bold"/>}
                 {renderBody(info.caption || '', info.entityList || [], 1)}
+                {Boolean(mode > 0) &&
+                <span className="show-more"
+                      onClick={toggleShowMoreHandler}>{i18n.t(mode === 1 ? 'label.show_more' : 'label.show_less')}</span>}
             </div>
         </div>}
     </>;
@@ -278,11 +332,28 @@ const LabelBodyVoice = ({message}: IProps) => {
 };
 
 const LabelBodyDefault = ({message}: IProps) => {
+    const [mode, setMode] = useState(0);
+    const refHandler = (ref: any) => {
+        if (ref && !mode) {
+            if (ref.scrollHeight > ref.clientHeight + 3) {
+                setMode(1);
+            }
+        }
+    };
+    const toggleShowMoreHandler = (e: any) => {
+        e.preventDefault();
+        if (mode) {
+            setMode(mode === 1 ? 2 : 1);
+        }
+    };
     return <div className="label-message-body">
-        <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr')}>
+        <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr') + (mode === 2 ? ' show-all' : '')} ref={refHandler}>
             {message.peertype === PeerType.PEERGROUP &&
             <UserName id={message.senderid || ''} noDetail={true} noIcon={true} postfix=": " className="_bold"/>}
             {renderBody(message.body || '', message.entitiesList || [], 1)}
+            {Boolean(mode > 0) &&
+            <span className="show-more"
+                  onClick={toggleShowMoreHandler}>{i18n.t(mode === 1 ? 'label.show_more' : 'label.show_less')}</span>}
         </div>
     </div>;
 };

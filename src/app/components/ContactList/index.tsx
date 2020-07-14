@@ -448,7 +448,6 @@ class ContactList extends React.Component<IProps, IState> {
                 });
             }
         };
-        window.console.log(this.props.teamId);
         this.userRepo.getAllContacts(this.props.teamId, fn).then(fn);
     }
 

@@ -1,3 +1,9 @@
+## 0.34.5
+* Team is now community ready
+* Show more/less added in label items
+* Label UI updated
+* Known bugs fixed
+
 ## 0.34.4
 * TypeAction updated
 

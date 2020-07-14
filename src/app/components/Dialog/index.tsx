@@ -40,9 +40,9 @@ import DialogSkeleton from "../DialogSkeleton";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import TopPeer from '../TopPeer';
 import {TopPeerType} from "../../repository/topPeer";
+import {GetPeerName} from "../../repository/dialog";
 
 import './style.scss';
-import {GetPeerName} from "../../repository/dialog";
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -387,7 +387,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                         const peerName = GetPeerName(dialog.peerid, dialog.peertype);
                         const isTyping = this.isTypingList.hasOwnProperty(peerName) ? this.isTypingList[peerName] : {};
                         return (
-                            <DialogMessage key={dialog.peerid || index} dialog={dialog}
+                            <DialogMessage key={peerName || index} dialog={dialog}
                                            isTyping={isTyping} selectedPeerName={this.state.selectedPeerName}
                                            onContextMenuOpen={this.contextMenuOpenHandler(index)}
                                            onDrop={this.props.onDrop}
@@ -395,8 +395,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
                         );
                     })}
                     {searchAddedItems.map((dialog, index) => {
+                        const peerName = GetPeerName(dialog.peerid, dialog.peertype);
                         return (
-                            <DialogMessage key={dialog.peerid || index} dialog={dialog}
+                            <DialogMessage key={peerName || index} dialog={dialog}
                                            isTyping={{}} selectedPeerName={this.state.selectedPeerName}
                                            onClick={this.closeSearchHandler}
                                            onDrop={this.props.onDrop}
@@ -408,7 +409,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 <div className="search-label">{i18n.t('dialog.messages')}</div>}
                 {searchMessageItems.map((dialog, index) => {
                     return (
-                        <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
+                        <DialogMessage key={dialog.topmessageid || GetPeerName(dialog.peerid, dialog.peertype) || index}
                                        dialog={dialog} isTyping={{}} selectedPeerName=""
                                        messageId={dialog.topmessageid}
                         />
@@ -592,7 +593,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             return;
         }
         const muted = isMuted(dialog.notifysettings);
-        if (peerType === PeerType.PEERUSER) {
+        if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
             menuTypes[1].forEach((key) => {
                 if (key === 6 || key === 7) {
                     if (key === 6 && !dialog.pinned) {

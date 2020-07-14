@@ -103,7 +103,7 @@ class RightMenu extends React.PureComponent<IProps, IState> {
                 <GroupInfoMenu key="group-info" peer={peer} teamId={this.teamId} onClose={this.closeHandler}
                                onAction={this.props.onMessageAttachmentAction}
                                onDeleteAndExitGroup={this.props.onDeleteAndExitGroup}/>}
-                {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERUSER) &&
+                {Boolean(rightMenu && peer && (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER)) &&
                 <UserInfoMenu key="user-info" peer={peer} teamId={this.teamId} onClose={this.closeHandler}
                               onAction={this.props.onMessageAttachmentAction}/>}
             </div>

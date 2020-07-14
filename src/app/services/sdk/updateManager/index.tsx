@@ -682,7 +682,7 @@ export default class UpdateManager {
                 updateMessagesDeleted.messageidsList.forEach((id) => {
                     this.removeMessage(transaction.messages, id);
                     if (updateMessagesDeleted.peer) {
-                        const peerName = GetPeerName(updateMessagesDeleted.peer.id || '', updateMessagesDeleted.peer.type || 0);
+                        const peerName = GetPeerName(updateMessagesDeleted.peer.id, updateMessagesDeleted.peer.type);
                         if (!transaction.removedMessages.hasOwnProperty(peerName)) {
                             transaction.removedMessages[peerName] = [id];
                         } else {

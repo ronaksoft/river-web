@@ -90,8 +90,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
             this.lastSrc = src;
         }
         return (
-            <div className={className} style={this.props.style} onClick={this.props.onClick}
-                 data-id={this.lastFileName}>
+            <div className={className} style={this.props.style} onClick={this.props.onClick}>
                 {Boolean(src || this.lastSrc.length > 0) &&
                 <img src={src || this.lastSrc} alt="" onLoad={this.props.onLoad} onError={this.imgErrorHandler} draggable={false}/>}
             </div>

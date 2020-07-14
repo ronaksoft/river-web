@@ -15,10 +15,11 @@ import AvatarService, {AvatarSrcUpdated} from '../../services/avatarService';
 import {find} from 'lodash';
 import Broadcaster from '../../services/broadcaster';
 import icon from '../../../asset/image/icon.png';
-import {UserStatus} from "../../services/sdk/messages/core.types_pb";
+import {PeerType, UserStatus} from "../../services/sdk/messages/core.types_pb";
 import RiverTime from "../../services/utilities/river_time";
 import {DeletedUserLight} from "./svg";
 import {GetDbFileName} from "../../repository/file";
+import {FaceRounded} from '@material-ui/icons';
 
 import './style.scss';
 
@@ -131,6 +132,7 @@ interface IProps {
     savedMessages?: boolean;
     onlineIndicator?: boolean;
     forceReload?: boolean;
+    peerType?: PeerType;
 }
 
 interface IState {
@@ -199,32 +201,37 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
+        const {peerType} = this.props;
         const {user, className, photo} = this.state;
         if (this.props.savedMessages) {
             return (
-                <span className={'uac saved-messages-avatar ' + className}>
+                <div className={'uac saved-messages-avatar ' + className}>
                     <BookmarkBorderRounded/>
-                </span>
+                </div>
             );
         } else if (this.state.id === '2374') {
             return (
-                <span className={'uac avatar-official ' + className}>
+                <div className={'uac avatar-official ' + className}>
                     <img src={icon} alt="avatar" draggable={false}/>
-                </span>
+                </div>
             );
         } else if (user && user.deleted) {
             return (
-                <span className={'uac user-deleted ' + className}>
+                <div className={'uac user-deleted ' + className}>
                     <DeletedUserLight/>
-                </span>
+                </div>
             );
         } else {
             return (
                 <>
-                <span className={'uac' + (className ? ` ${className}` : '')}
-                      onClick={this.clickHandler}>{(user && photo) ?
-                    <img className="avatar-image" src={photo} alt="avatar" draggable={false}
-                         onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}</span>
+                    <div className={'uac' + (className ? ` ${className}` : '')}
+                         onClick={this.clickHandler}>{(user && photo) ?
+                        <img className="avatar-image" src={photo} alt="avatar" draggable={false}
+                             onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}
+                        {Boolean(peerType === PeerType.PEEREXTERNALUSER) && <div className="external-user-overlay">
+                            <FaceRounded/>
+                        </div>}
+                    </div>
                     {this.getOnlineIndicator()}
                 </>
             );

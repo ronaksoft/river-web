@@ -203,10 +203,16 @@ export const highlightMessage = (id: number) => {
         }
         if (parentEl) {
             parentEl.classList.add('highlight');
+            const inputEl = document.createElement('input');
+            inputEl.style.display = 'none';
+            parentEl.appendChild(inputEl);
+            inputEl.focus();
             setTimeout(() => {
                 if (parentEl) {
                     parentEl.classList.remove('highlight');
                 }
+                inputEl.remove();
+
             }, 1050);
         }
     }

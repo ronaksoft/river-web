@@ -262,6 +262,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     private getName(info: IDialogInfo) {
         switch (info.peerType) {
             case PeerType.PEERUSER:
+            case PeerType.PEEREXTERNALUSER:
                 return <UserName className="name" id={info.peer.id}/>;
             case PeerType.PEERGROUP:
                 return <GroupName className="name" id={info.peer.id} teamId={info.teamId}/>;
@@ -273,6 +274,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     private getAvatar(info: IDialogInfo) {
         switch (info.peerType) {
             case PeerType.PEERUSER:
+            case PeerType.PEEREXTERNALUSER:
                 return <UserAvatar className="avatar" id={info.peer.id}/>;
             case PeerType.PEERGROUP:
                 return <GroupAvatar className="avatar" id={info.peer.id} teamId={info.teamId}/>;

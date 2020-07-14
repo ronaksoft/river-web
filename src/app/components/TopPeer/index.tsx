@@ -117,6 +117,7 @@ class TopPeer extends React.Component<IProps, IState> {
     private getItem(item: ITopPeerItem) {
         switch (item.type) {
             case PeerType.PEERUSER:
+            case PeerType.PEEREXTERNALUSER:
                 return <>
                     <UserAvatar id={item.item.id || '0'} noDetail={true} className="top-peer-avatar"
                                 savedMessages={item.item.id === this.userId}/>

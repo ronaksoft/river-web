@@ -758,7 +758,7 @@ class Chat extends React.Component<IProps, IState> {
                             </Button>
                             {Boolean(confirmDialogMode === 'remove_message_revoke' && this.selectedPeerName !== `${this.userId}_${PeerType.PEERUSER}`) &&
                             <Button onClick={this.removeMessageHandler(1)} color="primary">
-                                {(this.peer && this.peer.getType() === PeerType.PEERUSER) ?
+                                {(this.peer && (this.peer.getType() === PeerType.PEERUSER || this.peer.getType() === PeerType.PEEREXTERNALUSER)) ?
                                     <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
                                         <UserName noDetail={true} id={this.selectedPeerName} noIcon={true}
                                                   peerName={true}
@@ -775,7 +775,7 @@ class Chat extends React.Component<IProps, IState> {
                         <DialogContent>
                             <DialogContentText>
                                 {i18n.t('chat.exit_group_dialog.p1')}
-                                <GroupName className="group-name" id={this.state.leftMenuSelectedDialogId}
+                                <GroupName className="group-name" id={this.state.leftMenuSelectedDialogId.split('_')[0]}
                                            teamId={this.teamId}/> ?<br/>
                                 {i18n.t('chat.exit_group_dialog.p2')}
                             </DialogContentText>
@@ -795,8 +795,8 @@ class Chat extends React.Component<IProps, IState> {
                             <DialogContentText>
                                 {i18n.t('chat.delete_dialog.p1')}
                                 <UserName className="group-name"
-                                          id={this.state.leftMenuSelectedDialogId}
-                                          you={this.state.leftMenuSelectedDialogId === this.userId}
+                                          id={this.state.leftMenuSelectedDialogId.split('_')[0]}
+                                          you={this.state.leftMenuSelectedDialogId === `${this.userId}_1`}
                                           youPlaceholder={i18n.t('general.saved_messages')}
                                           noIcon={true}
                                           noDetail={true}
@@ -808,7 +808,7 @@ class Chat extends React.Component<IProps, IState> {
                             <Button onClick={this.confirmDialogCloseHandler} color="secondary">
                                 {i18n.t('general.disagree')}
                             </Button>
-                            <Button onClick={this.deleteUserHandler} color="primary" autoFocus={true}>
+                            <Button onClick={this.deleteUserConversationHandler} color="primary" autoFocus={true}>
                                 {i18n.t('general.agree')}
                             </Button>
                         </DialogActions>
@@ -1847,6 +1847,7 @@ class Chat extends React.Component<IProps, IState> {
                 random_id: randomId,
                 rtl: this.rtlDetector.direction(text || ''),
                 senderid: this.userId,
+                teamid: this.teamId,
             };
 
             const emLe = emojiLevel(text);
@@ -1924,11 +1925,14 @@ class Chat extends React.Component<IProps, IState> {
         }
         if (this.messages.length > 0 &&
             !TimeUtility.isInSameDay(message.createdon, this.messages[this.messages.length - 1].createdon)) {
-            const t = {
+            const t: IMessage = {
                 createdon: message.createdon,
                 id: message.id,
                 messagetype: C_MESSAGE_TYPE.Date,
+                peerid: message.peerid,
+                peertype: message.peertype,
                 senderid: message.senderid,
+                teamid: message.teamid || '0',
             };
             if (!this.messageMapExist(t)) {
                 this.messages.push(t);
@@ -2097,7 +2101,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
         } else {
-            if (dialog.peertype === PeerType.PEERUSER) {
+            if (dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEEREXTERNALUSER) {
                 const parts = name.split('_');
                 const id = parts[0];
                 const contact = this.userRepo.getInstantContact(id);
@@ -2143,7 +2147,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.dialogMap.hasOwnProperty(peerName)) {
                 let index = this.dialogMap[peerName];
                 // Double check
-                if (dialogs[index].peerid !== msg.peerid) {
+                if (dialogs[index].peerid !== msg.peerid && dialogs[index].peertype !== msg.peertype) {
                     index = findIndex(dialogs, {peerid: msg.peerid, peertype: msg.peertype});
                     if (index === -1) {
                         return;
@@ -3636,11 +3640,12 @@ class Chat extends React.Component<IProps, IState> {
             });
             if (remoteMsgIds.length > 0) {
                 const listPeer: any = {};
-                listPeer[peer.getId() || ''] = remoteMsgIds;
+                const peerName = GetPeerName(peer.getId(), peer.getType());
+                listPeer[peerName] = remoteMsgIds;
                 this.updateMessageDBRemovedHandler({
                     ids: remoteMsgIds,
                     listPeer,
-                    peerNames: [GetPeerName(peer.getId(), peer.getType())],
+                    peerNames: [peerName],
                 });
                 this.apiManager.removeMessage(peer, remoteMsgIds, mode === 1).catch((err) => {
                     window.console.debug(err);
@@ -3782,7 +3787,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setState({
                     confirmDialogMode: (dialog.peertype === PeerType.PEERGROUP) ? 'delete_exit_group' : 'delete_user',
                     confirmDialogOpen: true,
-                    leftMenuSelectedDialogId: dialog.peerid || '',
+                    leftMenuSelectedDialogId: GetPeerName(dialog.peerid, dialog.peertype),
                 });
                 break;
             case 'clear':
@@ -4008,7 +4013,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Cancel sending message */
-    private cancelSend(id: number, noUpdate?: boolean) {
+    private cancelSend(id: number) {
         const removeMessage = () => {
             if (id > 0) {
                 return;
@@ -4018,20 +4023,15 @@ class Chat extends React.Component<IProps, IState> {
                     this.apiManager.cancelRequest(msg.req_id);
                 }
                 this.messageRepo.remove(id).then(() => {
-                    const messages = this.messages;
-                    if (messages) {
-                        const index = findIndex(messages, (o) => {
-                            return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    if (msg) {
+                        const listPeer: any = {};
+                        const peerName = GetPeerName(msg.peerid, msg.peertype);
+                        listPeer[peerName] = [id];
+                        this.updateMessageDBRemovedHandler({
+                            ids: [id],
+                            listPeer,
+                            peerNames: [peerName],
                         });
-                        if (index > -1) {
-                            if (this.messageRef) {
-                                this.messageRef.clear(index);
-                            }
-                            messages.splice(index, 1);
-                            if (noUpdate !== true && this.messageRef) {
-                                this.messageRef.updateList();
-                            }
-                        }
                     }
                 }).catch((err) => {
                     window.console.debug(err);
@@ -4336,6 +4336,7 @@ class Chat extends React.Component<IProps, IState> {
             rtl: this.rtlDetector.direction(mediaItem.caption || ''),
             senderid: this.userId,
             temp_file: tempImageFile,
+            teamid: this.teamId,
         };
 
         let replyTo: any;
@@ -4563,6 +4564,7 @@ class Chat extends React.Component<IProps, IState> {
             random_id: randomId,
             rtl: this.rtlDetector.direction(item.caption || ''),
             senderid: this.userId,
+            teamid: this.teamId,
         };
 
         let replyTo;
@@ -4707,6 +4709,7 @@ class Chat extends React.Component<IProps, IState> {
             peertype: peer.getType(),
             rtl,
             senderid: this.userId,
+            teamid: this.teamId,
         };
 
         let replyTo: any;
@@ -4787,6 +4790,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         message.mediadata.caption = caption;
         message.labelidsList = undefined;
+        message.teamid = this.teamId;
 
         let replyTo: any;
         if (params.mode === C_MSG_MODE.Reply && params.message) {
@@ -4863,7 +4867,7 @@ class Chat extends React.Component<IProps, IState> {
             this.fileRepo.get(GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid)).then((res) => {
                 if (res) {
                     if (ElectronService.isElectron()) {
-                        this.downloadWithElectron(res.data, msg);
+                        this.downloadWithElectron(res.data, msg, this.getFileName(msg));
                     } else {
                         saveAs(res.data, this.getFileName(msg));
                     }
@@ -4887,11 +4891,9 @@ class Chat extends React.Component<IProps, IState> {
         return name;
     }
 
-    private downloadWithElectron(blob: Blob, message: IMessage) {
+    private downloadWithElectron(blob: Blob, message: IMessage, fileName: string) {
         const fileInfo = getFileInfo(message);
-        if (fileInfo.name.length === 0) {
-            fileInfo.name = `downloaded_${this.riverTime.now()}`;
-        }
+        fileInfo.name = fileName;
         const file = new File([blob], fileInfo.name, {type: blob.type});
         const objectUrl = URL.createObjectURL(file);
         this.electronService.download(objectUrl, fileInfo.name).then((res) => {
@@ -4982,8 +4984,8 @@ class Chat extends React.Component<IProps, IState> {
         this.confirmDialogCloseHandler();
     }
 
-    /* Delete user handler */
-    private deleteUserHandler = () => {
+    /* Delete user conversation handler */
+    private deleteUserConversationHandler = () => {
         const {leftMenuSelectedDialogId} = this.state;
         if (leftMenuSelectedDialogId === '') {
             return;
@@ -4992,11 +4994,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer.peer) {
             return;
         }
-        const id = this.apiManager.getConnInfo().UserID || '';
-        const user = new InputUser();
-        user.setUserid(id);
-        user.setAccesshash('');
-        const dialog = this.getDialogByPeerName(peer.peer.getId() || '');
+        const dialog = this.getDialogByPeerName(leftMenuSelectedDialogId);
         if (dialog && dialog.topmessageid) {
             this.apiManager.clearMessage(peer.peer, dialog.topmessageid, true);
         }

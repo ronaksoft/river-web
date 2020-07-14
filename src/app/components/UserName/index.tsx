@@ -16,6 +16,8 @@ import i18n from '../../services/i18n';
 import {ThemeChanged} from "../SettingsMenu";
 import {BotIcon} from "../SVG/bot";
 import {OfficialIcon} from "../SVG/official";
+import {PeerType} from "../../services/sdk/messages/core.types_pb";
+import {FaceRounded} from '@material-ui/icons';
 
 interface IProps {
     className?: string;
@@ -34,6 +36,7 @@ interface IProps {
     noIcon?: boolean;
     onClick?: (id: string) => void;
     peerName?: boolean;
+    peerType?: PeerType;
 }
 
 interface IState {
@@ -96,7 +99,7 @@ class UserName extends React.PureComponent<IProps, IState> {
 
     public render() {
         const {onlyFirstName, defaultString, noIcon} = this.props;
-        let {postfix, prefix} = this.props;
+        let {postfix, prefix, peerType} = this.props;
         prefix = prefix || '';
         postfix = postfix || '';
         const {user, className} = this.state;
@@ -121,6 +124,7 @@ class UserName extends React.PureComponent<IProps, IState> {
         } else {
             return (
                 <span className={className} style={style} onClick={this.clickHandler}>
+                    {Boolean(peerType === PeerType.PEEREXTERNALUSER) && <FaceRounded/>}
                     {Boolean(noIcon !== true && user.isbot) && <BotIcon/>}
                     {(user.id) ? (onlyFirstName ? `${prefix}${user.firstname !== '' ? user.firstname : user.lastname}${postfix}` : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}
                     {Boolean(noIcon !== true && user.official) && <OfficialIcon/>}

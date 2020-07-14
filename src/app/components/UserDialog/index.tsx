@@ -239,7 +239,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <div className="inner">{user.bio}</div>
                             </div>
                         </div>}
-                        {Boolean(!this.me && !isInContact && !edit) &&
+                        {Boolean(!this.me && !isInContact && !edit && this.props.teamId === '0') &&
                         <div className="add-as-contact" onClick={this.addAsContactHandler}>
                             <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                         </div>}

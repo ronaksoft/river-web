@@ -52,7 +52,6 @@
       align-items: flex-end;
       justify-content: center;
       flex-direction: column;
-      flex: 1;
     }
 
     .label-user-name {
@@ -79,7 +78,7 @@
     }
 
     .user-gap {
-      flex: 1;
+      flex: 1 1;
     }
 
     .label-date {
@@ -286,7 +285,7 @@
     }
 
     .info {
-      flex: 1;
+      flex: 1 1;
       text-align: left;
       padding: 2px 0 0;
 
@@ -320,11 +319,11 @@
     padding: 6px 6px 12px;
 
     .inner {
+      position: relative;
       font-size: 12px;
-      line-height: 1.23em;
-      max-height: 96px;
+      line-height: 1.3em;
+      max-height: 74px;
       overflow: hidden;
-      text-overflow: ellipsis;
       white-space: pre-wrap;
       word-break: break-word;
 
@@ -362,6 +361,35 @@
       ._url, ._hashtag {
         color: var(--light-mention);
         display: inline-block;
+      }
+
+      .show-more {
+        position: absolute;
+        bottom: -2px;
+        right: 0;
+        color: var(--river);
+        background-color: var(--white);
+        padding: 1px 4px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      &.rtl {
+        .show-more {
+          right: auto;
+          left: 0;
+        }
+      }
+
+      &.show-all {
+        max-height: unset;
+
+        .show-more {
+          position: static;
+          bottom: auto;
+          right: auto;
+          left: auto;
+        }
       }
     }
   }
@@ -409,6 +437,14 @@ html[theme="dark-night"], {
   .label-message-item {
     background-color: var(--dark-low);
 
+    .label-message-body {
+      .inner {
+        .show-more {
+          background-color: var(--dark-low);
+        }
+      }
+    }
+
     .label-message-media {
       background-color: var(--dark-medium);
     }
@@ -432,6 +468,14 @@ html[theme="dark-night"], {
 html[theme="dark-blue"] {
   .label-message-item {
     background-color: var(--dark-blue-low);
+
+    .label-message-body {
+      .inner {
+        .show-more {
+          background-color: var(--dark-blue-low);
+        }
+      }
+    }
 
     .label-message-media {
       background-color: var(--dark-blue-medium);

@@ -181,7 +181,7 @@ export default class SearchRepo {
                 if (!item.peer) {
                     return;
                 }
-                if (item.peer.type === PeerType.PEERUSER) {
+                if (item.peer.type === PeerType.PEERUSER || item.peer.type === PeerType.PEEREXTERNALUSER) {
                     userIds.push(item.peer.id || '0');
                 } else if (item.peer.type === PeerType.PEERGROUP && onlyUser !== true) {
                     groupIds.push(item.peer.id || '0');
@@ -195,7 +195,7 @@ export default class SearchRepo {
                     if (!item.peer) {
                         return;
                     }
-                    if (item.peer.type === PeerType.PEERUSER) {
+                    if (item.peer.type === PeerType.PEERUSER || item.peer.type === PeerType.PEEREXTERNALUSER) {
                         const t = find(data[0], {id: item.id});
                         if (t) {
                             list.push({

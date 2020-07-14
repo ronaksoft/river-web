@@ -642,6 +642,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (peer.getType()) {
                         case PeerType.PEERUSER:
+                        case PeerType.PEEREXTERNALUSER:
                             if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.chat_photos) || (message.messagetype === C_MESSAGE_TYPE.Gif && ds.chat_gifs) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.chat_videos)) {
                                 this.downloadFileHandler(false)();
                             }

@@ -222,6 +222,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                     const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (message.peertype) {
                         case PeerType.PEERUSER:
+                        case PeerType.PEEREXTERNALUSER:
                             if (message.messagetype === C_MESSAGE_TYPE.Voice && ds.chat_voices) {
                                 this.downloadVoiceHandler();
                             }

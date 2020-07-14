@@ -422,6 +422,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                     const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (peer.getType()) {
                         case PeerType.PEERUSER:
+                        case PeerType.PEEREXTERNALUSER:
                             if (ds.chat_files) {
                                 this.downloadFileHandler();
                             }
