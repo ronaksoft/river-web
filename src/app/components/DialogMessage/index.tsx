@@ -111,7 +111,7 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
         case C_MESSAGE_ACTION.MessageActionContactRegistered:
             return (<span className="preview-message system-message">
                     <UserName className="sender" id={dialog.sender_id || ''}
-                              noDetail={true} noIcon={true}/> {i18n.t('message.joined_river')}</span>);
+                              noDetail={true} noIcon={true} postfix=" "/> {i18n.t('message.joined_river')}</span>);
         case C_MESSAGE_ACTION.MessageActionGroupCreated:
             return (<span className="preview-message system-message">
                     <UserName className="sender"
@@ -122,7 +122,7 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
             if (!dialog.action_data) {
                 return (<span className="preview-message system-message">
                         <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true}
-                                  noIcon={true} noDetail={true}/> {i18n.t('message.added_a_user')}</span>);
+                                  noIcon={true} noDetail={true} postfix=" "/> {i18n.t('message.added_a_user')}</span>);
             } else {
                 return (<span className="preview-message system-message">
                         <UserName className="sender" id={dialog.sender_id || ''}
