@@ -761,6 +761,7 @@ class Message extends React.Component<IProps, IState> {
         };
         const selection = window.getSelection();
         const hasCopy = Boolean(selection && selection.type === 'Range');
+        const copiable = items[moreIndex] && (items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal || !items[moreIndex].messagetype);
         const menuItems: any[] = [];
         const id = items[moreIndex].id;
         const me = items[moreIndex].me;
@@ -772,11 +773,11 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 10) {
-                    if (hasCopy) {
+                    if (copiable && hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 11) {
-                    if (!hasCopy) {
+                    if (copiable && !hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -801,11 +802,11 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 10) {
-                    if (hasCopy) {
+                    if (copiable && hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 11) {
-                    if (!hasCopy) {
+                    if (copiable && !hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 13) {
@@ -827,11 +828,11 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 10) {
-                    if (hasCopy) {
+                    if (copiable && hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 11) {
-                    if (!hasCopy) {
+                    if (copiable && !hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 13) {

@@ -1,3 +1,6 @@
+## 0.34.6
+* UI improvements and bug fix
+
 ## 0.34.5
 * Team is now community ready
 * Show more/less added in label items
