@@ -100,7 +100,7 @@ import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
 import {
-    EventBlur,
+    EventBlur, EventCheckNetwork,
     EventFocus,
     EventMouseWheel,
     EventNetworkStatus,
@@ -171,6 +171,7 @@ import {
 import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 import {ITeam} from "../../repository/team/interface";
+import Socket from "../../services/sdk/server/socket";
 
 import './style.scss';
 
@@ -399,6 +400,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener(EventWebSocketOpen, this.wsOpenHandler);
         window.addEventListener(EventWebSocketClose, this.wsCloseHandler);
         window.addEventListener(EventNetworkStatus, this.networkStatusHandler);
+        window.addEventListener(EventCheckNetwork, this.checkNetworkHandler);
 
         // Get latest cached dialogs
         this.initDialogs();
@@ -2393,6 +2395,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.userRepo.getAllContacts(this.teamId);
                 this.apiManager.getSystemConfig();
                 this.startSyncing(res.updateid || 0);
+                this.sendAllPendingMessages();
             } else {
                 setTimeout(() => {
                     this.startSyncing(res.updateid || 0);
@@ -2515,6 +2518,13 @@ class Chat extends React.Component<IProps, IState> {
         const data = event.detail;
         this.setAppStatus({
             isOnline: data.online,
+        });
+    }
+
+    private checkNetworkHandler = () => {
+        this.apiManager.ping().catch(() => {
+            window.console.warn('bad network');
+            Socket.getInstance().tryAgain();
         });
     }
 
@@ -5615,6 +5625,14 @@ class Chat extends React.Component<IProps, IState> {
             });
         }
         this.closePeerHandler();
+    }
+
+    private sendAllPendingMessages() {
+        this.messageRepo.getValidPendingMessages().then((res) => {
+            res.forEach((message) => {
+                this.resendMessage(message);
+            });
+        });
     }
 }
 

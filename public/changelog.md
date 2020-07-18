@@ -1,4 +1,5 @@
 ## 0.34.7
+* Send all pending messages on start up
 * AudioPlayer bug fixed
 * AvatarService bug fixed
 * FileManager bug fixed

@@ -360,6 +360,13 @@ export default class MessageRepo {
         return this.userId;
     }
 
+    public getValidPendingMessages() {
+        return this.db.pendingMessages.toArray().then((res) => {
+            const msgIds = res.map((item) => item.message_id || 0);
+            return this.getIn(msgIds, true);
+        });
+    }
+
     /* Add pending message */
     public addPending(pending: IPendingMessage) {
         return this.db.pendingMessages.put(pending);

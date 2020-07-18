@@ -16,7 +16,7 @@ import {
     FileLocation, GroupPhoto,
     Label,
     LabelsMany,
-    MessageContainer,
+    MessageContainer, Pong,
     UserPhoto
 } from '../messages/core.types_pb';
 import {MessagesDialogs, MessagesGetDialogs, MessagesMany, MessagesSent} from '../messages/chat.messages_pb';
@@ -128,6 +128,8 @@ export default class Presenter {
                 return FoundGifs.deserializeBinary(data);
             case C_MSG.TeamsMany:
                 return TeamsMany.deserializeBinary(data);
+            case C_MSG.Pong:
+                return Pong.deserializeBinary(data);
             default:
                 return null;
         }

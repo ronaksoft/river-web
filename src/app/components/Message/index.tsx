@@ -769,7 +769,7 @@ class Message extends React.Component<IProps, IState> {
         if (id && id < 0) {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {
-                    if (items[moreIndex].error || (this.riverTime.now() - (items[moreIndex].createdon || 0)) > 60) {
+                    if (items[moreIndex].error || (this.riverTime.now() - (items[moreIndex].createdon || 0)) > 30) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 10) {

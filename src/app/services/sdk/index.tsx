@@ -56,7 +56,7 @@ import {
     LabelsMany,
     MessageEntity,
     PeerNotifySettings,
-    PhoneContact,
+    PhoneContact, Ping, Pong,
     PrivacyKey,
     PrivacyRule,
     PushTokenProvider,
@@ -978,6 +978,15 @@ export default class APIManager {
     public accountGetTeams(): Promise<TeamsMany.AsObject> {
         const data = new AccountGetTeams();
         return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true);
+    }
+
+    public ping(): Promise<Pong.AsObject> {
+        const data = new Ping();
+        data.setId(Date.now());
+        return this.server.send(C_MSG.Ping, data.serializeBinary(), true, {
+            retry: 1,
+            timeout: 2000,
+        });
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {
