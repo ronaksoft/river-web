@@ -12,6 +12,7 @@ import {clone} from 'lodash';
 import {IMediaInfo} from '../../components/MessageMedia';
 import MessageRepo from "../../repository/message";
 import {IPeer} from "../../repository/dialog/interface";
+import {GetPeerNameByPeer} from "../../repository/dialog";
 
 export interface IAudioEvent {
     currentTime: number;
@@ -79,7 +80,7 @@ export default class AudioPlayer {
     private lastObjectUrl: string = '';
     private playingFromPeerId: string | undefined;
     private fastEnable: boolean = false;
-    private backUpPeerId: string = '';
+    private backUpPeerName: string = '';
     private errFn?: (info: IAudioInfo, err: any) => void;
     private updateDurationFn?: (info: IAudioInfo, duration: number) => void;
     private playTimeout: any = null;
@@ -148,10 +149,12 @@ export default class AudioPlayer {
         if (messageId < 0) {
             return;
         }
+        peer = clone(peer);
         if (this.playingFromPeerId && this.playingFromPeerId !== peer.id) {
-            if (this.backUpPeerId !== peer.id) {
+            const peerName = GetPeerNameByPeer(peer);
+            if (this.backUpPeerName !== peerName) {
                 this.backUpTracks = {};
-                this.backUpPeerId = peer.id;
+                this.backUpPeerName = peerName;
             }
             if (!this.backUpTracks.hasOwnProperty(messageId)) {
                 this.backUpTracks[messageId] = {
@@ -641,7 +644,7 @@ export default class AudioPlayer {
                 fn({
                     fast: this.fastEnable,
                     messageId,
-                    peerId: this.tracks[messageId].peer.id,
+                    peer: this.tracks[messageId].peer,
                     userId: this.tracks[messageId].userId,
                 }, event, opt ? this.tracks[messageId].music : undefined);
             }

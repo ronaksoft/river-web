@@ -13,6 +13,7 @@ import MediaRepo from '../../repository/media/index';
 import {PeerType} from '../sdk/messages/core.types_pb';
 import MessageRepo from '../../repository/message';
 import {IPeer} from "../../repository/dialog/interface";
+import {C_MESSAGE_TYPE} from "../../repository/message/consts";
 
 export interface IStorageProgress {
     done: number;
@@ -95,7 +96,7 @@ export default class StorageUsageService {
                 this.computeQueue.push({id: dialog.peerid || '', peerType: dialog.peertype || 0});
             });
             this.totalComputations = dialogs.length;
-            this.startComputing();
+            this.startComputing(teamId);
         });
         return promise;
     }
@@ -152,7 +153,7 @@ export default class StorageUsageService {
     private getMediaFiles(teamId: string, peer: IPeer, before?: number) {
         const limit = 50;
         return this.mediaRepo.getMany(teamId, peer, {limit, before}).then((res) => {
-            const fileMap: any = {};
+            const fileMap: {[key: string]: {id: number, mediaType: number}} = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;
             const names: string[] = [];
@@ -161,18 +162,20 @@ export default class StorageUsageService {
                 return (o.mediadata && o.mediadata.doc && (o.mediadata.doc.id || (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid)));
             }).forEach((o) => {
                 if (o.mediadata.doc.id) {
-                    fileMap[o.mediadata.doc.id] = {
-                        id: o.id,
-                        mediaType: o.messagetype,
+                    const name = GetDbFileName(o.mediadata.doc.id, o.mediadata.doc.clusterid);
+                    fileMap[name] = {
+                        id: o.id || 0,
+                        mediaType: o.messagetype || C_MESSAGE_TYPE.Normal,
                     };
-                    names.push(GetDbFileName(o.mediadata.doc.id, o.mediadata.doc.clusterid));
+                    names.push(name);
                 }
                 if (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid) {
-                    fileMap[o.mediadata.doc.thumbnail.fileid] = {
-                        id: o.id,
-                        mediaType: o.messagetype,
+                    const name = GetDbFileName(o.mediadata.doc.thumbnail.fileid, o.mediadata.doc.thumbnail.clusterid);
+                    fileMap[name] = {
+                        id: o.id || 0,
+                        mediaType: o.messagetype || C_MESSAGE_TYPE.Normal,
                     };
-                    names.push(GetDbFileName(o.mediadata.doc.thumbnail.fileid, o.mediadata.doc.thumbnail.clusterid));
+                    names.push(name);
                 }
             });
             return this.fileRepo.getIn(names).then((files) => {
@@ -227,7 +230,7 @@ export default class StorageUsageService {
         });
     }
 
-    private startComputing(teamId?: string, peer?: IPeer, before?: number, total?: number) {
+    private startComputing(teamId: string, peer?: IPeer, before?: number, total?: number) {
         if (!peer) {
             peer = this.computeQueue.shift();
         }
@@ -240,7 +243,7 @@ export default class StorageUsageService {
                 if (res.more) {
                     this.startComputing(teamId, peer, res.minId - 1, total);
                 } else {
-                    this.startComputing(undefined, undefined, total);
+                    this.startComputing(teamId, undefined, undefined, total);
                 }
                 if (this.progressFn) {
                     this.progressFn({

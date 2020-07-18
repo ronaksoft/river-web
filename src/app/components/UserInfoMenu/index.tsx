@@ -189,7 +189,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <label>{i18n.t('general.first_name')}</label>
                                             <div className="inner">{user.firstname}{user && user.official &&
                                             <OfficialIcon/>}</div>
-                                            {isInContact && <div className="action">
+                                            {Boolean(!this.me && isInContact) && <div className="action">
                                                 <IconButton
                                                     onClick={this.onEditHandler}
                                                 >
@@ -215,7 +215,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         <div className="form-control">
                                             <label>{i18n.t('general.last_name')}</label>
                                             <div className="inner">{user.lastname}</div>
-                                            {isInContact && <div className="action">
+                                            {Boolean(!this.me && isInContact)  && <div className="action">
                                                 <IconButton
                                                     onClick={this.onEditHandler}
                                                 >

@@ -194,19 +194,24 @@ export default class AvatarService {
                                 }
                             });
                         }).catch(() => {
-                            this.avatars[id].retries++;
+                            if (this.avatars[id]) {
+                                this.avatars[id].retries++;
+                            }
                             reject();
                         });
                     } else {
-                        this.avatars[id].retries++;
+                        if (this.avatars[id]) {
+                            this.avatars[id].retries++;
+                        }
                         reject();
                     }
                 }).catch(() => {
-                    this.avatars[id].retries++;
+                    if (this.avatars[id]) {
+                        this.avatars[id].retries++;
+                    }
                     reject();
                 });
             } else {
-                this.avatars[id].retries++;
                 reject();
             }
         });

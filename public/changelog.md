@@ -1,3 +1,10 @@
+## 0.34.7
+* AudioPlayer bug fixed
+* AvatarService bug fixed
+* FileManager bug fixed
+* TopPeer bug fixed
+* Other Known bugs fixed
+
 ## 0.34.6
 * UI improvements and bug fix
 

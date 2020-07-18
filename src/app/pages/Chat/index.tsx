@@ -5591,6 +5591,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private leftMenuTeamChangeHandler = (team: ITeam) => {
+        this.apiManager.setTeam({
+            accesshash: team.accesshash,
+            id: team.id || '0',
+        });
+        this.setChatParams(this.teamId, this.selectedPeerName, null, false, {});
         if (this.dialogRef) {
             this.dialogRef.setDialogs([], undefined, true);
         }
@@ -5610,11 +5615,6 @@ class Chat extends React.Component<IProps, IState> {
             });
         }
         this.closePeerHandler();
-        this.apiManager.setTeam({
-            accesshash: team.accesshash,
-            id: team.id || '0',
-        });
-        this.setChatParams(this.teamId, this.selectedPeerName, null, false, {});
     }
 }
 

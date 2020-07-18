@@ -267,6 +267,13 @@ export default class Socket {
     }
 
     private initWebSocket() {
+        if (this.socket) {
+            try {
+                this.socket.close();
+            } catch (e) {
+                //
+            }
+        }
         clearTimeout(this.initTimeout);
 
         this.tryCounter++;

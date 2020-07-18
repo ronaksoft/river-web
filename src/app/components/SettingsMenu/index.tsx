@@ -2104,7 +2104,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (!this.settingsStorageUsageModalRef) {
             return;
         }
-        this.settingsStorageUsageModalRef.openDialog();
+        this.settingsStorageUsageModalRef.openDialog(this.state.teamSelectedId);
     }
 
     private toggleMenuBarHandler = () => {

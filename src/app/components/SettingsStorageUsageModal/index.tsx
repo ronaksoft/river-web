@@ -53,6 +53,7 @@ interface IState {
 }
 
 class SettingsStorageUsageModal extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private storageUsageService: StorageUsageService;
     private readonly progressThrottle: any;
 
@@ -78,7 +79,8 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         this.progressThrottle = throttle(this.displayProgress, 100);
     }
 
-    public openDialog() {
+    public openDialog(teamId: string) {
+        this.teamId = teamId;
         this.setState({
             open: true,
         }, () => {
@@ -223,7 +225,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         this.setState({
             loading: true
         });
-        this.storageUsageService.compute('all', this.computeProgress).then((list) => {
+        this.storageUsageService.compute(this.teamId, this.computeProgress).then((list) => {
             let totalSize: number = 0;
             const selectedDialogs: { [key: string]: boolean } = {};
             list.forEach((item) => {
