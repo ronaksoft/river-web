@@ -178,7 +178,7 @@ a.dialog-a {
 
       .sender {
         font-weight: bold;
-        white-space: pre-wrap;
+        white-space: nowrap;
       }
 
       &.ltr {
@@ -186,6 +186,7 @@ a.dialog-a {
 
         .sender {
           direction: ltr;
+          padding-right: 3px;
         }
 
         .preview-inner {
@@ -198,6 +199,7 @@ a.dialog-a {
 
         .sender {
           direction: rtl;
+          padding-left: 3px;
         }
 
         .preview-inner {

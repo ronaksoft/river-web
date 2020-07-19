@@ -1,3 +1,6 @@
+## 0.34.10
+* Known bugs fixed
+
 ## 0.34.9
 * Load more before bug fixed
 

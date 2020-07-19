@@ -63,10 +63,10 @@ export default class SearchRepo {
         });
     }
 
-    public search = (teamId: string, {skip, limit, keyword}: any): Promise<IDialogWithContact> => {
+    public search = (teamId: string, {skip, limit, keyword}: { skip?: number, limit?: number, keyword?: string }): Promise<IDialogWithContact> => {
         const promises: any[] = [];
-        limit = limit || 128;
-        skip = skip || 0;
+        const safeLimit = limit || 128;
+        const safeSkip = skip || 0;
         promises.push(this.userRepo.getManyCache(teamId, false, {limit, keyword}));
         promises.push(this.groupRepo.getManyCache(teamId, {limit, keyword}));
         return new Promise<IDialogWithContact>((resolve, reject) => {
@@ -87,7 +87,7 @@ export default class SearchRepo {
                         }
                     });
                 });
-                this.dialogRepo.findInArray(teamId, peers, skip, limit).then((res) => {
+                this.dialogRepo.findInArray(teamId, peers, safeSkip, safeLimit).then((res) => {
                     resolve({
                         contacts: (arrRes[0] || []).filter((user: IUser) => {
                             return user.is_contact === 1;

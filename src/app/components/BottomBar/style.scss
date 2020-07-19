@@ -36,6 +36,10 @@
     transform: translateY(2px);
     height: 39px;
 
+    .MuiBadge-anchorOriginTopRightRectangle:not(.MuiBadge-invisible) {
+      transform: scale(1) translate(50%, -25%);
+    }
+
     .title {
       font-size: 12px;
       color: var(--grey);

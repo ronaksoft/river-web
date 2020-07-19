@@ -186,7 +186,7 @@
 
               @for $i from 2 through 12 {
                 &._#{$i}-line {
-                  height: #{1.1 * ($i + 0.3)}em !important;
+                  height: #{1.12 * ($i + 0.3)}em !important;
                 }
               }
 

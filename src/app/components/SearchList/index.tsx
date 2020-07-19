@@ -379,7 +379,7 @@ class SearchList extends React.Component<IProps, IState> {
 
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
-        this.searchApi({keyword: text, limit: 12}).then((res: IDialogWithContact) => {
+        this.searchApi(this.props.teamId, {keyword: text, limit: 12}).then((res: IDialogWithContact) => {
             this.inputPeerRes = clone(res || []);
             if (this.list) {
                 this.list.resetAfterIndex(0, false);
