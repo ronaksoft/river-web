@@ -4353,8 +4353,8 @@ class Chat extends React.Component<IProps, IState> {
             random_id: randomId,
             rtl: this.rtlDetector.direction(mediaItem.caption || ''),
             senderid: this.userId,
-            temp_file: tempImageFile,
             teamid: this.teamId,
+            temp_file: tempImageFile,
         };
 
         let replyTo: any;
