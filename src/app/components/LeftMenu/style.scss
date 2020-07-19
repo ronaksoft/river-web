@@ -123,6 +123,7 @@
         left: 0;
         display: none;
         background-color: var(--white);
+        z-index: 10;
       }
 
       &.settings, &.contacts {
