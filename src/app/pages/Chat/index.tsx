@@ -1658,17 +1658,16 @@ class Chat extends React.Component<IProps, IState> {
 
         window.console.log('messageLoadMoreBeforeHandler');
 
-        const dialogId = peer.getId() || '';
+        const dialogName = GetPeerName(peer.getId(), peer.getType());
 
         this.setLoading(true);
-
         this.messageRepo.list(this.teamId, {
             before,
             limit: 30,
             peer,
         }).then((data) => {
             // Checks peerid on transition
-            if (this.selectedPeerName !== dialogId || data.length === 0 || !this.messageRef) {
+            if (this.selectedPeerName !== dialogName || data.length === 0 || !this.messageRef) {
                 this.setLoading(false);
                 return;
             }
