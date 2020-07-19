@@ -22,6 +22,7 @@ export interface ILabelItem {
     mid?: number;
     peertype?: number;
     peerid?: string;
+    teamid: string;
 }
 
 export interface ILabelItemList {

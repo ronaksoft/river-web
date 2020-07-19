@@ -25,3 +25,8 @@ export interface IParticipant extends IUser {
     type?: ParticipantType;
     accesshash?: string;
 }
+
+export interface IContact {
+    teamid: string;
+    id: string;
+}

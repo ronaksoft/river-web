@@ -58,12 +58,26 @@
     }
 
     .new-message {
+      position: relative;
       color: #60BF70;
       cursor: pointer;
       flex: 1;
 
-      svg {
+      .text-logo {
         transform: translateX(24px);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+
+        .team-name {
+          font-size: 10px;
+          padding: 0 6px;
+          color: var(--gale);
+          max-width: 68px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
       }
     }
 
@@ -109,6 +123,7 @@
         left: 0;
         display: none;
         background-color: var(--white);
+        z-index: 10;
       }
 
       &.settings, &.contacts {

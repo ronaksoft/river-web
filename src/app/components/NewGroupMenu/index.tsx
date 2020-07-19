@@ -36,6 +36,7 @@ import './style.scss';
 interface IProps {
     onClose?: () => void;
     onCreate: (contacts: IUser[], title: string, fileId: string) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -89,7 +90,8 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('contact.create_a_new_group')}</label>
                         </div>
                         <div className="contact-box">
-                            <ContactList onChange={this.contactListChangeHandler} mode="chip"/>
+                            <ContactList onChange={this.contactListChangeHandler} mode="chip"
+                                         teamId={this.props.teamId}/>
                         </div>
                         {Boolean(selectedContacts.length > 0) && <div className="actions-bar">
                             <div className="add-action" onClick={this.onNextHandler}>

@@ -88,7 +88,7 @@ import Broadcaster from '../../services/broadcaster';
 import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/accounts_pb';
 import TimeUtility from '../../services/utilities/time';
 import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
-import FileRepo from '../../repository/file';
+import FileRepo, {GetDbFileName} from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
 import SettingsConfigManager, {IDownloadSettings, INotificationSettings} from '../../services/settingsConfigManager';
 import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
@@ -112,6 +112,7 @@ import {C_VERSION} from "../../../App";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import TeamRepo from "../../repository/team";
 import {ITeam} from "../../repository/team/interface";
+import {IPeer} from "../../repository/dialog/interface";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -191,9 +192,10 @@ interface IProps {
     onAction?: (cmd: 'logout' | 'count_dialog') => void;
     onError?: (message: string) => void;
     onUpdateMessages?: (keep?: boolean) => void;
-    onReloadDialog?: (peerIds: string[]) => void;
+    onReloadDialog?: (peerIds: IPeer[]) => void;
     onSubPlaceChange?: (sub: string, subChild: string) => void;
     onTeamChange?: (team: ITeam) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -465,7 +467,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                   onDone={this.changePhoneModalDoneHandler}/>
                 <TwoStepVerificationModal ref={this.twoStepVerificationModalRefHandler} onError={this.props.onError}
                                           onDone={this.twoStepVerificationModalDoneHandler}/>
-                <UserListDialog ref={this.userListDialogRefHandler} onDone={this.userListDialogDoneHandler}/>
+                <UserListDialog ref={this.userListDialogRefHandler} onDone={this.userListDialogDoneHandler}
+                                teamId={this.props.teamId}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -494,7 +497,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <UserName className="username" id={this.userId} noDetail={true}/>
                                             <div className="account-phone">{phone}</div>
                                         </div>
-                                        {Boolean(teamList.length > 0) && <div className="team-select">
+                                        {Boolean(teamList.length > 1) && <div className="team-select">
                                             <div className="select-input" onClick={this.teamOpenHandler}>
                                                 <div className="select-label">{teamSelectedName}</div>
                                                 <div className="select-icon"><ArrowDropDownRounded/></div>
@@ -516,24 +519,23 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     paper: 'kk-context-menu-paper'
                                                 }}
                                             >
-                                                {teamLoading ? <div style={{
-                                                        alignItems: 'center',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                        <CircularProgress size={16}/>
-                                                    </div> :
-                                                    teamList.map((item) => {
-                                                        return (<MenuItem key={item.id} className="context-item"
-                                                                          onClick={this.teamSelectHandler(item)}
-                                                                          selected={teamSelectedId === item.id}>{item.name}</MenuItem>);
-                                                    })
-                                                }
+                                                {teamList.map((item) => {
+                                                    return (<MenuItem key={item.id} className="context-item"
+                                                                      onClick={this.teamSelectHandler(item)}
+                                                                      selected={teamSelectedId === item.id}>{item.name}</MenuItem>);
+                                                })}
+                                                {teamLoading && <div style={{
+                                                    alignItems: 'center',
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                    <CircularProgress size={16}/>
+                                                </div>}
                                             </Menu>
                                         </div>}
                                     </div>
                                     <div className="page-anchor">
-                                        <Link to={`/chat/${this.userId}`}>
+                                        <Link to={`/chat/${this.props.teamId}/${this.userId}/${PeerType.PEERUSER}`}>
                                             <div className="icon color-saved-messages">
                                                 <BookmarkBorderRounded/>
                                             </div>
@@ -1878,8 +1880,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     const {user} = this.state;
                     if (user) {
                         if (user.photo) {
-                            this.avatarService.remove(user.id || '', user.photo.photosmall.fileid);
-                            this.avatarService.remove(user.id || '', user.photo.photobig.fileid);
+                            this.avatarService.remove(user.id || '', GetDbFileName(user.photo.photosmall.fileid, user.photo.photosmall.clusterid));
+                            this.avatarService.remove(user.id || '', GetDbFileName(user.photo.photobig.fileid, user.photo.photobig.clusterid));
                         }
                         user.photo = undefined;
                         this.profileTempPhoto = '';
@@ -1907,20 +1909,21 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (!user || !user.photo) {
             return;
         }
-        let peer: InputPeer | undefined;
+        let inputPeer: InputPeer | undefined;
         if (user.accesshash) {
-            peer = new InputPeer();
-            peer.setAccesshash(user.accesshash);
-            peer.setId(user.id || '');
-            peer.setType(PeerType.PEERUSER);
+            inputPeer = new InputPeer();
+            inputPeer.setAccesshash(user.accesshash);
+            inputPeer.setId(user.id || '');
+            inputPeer.setType(PeerType.PEERUSER);
         }
         const doc: IDocument = {
+            inputPeer,
             items: [{
                 caption: '',
                 fileLocation: user.photo.photobig,
                 thumbFileLocation: user.photo.photosmall,
             }],
-            peer,
+            teamId: '0',
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);
@@ -2101,7 +2104,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (!this.settingsStorageUsageModalRef) {
             return;
         }
-        this.settingsStorageUsageModalRef.openDialog();
+        this.settingsStorageUsageModalRef.openDialog(this.state.teamSelectedId);
     }
 
     private toggleMenuBarHandler = () => {
@@ -2590,7 +2593,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.setState({
             teamLoading: true,
         });
-        this.teamRepo.getCachedTeam().then((res) => {
+        const fn = (loading: boolean) => (res: ITeam[]) => {
             res.unshift({
                 accesshash: '0',
                 creatorid: '0',
@@ -2600,7 +2603,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             });
             const q: any = {
                 teamList: res,
-                teamLoading: false,
+                teamLoading: loading,
             };
             const item = find(res, {id: this.state.teamSelectedId});
             if (item) {
@@ -2608,7 +2611,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 q.teamSelectedName = item.name;
             }
             this.setState(q);
-        }).catch(() => {
+        };
+        this.teamRepo.getCachedTeam(fn(true)).then(fn(false)).catch(() => {
             this.setState({
                 teamLoading: false,
             });
@@ -2627,12 +2631,23 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private teamSelectHandler = (item: ITeam) => () => {
+    private teamSelectHandler = (item: ITeam) => (e: any) => {
         localStorage.setItem(C_LOCALSTORAGE.TeamId, item.id || '0');
+        localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
+            accesshash: item.accesshash,
+            id: item.id,
+        }));
         this.setState({
+            teamMoreAnchorEl: null,
             teamSelectedId: item.id || '0',
             teamSelectedName: item.name || '',
         });
+        if (this.props.onTeamChange) {
+            this.props.onTeamChange(item);
+        }
+        if (this.props.onClose) {
+            this.props.onClose(e);
+        }
     }
 }
 

@@ -57,7 +57,7 @@ class Test extends React.Component<IProps, IState> {
         if (!this.dialogRepo) {
             return;
         }
-        this.dialogRepo.getSnapshot({}).then((res) => {
+        this.dialogRepo.getSnapshot('0', {}).then((res) => {
            window.console.log(res.dialogs.length, res.updateid);
            if (this.count < 20) {
                this.testHandler();

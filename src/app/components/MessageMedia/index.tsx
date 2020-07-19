@@ -28,6 +28,7 @@ import SettingsConfigManager from '../../services/settingsConfigManager';
 import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
 import {transformMimeType} from "../StreamVideo/helper";
+import {GetDbFileName} from "../../repository/file";
 
 import './style.scss';
 
@@ -254,7 +255,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private ref: any;
     private messageMediaClass: string = '';
     private lastId: number = 0;
-    private fileId: string = '';
+    private dbFileName: string = '';
     private downloaded: boolean = false;
     private saved: boolean = false;
     private circleProgressRef: any = null;
@@ -320,11 +321,16 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             return;
         }
         this.displayFileSize(0);
-        this.fileId = messageMediaDocument.doc.id || '';
+        this.dbFileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
         this.initProgress();
     }
 
     public componentWillReceiveProps(newProps: IProps) {
+        // @ts-ignore
+        const state: IState = {};
+        let updateState: boolean = false;
+        let forceUpdate: boolean = false;
+        let initProgress: boolean = false;
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
             this.downloaded = newProps.message.downloaded || false;
@@ -333,44 +339,50 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             const info = getMediaInfo(newProps.message);
             this.fileSize = info.size;
             this.displayFileSize(0);
-            this.setState({
-                fileState: this.getFileState(newProps.message),
-                info,
-                message: newProps.message,
-                streamReady: this.isStreamReady(info.mimeType || ''),
-            }, () => {
-                this.initProgress();
-            });
+            state.fileState = this.getFileState(newProps.message);
+            state.info = info;
+            state.message = newProps.message;
+            state.streamReady = this.isStreamReady(info.mimeType || '');
+            updateState = true;
+            initProgress = true;
         }
         const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
-        if (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.fileId) {
-            this.fileId = messageMediaDocument.doc.id || '';
-            this.setState({
-                message: newProps.message,
-            });
+        if (messageMediaDocument && messageMediaDocument.doc) {
+            const fileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
+            if (fileName !== this.dbFileName) {
+                this.dbFileName = fileName;
+                state.info = getMediaInfo(newProps.message);
+                state.message = newProps.message;
+                updateState = true;
+            }
         }
         if ((newProps.message.downloaded || false) !== this.downloaded) {
             this.downloaded = (newProps.message.downloaded || false);
-            this.setState({
-                fileState: this.getFileState(newProps.message),
-                message: newProps.message,
-            }, () => {
-                this.forceUpdate();
-            });
+            state.fileState = this.getFileState(newProps.message);
+            state.message = newProps.message;
+            updateState = true;
+            forceUpdate = true;
         }
         if ((newProps.message.saved || false) !== this.saved) {
             this.saved = (newProps.message.saved || false);
-            this.setState({
-                fileState: this.getFileState(newProps.message),
-                message: newProps.message,
-            });
+            state.fileState = this.getFileState(newProps.message);
+            state.message = newProps.message;
+            updateState = true;
         }
         if ((newProps.message.contentread || false) !== this.contentRead) {
             this.contentRead = (newProps.message.contentread || false);
-            this.setState({
-                message: newProps.message,
-            }, () => {
-                this.forceUpdate();
+            state.message = newProps.message;
+            forceUpdate = true;
+            updateState = true;
+        }
+        if (updateState) {
+            this.setState(state, () => {
+                if (initProgress) {
+                    this.initProgress();
+                }
+                if (forceUpdate) {
+                    this.forceUpdate();
+                }
             });
         }
     }
@@ -630,6 +642,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (peer.getType()) {
                         case PeerType.PEERUSER:
+                        case PeerType.PEEREXTERNALUSER:
                             if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.chat_photos) || (message.messagetype === C_MESSAGE_TYPE.Gif && ds.chat_gifs) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.chat_videos)) {
                                 this.downloadFileHandler(false)();
                             }
@@ -749,9 +762,10 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 userId: message.senderid || '',
                 width: info.width,
             }],
-            peerId: message.peerid || '',
+            peer: {id: message.peerid || '', peerType: message.peertype || 0},
             rect: el.getBoundingClientRect(),
             stream: Boolean(streamReady && !message.downloaded),
+            teamId: message.teamid || '0',
             type: message.messagetype === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
         };
         this.documentViewerService.loadDocument(doc);

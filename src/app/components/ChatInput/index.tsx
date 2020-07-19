@@ -45,7 +45,7 @@ import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import APIManager from '../../services/sdk';
 import {IUser} from '../../repository/user/interface';
-import DialogRepo from '../../repository/dialog';
+import DialogRepo, {GetPeerName} from '../../repository/dialog';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
 import VoicePlayer from '../VoicePlayer';
@@ -205,7 +205,7 @@ export interface IMessageParam {
 }
 
 interface IProps {
-    getDialog: (id: string) => IDialog | null;
+    getDialog: (peerName: string) => IDialog | null;
     onAction: (cmd: string, message?: IMessage) => (e?: any) => void;
     onBulkAction: (cmd: string) => (e?: any) => void;
     onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
@@ -274,6 +274,8 @@ interface IKeyboardBotData {
 }
 
 class ChatInput extends React.Component<IProps, IState> {
+    // teamId
+    private teamId: string = '0';
     private mentionContainer: any = null;
     private textarea: any = null;
     private typingThrottle: any = null;
@@ -354,7 +356,7 @@ class ChatInput extends React.Component<IProps, IState> {
             selectableDisable: false,
             textareaValue: '',
             uploadPreviewOpen: false,
-            user: props.peer && props.peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(props.peer.getId() || '') : null,
+            user: props.peer && (props.peer.getType() === PeerType.PEERUSER && props.peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(props.peer.getId() || '') : null,
             voiceMode: 'up',
         };
 
@@ -392,7 +394,8 @@ class ChatInput extends React.Component<IProps, IState> {
         this.initDraft(null, this.props.peer, 0, null);
     }
 
-    public setPeer(peer: InputPeer | null) {
+    public setPeer(teamId: string, peer: InputPeer | null) {
+        this.teamId = teamId;
         if (peer && this.state.peer !== peer) {
             this.firstLoad = true;
             this.botKeyboard = undefined;
@@ -400,7 +403,7 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
-            const user = peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(peer.getId() || '') : null;
+            const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 disableAuthority: 0x0,
                 peer,
@@ -408,7 +411,7 @@ class ChatInput extends React.Component<IProps, IState> {
             }, () => {
                 this.checkAuthority();
             });
-            if (peer.getType() === PeerType.PEERUSER && !user) {
+            if ((peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     if (res) {
                         this.setState({
@@ -428,7 +431,8 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    public setParams(peer: InputPeer | null, previewMessageMode?: number, previewMessage?: IMessage) {
+    public setParams(teamId: string, peer: InputPeer | null, previewMessageMode?: number, previewMessage?: IMessage) {
+        this.teamId = teamId;
         if ((previewMessageMode === C_MSG_MODE.Edit || previewMessageMode === C_MSG_MODE.Reply) && this.state.selectable) {
             this.setInputMode('default');
             if (this.props.onPreviewMessageChange) {
@@ -472,14 +476,14 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
-            const user = peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(peer.getId() || '') : null;
+            const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 peer,
                 user,
             }, () => {
                 this.checkAuthority();
             });
-            if (peer.getType() === PeerType.PEERUSER && !user) {
+            if ((peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     if (res) {
                         this.setState({
@@ -564,13 +568,13 @@ class ChatInput extends React.Component<IProps, IState> {
         }
         // @ts-ignore
         const newPeerObj = newPeer ? newPeer.toObject() : this.state.peer.toObject();
-        const dialog = cloneDeep(this.props.getDialog(newPeerObj.id || ''));
+        const dialog = cloneDeep(this.props.getDialog(GetPeerName(newPeerObj.id, newPeerObj.type)));
         if (!dialog || !dialog.draft || !dialog.draft.peerid) {
             this.changePreviewMessage('', C_MSG_MODE.Normal, null);
             return;
         }
         if (dialog.draft.replyto) {
-            this.messageRepo.get(dialog.draft.replyto, this.state.peer).then((msg) => {
+            this.messageRepo.get(dialog.draft.replyto, this.state.peer, this.teamId).then((msg) => {
                 if (msg && dialog && dialog.draft) {
                     this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Reply, msg, () => {
                         this.animatePreviewMessage();
@@ -593,7 +597,7 @@ class ChatInput extends React.Component<IProps, IState> {
     public setBot(peer: InputPeer | null, isBot: boolean, data: IKeyboardBotData | undefined) {
         if (this.firstLoad && peer) {
             this.firstLoad = false;
-            this.messageRepo.getLastIncomingMessage(peer.getId() || '').then((msg) => {
+            this.messageRepo.getLastIncomingMessage(this.teamId, peer.getId() || '', peer.getType() || 0).then((msg) => {
                 if (msg) {
                     if ((!this.botKeyboard || (this.botKeyboard && this.botKeyboard.msgId < (msg.id || 0))) && msg.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
                         this.botKeyboard = {
@@ -727,7 +731,8 @@ class ChatInput extends React.Component<IProps, IState> {
                 <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                            onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
-                    <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}/>
+                    <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}
+                                   teamId={this.teamId}/>
                     <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
                     {(!selectable && hasPreviewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
@@ -859,6 +864,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 style={mentionInputStyle}
                                 suggestionsPortalHost={this.mentionContainer}
                                 onFocus={this.props.onFocus}
+                                teamId={this.teamId}
                             />
                         </div>
                         <div className={'picker-anchor' + (isBot ? ' is-bot' : '')}>
@@ -1167,7 +1173,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private removeDraft(removeDraft?: boolean) {
         if (removeDraft && this.state.peer) {
-            const dialog = this.props.getDialog(this.state.peer.getId() || '');
+            const dialog = this.props.getDialog(GetPeerName(this.state.peer.getId(), this.state.peer.getType()));
             if (dialog && dialog.draft && dialog.draft.peerid) {
                 if (this.props.onClearDraft && this.state.peer) {
                     this.props.onClearDraft({
@@ -1180,6 +1186,8 @@ class ChatInput extends React.Component<IProps, IState> {
                         return this.dialogRepo.upsert([{
                             draft: {},
                             peerid: this.state.peer.getId() || '',
+                            peertype: this.state.peer.getType() || 0,
+                            teamid: this.teamId,
                         }]);
                     } else {
                         return Promise.resolve();
@@ -1221,11 +1229,11 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        if (data && data.ids.indexOf(peer.getId()) === -1) {
+        if (data && data.ids.indexOf(`${this.teamId}_${peer.getId()}`) === -1) {
             return;
         }
         if (peer.getType() === PeerType.PEERGROUP) {
-            this.groupRepo.get(peer.getId() || '').then((res) => {
+            this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
                 if (res) {
                     if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
                         this.setState({
@@ -1349,10 +1357,12 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.dialogRepo.lazyUpsert([{
                     draft: draftMessage,
                     peerid: oldPeerObj.id || '',
+                    peertype: oldPeerObj.type || 0,
+                    teamid: this.teamId,
                 }]);
             });
         } else {
-            const oldDialog = cloneDeep(this.props.getDialog(oldPeerObj.id || ''));
+            const oldDialog = cloneDeep(this.props.getDialog(GetPeerName(oldPeerObj.id, oldPeerObj.type)));
             if (oldDialog && oldDialog.draft && oldDialog.draft.peerid) {
                 if (this.props.onClearDraft && this.state.peer) {
                     this.props.onClearDraft({
@@ -1364,6 +1374,8 @@ class ChatInput extends React.Component<IProps, IState> {
                     this.dialogRepo.lazyUpsert([{
                         draft: {},
                         peerid: oldPeerObj.id || '',
+                        peertype: oldPeerObj.type || 0,
+                        teamid: this.teamId,
                     }]);
                 });
             }
@@ -1918,7 +1930,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     break;
                 case 'location':
                     if (this.mapPickerRef) {
-                        this.mapPickerRef.openDialog(this.state.peer);
+                        this.mapPickerRef.openDialog(this.teamId, this.state.peer);
                     }
                     break;
             }

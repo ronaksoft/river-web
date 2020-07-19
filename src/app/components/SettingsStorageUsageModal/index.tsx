@@ -29,11 +29,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import i18n from "../../services/i18n";
 import {localize} from '../../services/utilities/localize';
+import {IPeer} from "../../repository/dialog/interface";
+import {GetPeerNameByPeer} from "../../repository/dialog";
 
 import './style.scss';
 
 interface IProps {
-    onDone?: (peerIds: string[]) => void;
+    onDone?: (peerIds: IPeer[]) => void;
 }
 
 interface IState {
@@ -44,13 +46,14 @@ interface IState {
     open: boolean;
     progress: { percent: number, filesTotal: number };
     selectedDialog?: IDialogInfo;
-    selectedDialogs: { [key: number]: boolean };
+    selectedDialogs: { [key: string]: boolean };
     selectedMediaTypes: { [key: number]: boolean };
     totalSelectedSize: number;
     totalSize: number;
 }
 
 class SettingsStorageUsageModal extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private storageUsageService: StorageUsageService;
     private readonly progressThrottle: any;
 
@@ -76,7 +79,8 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         this.progressThrottle = throttle(this.displayProgress, 100);
     }
 
-    public openDialog() {
+    public openDialog(teamId: string) {
+        this.teamId = teamId;
         this.setState({
             open: true,
         }, () => {
@@ -101,9 +105,9 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                         {list.map((item, key) => {
                             return (<div key={key} className="storage-item">
                                 <div className="icon-container"
-                                     onClick={this.clearByIdHandler(item.peerId || '')}>{this.getAvatar(item)}</div>
+                                     onClick={this.clearByIdHandler(item.peer)}>{this.getAvatar(item)}</div>
                                 <div className="info-container"
-                                     onClick={this.clearByIdHandler(item.peerId || '')}>
+                                     onClick={this.clearByIdHandler(item.peer)}>
                                     <div className="name-row">{this.getName(item)}</div>
                                     <div className="size-row">
                                         {getHumanReadableSize(item.totalSize)}
@@ -114,8 +118,8 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                                 <div className="checkbox-container">
                                     <Checkbox
                                         color="primary"
-                                        checked={this.isDialogChecked(item.peerId)}
-                                        onChange={this.checkDialogItem(item.peerId)}
+                                        checked={this.isDialogChecked(item.peer)}
+                                        onChange={this.checkDialogItem(item.peer)}
                                         classes={{
                                             checked: 'checkbox-checked',
                                             root: 'checkbox',
@@ -221,12 +225,12 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         this.setState({
             loading: true
         });
-        this.storageUsageService.compute(this.computeProgress).then((list) => {
+        this.storageUsageService.compute(this.teamId, this.computeProgress).then((list) => {
             let totalSize: number = 0;
-            const selectedDialogs: { [key: number]: boolean } = {};
+            const selectedDialogs: { [key: string]: boolean } = {};
             list.forEach((item) => {
                 totalSize += item.totalSize;
-                selectedDialogs[item.peerId] = true;
+                selectedDialogs[GetPeerNameByPeer(item.peer)] = true;
             });
             this.setState({
                 list,
@@ -241,9 +245,9 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         this.progressThrottle(e);
     }
 
-    private clearByIdHandler = (id: string) => (e: any) => {
+    private clearByIdHandler = (peer: IPeer) => (e: any) => {
         const {list} = this.state;
-        const index = findIndex(list, {peerId: id});
+        const index = findIndex(list, o => o.peer.id === peer.id && o.peer.peerType === peer.peerType);
         if (index > -1) {
             const selectedMediaTypes: { [key: number]: boolean } = {};
             Object.keys(list[index].mediaTypes).forEach((key) => {
@@ -260,9 +264,10 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     private getName(info: IDialogInfo) {
         switch (info.peerType) {
             case PeerType.PEERUSER:
-                return <UserName className="name" id={info.peerId}/>;
+            case PeerType.PEEREXTERNALUSER:
+                return <UserName className="name" id={info.peer.id}/>;
             case PeerType.PEERGROUP:
-                return <GroupName className="name" id={info.peerId}/>;
+                return <GroupName className="name" id={info.peer.id} teamId={info.teamId}/>;
             default:
                 return null;
         }
@@ -271,9 +276,10 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     private getAvatar(info: IDialogInfo) {
         switch (info.peerType) {
             case PeerType.PEERUSER:
-                return <UserAvatar className="avatar" id={info.peerId}/>;
+            case PeerType.PEEREXTERNALUSER:
+                return <UserAvatar className="avatar" id={info.peer.id}/>;
             case PeerType.PEERGROUP:
-                return <GroupAvatar className="avatar" id={info.peerId}/>;
+                return <GroupAvatar className="avatar" id={info.peer.id} teamId={info.teamId}/>;
             default:
                 return null;
         }
@@ -297,17 +303,18 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         });
     }
 
-    private isDialogChecked(id: string) {
+    private isDialogChecked(peer: IPeer) {
         const {selectedDialogs} = this.state;
-        return selectedDialogs.hasOwnProperty(id);
+        return selectedDialogs.hasOwnProperty(`${peer.id}_${peer.peerType}`);
     }
 
-    private checkDialogItem = (id: string) => (e: any) => {
+    private checkDialogItem = (peer: IPeer) => (e: any) => {
         const {selectedDialogs} = this.state;
-        if (!selectedDialogs.hasOwnProperty(id)) {
-            selectedDialogs[id] = true;
+        const peerName = GetPeerNameByPeer(peer);
+        if (!selectedDialogs.hasOwnProperty(peerName)) {
+            selectedDialogs[peerName] = true;
         } else {
-            delete selectedDialogs[id];
+            delete selectedDialogs[peerName];
         }
         this.setState({
             selectedDialogs,
@@ -353,7 +360,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         }
         let totalSize: number = 0;
         list.forEach((item) => {
-            if (selectedDialogs.hasOwnProperty(item.peerId)) {
+            if (selectedDialogs.hasOwnProperty(`${item.peer.id}_${item.peer.peerType}`)) {
                 totalSize += item.totalSize;
             }
         });
@@ -391,9 +398,9 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     private confirmAcceptHandler = () => {
         const {selectedDialogs, selectedMediaTypes, selectedDialog, list} = this.state;
         const items: IFileWithId[] = [];
-        const peerIds: string[] = [];
+        const peers: IPeer[] = [];
         if (selectedDialog) {
-            const index = findIndex(list, {peerId: selectedDialog.peerId});
+            const index = findIndex(list, o => o.peer.id === selectedDialog.peer.id && o.peerType === selectedDialog.peer.peerType);
             Object.keys(selectedMediaTypes).forEach((key) => {
                 if (selectedDialog.mediaTypes.hasOwnProperty(key)) {
                     selectedDialog.mediaTypes[key].fileIds.forEach((item: IFileWithId) => {
@@ -405,15 +412,15 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
             if (Object.keys(list[index].mediaTypes).length === 0) {
                 list.splice(index, 1);
             }
-            peerIds.push(selectedDialog.peerId);
+            peers.push(selectedDialog.peer);
         } else {
             const keys: number[] = [];
             const ids = Object.keys(selectedDialogs);
             list.filter((o) => {
-                return ids.indexOf(o.peerId) > -1;
+                return ids.indexOf(GetPeerNameByPeer(o.peer)) > -1;
             }).forEach((info, index) => {
                 keys.push(index);
-                peerIds.push(info.peerId);
+                peers.push(info.peer);
                 Object.keys(info.mediaTypes).forEach((key) => {
                     info.mediaTypes[key].fileIds.forEach((item: IFileWithId) => {
                         items.push(item);
@@ -434,7 +441,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                 selectedMediaTypes: {},
             });
             if (this.props.onDone) {
-                this.props.onDone(peerIds);
+                this.props.onDone(peers);
             }
         });
     }

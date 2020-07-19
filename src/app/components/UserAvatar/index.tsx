@@ -11,13 +11,15 @@ import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import {BookmarkBorderRounded} from '@material-ui/icons';
-import AvatarService from '../../services/avatarService';
+import AvatarService, {AvatarSrcUpdated} from '../../services/avatarService';
 import {find} from 'lodash';
 import Broadcaster from '../../services/broadcaster';
 import icon from '../../../asset/image/icon.png';
-import {UserStatus} from "../../services/sdk/messages/core.types_pb";
+import {PeerType, UserStatus} from "../../services/sdk/messages/core.types_pb";
 import RiverTime from "../../services/utilities/river_time";
 import {DeletedUserLight} from "./svg";
+import {GetDbFileName} from "../../repository/file";
+import {FaceRounded} from '@material-ui/icons';
 
 import './style.scss';
 
@@ -130,6 +132,7 @@ interface IProps {
     savedMessages?: boolean;
     onlineIndicator?: boolean;
     forceReload?: boolean;
+    peerType?: PeerType;
 }
 
 interface IState {
@@ -169,7 +172,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
         if (!this.props.savedMessages) {
             this.getUser();
             this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
-            this.eventReferences.push(this.broadcaster.listen('Avatar_SRC_Updated', this.getUserPhoto));
+            this.eventReferences.push(this.broadcaster.listen(AvatarSrcUpdated, this.getUserPhoto));
         }
     }
 
@@ -198,32 +201,37 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
+        const {peerType} = this.props;
         const {user, className, photo} = this.state;
         if (this.props.savedMessages) {
             return (
-                <span className={'uac saved-messages-avatar ' + className}>
+                <div className={'uac saved-messages-avatar ' + className}>
                     <BookmarkBorderRounded/>
-                </span>
+                </div>
             );
         } else if (this.state.id === '2374') {
             return (
-                <span className={'uac avatar-official ' + className}>
+                <div className={'uac avatar-official ' + className}>
                     <img src={icon} alt="avatar" draggable={false}/>
-                </span>
+                </div>
             );
         } else if (user && user.deleted) {
             return (
-                <span className={'uac user-deleted ' + className}>
+                <div className={'uac user-deleted ' + className}>
                     <DeletedUserLight/>
-                </span>
+                </div>
             );
         } else {
             return (
                 <>
-                <span className={'uac' + (className ? ` ${className}` : '')}
-                      onClick={this.clickHandler}>{(user && photo) ?
-                    <img className="avatar-image" src={photo} alt="avatar" draggable={false}
-                         onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}</span>
+                    <div className={'uac' + (className ? ` ${className}` : '')}
+                         onClick={this.clickHandler}>{(user && photo) ?
+                        <img className="avatar-image" src={photo} alt="avatar" draggable={false}
+                             onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}
+                        {Boolean(peerType === PeerType.PEEREXTERNALUSER) && <div className="external-user-overlay">
+                            <FaceRounded/>
+                        </div>}
+                    </div>
                     {this.getOnlineIndicator()}
                 </>
             );
@@ -276,7 +284,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
             if (user.id !== this.state.user.id) {
                 this.avatarService.resetRetries(user.id || '');
             }
-            this.getAvatar(user.id || '', user.photo.photosmall.fileid);
+            this.getAvatar(user.id || '', GetDbFileName(user.photo.photosmall.fileid, user.photo.photosmall.clusterid));
         } else {
             this.setState({
                 photo: undefined,
@@ -294,13 +302,13 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
             item = find(data.items, {id: this.state.id});
         }
         if (item) {
-            this.getAvatar(item.id, item.fileId);
+            this.getAvatar(item.id, item.fileName);
         }
     }
 
     /* Get avatar from service */
-    private getAvatar(id: string, fileId: string) {
-        this.avatarService.getAvatar(id, fileId).then((photo) => {
+    private getAvatar(id: string, fileName: string) {
+        this.avatarService.getAvatar('0', id, fileName).then((photo) => {
             if (!this.mounted) {
                 return;
             }
@@ -336,9 +344,9 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
     private imgErrorHandler = () => {
         const {user} = this.state;
         if (user && user.photo && user.photo.photosmall.fileid && user.photo.photosmall.fileid !== '0') {
-            const fileId = user.photo.photosmall.fileid;
-            this.avatarService.remove(user.id || '', fileId).then(() => {
-                this.getAvatar(user.id || '', fileId);
+            const fileName = GetDbFileName(user.photo.photosmall.fileid, user.photo.photosmall.clusterid);
+            this.avatarService.remove(user.id || '', fileName).then(() => {
+                this.getAvatar(user.id || '', fileName);
             });
         }
     }

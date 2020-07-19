@@ -32,9 +32,10 @@ import animateScrollTo from "animated-scroll-to";
 import {Loading} from '../Loading';
 import SearchRepo from "../../repository/search";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {InputAdornment} from "@material-ui/core";
+import {PeerType} from "../../services/sdk/messages/core.types_pb";
 
 import './style.scss';
-import {InputAdornment} from "@material-ui/core";
 
 interface IProps {
     className?: string;
@@ -46,6 +47,7 @@ interface IProps {
     onChange?: (contacts: IUser[]) => void;
     onContextMenuAction?: (cmd: string, contact: IUser) => void;
     globalSearch?: boolean;
+    teamId: string;
 }
 
 interface IState {
@@ -235,7 +237,7 @@ class ContactList extends React.Component<IProps, IState> {
                         onChange={this.searchChangeHandler}
                     />}
                 </div>
-                <div className="contact-list-container">
+                <div className={'contact-list-container' + (this.props.teamId === '0' ? ' default-team' : '')}>
                     {this.getWrapper()}
                 </div>
                 <Menu
@@ -359,7 +361,7 @@ class ContactList extends React.Component<IProps, IState> {
                             <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
                             <span
                                 className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
-                            {Boolean(this.props.onContextMenuAction) &&
+                            {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                             <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                                 <MoreVert/>
                             </div>}
@@ -368,17 +370,17 @@ class ContactList extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div style={style} key={contact.id || ''} className="contact-item">
-                            <Link to={`/chat/${contact.id}`}>
+                            <Link to={`/chat/${this.props.teamId}/${contact.id}_${PeerType.PEERUSER}`}>
                                 <span className="avatar">
                                     <UserAvatar id={contact.id || ''}/>
                                 </span>
                                 <span className="name">
                                     <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
-                                    <LastSeen className="last-seen" id={contact.id || ''}/>
+                                    <LastSeen className="last-seen" id={contact.id || ''} teamId={this.props.teamId}/>
                                 </span>
                                 <span
                                     className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
-                                {Boolean(this.props.onContextMenuAction) &&
+                                {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                                 <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                                     <MoreVert/>
                                 </div>}
@@ -394,17 +396,17 @@ class ContactList extends React.Component<IProps, IState> {
             const contact = this.state.globalUsers[index - (this.state.contacts.length + 1)];
             return (
                 <div style={style} key={contact.id || ''} className="contact-item">
-                    <Link to={`/chat/${contact.id}`}>
+                    <Link to={`/chat/${this.props.teamId}/${contact.id}_${PeerType.PEERUSER}`}>
                         <span className="avatar">
                             <UserAvatar id={contact.id || ''}/>
                         </span>
                         <span className="name">
                             <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
-                            <LastSeen className="last-seen" id={contact.id || ''}/>
+                            <LastSeen className="last-seen" id={contact.id || ''} teamId={this.props.teamId}/>
                         </span>
                         <span
                             className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
-                        {Boolean(this.props.onContextMenuAction) &&
+                        {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                         <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                             <MoreVert/>
                         </div>}
@@ -446,7 +448,7 @@ class ContactList extends React.Component<IProps, IState> {
                 });
             }
         };
-        this.userRepo.getAllContacts(fn).then(fn);
+        this.userRepo.getAllContacts(this.props.teamId, fn).then(fn);
     }
 
     /* Searches the given string */
@@ -468,7 +470,7 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
-        this.userRepo.getManyCache(true, {keyword: text, limit: 12}).then((res) => {
+        this.userRepo.getManyCache(this.props.teamId, true, {keyword: text, limit: 12}).then((res) => {
             this.contactsRes = clone(res || []);
             if (this.list) {
                 this.list.resetAfterIndex(0, false);
@@ -478,7 +480,7 @@ class ContactList extends React.Component<IProps, IState> {
             });
         });
         if (this.props.globalSearch && text.length > 0) {
-            this.searchRepo.globalSearch(text, this.contactsRes, (users) => {
+            this.searchRepo.globalSearch(this.props.teamId, text, this.contactsRes, (users) => {
                 if (this.list) {
                     this.list.resetAfterIndex(this.state.contacts.length, false);
                 }

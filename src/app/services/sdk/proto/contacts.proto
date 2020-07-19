@@ -107,6 +107,7 @@ enum TopPeerCategory {
 
 // TopPeer
 message TopPeer {
+    optional int64 TeamID = 100 [jstype = JS_STRING];
     required Peer Peer = 1;
     required float Rate = 2;
     optional int64 LastUpdate = 3;
@@ -139,4 +140,5 @@ message ContactsMany {
     required bool Modified = 3;
     repeated User Users = 4;
     optional bool Empty = 5;
+    optional uint32 Hash = 6;
 }

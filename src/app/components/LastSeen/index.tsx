@@ -22,6 +22,7 @@ import {localize} from "../../services/utilities/localize";
 interface IProps {
     className?: string;
     id: string;
+    teamId: string;
     withLastSeen?: boolean;
 }
 
@@ -181,11 +182,11 @@ class LastSeen extends React.PureComponent<IProps, IState> {
             return;
         }
 
-        if (data && data.ids.indexOf(this.state.id) === -1) {
+        if (data && data.ids.indexOf(`${this.props.teamId}_${this.state.id}`) === -1) {
             return;
         }
 
-        this.groupRepo.get(this.state.id).then((group) => {
+        this.groupRepo.get(this.props.teamId, this.state.id).then((group) => {
             if (group) {
                 this.setState({
                     group,

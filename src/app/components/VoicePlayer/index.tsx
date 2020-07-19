@@ -28,6 +28,7 @@ import {from4bitResolution} from "../ChatInput/utils";
 import {base64ToU8a} from "../../services/sdk/fileManager/http/utils";
 
 import './style.scss';
+import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     className?: string;
@@ -47,21 +48,21 @@ export interface IVoicePlayerData {
     duration: number;
     state: 'pause' | 'progress' | 'download';
     voice?: Blob;
-    fileId?: string;
+    fileName?: string;
 }
 
 export const getVoiceInfo = (message: IMessage): IVoicePlayerData => {
     const info: IVoicePlayerData = {
         bars: [],
         duration: 0,
-        fileId: '',
+        fileName: '',
         state: 'download',
     };
     const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
     if (!messageMediaDocument) {
         return info;
     }
-    info.fileId = messageMediaDocument.doc.id;
+    info.fileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
     if (!message.attributes) {
         return info;
     }
@@ -106,7 +107,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private circleProgressRef: any = null;
     private eventReferences: any[] = [];
     private progressBroadcaster: ProgressBroadcaster;
-    private voiceId: string | undefined;
+    private voiceFileName: string | undefined;
     private audioPlayer: AudioPlayer;
     private readSent: boolean = false;
     private broadcaster: Broadcaster;
@@ -180,10 +181,13 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             this.audioPlayer.setInstantVoice(this.voice);
         }
         this.setVoiceState(data.state);
-        if (data.fileId) {
-            this.voiceId = data.fileId;
+        if (data.fileName) {
+            this.voiceFileName = data.fileName;
             if (message) {
-                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
+                this.audioPlayer.addToPlaylist(message.id || 0, {
+                    id: message.peerid || '',
+                    peerType: message.peertype || 0
+                }, this.voiceFileName, message.senderid || '', message.downloaded || false);
                 this.removeAllListeners();
                 this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
                 this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
@@ -218,6 +222,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                     const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (message.peertype) {
                         case PeerType.PEERUSER:
+                        case PeerType.PEEREXTERNALUSER:
                             if (message.messagetype === C_MESSAGE_TYPE.Voice && ds.chat_voices) {
                                 this.downloadVoiceHandler();
                             }
@@ -235,8 +240,11 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         if (state === 'pause') {
             this.removeAllListeners();
             this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
-            if (this.voiceId) {
-                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
+            if (this.voiceFileName) {
+                this.audioPlayer.addToPlaylist(message.id || 0, {
+                    id: message.peerid || '',
+                    peerType: message.peertype || 0,
+                }, this.voiceFileName, message.senderid || '', message.downloaded || false);
             }
         }
     }
@@ -397,7 +405,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                     this.audioPlayer.play(C_INSTANT_AUDIO);
                 });
             });
-        } else if (this.voiceId && message) {
+        } else if (this.voiceFileName && message) {
             this.audioPlayer.play(message.id || 0, true).catch((err) => {
                 window.console.log(err, message);
             });
@@ -409,7 +417,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         const {message} = this.props;
         if (this.voice) {
             this.audioPlayer.pause(C_INSTANT_AUDIO);
-        } else if (this.voiceId && message) {
+        } else if (this.voiceFileName && message) {
             this.audioPlayer.pause(message.id || 0);
         }
     }
@@ -420,7 +428,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         const {message} = this.props;
         if (this.voice) {
             this.audioPlayer.seekTo(C_INSTANT_AUDIO, ratio);
-        } else if (this.voiceId && message) {
+        } else if (this.voiceFileName && message) {
             this.audioPlayer.seekTo(message.id || 0, ratio);
         }
     }

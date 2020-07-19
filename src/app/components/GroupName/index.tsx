@@ -17,6 +17,7 @@ interface IProps {
     className?: string;
     defaultString?: string;
     id: string;
+    teamId: string;
     noIcon?: boolean;
     prefix?: string;
 }
@@ -82,7 +83,8 @@ class GroupName extends React.PureComponent<IProps, IState> {
         const {defaultString, noIcon} = this.props;
         return (
             <span
-                className={className}>{Boolean(noIcon !== true) && <GroupRounded/>}{(group && group.id) ? `${prefix}${group.title}` : (defaultString || '')}</span>
+                className={className}>{Boolean(noIcon !== true) &&
+            <GroupRounded/>}{(group && group.id) ? `${prefix}${group.title}` : (defaultString || '')}</span>
         );
     }
 
@@ -90,11 +92,11 @@ class GroupName extends React.PureComponent<IProps, IState> {
         if (!this.state || this.state.id === '') {
             return;
         }
-        if (data && data.ids.indexOf(this.state.id) === -1) {
+        if (data && data.ids.indexOf(`${this.props.teamId}_${this.state.id}`) === -1) {
             return;
         }
 
-        this.groupRepo.get(this.state.id).then((group) => {
+        this.groupRepo.get(this.props.teamId, this.state.id).then((group) => {
             if (!this.mounted || !group) {
                 return;
             }

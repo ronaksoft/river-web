@@ -16,3 +16,4 @@ export const EventWasmStarted = 'fnStarted';
 export const EventWebSocketOpen = 'wsOpen';
 export const EventWebSocketClose = 'wsClose';
 export const EventNetworkStatus = 'networkStatus';
+export const EventCheckNetwork = 'checkNetwork';

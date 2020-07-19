@@ -1,5 +1,44 @@
-## 0.33.9
-* Scroll bug patched
+## 0.34.8
+* Known bugs fixed
+
+## 0.34.7
+* Send all pending messages on start up
+* AudioPlayer bug fixed
+* AvatarService bug fixed
+* FileManager bug fixed
+* TopPeer bug fixed
+* Other Known bugs fixed
+
+## 0.34.6
+* UI improvements and bug fix
+
+## 0.34.5
+* Team is now community ready
+* Show more/less added in label items
+* Label UI updated
+* Known bugs fixed
+
+## 0.34.4
+* TypeAction updated
+
+## 0.34.3
+* TypeAction for team implemented
+* Bug fixes and performance improvements
+
+## 0.34.2
+* TopPeer for team implemented
+
+## 0.34.1
+* GIF bug fixed
+* Upload bug fixed
+* Overall performance improvements
+
+## 0.34.0
+* 🎉 New Team Feature
+* Database version 5
+* FileManager updated with clusterId
+* All repositories modified for team
+* Bug fixes and performance improvements 
 
 ## 0.33.8
 * Load more bugs fixed

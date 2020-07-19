@@ -19,6 +19,7 @@ import './style.scss';
 
 interface IProps {
     onDone: (contacts: IUser[], caption: string) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -74,7 +75,8 @@ class ContactPicker extends React.Component<IProps, IState> {
                                     </IconButton>
                                     {i18n.t('general.choose_recipients')}
                                 </div>
-                                <ContactList onChange={this.addRecipientChangeHandler} mode="chip"/>
+                                <ContactList onChange={this.addRecipientChangeHandler} mode="chip"
+                                             teamId={this.props.teamId}/>
                                 {Boolean(recipients.length > 0) && <div className="actions-bar">
                                     <div className="add-action send" onClick={this.doneHandler}>
                                         <SendRounded/>

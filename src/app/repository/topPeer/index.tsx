@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/top_peer';
 import {ITopPeer} from './interface';
-import {differenceBy, find, groupBy} from 'lodash';
+import {differenceWith, find, groupBy} from 'lodash';
 import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
 import {DexieTopPeerDB} from "../../services/db/dexie/top_peer";
@@ -74,26 +74,28 @@ export default class TopPeerRepo {
         return this.getDbByType(type).bulkPut(topPeers);
     }
 
-    public remove(type: TopPeerType, id: string) {
-        return this.getDbByType(type).delete(id);
+    public remove(teamId: string, type: TopPeerType, id: string, peerType: number) {
+        return this.getDbByType(type).delete([teamId, id, peerType]);
     }
 
-    public insertFromRemote(type: TopPeerType, remoteTopPeers: TopPeer.AsObject[]) {
+    public insertFromRemote(teamId: string, type: TopPeerType, remoteTopPeers: TopPeer.AsObject[]) {
         const topPeers = (remoteTopPeers as ITopPeer[]).map((tp: ITopPeer) => {
             if (tp.peer) {
                 tp.id = tp.peer.id || '';
+                tp.peertype = tp.peer.type || 0;
             }
+            tp.teamid = tp.teamid || teamId;
             return tp;
         });
         return this.createMany(type, topPeers);
     }
 
-    public get(type: TopPeerType, id: string): Promise<ITopPeer | undefined> {
-        return this.getDbByType(type).get(id);
+    public get(teamId: string, type: TopPeerType, id: string): Promise<ITopPeer | undefined> {
+        return this.getDbByType(type).get([teamId, id]);
     }
 
-    public list(type: TopPeerType, limit: number): Promise<ITopPeer[]> {
-        return this.getDbByType(type).where('[rate+id]').between([Dexie.minKey, Dexie.minKey], [Dexie.maxKey, Dexie.maxKey]).reverse().limit(limit).toArray();
+    public list(teamId: string, type: TopPeerType, limit: number): Promise<ITopPeer[]> {
+        return this.getDbByType(type).where('[teamid+rate]').between([teamId, Dexie.minKey], [teamId, Dexie.maxKey]).reverse().limit(limit).toArray();
     }
 
     public importBulkEmbedType(topPeers: ITopPeerWithType[]): Promise<any> {
@@ -169,15 +171,16 @@ export default class TopPeerRepo {
         if (topPeers.length === 0) {
             return Promise.resolve();
         }
-        const ids = topPeers.map((topPeer) => {
+        const ids: Array<[string, string, number]> = topPeers.map((topPeer) => {
             // @ts-ignore
             delete topPeer.type;
-            return topPeer.id || '';
+            topPeer.teamid = topPeer.teamid || '0';
+            return [topPeer.teamid, topPeer.id || '', topPeer.peertype || 0];
         });
-        return this.getDbByType(type).where('id').anyOf(ids).toArray().then((result) => {
-            const createItems: ITopPeer[] = differenceBy(topPeers, result, 'id').map((t) => this.computeRate(t));
+        return this.getDbByType(type).where('[teamid+id+peertype]').anyOf(ids).toArray().then((result) => {
+            const createItems: ITopPeer[] = differenceWith(topPeers, result, (i1, i2) => i1.teamid === i2.teamid && i1.id === i2.id && i1.peertype === i2.peertype).map((t) => this.computeRate(t));
             const updateItems: ITopPeer[] = result.map((topPeer: ITopPeer) => {
-                const t = find(topPeers, {id: topPeer.id});
+                const t = find(topPeers, {teamid: topPeer.teamid, id: topPeer.id, peertype: topPeer.peertype});
                 if (t) {
                     return this.computeRate(t, topPeer);
                 } else {

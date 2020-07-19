@@ -12,13 +12,13 @@ import {ITopPeer} from "../../../repository/topPeer/interface";
 
 export class DexieTopPeerDB extends Dexie {
     // @ts-ignore
-    public search: Dexie.Table<ITopPeer, string>;
+    public search: Dexie.Table<ITopPeer, [string, string, number]>;
     // @ts-ignore
-    public forward: Dexie.Table<ITopPeer, string>;
+    public forward: Dexie.Table<ITopPeer, [string, string, number]>;
     // @ts-ignore
-    public botinline: Dexie.Table<ITopPeer, string>;
+    public botinline: Dexie.Table<ITopPeer, [string, string, number]>;
     // @ts-ignore
-    public botmessage: Dexie.Table<ITopPeer, string>;
+    public botmessage: Dexie.Table<ITopPeer, [string, string, number]>;
 
     constructor() {
         super('top_peer_db');
@@ -28,10 +28,10 @@ export class DexieTopPeerDB extends Dexie {
         // (Here's where the implicit table props are dynamically created)
         //
         this.version(1).stores({
-            botinline: `id,[rate+id],[lastupdate+id]`,
-            botmessage: `id,[rate+id],[lastupdate+id]`,
-            forward: `id,[rate+id],[lastupdate+id]`,
-            search: `id,[rate+id],[lastupdate+id]`,
+            botinline: `[teamid+id+peertype],[teamid+rate],[teamid+lastupdate]`,
+            botmessage: `[teamid+id+peertype],[teamid+rate],[teamid+lastupdate]`,
+            forward: `[teamid+id+peertype],[teamid+rate],[teamid+lastupdate]`,
+            search: `[teamid+id+peertype],[teamid+rate],[teamid+lastupdate]`,
         });
 
         this.search = this.table('search');

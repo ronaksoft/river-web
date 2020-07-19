@@ -625,7 +625,7 @@ class SignUp extends React.Component<IProps, IState> {
             loading: false,
             tries: this.state.tries + 1,
         });
-        this.props.history.push('/chat/null');
+        this.props.history.push('/chat/0/null');
         this.dispatchWSOpenEvent();
         // this.notification.initToken().then((token) => {
         //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
@@ -742,6 +742,8 @@ class SignUp extends React.Component<IProps, IState> {
                 }
                 if (err.code === C_ERR.ErrCodeInvalid && (err.items === C_ERR_ITEM.ErrItemSecurityAnswer || err.items === C_ERR_ITEM.ErrItemSecurityQuestion)) {
                     this.props.enqueueSnackbar(i18n.t('settings.2fa.security_answer_are_wrong'));
+                } else if (err.code === C_ERR.ErrCodeTooFew && err.items === C_ERR_ITEM.ErrItemSecurityAnswer) {
+                    this.props.enqueueSnackbar(i18n.t('settings.2fa.security_answer_are_wrong'));
                 }
             });
         }
@@ -773,7 +775,7 @@ class SignUp extends React.Component<IProps, IState> {
                 loading: false,
                 tries: this.state.tries + 1,
             });
-            this.props.history.push('/chat/null');
+            this.props.history.push('/chat/0/null');
             this.dispatchWSOpenEvent();
             // this.notification.initToken().then((token) => {
             //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
@@ -837,7 +839,7 @@ class SignUp extends React.Component<IProps, IState> {
     private wsOpenHandler = () => {
         this.apiManager.authRecall().then(() => {
             if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
-                this.props.history.push('/chat/null');
+                this.props.history.push('/chat/0/null');
             }
         }).catch((err) => {
             window.console.warn(err);

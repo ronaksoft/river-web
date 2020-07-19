@@ -62,7 +62,8 @@ const showLocationHandler = (lat: number, long: number, message: IMessage) => (e
                 lng: long,
             },
         }],
-        peerId: message.peerid || '',
+        peer: {id: message.peerid || '', peerType: message.peertype || 0},
+        teamId: message.teamid || '0',
         type: 'location',
     };
     DocumentViewerService.getInstance().loadDocument(doc);

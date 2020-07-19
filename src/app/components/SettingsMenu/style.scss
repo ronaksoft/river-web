@@ -1624,6 +1624,42 @@ html[theme="dark-blue"] {
         background-color: var(--dark-low);
       }
     }
+
+    .block-list {
+      &.no-result {
+        color: var(--grey);
+      }
+
+      .contact-item {
+        &:after {
+          background-color: var(--dark-low-op50);
+        }
+
+        &:hover {
+          border: 0;
+          background-color: var(--dark-hover);
+        }
+
+        .name {
+          color: var(--light);
+          .last-seen {
+            .online {
+              color: var(--river);
+            }
+          }
+        }
+
+        .phone {
+          color: var(--grey);
+        }
+
+        .more {
+          svg {
+            color: var(--grey);
+          }
+        }
+      }
+    }
   }
 }
 
@@ -1730,6 +1766,23 @@ html[theme="dark-blue"] {
 
       &.terminate-all {
         background-color: var(--dark-blue-low);
+      }
+    }
+
+    .block-list {
+      &.no-result {
+        color: var(--grey);
+      }
+
+      .contact-item {
+        &:after {
+          background-color: var(--dark-blue-low-op50);
+        }
+
+        &:hover {
+          border: 0;
+          background-color: var(--dark-blue-hover);
+        }
       }
     }
   }

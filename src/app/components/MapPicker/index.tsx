@@ -63,6 +63,7 @@ const mentionInputStyle = {
 };
 
 class MapPicker extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private mentionContainer: any = null;
     private textarea: any = null;
     private rtlDetector: RTLDetector;
@@ -93,7 +94,8 @@ class MapPicker extends React.Component<IProps, IState> {
         this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
     }
 
-    public openDialog(peer: InputPeer | null) {
+    public openDialog(teamId: string, peer: InputPeer | null) {
+        this.teamId = teamId;
         this.setState({
             dialogOpen: true,
             peer,
@@ -152,6 +154,7 @@ class MapPicker extends React.Component<IProps, IState> {
                                         value={caption}
                                         onChange={this.captionChangeHandler}
                                         placeholder={i18n.t('uploader.write_a_caption')}
+                                        teamId={this.teamId}
                                     />
                                 </div>
                             </div>

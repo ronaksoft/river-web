@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import SettingsModal from '../SettingsModal';
-import {CheckRounded, LabelOutlined, LabelRounded, SearchRounded, AddRounded} from '@material-ui/icons';
+import {CheckRounded, LabelOutlined, LabelRounded, SearchRounded, AddRounded, AddCircle} from '@material-ui/icons';
 import i18n from '../../services/i18n';
 import {ILabel} from "../../repository/label/interface";
 import {TextField, InputAdornment} from "@material-ui/core";
@@ -163,8 +163,10 @@ class LabelDialog extends React.Component<IProps, IState> {
                         </Scrollbars>
                     </div>}
                     {Boolean(list.length === 0 && !loading) && <div className="label-container label-placeholder">
-                        <LabelRounded/>
-                        {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
+                        <div className="add-new-label" onClick={this.addLabelHandler}>
+                            <AddCircle/>
+                            {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
+                        </div>
                     </div>}
                     {Boolean(!isEqual(this.selectedIds, selectedIds) || !isEqual(this.indeterminateIds, indeterminateIds)) &&
                     <div className="actions-bar no-bg">

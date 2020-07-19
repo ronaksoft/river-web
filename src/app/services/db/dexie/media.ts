@@ -22,7 +22,7 @@ export class DexieMediaDB extends Dexie {
         // (Here's where the implicit table props are dynamically created)
         //
         this.version(1).stores({
-            medias: `id,[peerid+id+type]`,
+            medias: `id,[teamid+peerid+peertype+id]`,
         });
 
         this.medias = this.table('medias');

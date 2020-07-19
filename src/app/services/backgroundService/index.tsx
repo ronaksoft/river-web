@@ -55,10 +55,10 @@ export default class BackgroundService {
     }
 
     /* Get background picture */
-    public getBackground(fileId: string, applyBackground?: boolean): Promise<Blob> {
+    public getBackground(fileName: string, applyBackground?: boolean): Promise<Blob> {
         return new Promise((resolve, reject) => {
-            if (fileId !== '0') {
-                this.getLocalFile(fileId).then((res) => {
+            if (fileName !== '0') {
+                this.getLocalFile(fileName).then((res) => {
                     if (applyBackground) {
                         this.setBackground(res);
                     }
@@ -71,9 +71,9 @@ export default class BackgroundService {
     }
 
     /* Get local file */
-    private getLocalFile(fileId: string): Promise<Blob> {
+    private getLocalFile(fileName: string): Promise<Blob> {
         return new Promise((resolve, reject) => {
-            this.fileRepo.get(fileId).then((fileRes) => {
+            this.fileRepo.get(fileName).then((fileRes) => {
                 if (fileRes) {
                     resolve(fileRes.data);
                 } else {

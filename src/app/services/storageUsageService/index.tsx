@@ -7,11 +7,13 @@
     Copyright Ronak Software Group 2019
 */
 
-import FileRepo from '../../repository/file/index';
+import FileRepo, {GetDbFileName} from '../../repository/file/index';
 import DialogRepo from '../../repository/dialog/index';
 import MediaRepo from '../../repository/media/index';
 import {PeerType} from '../sdk/messages/core.types_pb';
 import MessageRepo from '../../repository/message';
+import {IPeer} from "../../repository/dialog/interface";
+import {C_MESSAGE_TYPE} from "../../repository/message/consts";
 
 export interface IStorageProgress {
     done: number;
@@ -20,14 +22,14 @@ export interface IStorageProgress {
 }
 
 interface IFileInfo {
-    fileId: string;
+    fileName: string;
     id: number;
     mediaType: number;
     size: number;
 }
 
 export interface IFileWithId {
-    fileId: string;
+    fileName: string;
     id: number;
 }
 
@@ -39,7 +41,8 @@ interface IStorageInfo {
 
 export interface IDialogInfo {
     mediaTypes: { [key: number]: IStorageInfo };
-    peerId: string;
+    peer: IPeer;
+    teamId: string;
     peerType: PeerType;
     totalFile: number;
     totalSize: number;
@@ -61,7 +64,7 @@ export default class StorageUsageService {
     private dialogRepo: DialogRepo;
     private mediaRepo: MediaRepo;
     private messageRepo: MessageRepo;
-    private computeQueue: string[] = [];
+    private computeQueue: IPeer[] = [];
     private dialogInfo: { [key: string]: IDialogInfo } = {};
     private totalComputations: number = 0;
     // Progress and promise
@@ -75,7 +78,7 @@ export default class StorageUsageService {
         this.messageRepo = MessageRepo.getInstance();
     }
 
-    public compute(progress?: (e: IStorageProgress) => void) {
+    public compute(teamId: string, progress?: (e: IStorageProgress) => void) {
         this.progressFn = progress;
         const promise = new Promise<IDialogInfo[]>((res, rej) => {
             this.promise.resolve = res;
@@ -88,12 +91,12 @@ export default class StorageUsageService {
         this.progressFn = progress;
         this.dialogInfo = {};
         this.computeQueue = [];
-        this.dialogRepo.getManyCache({}).then((dialogs) => {
+        this.dialogRepo.getManyCache(teamId, {}).then((dialogs) => {
             dialogs.forEach((dialog) => {
-                this.computeQueue.push(dialog.peerid || '');
+                this.computeQueue.push({id: dialog.peerid || '', peerType: dialog.peertype || 0});
             });
             this.totalComputations = dialogs.length;
-            this.startComputing();
+            this.startComputing(teamId);
         });
         return promise;
     }
@@ -132,11 +135,11 @@ export default class StorageUsageService {
 
     private clearChunk(infoList: IFileWithId[], skip?: number, limit?: number) {
         const items = infoList.slice(skip, limit);
-        const fileIds: string[] = [];
+        const fileNames: string[] = [];
         items.forEach((file) => {
-            fileIds.push(file.fileId);
+            fileNames.push(file.fileName);
         });
-        return this.fileRepo.removeMany(fileIds).then(() => {
+        return this.fileRepo.removeMany(fileNames).then(() => {
             return this.messageRepo.lazyUpsert(items.map((item) => {
                 return {
                     downloaded: false,
@@ -147,37 +150,39 @@ export default class StorageUsageService {
         });
     }
 
-    private getMediaFiles(peerId: string, before?: number) {
+    private getMediaFiles(teamId: string, peer: IPeer, before?: number) {
         const limit = 50;
-        return this.mediaRepo.getMany({limit, before}, peerId).then((res) => {
-            const fileMap: any = {};
+        return this.mediaRepo.getMany(teamId, peer, {limit, before}).then((res) => {
+            const fileMap: {[key: string]: {id: number, mediaType: number}} = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;
-            const ids: string[] = [];
+            const names: string[] = [];
             res.messages.filter((o) => {
                 peerType = o.peertype || PeerType.PEERUSER;
                 return (o.mediadata && o.mediadata.doc && (o.mediadata.doc.id || (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid)));
             }).forEach((o) => {
                 if (o.mediadata.doc.id) {
-                    fileMap[o.mediadata.doc.id] = {
-                        id: o.id,
-                        mediaType: o.messagetype,
+                    const name = GetDbFileName(o.mediadata.doc.id, o.mediadata.doc.clusterid);
+                    fileMap[name] = {
+                        id: o.id || 0,
+                        mediaType: o.messagetype || C_MESSAGE_TYPE.Normal,
                     };
-                    ids.push(o.mediadata.doc.id);
+                    names.push(name);
                 }
                 if (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid) {
-                    fileMap[o.mediadata.doc.thumbnail.fileid] = {
-                        id: o.id,
-                        mediaType: o.messagetype,
+                    const name = GetDbFileName(o.mediadata.doc.thumbnail.fileid, o.mediadata.doc.thumbnail.clusterid);
+                    fileMap[name] = {
+                        id: o.id || 0,
+                        mediaType: o.messagetype || C_MESSAGE_TYPE.Normal,
                     };
-                    ids.push(o.mediadata.doc.thumbnail.fileid);
+                    names.push(name);
                 }
             });
-            return this.fileRepo.getIn(ids).then((files) => {
+            return this.fileRepo.getIn(names).then((files) => {
                 return {
                     infoList: files.map((o) => {
                         return {
-                            fileId: o.id,
+                            fileName: o.id,
                             id: fileMap[o.id].id,
                             mediaType: fileMap[o.id].mediaType,
                             size: o.size,
@@ -185,7 +190,7 @@ export default class StorageUsageService {
                     }),
                     minId: res.minId,
                     more,
-                    peerId,
+                    peerId: peer.id,
                     peerType,
                 };
             });
@@ -194,49 +199,51 @@ export default class StorageUsageService {
         });
     }
 
-    private getMediaListPart(peerId: string, before?: number) {
-        return this.getMediaFiles(peerId, before).then((res) => {
-            if (!this.dialogInfo.hasOwnProperty(peerId)) {
-                this.dialogInfo[peerId] = {
+    private getMediaListPart(teamId: string, peer: IPeer, before?: number) {
+        return this.getMediaFiles(teamId, peer, before).then((res) => {
+            const mapId = `${teamId}_${peer.id}_${peer.peerType}`;
+            if (!this.dialogInfo.hasOwnProperty(mapId)) {
+                this.dialogInfo[mapId] = {
                     mediaTypes: {},
-                    peerId,
+                    peer,
                     peerType: res.peerType,
+                    teamId,
                     totalFile: 0,
                     totalSize: 0,
                 };
             }
             res.infoList.forEach((list) => {
-                this.dialogInfo[peerId].totalFile++;
-                this.dialogInfo[peerId].totalSize += list.size;
-                if (!this.dialogInfo[peerId].mediaTypes[list.mediaType]) {
-                    this.dialogInfo[peerId].mediaTypes[list.mediaType] = {
+                this.dialogInfo[mapId].totalFile++;
+                this.dialogInfo[mapId].totalSize += list.size;
+                if (!this.dialogInfo[mapId].mediaTypes[list.mediaType]) {
+                    this.dialogInfo[mapId].mediaTypes[list.mediaType] = {
                         fileIds: [],
                         totalFile: 0,
                         totalSize: 0,
                     };
                 }
-                this.dialogInfo[peerId].mediaTypes[list.mediaType].fileIds.push({fileId: list.fileId, id: list.id});
-                this.dialogInfo[peerId].mediaTypes[list.mediaType].totalFile++;
-                this.dialogInfo[peerId].mediaTypes[list.mediaType].totalSize += list.size;
+                this.dialogInfo[mapId].mediaTypes[list.mediaType].fileIds.push({fileName: list.fileName, id: list.id});
+                this.dialogInfo[mapId].mediaTypes[list.mediaType].totalFile++;
+                this.dialogInfo[mapId].mediaTypes[list.mediaType].totalSize += list.size;
             });
             return res;
         });
     }
 
-    private startComputing(peerId?: string, before?: number, total?: number) {
-        if (!peerId) {
-            peerId = this.computeQueue.shift();
+    private startComputing(teamId: string, peer?: IPeer, before?: number, total?: number) {
+        if (!peer) {
+            peer = this.computeQueue.shift();
         }
-        if (peerId) {
-            this.getMediaListPart(peerId, before).then((res) => {
+        if (teamId && peer) {
+            this.getMediaListPart(teamId, peer, before).then((res) => {
                 if (!total) {
                     total = 0;
                 }
                 total += res.infoList.length;
                 if (res.more) {
-                    this.startComputing(peerId, res.minId - 1, total);
+                    this.startComputing(teamId, peer, res.minId - 1, total);
                 } else {
-                    this.startComputing(undefined, undefined, total);
+                    this.startComputing(teamId, undefined, undefined, total);
                 }
                 if (this.progressFn) {
                     this.progressFn({

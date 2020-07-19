@@ -24,6 +24,7 @@ import ElectronService from "../../services/electron";
 
 import './style.scss';
 import CachedPhoto from "../CachedPhoto";
+import {GetDbFileName} from "../../repository/file";
 
 /* Get human readable size */
 export const getHumanReadableSize = (size: number) => {
@@ -181,7 +182,7 @@ interface IState {
 
 class MessageFile extends React.PureComponent<IProps, IState> {
     private lastId: number = 0;
-    private fileId: string = '';
+    private dbFileName: string = '';
     private downloaded: boolean = false;
     private saved: boolean = false;
     private circleProgressRef: any = null;
@@ -224,7 +225,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
             return;
         }
         this.displayFileSize(0);
-        this.fileId = messageMediaDocument.doc.id || '';
+        this.dbFileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
         this.initProgress();
     }
 
@@ -243,11 +244,14 @@ class MessageFile extends React.PureComponent<IProps, IState> {
             });
         }
         const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
-        if (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.fileId) {
-            this.fileId = messageMediaDocument.doc.id || '';
-            this.setState({
-                message: newProps.message,
-            });
+        if (messageMediaDocument && messageMediaDocument.doc) {
+            const fileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
+            if (fileName !== this.dbFileName) {
+                this.dbFileName = fileName;
+                this.setState({
+                    message: newProps.message,
+                });
+            }
         }
         if ((newProps.message.downloaded || false) !== this.downloaded) {
             this.downloaded = (newProps.message.downloaded || false);
@@ -418,6 +422,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                     const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (peer.getType()) {
                         case PeerType.PEERUSER:
+                        case PeerType.PEEREXTERNALUSER:
                             if (ds.chat_files) {
                                 this.downloadFileHandler();
                             }

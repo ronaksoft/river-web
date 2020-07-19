@@ -10,9 +10,14 @@
 import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
 import {IServerRequest, serverKeys} from '../index';
 import ElectronService from '../../../electron';
-import {EventWasmInit, EventWebSocketClose, EventWebSocketOpen} from "../../../events";
+import {
+    EventCheckNetwork,
+    EventNetworkStatus,
+    EventWasmInit,
+    EventWebSocketClose,
+    EventWebSocketOpen
+} from "../../../events";
 import {C_LOCALSTORAGE} from "../../const";
-import {InputTeam} from "../../messages/core.types_pb";
 
 export const defaultGateway = 'cyrus.river.im';
 
@@ -60,7 +65,6 @@ export default class Socket {
     private resolveDecryptFn: any | undefined;
     private resolveGenSrpHashFn: any | undefined;
     private resolveGenInputPasswordFn: any | undefined;
-    private inputTeam: InputTeam.AsObject | undefined;
 
     public constructor() {
         this.testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
@@ -73,7 +77,7 @@ export default class Socket {
 
         window.addEventListener('online', () => {
             this.online = true;
-            this.dispatchEvent('networkStatus', {online: true});
+            this.dispatchEvent(EventNetworkStatus, {online: true});
             this.initTimeout = setTimeout(() => {
                 this.initWebSocket();
             }, 10);
@@ -81,14 +85,14 @@ export default class Socket {
 
         window.addEventListener('offline', () => {
             this.online = false;
-            this.dispatchEvent('networkStatus', {online: false});
+            this.dispatchEvent(EventNetworkStatus, {online: false});
             this.closeWire();
         });
 
         setTimeout(() => {
             if (!navigator.onLine) {
                 this.online = false;
-                this.dispatchEvent('networkStatus', {online: false});
+                this.dispatchEvent(EventNetworkStatus, {online: false});
                 this.closeWire();
             }
         }, 3000);
@@ -98,6 +102,10 @@ export default class Socket {
         if (connection) {
             connection.addEventListener('change', () => {
                 window.console.log('connection changed!');
+                if (navigator.onLine !== undefined && this.online !== navigator.onLine) {
+                    this.online = navigator.onLine;
+                    this.dispatchEvent(EventNetworkStatus, {online: navigator.onLine});
+                }
                 if (this.online) {
                     this.closeWire();
                 }
@@ -111,7 +119,10 @@ export default class Socket {
                     localStorage.setItem(C_LOCALSTORAGE.ConnInfo, d.data);
                     break;
                 case 'loadConnInfo':
-                    this.workerMessage('loadConnInfo', {connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo), serverKeys});
+                    this.workerMessage('loadConnInfo', {
+                        connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo),
+                        serverKeys
+                    });
                     this.initWebSocket();
                     this.workerMessage('initSDK', 0);
                     setTimeout(() => {
@@ -135,9 +146,7 @@ export default class Socket {
                 case 'wsSend':
                     if (this.socket && this.connected && this.socket.readyState === WebSocket.OPEN) {
                         this.socket.send(base64ToU8a(d.data));
-                        if (this.lastReceiveTime >= this.lastSendTime) {
-                            this.lastSendTime = Date.now();
-                        }
+                        this.lastSendTime = Date.now();
                     }
                     break;
                 case 'wsError':
@@ -227,9 +236,9 @@ export default class Socket {
             payload: uint8ToBase64(data.data),
             reqId: data.reqId,
         };
-        if (this.inputTeam) {
-            payload.teamId = this.inputTeam.id;
-            payload.teamAccessHash = this.inputTeam.accesshash;
+        if (data.inputTeam) {
+            payload.teamId = data.inputTeam.id;
+            payload.teamAccessHash = data.inputTeam.accesshash;
         }
         this.workerMessage('fnCall', payload);
     }
@@ -265,11 +274,14 @@ export default class Socket {
         this.closeWire(true);
     }
 
-    public setTeam(inputTeam: InputTeam.AsObject) {
-        this.inputTeam = inputTeam;
-    }
-
     private initWebSocket() {
+        if (this.socket) {
+            try {
+                this.socket.close();
+            } catch (e) {
+                //
+            }
+        }
         clearTimeout(this.initTimeout);
 
         this.tryCounter++;
@@ -295,7 +307,7 @@ export default class Socket {
             this.tryCounter = 0;
             this.connected = true;
             this.lastSendTime = Date.now();
-            this.lastReceiveTime = Date.now();
+            this.lastReceiveTime = Date.now() + 1;
             if (this.started) {
                 this.dispatchEvent(EventWebSocketOpen, null);
             }
@@ -371,8 +383,7 @@ export default class Socket {
             if (this.lastSendTime > this.lastReceiveTime && this.online) {
                 const now = Date.now();
                 if (now - this.lastSendTime > 12000) {
-                    window.console.log('bad network');
-                    this.closeWire();
+                    this.dispatchEvent(EventCheckNetwork, {});
                 }
             }
         }, 12000);

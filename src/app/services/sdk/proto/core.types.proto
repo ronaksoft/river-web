@@ -47,6 +47,19 @@ message UpdateContainer {
     repeated Group Groups = 6;
 }
 
+// CommunityUpdateEnvelope
+message CommunityUpdateEnvelope {
+    required int64 OffsetID = 1;
+    required int32 PartitionID = 2;
+    required int64 Constructor = 3;
+    optional bytes Update = 4;
+}
+
+// CommunityUpdateContainer
+message CommunityUpdateContainer {
+    repeated CommunityUpdateEnvelope Updates = 1;
+}
+
 // ProtoMessage
 // If AuthID == 0 then Payload is a MessageEnvelop otherwise Payload is a ProtoEncryptedPayload
 message ProtoMessage {
@@ -109,7 +122,7 @@ enum PeerType {
     PeerSelf = 0;
     PeerUser = 1;
     PeerGroup = 2;
-    PeerSuperGroup = 3;
+    PeerExternalUser = 3;
     PeerChannel = 4;
 }
 
@@ -248,6 +261,7 @@ message GroupPhoto {
 
 // Group
 message Group {
+    optional int64 TeamID = 100 [jstype = JS_STRING];
     required int64 ID = 1 [jstype = JS_STRING];
     required string Title = 2;
     required int64 CreatedOn = 3;

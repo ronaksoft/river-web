@@ -55,6 +55,7 @@ interface IProps {
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
     onClose: (e: any) => void;
     peer: InputPeer | null;
+    teamId: string;
 }
 
 interface IState {
@@ -188,7 +189,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <label>{i18n.t('general.first_name')}</label>
                                             <div className="inner">{user.firstname}{user && user.official &&
                                             <OfficialIcon/>}</div>
-                                            {isInContact && <div className="action">
+                                            {Boolean(!this.me && isInContact) && <div className="action">
                                                 <IconButton
                                                     onClick={this.onEditHandler}
                                                 >
@@ -214,7 +215,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         <div className="form-control">
                                             <label>{i18n.t('general.last_name')}</label>
                                             <div className="inner">{user.lastname}</div>
-                                            {isInContact && <div className="action">
+                                            {Boolean(!this.me && isInContact)  && <div className="action">
                                                 <IconButton
                                                     onClick={this.onEditHandler}
                                                 >
@@ -271,7 +272,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <CheckRounded/>
                                         </div>
                                     </div>}
-                                    {Boolean(!this.me && !isInContact && !edit) &&
+                                    {Boolean(!this.me && !isInContact && !edit && this.props.teamId === '0') &&
                                     <div className="add-as-contact" onClick={this.addAsContactHandler}>
                                         <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                                     </div>}
@@ -293,7 +294,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false}
+                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.props.teamId}
                                            onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
                             </div>
                         </Scrollbars>
@@ -310,7 +311,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia className="kk-card" peer={peer} full={true} onAction={this.props.onAction}/>}
+                        <PeerMedia className="kk-card" peer={peer} teamId={this.props.teamId} full={true}
+                                   onAction={this.props.onAction}/>}
                     </div>
                 </div>
                 <Dialog
@@ -380,7 +382,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             });
         }
 
-        this.dialogRepo.get(peer.getId() || '').then((dialog) => {
+        this.dialogRepo.get(this.props.teamId, peer.getId() || '', peer.getType() || 0).then((dialog) => {
             if (dialog) {
                 this.setState({
                     dialog,
@@ -552,20 +554,21 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         if (!user || !user.photo) {
             return;
         }
-        let peer: InputPeer | undefined;
+        let inputPeer: InputPeer | undefined;
         if (user.accesshash) {
-            peer = new InputPeer();
-            peer.setAccesshash(user.accesshash);
-            peer.setId(user.id || '');
-            peer.setType(PeerType.PEERUSER);
+            inputPeer = new InputPeer();
+            inputPeer.setAccesshash(user.accesshash);
+            inputPeer.setId(user.id || '');
+            inputPeer.setType(PeerType.PEERUSER);
         }
         const doc: IDocument = {
+            inputPeer,
             items: [{
                 caption: '',
                 fileLocation: user.photo.photobig,
                 thumbFileLocation: user.photo.photosmall,
             }],
-            peer,
+            teamId: '0',
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);

@@ -32,8 +32,10 @@ import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
 import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import i18n from '../../services/i18n';
+import {IPeer} from "../../repository/dialog/interface";
 
 import './style.scss';
+import {GetDbFileName} from "../../repository/file";
 
 interface IMedia {
     _modified?: boolean;
@@ -42,10 +44,12 @@ interface IMedia {
     id: number;
     info: IMediaInfo;
     peerId: string;
+    peerType: number;
     playing?: boolean;
     saved: boolean;
     type: number;
     userId: string;
+    teamId: string;
 }
 
 interface IProps {
@@ -54,6 +58,7 @@ interface IProps {
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onMore?: () => void;
     peer: InputPeer;
+    teamId: string;
 }
 
 interface IState {
@@ -66,7 +71,7 @@ interface IState {
 class PeerMedia extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private downloadEventReferences: any[] = [];
-    private peerId: string = '';
+    private peer: IPeer = {peerType: 0, id: ''};
     private mediaRepo: MediaRepo;
     private documentViewerService: DocumentViewerService;
     private itemMap: { [key: number]: number } = {};
@@ -83,7 +88,10 @@ class PeerMedia extends React.Component<IProps, IState> {
             tab: 0,
         };
 
-        this.peerId = props.peer.getId() || '';
+        this.peer = {
+            id: props.peer.getId() || '',
+            peerType: props.peer.getType() || 0,
+        };
         this.mediaRepo = MediaRepo.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
         this.audioPlayer = AudioPlayer.getInstance();
@@ -98,8 +106,11 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.peerId !== (newProps.peer.getId() || '')) {
-            this.peerId = newProps.peer.getId() || '';
+        if (this.peer.id !== (newProps.peer.getId() || '') || this.peer.peerType !== (newProps.peer.getType() || 0)) {
+            this.peer = {
+                id: newProps.peer.getId() || '',
+                peerType: newProps.peer.getType() || 0,
+            };
             this.getMedias();
         }
     }
@@ -120,7 +131,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>}
                 </div>}
                 {this.props.full && <div className="peer-media-tab">
-                    <Tabs indicatorColor="primary" textColor="primary" variant="scrollable" centered={true} value={tab}
+                    <Tabs indicatorColor="primary" textColor="primary" variant="scrollable" value={tab}
                           onChange={this.tabChangeHandler}>
                         <Tab value={0} label={i18n.t('peer_info.photo_video')} className="peer-media-tab-item"/>
                         <Tab value={1} label={i18n.t('peer_info.audio')} className="peer-media-tab-item"/>
@@ -300,10 +311,10 @@ class PeerMedia extends React.Component<IProps, IState> {
                 mediaType = C_MEDIA_TYPE.GIF;
                 break;
         }
-        this.mediaRepo.getMany({
+        this.mediaRepo.getMany(this.props.teamId, this.peer, {
             limit: this.props.full ? 128 : 8,
             type: this.props.full ? mediaType : undefined,
-        }, this.peerId).then((result) => {
+        }).then((result) => {
             if (!this.props.full) {
                 result.messages = result.messages.slice(0, 4);
             }
@@ -351,8 +362,9 @@ class PeerMedia extends React.Component<IProps, IState> {
                     userId: item.userId || '',
                     width: item.info.width,
                 }],
-                peerId: item.peerId || '',
+                peer: {id: item.peerId || '', peerType: item.peerType || 0},
                 rect: (e.currentTarget || e).getBoundingClientRect(),
+                teamId: item.teamId,
                 type: item.type === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
             };
             this.documentViewerService.loadDocument(doc);
@@ -399,11 +411,13 @@ class PeerMedia extends React.Component<IProps, IState> {
                 default:
                     if (!item.saved) {
                         return (<div className="media-file-action">
-                            <span onClick={this.mediaActionClickHandler(item.id, 'view')}>{i18n.t('general.save')}</span>
+                            <span
+                                onClick={this.mediaActionClickHandler(item.id, 'view')}>{i18n.t('general.save')}</span>
                         </div>);
                     } else {
                         return (<div className="media-file-action">
-                            <span onClick={this.mediaActionClickHandler(item.id, 'open')}>{i18n.t('general.open')}</span>
+                            <span
+                                onClick={this.mediaActionClickHandler(item.id, 'open')}>{i18n.t('general.open')}</span>
                         </div>);
                     }
             }
@@ -454,12 +468,12 @@ class PeerMedia extends React.Component<IProps, IState> {
                     break;
             }
         }
-        this.mediaRepo.getMany({
+        this.mediaRepo.getMany(this.props.teamId, this.peer, {
             after: !append ? breakPoint : undefined,
             before: append ? breakPoint : undefined,
             limit,
             type: mediaType,
-        }, this.peerId).then((result) => {
+        }).then((result) => {
             if (result.messages.length === 0) {
                 this.setState({
                     loading: false,
@@ -502,7 +516,9 @@ class PeerMedia extends React.Component<IProps, IState> {
                     id: item.id || 0,
                     info: getMediaInfo(item),
                     peerId: item.peerid || '',
+                    peerType: item.peertype || 0,
                     saved: item.saved || false,
+                    teamId: item.teamid || '0',
                     type: item.messagetype || C_MESSAGE_TYPE.Normal,
                     userId: item.senderid || '',
                 });
@@ -518,7 +534,7 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     /* Audio player handler */
     private audioPlayerHandler = (info: IAudioInfo, e: IAudioEvent) => {
-        if (info.peerId !== this.peerId || !this.itemMap.hasOwnProperty(info.messageId)) {
+        if (info.peer.id !== this.peer.id || !this.itemMap.hasOwnProperty(info.messageId)) {
             return;
         }
         const index = this.itemMap[info.messageId];
@@ -545,7 +561,7 @@ class PeerMedia extends React.Component<IProps, IState> {
         const {items} = this.state;
         const item = items[index];
         if (!items[index].playing) {
-            this.audioPlayer.addToPlaylist(id, this.peerId, item.info.file.fileid || '', item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
+            this.audioPlayer.addToPlaylist(id, this.peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
             this.audioPlayer.play(id);
         } else {
             this.audioPlayer.pause(id);

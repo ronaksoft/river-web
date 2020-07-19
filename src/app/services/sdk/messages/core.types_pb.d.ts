@@ -218,6 +218,70 @@ export namespace UpdateContainer {
   }
 }
 
+export class CommunityUpdateEnvelope extends jspb.Message {
+  hasOffsetid(): boolean;
+  clearOffsetid(): void;
+  getOffsetid(): number | undefined;
+  setOffsetid(value: number): void;
+
+  hasPartitionid(): boolean;
+  clearPartitionid(): void;
+  getPartitionid(): number | undefined;
+  setPartitionid(value: number): void;
+
+  hasConstructor(): boolean;
+  clearConstructor(): void;
+  getConstructor(): number | undefined;
+  setConstructor(value: number): void;
+
+  hasUpdate(): boolean;
+  clearUpdate(): void;
+  getUpdate(): Uint8Array | string;
+  getUpdate_asU8(): Uint8Array;
+  getUpdate_asB64(): string;
+  setUpdate(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CommunityUpdateEnvelope.AsObject;
+  static toObject(includeInstance: boolean, msg: CommunityUpdateEnvelope): CommunityUpdateEnvelope.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CommunityUpdateEnvelope, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CommunityUpdateEnvelope;
+  static deserializeBinaryFromReader(message: CommunityUpdateEnvelope, reader: jspb.BinaryReader): CommunityUpdateEnvelope;
+}
+
+export namespace CommunityUpdateEnvelope {
+  export type AsObject = {
+    offsetid?: number,
+    partitionid?: number,
+    constructor?: number,
+    update: Uint8Array | string,
+  }
+}
+
+export class CommunityUpdateContainer extends jspb.Message {
+  clearUpdatesList(): void;
+  getUpdatesList(): Array<CommunityUpdateEnvelope>;
+  setUpdatesList(value: Array<CommunityUpdateEnvelope>): void;
+  addUpdates(value?: CommunityUpdateEnvelope, index?: number): CommunityUpdateEnvelope;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CommunityUpdateContainer.AsObject;
+  static toObject(includeInstance: boolean, msg: CommunityUpdateContainer): CommunityUpdateContainer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CommunityUpdateContainer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CommunityUpdateContainer;
+  static deserializeBinaryFromReader(message: CommunityUpdateContainer, reader: jspb.BinaryReader): CommunityUpdateContainer;
+}
+
+export namespace CommunityUpdateContainer {
+  export type AsObject = {
+    updatesList: Array<CommunityUpdateEnvelope.AsObject>,
+  }
+}
+
 export class ProtoMessage extends jspb.Message {
   hasAuthid(): boolean;
   clearAuthid(): void;
@@ -1041,6 +1105,11 @@ export namespace GroupPhoto {
 }
 
 export class Group extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasId(): boolean;
   clearId(): void;
   getId(): string | undefined;
@@ -1088,6 +1157,7 @@ export class Group extends jspb.Message {
 
 export namespace Group {
   export type AsObject = {
+    teamid?: string,
     id?: string,
     title?: string,
     createdon?: number,
@@ -1926,7 +1996,7 @@ export enum PeerType {
   PEERSELF = 0,
   PEERUSER = 1,
   PEERGROUP = 2,
-  PEERSUPERGROUP = 3,
+  PEEREXTERNALUSER = 3,
   PEERCHANNEL = 4,
 }
 

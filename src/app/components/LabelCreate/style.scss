@@ -121,7 +121,7 @@ html[theme="dark-night"] {
         color: var(--white);
       }
 
-      button.MuiButton-textPrimary {
+      button.MuiButton-textPrimary:not([disabled]) {
         color: var(--river);
       }
     }
@@ -151,7 +151,7 @@ html[theme="dark-blue"]{
         color: var(--white);
       }
 
-      button.MuiButton-textPrimary {
+      button.MuiButton-textPrimary:not([disabled]) {
         color: var(--river);
       }
     }

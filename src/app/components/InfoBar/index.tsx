@@ -31,10 +31,10 @@ interface IState {
     isConnecting: boolean;
     isOnline: boolean;
     isUpdating: boolean;
-    selectedDialogId: string;
 }
 
 class InfoBar extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private currentUserId: string = UserRepo.getInstance().getCurrentUserId();
 
     constructor(props: IProps) {
@@ -45,14 +45,13 @@ class InfoBar extends React.Component<IProps, IState> {
             isOnline: false,
             isUpdating: false,
             peer: null,
-            selectedDialogId: 'null',
         };
     }
 
-    public setPeer(peer: InputPeer | null, selectedDialogId: string) {
+    public setPeer(teamId: string, peer: InputPeer | null) {
+        this.teamId = teamId;
         this.setState({
             peer,
-            selectedDialogId,
         });
     }
 
@@ -61,14 +60,14 @@ class InfoBar extends React.Component<IProps, IState> {
         isOnline?: boolean;
         isUpdating?: boolean;
         peer?: InputPeer | null,
-        selectedDialogId?: string,
+        selectedPeerName?: string,
     }) {
         // @ts-ignore
         this.setState(omitBy(state, isNil));
     }
 
     public render() {
-        const {selectedDialogId, isConnecting, isOnline, isUpdating, peer} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer} = this.state;
         return (
             <div className="info-bar">
                 {this.props.isMobileView ?
@@ -85,7 +84,8 @@ class InfoBar extends React.Component<IProps, IState> {
                            isOnline={isOnline}
                            isUpdating={isUpdating}
                            onAction={this.props.onAction}
-                           peer={peer} selectedDialogId={selectedDialogId}
+                           peer={peer}
+                           teamId={this.teamId}
                            currentUserId={this.currentUserId}
                 />
                 <div className="buttons">

@@ -47,6 +47,7 @@ interface IProps {
     onError?: (text: string) => void;
     onMouseEnter?: (e: any) => void;
     onAction?: (cmd: 'download', message: IMessage) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -426,7 +427,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                                     <CircularProgress size={32} thickness={3} color="inherit"/>
                                 </div>}
                                 {labelList.map((message, index) => {
-                                    return (<LabelMessageItem key={message.id || 0} message={message}
+                                    return (<LabelMessageItem key={message.id || 0} message={message} teamId={this.props.teamId}
                                                               onAction={this.props.onAction}/>);
                                 })}
                                 {labelLoading && <div key="label-item-loading" className="label-item-loading">
@@ -470,7 +471,10 @@ class LabelMenu extends React.Component<IProps, IState> {
         });
 
         let loadOnce = false;
-        this.labelRepo.getMessageByItem(label.id || 0, {max: after || 0, limit: C_LABEL_LIST_LIMIT}, (cacheMsg) => {
+        this.labelRepo.getMessageByItem(this.props.teamId, label.id || 0, {
+            limit: C_LABEL_LIST_LIMIT,
+            max: after || 0,
+        }, (cacheMsg) => {
             if (after) {
                 return;
             }
@@ -520,7 +524,10 @@ class LabelMenu extends React.Component<IProps, IState> {
             loadBeforeLoading: true,
         });
         const before = labelList[0].id || 0;
-        this.labelRepo.getRemoteMessageByItem(label.id || 0, {min: before + 1, limit: 200}).then((res) => {
+        this.labelRepo.getRemoteMessageByItem(this.props.teamId, label.id || 0, {
+            limit: 200,
+            min: before + 1,
+        }).then((res) => {
             labelList.unshift.apply(labelList, this.transformMessage(res.reverse()));
             this.setState({
                 labelList,

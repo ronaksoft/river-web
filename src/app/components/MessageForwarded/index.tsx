@@ -34,11 +34,13 @@ const MessageForwarded = ({message, peer, onDoubleClick}: IProps) => {
                     <span className="forwarded-bar"/>
                     {Boolean(mode === 'user') && <div className="forward-message-detail">
                         <UserName id={message.fwdsenderid} you={true} noIcon={true}
-                                  prefix={i18n.t('message.forwarded_message_from')} defaultString="Forwarded message"/>
+                                  prefix={i18n.t('message.forwarded_message')}
+                                  defaultString={i18n.t('message.forwarded_message')}/>
                     </div>}
                     {Boolean(mode === 'group') && <div className="forward-message-detail">
-                        <GroupName id={message.fwdsenderid} prefix="Forwarded from "
-                                   defaultString={i18n.t('message.forwarded_message')} noIcon={true}/>
+                        <GroupName id={message.fwdsenderid} teamId={message.teamid || '0'}
+                                   prefix={i18n.t('message.forwarded_message')}
+                                   defaultString={i18n.t('message.forwarded_message_from')} noIcon={true}/>
                     </div>}
                 </div>
             </div>

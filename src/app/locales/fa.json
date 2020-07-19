@@ -61,7 +61,7 @@
     "ok": "باشه",
     "send": "ارسال",
     "create": "ساختن",
-    "frequently_contacted": "پرتکرار",
+    "frequently_contacted": "مخاطبین متداول",
     "dialogs": "گفتگو",
     "clear": "حذف",
     "open": "بگشا"
@@ -439,7 +439,9 @@
     "max_label_warning": "شما نمی‌توانید بیش از ۲۰ برچسب ایجاد نمایید",
     "no_label": "بدون برچسب",
     "create_label": "برچسب جدید",
-    "edit_label": "ویرایش برچسب"
+    "edit_label": "ویرایش برچسب",
+    "show_more": "بیشتر",
+    "show_less": "کمتر"
   },
   "bot": {
     "start_bot": "فعال کردن Bot",

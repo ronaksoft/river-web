@@ -10,7 +10,7 @@
 import * as React from 'react';
 import AutoSizer from "react-virtualized-auto-sizer";
 import {Link} from 'react-router-dom';
-import {clone, debounce, differenceBy, findIndex, intersectionBy, uniq, uniqBy} from 'lodash';
+import {clone, debounce, differenceBy, findIndex, intersectionWith, uniqWith, uniqBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
 import {ClearRounded, LabelOutlined, LabelRounded, MessageRounded} from '@material-ui/icons';
@@ -40,6 +40,7 @@ import DialogSkeleton from "../DialogSkeleton";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import TopPeer from '../TopPeer';
 import {TopPeerType} from "../../repository/topPeer";
+import {GetPeerName} from "../../repository/dialog";
 
 import './style.scss';
 
@@ -47,12 +48,13 @@ interface IProps {
     cancelIsTyping: (id: string) => void;
     onContextMenu?: (cmd: string, dialog: IDialog) => void;
     onDrop: (peerId: string, files: File[], hasData: boolean) => void;
+    teamId: string;
 }
 
 interface IState {
     appliedSelectedLabelIds: number[];
     focus: boolean;
-    ids: string[];
+    ids: Array<[string, number]>;
     items: IDialog[];
     labelActive: boolean;
     labelList: ILabel[];
@@ -62,7 +64,7 @@ interface IState {
     searchEnable: boolean;
     searchItems: IDialog[];
     searchMessageItems: IDialog[];
-    selectedId: string;
+    selectedPeerName: string;
 }
 
 const listStyle: React.CSSProperties = {
@@ -108,7 +110,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             searchEnable: false,
             searchItems: [],
             searchMessageItems: [],
-            selectedId: 'null',
+            selectedPeerName: 'null',
         };
 
         this.searchRepo = SearchRepo.getInstance();
@@ -182,21 +184,24 @@ class Dialog extends React.PureComponent<IProps, IState> {
         });
     }
 
-    public setSelectedId(id: string) {
+    public setSelectedPeerName(name: string) {
         this.setState({
-            selectedId: id,
+            selectedPeerName: name,
         }, () => {
             this.filterItem();
         });
     }
 
-    public setDialogs(dialogs: IDialog[], callback?: () => void) {
+    public setDialogs(dialogs: IDialog[], callback?: () => void, resetFirstTime?: boolean) {
         this.setState({
             items: dialogs,
         }, () => {
             this.filterItem();
             if (callback) {
                 callback();
+            }
+            if (resetFirstTime) {
+                this.firstTimeLoad = true;
             }
             if (dialogs.length > 0) {
                 this.firstTimeLoad = false;
@@ -217,8 +222,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.forceUpdate();
     }
 
-    public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
-        this.isTypingList = isTypingList;
+    public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } }) {
+        if (isTypingList.hasOwnProperty(this.props.teamId)) {
+            this.isTypingList = isTypingList[this.props.teamId];
+        }
         this.forceUpdate();
     }
 
@@ -319,7 +326,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                                    onApply={this.labelPopoverApplyHandler} closeAfterSelect={true}
                                                    onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
-                {searchEnable && <TopPeer type={TopPeerType.Search} visible={focus}/>}
+                {searchEnable && <TopPeer teamId={this.props.teamId} type={TopPeerType.Search} visible={focus}/>}
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
                     <AutoSizer>
@@ -377,19 +384,21 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 <div className="search-label">{i18n.t('general.dialogs')}</div>}
                 {Boolean(appliedSelectedLabelIds.length === 0) && <>
                     {searchItems.map((dialog, index) => {
-                        const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
+                        const peerName = GetPeerName(dialog.peerid, dialog.peertype);
+                        const isTyping = this.isTypingList.hasOwnProperty(peerName) ? this.isTypingList[peerName] : {};
                         return (
-                            <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                           isTyping={isTyping} selectedId={this.state.selectedId}
+                            <DialogMessage key={peerName || index} dialog={dialog}
+                                           isTyping={isTyping} selectedPeerName={this.state.selectedPeerName}
                                            onContextMenuOpen={this.contextMenuOpenHandler(index)}
                                            onDrop={this.props.onDrop}
                             />
                         );
                     })}
                     {searchAddedItems.map((dialog, index) => {
+                        const peerName = GetPeerName(dialog.peerid, dialog.peertype);
                         return (
-                            <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                           isTyping={{}} selectedId={this.state.selectedId}
+                            <DialogMessage key={peerName || index} dialog={dialog}
+                                           isTyping={{}} selectedPeerName={this.state.selectedPeerName}
                                            onClick={this.closeSearchHandler}
                                            onDrop={this.props.onDrop}
                             />
@@ -400,8 +409,8 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 <div className="search-label">{i18n.t('dialog.messages')}</div>}
                 {searchMessageItems.map((dialog, index) => {
                     return (
-                        <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
-                                       dialog={dialog} isTyping={{}} selectedId=""
+                        <DialogMessage key={dialog.topmessageid || GetPeerName(dialog.peerid, dialog.peertype) || index}
+                                       dialog={dialog} isTyping={{}} selectedPeerName=""
                                        messageId={dialog.topmessageid}
                         />
                     );
@@ -502,11 +511,11 @@ class Dialog extends React.PureComponent<IProps, IState> {
             const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
             return (
                 <div style={style} key={dialog.peerid || key}>
-                    <Link to={`/chat/${dialog.peerid}`}>
+                    <Link to={`/chat/${this.props.teamId}/${dialog.peerid}_${dialog.peertype}`}>
                         <div
-                            className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
+                            className={'dialog' + (dialog.peerid === this.state.selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
                             <DialogMessage dialog={dialog} isTyping={isTyping} onDrop={this.props.onDrop}
-                                           onContextMenuOpen={this.contextMenuOpenHandler(index)} selectedId=""/>
+                                           onContextMenuOpen={this.contextMenuOpenHandler(index)} selectedPeerName=""/>
                         </div>
                     </Link>
                 </div>
@@ -516,9 +525,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
             if (dialog) {
                 return (
                     <div style={style} key={dialog.peerid || key} onClick={this.closeSearchHandler}>
-                        <Link to={`/chat/${dialog.peerid}`}>
+                        <Link to={`/chat/${this.props.teamId}/${dialog.peerid}_${dialog.peertype}`}>
                             <div className="dialog">
-                                <DialogMessage dialog={dialog} isTyping={{}} selectedId="" onDrop={this.props.onDrop}/>
+                                <DialogMessage dialog={dialog} isTyping={{}} selectedPeerName=""
+                                               onDrop={this.props.onDrop}/>
                             </div>
                         </Link>
                     </div>
@@ -583,7 +593,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             return;
         }
         const muted = isMuted(dialog.notifysettings);
-        if (peerType === PeerType.PEERUSER) {
+        if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
             menuTypes[1].forEach((key) => {
                 if (key === 6 || key === 7) {
                     if (key === 6 && !dialog.pinned) {
@@ -666,12 +676,13 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.keyword = keyword;
         const {appliedSelectedLabelIds} = this.state;
         if (appliedSelectedLabelIds.length === 0) {
-            let ids: string[] = [];
+            let ids: Array<[string, number]> = [];
             let contacts: IUser[] = [];
             // Search local db
-            this.searchRepo.search({keyword, limit: 100}).then((res) => {
-                ids.push(...res.dialogs.map(o => (o.peerid || '')));
-                ids = uniq(ids);
+            this.searchRepo.search(this.props.teamId, {keyword, limit: 100}).then((res) => {
+                const t: Array<[string, number]> = res.dialogs.map(o => [o.peerid || '', o.peertype || 0]);
+                ids.push(...t);
+                ids = uniqWith(ids, (i1, i2) => i1[0] === i2[0] && i1[1] === i2[1]);
                 contacts.push(...res.contacts);
                 contacts = uniqBy(contacts, 'id');
                 this.setState({
@@ -682,8 +693,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
             });
             // Search remote server
             this.searchRepo.searchUsername(keyword).then((res) => {
-                ids.push(...(res || []).map((o: any) => (o.id || '')));
-                ids = uniq(ids);
+                const t: Array<[string, number]> = (res || []).map((o: IUser) => [o.id || '', PeerType.PEERUSER]);
+                ids.push(...t);
+                ids = uniqWith(ids, (i1, i2) => i1[0] === i2[0] && i1[1] === i2[1]);
                 contacts.push(...res);
                 contacts = uniqBy(contacts, 'id');
                 this.setState({
@@ -703,14 +715,15 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     label_ids: msg.labelidsList,
                     last_update: msg.createdon,
                     only_contact: true,
-                    peerid: msg.peerid,
-                    peertype: msg.peertype,
+                    peerid: msg.peerid || '',
+                    peertype: msg.peertype || 0,
                     preview: messageTitle.text,
                     preview_icon: messageTitle.icon,
                     preview_me: msg.me,
                     preview_rtl: msg.rtl,
                     saved_messages: msg.peerid === this.userId,
                     sender_id: msg.senderid,
+                    teamid: msg.teamid || '0',
                     topmessageid: msg.id,
                 };
             });
@@ -729,19 +742,21 @@ class Dialog extends React.PureComponent<IProps, IState> {
         } else {
             const peerIds = ids.map((id) => {
                 return {
-                    peerid: id,
+                    peerid: id[0],
+                    peertype: id[1],
                 };
             });
-            searchItems = intersectionBy(items, peerIds, 'peerid');
+            searchItems = intersectionWith(items, peerIds, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
             const noMessageText = i18n.t('general.no_message');
             searchAddedItems = (users ? users.map((u) => {
                 return {
                     accesshash: u.accesshash,
                     only_contact: true,
-                    peerid: u.id,
+                    peerid: u.id || '',
                     peertype: PeerType.PEERUSER,
                     preview: noMessageText,
                     preview_me: false,
+                    teamid: this.props.teamId,
                 };
             }) : []);
             searchAddedItems = differenceBy(searchAddedItems, searchItems, 'peerid');
@@ -845,7 +860,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
     private initScrollPos() {
         setTimeout(() => {
-            const index = findIndex(this.state.items, {peerid: this.state.selectedId});
+            const index = findIndex(this.state.items, {peerid: this.state.selectedPeerName});
             if (this.scrollbarsRef && index > -1) {
                 const scrollTop = index * 64;
                 const containerHeight = this.scrollbarsRef.getClientHeight();

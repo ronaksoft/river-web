@@ -8,11 +8,10 @@
 */
 
 import DB from '../../services/db/user';
-import {IUser} from './interface';
+import {IContact, IUser} from './interface';
 import {differenceBy, find, uniqBy, uniq, throttle} from 'lodash';
 import APIManager from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
-import Dexie from 'dexie';
 import {Int64BE} from 'int64-buffer';
 // @ts-ignore
 import CRC from 'js-crc/build/crc.min';
@@ -21,6 +20,7 @@ import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge, kUserMerge} from "../../services/utilities/kDash";
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE} from "../../services/sdk/const";
+import Dexie from 'dexie';
 
 export const UserDBUpdated = 'User_DB_Updated';
 
@@ -67,7 +67,7 @@ export default class UserRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private apiManager: APIManager;
-    private lastContactTimestamp: number = 0;
+    private lastContactTimestamp: {[key: number]: number} = {};
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private bubbleMode: string = localStorage.getItem(C_LOCALSTORAGE.ThemeBubble) || '4';
@@ -176,7 +176,7 @@ export default class UserRepo {
         return this.dbService.getUser(id);
     }
 
-    public getManyCache(isContact: boolean, {keyword, limit}: any): Promise<IUser[]> {
+    public getManyCache(teamId: string, isContact: boolean, {keyword, limit}: any): Promise<IUser[]> {
         const reg = new RegExp(keyword || '', 'gi');
         const searchFilter = (u: IUser) => {
             if (u.id === this.apiManager.getConnInfo().UserID && reg.test('Saved Messages')) {
@@ -184,11 +184,8 @@ export default class UserRepo {
             }
             return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(`${u.firstname} ${u.lastname}`));
         };
-        if (isContact) {
-            if (!keyword) {
-                return this.db.users.where('[is_contact+username]').between([1, Dexie.minKey], [1, Dexie.maxKey], true, true).limit(limit || 1000).toArray();
-            }
-            return this.db.users.where('[is_contact+username]').between([1, Dexie.minKey], [1, Dexie.maxKey], true, true).filter(searchFilter).limit(limit || 12).toArray();
+        if (isContact || teamId !== '0') {
+            return this.searchTeamContacts(teamId, keyword ? searchFilter : undefined);
         } else {
             if (!keyword) {
                 return this.db.users.limit(limit || 1000).toArray();
@@ -267,32 +264,38 @@ export default class UserRepo {
         });
     }
 
-    public getAllContacts(cb?: (users: IUser[]) => void): Promise<IUser[]> {
+    public getAllContacts(teamId: string, cb?: (users: IUser[]) => void): Promise<IUser[]> {
         if (cb) {
-            this.getManyCache(true, {}).then((res) => {
+            this.getManyCache(teamId, true, {}).then((res) => {
                 cb(res);
             });
         }
         return new Promise((resolve, reject) => {
             const now = Math.floor(Date.now() / 1000);
-            if (now - this.lastContactTimestamp < 1800) {
-                this.getManyCache(true, {}).then((res) => {
+            if (now - (this.lastContactTimestamp[teamId] || 0) < 1800) {
+                this.getManyCache(teamId, true, {}).then((res) => {
                     resolve(res);
                 }).catch((err) => {
                     reject(err);
                 });
             } else {
-                const crc32 = this.getContactsCrc();
+                const crc32 = this.getContactsCrc(teamId);
                 this.apiManager.getContacts(crc32).then((remoteRes) => {
                     if (remoteRes.modified) {
                         this.importBulk(true, remoteRes.contactusersList);
                         this.importBulk(false, remoteRes.usersList);
-                        this.storeContactsCrc(remoteRes.contactusersList);
-                        this.lastContactTimestamp = now;
+                        this.setContactList(remoteRes.usersList.map((o) => {
+                            return {
+                                id: o.id || '0',
+                                teamid: teamId,
+                            };
+                        }));
+                        this.storeContactsCrc(teamId, remoteRes.contactusersList);
+                        this.lastContactTimestamp[teamId] = now;
                         resolve(remoteRes.contactusersList);
                     } else {
-                        this.lastContactTimestamp = now;
-                        this.getManyCache(true, {}).then((res) => {
+                        this.lastContactTimestamp[teamId] = now;
+                        this.getManyCache(teamId, true, {}).then((res) => {
                             resolve(res);
                         });
                     }
@@ -374,14 +377,24 @@ export default class UserRepo {
         }
     }
 
-    private getContactsCrc() {
-        const crc = localStorage.getItem(C_LOCALSTORAGE.ContactsHash) || '0';
-        return parseInt(crc, 10);
+    private getContactsCrc(teamId: string) {
+        const crc = localStorage.getItem(C_LOCALSTORAGE.ContactsHash);
+        if (!crc) {
+            return 0;
+        }
+        const crcData = JSON.parse(crc);
+        if (crcData[teamId]) {
+            return parseInt(crcData[teamId], 10);
+        } else {
+            return 0;
+        }
     }
 
-    private storeContactsCrc(users: IUser[]) {
-        const crc32 = getContactsCrc(users);
-        localStorage.setItem(C_LOCALSTORAGE.ContactsHash, String(crc32));
+    private storeContactsCrc(teamId: string, users: IUser[]) {
+        const crc = localStorage.getItem(C_LOCALSTORAGE.ContactsHash);
+        const crcData = crc ? JSON.parse(crc) : {};
+        crcData[teamId] = getContactsCrc(users);
+        localStorage.setItem(C_LOCALSTORAGE.ContactsHash, JSON.stringify(crcData));
     }
 
     private throttleBroadcast(ids: string[]) {
@@ -421,5 +434,24 @@ export default class UserRepo {
 
     private broadcastEvent(name: string, data: any) {
         this.broadcaster.publish(name, data);
+    }
+
+    private setContactList(contacts: IContact[]) {
+        return this.db.contacts.bulkPut(contacts);
+    }
+
+    private getContactList(teamId: string) {
+        return this.db.contacts.where('[teamid+id]').between([teamId, Dexie.minKey], [teamId, Dexie.maxKey], true, true).toArray();
+    }
+
+    private searchTeamContacts(teamId: string, filterFn?: any): Promise<IUser[]> {
+        return this.getContactList(teamId).then((res) => {
+            const p = this.db.users.where('id').anyOf(res.map(o => o.id));
+            if (filterFn) {
+                return p.filter(filterFn).toArray();
+            } else {
+                return p.toArray();
+            }
+        });
     }
 }

@@ -22,7 +22,6 @@ export interface IMessage extends UserMessage.AsObject {
     me?: boolean;
     mediadata?: any;
     mention_me?: boolean;
-    pmodified?: boolean;
     random_id?: number;
     removed_labels?: number[];
     replydata?: any;

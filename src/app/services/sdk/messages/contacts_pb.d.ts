@@ -336,6 +336,11 @@ export namespace ContactsTopPeers {
 }
 
 export class TopPeer extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasPeer(): boolean;
   clearPeer(): void;
   getPeer(): core_types_pb.Peer;
@@ -363,6 +368,7 @@ export class TopPeer extends jspb.Message {
 
 export namespace TopPeer {
   export type AsObject = {
+    teamid?: string,
     peer: core_types_pb.Peer.AsObject,
     rate?: number,
     lastupdate?: number,
@@ -491,6 +497,11 @@ export class ContactsMany extends jspb.Message {
   getEmpty(): boolean | undefined;
   setEmpty(value: boolean): void;
 
+  hasHash(): boolean;
+  clearHash(): void;
+  getHash(): number | undefined;
+  setHash(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsMany.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsMany): ContactsMany.AsObject;
@@ -508,6 +519,7 @@ export namespace ContactsMany {
     modified?: boolean,
     usersList: Array<core_types_pb.User.AsObject>,
     empty?: boolean,
+    hash?: number,
   }
 }
 

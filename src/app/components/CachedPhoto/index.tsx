@@ -11,6 +11,7 @@ import * as React from 'react';
 import CachedFileService from '../../services/cachedFileService';
 import {InputFileLocation} from '../../services/sdk/messages/core.types_pb';
 import {CSSProperties} from 'react';
+import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     blur?: number;
@@ -30,12 +31,13 @@ interface IState {
 
 class CachedPhoto extends React.PureComponent<IProps, IState> {
     private cachedFileService: CachedFileService;
-    private lastFileId: string;
+    private lastFileName: string;
     private lastBlur: number;
     private retries: number = 0;
     private tryTimeout: any = null;
     private mounted: boolean = true;
     private tempFileSrc: string | null = null;
+    private lastSrc: string = '';
 
     constructor(props: IProps) {
         super(props);
@@ -47,9 +49,9 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         this.cachedFileService = CachedFileService.getInstance();
 
         if (this.props.fileLocation) {
-            this.lastFileId = this.props.fileLocation.fileid || '';
+            this.lastFileName = GetDbFileName(props.fileLocation.fileid, props.fileLocation.clusterid);
         } else {
-            this.lastFileId = '';
+            this.lastFileName = '';
         }
         this.lastBlur = this.props.blur || 0;
     }
@@ -59,11 +61,14 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (newProps.fileLocation && (this.lastFileId !== newProps.fileLocation.fileid || (newProps.blur || 0) !== this.lastBlur)) {
-            this.lastFileId = newProps.fileLocation.fileid || '';
-            this.lastBlur = newProps.blur || 0;
-            this.retries = 0;
-            this.getFile();
+        if (newProps.fileLocation) {
+            const fileName = GetDbFileName(newProps.fileLocation.fileid, newProps.fileLocation.clusterid);
+            if (this.lastFileName !== fileName || (newProps.blur || 0) !== this.lastBlur) {
+                this.lastFileName = fileName;
+                this.lastBlur = newProps.blur || 0;
+                this.retries = 0;
+                this.getFile();
+            }
         }
     }
 
@@ -71,7 +76,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         this.mounted = false;
         clearTimeout(this.tryTimeout);
         if (this.props.fileLocation) {
-            this.cachedFileService.unmountCache(this.props.fileLocation.fileid || '');
+            this.cachedFileService.unmountCache(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid));
         }
         if (this.tempFileSrc) {
             URL.revokeObjectURL(this.tempFileSrc);
@@ -81,10 +86,13 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
 
     public render() {
         const {className, src} = this.state;
+        if (src && src.length > 0) {
+            this.lastSrc = src;
+        }
         return (
             <div className={className} style={this.props.style} onClick={this.props.onClick}>
-                {Boolean(src) &&
-                <img src={src} alt="" onLoad={this.props.onLoad} onError={this.imgErrorHandler} draggable={false}/>}
+                {Boolean(src || this.lastSrc.length > 0) &&
+                <img src={src || this.lastSrc} alt="" onLoad={this.props.onLoad} onError={this.imgErrorHandler} draggable={false}/>}
             </div>
         );
     }
@@ -141,7 +149,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
 
     /* Img error handler */
     private imgErrorHandler = () => {
-        this.cachedFileService.remove(this.props.fileLocation.fileid || '').then(() => {
+        this.cachedFileService.remove(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid)).then(() => {
             if (!this.mounted) {
                 return;
             }

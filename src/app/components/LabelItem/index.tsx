@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import React from "react";
+import React, {useState} from "react";
 import {IMessage} from "../../repository/message/interface";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -38,6 +38,7 @@ import {IconButton} from '@material-ui/core';
 import './style.scss';
 
 interface IProps {
+    teamId: string;
     message: IMessage;
     onAction?: (cmd: 'download', message: IMessage) => void;
 }
@@ -66,9 +67,9 @@ const LabelHeader = ({message}: IProps) => {
         <div
             className={'label-message-item-header' + (message.peertype === PeerType.PEERGROUP && id !== '' ? ' with-sender' : '')}>
             {message.peertype === PeerType.PEERGROUP ? <>
-                <GroupAvatar id={message.peerid || ''} className="label-user-avatar"/>
+                <GroupAvatar id={message.peerid || ''} teamId={message.teamid || '0'} className="label-user-avatar"/>
                 <div className="label-user">
-                    <GroupName id={message.peerid || ''} className="label-user-name"/>
+                    <GroupName id={message.peerid || ''} teamId={message.teamid || '0'} className="label-user-name"/>
                     {id !== '' && <UserName id={id} noDetail={true} noIcon={true} className="label-user-sender"/>}
                 </div>
             </> : <>
@@ -100,7 +101,21 @@ const LabelIndicator = ({labelIds}: { labelIds: number[] }) => {
 };
 
 const LabelBodyAudio = ({message}: IProps) => {
+    const [mode, setMode] = useState(0);
     const info = getMediaInfo(message);
+    const refHandler = (ref: any) => {
+        if (ref && !mode && (info.caption || '').length > 10) {
+            if (ref.scrollHeight > ref.clientHeight + 3) {
+                setMode(1);
+            }
+        }
+    };
+    const toggleShowMoreHandler = (e: any) => {
+        e.preventDefault();
+        if (mode) {
+            setMode(mode === 1 ? 2 : 1);
+        }
+    };
     return <>
         {Boolean(info.thumbFile && info.thumbFile.fileid !== '') ? <div className="label-message-media">
             <CachedPhoto className="thumbnail audio" fileLocation={info.thumbFile}/>
@@ -122,10 +137,14 @@ const LabelBodyAudio = ({message}: IProps) => {
         </div>}
         {Boolean((info.caption || '').length > 0) &&
         <div className="label-message-body">
-            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr')}>
+            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr') + (mode === 2 ? ' show-all' : '')}
+                 ref={refHandler}>
                 {message.peertype === PeerType.PEERGROUP &&
                 <UserName id={message.senderid || ''} noDetail={true} noIcon={true} postfix=": " className="_bold"/>}
                 {renderBody(info.caption || '', info.entityList || [], 1)}
+                {Boolean(mode > 0) &&
+                <span className="show-more"
+                      onClick={toggleShowMoreHandler}>{i18n.t(mode === 1 ? 'label.show_more' : 'label.show_less')}</span>}
             </div>
         </div>}
     </>;
@@ -145,7 +164,21 @@ const LabelBodyContact = ({message}: IProps) => {
 };
 
 const LabelBodyFile = ({message}: IProps) => {
+    const [mode, setMode] = useState(0);
     const info = getFileInfo(message);
+    const refHandler = (ref: any) => {
+        if (ref && !mode && (info.caption || '').length > 10) {
+            if (ref.scrollHeight > ref.clientHeight + 3) {
+                setMode(1);
+            }
+        }
+    };
+    const toggleShowMoreHandler = (e: any) => {
+        e.preventDefault();
+        if (mode) {
+            setMode(mode === 1 ? 2 : 1);
+        }
+    };
     return <>
         <div className="label-message-info">
             <div className="icon">
@@ -159,10 +192,14 @@ const LabelBodyFile = ({message}: IProps) => {
         </div>
         {Boolean((info.caption || '').length > 0) &&
         <div className="label-message-body">
-            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr')}>
+            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr') + (mode === 2 ? ' show-all' : '')}
+                 ref={refHandler}>
                 {message.peertype === PeerType.PEERGROUP &&
                 <UserName id={message.senderid || ''} noDetail={true} noIcon={true} postfix=": " className="_bold"/>}
                 {renderBody(info.caption || '', info.entityList || [], 1)}
+                {Boolean(mode > 0) &&
+                <span className="show-more"
+                      onClick={toggleShowMoreHandler}>{i18n.t(mode === 1 ? 'label.show_more' : 'label.show_less')}</span>}
             </div>
         </div>}
     </>;
@@ -193,9 +230,10 @@ const viewDocumentHandler = (message: IMessage) => (e: any) => {
             userId: message.senderid || '',
             width: info.width,
         }],
-        peerId: message.peerid || '',
+        peer: {id: message.peerid || '', peerType: message.peertype || 0},
         rect: el ? el.getBoundingClientRect() : undefined,
         stream: false,
+        teamId: message.teamid || '0',
         type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
     };
     DocumentViewerService.getInstance().loadDocument(doc);
@@ -206,7 +244,21 @@ const showHandler = (e: any) => {
 };
 
 const LabelBodyMedia = ({message, onAction}: IProps) => {
+    const [mode, setMode] = useState(0);
     const info = getMediaInfo(message);
+    const refHandler = (ref: any) => {
+        if (ref && !mode && (info.caption || '').length > 10) {
+            if (ref.scrollHeight > ref.clientHeight + 3) {
+                setMode(1);
+            }
+        }
+    };
+    const toggleShowMoreHandler = (e: any) => {
+        e.preventDefault();
+        if (mode) {
+            setMode(mode === 1 ? 2 : 1);
+        }
+    };
     const withBlur = (info.height / info.width) > 1 || Math.max(info.width, info.height) < 96;
     const ratio = info.height / info.width;
     let height = 96;
@@ -242,10 +294,14 @@ const LabelBodyMedia = ({message, onAction}: IProps) => {
         </div>
         {Boolean((info.caption || '').length > 0) &&
         <div className="label-message-body">
-            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr')}>
+            <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr') + (mode === 2 ? ' show-all' : '')}
+                 ref={refHandler}>
                 {message.peertype === PeerType.PEERGROUP &&
                 <UserName id={message.senderid || ''} noDetail={true} noIcon={true} postfix=": " className="_bold"/>}
                 {renderBody(info.caption || '', info.entityList || [], 1)}
+                {Boolean(mode > 0) &&
+                <span className="show-more"
+                      onClick={toggleShowMoreHandler}>{i18n.t(mode === 1 ? 'label.show_more' : 'label.show_less')}</span>}
             </div>
         </div>}
     </>;
@@ -276,45 +332,63 @@ const LabelBodyVoice = ({message}: IProps) => {
 };
 
 const LabelBodyDefault = ({message}: IProps) => {
+    const [mode, setMode] = useState(0);
+    const refHandler = (ref: any) => {
+        if (ref && !mode) {
+            if (ref.scrollHeight > ref.clientHeight + 3) {
+                setMode(1);
+            }
+        }
+    };
+    const toggleShowMoreHandler = (e: any) => {
+        e.preventDefault();
+        if (mode) {
+            setMode(mode === 1 ? 2 : 1);
+        }
+    };
     return <div className="label-message-body">
-        <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr')}>
+        <div className={'inner ' + (message.rtl ? ' rtl' : ' ltr') + (mode === 2 ? ' show-all' : '')} ref={refHandler}>
             {message.peertype === PeerType.PEERGROUP &&
             <UserName id={message.senderid || ''} noDetail={true} noIcon={true} postfix=": " className="_bold"/>}
             {renderBody(message.body || '', message.entitiesList || [], 1)}
+            {Boolean(mode > 0) &&
+            <span className="show-more"
+                  onClick={toggleShowMoreHandler}>{i18n.t(mode === 1 ? 'label.show_more' : 'label.show_less')}</span>}
         </div>
     </div>;
 };
 
-const LabelBody = ({message, onAction}: IProps) => {
+const LabelBody = ({teamId, message, onAction}: IProps) => {
     switch (message.messagetype) {
         case C_MESSAGE_TYPE.Audio:
-            return <LabelBodyAudio message={message}/>;
+            return <LabelBodyAudio message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Contact:
-            return <LabelBodyContact message={message}/>;
+            return <LabelBodyContact message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.File:
-            return <LabelBodyFile message={message}/>;
+            return <LabelBodyFile message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Location:
-            return <LabelBodyLocation message={message}/>;
+            return <LabelBodyLocation message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Picture:
         case C_MESSAGE_TYPE.Video:
-            return <LabelBodyMedia message={message} onAction={onAction}/>;
+            return <LabelBodyMedia message={message} onAction={onAction} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Voice:
-            return <LabelBodyVoice message={message}/>;
+            return <LabelBodyVoice message={message} teamId={teamId}/>;
         default:
-            return <LabelBodyDefault message={message}/>;
+            return <LabelBodyDefault message={message} teamId={teamId}/>;
     }
 };
 
-export const LabelMessageItem = ({message, onAction}: IProps) => {
+export const LabelMessageItem = ({teamId, message, onAction}: IProps) => {
     const dragStart = (e: any) => {
         e.dataTransfer.setData("message/id", message.id || '');
     };
 
     return (
-        <Link className="label-message-item-href" to={`/chat/${message.peerid}/${message.id}`}>
+        <Link className="label-message-item-href"
+              to={`/chat/${teamId}/${message.peerid}_${message.peertype}/${message.id}`}>
             <div className="label-message-item" draggable={true} onDragStart={dragStart}>
-                <LabelHeader message={message}/>
-                <LabelBody message={message} onAction={onAction}/>
+                <LabelHeader message={message} teamId={teamId}/>
+                <LabelBody message={message} teamId={teamId} onAction={onAction}/>
                 <LabelIndicator labelIds={message.labelidsList || []}/>
             </div>
         </Link>

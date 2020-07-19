@@ -39,13 +39,14 @@ import {isMuted} from '../UserInfoMenu';
 import Broadcaster from '../../services/broadcaster';
 import i18n from '../../services/i18n';
 import {notifyOptions} from "../../pages/Chat";
+import {OfficialIcon} from "../SVG/official";
 
 import './style.scss';
-import {OfficialIcon} from "../SVG/official";
 
 interface IProps {
     onClose?: () => void;
     onAction: (cmd: string, user?: IUser) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -238,7 +239,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <div className="inner">{user.bio}</div>
                             </div>
                         </div>}
-                        {Boolean(!this.me && !isInContact && !edit) &&
+                        {Boolean(!this.me && !isInContact && !edit && this.props.teamId === '0') &&
                         <div className="add-as-contact" onClick={this.addAsContactHandler}>
                             <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                         </div>}
@@ -268,7 +269,8 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     {sendMessageEnable && <div className="kk-card">
-                        <Link className="send-message" to={`/chat/${user ? user.id : 'null'}`}
+                        <Link className="send-message"
+                              to={`/chat/${this.props.teamId}/${user ? `${user.id}_${PeerType.PEERUSER}` : 'null'}`}
                               onClick={this.close}>
                             <SendRounded/> {i18n.t('general.send_message')}
                         </Link>
@@ -555,20 +557,21 @@ class UserDialog extends React.Component<IProps, IState> {
         if (!user || !user.photo) {
             return;
         }
-        let peer: InputPeer | undefined;
+        let inputPeer: InputPeer | undefined;
         if (user.accesshash) {
-            peer = new InputPeer();
-            peer.setAccesshash(user.accesshash);
-            peer.setId(user.id || '');
-            peer.setType(PeerType.PEERUSER);
+            inputPeer = new InputPeer();
+            inputPeer.setAccesshash(user.accesshash);
+            inputPeer.setId(user.id || '');
+            inputPeer.setType(PeerType.PEERUSER);
         }
         const doc: IDocument = {
+            inputPeer,
             items: [{
                 caption: '',
                 fileLocation: user.photo.photobig,
                 thumbFileLocation: user.photo.photosmall,
             }],
-            peer,
+            teamId: this.props.teamId,
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);

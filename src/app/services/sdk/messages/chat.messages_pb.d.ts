@@ -57,40 +57,6 @@ export namespace MessagesSend {
   }
 }
 
-export class MessagesBroadcast extends jspb.Message {
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
-  setBody(value: string): void;
-
-  clearReceiveridsList(): void;
-  getReceiveridsList(): Array<number>;
-  setReceiveridsList(value: Array<number>): void;
-  addReceiverids(value: number, index?: number): number;
-
-  clearEntitiesList(): void;
-  getEntitiesList(): Array<core_types_pb.MessageEntity>;
-  setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
-  addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MessagesBroadcast.AsObject;
-  static toObject(includeInstance: boolean, msg: MessagesBroadcast): MessagesBroadcast.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: MessagesBroadcast, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MessagesBroadcast;
-  static deserializeBinaryFromReader(message: MessagesBroadcast, reader: jspb.BinaryReader): MessagesBroadcast;
-}
-
-export namespace MessagesBroadcast {
-  export type AsObject = {
-    body?: string,
-    receiveridsList: Array<number>,
-    entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-  }
-}
-
 export class MessagesSendMedia extends jspb.Message {
   hasRandomid(): boolean;
   clearRandomid(): void;

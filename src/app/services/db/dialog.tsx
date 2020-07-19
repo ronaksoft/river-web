@@ -24,15 +24,9 @@ export default class DialogDB {
     private constructor() {
         this.db = new DexieDialogDB();
         this.db.open();
-        // setInterval(this.viewCleanup, 60000);
     }
 
     public getDB() {
         return this.db;
     }
-
-    //
-    // private viewCleanup = () => {
-    //     //
-    // }
 }

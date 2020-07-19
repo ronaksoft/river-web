@@ -431,6 +431,11 @@ export class UpdateUserTyping extends jspb.Message {
   getPeerid(): string | undefined;
   setPeerid(value: string): void;
 
+  hasPeertype(): boolean;
+  clearPeertype(): void;
+  getPeertype(): number | undefined;
+  setPeertype(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateUserTyping.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateUserTyping): UpdateUserTyping.AsObject;
@@ -448,6 +453,7 @@ export namespace UpdateUserTyping {
     userid?: string,
     action?: core_types_pb.TypingAction,
     peerid?: string,
+    peertype?: number,
   }
 }
 
@@ -612,6 +618,11 @@ export class UpdateNotifySettings extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasUserid(): boolean;
   clearUserid(): void;
   getUserid(): string | undefined;
@@ -641,6 +652,7 @@ export namespace UpdateNotifySettings {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
+    teamid?: string,
     userid?: string,
     notifypeer: core_types_pb.Peer.AsObject,
     settings: core_types_pb.PeerNotifySettings.AsObject,

@@ -56,7 +56,7 @@ import {
     LabelsMany,
     MessageEntity,
     PeerNotifySettings,
-    PhoneContact,
+    PhoneContact, Ping, Pong,
     PrivacyKey,
     PrivacyRule,
     PushTokenProvider,
@@ -194,7 +194,7 @@ export default class APIManager {
         }
     }
 
-    public setTeam(team: InputTeam.AsObject) {
+    public setTeam(team: InputTeam.AsObject | undefined) {
         this.server.setTeam(team);
         FileManager.getInstance().setTeam(team);
     }
@@ -220,8 +220,12 @@ export default class APIManager {
         this.setConnInfo(info);
         localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
         localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
-        localStorage.removeItem(C_LOCALSTORAGE.TopPeerInit);
         localStorage.removeItem(C_LOCALSTORAGE.GifHash);
+        localStorage.removeItem(C_LOCALSTORAGE.TeamId);
+        localStorage.removeItem(C_LOCALSTORAGE.TeamData);
+        localStorage.removeItem(C_LOCALSTORAGE.SnapshotRecord);
+        localStorage.removeItem(C_LOCALSTORAGE.ThemeBg);
+        localStorage.removeItem(C_LOCALSTORAGE.ThemeBgPic);
     }
 
     public loadConnInfo(): IConnInfo {
@@ -974,6 +978,15 @@ export default class APIManager {
     public accountGetTeams(): Promise<TeamsMany.AsObject> {
         const data = new AccountGetTeams();
         return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true);
+    }
+
+    public ping(): Promise<Pong.AsObject> {
+        const data = new Ping();
+        data.setId(Date.now());
+        return this.server.send(C_MSG.Ping, data.serializeBinary(), true, {
+            retry: 1,
+            timeout: 2000,
+        });
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {

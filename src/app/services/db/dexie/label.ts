@@ -23,7 +23,7 @@ export class DexieLabelDB extends Dexie {
         // (Here's where the implicit table props are dynamically created)
         //
         this.version(1).stores({
-            labelItems: `++id,[lid+mid]`,
+            labelItems: `++id,[teamid+lid+mid]`,
             labels: `id`,
         });
 

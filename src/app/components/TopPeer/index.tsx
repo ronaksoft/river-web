@@ -17,13 +17,13 @@ import UserAvatar from "../UserAvatar";
 import GroupAvatar from "../GroupAvatar";
 import GroupName from "../GroupName";
 import I18n from "../../services/i18n";
+import i18n from "../../services/i18n";
 import {Link} from "react-router-dom";
 import {IUser} from "../../repository/user/interface";
 import {IGroup} from "../../repository/group/interface";
 import {CloseRounded} from "@material-ui/icons";
 import APIManager from "../../services/sdk";
 import {findIndex} from 'lodash';
-import i18n from '../../services/i18n';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import {TopPeerCategory} from "../../services/sdk/messages/contacts_pb";
 
@@ -32,6 +32,7 @@ import './style.scss';
 interface IProps {
     onSelect?: (type: PeerType, item: IUser | IGroup) => void;
     type: TopPeerType;
+    teamId: string;
     visible?: boolean;
     noTitle?: boolean;
     onlyUser?: boolean;
@@ -75,7 +76,7 @@ class TopPeer extends React.Component<IProps, IState> {
     }
 
     public componentDidMount(): void {
-        this.searchRepo.getSearchTopPeers(this.props.type, C_TOP_PEER_LEN, this.props.onlyUser).then((list) => {
+        this.searchRepo.getSearchTopPeers(this.props.teamId, this.props.type, C_TOP_PEER_LEN, this.props.onlyUser).then((list) => {
             this.setState({
                 list,
             });
@@ -100,7 +101,7 @@ class TopPeer extends React.Component<IProps, IState> {
                 <div className="scroll-bar" style={{width: `${list.length * 64}px`}}>
                     {filteredList.map((item, index) => {
                         return (
-                            <Link key={index} to={`/chat/${item.item.id}`} onClick={this.clickHandler(item)}>
+                            <Link key={index} to={`/chat/${this.props.teamId}/${item.item.id}_${item.type}`} onClick={this.clickHandler(item)}>
                                 <div className="top-peer-item">
                                     <div className="remove" onClick={this.removeHandler(item)}><CloseRounded/></div>
                                     {this.getItem(item)}
@@ -116,6 +117,7 @@ class TopPeer extends React.Component<IProps, IState> {
     private getItem(item: ITopPeerItem) {
         switch (item.type) {
             case PeerType.PEERUSER:
+            case PeerType.PEEREXTERNALUSER:
                 return <>
                     <UserAvatar id={item.item.id || '0'} noDetail={true} className="top-peer-avatar"
                                 savedMessages={item.item.id === this.userId}/>
@@ -124,9 +126,11 @@ class TopPeer extends React.Component<IProps, IState> {
                               youPlaceholder={i18n.t('general.saved_messages')}/>
                 </>;
             case PeerType.PEERGROUP:
+                const group = item.item as IGroup;
                 return <>
-                    <GroupAvatar id={item.item.id || '0'} className="top-peer-avatar"/>
-                    <GroupName id={item.item.id || '0'} noIcon={true} className="top-peer-name"/>
+                    <GroupAvatar id={group.id || '0'} teamId={group.teamid || '0'} className="top-peer-avatar"/>
+                    <GroupName id={group.id || '0'} teamId={group.teamid || '0'} noIcon={true}
+                               className="top-peer-name"/>
                 </>;
             default:
                 return null;
@@ -183,7 +187,7 @@ class TopPeer extends React.Component<IProps, IState> {
             });
         }
         this.apiManager.removeTopPeer(this.getTopPeerCategory(item.type), inputPeer).then((res) => {
-            this.topPeerRepo.remove(this.props.type, item.item.id || '0');
+            this.topPeerRepo.remove(this.props.teamId, this.props.type, item.item.id || '0', item.type);
         });
     }
 }

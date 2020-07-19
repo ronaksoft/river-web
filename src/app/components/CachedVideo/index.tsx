@@ -10,6 +10,7 @@
 import * as React from 'react';
 import CachedFileService from '../../services/cachedFileService';
 import {InputFileLocation} from '../../services/sdk/messages/core.types_pb';
+import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     autoPlay?: boolean;
@@ -47,7 +48,7 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        this.cachedFileService.unmountCache(this.props.fileLocation.fileid || '');
+        this.cachedFileService.unmountCache(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid));
     }
 
     public render() {
@@ -83,7 +84,7 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
 
     /* Video error handler */
     private videoErrorHandler = () => {
-        this.cachedFileService.remove(this.props.fileLocation.fileid || '').then(() => {
+        this.cachedFileService.remove(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid)).then(() => {
             this.retries = 0;
             this.getFile();
         });

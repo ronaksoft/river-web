@@ -23,7 +23,7 @@ import {InputDocument, InputFileLocation} from "../../services/sdk/messages/core
 import FileManager from "../../services/sdk/fileManager";
 import ProgressBroadcaster from "../../services/progress";
 import FileDownloadProgress from "../../components/FileDownloadProgress";
-import FileRepo from "../file";
+import FileRepo, {GetDbFileName} from "../file";
 import {Int64BE} from "int64-buffer";
 // @ts-ignore
 import CRC from 'js-crc/build/crc.min';
@@ -57,6 +57,7 @@ export default class GifRepo {
             out.attributes = MessageRepo.parseAttributes(gifDoc.doc.attributesList, flags);
             out.messagetype = flags.type;
         }
+        out.id = GetDbFileName(gifDoc.doc.id, gifDoc.doc.clusterid);
         delete out.entitiesList;
         return out;
     }
@@ -127,8 +128,9 @@ export default class GifRepo {
         const timeList: number[] = [];
         const ids: string[] = [];
         list.forEach((o) => {
-            timeList[o.doc.id || ''] = o.time;
-            ids.push(o.doc.id || '');
+            const fileName = GetDbFileName(o.doc.id, o.doc.clusterid);
+            timeList[fileName] = o.time;
+            ids.push(GetDbFileName(o.doc.id, o.doc.clusterid));
         });
         return this.db.gifs.where('id').anyOf(ids).toArray().then((result) => {
             const ls: IGif[] = result.map((item) => {
@@ -142,12 +144,12 @@ export default class GifRepo {
     }
 
     public download(inputFile: InputFileLocation, md5: string, size: number, mimeType: string) {
-        const id = inputFile.getFileid() || '0';
+        const fileName = GetDbFileName(inputFile.getFileid(), inputFile.getClusterid());
         const progressSubject = FileDownloadProgress.getUid(inputFile.toObject());
         return this.fileManager.receiveFile(inputFile, md5, size, mimeType, (progress) => {
             this.progressBroadcaster.publish(progressSubject || 0, progress);
         }).then(() => {
-            return this.markAsDownloaded(id);
+            return this.markAsDownloaded(fileName);
         });
     }
 
@@ -160,8 +162,8 @@ export default class GifRepo {
     }
 
     public useGif(inputDocument: InputDocument) {
-        const id = inputDocument.getId() || '0';
-        return this.db.gifs.where('id').equals(id).first().then((result) => {
+        const fileName = GetDbFileName(inputDocument.getId(), inputDocument.getClusterid());
+        return this.db.gifs.where('id').equals(fileName).first().then((result) => {
             if (result) {
                 result.last_used = this.riverTime.now();
                 return this.db.gifs.put(result);
@@ -173,7 +175,6 @@ export default class GifRepo {
 
     public upsert(gifs: IGif[], fromRemote?: boolean): Promise<any> {
         const ids = gifs.map((gif, index) => {
-            gif.id = gif.doc.id;
             if (fromRemote) {
                 gif.last_used = this.riverTime.now();
             }
@@ -215,8 +216,8 @@ export default class GifRepo {
         });
     }
 
-    private markAsDownloaded(id: string): Promise<any> {
-        return this.db.gifs.where('id').equals(id).first().then((result) => {
+    private markAsDownloaded(name: string): Promise<any> {
+        return this.db.gifs.where('id').equals(name).first().then((result) => {
             if (result) {
                 result.downloaded = true;
                 return this.db.gifs.put(result);

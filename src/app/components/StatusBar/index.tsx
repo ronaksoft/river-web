@@ -18,6 +18,7 @@ import Socket from "../../services/sdk/server/socket";
 
 import './style.scss';
 import Smoother from "../../services/utilities/smoother";
+import {GetPeerName} from "../../repository/dialog";
 
 interface IProps {
     currentUserId: string;
@@ -26,16 +27,16 @@ interface IProps {
     isUpdating: boolean;
     onAction: (cmd: string) => (e?: any) => void;
     peer: InputPeer | null;
-    selectedDialogId: string;
+    teamId: string;
 }
 
 interface IState {
     isConnecting: boolean;
     isOnline: boolean;
-    isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
+    isTypingList: { [key: string]: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } };
     isUpdating: boolean;
     peer: InputPeer | null;
-    selectedDialogId: string;
+    selectedId: string;
 }
 
 class StatusBar extends React.Component<IProps, IState> {
@@ -45,7 +46,7 @@ class StatusBar extends React.Component<IProps, IState> {
             isOnline: props.isOnline,
             isUpdating: props.isUpdating,
             peer: props.peer,
-            selectedDialogId: props.selectedDialogId,
+            selectedId: props.peer ? (props.peer.getId() || '') : '',
         };
     }
 
@@ -61,7 +62,7 @@ class StatusBar extends React.Component<IProps, IState> {
             isTypingList: {},
             isUpdating: props.isUpdating,
             peer: null,
-            selectedDialogId: props.selectedDialogId,
+            selectedId: props.peer ? (props.peer.getId() || '') : '',
         };
 
         this.smoother = new Smoother(2000, this.updateFunctionHandler);
@@ -71,41 +72,43 @@ class StatusBar extends React.Component<IProps, IState> {
         this.smoother.destroy();
     }
 
-    public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
+    public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } }) {
         this.setState({
             isTypingList,
         });
     }
 
     public render() {
-        const {peer, selectedDialogId} = this.state;
+        const {peer, selectedId} = this.state;
         if (!peer) {
             return null;
         }
         const isGroup = peer.getType() === PeerType.PEERGROUP;
-        const savedMessages = (this.props.currentUserId === selectedDialogId);
+        const savedMessages = (this.props.currentUserId === selectedId);
         return (
             <span className={'status-bar' + (savedMessages ? ' saved-messages' : '')} onClick={this.clickHandler}>
                 {!isGroup &&
-                <UserName id={selectedDialogId} className="name" you={true}
+                <UserName id={selectedId} className="name" you={true}
                           youPlaceholder={i18n.t('general.saved_messages')} noDetail={true}/>}
                 {isGroup &&
-                <GroupName id={selectedDialogId} className="name"/>}
+                <GroupName id={selectedId} teamId={this.props.teamId} className="name"/>}
                 {this.getChatStatus(savedMessages)}
             </span>
         );
     }
 
     private getChatStatus(hideStatus: boolean) {
-        const {selectedDialogId, peer, isConnecting} = this.state;
+        const {peer, isConnecting, selectedId, isTypingList} = this.state;
         if (!peer) {
             return null;
         }
+        const {teamId} = this.props;
+        const peerName = GetPeerName(peer.getId(), peer.getType());
         const showIsConnecting = this.smoother.getState(isConnecting);
         let typingList: { [key: string]: { fn: any, action: TypingAction } } = {};
         let ids: number = 0;
-        if (this.state.isTypingList.hasOwnProperty(selectedDialogId)) {
-            typingList = this.state.isTypingList[selectedDialogId];
+        if (isTypingList.hasOwnProperty(teamId) && isTypingList[teamId].hasOwnProperty(peerName)) {
+            typingList = this.state.isTypingList[teamId][peerName];
             ids = Object.keys(typingList).length;
         }
         if (!this.state.isOnline) {
@@ -118,7 +121,7 @@ class StatusBar extends React.Component<IProps, IState> {
         } else if (ids > 0) {
             return (isTypingRender(typingList, peer.getType() || PeerType.PEERUSER));
         } else if (!hideStatus) {
-            return (<LastSeen id={selectedDialogId} withLastSeen={true}/>);
+            return (<LastSeen id={selectedId} teamId={this.props.teamId} withLastSeen={true}/>);
         } else {
             return null;
         }

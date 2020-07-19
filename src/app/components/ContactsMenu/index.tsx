@@ -28,6 +28,7 @@ interface IProps {
     id?: number;
     onClose?: () => void;
     onError?: (text: string) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -80,7 +81,7 @@ class ContactMenus extends React.Component<IProps, IState> {
                         <KeyboardBackspaceRounded/>
                     </IconButton>
                     <label>{i18n.t('contact.contacts')}</label>
-                    <Tooltip
+                    {this.props.teamId === '0' && <Tooltip
                         title={i18n.t('contact.new_contact')}
                         placement="bottom"
                     >
@@ -89,10 +90,11 @@ class ContactMenus extends React.Component<IProps, IState> {
                         >
                             <PersonAddRounded/>
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip>}
                 </div>
                 <div className="contact-box">
-                    <ContactList ref={this.contactListRefHandler} className="contacts-menu" mode="link"
+                    <ContactList ref={this.contactListRefHandler} className="contacts-menu"
+                                 teamId={this.props.teamId} mode="link"
                                  noRowsRenderer={this.noRowsRenderer} disableCheckSelected={true}
                                  onContextMenuAction={this.contextMenuActionHandler} globalSearch={true}/>
                 </div>

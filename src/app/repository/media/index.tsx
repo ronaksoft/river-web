@@ -15,6 +15,7 @@ import {DexieMediaDB} from '../../services/db/dexie/media';
 import MessageRepo from '../message';
 import {kMerge} from "../../services/utilities/kDash";
 import {IMessage} from "../message/interface";
+import {IPeer} from "../dialog/interface";
 
 interface IMediaWithCount {
     count: number;
@@ -65,9 +66,9 @@ export default class MediaRepo {
         });
     }
 
-    public getMany({limit, before, after, type}: any, peerId: string): Promise<IMediaWithCount> {
+    public getMany(teamId: string, peer: IPeer, {limit, before, after, type}: { limit?: number, before?: number, after?: number, type?: number }): Promise<IMediaWithCount> {
         return new Promise<IMediaWithCount>((resolve, reject) => {
-            const pipe = this.db.medias.where('[peerid+id+type]');
+            const pipe = this.db.medias.where('[teamid+peerid+peertype+id]');
             let pipe2: Dexie.Collection<IMedia, number>;
             let mode = 0x0;
             if (before !== null && before !== undefined) {
@@ -95,19 +96,19 @@ export default class MediaRepo {
                 // none
                 default:
                 case 0x0:
-                    pipe2 = pipe.between([peerId, Dexie.minKey, Dexie.minKey], [peerId, Dexie.maxKey, Dexie.maxKey], true, true);
+                    pipe2 = pipe.between([teamId, peer.id, peer.peerType, Dexie.minKey], [teamId, peer.id, peer.peerType, Dexie.maxKey], true, true);
                     break;
                 // before
                 case 0x1:
-                    pipe2 = pipe.between([peerId, Dexie.minKey, Dexie.minKey], [peerId, before, Dexie.maxKey], true, true);
+                    pipe2 = pipe.between([teamId, peer.id, peer.peerType, Dexie.minKey], [teamId, peer.id, peer.peerType, before], true, true);
                     break;
                 // after
                 case 0x2:
-                    pipe2 = pipe.between([peerId, after, Dexie.minKey], [peerId, Dexie.maxKey, Dexie.maxKey], true, true);
+                    pipe2 = pipe.between([teamId, peer.id, peer.peerType, after], [teamId, peer.id, peer.peerType, Dexie.maxKey], true, true);
                     break;
                 // between
                 case 0x3:
-                    pipe2 = pipe.between([peerId, after, Dexie.minKey], [peerId, before, Dexie.maxKey], true, true);
+                    pipe2 = pipe.between([teamId, peer.id, peer.peerType, after], [teamId, peer.id, peer.peerType, before], true, true);
                     break;
             }
             if (mode !== 0x2) {

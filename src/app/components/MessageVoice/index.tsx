@@ -14,6 +14,7 @@ import VoicePlayer, {getVoiceInfo} from '../VoicePlayer';
 import {MediaDocument} from '../../services/sdk/messages/chat.messages.medias_pb';
 
 import './style.scss';
+import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     message: IMessage;
@@ -28,7 +29,7 @@ interface IState {
 class MessageVoice extends React.Component<IProps, IState> {
     private voicePlayerRef: VoicePlayer | undefined;
     private lastId: number = 0;
-    private fileId: string = '';
+    private dbFileName: string = '';
     private downloaded: boolean = false;
     private contentRead: boolean = false;
 
@@ -53,7 +54,7 @@ class MessageVoice extends React.Component<IProps, IState> {
             this.voicePlayerRef.setData({
                 bars: info.bars,
                 duration: info.duration,
-                fileId: info.fileId,
+                fileName: info.fileName,
                 state: this.getVoiceState(message),
             });
         }
@@ -62,10 +63,10 @@ class MessageVoice extends React.Component<IProps, IState> {
     public USAFE_componentWillReceiveProps(newProps: IProps) {
         const {message} = this.state;
         const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
-        if ((newProps.message && this.lastId !== newProps.message.id) || (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.fileId)) {
+        if ((newProps.message && this.lastId !== newProps.message.id) || (messageMediaDocument && messageMediaDocument.doc && GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid) !== this.dbFileName)) {
             const info = getVoiceInfo(message);
             this.lastId = newProps.message.id || 0;
-            this.fileId = info.fileId || '';
+            this.dbFileName = info.fileName || '';
             this.setState({
                 message: newProps.message,
             }, () => {
@@ -73,7 +74,7 @@ class MessageVoice extends React.Component<IProps, IState> {
                     this.voicePlayerRef.setData({
                         bars: info.bars,
                         duration: info.duration,
-                        fileId: info.fileId,
+                        fileName: info.fileName,
                         state: this.getVoiceState(message),
                     });
                 }

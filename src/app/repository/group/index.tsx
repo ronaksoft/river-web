@@ -9,13 +9,14 @@
 
 import DB from '../../services/db/user';
 import {IGroup} from './interface';
-import {differenceBy, find, throttle, uniq, uniqBy} from 'lodash';
+import {differenceWith, find, throttle, uniq, uniqBy} from 'lodash';
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
+import Dexie from "dexie";
 
 export const GroupDBUpdated = 'Group_DB_Updated';
 
@@ -64,12 +65,12 @@ export default class GroupRepo {
         return this.db.groups.bulkPut(group);
     }
 
-    public get(id: string): Promise<IGroup | undefined> {
-        const group = this.dbService.getGroup(id);
+    public get(teamId: string, id: string): Promise<IGroup | undefined> {
+        const group = this.dbService.getGroup(this.getTeamId(teamId, id));
         if (group) {
             return Promise.resolve(group);
         }
-        return this.db.groups.get(id).then((g: IGroup | undefined) => {
+        return this.db.groups.get([teamId, id]).then((g: IGroup | undefined) => {
             if (g) {
                 this.dbService.setGroup(g);
             }
@@ -77,16 +78,19 @@ export default class GroupRepo {
         });
     }
 
-    public findInArray(ids: string[], skip: number, limit: number): Promise<IGroup[]> {
+    public findInArray(teamId: string, ids: string[], skip: number, limit: number): Promise<IGroup[]> {
         if (ids.length === 0) {
             return Promise.resolve([]);
         }
-        return this.db.groups.where('id').anyOf(ids).offset(skip || 0).limit(limit).toArray();
+        const queries: any[] = ids.map((id) => {
+            return [teamId, id];
+        });
+        return this.db.groups.where('[teamid+id]').anyOf(queries).offset(skip || 0).limit(limit).toArray();
     }
 
-    public getFull(id: string, cacheCB?: (gs: IGroup) => void, checkLastUpdate?: boolean): Promise<IGroup> {
+    public getFull(teamId: string, id: string, cacheCB?: (gs: IGroup) => void, checkLastUpdate?: boolean): Promise<IGroup> {
         return new Promise<IGroup>((resolve, reject) => {
-            this.get(id).then((group) => {
+            this.get(teamId, id).then((group) => {
                 if (group) {
                     if (cacheCB) {
                         cacheCB(group);
@@ -121,12 +125,12 @@ export default class GroupRepo {
         });
     }
 
-    public getManyCache({keyword, limit}: any): Promise<IGroup[]> {
+    public getManyCache(teamId: string, {keyword, limit}: any): Promise<IGroup[]> {
         if (!keyword) {
             return this.db.groups.limit(limit || 100).toArray();
         }
         const reg = new RegExp(keyword || '', 'gi');
-        return this.db.groups.filter((g) => {
+        return this.db.groups.where('[teamid+id]').between([teamId, Dexie.minKey], [teamId, Dexie.maxKey], true, true).filter((g) => {
             return reg.test(g.title || '');
         }).limit(limit || 12).toArray();
     }
@@ -166,13 +170,18 @@ export default class GroupRepo {
         if (groups.length === 0) {
             return Promise.resolve();
         }
-        const ids = groups.map((group) => {
-            return group.id || '';
+        const ids: string[] = [];
+        const pairs: Array<[string, string]> = groups.map((group) => {
+            group.teamid = group.teamid || '0';
+            ids.push(`${group.teamid}_${group.id || ''}`);
+            return [group.teamid, group.id || ''];
         });
-        return this.db.groups.where('id').anyOf(ids).toArray().then((result) => {
-            const createItems: IGroup[] = differenceBy(groups, result, 'id');
+        return this.db.groups.where('[teamid+id]').anyOf(pairs).toArray().then((result) => {
+            const createItems: IGroup[] = differenceWith(groups, result, (o1, o2) => {
+                return o1.teamid === o2.teamid && o1.id === o2.id;
+            });
             const updateItems: IGroup[] = result.map((group: IGroup) => {
-                const t = find(groups, {id: group.id});
+                const t = find(groups, {teamid: group.teamid, id: group.id});
                 if (t) {
                     return this.mergeCheck(group, t);
                 } else {
@@ -241,5 +250,9 @@ export default class GroupRepo {
 
     private broadcastEvent(name: string, data: any) {
         this.broadcaster.publish(name, data);
+    }
+
+    private getTeamId(teamId: string, id: string) {
+        return `${teamId}_${id}`;
     }
 }

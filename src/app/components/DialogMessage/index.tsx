@@ -13,9 +13,22 @@ import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 import {
-    AlternateEmailRounded, DoneAllRounded, DoneRounded, InsertDriveFileOutlined, LocationOnOutlined, MoreVert,
-    MusicNoteOutlined, NotificationsOffRounded, PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined, ScheduleRounded,
-    VideocamOutlined, ForwardOutlined, ReplyOutlined, GifOutlined,
+    AlternateEmailRounded,
+    DoneAllRounded,
+    DoneRounded,
+    ForwardOutlined,
+    GifOutlined,
+    InsertDriveFileOutlined,
+    LocationOnOutlined,
+    MoreVert,
+    MusicNoteOutlined,
+    NotificationsOffRounded,
+    PeopleOutlined,
+    PhotoOutlined,
+    RecordVoiceOverOutlined,
+    ReplyOutlined,
+    ScheduleRounded,
+    VideocamOutlined,
 } from '@material-ui/icons';
 import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -30,6 +43,7 @@ import {Link} from "react-router-dom";
 import {IUser} from "../../repository/user/interface";
 
 import './style.scss';
+import {GetPeerName} from "../../repository/dialog";
 
 export const getMessageIcon = (icon?: number) => {
     switch (icon) {
@@ -64,7 +78,7 @@ interface IProps {
     isTyping: { [key: string]: { fn: any, action: TypingAction } };
     onContextMenuOpen?: (e: any) => void;
     onClick?: (e: any) => void;
-    selectedId: string;
+    selectedPeerName: string;
     messageId?: number;
     onDrop?: (peerId: string, files: File[], hasData: boolean) => void;
 }
@@ -97,27 +111,27 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
         case C_MESSAGE_ACTION.MessageActionContactRegistered:
             return (<span className="preview-message system-message">
                     <UserName className="sender" id={dialog.sender_id || ''}
-                              noDetail={true} noIcon={true}/> {i18n.t('message.joined_river')}</span>);
+                              noDetail={true} noIcon={true} postfix=" "/> {i18n.t('message.joined_river')}</span>);
         case C_MESSAGE_ACTION.MessageActionGroupCreated:
             return (<span className="preview-message system-message">
                     <UserName className="sender"
                               id={dialog.sender_id || ''}
                               you={true} onlyFirstName={true} noIcon={true}
-                              noDetail={true}/> {i18n.t('message.created_the_group')}</span>);
+                              noDetail={true} postfix=" "/> {i18n.t('message.created_the_group')}</span>);
         case C_MESSAGE_ACTION.MessageActionGroupAddUser:
             if (!dialog.action_data) {
                 return (<span className="preview-message system-message">
                         <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true}
-                                  noIcon={true} noDetail={true}/> {i18n.t('message.added_a_user')}</span>);
+                                  noIcon={true} noDetail={true} postfix=" "/> {i18n.t('message.added_a_user')}</span>);
             } else {
                 return (<span className="preview-message system-message">
                         <UserName className="sender" id={dialog.sender_id || ''}
-                                  you={true} onlyFirstName={true} noIcon={true}
+                                  you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.t('message.added')} {dialog.action_data.useridsList.map((id: string, index: number) => {
                     return (
                         <span key={index}>
                                 {index !== 0 ? ', ' : ''}
-                            <UserName className="target-user" id={id} you={true} noDetail={true}
+                            <UserName className="target-user" id={id} you={true} noDetail={true} postfix=" "
                                       noIcon={true}/></span>
                     );
                 })}</span>);
@@ -127,25 +141,25 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                 return (<span className="preview-message system-message">
                         <UserName className="sender"
                                   id={dialog.sender_id || ''}
-                                  you={true} onlyFirstName={true} noIcon={true}
+                                  you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.t('message.removed_a_user')}</span>);
             } else {
                 if (dialog.action_data.useridsList.indexOf(dialog.sender_id) > -1) {
                     return (
                         <span className="preview-message system-message">
                                 <UserName className="sender"
-                                          id={dialog.sender_id || ''}
+                                          id={dialog.sender_id || ''} postfix=" "
                                           you={true} onlyFirstName={true} noIcon={true}
                                           noDetail={true}/> {i18n.t('message.left')}</span>);
                 }
                 return (<span className="preview-message system-message">
                     <UserName className="sender" id={dialog.sender_id || ''}
-                              you={true} onlyFirstName={true} noIcon={true}
+                              you={true} onlyFirstName={true} noIcon={true} postfix=" "
                               noDetail={true}/> {i18n.t('message.removed')} {dialog.action_data.useridsList.map((id: string, index: number) => {
                     return (
                         <span key={index}>
                             {index !== 0 ? ', ' : ''}
-                            <UserName className="target-user" id={id} you={true} noDetail={true}
+                            <UserName className="target-user" id={id} you={true} noDetail={true} postfix=" "
                                       noIcon={true}/></span>
                     );
                 })}</span>);
@@ -154,12 +168,12 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
             if (!dialog.action_data) {
                 return (<span className="preview-message system-message">
                         <UserName className="sender"
-                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true}
+                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.t('message.changed_the_title')}</span>);
             } else {
                 return (<span className="preview-message system-message">
                         <UserName className="sender"
-                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true}
+                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.tf('message.changed_the_title_to', dialog.action_data.grouptitle)}</span>);
             }
         case C_MESSAGE_ACTION.MessageActionClearHistory:
@@ -168,12 +182,12 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
             if (!dialog.action_data) {
                 return (<span className="preview-message system-message">
                         <UserName className="sender"
-                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true}
+                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.t('message.removed_the_group_photo')}</span>);
             } else {
                 return (<span className="preview-message system-message">
                         <UserName className="sender"
-                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true}
+                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.t('message.changed_the_group_photo')}</span>);
             }
         default:
@@ -208,7 +222,7 @@ const GetStatus = ({id, readId, peerId, isBot, userId}: { id: number, readId: nu
     }
 };
 
-export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOpen, onClick, selectedId, messageId, onDrop}: IProps) => {
+export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOpen, onClick, selectedPeerName, messageId, onDrop}: IProps) => {
     const [isBot, setIsBot] = useState<boolean>(false);
 
     const userId: string = sdk.getInstance().getConnInfo().UserID || '';
@@ -247,30 +261,30 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
     const muted = isMuted(dialog.notifysettings);
     const hasCounter = Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
     const hasMention = Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
-
+    const peerName = GetPeerName(dialog.peerid, dialog.peertype);
     return (
         <Link className="dialog-a" onClick={onClick} data-peerid={dialog.peerid}
-              to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}
+              to={messageId ? `/chat/${dialog.teamid || '0'}/${peerName}/${messageId}` : `/chat/${dialog.teamid}/${dialog.peerid}_${dialog.peertype || 0}`}
               onDrop={dropHandler}
         >
             <div
-                className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}
+                className={'dialog' + (peerName === selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}
             >
                 <div
                     className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
-                    {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                    <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
-                                savedMessages={dialog.saved_messages} onlineIndicator={selectedId !== ''}/>}
+                    {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF || dialog.peertype === PeerType.PEEREXTERNALUSER) &&
+                    <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true} peerType={dialog.peertype}
+                                savedMessages={dialog.saved_messages} onlineIndicator={selectedPeerName !== ''}/>}
                     {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                    <GroupAvatar className="avatar" id={dialog.peerid || ''}/>}
+                    <GroupAvatar className="avatar" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
                     <div className="dialog-top-bar">
                         {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
-                        {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                        <UserName className="name" id={dialog.peerid || ''} noDetail={true}
+                        {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF || dialog.peertype === PeerType.PEEREXTERNALUSER) &&
+                        <UserName className="name" id={dialog.peerid || ''} noDetail={true} peerType={dialog.peertype}
                                   you={dialog.saved_messages} onLoad={userNameLoadHandler}
                                   youPlaceholder={i18n.t('general.saved_messages')}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                        <GroupName className="name" id={dialog.peerid || ''}/>}
+                        <GroupName className="name" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
                         {dialog.preview_me && <span
                             className="status"><GetStatus id={dialog.topmessageid || 0} isBot={isBot}
                                                           readId={dialog.readoutboxmaxid || 0} userId={userId}
@@ -311,7 +325,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 return i18n.t('status.uploading_file');
         }
     };
-    if (peerType === PeerType.PEERUSER) {
+    if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
         return (<span className="preview">{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}</span>);
     } else {
         const types = {};
@@ -326,9 +340,10 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
         });
         return (<span className="preview">
                 {ids.slice(0, 2).map((id, index) => {
+                    const peerId = id.split('_')[0];
                     return (<span key={index}>
                         {index !== 0 ? (ids.length - 1 === index ? ' & ' : ', ') : ''}
-                        <UserName id={id} onlyFirstName={true} noIcon={true}/>
+                        <UserName id={peerId} onlyFirstName={true} noIcon={true}/>
                     </span>);
                 })}
             {Boolean(ids.length > 2) && <span> & {ids.length - 2} more</span>}
