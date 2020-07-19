@@ -32,10 +32,10 @@ import animateScrollTo from "animated-scroll-to";
 import {Loading} from '../Loading';
 import SearchRepo from "../../repository/search";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
-
-import './style.scss';
 import {InputAdornment} from "@material-ui/core";
 import {PeerType} from "../../services/sdk/messages/core.types_pb";
+
+import './style.scss';
 
 interface IProps {
     className?: string;
@@ -237,7 +237,7 @@ class ContactList extends React.Component<IProps, IState> {
                         onChange={this.searchChangeHandler}
                     />}
                 </div>
-                <div className="contact-list-container">
+                <div className={'contact-list-container' + (this.props.teamId === '0' ? ' default-team' : '')}>
                     {this.getWrapper()}
                 </div>
                 <Menu
@@ -361,7 +361,7 @@ class ContactList extends React.Component<IProps, IState> {
                             <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
                             <span
                                 className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
-                            {Boolean(this.props.onContextMenuAction) &&
+                            {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                             <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                                 <MoreVert/>
                             </div>}
@@ -380,7 +380,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 </span>
                                 <span
                                     className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
-                                {Boolean(this.props.onContextMenuAction) &&
+                                {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                                 <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                                     <MoreVert/>
                                 </div>}
@@ -406,7 +406,7 @@ class ContactList extends React.Component<IProps, IState> {
                         </span>
                         <span
                             className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
-                        {Boolean(this.props.onContextMenuAction) &&
+                        {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                         <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                             <MoreVert/>
                         </div>}

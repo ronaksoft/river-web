@@ -208,6 +208,7 @@ class Chat extends React.Component<IProps, IState> {
     private popUpDateRef: PopUpDate | undefined;
     private popUpNewMessageRef: PopUpNewMessage | undefined;
     private infoBarRef: InfoBar | undefined;
+    private audioPlayerShellRef: AudioPlayerShell | undefined;
     private messageRef: Message | undefined;
     private chatInputRef: ChatInput | undefined;
     private messages: IMessage[] = [];
@@ -626,7 +627,8 @@ class Chat extends React.Component<IProps, IState> {
                                          onClose={this.closePeerHandler} onAction={this.messageMoreActionHandler}
                                          statusBarRefHandler={this.statusBarRefHandler}
                                          isMobileView={this.isMobileView}/>
-                                <AudioPlayerShell key="audio-player-shell" onVisible={this.audioPlayerVisibleHandler}
+                                <AudioPlayerShell key="audio-player-shell" ref={this.audioPlayerShellRefHandler}
+                                                  onVisible={this.audioPlayerVisibleHandler}
                                                   onAction={this.messageAttachmentActionHandler}/>
                             </div>
                             <div ref={this.conversationRefHandler} className="conversation">
@@ -1022,6 +1024,13 @@ class Chat extends React.Component<IProps, IState> {
                 peer: this.peer,
                 selectedPeerName: this.selectedPeerName
             });
+        }
+    }
+
+    private audioPlayerShellRefHandler = (ref: any) => {
+        this.audioPlayerShellRef = ref;
+        if (ref) {
+            ref.setTeamId(this.teamId);
         }
     }
 
@@ -4976,15 +4985,14 @@ class Chat extends React.Component<IProps, IState> {
         const user = new InputUser();
         user.setUserid(id);
         user.setAccesshash('');
-        const peerName = GetPeerName(inputPeer.getId(), inputPeer.getType());
         this.apiManager.groupRemoveMember(inputPeer, user).then(() => {
-            const dialog = this.getDialogByPeerName(peerName);
+            const dialog = this.getDialogByPeerName(leftMenuSelectedDialogId);
             if (dialog && dialog.topmessageid) {
                 this.apiManager.clearMessage(inputPeer, dialog.topmessageid, true);
             }
         }).catch((err) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMember) {
-                const dialog = this.getDialogByPeerName(peerName);
+                const dialog = this.getDialogByPeerName(leftMenuSelectedDialogId);
                 if (dialog) {
                     this.dialogRepo.remove(this.teamId, dialog.peerid || '', dialog.peertype || 0);
                     this.messageRepo.clearHistory(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid || 0);
@@ -5316,6 +5324,10 @@ class Chat extends React.Component<IProps, IState> {
 
         if (this.infoBarRef) {
             this.infoBarRef.setPeer(this.teamId, this.peer);
+        }
+
+        if (this.audioPlayerShellRef) {
+            this.audioPlayerShellRef.setTeamId(this.teamId);
         }
 
         if (this.dialogRef) {

@@ -27,9 +27,9 @@ import CachedPhoto from '../CachedPhoto';
 import DownloadProgress from '../DownloadProgress';
 import {findIndex} from 'lodash';
 import i18n from '../../services/i18n';
+import {IPeer} from "../../repository/dialog/interface";
 
 import './style.scss';
-import {IPeer} from "../../repository/dialog/interface";
 
 const C_CELL_HEIGHT = 54;
 const C_MAX_LIST_HEIGHT = 288;
@@ -55,6 +55,7 @@ interface IState {
 }
 
 class AudioPlayerShell extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private scrollbarRef: Scrollbars | undefined;
     private readonly audioPlayer: AudioPlayer;
     private eventReferences: any[] = [];
@@ -85,6 +86,10 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         };
 
         this.audioPlayer = AudioPlayer.getInstance();
+    }
+
+    public setTeamId(id: string) {
+        this.teamId = id;
     }
 
     public componentDidMount() {
@@ -151,7 +156,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                     </div>
                     <div className="audio-player-content">
                         {Boolean(userId !== '') && <div className="audio-player-anchor">
-                            <Link to={`/chat/${peer.id}_${peer.peerType}/${messageId}`}>
+                            <Link to={`/chat/${this.teamId}/${peer.id}_${peer.peerType}/${messageId}`}>
                                 {i18n.t('media.playing_from')} <UserName className="user" id={userId} unsafe={true}
                                                                          noDetail={true}/>
                             </Link>

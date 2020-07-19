@@ -90,12 +90,6 @@
           text-overflow: ellipsis;
           color: var(--grey);
         }
-
-        &:hover {
-          .name {
-            max-width: calc(100% - 72px);
-          }
-        }
       }
 
       .no-result {

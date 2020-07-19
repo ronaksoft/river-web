@@ -1,3 +1,6 @@
+## 0.34.8
+* Known bugs fixed
+
 ## 0.34.7
 * Send all pending messages on start up
 * AudioPlayer bug fixed

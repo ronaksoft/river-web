@@ -150,16 +150,6 @@
             color: var(--grey);
           }
         }
-
-        &:hover {
-          .more {
-            display: block;
-          }
-
-          .name {
-            min-width: 186px;
-          }
-        }
       }
 
       .contact-separator {
@@ -181,6 +171,23 @@
         padding: 3px 16px 1px;
         user-select: none;
         background-color: var(--bg);
+      }
+    }
+
+    &.default-team {
+      .contact-container {
+        .contact-item {
+          &:hover {
+            .more {
+              display: block;
+            }
+
+            .name {
+              min-width: 186px;
+              max-width: calc(100% - 72px);
+            }
+          }
+        }
       }
     }
   }

@@ -121,7 +121,7 @@ class LabelDialog extends React.Component<IProps, IState> {
                             onChange={this.searchChangeHandler}
                         />
                     </div>
-                    {Boolean(list.length === 0) && <div className="label-container">
+                    {Boolean(list.length > 0) && <div className="label-container">
                         <Scrollbars
                             autoHide={true}
                             hideTracksWhenNotNeeded={true}
@@ -162,7 +162,7 @@ class LabelDialog extends React.Component<IProps, IState> {
                             </div>
                         </Scrollbars>
                     </div>}
-                    {Boolean(list.length > 0 && !loading) && <div className="label-container label-placeholder">
+                    {Boolean(list.length === 0 && !loading) && <div className="label-container label-placeholder">
                         <div className="add-new-label" onClick={this.addLabelHandler}>
                             <AddCircle/>
                             {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
