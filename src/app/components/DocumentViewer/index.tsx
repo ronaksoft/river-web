@@ -85,7 +85,7 @@ interface ISize {
 
 interface IProps {
     className?: string;
-    onAction?: (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileName?: string) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileName?: string) => void;
     onJumpOnMessage?: (id: number) => void;
     onError: (text: string) => void;
 }

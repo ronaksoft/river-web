@@ -21,7 +21,7 @@ interface IProps {
     className?: string;
     id: number;
     fileSize: number;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onComplete?: (id: number) => void;
     hideSizeIndicator?: boolean;
     thumbFile?: FileLocation.AsObject;

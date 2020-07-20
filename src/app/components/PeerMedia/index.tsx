@@ -55,7 +55,7 @@ interface IMedia {
 interface IProps {
     className?: string;
     full: boolean;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onMore?: () => void;
     peer: InputPeer;
     teamId: string;
@@ -560,7 +560,7 @@ class PeerMedia extends React.Component<IProps, IState> {
         const index = this.itemMap[id];
         const {items} = this.state;
         const item = items[index];
-        if (!items[index].playing) {
+        if (!item.playing) {
             this.audioPlayer.addToPlaylist(id, this.peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
             this.audioPlayer.play(id);
         } else {

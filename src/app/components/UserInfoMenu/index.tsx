@@ -52,7 +52,7 @@ import {OfficialIcon} from "../SVG/official";
 import './style.scss';
 
 interface IProps {
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
     onClose: (e: any) => void;
     peer: InputPeer | null;
     teamId: string;

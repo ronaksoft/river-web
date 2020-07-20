@@ -63,7 +63,7 @@ import './style.scss';
 interface IProps {
     teamId: string;
     peer: InputPeer | null;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onClose?: (e: any) => void;
     onDeleteAndExitGroup?: () => void;
 }

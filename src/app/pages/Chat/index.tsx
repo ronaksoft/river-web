@@ -2792,7 +2792,8 @@ class Chat extends React.Component<IProps, IState> {
     /* Notify on new message received */
     private notifyMessage(data: UpdateNewMessage.AsObject) {
         const message: IMessage = data.message;
-        if (!(!this.isInChat && data.sender.id !== this.userId && this.canNotify(message.peerid || '')) && (message.mention_me !== true)) {
+        const peerName = GetPeerName(message.peerid, message.peertype);
+        if (!(!this.isInChat && data.sender.id !== this.userId && this.canNotify(peerName)) && (message.mention_me !== true)) {
             return;
         }
         if (message.peertype === PeerType.PEERGROUP) {
@@ -3674,11 +3675,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Check if can notify user */
-    private canNotify(peerId: string, d?: IDialog) {
-        if (!peerId) {
+    private canNotify(peerName: string, d?: IDialog) {
+        if (!peerName) {
             return;
         }
-        const dialog = d || this.getDialogByPeerName(peerId);
+        const dialog = d || this.getDialogByPeerName(peerName);
         if (dialog) {
             return !isMuted(dialog.notifysettings);
         }

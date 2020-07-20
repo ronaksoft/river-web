@@ -37,7 +37,7 @@ const C_MAX_LIST_HEIGHT = 288;
 interface IProps {
     className?: string;
     onVisible: (visible: boolean) => void;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
 }
 
 interface IState {
