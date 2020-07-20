@@ -132,7 +132,7 @@ export default class CachedMessageService {
     }
 
     /* Clear peer id messages */
-    public clearPeerId(name: string) {
+    public clearPeerName(name: string) {
         if (this.peerNames.hasOwnProperty(name)) {
             this.peerNames[name].forEach((id) => {
                 if (this.messages.hasOwnProperty(id)) {

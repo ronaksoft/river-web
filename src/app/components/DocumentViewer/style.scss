@@ -246,6 +246,10 @@
     border-radius: 5px;
     padding: 8px;
 
+    &:hover {
+      z-index: 1400;
+    }
+
     .caption-wrapper {
       max-width: 100%;
       //min-width: 640px;

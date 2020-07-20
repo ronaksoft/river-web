@@ -547,7 +547,7 @@ class Chat extends React.Component<IProps, IState> {
             });
             return;
         }
-        this.cachedMessageService.clearPeerId(this.selectedPeerName);
+        this.cachedMessageService.clearPeerName(this.selectedPeerName);
         this.newMessageLoadThrottle.cancel();
         this.updateDialogsCounter(this.selectedPeerName, {scrollPos: this.lastMessageId});
         if (selectedPeerName === 'null') {
@@ -1473,10 +1473,6 @@ class Chat extends React.Component<IProps, IState> {
         this.messages = [];
         this.messageMap = {};
 
-        if (this.chatInputRef) {
-            this.chatInputRef.setLastMessage(null);
-        }
-
         const dialog = this.getDialogByPeerName(dialogPeerName);
 
         let before = 10000000000;
@@ -1835,7 +1831,7 @@ class Chat extends React.Component<IProps, IState> {
                         this.messageRef.updateList();
                     }
                     if (this.chatInputRef && index + 1 === this.messages.length) {
-                        this.chatInputRef.setLastMessage(message);
+                        this.chatInputRef.updateLastMessage();
                     }
                 }
                 this.messageRepo.lazyUpsert([message]);
@@ -2588,11 +2584,11 @@ class Chat extends React.Component<IProps, IState> {
                         const messageTitle = getMessageTitle(message);
                         this.notify(
                             `New message from ${user.firstname} ${user.lastname}`,
-                            messageTitle.text, message.peerid || 'null');
+                            messageTitle.text, GetPeerName(message.peerid, message.peertype));
                     }
                 });
             } else {
-                this.notify(`${ids.length} new messages from ${user.firstname} ${user.lastname}`, '', peerId);
+                this.notify(`${ids.length} new messages from ${user.firstname} ${user.lastname}`, '', GetPeerName(peerId, peerType));
             }
         }
     }
@@ -2600,6 +2596,7 @@ class Chat extends React.Component<IProps, IState> {
     private notifyGroup(peerId: string, ids: number[]) {
         this.groupRepo.get(this.teamId, peerId).then((group) => {
             if (group) {
+                const peerName = GetPeerName(peerId, PeerType.PEERGROUP);
                 if (ids.length === 1) {
                     this.messageRepo.get(ids[0]).then((message) => {
                         if (message) {
@@ -2609,17 +2606,17 @@ class Chat extends React.Component<IProps, IState> {
                                 if (message.mention_me) {
                                     this.notify(
                                         `${user.firstname} ${user.lastname} mentioned you in ${group.title}`,
-                                        messageTitle.text, peerId);
+                                        messageTitle.text, peerName);
                                 } else {
                                     this.notify(
                                         `New message from ${user.firstname} ${user.lastname} in ${group.title}`,
-                                        messageTitle.text, peerId);
+                                        messageTitle.text, peerName);
                                 }
                             }
                         }
                     });
                 } else {
-                    this.notify(`${ids.length} new messages in ${group.title}`, '', peerId);
+                    this.notify(`${ids.length} new messages in ${group.title}`, '', peerName);
                 }
             }
         });
@@ -2807,11 +2804,11 @@ class Chat extends React.Component<IProps, IState> {
                 if (message.mention_me === true) {
                     this.notify(
                         `${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle}`,
-                        messageTitle.text, message.peerid || 'null');
+                        messageTitle.text, GetPeerName(message.peerid, message.peertype));
                 } else if (!message.me) {
                     this.notify(
                         `New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`,
-                        messageTitle.text, message.peerid || 'null');
+                        messageTitle.text, GetPeerName(message.peerid, message.peertype));
                 }
                 // } else {
                 //     this.notify(
@@ -2823,7 +2820,7 @@ class Chat extends React.Component<IProps, IState> {
                 const messageTitle = getMessageTitle(message);
                 this.notify(
                     `New message from ${data.sender.firstname} ${data.sender.lastname}`,
-                    messageTitle.text, message.peerid || 'null');
+                    messageTitle.text, GetPeerName(message.peerid, message.peertype));
                 // } else {
                 //     this.notify(
                 //         `${data.messages.length} new messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
@@ -3349,10 +3346,10 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Message on last message handler */
     private messageLastMessageHandler = (message: IMessage | null) => {
-        if (this.chatInputRef && message) {
-            const dialog = message.replymarkup ? this.getDialogByPeerName(this.selectedPeerName) : null;
-            this.chatInputRef.setLastMessage(message, dialog ? ((dialog.topmessageid || 0) <= (message.id || 0)) : false);
-        }
+        // if (this.chatInputRef && message) {
+        //     const dialog = message.replymarkup ? this.getDialogByPeerName(this.selectedPeerName) : null;
+        //     this.chatInputRef.setLastMessage(message, dialog ? ((dialog.topmessageid || 0) <= (message.id || 0)) : false);
+        // }
         if (this.conversationRef) {
             if (!message && !this.conversationRef.classList.contains('no-result')) {
                 this.conversationRef.classList.add('no-result');

@@ -319,7 +319,6 @@ class ChatInput extends React.Component<IProps, IState> {
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
-    private lastMessage: IMessage | null = null;
     private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.Lang) === 'fa' || false;
     private readonly isMobileView: boolean = false;
     private preventMessageSend: boolean = false;
@@ -550,16 +549,20 @@ class ChatInput extends React.Component<IProps, IState> {
         }, 100);
     }
 
-    public setLastMessage(message: IMessage | null, isLastMessage?: boolean) {
-        if (message && this.lastMessage && this.lastMessage.id !== message.id) {
-            this.checkAuthority();
-        }
-        if (isLastMessage && this.state.isBot && message && message.replymarkup === C_REPLY_ACTION.ReplyKeyboardForceReply) {
-            if (!this.state.previewMessage || (this.state.previewMessageMode === C_MSG_MODE.Reply && this.state.previewMessage.id !== message.id)) {
-                this.props.onAction('reply', message)();
+    public updateLastMessage() {
+        if (this.state.isBot && this.state.peer) {
+            const peerObj = this.state.peer.toObject();
+            const peerName = GetPeerName(peerObj.id, peerObj.type);
+            const dialog = cloneDeep(this.props.getDialog(peerName));
+            if (dialog) {
+                this.messageRepo.getLastMessage(this.teamId, peerObj.id || '', peerObj.type || 0, 'in').then((message) => {
+                    if ((message && message.id === dialog.topmessageid && message.replymarkup === C_REPLY_ACTION.ReplyKeyboardForceReply) && (!this.state.previewMessage || (this.state.previewMessageMode === C_MSG_MODE.Reply && this.state.previewMessage.id !== message.id))) {
+                        this.props.onAction('reply', message)();
+                    }
+                    this.checkAuthority();
+                });
             }
         }
-        this.lastMessage = message;
     }
 
     public checkDraft(newPeer?: InputPeer) {
@@ -597,7 +600,8 @@ class ChatInput extends React.Component<IProps, IState> {
     public setBot(peer: InputPeer | null, isBot: boolean, data: IKeyboardBotData | undefined) {
         if (this.firstLoad && peer) {
             this.firstLoad = false;
-            this.messageRepo.getLastIncomingMessage(this.teamId, peer.getId() || '', peer.getType() || 0).then((msg) => {
+            this.messageRepo.getLastMessage(this.teamId, peer.getId() || '', peer.getType() || 0, 'in').then((msg) => {
+                this.checkAuthority(msg)();
                 if (msg) {
                     if ((!this.botKeyboard || (this.botKeyboard && this.botKeyboard.msgId < (msg.id || 0))) && msg.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
                         this.botKeyboard = {
@@ -1028,10 +1032,6 @@ class ChatInput extends React.Component<IProps, IState> {
     private inputKeyUpHandler = (e: any) => {
         const textVal = e.target.value;
         const {previewMessage, previewMessageMode} = this.state;
-        if (e.key === 'Escape' && textVal.length === 0 && this.props.onChatClose && previewMessageMode === C_MSG_MODE.Normal) {
-            this.props.onChatClose();
-            return;
-        }
         this.rtlDetectorThrottle(textVal);
         let cancelTyping = false;
         const droppedMessage = cloneDeep(this.state.droppedMessage);
@@ -1113,22 +1113,27 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private inputKeyDownHandler = (e: any) => {
+        const textVal = e.target.value;
+        const {previewMessageMode} = this.state;
+        if (e.key === 'Escape' && textVal.length === 0 && this.props.onChatClose && previewMessageMode === C_MSG_MODE.Normal) {
+            this.props.onChatClose();
+            return;
+        }
         if (e.key === 'Enter' && !e.shiftKey) {
             e.stopPropagation();
             e.preventDefault();
-        } else if (e.keyCode === 38 && this.lastMessage &&
-            this.lastMessage.senderid === this.props.userId &&
-            this.state.previewMessageMode !== C_MSG_MODE.Edit &&
-            this.textarea.value === '') {
-            const message = this.lastMessage;
-            if ((this.riverTime.now() - (message.createdon || 0)) < 86400 &&
-                (message.fwdsenderid === '0' || !message.fwdsenderid) &&
-                (message.messagetype === C_MESSAGE_TYPE.Normal || (message.messagetype || 0) === 0)) {
-                e.preventDefault();
-                if (this.props.onAction) {
-                    this.props.onAction('edit', message)();
+        } else if (e.keyCode === 38 && this.state.peer && this.state.previewMessageMode !== C_MSG_MODE.Edit && this.textarea.value === '') {
+            const peerObj = this.state.peer.toObject();
+            this.messageRepo.getLastMessage(this.teamId, peerObj.id || '', peerObj.type || 0, 'out').then((message) => {
+                if (message && ((this.riverTime.now() - (message.createdon || 0)) < 86400 &&
+                    (message.fwdsenderid === '0' || !message.fwdsenderid) &&
+                    (message.messagetype === C_MESSAGE_TYPE.Normal || (message.messagetype || 0) === 0))) {
+                    e.preventDefault();
+                    if (this.props.onAction) {
+                        this.props.onAction('edit', message)();
+                    }
                 }
-            }
+            });
         } else if (e.keyCode === 27) {
             this.clearPreviewMessage(false)();
         }
@@ -1224,7 +1229,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     /* Check authority for composing message and etc. */
-    private checkAuthority = (data?: any) => {
+    private checkAuthority = (message?: IMessage) => (data?: any) => {
         const {peer, user} = this.state;
         if (!peer) {
             return;
@@ -1255,17 +1260,19 @@ class ChatInput extends React.Component<IProps, IState> {
                 }
             });
         } else {
-            if ((user && user.isbot && !user.is_bot_started) && (!this.lastMessage || (this.lastMessage && this.lastMessage.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory))) {
-                this.setState({
-                    disableAuthority: 0x3,
-                });
+            if (user && user.isbot && !user.is_bot_started) {
+                if (!message || message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
+                    this.setState({
+                        disableAuthority: 0x3,
+                    });
+                } else {
+                    this.updateBotStatus(true);
+                }
+                this.updateBotStatus(true);
             } else {
                 this.setState({
                     disableAuthority: 0x0,
                 });
-                if (user && user.isbot && !user.is_bot_started) {
-                    this.updateBotStatus(true);
-                }
             }
         }
     }

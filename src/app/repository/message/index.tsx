@@ -549,10 +549,15 @@ export default class MessageRepo {
         }
     }
 
-    public getLastMessage(teamId: string, peerId: string, peerType: number) {
+    public getLastMessage(teamId: string, peerId: string, peerType: number, mode?: 'in' | 'out') {
         return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, Dexie.minKey], [teamId, peerId, peerType, Dexie.maxKey], true, true)
             .filter((item: IMessage) => {
-                return (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
+                if (mode) {
+                    const ok = mode === 'in' ? Boolean(item.senderid !== this.userId) : Boolean(item.senderid === this.userId);
+                    return ok && (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
+                } else {
+                    return (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
+                }
             }).last();
     }
 
@@ -811,13 +816,6 @@ export default class MessageRepo {
                 });
             }).catch(reject);
         });
-    }
-
-    public getLastIncomingMessage(teamId: string, peerId: string, peerType: number): Promise<IMessage | undefined> {
-        return this.db.messages.where('[teamid+peerid+peertype+id]')
-            .between([teamId, peerId, peerType, Dexie.minKey], [teamId, peerId, peerType, Dexie.maxKey], true, true).filter((item) => {
-                return (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0 && item.senderid !== this.userId);
-            }).reverse().first();
     }
 
     public clearHistory(teamId: string, peerId: string, peerType: number, id: number): Promise<any> {

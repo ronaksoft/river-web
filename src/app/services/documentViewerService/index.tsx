@@ -34,6 +34,7 @@ interface IDocumentItem {
 
 export interface IDocument {
     anchor?: 'message' | 'shared_media' | 'shared_media_full' | 'label';
+    labelId?: number;
     items: IDocumentItem[];
     peer?: IPeer;
     rect?: ClientRect;
@@ -79,7 +80,16 @@ export default class DocumentViewerService {
             return;
         }
         this.onDocumentReady(doc);
-        this.initPagination(doc);
+        if (doc.labelId !== undefined) {
+            if (this.onDocumentPrev) {
+                this.onDocumentPrev(null);
+            }
+            if (this.onDocumentNext) {
+                this.onDocumentNext(null);
+            }
+        } else {
+            this.initPagination(doc);
+        }
     }
 
     private initPagination(doc: IDocument) {

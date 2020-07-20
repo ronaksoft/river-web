@@ -970,7 +970,7 @@ class Message extends React.Component<IProps, IState> {
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
                                 onChange={this.selectMessageHandler(message.id || 0, index, null)}/>}
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
-                            {Boolean(message.me && message.error) &&
+                            {Boolean(message.me && message.error && (message.id || 0) > 0) &&
                             <span className="error" onClick={this.contextMenuHandler(index)}><ErrorRounded/></span>}
                             <div className="message-container">
                                 <div ref={parenElRefHandler}

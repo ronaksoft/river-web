@@ -37,9 +37,23 @@ import {IconButton} from '@material-ui/core';
 
 import './style.scss';
 
+interface IRootProps {
+    teamId: string;
+    message: IMessage;
+    labelId: number;
+    onAction?: (cmd: 'download', message: IMessage) => void;
+}
+
 interface IProps {
     teamId: string;
     message: IMessage;
+    onAction?: (cmd: 'download', message: IMessage) => void;
+}
+
+interface IMediaProps {
+    teamId: string;
+    message: IMessage;
+    labelId: number;
     onAction?: (cmd: 'download', message: IMessage) => void;
 }
 
@@ -205,7 +219,7 @@ const LabelBodyFile = ({message}: IProps) => {
     </>;
 };
 
-const viewDocumentHandler = (message: IMessage) => (e: any) => {
+const viewDocumentHandler = (labelId: number, message: IMessage) => (e: any) => {
     e.stopPropagation();
     e.preventDefault();
     // @ts-ignore
@@ -230,6 +244,7 @@ const viewDocumentHandler = (message: IMessage) => (e: any) => {
             userId: message.senderid || '',
             width: info.width,
         }],
+        labelId,
         peer: {id: message.peerid || '', peerType: message.peertype || 0},
         rect: el ? el.getBoundingClientRect() : undefined,
         stream: false,
@@ -243,7 +258,7 @@ const showHandler = (e: any) => {
     e.stopPropagation();
 };
 
-const LabelBodyMedia = ({message, onAction}: IProps) => {
+const LabelBodyMedia = ({labelId, message, onAction}: IMediaProps) => {
     const [mode, setMode] = useState(0);
     const info = getMediaInfo(message);
     const refHandler = (ref: any) => {
@@ -272,7 +287,7 @@ const LabelBodyMedia = ({message, onAction}: IProps) => {
     };
     return <>
         <div className={`label-message-media item_${message.id || 0}`} style={{height: `${height}px`}}
-             onClick={viewDocumentHandler(message)}>
+             onClick={viewDocumentHandler(labelId, message)}>
             {withBlur ? <><CachedPhoto className="thumbnail-blur" fileLocation={info.thumbFile} blur={10}/>
                     <CachedPhoto className="thumbnail blur-top" onLoad={mediaLoadHandler}
                                  fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/></> :
@@ -358,7 +373,7 @@ const LabelBodyDefault = ({message}: IProps) => {
     </div>;
 };
 
-const LabelBody = ({teamId, message, onAction}: IProps) => {
+const LabelBody = ({teamId, labelId, message, onAction}: IRootProps) => {
     switch (message.messagetype) {
         case C_MESSAGE_TYPE.Audio:
             return <LabelBodyAudio message={message} teamId={teamId}/>;
@@ -370,7 +385,7 @@ const LabelBody = ({teamId, message, onAction}: IProps) => {
             return <LabelBodyLocation message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Picture:
         case C_MESSAGE_TYPE.Video:
-            return <LabelBodyMedia message={message} onAction={onAction} teamId={teamId}/>;
+            return <LabelBodyMedia message={message} onAction={onAction} teamId={teamId} labelId={labelId}/>;
         case C_MESSAGE_TYPE.Voice:
             return <LabelBodyVoice message={message} teamId={teamId}/>;
         default:
@@ -378,7 +393,7 @@ const LabelBody = ({teamId, message, onAction}: IProps) => {
     }
 };
 
-export const LabelMessageItem = ({teamId, message, onAction}: IProps) => {
+export const LabelMessageItem = ({teamId, labelId, message, onAction}: IRootProps) => {
     const dragStart = (e: any) => {
         e.dataTransfer.setData("message/id", message.id || '');
     };
@@ -388,7 +403,7 @@ export const LabelMessageItem = ({teamId, message, onAction}: IProps) => {
               to={`/chat/${teamId}/${message.peerid}_${message.peertype}/${message.id}`}>
             <div className="label-message-item" draggable={true} onDragStart={dragStart}>
                 <LabelHeader message={message} teamId={teamId}/>
-                <LabelBody message={message} teamId={teamId} onAction={onAction}/>
+                <LabelBody message={message} teamId={teamId} onAction={onAction} labelId={labelId}/>
                 <LabelIndicator labelIds={message.labelidsList || []}/>
             </div>
         </Link>

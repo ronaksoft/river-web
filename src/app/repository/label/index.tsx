@@ -151,15 +151,23 @@ export default class LabelRepo {
         });
     }
 
-    public getCachedMessageByItem(teamId: string, id: number, {max, limit}: { min?: number, max?: number, limit?: number }): Promise<ILabelItemList> {
+    public getCachedMessageByItem(teamId: string, id: number, {max, min, limit}: { min?: number, max?: number, limit?: number }): Promise<ILabelItemList> {
         const pipe = this.db.labelItems.where('[teamid+lid+mid]');
         let pipe2: Dexie.Collection<ILabelItem, number>;
         if (max) {
-            pipe2 = pipe.between([teamId, id, Dexie.minKey], [teamId, id, (max || 0) - 1], true, true);
+            pipe2 = pipe.between([teamId, id, Dexie.minKey], [teamId, id, (max || 0)], true, false);
+        } else if (min) {
+            pipe2 = pipe.between([teamId, id, min], [teamId, id, Dexie.maxKey], false, true);
         } else {
             pipe2 = pipe.between([teamId, id, Dexie.minKey], [teamId, id, Dexie.maxKey], true, true);
         }
-        return pipe2.limit(limit || 100).reverse().toArray().then((res) => {
+        let pipe3;
+        if (min) {
+            pipe3 = pipe2.limit(limit || 100);
+        } else {
+            pipe3 = pipe2.limit(limit || 100).reverse();
+        }
+        return pipe3.toArray().then((res) => {
             const ids = res.map((item) => {
                 return item.mid || 0;
             });
