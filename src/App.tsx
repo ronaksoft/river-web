@@ -33,7 +33,7 @@ import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 
 import './App.scss';
 
-export const C_VERSION = '0.34.15';
+export const C_VERSION = '0.34.16';
 export const C_ELECTRON_VERSION = '9.0.5';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');

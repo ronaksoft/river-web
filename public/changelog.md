@@ -1,3 +1,6 @@
+## 0.34.16
+* Minor changes in container teamInput
+
 ## 0.34.15
 * Verbose log added in dev tools
 

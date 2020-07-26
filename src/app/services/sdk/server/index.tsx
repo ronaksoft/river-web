@@ -373,6 +373,7 @@ export default class Server {
             this.socket.send({
                 constructor: C_MSG.MessageContainer,
                 data: data.serializeBinary(),
+                inputTeam: this.inputTeam,
                 reqId,
                 retry: 0,
                 timeout: null,
