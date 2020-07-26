@@ -100,7 +100,8 @@ import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
 import {
-    EventBlur, EventCheckNetwork,
+    EventBlur,
+    EventCheckNetwork,
     EventFocus,
     EventMouseWheel,
     EventNetworkStatus,
@@ -3847,8 +3848,8 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Resend text message */
     private resendTextMessage(randomId: number, message: IMessage) {
-        const peer = this.peer;
-        if (peer === null) {
+        const peerInfo = this.getPeerByName(GetPeerName(message.peerid, message.peertype));
+        if (!peerInfo || !peerInfo.peer) {
             return;
         }
 
@@ -3866,7 +3867,7 @@ class Chat extends React.Component<IProps, IState> {
 
         // For double checking update message id
         this.updateManager.setRandomId(randomId);
-        this.apiManager.sendMessage(randomId, message.body || '', peer, message.replyto, messageEntities).then((res) => {
+        this.apiManager.sendMessage(randomId, message.body || '', peerInfo.peer, message.replyto, messageEntities).then((res) => {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
@@ -3882,15 +3883,18 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Resend media message */
     private resendMediaMessage(randomId: number, message: IMessage, fileNames: string[], data: any, inputMediaType?: InputMediaType) {
-        const peer = this.peer;
-        if (peer === null) {
+        const peerInfo = this.getPeerByName(GetPeerName(message.peerid, message.peertype));
+        if (!peerInfo || !peerInfo.peer) {
             return;
         }
 
         const fn = () => {
+            if (!peerInfo || !peerInfo.peer) {
+                return;
+            }
             // For double checking update message id
             this.updateManager.setRandomId(randomId);
-            this.apiManager.sendMediaMessage(randomId, peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+            this.apiManager.sendMediaMessage(randomId, peerInfo.peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 message.id = res.messageid;
                 this.messageMapAppend(message);
                 message.downloaded = true;

@@ -1,3 +1,6 @@
+## 0.34.13
+* Critical bug in retrying pending messages fixed
+
 ## 0.34.12
 * Edit last message has better experience
 * Start bot bug fixed

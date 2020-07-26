@@ -60,7 +60,6 @@
     "notistack": "^0.9.9",
     "opus-recorder": "^6.1.1",
     "protobufjs": "^6.8.9",
-    "rc-progress": "^2.4.1",
     "react": "^16.13.1",
     "react-avatar-editor": "^11.0.6",
     "react-custom-scrollbars": "ronaksoft/react-custom-scrollbars",

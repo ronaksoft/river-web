@@ -1,3 +1,6 @@
+## 0.34.13
+* Bug fix
+
 ## 0.34.12
 * Edit last message has better experience
 * Start bot bug fixed
