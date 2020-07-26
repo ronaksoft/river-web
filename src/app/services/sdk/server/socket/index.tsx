@@ -370,14 +370,6 @@ export default class Socket {
         });
     }
 
-    private dispatchEvent(cmd: string, data: any) {
-        const fnStarted = new CustomEvent(cmd, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(fnStarted);
-    }
-
     private checkNetwork() {
         setInterval(() => {
             if (this.lastSendTime > this.lastReceiveTime && this.online) {
@@ -387,5 +379,13 @@ export default class Socket {
                 }
             }
         }, 12000);
+    }
+
+    private dispatchEvent(cmd: string, data: any) {
+        const fnStarted = new CustomEvent(cmd, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(fnStarted);
     }
 }

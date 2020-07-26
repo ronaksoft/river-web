@@ -17,7 +17,7 @@ import MainRepo from "../../../repository";
 import MessageRepo from "../../../repository/message";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../App";
-import {EventWebSocketClose, EventWebSocketOpen} from "../../events";
+import {EventCheckNetwork, EventWebSocketClose, EventWebSocketOpen} from "../../events";
 import {SystemConfig} from "../messages/system_pb";
 import {InputPassword, InputTeam, MessageContainer, MessageEnvelope} from "../messages/core.types_pb";
 import {Error as RiverError} from "../messages/core.types_pb";
@@ -87,6 +87,7 @@ export default class Server {
     private isConnected: boolean = false;
     private requestQueue: MessageEnvelope[] = [];
     private readonly executeSendThrottledRequestThrottle: any;
+    private readonly checkNetworkThrottle: any;
     private lastActivityTime: number = 0;
     private cancelList: number[] = [];
     private updateInterval: any = null;
@@ -146,6 +147,7 @@ export default class Server {
                 throttleInterval = parseInt(tils, 10);
             }
             this.executeSendThrottledRequestThrottle = throttle(this.executeSendThrottledRequest, throttleInterval);
+            this.checkNetworkThrottle = throttle(this.checkNetworkHandler, 1023);
         }
     }
 
@@ -504,6 +506,11 @@ export default class Server {
             }
         }
         this.cleanQueue(reqId);
+        this.checkNetworkThrottle();
+    }
+
+    private checkNetworkHandler = () => {
+        this.dispatchEvent(EventCheckNetwork, {});
     }
 
     private cleanQueue(reqId: number) {
@@ -752,5 +759,13 @@ export default class Server {
         if (req && req.resolve) {
             req.resolve(InputPassword.deserializeBinary(base64ToU8a(data)));
         }
+    }
+
+    private dispatchEvent(cmd: string, data: any) {
+        const fnStarted = new CustomEvent(cmd, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(fnStarted);
     }
 }

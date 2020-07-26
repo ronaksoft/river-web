@@ -1,3 +1,6 @@
+## 0.34.14
+* Check network on API timeout
+
 ## 0.34.13
 * Critical bug in retrying pending messages fixed
 
