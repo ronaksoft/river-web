@@ -375,6 +375,7 @@ export default class APIManager {
 
     public deleteAllContacts() {
         const data = new ContactsDeleteAll();
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsDeleteAll, data.serializeBinary(), true);
     }
 
@@ -382,6 +383,7 @@ export default class APIManager {
         const data = new MessagesGetDialogs();
         data.setOffset(skip || 0);
         data.setLimit(limit || 0);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary(), false, {
             retry: 5,
             retryErrors: [{

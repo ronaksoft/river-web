@@ -1,3 +1,6 @@
+## 0.34.17
+* Log bug fixed
+
 ## 0.34.16
 * Minor changes in container teamInput
 
