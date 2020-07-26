@@ -7,79 +7,30 @@
     Copyright Ronak Software Group 2019
 */
 
-.avatar-cropper-dialog {
-  .avatar-cropper-dialog-paper {
-    line-height: 0;
-    max-width: 640px;
-    overflow: hidden;
-  }
-
-  .avatar-cropper-header {
-    background-color: var(--river);
-    color: var(--white);
-    height: 40px;
-    padding: 0 12px;
+.dev-tools-dialog {
+  .switch-container {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-  }
+    justify-content: center;
+    padding: 8px 0;
 
-  .avatar-cropper-area {
-    canvas {
-      margin: -142px -157px;
-      transform: scale(0.6);
+    .switch-label {
+      flex: 1;
     }
-  }
 
-  .avatar-cropper-footer {
-    position: relative;
-    background-color: var(--header-color);
-    height: 36px;
-
-    .avatar-cropper-action {
-      position: absolute;
-      height: 48px;
-      width: 48px;
-      top: -24px;
-      right: 24px;
-      border-radius: 50%;
-      background-color: var(--river);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-
-      svg {
-        color: var(--light);
-        font-size: 30px;
+    .settings-switch {
+      .settings-switch-base {
+        padding: 9px;
       }
-    }
 
-    .avatar-cropper-edit-action {
-      position: absolute;
-      height: 36px;
-      width: 162px;
-      top: -16px;
-      left: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      .settings-switch-thumb {
+        color: var(--light);
+      }
 
-      .action-item {
-        height: 36px;
-        width: 36px;
-        border-radius: 50%;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-        background-color: var(--white);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-
-        svg {
-          color: var(--grey);
-          font-size: 24px;
+      &.root-settings-switch-checked {
+        .settings-switch-track {
+          background-color: var(--river);
+          opacity: 0.9;
         }
       }
     }
@@ -87,41 +38,24 @@
 }
 
 html[theme="dark"],
-html[theme="dark-night"] {
-  .avatar-cropper-dialog {
-    .avatar-cropper-footer {
-      background-color: var(--dark-medium);
-    }
-
-    .avatar-cropper-area {
-      background-color: var(--dark-low);
-    }
-
-    .avatar-cropper-edit-action {
-      .action-item {
-        background-color: var(--dark-low);
-      }
-    }
-  }
-}
-
+html[theme="dark-night"],
 html[theme="dark-blue"] {
-  .avatar-cropper-dialog {
-    .avatar-cropper-footer {
-      background-color: var(--dark-blue-medium);
-    }
+  .dev-tools-dialog {
+    .switch-container {
+      .switch-label {
+        color: var(--light);
+      }
 
-    .avatar-cropper-area {
-      background-color: var(--dark-blue-low);
-    }
-
-    .avatar-cropper-edit-action {
-      .action-item {
-        background-color: var(--dark-blue-low);
-
-        svg {
-          color: var(--dark-blue-high-alt);
+      .settings-switch {
+        .settings-switch-thumb {
+          color: var(--light);
         }
+
+      }
+
+      .settings-switch-base.settings-switch-checked + .settings-switch-track{
+        background-color: var(--river);
+        opacity: 0.9;
       }
     }
   }

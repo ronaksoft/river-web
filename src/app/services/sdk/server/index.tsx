@@ -93,6 +93,7 @@ export default class Server {
     private updateInterval: any = null;
     private systemConfig: SystemConfig.AsObject = {dcsList: []};
     private inputTeam: InputTeam.AsObject | undefined;
+    private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
 
     public constructor() {
         this.socket = Socket.getInstance();
@@ -414,6 +415,9 @@ export default class Server {
                 }
             }
             if (res) {
+                if (this.verboseAPI) {
+                    window.console.info('%cResponse', 'background-color: #8124F9', res.toObject());
+                }
                 if (constructor === C_MSG.Error) {
                     const resData = res.toObject();
                     if (this.checkRetry(reqId, resData)) {

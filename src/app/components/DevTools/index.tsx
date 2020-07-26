@@ -21,6 +21,7 @@ import {serverKeys} from "../../services/sdk/server";
 
 import './style.scss';
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {Switch} from "@material-ui/core";
 
 interface IProps {
     className?: string;
@@ -33,11 +34,19 @@ interface IState {
     open: boolean;
     throttleInterval: number;
     url: string;
+    verboseAPICall: boolean;
 }
 
 class DevTools extends React.Component<IProps, IState> {
     private electronService: ElectronService;
     private electronLoadUrl: string = '';
+    private switchClasses: any = {
+        checked: 'settings-switch-checked',
+        root: 'settings-switch',
+        switchBase: 'settings-switch-base',
+        thumb: 'settings-switch-thumb',
+        track: 'settings-switch-track',
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -48,7 +57,8 @@ class DevTools extends React.Component<IProps, IState> {
             fileUrl: localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || 'file.river.im',
             open: false,
             throttleInterval: parseInt(localStorage.getItem(C_LOCALSTORAGE.DebugThrottleInterval) || '200', 10),
-            url: localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'cyrus.river.im'
+            url: localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'cyrus.river.im',
+            verboseAPICall: localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true',
         };
 
         this.electronService = ElectronService.getInstance();
@@ -73,7 +83,7 @@ class DevTools extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, url, fileUrl, throttleInterval, debugServerKeys, electronLoadUrl} = this.state;
+        const {open, url, fileUrl, throttleInterval, debugServerKeys, electronLoadUrl, verboseAPICall} = this.state;
         return (
             <Dialog
                 open={open}
@@ -129,6 +139,16 @@ class DevTools extends React.Component<IProps, IState> {
                                 value={throttleInterval}
                                 onChange={this.debugModeThrottleIntervalChange}
                             />
+                            <div className="switch-container">
+                                <div className="switch-label">Verbose API call</div>
+                                <Switch
+                                    checked={verboseAPICall}
+                                    color="default"
+                                    onChange={this.verboseAPICallChangeHandler}
+                                    className="switch"
+                                    classes={this.switchClasses}
+                                />
+                            </div>
                             <Button onClick={this.debugModeClearAllDataHandler} variant="contained" color="secondary"
                                     fullWidth={true}>{i18n.t('settings.clear_all_data')}</Button>
                             {ElectronService.isElectron() &&
@@ -168,6 +188,7 @@ class DevTools extends React.Component<IProps, IState> {
         localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, this.state.fileUrl);
         localStorage.setItem(C_LOCALSTORAGE.ServerKeys, this.state.debugServerKeys);
         localStorage.setItem(C_LOCALSTORAGE.DebugThrottleInterval, String(this.state.throttleInterval));
+        localStorage.setItem(C_LOCALSTORAGE.DebugVerboseAPI, this.state.verboseAPICall ? 'true' : 'false');
         if (ElectronService.isElectron() && this.state.electronLoadUrl !== this.electronLoadUrl) {
             this.electronService.setLoadUrl(this.state.electronLoadUrl);
         }
@@ -219,6 +240,12 @@ class DevTools extends React.Component<IProps, IState> {
     /* Debug mode toggle menu bar handler */
     private toggleMenuBarHandler = () => {
         this.electronService.toggleMenuBar();
+    }
+
+    private verboseAPICallChangeHandler = (e: any, checked: boolean) => {
+        this.setState({
+            verboseAPICall: checked,
+        });
     }
 }
 

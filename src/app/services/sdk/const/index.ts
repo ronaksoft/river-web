@@ -928,6 +928,7 @@ export const C_LOCALSTORAGE = {
     ConnInfo: 'river.conn.info',
     ContactsHash: 'river.contacts.hash',
     DebugThrottleInterval: 'river.debug.throttle_interval',
+    DebugVerboseAPI: 'river.debug.verbose_api',
     EmojiMartFrequency: 'emoji-mart.frequently',
     GifHash: 'river.gif.hash',
     Lang: 'river.lang',

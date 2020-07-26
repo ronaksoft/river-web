@@ -1,3 +1,6 @@
+## 0.34.15
+* Verbose log added in dev tools
+
 ## 0.34.14
 * Check network on API timeout
 

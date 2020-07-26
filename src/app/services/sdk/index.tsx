@@ -170,6 +170,8 @@ export default class APIManager {
 
     private typingList: { [key: string]: boolean } = {};
 
+    private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
+
     public constructor() {
         this.server = Server.getInstance();
 
@@ -248,6 +250,7 @@ export default class APIManager {
     public sendCode(phone: string): Promise<AuthSentCode.AsObject> {
         const data = new AuthSendCode();
         data.setPhone(phone);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AuthSendCode, data.serializeBinary(), true);
     }
 
@@ -255,12 +258,14 @@ export default class APIManager {
         const data = new AuthResendCode();
         data.setPhone(phone);
         data.setPhonecodehash(hash);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AuthResendCode, data.serializeBinary(), true);
     }
 
     public checkPhone(phone: string): Promise<AuthCheckedPhone.AsObject> {
         const data = new AuthCheckPhone();
         data.setPhone(phone);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AuthCheckPhone, data.serializeBinary(), true);
     }
 
@@ -272,6 +277,7 @@ export default class APIManager {
         data.setFirstname(fName);
         data.setLastname(lName);
         data.setLangcode(lang);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AuthRegister, data.serializeBinary(), true);
     }
 
@@ -280,12 +286,14 @@ export default class APIManager {
         data.setPhone(phone);
         data.setPhonecode(phoneCode);
         data.setPhonecodehash(phoneCodeHash);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AuthLogin, data.serializeBinary(), true);
     }
 
     public loginByPassword(inputPassword: InputPassword): Promise<AuthAuthorization.AsObject> {
         const data = new AuthCheckPassword();
         data.setPassword(inputPassword);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AuthCheckPassword, data.serializeBinary(), true);
     }
 
@@ -293,17 +301,20 @@ export default class APIManager {
         const data = new AuthRecall();
         data.setClientid('0');
         data.setVersion(0);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AuthRecall, data.serializeBinary(), true);
     }
 
     public sessionGetAll(): Promise<AccountAuthorizations.AsObject> {
         const data = new AccountGetAuthorizations();
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountGetAuthorizations, data.serializeBinary(), true);
     }
 
     public sessionTerminate(id: string): Promise<AuthRecalled.AsObject> {
         const data = new AccountResetAuthorization();
         data.setAuthid(id);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountResetAuthorization, data.serializeBinary(), true);
     }
 
@@ -338,12 +349,14 @@ export default class APIManager {
         });
         data.setContactsList(arr);
         data.setReplace(replace);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsImport, data.serializeBinary(), false);
     }
 
     public getContacts(crc?: number): Promise<ContactsMany.AsObject> {
         const data = new ContactsGet();
         data.setCrc32hash(crc || 0);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsGet, data.serializeBinary(), true, {
             retry: 2,
             retryErrors: [{
@@ -356,6 +369,7 @@ export default class APIManager {
     public removeContact(contactIds: string[]): Promise<Bool.AsObject> {
         const data = new ContactsDelete();
         data.setUseridsList(contactIds);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsDelete, data.serializeBinary(), true);
     }
 
@@ -390,6 +404,7 @@ export default class APIManager {
         if (entities) {
             data.setEntitiesList(entities);
         }
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary(), false, {
             retry: 1,
             retryErrors: [{
@@ -409,6 +424,7 @@ export default class APIManager {
         if (entities) {
             data.setEntitiesList(entities);
         }
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesEdit, data.serializeBinary(), true, {
             retry: 1,
             retryErrors: [{
@@ -428,6 +444,7 @@ export default class APIManager {
         if (replyTo) {
             data.setReplyto(replyTo);
         }
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesSendMedia, data.serializeBinary(), false, {
             retry: 3,
             retryErrors: [{
@@ -445,6 +462,7 @@ export default class APIManager {
         const data = new MessagesReadContents();
         data.setPeer(peer);
         data.setMessageidsList(ids);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesReadContents, data.serializeBinary(), false);
     }
 
@@ -454,6 +472,7 @@ export default class APIManager {
         data.setLimit(limit || 0);
         data.setMinid(Math.floor(minId || 0));
         data.setMaxid(Math.floor(maxId || 0));
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true, {
             retry: 7,
             retryErrors: [{
@@ -467,6 +486,7 @@ export default class APIManager {
         const data = new MessagesGet();
         data.setPeer(peer);
         data.setMessagesidsList(ids);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesGet, data.serializeBinary(), true);
     }
 
@@ -482,6 +502,7 @@ export default class APIManager {
         const data = new MessagesSetTyping();
         data.setPeer(peer);
         data.setAction(type);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesSetTyping, data.serializeBinary(), true).then((res) => {
             clearTimeout(timeout);
             delete this.typingList[key];
@@ -496,6 +517,7 @@ export default class APIManager {
         const data = new MessagesReadHistory();
         data.setPeer(peer);
         data.setMaxid(maxId);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesReadHistory, data.serializeBinary(), true, {
             retry: 3,
             retryErrors: [{
@@ -507,6 +529,7 @@ export default class APIManager {
 
     public getUpdateState(): Promise<UpdateState.AsObject> {
         const data = new UpdateGetState();
+        this.logVerbose(data);
         return this.server.send(C_MSG.UpdateGetState, data.serializeBinary(), true);
     }
 
@@ -526,6 +549,7 @@ export default class APIManager {
     public logout(authId: string): Promise<Bool> {
         const data = new AuthLogout();
         data.setAuthidsList([authId]);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true, {timeout: 5000});
     }
 
@@ -538,6 +562,7 @@ export default class APIManager {
         data.setToken(token);
         data.setTokentype(PushTokenProvider.PUSHTOKENFIREBASE);
         data.setClientid('river');
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
     }
 
@@ -546,6 +571,7 @@ export default class APIManager {
         data.setPeer(peer);
         data.setMessageidsList(ids);
         data.setRevoke(revoke);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesDelete, data.serializeBinary(), true);
     }
 
@@ -556,6 +582,7 @@ export default class APIManager {
         data.setTopeer(targetPeer);
         data.setRandomid(randomId);
         data.setSilence(silence);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesForward, data.serializeBinary(), false);
     }
 
@@ -564,18 +591,21 @@ export default class APIManager {
         data.setPeer(peer);
         data.setMaxid(maxId);
         data.setDelete(clearDialog);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesClearHistory, data.serializeBinary(), true);
     }
 
     public usernameAvailable(username: string): Promise<Bool.AsObject> {
         const data = new AccountCheckUsername();
         data.setUsername(username);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountCheckUsername, data.serializeBinary(), true);
     }
 
     public updateUsername(username: string): Promise<User.AsObject> {
         const data = new AccountUpdateUsername();
         data.setUsername(username);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountUpdateUsername, data.serializeBinary(), true);
     }
 
@@ -584,6 +614,7 @@ export default class APIManager {
         data.setFirstname(firstname);
         data.setLastname(lastname);
         data.setBio(bio);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountUpdateProfile, data.serializeBinary(), true);
     }
 
@@ -591,30 +622,35 @@ export default class APIManager {
         const data = new AccountUploadPhoto();
         data.setFile(file);
         data.setReturnobject(true);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountUploadPhoto, data.serializeBinary(), true);
     }
 
     public updateProfilePicture(id: string): Promise<Bool.AsObject> {
         const data = new AccountUpdatePhoto();
         data.setPhotoid(id);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountUpdatePhoto, data.serializeBinary(), true);
     }
 
     public removeProfilePicture(id?: string): Promise<Bool.AsObject> {
         const data = new AccountRemovePhoto();
         data.setPhotoid(id || '0');
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountRemovePhoto, data.serializeBinary(), true);
     }
 
     public getUserFull(usersInput: InputUser[]): Promise<UsersMany.AsObject> {
         const data = new UsersGetFull();
         data.setUsersList(usersInput);
+        this.logVerbose(data);
         return this.server.send(C_MSG.UsersGetFull, data.serializeBinary(), true);
     }
 
     public getUser(usersInput: InputUser[]): Promise<UsersMany.AsObject> {
         const data = new UsersGet();
         data.setUsersList(usersInput);
+        this.logVerbose(data);
         return this.server.send(C_MSG.UsersGet, data.serializeBinary(), false);
     }
 
@@ -622,12 +658,14 @@ export default class APIManager {
         const data = new AccountSetNotifySettings();
         data.setPeer(peer);
         data.setSettings(settings);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountSetNotifySettings, data.serializeBinary(), true);
     }
 
     public getNotifySettings(peer: InputPeer): Promise<PeerNotifySettings.AsObject> {
         const data = new AccountGetNotifySettings();
         data.setPeer(peer);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountGetNotifySettings, data.serializeBinary(), true);
     }
 
@@ -635,12 +673,14 @@ export default class APIManager {
         const data = new GroupsCreate();
         data.setUsersList(users);
         data.setTitle(title);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsCreate, data.serializeBinary(), true);
     }
 
     public groupGetFull(peer: InputPeer): Promise<GroupFull.AsObject> {
         const data = new GroupsGetFull();
         data.setGroupid(peer.getId() || '');
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsGetFull, data.serializeBinary(), true);
     }
 
@@ -648,6 +688,7 @@ export default class APIManager {
         const data = new GroupsEditTitle();
         data.setGroupid(peer.getId() || '');
         data.setTitle(title);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsEditTitle, data.serializeBinary(), true);
     }
 
@@ -655,6 +696,7 @@ export default class APIManager {
         const data = new GroupsDeleteUser();
         data.setGroupid(peer.getId() || '');
         data.setUser(user);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsDeleteUser, data.serializeBinary(), true);
     }
 
@@ -663,6 +705,7 @@ export default class APIManager {
         data.setGroupid(peer.getId() || '');
         data.setUser(user);
         data.setForwardlimit(limit);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsAddUser, data.serializeBinary(), true);
     }
 
@@ -671,6 +714,7 @@ export default class APIManager {
         data.setGroupid(peer.getId() || '');
         data.setUser(user);
         data.setAdmin(admin);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsUpdateAdmin, data.serializeBinary(), true);
     }
 
@@ -678,6 +722,7 @@ export default class APIManager {
         const data = new GroupsToggleAdmins();
         data.setGroupid(peer.getId() || '');
         data.setAdminenabled(adminEnabled);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsToggleAdmins, data.serializeBinary(), true);
     }
 
@@ -686,6 +731,7 @@ export default class APIManager {
         data.setGroupid(groupId);
         data.setFile(file);
         data.setReturnobject(true);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsUploadPhoto, data.serializeBinary(), true);
     }
 
@@ -693,6 +739,7 @@ export default class APIManager {
         const data = new GroupsUpdatePhoto();
         data.setGroupid(groupId);
         data.setPhotoid(id || '0');
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsUpdatePhoto, data.serializeBinary(), true);
     }
 
@@ -700,6 +747,7 @@ export default class APIManager {
         const data = new GroupsRemovePhoto();
         data.setGroupid(groupId);
         data.setPhotoid(id || '0');
+        this.logVerbose(data);
         return this.server.send(C_MSG.GroupsRemovePhoto, data.serializeBinary(), true);
     }
 
@@ -708,6 +756,7 @@ export default class APIManager {
             return Promise.resolve(this.systemInfoCache);
         }
         const data = new SystemGetInfo();
+        this.logVerbose(data);
         return this.server.send(C_MSG.SystemGetInfo, data.serializeBinary(), true).then((res) => {
             this.systemInfoCache = res;
             return res;
@@ -716,6 +765,7 @@ export default class APIManager {
 
     public dialogGetPinned(): Promise<MessagesDialogs.AsObject> {
         const data = new MessagesGetPinnedDialogs();
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesGetPinnedDialogs, data.serializeBinary(), true);
     }
 
@@ -723,12 +773,14 @@ export default class APIManager {
         const data = new MessagesToggleDialogPin();
         data.setPeer(peer);
         data.setPin(pin);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesToggleDialogPin, data.serializeBinary(), true);
     }
 
     public getPrivacy(privacyKey: PrivacyKey): Promise<AccountPrivacyRules.AsObject> {
         const data = new AccountGetPrivacy();
         data.setKey(privacyKey);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountGetPrivacy, data.serializeBinary(), false);
     }
 
@@ -740,6 +792,7 @@ export default class APIManager {
         data.setLastseenList(lastSeenList || []);
         data.setPhonenumberList(phoneNumberList || []);
         data.setProfilephotoList(profilePhotoList || []);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountSetPrivacy, data.serializeBinary(), false);
     }
 
@@ -760,18 +813,21 @@ export default class APIManager {
             });
         }
         data.setEntitiesList(messageEntities);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesSaveDraft, data.serializeBinary(), true);
     }
 
     public clearDraft(peer: InputPeer): Promise<Bool.AsObject> {
         const data = new MessagesClearDraft();
         data.setPeer(peer);
+        this.logVerbose(data);
         return this.server.send(C_MSG.MessagesClearDraft, data.serializeBinary(), true);
     }
 
     public setLang(langCode: string): Promise<Bool.AsObject> {
         const data = new AccountSetLang();
         data.setLangcode(langCode);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountSetLang, data.serializeBinary(), true, {timeout: 3000});
     }
 
@@ -779,6 +835,7 @@ export default class APIManager {
         const data = new LabelsCreate();
         data.setName(name);
         data.setColour(color);
+        this.logVerbose(data);
         return this.server.send(C_MSG.LabelsCreate, data.serializeBinary(), true);
     }
 
@@ -787,17 +844,20 @@ export default class APIManager {
         data.setLabelid(id);
         data.setName(name);
         data.setColour(color);
+        this.logVerbose(data);
         return this.server.send(C_MSG.LabelsEdit, data.serializeBinary(), true);
     }
 
     public labelDelete(ids: number[]): Promise<Bool.AsObject> {
         const data = new LabelsDelete();
         data.setLabelidsList(ids);
+        this.logVerbose(data);
         return this.server.send(C_MSG.LabelsDelete, data.serializeBinary(), true);
     }
 
     public labelGet(): Promise<LabelsMany.AsObject> {
         const data = new LabelsGet();
+        this.logVerbose(data);
         return this.server.send(C_MSG.LabelsGet, data.serializeBinary(), true);
     }
 
@@ -806,6 +866,7 @@ export default class APIManager {
         data.setPeer(peer);
         data.setLabelidsList(labelIds);
         data.setMessageidsList(msgIds);
+        this.logVerbose(data);
         return this.server.send(C_MSG.LabelsAddToMessage, data.serializeBinary(), true);
     }
 
@@ -814,6 +875,7 @@ export default class APIManager {
         data.setPeer(peer);
         data.setLabelidsList(labelIds);
         data.setMessageidsList(msgIds);
+        this.logVerbose(data);
         return this.server.send(C_MSG.LabelsRemoveFromMessage, data.serializeBinary(), true);
     }
 
@@ -823,12 +885,14 @@ export default class APIManager {
         data.setLimit(limit);
         data.setMinid(min);
         data.setMaxid(max);
+        this.logVerbose(data);
         return this.server.send(C_MSG.LabelsListItems, data.serializeBinary(), true);
     }
 
     public contactSearch(query: string): Promise<UsersMany.AsObject> {
         const data = new ContactsSearch();
         data.setQ(query);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsSearch, data.serializeBinary(), true);
     }
 
@@ -838,6 +902,7 @@ export default class APIManager {
         data.setLastname(lastName);
         data.setPhone(phone);
         data.setUser(inputUser);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsAdd, data.serializeBinary(), true);
     }
 
@@ -847,17 +912,20 @@ export default class APIManager {
         data.setPhonecode(phoneCode);
         data.setPhonecodehash(phoneHash);
         data.setPassword(inputPassword);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountChangePhone, data.serializeBinary(), true);
     }
 
     public accountSendChangePhoneCode(phone: string): Promise<AuthSentCode.AsObject> {
         const data = new AccountSendChangePhoneCode();
         data.setPhone(phone);
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountSendChangePhoneCode, data.serializeBinary(), true);
     }
 
     public accountGetPassword(): Promise<AccountPassword> {
         const data = new AccountGetPassword();
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountGetPassword, data.serializeBinary(), true);
     }
 
@@ -875,6 +943,7 @@ export default class APIManager {
             securityQuestion.setId(question.id || 0);
             data.addQuestions(securityQuestion);
         });
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountUpdatePasswordSettings, data.serializeBinary(), true);
     }
 
@@ -889,6 +958,7 @@ export default class APIManager {
             securityAnswer.setQuestionid(answer.questionid || 0);
             data.addAnswers(securityAnswer);
         });
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountRecoverPassword, data.serializeBinary(), true);
     }
 
@@ -896,18 +966,21 @@ export default class APIManager {
         const data = new ContactsGetBlocked();
         data.setOffset(skip);
         data.setLimit(limit);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsGetBlocked, data.serializeBinary(), true);
     }
 
     public accountBlock(inputUser: InputUser): Promise<any> {
         const data = new ContactsBlock();
         data.setUser(inputUser);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsBlock, data.serializeBinary(), true);
     }
 
     public accountUnblock(inputUser: InputUser): Promise<any> {
         const data = new ContactsUnblock();
         data.setUser(inputUser);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsUnblock, data.serializeBinary(), true);
     }
 
@@ -916,6 +989,7 @@ export default class APIManager {
         data.setBot(inputPeer);
         data.setRandomid(randomId);
         data.setStartparam("");
+        this.logVerbose(data);
         return this.server.send(C_MSG.BotStart, data.serializeBinary(), true);
     }
 
@@ -926,6 +1000,7 @@ export default class APIManager {
         if (msgId) {
             data.setMessageid(msgId);
         }
+        this.logVerbose(data);
         return this.server.send(C_MSG.BotGetCallbackAnswer, data.serializeBinary(), true);
     }
 
@@ -934,6 +1009,7 @@ export default class APIManager {
         data.setCategory(category);
         data.setOffset(offset);
         data.setLimit(limit);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsGetTopPeers, data.serializeBinary(), false);
     }
 
@@ -941,11 +1017,13 @@ export default class APIManager {
         const data = new ContactsResetTopPeer();
         data.setCategory(category);
         data.setPeer(peer);
+        this.logVerbose(data);
         return this.server.send(C_MSG.ContactsResetTopPeer, data.serializeBinary(), true);
     }
 
     public getSystemConfig(): Promise<SystemConfig.AsObject> {
         const data = new SystemGetConfig();
+        this.logVerbose(data);
         return this.server.send(C_MSG.SystemGetConfig, data.serializeBinary(), false).then((config) => {
             this.server.setSystemConfig(config);
             return config;
@@ -959,6 +1037,7 @@ export default class APIManager {
     public getGif(hash: number): Promise<SavedGifs.AsObject> {
         const data = new GifGetSaved();
         data.setHash(hash);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GifGetSaved, data.serializeBinary(), false);
     }
 
@@ -966,23 +1045,27 @@ export default class APIManager {
         const data = new GifSave();
         data.setDoc(inputDocument);
         data.setAttributesList(attributeList);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GifSave, data.serializeBinary(), false);
     }
 
     public removeGif(inputDocument: InputDocument): Promise<Bool.AsObject> {
         const data = new GifDelete();
         data.setDoc(inputDocument);
+        this.logVerbose(data);
         return this.server.send(C_MSG.GifDelete, data.serializeBinary(), false);
     }
 
     public accountGetTeams(): Promise<TeamsMany.AsObject> {
         const data = new AccountGetTeams();
+        this.logVerbose(data);
         return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true);
     }
 
     public ping(): Promise<Pong.AsObject> {
         const data = new Ping();
         data.setId(Date.now());
+        this.logVerbose(data);
         return this.server.send(C_MSG.Ping, data.serializeBinary(), true, {
             retry: 1,
             timeout: 2000,
@@ -1006,6 +1089,7 @@ export default class APIManager {
         const data = new FileGetBySha256();
         data.setSha256(sha256);
         data.setFilesize(size);
+        this.logVerbose(data);
         return this.server.send(C_MSG.FileGetBySha256, data.serializeBinary(), true, {
             retry: 2,
             retryWait: 500,
@@ -1026,5 +1110,11 @@ export default class APIManager {
 
     public isStarted() {
         return this.server.isStarted();
+    }
+
+    private logVerbose(data: any) {
+        if (this.verboseAPI && data && data.toObject) {
+            window.console.info('%cRequest', 'background-color: #008AAA', data.toObject());
+        }
     }
 }

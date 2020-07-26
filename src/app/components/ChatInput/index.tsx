@@ -83,10 +83,10 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@material-ui/core';
 import GifPicker from "../GifPicker";
 import {IGif} from "../../repository/gif/interface";
+import {Sticker} from "../SVG/sticker";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
-import {Sticker} from "../SVG/sticker";
 
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
