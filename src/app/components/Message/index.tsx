@@ -958,7 +958,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div
-                            className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '') + ((message.em_le || 0) > 0 ? ' large-emoji' : '')}
+                            className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error && (message.id || 0) < 0) ? ' has-error' : '') + ((message.em_le || 0) > 0 ? ' large-emoji' : '')}
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
                             onDoubleClick={this.selectMessage(index)}
                         >
@@ -970,7 +970,7 @@ class Message extends React.Component<IProps, IState> {
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
                                 onChange={this.selectMessageHandler(message.id || 0, index, null)}/>}
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
-                            {Boolean(message.me && message.error && (message.id || 0) > 0) &&
+                            {Boolean(message.me && message.error && (message.id || 0) < 0) &&
                             <span className="error" onClick={this.contextMenuHandler(index)}><ErrorRounded/></span>}
                             <div className="message-container">
                                 <div ref={parenElRefHandler}

@@ -1,3 +1,6 @@
+## 0.34.18
+* Error indicator bug fixed
+
 ## 0.34.17
 * Log bug fixed
 
