@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -18,7 +18,7 @@
     "elec-dist": "npx build --x64 --macos --win --linux --c.mac.identity=null --c.extraMetadata.main=public/electron.js -p always",
     "elec-dist-mac": "electron-builder -m",
     "elec-dist-win": "electron-builder -w",
-    "elec-dist-linux": "npx build --x64 --linux --c.mac.identity=null --c.extraMetadata.main=public/electron.js -p always"
+    "elec-dist-linux": "electron-builder -l"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
@@ -103,7 +103,7 @@
     "@types/react-window": "^1.8.1",
     "@types/shortid": "^0.0.29",
     "@types/xregexp": "^3.0.29",
-    "electron": "^9.0.5",
+    "electron": "^9.1.2",
     "electron-builder": "^22.7.0",
     "electron-devtools-installer": "^3.0.0",
     "glob": "^7.1.6",
