@@ -1,3 +1,6 @@
+## 0.34.20
+* Hotfix in server migration
+
 ## 0.34.19
 * Bug fixes and performance improvements
 

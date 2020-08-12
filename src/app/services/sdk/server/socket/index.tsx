@@ -13,7 +13,7 @@ import ElectronService from '../../../electron';
 import {
     EventCheckNetwork,
     EventNetworkStatus,
-    EventWasmInit,
+    EventWasmInit, EventWasmStarted,
     EventWebSocketClose,
     EventWebSocketOpen
 } from "../../../events";
@@ -167,7 +167,7 @@ export default class Socket {
                         this.dispatchEvent(EventWebSocketOpen, null);
                     }
                     this.started = true;
-                    this.dispatchEvent('fnStarted', d.data);
+                    this.dispatchEvent(EventWasmStarted, d.data);
                     break;
                 case 'fnDecryptError':
                     // this.dispatchEvent('fnDecryptError', null);

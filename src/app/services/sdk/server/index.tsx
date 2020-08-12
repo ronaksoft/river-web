@@ -555,7 +555,7 @@ export default class Server {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
                 v: 6,
             }));
-            return 6;
+            return false;
         }
         const pv = JSON.parse(v);
         switch (pv.v) {
@@ -648,6 +648,10 @@ export default class Server {
         //         });
         //     });
         // }, 100);
+        localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+            v: 4,
+        }));
+        window.location.reload();
     }
 
     private migrate4() {
