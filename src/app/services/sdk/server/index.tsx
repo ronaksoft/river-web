@@ -14,7 +14,6 @@ import {throttle, cloneDeep} from 'lodash';
 import Socket from './socket';
 import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
-import MessageRepo from "../../../repository/message";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../App";
 import {EventCheckNetwork, EventWebSocketClose, EventWebSocketOpen} from "../../events";
@@ -631,24 +630,24 @@ export default class Server {
     }
 
     private migrate3() {
-        setTimeout(() => {
-            const messageRepo = MessageRepo.getInstance();
-            messageRepo.getAllTemps().then((msgs) => {
-                msgs.map((msg) => {
-                    msg.temp = false;
-                    return msg;
-                });
-                const promises: any[] = [];
-                promises.push(messageRepo.upsert(msgs));
-                promises.push(messageRepo.insertDiscrete('0', msgs));
-                Promise.all(promises).then(() => {
-                    localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                        v: 4,
-                    }));
-                    window.location.reload();
-                });
-            });
-        }, 100);
+        // setTimeout(() => {
+        //     const messageRepo = MessageRepo.getInstance();
+        //     messageRepo.getAllTemps().then((msgs) => {
+        //         msgs.map((msg) => {
+        //             msg.temp = false;
+        //             return msg;
+        //         });
+        //         const promises: any[] = [];
+        //         promises.push(messageRepo.importBulk(msgs));
+        //         promises.push(messageRepo.insertDiscrete('0', msgs));
+        //         Promise.all(promises).then(() => {
+        //             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+        //                 v: 4,
+        //             }));
+        //             window.location.reload();
+        //         });
+        //     });
+        // }, 100);
     }
 
     private migrate4() {

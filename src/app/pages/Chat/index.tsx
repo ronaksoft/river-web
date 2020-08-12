@@ -1835,7 +1835,7 @@ class Chat extends React.Component<IProps, IState> {
                         this.chatInputRef.updateLastMessage();
                     }
                 }
-                this.messageRepo.lazyUpsert([message]);
+                this.messageRepo.importBulk([message]);
             }).catch((err) => {
                 window.console.debug(err);
             });
@@ -1892,7 +1892,7 @@ class Chat extends React.Component<IProps, IState> {
             }).then((res) => {
                 message.id = res.messageid;
                 this.messageMapAppend(message);
-                this.messageRepo.lazyUpsert([message]);
+                this.messageRepo.importBulk([message]);
                 this.updateDialogs(message, '0');
                 this.checkMessageOrder(message);
                 if (this.messageRef && index > -1) {
@@ -1904,7 +1904,7 @@ class Chat extends React.Component<IProps, IState> {
                     const messages = this.messages;
                     if (index > -1 && messages[index]) {
                         messages[index].error = true;
-                        this.messageRepo.importBulk([messages[index]], false);
+                        this.messageRepo.importBulk([messages[index]]);
                         if (this.messageRef) {
                             this.messageRef.forceUpdate();
                         }
@@ -1958,7 +1958,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         this.setScrollMode('none');
         this.messageRef.setMessages(this.messages);
-        this.messageRepo.lazyUpsert([message]);
+        this.messageRepo.importBulk([message]);
         this.newMessageLoadThrottle();
         return this.messages.length - 1;
     }
@@ -3090,7 +3090,7 @@ class Chat extends React.Component<IProps, IState> {
                 const messageSelectedIds = {};
                 messageSelectedIds[message.id || 0] = true;
                 let removeMode: any = 'remove_message';
-                if ((this.riverTime.now() - (message.createdon || 0)) < 86400 && message.me === true) {
+                if ((this.riverTime.now() - (message.createdon || 0)) < 86400 && message.me === true && !message.messageaction) {
                     removeMode = 'remove_message_revoke';
                 }
                 this.messageSelectedIds = cloneDeep(messageSelectedIds);
@@ -3521,7 +3521,7 @@ class Chat extends React.Component<IProps, IState> {
                 for (const i in this.messageSelectedIds) {
                     if (this.messageSelectedIds.hasOwnProperty(i)) {
                         const msg = messages[this.messageSelectedIds[i]];
-                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0)) {
+                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0) && !msg.messageaction) {
                             noRevoke = false;
                             if (!allPending) {
                                 break;
@@ -3574,10 +3574,11 @@ class Chat extends React.Component<IProps, IState> {
         }
         switch (cmd) {
             case 'remove_dialog':
-                const dialog = this.getDialogByPeerName(peer.getId() || '');
+                const peerName = GetPeerName(peer.getId(), peer.getType());
+                const dialog = this.getDialogByPeerName(peerName);
                 if (dialog) {
                     this.apiManager.clearMessage(peer, dialog.topmessageid || 0, true).then(() => {
-                        this.dialogRemove(GetPeerName(peer.getId(), peer.getType()));
+                        this.dialogRemove(peerName);
                     });
                 }
                 break;
@@ -3871,7 +3872,7 @@ class Chat extends React.Component<IProps, IState> {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
-            this.messageRepo.lazyUpsert([message]);
+            this.messageRepo.importBulk([message]);
             this.updateDialogs(message, '0');
 
             // Force update messages
@@ -3899,7 +3900,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageMapAppend(message);
                 message.downloaded = true;
 
-                this.messageRepo.lazyUpsert([message]);
+                this.messageRepo.importBulk([message]);
                 this.updateDialogs(message, '0');
 
                 // Force update messages
@@ -3934,7 +3935,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 if (index > -1) {
                     messages[index].error = true;
-                    this.messageRepo.importBulk([messages[index]], false);
+                    this.messageRepo.importBulk([messages[index]]);
                     if (this.messageRef) {
                         this.messageRef.updateList();
                     }
@@ -4099,7 +4100,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.broadcastEvent('File_Downloaded', {id: msg.id});
                 this.progressBroadcaster.remove(msg.id || 0);
                 this.bufferProgressBroadcaster.remove(msg.id || 0);
-                this.messageRepo.lazyUpsert([{
+                this.messageRepo.importBulk([{
                     downloaded: true,
                     id: msg.id,
                 }]);
@@ -4496,7 +4497,7 @@ class Chat extends React.Component<IProps, IState> {
                         message.mediadata = mediaDocument.toObject();
                     }
 
-                    this.messageRepo.lazyUpsert([message]);
+                    this.messageRepo.importBulk([message]);
                     this.updateDialogs(message, '0');
 
                     if (this.selectedPeerName === peerName) {
@@ -4516,7 +4517,7 @@ class Chat extends React.Component<IProps, IState> {
                         });
                         if (index > -1) {
                             messages[index].error = true;
-                            this.messageRepo.importBulk([messages[index]], false);
+                            this.messageRepo.importBulk([messages[index]]);
                             if (this.messageRef) {
                                 this.messageRef.updateList();
                             }
@@ -4533,7 +4534,7 @@ class Chat extends React.Component<IProps, IState> {
                     });
                     if (index > -1) {
                         messages[index].error = true;
-                        this.messageRepo.importBulk([messages[index]], false);
+                        this.messageRepo.importBulk([messages[index]]);
                         if (this.messageRef) {
                             this.messageRef.updateList();
                         }
@@ -4623,7 +4624,7 @@ class Chat extends React.Component<IProps, IState> {
         this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
             message.id = res.messageid;
             this.messageMapAppend(message);
-            this.messageRepo.lazyUpsert([message]);
+            this.messageRepo.importBulk([message]);
             this.updateDialogs(message, '0');
 
             if (this.selectedPeerName === peerName) {
@@ -4643,7 +4644,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 if (index > -1) {
                     messages[index].error = true;
-                    this.messageRepo.importBulk([messages[index]], false);
+                    this.messageRepo.importBulk([messages[index]]);
                     if (this.messageRef) {
                         this.messageRef.updateList();
                     }
@@ -4751,7 +4752,7 @@ class Chat extends React.Component<IProps, IState> {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
-            this.messageRepo.lazyUpsert([message]);
+            this.messageRepo.importBulk([message]);
             this.updateDialogs(message, '0');
 
             this.checkMessageOrder(message);
@@ -4769,7 +4770,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 if (index > -1) {
                     messages[index].error = true;
-                    this.messageRepo.importBulk([messages[index]], false);
+                    this.messageRepo.importBulk([messages[index]]);
                     if (this.messageRef) {
                         this.messageRef.updateList();
                     }
@@ -4836,7 +4837,7 @@ class Chat extends React.Component<IProps, IState> {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
-            this.messageRepo.lazyUpsert([message]);
+            this.messageRepo.importBulk([message]);
             this.updateDialogs(message, '0');
 
             this.checkMessageOrder(message);
@@ -4854,7 +4855,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 if (index > -1) {
                     messages[index].error = true;
-                    this.messageRepo.importBulk([messages[index]], false);
+                    this.messageRepo.importBulk([messages[index]]);
                     if (this.messageRef) {
                         this.messageRef.updateList();
                     }
@@ -4919,7 +4920,7 @@ class Chat extends React.Component<IProps, IState> {
         this.electronService.download(objectUrl, fileInfo.name).then((res) => {
             message.saved = true;
             message.saved_path = res.path;
-            this.messageRepo.lazyUpsert([message]);
+            this.messageRepo.importBulk([message]);
             const fileLocation = getFileLocation(message);
             if (fileLocation) {
                 const fileLocationObject = fileLocation.toObject();
@@ -5260,7 +5261,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private audioPlayerErrorHandler = (info: IAudioInfo, err: any) => {
-        this.messageRepo.lazyUpsert([{
+        this.messageRepo.importBulk([{
             downloaded: false,
             id: info.messageId,
             saved: false,
@@ -5283,7 +5284,7 @@ class Chat extends React.Component<IProps, IState> {
                 const index = findIndex(res.mediadata.doc.attributesList, {type: DocumentAttributeType.ATTRIBUTETYPEAUDIO});
                 if (index > -1 && res.attributes[index]) {
                     res.attributes[index].duration = Math.floor(duration);
-                    this.messageRepo.lazyUpsert([res]);
+                    this.messageRepo.importBulk([res]);
                 }
             }
         });

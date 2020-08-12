@@ -29,7 +29,6 @@ export interface IMessage extends UserMessage.AsObject {
     rtl?: boolean;
     saved?: boolean;
     saved_path?: string;
-    temp?: boolean;
     temp_file?: Blob;
 }
 

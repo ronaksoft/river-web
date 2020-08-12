@@ -227,6 +227,12 @@ a.dialog-a {
         overflow: hidden;
         text-overflow: ellipsis;
         line-height: 1.5em;
+
+        &.system-message {
+          .target-user {
+            padding: 0 3px;
+          }
+        }
       }
     }
 

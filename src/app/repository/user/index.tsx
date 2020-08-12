@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/user';
 import {IContact, IUser} from './interface';
-import {differenceBy, find, uniqBy, uniq, throttle} from 'lodash';
+import {differenceBy, find, uniq, throttle} from 'lodash';
 import APIManager from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 import {Int64BE} from 'int64-buffer';
@@ -50,6 +50,7 @@ interface IUserAction {
     isContact: boolean;
     reject: any;
     resolve: any;
+    teamId?: string;
     users: IUser[];
 }
 
@@ -194,15 +195,24 @@ export default class UserRepo {
         }
     }
 
-    public importBulk(isContact: boolean, users: IUser[], force?: boolean, callerId?: number): Promise<any> {
+    public computeHash(teamId: string) {
+        this.getContactList(teamId).then((list) => {
+            this.storeContactsCrc(teamId, list);
+            this.lastContactTimestamp[teamId] = 0;
+        });
+    }
+
+    public importBulk(isContact: boolean, users: IUser[], force?: boolean, callerId?: number, teamId?: string): Promise<any> {
         if (!users || users.length === 0) {
             return Promise.resolve();
         }
-        const uniqUsers = uniqBy(users, 'id');
+        // TODO merge user
+        // const uniqUsers = uniqBy(users, 'id');
+        const uniqUsers = users;
 
         if (this.actionList.length === 0 && !this.actionBusy) {
             this.actionBusy = true;
-            return this.upsert(isContact, uniqUsers, force, callerId).finally(() => {
+            return this.upsert(isContact, uniqUsers, force, callerId, teamId).finally(() => {
                 this.actionBusy = false;
             });
         }
@@ -220,13 +230,14 @@ export default class UserRepo {
             isContact,
             reject: internalReject,
             resolve: internalResolve,
+            teamId,
             users: uniqUsers,
         });
         this.applyActions();
         return promise;
     }
 
-    public upsert(isContact: boolean, users: IUser[], force?: boolean, callerId?: number): Promise<any> {
+    public upsert(isContact: boolean, users: IUser[], force?: boolean, callerId?: number, teamId?: string): Promise<any> {
         const ids = users.map((user) => {
             if (isContact) {
                 user.is_contact = 1;
@@ -253,6 +264,14 @@ export default class UserRepo {
             list.forEach((item) => {
                 this.dbService.setUser(item);
             });
+            if (isContact && teamId) {
+                this.setContactList(users.map((o) => {
+                    return {
+                        id: o.id || '0',
+                        teamid: teamId,
+                    };
+                }));
+            }
             return this.createMany(list);
         }).then((res) => {
             if (callerId) {
@@ -420,7 +439,7 @@ export default class UserRepo {
             const action = this.actionList.shift();
             if (action) {
                 this.actionBusy = true;
-                this.upsert(action.isContact, action.users, action.force, action.callerId).then((res) => {
+                this.upsert(action.isContact, action.users, action.force, action.callerId, action.teamId).then((res) => {
                     action.resolve(res);
                 }).catch((err) => {
                     action.reject(err);

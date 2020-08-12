@@ -484,6 +484,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         <div className="menu-content with-footer">
                             <Scrollbars
                                 autoHide={true}
+                                rtl={this.rtl}
                             >
                                 <div className="padding-side">
                                     <div className="account-summary">
@@ -615,6 +616,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             <div className="menu-content">
                                 <Scrollbars
                                     autoHide={true}
+                                    rtl={this.rtl}
                                 >
                                     <div className="padding-side">
                                         <div className="page-content" style={{overflow: 'hidden'}}>
@@ -792,6 +794,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 {user &&
                                 <Scrollbars
                                     autoHide={true}
+                                    rtl={this.rtl}
                                 >
                                     <div className="info">
                                         <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
@@ -975,6 +978,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             <div className="menu-content">
                                 <Scrollbars
                                     autoHide={true}
+                                    rtl={this.rtl}
                                 >
                                     <div>
                                         <div
@@ -1045,7 +1049,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 <label>{i18n.t('settings.data_and_storage')}</label>
                             </div>
                             <div className="menu-content">
-                                <Scrollbars autoHide={true}>
+                                <Scrollbars
+                                    autoHide={true}
+                                    rtl={this.rtl}
+                                >
                                     <div>
                                         {storageItems.map((item) => {
                                             if (item.type === 'item') {
@@ -1093,6 +1100,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             <div className="menu-content">
                                 <Scrollbars
                                     autoHide={true}
+                                    rtl={this.rtl}
                                 >
                                     <div className="info language-list">
                                         {languageList.map((item, key) => {
@@ -1149,6 +1157,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             {sessions && <div className="menu-content">
                                 {Boolean(sessions.length > 0 && !loading) && <Scrollbars
                                     autoHide={true}
+                                    rtl={this.rtl}
                                 >
                                     <div>
                                         {sessions.map((item, key) => {

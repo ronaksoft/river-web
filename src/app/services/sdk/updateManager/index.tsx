@@ -1364,7 +1364,7 @@ export default class UpdateManager {
         });
         Promise.all(persistFilePromises).then(() => {
             if (messages.length > 0) {
-                messageRepo.upsert(messages).then(() => {
+                messageRepo.importBulk(messages).then(() => {
                     const data: IMessageIdDBUpdated = {
                         peerNames: {},
                     };

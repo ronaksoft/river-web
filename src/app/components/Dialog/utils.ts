@@ -29,12 +29,40 @@ const getSystemMessageTitle = (message: IMessage) => {
         case C_MESSAGE_ACTION.MessageActionGroupCreated:
             return `${name} ${i18n.t('message.created_the_group')}`;
         case C_MESSAGE_ACTION.MessageActionGroupAddUser:
-            return `${name} ${i18n.t('message.added_a_user')}`;
+            if (!message.actiondata) {
+                return `${name} ${i18n.t('message.added_a_user')}`;
+            } else {
+                const userIds: string[] = message.actiondata.useridsList;
+                if (userIds && userIds.length > 0) {
+                    const targetUser = UserRepo.getInstance().getInstant(userIds[0]);
+                    if (targetUser) {
+                        return `${name} ${i18n.tf('message.added_a_user_param', targetUser.firstname || '')}`;
+                    } else {
+                        return `${name} ${i18n.t('message.added_a_user')}`;
+                    }
+                } else {
+                    return `${name} ${i18n.t('message.added_a_user')}`;
+                }
+            }
         case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
-            if (!message.actiondata || message.actiondata.useridsList.indexOf(message.senderid) === -1) {
+            if (!message.actiondata) {
                 return `${name} ${i18n.t('message.removed_a_user')}`;
             } else {
-                return `${name} ${i18n.t('message.left')}`;
+                const userIds: string[] = message.actiondata.useridsList;
+                if (message.actiondata.useridsList.indexOf(message.senderid) > -1) {
+                    return `${name} ${i18n.t('message.left')}`;
+                } else {
+                    if (userIds && userIds.length > 0) {
+                        const targetUser = UserRepo.getInstance().getInstant(userIds[0]);
+                        if (targetUser) {
+                            return `${name} ${i18n.tf('message.removed_a_user_param', targetUser.firstname || '')}`;
+                        } else {
+                            return `${name} ${i18n.t('message.removed_a_user')}`;
+                        }
+                    } else {
+                        return `${name} ${i18n.t('message.removed_a_user')}`;
+                    }
+                }
             }
         case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
             return `${name} ${i18n.t('message.changed_the_title')}`;

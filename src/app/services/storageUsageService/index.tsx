@@ -140,7 +140,7 @@ export default class StorageUsageService {
             fileNames.push(file.fileName);
         });
         return this.fileRepo.removeMany(fileNames).then(() => {
-            return this.messageRepo.lazyUpsert(items.map((item) => {
+            return this.messageRepo.importBulk(items.map((item) => {
                 return {
                     downloaded: false,
                     id: item.id,

@@ -51,6 +51,13 @@ import {
     ReplyKeyboardMarkup
 } from "../../services/sdk/messages/chat.messages.markups_pb";
 
+interface IMessageAction {
+    callerId?: number;
+    msgs: IMessage[];
+    reject: any;
+    resolve: any;
+}
+
 interface IMessageBundlePromise {
     reject: any;
     resolve: any;
@@ -242,6 +249,7 @@ export default class MessageRepo {
                     out.actiondata = MessageActionGroupPhotoChanged.deserializeBinary(actionData).toObject();
                     break;
             }
+            out.messagetype = C_MESSAGE_TYPE.System;
             delete out.messageactiondata;
         }
         if (msg.replymarkupdata) {
@@ -288,7 +296,7 @@ export default class MessageRepo {
                 break;
         }
         if (msgType && out.id && (out.id || 0) > 0) {
-            MediaRepo.getInstance().lazyUpsert([{
+            MediaRepo.getInstance().importBulk([{
                 id: out.id,
                 peerid: out.peerid || '',
                 peertype: out.peertype || 0,
@@ -332,12 +340,12 @@ export default class MessageRepo {
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private userId: string;
-    private lazyMap: { [key: number]: IMessage } = {};
     private messageBundle: { [key: string]: IMessageBundle } = {};
-    // @ts-ignore
     private readonly getBundleMessageThrottle: any = null;
     // @ts-ignore
-    private readonly updateThrottle: any = null;
+    private actionList: IMessageAction[] = [];
+    // @ts-ignore
+    private actionBusy: boolean = false;
 
     private constructor() {
         APIManager.getInstance().loadConnInfo();
@@ -347,7 +355,6 @@ export default class MessageRepo {
         this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
-        this.updateThrottle = throttle(this.insertToDb, 300);
         this.getBundleMessageThrottle = throttle(this.getMessageForBundle, 300);
     }
 
@@ -429,9 +436,6 @@ export default class MessageRepo {
     }
 
     public removeMany(ids: number[], callerId?: number) {
-        ids.forEach((id) => {
-            delete this.lazyMap[id];
-        });
         MediaRepo.getInstance().removeMany(ids).catch(() => {
             //
         });
@@ -563,10 +567,6 @@ export default class MessageRepo {
 
     public get(id: number, peer?: InputPeer | null, teamId?: string): Promise<IMessage | null> {
         return new Promise((resolve, reject) => {
-            if (this.lazyMap.hasOwnProperty(id)) {
-                resolve(this.lazyMap[id]);
-                return;
-            }
             const fn = () => {
                 if (peer && teamId) {
                     this.getBundleMessage(teamId, peer, id).then((remoteRes) => {
@@ -728,58 +728,44 @@ export default class MessageRepo {
         return pipe2.limit(limit || 32).toArray();
     }
 
-    public importBulk(msgs: IMessage[], noTransform?: boolean): Promise<any> {
+    public importBulk(msgs: IMessage[], callerId?: number): Promise<any> {
+        if (!msgs || msgs.length === 0) {
+            return Promise.resolve();
+        }
+
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();
         }
-        const tempMsgs = cloneDeep(msgs);
-        return this.upsert(tempMsgs).catch((err) => {
-            window.console.debug(err);
-        });
-    }
 
-    public upsert(msgs: IMessage[], callerId?: number): Promise<any> {
-        const peerIdMap: { [key: string]: number[] } = {};
-        const ids = msgs.map((msg) => {
-            this.trimMessage(msg);
-            return msg.id || '';
+        const uniqMsgs = cloneDeep(msgs);
+
+        if (this.actionList.length === 0 && !this.actionBusy) {
+            this.actionBusy = true;
+            return this.upsert(uniqMsgs, callerId).finally(() => {
+                this.actionBusy = false;
+            });
+        }
+
+        let internalResolve = null;
+        let internalReject = null;
+
+        const promise = new Promise<any>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
         });
-        return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {
-            const createItems: IMessage[] = differenceBy(msgs, result, 'id');
-            const updateItems: IMessage[] = result.map((msg: IMessage) => {
-                this.trimMessage(msg);
-                const t = find(msgs, {id: msg.id});
-                if (t && t.temp === true && msg.temp === false) {
-                    const d = this.mergeCheck(msg, t);
-                    // d.temp = false;
-                    return d;
-                } else if (t) {
-                    return this.mergeCheck(msg, t);
-                } else {
-                    return msg;
-                }
-            });
-            createItems.forEach((msg) => {
-                this.trimMessage(msg);
-                if (msg.peerid) {
-                    if (!peerIdMap.hasOwnProperty(msg.peerid)) {
-                        peerIdMap[msg.peerid] = [];
-                    }
-                    peerIdMap[msg.peerid].push(msg.id || 0);
-                }
-            });
-            return this.createMany([...createItems, ...updateItems]).then((res) => {
-                this.broadcastEvent('Message_DB_Added', {newMsg: peerIdMap, callerId});
-                return res;
-            });
+
+        this.actionList.push({
+            callerId,
+            msgs: uniqMsgs,
+            reject: internalReject,
+            resolve: internalResolve,
         });
+
+        this.applyActions();
+        return promise;
     }
 
     public remove(id: number, callerId?: number): Promise<any> {
-        if (this.lazyMap.hasOwnProperty(id)) {
-            delete this.lazyMap[id];
-            // return Promise.resolve();
-        }
         return this.db.messages.delete(id).then((res) => {
             this.broadcastEvent('Message_DB_Removed', {ids: [id], callerId});
             return res;
@@ -822,22 +808,6 @@ export default class MessageRepo {
         return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, Dexie.minKey], [teamId, peerId, peerType, id], true, true).delete();
     }
 
-    public flush() {
-        return;
-        // Disabling debouncer
-        // this.updateThrottle.cancel();
-        // this.insertToDb();
-    }
-
-    public lazyUpsert(messages: IMessage[]) {
-        if (this.userId === '0' || this.userId === '') {
-            this.loadConnInfo();
-        }
-        // Start
-        const msgs = cloneDeep(messages);
-        return this.upsert(msgs);
-    }
-
     public insertDiscrete(teamId: string, messages: IMessage[]) {
         const peerGroups = groupBy(messages, (o => `${o.peerid || ''}_${o.peertype || 0}`));
         const edgeIds: any[] = [];
@@ -873,14 +843,6 @@ export default class MessageRepo {
         });
     }
 
-    // Get all temp messages
-    // For migration purposes
-    public getAllTemps() {
-        return this.db.messages.filter((item) => {
-            return (item.temp === true);
-        }).toArray();
-    }
-
     public insertHole(teamId: string, peerId: string, peerType: number, id: number, asc: boolean) {
         return this.db.messages.put({
             id: id + (asc ? 0.5 : -0.5),
@@ -911,6 +873,56 @@ export default class MessageRepo {
         });
     }
 
+    private applyActions() {
+        if (!this.actionBusy && this.actionList.length > 0) {
+            const action = this.actionList.shift();
+            if (action) {
+                this.actionBusy = true;
+                this.upsert(action.msgs, action.callerId).then((res) => {
+                    action.resolve(res);
+                }).catch((err) => {
+                    action.reject(err);
+                }).finally(() => {
+                    this.actionBusy = false;
+                    this.applyActions();
+                });
+            }
+        }
+    }
+
+    private upsert(msgs: IMessage[], callerId?: number): Promise<any> {
+        const peerIdMap: { [key: string]: number[] } = {};
+        const ids = msgs.map((msg) => {
+            this.trimMessage(msg);
+            return msg.id || '';
+        });
+        return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {
+            const createItems: IMessage[] = differenceBy(msgs, result, 'id');
+            const updateItems: IMessage[] = result.map((msg: IMessage) => {
+                this.trimMessage(msg);
+                const t = find(msgs, {id: msg.id});
+                if (t) {
+                    return this.mergeCheck(msg, t);
+                } else {
+                    return msg;
+                }
+            });
+            createItems.forEach((msg) => {
+                this.trimMessage(msg);
+                if (msg.peerid) {
+                    if (!peerIdMap.hasOwnProperty(msg.peerid)) {
+                        peerIdMap[msg.peerid] = [];
+                    }
+                    peerIdMap[msg.peerid].push(msg.id || 0);
+                }
+            });
+            return this.createMany([...createItems, ...updateItems]).then((res) => {
+                this.broadcastEvent('Message_DB_Added', {newMsg: peerIdMap, callerId});
+                return res;
+            });
+        });
+    }
+
     private completeMessagesLimitFromRemote(teamId: string, peer: InputPeer, messages: IMessage[], id: number, asc: boolean, limit: number, localOnly?: boolean): Promise<IMessage[]> {
         if (id === -1) {
             return Promise.reject('bad message id');
@@ -926,7 +938,7 @@ export default class MessageRepo {
             this.userRepo.importBulk(false, remoteMessages.usersList);
             this.groupRepo.importBulk(remoteMessages.groupsList);
             remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, this.userId);
-            return this.importBulk(remoteMessages.messagesList, true).then(() => {
+            return this.importBulk(remoteMessages.messagesList).then(() => {
                 return [...messages, ...remoteMessages.messagesList];
             });
         });
@@ -943,20 +955,6 @@ export default class MessageRepo {
             });
         };
         return fn;
-    }
-
-    private insertToDb = () => {
-        const messages: IMessage[] = [];
-        Object.keys(this.lazyMap).forEach((key) => {
-            messages.push(cloneDeep(this.lazyMap[key]));
-        });
-        if (messages.length === 0) {
-            return;
-        }
-        this.lazyMap = {};
-        this.upsert(messages).then(() => {
-            //
-        });
     }
 
     private mergeCheck(message: IMessage, newMessage: IMessage): IMessage {

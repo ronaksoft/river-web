@@ -137,6 +137,8 @@ class AvatarCropper extends React.Component<IProps, IState> {
     private profileCropperCloseHandler = () => {
         this.setState({
             profileCropperOpen: false,
+            rotate: 0,
+            zoom: 1.0,
         });
         if (this.fileInputRef) {
             this.fileInputRef.value = '';

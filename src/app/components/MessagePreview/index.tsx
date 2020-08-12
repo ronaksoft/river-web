@@ -208,7 +208,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                 previewMessage: null,
             });
             if (message.id) {
-                this.messageRepo.lazyUpsert([{
+                this.messageRepo.importBulk([{
                     deleted_reply: true,
                     id: message.id,
                 }]);

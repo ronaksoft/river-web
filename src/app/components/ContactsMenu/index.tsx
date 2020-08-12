@@ -207,11 +207,11 @@ class ContactMenus extends React.Component<IProps, IState> {
             phone,
         });
         this.apiManager.contactImport(true, contacts).then((data) => {
-            data.contactusersList.forEach((user) => {
-                this.userRepo.importBulk(true, [user]).then(() => {
-                    if (this.contactListRef) {
-                        this.contactListRef.reload();
-                    }
+            this.userRepo.importBulk(true, data.contactusersList, undefined, undefined, this.props.teamId).then(() => {
+                if (this.contactListRef) {
+                    this.contactListRef.reload();
+                }
+                data.contactusersList.forEach((user) => {
                     this.broadcastEvent('User_Dialog_Open', {
                         id: user.id,
                     });
@@ -219,6 +219,8 @@ class ContactMenus extends React.Component<IProps, IState> {
             });
             if (data.contactusersList.length === 0 && this.props.onError) {
                 this.props.onError(i18n.tf('contact.is_not_on_river_yet', firstName));
+            } else {
+                this.userRepo.computeHash(this.props.teamId);
             }
             this.setState({
                 firstName: '',
