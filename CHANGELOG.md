@@ -1,3 +1,6 @@
+## 0.34.21
+* Skippable request implemented
+
 ## 0.34.20
 * Hotfix in server migration
 

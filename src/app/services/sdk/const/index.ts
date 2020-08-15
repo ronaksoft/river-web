@@ -511,6 +511,7 @@ export const C_ERR_ITEM = {
     ErrItemSecurityQuestion: "SECURITY_QUESTION",
     ErrItemServer: "SERVER",
     ErrItemSignIn: "SIGN_IN",
+    ErrItemSkip: "skip",
     ErrItemSrpB: "SRP_B",
     ErrItemStorageServer: "STORAGE_SERVER",
     ErrItemTimeout: "timeout",

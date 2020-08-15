@@ -383,13 +383,15 @@ export default class UpdateManager {
                         this.callHandlers('all', C_MSG.UpdateManagerStatus, {
                             isUpdating: true,
                         });
-                    }).catch(() => {
-                        this.enableLiveUpdate();
-                        if (this.isDiffUpdating) {
-                            this.isDiffUpdating = false;
-                            this.callHandlers('all', C_MSG.UpdateManagerStatus, {
-                                isUpdating: false,
-                            });
+                    }).catch((err) => {
+                        if (err.err === 'too_soon') {
+                            this.enableLiveUpdate();
+                            if (this.isDiffUpdating) {
+                                this.isDiffUpdating = false;
+                                this.callHandlers('all', C_MSG.UpdateManagerStatus, {
+                                    isUpdating: false,
+                                });
+                            }
                         }
                     });
                 }
@@ -492,8 +494,10 @@ export default class UpdateManager {
         this.transactionList = [];
         this.canSync().then(() => {
             this.disableLiveUpdate();
-        }).catch(() => {
-            this.enableLiveUpdate();
+        }).catch((err) => {
+            if (err.err === 'too_soon') {
+                this.enableLiveUpdate();
+            }
         });
     }
 

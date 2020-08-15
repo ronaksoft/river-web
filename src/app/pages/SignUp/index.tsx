@@ -841,8 +841,6 @@ class SignUp extends React.Component<IProps, IState> {
             if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
                 this.props.history.push('/chat/0/null');
             }
-        }).catch((err) => {
-            window.console.warn(err);
         });
         if (this.state.step === 'phone') {
             this.apiManager.systemGetInfo().then((res) => {

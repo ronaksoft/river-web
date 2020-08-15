@@ -843,19 +843,13 @@ export default class MessageRepo {
         });
     }
 
-    public insertHole(teamId: string, peerId: string, peerType: number, id: number, asc: boolean) {
-        return this.db.messages.put({
-            id: id + (asc ? 0.5 : -0.5),
-            messagetype: C_MESSAGE_TYPE.Hole,
-            peerid: peerId,
-            peertype: peerType,
-            teamid: teamId,
-        });
+    public insertHole(teamId: string, peerId: string, peerType: number, id: number, after: boolean) {
+        return this.db.messages.put(this.getHoleMessage(teamId, peerId, peerType, id, after));
     }
 
-    public getHoleMessage(teamId: string, peerId: string, peerType: number, id: number, asc: boolean): IMessage {
+    public getHoleMessage(teamId: string, peerId: string, peerType: number, id: number, after: boolean): IMessage {
         return {
-            id: id + (asc ? 0.5 : -0.5),
+            id: id + (after ? 0.5 : -0.5),
             messagetype: C_MESSAGE_TYPE.Hole,
             peerid: peerId,
             peertype: peerType,

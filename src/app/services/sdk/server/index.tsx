@@ -10,7 +10,7 @@
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
 import UpdateManager from './../updateManager';
-import {throttle, cloneDeep} from 'lodash';
+import {throttle, cloneDeep, forEachRight} from 'lodash';
 import Socket from './socket';
 import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
@@ -483,9 +483,21 @@ export default class Server {
     }
 
     private flushSentQueue() {
+        const skipIds = this.getSkippableRequestIds();
         this.sentQueue.forEach((reqId) => {
             if (this.messageListeners[reqId]) {
-                this.sendRequest(this.messageListeners[reqId].request);
+                const msg = this.messageListeners[reqId];
+                if (skipIds.length > 0 && skipIds.indexOf(msg.request.reqId) > -1) {
+                    if (msg.reject) {
+                        msg.reject({
+                            code: C_ERR.ErrCodeInternal,
+                            items: C_ERR_ITEM.ErrItemSkip,
+                        });
+                    }
+                    this.cleanQueue(reqId);
+                } else {
+                    this.sendRequest(msg.request);
+                }
             }
         });
     }
@@ -767,6 +779,22 @@ export default class Server {
         if (req && req.resolve) {
             req.resolve(InputPassword.deserializeBinary(base64ToU8a(data)));
         }
+    }
+
+    private getSkippableRequestIds() {
+        const containList: number[] = [];
+        const reqIds: number[] = [];
+        forEachRight(this.sentQueue, (reqId) => {
+            const req = this.messageListeners[reqId];
+            if (req && (req.request.constructor === C_MSG.Ping || req.request.constructor === C_MSG.AuthRecall)) {
+                if (containList.indexOf(req.request.constructor) > -1) {
+                    reqIds.push(req.request.reqId);
+                } else {
+                    containList.push(req.request.constructor);
+                }
+            }
+        });
+        return reqIds;
     }
 
     private dispatchEvent(cmd: string, data: any) {

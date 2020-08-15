@@ -2448,7 +2448,7 @@ class Chat extends React.Component<IProps, IState> {
                     const sameItems: IDialog[] = intersectionWith(cloneDeep(oldDialogs), res.dialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
                     const newItems: IDialog[] = differenceWith(cloneDeep(res.dialogs), oldDialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
                     sameItems.forEach((dialog) => {
-                        const d = find(res.dialogs, {peerid: dialog.peerid, peertype: dialog.peertype});
+                        const d = find(res.dialogs, o => o.peerid === dialog.peerid && o.peertype === dialog.peertype);
                         if (d) {
                             this.messageRepo.clearHistory(this.teamId, d.peerid || '', d.peertype || 0, d.topmessageid || 0);
                         }
@@ -2527,9 +2527,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private checkNetworkHandler = () => {
-        this.apiManager.ping().catch(() => {
-            window.console.warn('bad network');
-            Socket.getInstance().tryAgain();
+        this.apiManager.ping().catch((err) => {
+            if (!(err && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemSkip)) {
+                window.console.warn('bad network');
+                Socket.getInstance().tryAgain();
+            }
         });
     }
 
