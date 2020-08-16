@@ -18,6 +18,7 @@ import {
     EventWebSocketOpen
 } from "../../../events";
 import {C_LOCALSTORAGE} from "../../const";
+import {getWsServerUrl} from "../../../../components/DevTools";
 
 export const defaultGateway = 'cyrus.river.im';
 
@@ -57,7 +58,6 @@ export default class Socket {
     private fnCallback: any = null;
     private fnUpdate: any = null;
     private fnError: any = null;
-    private testUrl: string = '';
     private lastSendTime: number = 0;
     private lastReceiveTime: number = 0;
     private online: boolean = navigator.onLine === undefined ? true : navigator.onLine;
@@ -67,8 +67,6 @@ export default class Socket {
     private resolveGenInputPasswordFn: any | undefined;
 
     public constructor() {
-        this.testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
-
         this.worker = new Worker('/bin/worker.js?v22');
 
         setTimeout(() => {
@@ -286,9 +284,10 @@ export default class Socket {
 
         this.tryCounter++;
 
-        this.testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
-        if (this.testUrl.length > 0) {
-            this.socket = new WebSocket(`ws://${this.testUrl}`);
+        const wsUrl = getWsServerUrl();
+        window.console.log(wsUrl);
+        if (wsUrl && wsUrl.length > 0) {
+            this.socket = new WebSocket(`ws://${wsUrl}`);
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
             this.socket = new WebSocket('wss://' + window.location.host + '/ws');
         } else {

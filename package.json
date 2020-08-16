@@ -23,7 +23,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/styles": "^4.1.2",
+    "@material-ui/styles": "^4.10.0",
     "@sentry/browser": "^5.15.5",
     "@toast-ui/react-image-editor": "^1.2.0",
     "add": "^2.0.6",

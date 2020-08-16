@@ -936,6 +936,7 @@ export const C_LOCALSTORAGE = {
     LangDir: 'river.lang.dir',
     LastUpdateId: 'river.last_update_id',
     ServerKeys: 'river.server_keys',
+    ServerMode: 'river.server_mode',
     SettingsDownload: 'river.settings.download',
     SettingsNotification: 'river.settings.notification',
     ShrunkMenu: 'river.shrunk_menu',

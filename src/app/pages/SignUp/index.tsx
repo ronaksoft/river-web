@@ -104,7 +104,7 @@ class SignUp extends React.Component<IProps, IState> {
         super(props);
         let step = 'phone';
         if (window.location.host !== 'web.river.im' && window.location.host !== 'web.river.ronaksoftware.com') {
-            if (!localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl)) {
+            if (!localStorage.getItem(C_LOCALSTORAGE.ServerMode)) {
                 step = 'workspace';
             }
         }
@@ -473,16 +473,19 @@ class SignUp extends React.Component<IProps, IState> {
                 });
                 if (res.storageurl && res.storageurl.length > 0) {
                     localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, res.storageurl || '');
+                    localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
                 const localWorkspace = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl);
                 if ((localWorkspace || 'cyrus.river.im') !== workspace) {
                     this.workspaceManager.closeWire();
+                    localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
                     localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, workspace);
                     localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
                     localStorage.removeItem(C_LOCALSTORAGE.ConnInfo);
                     window.location.reload();
                 } else if ((!localWorkspace || localWorkspace === '') && workspace === defaultGateway) {
+                    localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
                     localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, workspace);
                 }
 
@@ -851,6 +854,7 @@ class SignUp extends React.Component<IProps, IState> {
                 });
                 if (res.storageurl && res.storageurl.length > 0) {
                     localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, res.storageurl || '');
+                    // localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
             });

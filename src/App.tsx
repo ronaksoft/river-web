@@ -33,7 +33,7 @@ import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 
 import './App.scss';
 
-export const C_VERSION = '0.34.21';
+export const C_VERSION = '0.34.22';
 export const C_ELECTRON_VERSION = '9.0.5';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
@@ -55,6 +55,7 @@ const theme = createMuiTheme({
             light: '#29c16d',
             main: '#27AE60',
         },
+        type: (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') === 'light'? 'light': 'dark',
     },
     typography: {
         fontFamily: `'YekanBakh', 'OpenSans'`,
@@ -305,15 +306,19 @@ class App extends React.Component<{}, IState> {
             clearingSiteData: true,
         });
         this.mainRepo.destroyDB().then(() => {
+            const serverMode = localStorage.getItem(C_LOCALSTORAGE.ServerMode) || 'prod';
             const testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
             const testFileUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || '';
             const serverKeys = localStorage.getItem(C_LOCALSTORAGE.ServerKeys) || '';
+            const verboseMode = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) || '';
             localStorage.clear();
+            localStorage.setItem(C_LOCALSTORAGE.ServerMode, serverMode);
             localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, testUrl);
             localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, testFileUrl);
             if (serverKeys) {
                 localStorage.setItem(C_LOCALSTORAGE.ServerKeys, serverKeys);
             }
+            localStorage.setItem(C_LOCALSTORAGE.DebugVerboseAPI, verboseMode);
             this.setState({
                 alertOpen: false,
             }, () => {

@@ -17,6 +17,7 @@ import {serverKeys} from "../../server";
 import Socket, {serverTime} from '../../server/socket';
 import {EventWebSocketOpen} from "../../../events";
 import {InputTeam} from "../../messages/core.types_pb";
+import {getFileServerUrl} from "../../../../components/DevTools";
 
 export interface IHttpRequest {
     constructor: number;
@@ -53,7 +54,7 @@ export default class Http {
     private inputTeam: InputTeam.AsObject | undefined;
 
     public constructor(shareWorker: boolean, id: number) {
-        const fileUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || '';
+        const fileUrl = getFileServerUrl();
         this.shareWorker = shareWorker;
 
         this.reqId = 0;
