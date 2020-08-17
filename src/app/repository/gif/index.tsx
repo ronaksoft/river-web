@@ -208,11 +208,11 @@ export default class GifRepo {
             } else {
                 return this.createMany(list);
             }
-        }).then(() => {
+        }).then((res) => {
             if (!fromRemote) {
                 this.computeHash();
             }
-            return;
+            return res;
         });
     }
 

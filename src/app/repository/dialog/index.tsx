@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/dialog';
 import {IDialog, IDialogWithUpdateId, IDraft, IPeer} from './interface';
-import {throttle, differenceBy, find, uniqBy, cloneDeep} from 'lodash';
+import {throttle, differenceWith, find, uniqBy, cloneDeep} from 'lodash';
 import APIManager from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
@@ -238,7 +238,7 @@ export default class DialogRepo {
             return [dialog.teamid || '0', dialog.peerid || '', dialog.peertype || 0];
         });
         return this.db.dialogs.where('[teamid+peerid+peertype]').anyOf(queries).toArray().then((result) => {
-            const createItems: IDialog[] = differenceBy(tempDialogs, result, 'peerid');
+            const createItems: IDialog[] = differenceWith(tempDialogs, result, (i1, i2) => i1.teamid === i2.teamid && i1.peerid === i2.peerid && i1.peertype === i2.peertype);
             const updateItems: IDialog[] = result.map((dialog: IDialog) => {
                 const t = find(tempDialogs, {teamid: dialog.teamid, peerid: dialog.peerid, peertype: dialog.peertype});
                 if (t) {
@@ -313,8 +313,8 @@ export default class DialogRepo {
 
     private insertToDb = () => {
         const dialogs: IDialog[] = [];
-        Object.keys(this.lazyMap).forEach((key) => {
-            dialogs.push(cloneDeep(this.lazyMap[key]));
+        Object.values(this.lazyMap).forEach((item) => {
+            dialogs.push(cloneDeep(item));
         });
         if (dialogs.length === 0) {
             this.lazyMap = {};

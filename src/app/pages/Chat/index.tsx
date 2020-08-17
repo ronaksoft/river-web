@@ -1918,6 +1918,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!this.messageRef) {
             return -1;
         }
+        this.messageRepo.importBulk([message]);
         const dialog = this.getDialogByPeerName(this.selectedPeerName);
         let gapNumber = 0;
         if (dialog && this.messages.length > 0) {
@@ -1958,7 +1959,6 @@ class Chat extends React.Component<IProps, IState> {
         }
         this.setScrollMode('none');
         this.messageRef.setMessages(this.messages);
-        this.messageRepo.importBulk([message]);
         this.newMessageLoadThrottle();
         return this.messages.length - 1;
     }
@@ -2404,7 +2404,7 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 setTimeout(() => {
                     this.startSyncing(res.updateid || 0);
-                }, 2000);
+                }, 1000);
             }
         });
     }
@@ -2459,10 +2459,10 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     });
                     // Sorts dialogs by last update
-                    this.dialogRepo.lazyUpsert(res.dialogs.map((o) => {
-                        o.force = true;
-                        return o;
-                    }));
+                    // this.dialogRepo.lazyUpsert(res.dialogs.map((o) => {
+                    //     o.force = true;
+                    //     return o;
+                    // }));
                     if (ignoreViewUpdate !== true) {
                         this.dialogsSort(res.dialogs);
                     }

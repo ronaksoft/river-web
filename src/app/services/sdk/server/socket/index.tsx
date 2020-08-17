@@ -285,7 +285,6 @@ export default class Socket {
         this.tryCounter++;
 
         const wsUrl = getWsServerUrl();
-        window.console.log(wsUrl);
         if (wsUrl && wsUrl.length > 0) {
             this.socket = new WebSocket(`ws://${wsUrl}`);
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
