@@ -779,7 +779,7 @@ export default class Server {
         const reqIds: number[] = [];
         forEachRight(this.sentQueue, (reqId) => {
             const req = this.messageListeners[reqId];
-            if (req && (req.request.constructor === C_MSG.Ping || req.request.constructor === C_MSG.AuthRecall)) {
+            if (req && (req.request.constructor === C_MSG.Ping || req.request.constructor === C_MSG.AuthRecall || req.request.constructor === C_MSG.UpdateGetState)) {
                 if (containList.indexOf(req.request.constructor) > -1) {
                     reqIds.push(req.request.reqId);
                 } else {

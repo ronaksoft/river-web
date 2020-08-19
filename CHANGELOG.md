@@ -1,3 +1,6 @@
+## 0.34.24
+* Hot fix
+
 ## 0.34.23
 * Minor bugs fixed
 

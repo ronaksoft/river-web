@@ -57,7 +57,7 @@ import TopPeerRepo, {ITopPeerWithType, TopPeerType} from "../../../repository/to
 import {Document, MediaDocument} from "../messages/chat.messages.medias_pb";
 import GifRepo from "../../../repository/gif";
 
-const C_MAX_UPDATE_DIFF = 10;
+const C_MAX_UPDATE_DIFF = 5000;
 const C_DIFF_AMOUNT = 100;
 
 export interface IDialogDBUpdated {
