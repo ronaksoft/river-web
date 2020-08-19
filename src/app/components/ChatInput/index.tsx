@@ -569,8 +569,10 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.state.peer && !newPeer) {
             return;
         }
-        // @ts-ignore
-        const newPeerObj = newPeer ? newPeer.toObject() : this.state.peer.toObject();
+        const newPeerObj = newPeer ? newPeer.toObject() : this.state.peer ? this.state.peer.toObject() : null;
+        if (!newPeerObj) {
+            return;
+        }
         const dialog = cloneDeep(this.props.getDialog(GetPeerName(newPeerObj.id, newPeerObj.type)));
         if (!dialog || !dialog.draft || !dialog.draft.peerid) {
             this.changePreviewMessage('', C_MSG_MODE.Normal, null);
