@@ -2447,17 +2447,29 @@ class Chat extends React.Component<IProps, IState> {
                     // Insert holes on snapshot if it has difference
                     const sameItems: IDialog[] = intersectionWith(cloneDeep(oldDialogs), res.dialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
                     const newItems: IDialog[] = differenceWith(cloneDeep(res.dialogs), oldDialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
+                    const promises: any[] = [];
                     sameItems.forEach((dialog) => {
                         const d = find(res.dialogs, o => o.peerid === dialog.peerid && o.peertype === dialog.peertype);
                         if (d) {
-                            this.messageRepo.clearHistory(this.teamId, d.peerid || '', d.peertype || 0, d.topmessageid || 0);
+                            promises.push(this.messageRepo.clearHistory(this.teamId, d.peerid || '', d.peertype || 0, d.topmessageid || 0));
                         }
                     });
-                    newItems.forEach((dialog) => {
-                        if (dialog.topmessageid) {
-                            this.messageRepo.insertHole(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid, false);
-                        }
-                    });
+                    const insertHoleFn = () => {
+                        newItems.forEach((dialog) => {
+                            if (dialog.topmessageid) {
+                                this.messageRepo.insertHole(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid, false);
+                            }
+                        });
+                    };
+                    if (promises.length > 0) {
+                        Promise.all(promises).then(() => {
+                            insertHoleFn();
+                        }).catch(() => {
+                            insertHoleFn();
+                        });
+                    } else {
+                        insertHoleFn();
+                    }
                     // Sorts dialogs by last update
                     // this.dialogRepo.lazyUpsert(res.dialogs.map((o) => {
                     //     o.force = true;

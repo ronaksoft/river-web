@@ -75,4 +75,13 @@ export default class MainRepo {
         promises.push(this.gifDB.delete());
         return Promise.all(promises);
     }
+
+    public destroyMessageRelatedDBs(): Promise<any> {
+        const promises = [];
+        // @ts-ignore
+        promises.push(this.messageDB.delete());
+        // @ts-ignore
+        promises.push(this.dialogDB.delete());
+        return Promise.all(promises);
+    }
 }

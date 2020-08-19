@@ -1,3 +1,6 @@
+## 0.34.25
+* Hot fix in snapshot concurrent pipelines
+
 ## 0.34.24
 * Minor bugs fixed
 

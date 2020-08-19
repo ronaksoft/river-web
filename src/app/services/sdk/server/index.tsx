@@ -558,7 +558,7 @@ export default class Server {
         const v = localStorage.getItem(C_LOCALSTORAGE.Version);
         if (v === null) {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                v: 6,
+                v: 7,
             }));
             return false;
         }
@@ -571,8 +571,9 @@ export default class Server {
             case 3:
             case 4:
             case 5:
-                return pv.v;
             case 6:
+                return pv.v;
+            case 7:
                 return false;
         }
     }
@@ -593,6 +594,9 @@ export default class Server {
             case 4:
             case 5:
                 this.migrate4();
+                return;
+            case 6:
+                this.migrate6();
                 return;
         }
     }
@@ -676,6 +680,24 @@ export default class Server {
                 localStorage.removeItem(C_LOCALSTORAGE.LastUpdateId);
                 localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
                     v: 6,
+                }));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+            });
+        }, 1000);
+    }
+
+    private migrate6() {
+        if (this.updateManager) {
+            this.updateManager.disableLiveUpdate();
+        }
+        setTimeout(() => {
+            MainRepo.getInstance().destroyMessageRelatedDBs().then(() => {
+                localStorage.removeItem(C_LOCALSTORAGE.SnapshotRecord);
+                localStorage.removeItem(C_LOCALSTORAGE.LastUpdateId);
+                localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+                    v: 7,
                 }));
                 setTimeout(() => {
                     window.location.reload();

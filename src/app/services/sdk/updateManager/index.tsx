@@ -1270,9 +1270,8 @@ export default class UpdateManager {
         });
         if (myMessageList.length > 0) {
             setTimeout(() => {
-                window.console.log(randomMessageIds, myMessageList);
                 this.modifyPendingMessages(randomMessageIds, myMessageList);
-            }, 2048);
+            }, 1024);
         }
         if (messageList.length > 0 && this.messageRepo) {
             return this.messageRepo.importBulk(messageList).then(() => {
