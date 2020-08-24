@@ -2592,6 +2592,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     /* Remove synced contacts handler */
     private removeSyncedContactsHandler = () => {
         this.apiManager.deleteAllContacts().then(() => {
+            this.userRepo.removeManyContacts('0');
             if (this.props.onError) {
                 this.props.onError(i18n.t('settings.synced_contacts_removed_successfully'));
             }

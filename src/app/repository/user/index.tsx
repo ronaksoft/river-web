@@ -323,13 +323,29 @@ export default class UserRepo {
         });
     }
 
-    public removeContact(id: string) {
+    public removeContact(teamId: string, id: string) {
         return this.db.users.where('id').equals(id).first().then((user) => {
             if (user) {
                 user.is_contact = 0;
                 this.dbService.setUser(user);
                 this.createMany([user]);
+                this.db.contacts.delete([teamId, id]);
             }
+        });
+    }
+
+    public removeManyContacts(teamId: string) {
+        return this.getContactList(teamId).then((res) => {
+            const ids = res.map(o => o.id);
+            return this.db.users.where('id').anyOf(ids).toArray().then((users) => {
+                const t = users.map((user) => {
+                    user.is_contact = 0;
+                    return user;
+                });
+                return this.createMany(t).then(() => {
+                    return this.removeContactList(teamId);
+                });
+            });
         });
     }
 
@@ -461,6 +477,10 @@ export default class UserRepo {
 
     private getContactList(teamId: string) {
         return this.db.contacts.where('[teamid+id]').between([teamId, Dexie.minKey], [teamId, Dexie.maxKey], true, true).toArray();
+    }
+
+    private removeContactList(teamId: string) {
+        return this.db.contacts.where('[teamid+id]').between([teamId, Dexie.minKey], [teamId, Dexie.maxKey], true, true).delete();
     }
 
     private searchTeamContacts(teamId: string, filterFn?: any): Promise<IUser[]> {

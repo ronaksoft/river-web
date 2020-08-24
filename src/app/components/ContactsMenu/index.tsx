@@ -244,7 +244,7 @@ class ContactMenus extends React.Component<IProps, IState> {
                 const contactIds: string[] = [];
                 contactIds.push(contact.id || '');
                 this.apiManager.removeContact(contactIds).then(() => {
-                    this.userRepo.removeContact(contact.id || '').finally(() => {
+                    this.userRepo.removeContact(this.props.teamId, contact.id || '').finally(() => {
                         if (this.contactListRef) {
                             this.contactListRef.reload();
                         }
