@@ -127,7 +127,6 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         const timeout = setTimeout(() => {
             this.getFile();
         }, 1000);
-        window.console.log(this.props.fileLocation);
         this.cachedFileService.getFile(this.props.fileLocation, '', 0, this.props.mimeType, this.props.searchTemp, this.props.blur).then((src) => {
             if (!this.mounted) {
                 return;
