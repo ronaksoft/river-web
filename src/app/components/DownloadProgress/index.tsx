@@ -84,7 +84,9 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
             <div className={`download-progress-container ${className}`}>
                 {Boolean(this.props.hideSizeIndicator !== true) &&
                 <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>}
-                {thumbFile && thumbFile.fileid !== '' && <CachedPhoto className="download-progress-audio-thumbnail" fileLocation={thumbFile}/>}
+                {thumbFile && thumbFile.fileid !== '' &&
+                <CachedPhoto className="download-progress-audio-thumbnail" fileLocation={thumbFile}
+                             mimeType="image/jpeg"/>}
                 <div className="media-action">
                     {Boolean(fileState === 'download') &&
                     <ArrowDownwardRounded onClick={this.downloadFileHandler}/>}

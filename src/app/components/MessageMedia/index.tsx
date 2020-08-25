@@ -77,7 +77,7 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
         caption: '',
         file: {
             accesshash: '',
-            clusterid: 0,
+            clusterid: 1,
             fileid: '',
         },
         fileName: '',
@@ -86,7 +86,7 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
         size: 0,
         thumbFile: {
             accesshash: '',
-            clusterid: 0,
+            clusterid: 1,
             fileid: '',
         },
         type: '',
@@ -455,11 +455,12 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                      style={{height: this.pictureContentSize.height}}>
             {this.blurredImageEnable &&
             <CachedPhoto className="blurred-picture" blur={10}
-                         fileLocation={info.thumbFile}
+                         fileLocation={info.thumbFile} mimeType="image/jpeg"
                          tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
             />}
             <CachedPhoto className="picture"
                          fileLocation={((message.id || 0) < 0 || downloaded) && message.messagetype !== C_MESSAGE_TYPE.Video ? info.file : info.thumbFile}
+                         mimeType={((message.id || 0) < 0 || downloaded) && message.messagetype !== C_MESSAGE_TYPE.Video ? (info.mimeType || 'image/jpeg') : 'image/jpeg'}
                          style={this.pictureContentSize}
                          onLoad={this.cachedPhotoLoadHandler} blur={downloaded ? undefined : 10} searchTemp={true}
                          tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}

@@ -142,11 +142,11 @@ class GifPicker extends React.Component<IProps, IState> {
             fileid: item.doc.id,
         };
         if (item.downloaded) {
-            return <CachedPhoto className="gif" fileLocation={fileInput}/>;
+            return <CachedPhoto className="gif" fileLocation={fileInput} mimeType={item.doc.mimetype || 'image/jpeg'}/>;
         } else if (item.doc.thumbnail) {
             return <>
                 <CachedPhoto className="blurred-gif" blur={10}
-                             fileLocation={item.doc.thumbnail}
+                             fileLocation={item.doc.thumbnail} mimeType="image/jpeg"
                 />
                 <FileDownloadProgress fileLocation={fileInput} onAction={this.progressActionHandler(index)}
                                       fileSize={item.doc.filesize || 0}/>

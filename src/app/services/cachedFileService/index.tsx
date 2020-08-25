@@ -128,7 +128,9 @@ export default class CachedFileService {
     }
 
     public swap(name: string, targetLocation: InputFileLocation.AsObject) {
+        window.console.log(name, targetLocation, this.files);
         if (this.files.hasOwnProperty(name)) {
+            window.console.log('has', name);
             const file = this.files[name];
             file.location = targetLocation;
             const newName = GetDbFileName(targetLocation.fileid, targetLocation.clusterid);

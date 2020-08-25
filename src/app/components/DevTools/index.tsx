@@ -75,7 +75,7 @@ export const getServerKeys = () => {
         }
     } else {
         if (serverMode === 'dev') {
-            return prodKey;
+            return devKey;
         } else if (serverMode === 'other') {
             const t = localStorage.getItem(C_LOCALSTORAGE.ServerKeys);
             if (!t && (workspace.indexOf('ronaksoftware.com') > -1 || workspace.indexOf('localhost') > -1 || (workspace === '' && window.location.host.indexOf('ronaksoftware.com') > -1))) {

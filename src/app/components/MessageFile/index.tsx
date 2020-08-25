@@ -280,7 +280,8 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                 className={'message-file' + (thumbFile ? ' has-thumbnail' : '') + (info.caption.length === 0 ? ' no-caption' : '')}>
                 <div className="file-content">
                     {thumbFile && <CachedPhoto className="file-thumbnail" fileLocation={thumbFile}
-                                               tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}/>}
+                                               tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
+                                               mimeType="image/jpeg"/>}
                     <div className="file-action">
                         {Boolean(fileState === 'view' || fileState === 'open') &&
                         <Tooltip

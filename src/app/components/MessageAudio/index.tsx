@@ -139,7 +139,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
         } else {
             return (<div
                 className={'audio-item-action' + (info.thumbFile && info.thumbFile.fileid !== '' ? ' has-cover' : '')}>
-                <CachedPhoto className="audio-thumbnail" fileLocation={info.thumbFile}/>
+                <CachedPhoto className="audio-thumbnail" fileLocation={info.thumbFile} mimeType="image/jpeg"/>
                 <div className="audio-action" onClick={this.audioActionClickHandler(message.id || 0)}>
                     {!playing && <PlayArrowRounded/>}
                     {playing && <PauseRounded/>}

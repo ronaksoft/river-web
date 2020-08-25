@@ -205,7 +205,8 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                         {mediaInfo && <div className="song-details">
                             <div className="song-cover">
                                 {mediaInfo.thumbFile.fileid !== '' &&
-                                <CachedPhoto className="picture" fileLocation={mediaInfo.thumbFile}/>}
+                                <CachedPhoto className="picture" fileLocation={mediaInfo.thumbFile}
+                                             mimeType="image/jpeg"/>}
                                 {mediaInfo.thumbFile.fileid === '' && <div className="picture">
                                     <MusicNoteRounded/>
                                 </div>}
@@ -253,7 +254,8 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                                             <div className="playlist-avatar"
                                                  onClick={this.playHandlerById(item.id)}>
                                                 {item.music.thumbFile.fileid !== '' &&
-                                                <CachedPhoto className="picture" fileLocation={item.music.thumbFile}/>}
+                                                <CachedPhoto className="picture" fileLocation={item.music.thumbFile}
+                                                             mimeType="image/jpeg"/>}
                                                 {item.music.thumbFile.fileid === '' && <div className="picture">
                                                     <MusicNoteRounded/>
                                                 </div>}

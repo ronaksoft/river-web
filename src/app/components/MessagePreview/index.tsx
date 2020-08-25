@@ -239,7 +239,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                     return (
                         <div className="preview-thumbnail">
                             <CachedPhoto key="reply-thumbnail" className="thumbnail"
-                                         fileLocation={mediaInfo.thumbFile}/>
+                                         fileLocation={mediaInfo.thumbFile} mimeType="image/jpeg"/>
                         </div>
                     );
                 } else {
@@ -250,7 +250,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                     return (
                         <div className="preview-thumbnail">
                             <CachedPhoto key="reply-thumbnail" className="thumbnail"
-                                         fileLocation={mediaInfo.thumbFile}/>
+                                         fileLocation={mediaInfo.thumbFile} mimeType="image/jpeg"/>
                         </div>
                     );
                 } else {

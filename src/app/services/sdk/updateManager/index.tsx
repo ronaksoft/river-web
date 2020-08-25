@@ -69,6 +69,7 @@ export interface IDialogDBUpdated {
 export interface IMessageDBUpdated {
     editedIds: number[];
     ids: number[];
+    randomIds: number[];
     minIds: { [key: string]: number };
     peers: IPeer[];
     peerNames: string[];
@@ -370,7 +371,6 @@ export default class UpdateManager {
             this.applyDiffUpdate(res.toObject()).then((id) => {
                 this.startSyncing(id, limit);
             }).catch((err2) => {
-                window.console.warn(err2);
                 this.enableLiveUpdate();
                 this.isDiffUpdating = false;
                 this.callHandlers('all', C_MSG.UpdateManagerStatus, {
@@ -1281,6 +1281,7 @@ export default class UpdateManager {
                     minIds: minIdPerPeer,
                     peerNames,
                     peers,
+                    randomIds: randomMessageIds,
                 };
             });
         } else {
@@ -1290,6 +1291,7 @@ export default class UpdateManager {
                 minIds: minIdPerPeer,
                 peerNames,
                 peers,
+                randomIds: randomMessageIds,
             });
         }
     }
@@ -1313,7 +1315,7 @@ export default class UpdateManager {
                     pendingArr.forEach((pending) => {
                         if (pending.file_ids && pending.file_ids.length > 0 && messageMap.hasOwnProperty(pending.id)) {
                             toModifyTempList.push({
-                                fileNames: pending.file_ids,
+                                fileNames: pending.file_ids.map(o => GetDbFileName(o, 0)),
                                 message: messageMap[pending.id],
                             });
                         }

@@ -454,6 +454,10 @@ class Uploader extends React.Component<IProps, IState> {
         const {hasFile} = this.state;
         this.setState({
             isFile: hasFile ? true : val === 1,
+        }, () => {
+            if (val === 0) {
+                this.setImageActionSize();
+            }
         });
     }
 

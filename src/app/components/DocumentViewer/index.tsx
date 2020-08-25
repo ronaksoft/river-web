@@ -230,11 +230,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
                             return (
                                 <React.Fragment key={item.fileLocation ? (item.fileLocation.fileid || index) : index}>
                                     {item.thumbFileLocation && <div className="thumbnail">
-                                        <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}/>
+                                        <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
+                                                     mimeType="image/jpeg"/>
                                         <Loading/>
                                     </div>}
                                     <div className="photo">
-                                        <CachedPhoto fileLocation={item.fileLocation}/>
+                                        <CachedPhoto fileLocation={item.fileLocation} mimeType="image/jpeg"/>
                                     </div>
                                 </React.Fragment>
                             );
@@ -246,11 +247,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         return (
                             <div className="avatar-container" style={size ? size : {}}>
                                 {picture.photosmall && <div className="thumbnail">
-                                    <CachedPhoto className="thumb-picture" fileLocation={picture.photosmall}/>
+                                    <CachedPhoto className="thumb-picture" fileLocation={picture.photosmall}
+                                                 mimeType="image/jpeg"/>
                                     <Loading/>
                                 </div>}
                                 <div className="photo" key={picture.photoid}>
-                                    <CachedPhoto fileLocation={picture.photobig}/>
+                                    <CachedPhoto fileLocation={picture.photobig} mimeType="image/jpeg"/>
                                 </div>
                             </div>
                         );
@@ -267,11 +269,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                      style={size ? size : {}}>
                                     {item.thumbFileLocation && <div className="thumbnail">
                                         <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
-                                                     blur={10}/>
+                                                     blur={10} mimeType="image/jpeg"/>
                                     </div>}
                                     {this.getDownloadAction()}
                                     {Boolean(item.downloaded !== false) &&
-                                    <CachedPhoto className="picture" fileLocation={item.fileLocation}/>}
+                                    <CachedPhoto className="picture" fileLocation={item.fileLocation}
+                                                 mimeType={item.mimeType || 'image/jpeg'}/>}
                                 </div>
                             </React.Fragment>
                         );
@@ -286,7 +289,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                      style={size ? size : {}}>
                                     {item.thumbFileLocation && <div className="thumbnail">
                                         <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
-                                                     blur={item.downloaded === false ? 10 : 0}/>
+                                                     blur={item.downloaded === false ? 10 : 0} mimeType="image/jpeg"/>
                                     </div>}
                                     {Boolean(!item.downloaded && item.duration && !doc.stream) &&
                                     <div className="media-duration-container">
@@ -295,7 +298,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                     {!Boolean(doc.stream) && this.getDownloadAction()}
                                     {Boolean(item.downloaded !== false && !doc.stream) &&
                                     <CachedVideo className="video" fileLocation={item.fileLocation}
-                                                 autoPlay={this.firstTimeLoad}
+                                                 mimeType={item.mimeType} autoPlay={this.firstTimeLoad}
                                                  timeOut={200} onPlay={this.cachedVideoPlayHandler}/>}
                                     {Boolean(doc.stream) &&
                                     <StreamVideo className="video" fileLocation={item.fileLocation}
@@ -594,7 +597,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 }}>
                     <CachedPhoto className="picture"
                                  fileLocation={downloaded ? fileLocation : doc.items[0].thumbFileLocation}
-                                 blur={downloaded ? 0 : 10}/>
+                                 blur={downloaded ? 0 : 10} mimeType="image/jpeg"/>
                 </div>);
             } else {
                 return null;
@@ -613,7 +616,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 top: `${doc.rect.top}px`,
                 width: `${doc.rect.width}px`,
             }}>
-                <CachedPhoto className="picture" fileLocation={fileLocation} blur={downloaded ? 0 : 10}/>
+                <CachedPhoto className="picture" fileLocation={fileLocation} blur={downloaded ? 0 : 10}
+                             mimeType="image/jpeg"/>
             </div>);
     }
 
@@ -1129,7 +1133,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                         <div className={'slide' + (gallerySelect === key ? ' selected' : '')}
                                              onClick={this.selectGalleryIndexHandler(key)}>
 
-                                            <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
+                                            <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}
+                                                         mimeType="image/jpeg"/>
                                         </div>
                                     </Tooltip>);
                             } else {
@@ -1137,7 +1142,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                              className={'slide' + (gallerySelect === key ? ' selected' : '')}
                                              onClick={this.selectGalleryIndexHandler(key)}>
 
-                                    <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
+                                    <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}
+                                                 mimeType="image/jpeg"/>
                                 </div>);
                             }
                         })}

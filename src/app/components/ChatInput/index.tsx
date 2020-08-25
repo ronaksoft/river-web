@@ -2004,7 +2004,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 const info = getMediaInfo(previewMessage);
                 return (
                     <div className="preview-thumbnail">
-                        <CachedPhoto className="thumbnail" fileLocation={info.thumbFile}/>
+                        <CachedPhoto className="thumbnail" fileLocation={info.thumbFile} mimeType="image/jpeg"/>
                     </div>
                 );
             default:
@@ -2038,7 +2038,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     </div>}
                 </div>
                 {Boolean(info && info.thumbFile && info.thumbFile.fileid !== '') && <div className="preview-thumbnail">
-                    <CachedPhoto className="thumbnail" fileLocation={info.thumbFile}/>
+                    <CachedPhoto className="thumbnail" fileLocation={info.thumbFile} mimeType="image/jpeg"/>
                 </div>}
             </>;
         } else {

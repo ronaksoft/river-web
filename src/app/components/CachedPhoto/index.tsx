@@ -17,6 +17,7 @@ interface IProps {
     blur?: number;
     className?: string;
     fileLocation: InputFileLocation.AsObject;
+    mimeType: string;
     onClick?: (e: any) => void;
     onLoad?: () => void;
     searchTemp?: boolean;
@@ -58,6 +59,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
 
     public componentDidMount() {
         this.getFile();
+        window.console.log(this.props.fileLocation);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -82,17 +84,25 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
             URL.revokeObjectURL(this.tempFileSrc);
             this.tempFileSrc = null;
         }
+        window.console.log(this.props.fileLocation);
     }
 
     public render() {
         const {className, src} = this.state;
+        let source: any = undefined;
         if (src && src.length > 0) {
             this.lastSrc = src;
+            source = src;
+        } else {
+            source = this.lastSrc;
+        }
+        if (!source) {
+            window.console.log(this.props.fileLocation, this.props.tempFile);
         }
         return (
             <div className={className} style={this.props.style} onClick={this.props.onClick}>
-                {Boolean(src || this.lastSrc.length > 0) &&
-                <img src={src || this.lastSrc} alt="" onLoad={this.props.onLoad} onError={this.imgErrorHandler} draggable={false}/>}
+                {Boolean(source) && <img src={source} alt="" onLoad={this.props.onLoad} onError={this.imgErrorHandler}
+                                         draggable={false}/>}
             </div>
         );
     }
@@ -117,7 +127,8 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         const timeout = setTimeout(() => {
             this.getFile();
         }, 1000);
-        this.cachedFileService.getFile(this.props.fileLocation, '', 0, 'image/jpeg', this.props.searchTemp, this.props.blur).then((src) => {
+        window.console.log(this.props.fileLocation);
+        this.cachedFileService.getFile(this.props.fileLocation, '', 0, this.props.mimeType, this.props.searchTemp, this.props.blur).then((src) => {
             if (!this.mounted) {
                 return;
             }

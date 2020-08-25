@@ -132,7 +132,7 @@ const LabelBodyAudio = ({message}: IProps) => {
     };
     return <>
         {Boolean(info.thumbFile && info.thumbFile.fileid !== '') ? <div className="label-message-media">
-            <CachedPhoto className="thumbnail audio" fileLocation={info.thumbFile}/>
+            <CachedPhoto className="thumbnail audio" fileLocation={info.thumbFile} mimeType="image/jpeg"/>
             <div className="icon">
                 <MusicNoteRounded/>
             </div>
@@ -288,11 +288,16 @@ const LabelBodyMedia = ({labelId, message, onAction}: IMediaProps) => {
     return <>
         <div className={`label-message-media item_${message.id || 0}`} style={{height: `${height}px`}}
              onClick={viewDocumentHandler(labelId, message)}>
-            {withBlur ? <><CachedPhoto className="thumbnail-blur" fileLocation={info.thumbFile} blur={10}/>
+            {withBlur ? <><CachedPhoto className="thumbnail-blur" fileLocation={info.thumbFile} blur={10}
+                                       mimeType="image/jpeg"/>
                     <CachedPhoto className="thumbnail blur-top" onLoad={mediaLoadHandler}
-                                 fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/></> :
+                                 fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}
+                                 mimeType={message.messagetype === C_MESSAGE_TYPE.Video ? 'image/jpeg' : (info.mimeType || 'image/jpeg')}
+                    /></> :
                 <CachedPhoto className="thumbnail" onLoad={mediaLoadHandler}
-                             fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}/>}
+                             fileLocation={message.messagetype === C_MESSAGE_TYPE.Video ? info.thumbFile : info.file}
+                             mimeType={message.messagetype === C_MESSAGE_TYPE.Video ? 'image/jpeg' : (info.mimeType || 'image/jpeg')}
+                />}
             {message.messagetype === C_MESSAGE_TYPE.Video && <>
                 <div className="duration">
                     {getDuration(info.duration || 0)}

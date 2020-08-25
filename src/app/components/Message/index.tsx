@@ -765,7 +765,7 @@ class Message extends React.Component<IProps, IState> {
         const menuItems: any[] = [];
         const id = items[moreIndex].id;
         const me = items[moreIndex].me;
-        const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio, C_MESSAGE_TYPE.Video];
+        const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio, C_MESSAGE_TYPE.Video, C_MESSAGE_TYPE.Picture];
         if (id && id < 0) {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {
@@ -1220,7 +1220,7 @@ class Message extends React.Component<IProps, IState> {
                                               you={true}/> {i18n.t('message.changed_the_group_photo')}
                                 </span>
                                 <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}
-                                             onClick={this.openAvatar(photo)}/>
+                                             mimeType="image/jpeg" onClick={this.openAvatar(photo)}/>
                             </div>
                         );
                     }

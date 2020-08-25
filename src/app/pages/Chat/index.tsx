@@ -214,6 +214,7 @@ class Chat extends React.Component<IProps, IState> {
     private chatInputRef: ChatInput | undefined;
     private messages: IMessage[] = [];
     private messageMap: { [key: number]: boolean } = {};
+    private messageRandomIdMap: { [key: number]: boolean } = {};
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
@@ -1473,6 +1474,7 @@ class Chat extends React.Component<IProps, IState> {
 
         this.messages = [];
         this.messageMap = {};
+        this.messageRandomIdMap = {};
 
         const dialog = this.getDialogByPeerName(dialogPeerName);
 
@@ -1927,6 +1929,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.clearAll();
                 this.messages = [];
                 this.messageMap = {};
+                this.messageRandomIdMap = {};
                 gapNumber = dialog.topmessageid || 0;
                 this.messageRef.setLoading(true, true);
             }
@@ -2693,6 +2696,11 @@ class Chat extends React.Component<IProps, IState> {
             if (after <= 0) {
                 return;
             }
+            if (data.randomIds && data.randomIds.length > 0) {
+                data.randomIds.forEach((id) => {
+                    this.messageRandomIdMap[id] = true;
+                });
+            }
             this.messageRepo.list(this.teamId, {after, limit: 100, peer}).then((res) => {
                 if (!this.messageRef) {
                     return;
@@ -2741,7 +2749,9 @@ class Chat extends React.Component<IProps, IState> {
                 for (let i = this.messages.length - 1; i >= 0 && ids.length > 0 && res.length > 0; i--) {
                     if (this.messages[i].id === ids[0] && res[0].id === ids[0]) {
                         hasUpdate = true;
+                        const avatar = this.messages[i].avatar;
                         this.messages[i] = res[0];
+                        this.messages[i].avatar = avatar;
                         res.shift();
                         ids.shift();
                     }
@@ -3736,6 +3746,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 this.messages = [];
                 this.messageMap = {};
+                this.messageRandomIdMap = {};
                 this.messageRef.clearAll();
                 this.setScrollMode('top');
                 const dataMsg = this.modifyMessages(this.messages, res, true);
@@ -5520,6 +5531,9 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         this.messageMap[(message.id * 100) + (message.messagetype || 0)] = true;
+        if (message.random_id) {
+            this.messageRandomIdMap[message.random_id] = true;
+        }
     }
 
     private messageMapExist(message: IMessage) {
@@ -5527,6 +5541,9 @@ class Chat extends React.Component<IProps, IState> {
             return false;
         }
         if (this.messageMap[(message.id * 100) + (message.messagetype || 0)]) {
+            return true;
+        }
+        if (message.random_id && this.messageRandomIdMap[message.random_id]) {
             return true;
         }
         this.messageMapAppend(message);
