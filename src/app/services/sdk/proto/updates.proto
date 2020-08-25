@@ -361,6 +361,34 @@ message UpdateTeamPhotoChanged {
     required FileLocation Photo = 2;
 }
 
+// UpdateCommunityMessage
+message UpdateCommunityMessage {
+    required int64 TeamID = 100;
+    required int64 SenderID = 1;
+    required int64 ReceiverID = 2;
+    required string Body = 3;
+    required int64 CreatedOn = 4;
+    required uint64 GlobalMsgID = 5;
+    repeated MessageEntity Entities = 6;
+    required int64 SenderMsgID = 7;
+}
+
+// UpdateCommunityReadOutbox
+message UpdateCommunityReadOutbox {
+    required int64 TeamID = 100;
+    required int64 SenderID = 1;
+    required int64 ReceiverID = 2;
+    required int64 SenderMsgID = 3;
+}
+
+// UpdateCommunityTyping
+message UpdateCommunityTyping {
+    required int64 TeamID = 100;
+    required int64 SenderID = 1;
+    required int64 ReceiverID = 2;
+    required TypingAction Action = 3;
+}
+
 // UpdateCalendarEventAdded
 message UpdateCalendarEventAdded {
     required int32 UCount = 100;
@@ -381,4 +409,6 @@ message UpdateCalendarEventEdited {
     required int64 UpdateID = 101;
     required CalendarEvent Event = 1;
 }
+
+
 

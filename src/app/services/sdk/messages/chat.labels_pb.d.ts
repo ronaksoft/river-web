@@ -6,6 +6,11 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class LabelsCreate extends jspb.Message {
+  hasRandomid(): boolean;
+  clearRandomid(): void;
+  getRandomid(): number | undefined;
+  setRandomid(value: number): void;
+
   hasName(): boolean;
   clearName(): void;
   getName(): string | undefined;
@@ -28,6 +33,7 @@ export class LabelsCreate extends jspb.Message {
 
 export namespace LabelsCreate {
   export type AsObject = {
+    randomid?: number,
     name?: string,
     colour?: string,
   }

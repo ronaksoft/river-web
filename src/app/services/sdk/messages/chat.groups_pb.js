@@ -276,7 +276,8 @@ proto.msg.GroupsCreate.toObject = function(includeInstance, msg) {
   var f, obj = {
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     core_types_pb.InputUser.toObject, includeInstance),
-    title: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    title: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    randomid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -322,6 +323,10 @@ proto.msg.GroupsCreate.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setTitle(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setRandomid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -363,6 +368,13 @@ proto.msg.GroupsCreate.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64(
+      3,
       f
     );
   }
@@ -440,6 +452,42 @@ proto.msg.GroupsCreate.prototype.clearTitle = function() {
  */
 proto.msg.GroupsCreate.prototype.hasTitle = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional int64 RandomID = 3;
+ * @return {number}
+ */
+proto.msg.GroupsCreate.prototype.getRandomid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.GroupsCreate} returns this
+ */
+proto.msg.GroupsCreate.prototype.setRandomid = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.GroupsCreate} returns this
+ */
+proto.msg.GroupsCreate.prototype.clearRandomid = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.GroupsCreate.prototype.hasRandomid = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

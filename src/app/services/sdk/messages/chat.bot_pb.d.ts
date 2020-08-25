@@ -767,6 +767,58 @@ export namespace BotUploadWallPaper {
   }
 }
 
+export class BotUploadGif extends jspb.Message {
+  hasToken(): boolean;
+  clearToken(): void;
+  getToken(): string | undefined;
+  setToken(value: string): void;
+
+  hasFile(): boolean;
+  clearFile(): void;
+  getFile(): core_types_pb.InputFile;
+  setFile(value?: core_types_pb.InputFile): void;
+
+  hasThumb(): boolean;
+  clearThumb(): void;
+  getThumb(): core_types_pb.InputFile;
+  setThumb(value?: core_types_pb.InputFile): void;
+
+  hasWidth(): boolean;
+  clearWidth(): void;
+  getWidth(): number | undefined;
+  setWidth(value: number): void;
+
+  hasHeight(): boolean;
+  clearHeight(): void;
+  getHeight(): number | undefined;
+  setHeight(value: number): void;
+
+  hasMimetype(): boolean;
+  clearMimetype(): void;
+  getMimetype(): string | undefined;
+  setMimetype(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotUploadGif.AsObject;
+  static toObject(includeInstance: boolean, msg: BotUploadGif): BotUploadGif.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotUploadGif, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotUploadGif;
+  static deserializeBinaryFromReader(message: BotUploadGif, reader: jspb.BinaryReader): BotUploadGif;
+}
+
+export namespace BotUploadGif {
+  export type AsObject = {
+    token?: string,
+    file: core_types_pb.InputFile.AsObject,
+    thumb: core_types_pb.InputFile.AsObject,
+    width?: number,
+    height?: number,
+    mimetype?: string,
+  }
+}
+
 export class BotResults extends jspb.Message {
   hasGallery(): boolean;
   clearGallery(): void;

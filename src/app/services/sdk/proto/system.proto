@@ -45,6 +45,13 @@ message SystemUploadUsage {
     repeated ClientUsage Usage = 1;
 }
 
+// SystemGetResponse
+// @Function
+// @Return: MessageEnvelope / MessageContainer
+message SystemGetResponse {
+    repeated fixed64 RequestIDs = 1;
+}
+
 // ClientUsage
 message ClientUsage {
     required int32 Year = 1;
@@ -53,7 +60,7 @@ message ClientUsage {
     required int64 UserID = 4;
     required int64 ForegroundTime = 5; // The time client is on foreground in seconds
     required int64 AvgResponseTime = 6; // The average response time for each api
-    required int64 TotalRequests = 7;   // Total requests sent to server
+    required int64 TotalRequests = 7; // Total requests sent to server
     optional int64 ReceivedMessages = 8;
     optional int64 SentMessages = 9;
     optional int64 ReceivedMedia = 10;
@@ -64,6 +71,8 @@ message ClientUsage {
 
 // SystemConfig
 message SystemConfig {
+    optional string GifBot = 110;
+    optional string WikiBot = 111;
     required bool TestMode = 1;
     required bool PhoneCallEnabled = 2;
     required int64 ExpireOn = 3;
@@ -80,10 +89,7 @@ message SystemConfig {
     required int32 MaxLabels = 14;
     required float TopPeerDecayRate = 15;
     required float TopPeerMaxStep = 16;
-    optional string GifBot = 110;
-    optional string WikiBot = 111;
-
-
+    optional uint32 MaxActiveSessions = 17;
 }
 
 // DataCenter

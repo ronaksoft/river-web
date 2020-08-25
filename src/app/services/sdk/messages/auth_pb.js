@@ -6109,7 +6109,8 @@ proto.msg.AuthAuthorization.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AuthAuthorization.toObject = function(includeInstance, msg) {
   var f, obj = {
     expired: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    user: (f = msg.getUser()) && core_types_pb.User.toObject(includeInstance, f)
+    user: (f = msg.getUser()) && core_types_pb.User.toObject(includeInstance, f),
+    activesessions: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -6155,6 +6156,10 @@ proto.msg.AuthAuthorization.deserializeBinaryFromReader = function(msg, reader) 
       reader.readMessage(value,core_types_pb.User.deserializeBinaryFromReader);
       msg.setUser(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setActivesessions(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -6197,6 +6202,13 @@ proto.msg.AuthAuthorization.serializeBinaryToWriter = function(message, writer) 
       2,
       f,
       core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeUint32(
+      3,
+      f
     );
   }
 };
@@ -6272,6 +6284,42 @@ proto.msg.AuthAuthorization.prototype.clearUser = function() {
  */
 proto.msg.AuthAuthorization.prototype.hasUser = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional uint32 ActiveSessions = 3;
+ * @return {number}
+ */
+proto.msg.AuthAuthorization.prototype.getActivesessions = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.AuthAuthorization} returns this
+ */
+proto.msg.AuthAuthorization.prototype.setActivesessions = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.AuthAuthorization} returns this
+ */
+proto.msg.AuthAuthorization.prototype.clearActivesessions = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.AuthAuthorization.prototype.hasActivesessions = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

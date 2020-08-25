@@ -192,7 +192,7 @@ export default class FileRepo {
     }
 
     private getFileMap(inputFile: InputFileLocation.AsObject): Promise<IFileMap | undefined> {
-        return this.db.fileMap.get(GetDbFileName(inputFile.fileid, inputFile.clusterid ));
+        return this.db.fileMap.get(GetDbFileName(inputFile.fileid, inputFile.clusterid));
     }
 
     private createSha256(blob: Blob): Promise<string> {

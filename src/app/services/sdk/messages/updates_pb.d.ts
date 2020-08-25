@@ -1787,6 +1787,150 @@ export namespace UpdateTeamPhotoChanged {
   }
 }
 
+export class UpdateCommunityMessage extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): number | undefined;
+  setTeamid(value: number): void;
+
+  hasSenderid(): boolean;
+  clearSenderid(): void;
+  getSenderid(): number | undefined;
+  setSenderid(value: number): void;
+
+  hasReceiverid(): boolean;
+  clearReceiverid(): void;
+  getReceiverid(): number | undefined;
+  setReceiverid(value: number): void;
+
+  hasBody(): boolean;
+  clearBody(): void;
+  getBody(): string | undefined;
+  setBody(value: string): void;
+
+  hasCreatedon(): boolean;
+  clearCreatedon(): void;
+  getCreatedon(): number | undefined;
+  setCreatedon(value: number): void;
+
+  hasGlobalmsgid(): boolean;
+  clearGlobalmsgid(): void;
+  getGlobalmsgid(): number | undefined;
+  setGlobalmsgid(value: number): void;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
+  addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
+
+  hasSendermsgid(): boolean;
+  clearSendermsgid(): void;
+  getSendermsgid(): number | undefined;
+  setSendermsgid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateCommunityMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateCommunityMessage): UpdateCommunityMessage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateCommunityMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateCommunityMessage;
+  static deserializeBinaryFromReader(message: UpdateCommunityMessage, reader: jspb.BinaryReader): UpdateCommunityMessage;
+}
+
+export namespace UpdateCommunityMessage {
+  export type AsObject = {
+    teamid?: number,
+    senderid?: number,
+    receiverid?: number,
+    body?: string,
+    createdon?: number,
+    globalmsgid?: number,
+    entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
+    sendermsgid?: number,
+  }
+}
+
+export class UpdateCommunityReadOutbox extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): number | undefined;
+  setTeamid(value: number): void;
+
+  hasSenderid(): boolean;
+  clearSenderid(): void;
+  getSenderid(): number | undefined;
+  setSenderid(value: number): void;
+
+  hasReceiverid(): boolean;
+  clearReceiverid(): void;
+  getReceiverid(): number | undefined;
+  setReceiverid(value: number): void;
+
+  hasSendermsgid(): boolean;
+  clearSendermsgid(): void;
+  getSendermsgid(): number | undefined;
+  setSendermsgid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateCommunityReadOutbox.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateCommunityReadOutbox): UpdateCommunityReadOutbox.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateCommunityReadOutbox, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateCommunityReadOutbox;
+  static deserializeBinaryFromReader(message: UpdateCommunityReadOutbox, reader: jspb.BinaryReader): UpdateCommunityReadOutbox;
+}
+
+export namespace UpdateCommunityReadOutbox {
+  export type AsObject = {
+    teamid?: number,
+    senderid?: number,
+    receiverid?: number,
+    sendermsgid?: number,
+  }
+}
+
+export class UpdateCommunityTyping extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): number | undefined;
+  setTeamid(value: number): void;
+
+  hasSenderid(): boolean;
+  clearSenderid(): void;
+  getSenderid(): number | undefined;
+  setSenderid(value: number): void;
+
+  hasReceiverid(): boolean;
+  clearReceiverid(): void;
+  getReceiverid(): number | undefined;
+  setReceiverid(value: number): void;
+
+  hasAction(): boolean;
+  clearAction(): void;
+  getAction(): core_types_pb.TypingAction | undefined;
+  setAction(value: core_types_pb.TypingAction): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateCommunityTyping.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateCommunityTyping): UpdateCommunityTyping.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateCommunityTyping, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateCommunityTyping;
+  static deserializeBinaryFromReader(message: UpdateCommunityTyping, reader: jspb.BinaryReader): UpdateCommunityTyping;
+}
+
+export namespace UpdateCommunityTyping {
+  export type AsObject = {
+    teamid?: number,
+    senderid?: number,
+    receiverid?: number,
+    action?: core_types_pb.TypingAction,
+  }
+}
+
 export class UpdateCalendarEventAdded extends jspb.Message {
   hasUcount(): boolean;
   clearUcount(): void;

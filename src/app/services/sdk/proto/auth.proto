@@ -202,6 +202,7 @@ message AuthRecalled {
 message AuthAuthorization {
     required fixed64 Expired = 1;
     required User User = 2;
+    optional uint32 ActiveSessions = 3;
 }
 
 // AuthBotAuthorization

@@ -123,6 +123,28 @@ export namespace SystemUploadUsage {
   }
 }
 
+export class SystemGetResponse extends jspb.Message {
+  clearRequestidsList(): void;
+  getRequestidsList(): Array<number>;
+  setRequestidsList(value: Array<number>): void;
+  addRequestids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemGetResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemGetResponse): SystemGetResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemGetResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemGetResponse;
+  static deserializeBinaryFromReader(message: SystemGetResponse, reader: jspb.BinaryReader): SystemGetResponse;
+}
+
+export namespace SystemGetResponse {
+  export type AsObject = {
+    requestidsList: Array<number>,
+  }
+}
+
 export class ClientUsage extends jspb.Message {
   hasYear(): boolean;
   clearYear(): void;
@@ -218,6 +240,16 @@ export namespace ClientUsage {
 }
 
 export class SystemConfig extends jspb.Message {
+  hasGifbot(): boolean;
+  clearGifbot(): void;
+  getGifbot(): string | undefined;
+  setGifbot(value: string): void;
+
+  hasWikibot(): boolean;
+  clearWikibot(): void;
+  getWikibot(): string | undefined;
+  setWikibot(value: string): void;
+
   hasTestmode(): boolean;
   clearTestmode(): void;
   getTestmode(): boolean | undefined;
@@ -298,15 +330,10 @@ export class SystemConfig extends jspb.Message {
   getToppeermaxstep(): number | undefined;
   setToppeermaxstep(value: number): void;
 
-  hasGifbot(): boolean;
-  clearGifbot(): void;
-  getGifbot(): string | undefined;
-  setGifbot(value: string): void;
-
-  hasWikibot(): boolean;
-  clearWikibot(): void;
-  getWikibot(): string | undefined;
-  setWikibot(value: string): void;
+  hasMaxactivesessions(): boolean;
+  clearMaxactivesessions(): void;
+  getMaxactivesessions(): number | undefined;
+  setMaxactivesessions(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SystemConfig.AsObject;
@@ -320,6 +347,8 @@ export class SystemConfig extends jspb.Message {
 
 export namespace SystemConfig {
   export type AsObject = {
+    gifbot?: string,
+    wikibot?: string,
     testmode?: boolean,
     phonecallenabled?: boolean,
     expireon?: number,
@@ -336,8 +365,7 @@ export namespace SystemConfig {
     maxlabels?: number,
     toppeerdecayrate?: number,
     toppeermaxstep?: number,
-    gifbot?: string,
-    wikibot?: string,
+    maxactivesessions?: number,
   }
 }
 

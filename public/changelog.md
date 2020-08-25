@@ -1,4 +1,7 @@
 ## 0.34.26
+* File service improvements
+* Uploader bug fixed
+* Message repo queue bug fixed
 * Known bugs fixed
 
 ## 0.34.25

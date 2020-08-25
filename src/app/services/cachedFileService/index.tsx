@@ -45,7 +45,7 @@ export default class CachedFileService {
     }
 
     /* Get file */
-    public getFile(fileLocation: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, searchTemp?: boolean, blurRadius?: number): Promise<string> {
+    public getFile(fileLocation: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, searchTemp?: boolean, blurRadius?: number, tempBlob?: Blob): Promise<string> {
         if (!fileLocation) {
             return Promise.reject();
         }
@@ -79,6 +79,11 @@ export default class CachedFileService {
                     src: '',
                     timeout: null,
                 };
+                if (tempBlob) {
+                    this.files[fileName].src = URL.createObjectURL(tempBlob);
+                    resolve(this.files[fileName].src);
+                    return;
+                }
                 const getFn = () => {
                     this.getLocalFile(fileName, searchTemp, blurRadius).then((res) => {
                         resolve(res);
@@ -128,9 +133,7 @@ export default class CachedFileService {
     }
 
     public swap(name: string, targetLocation: InputFileLocation.AsObject) {
-        window.console.log(name, targetLocation, this.files);
         if (this.files.hasOwnProperty(name)) {
-            window.console.log('has', name);
             const file = this.files[name];
             file.location = targetLocation;
             const newName = GetDbFileName(targetLocation.fileid, targetLocation.clusterid);

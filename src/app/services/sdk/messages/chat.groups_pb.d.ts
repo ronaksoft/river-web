@@ -16,6 +16,11 @@ export class GroupsCreate extends jspb.Message {
   getTitle(): string | undefined;
   setTitle(value: string): void;
 
+  hasRandomid(): boolean;
+  clearRandomid(): void;
+  getRandomid(): number | undefined;
+  setRandomid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsCreate.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsCreate): GroupsCreate.AsObject;
@@ -30,6 +35,7 @@ export namespace GroupsCreate {
   export type AsObject = {
     usersList: Array<core_types_pb.InputUser.AsObject>,
     title?: string,
+    randomid?: number,
   }
 }
 

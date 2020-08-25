@@ -778,6 +778,11 @@ export class AuthAuthorization extends jspb.Message {
   getUser(): core_types_pb.User;
   setUser(value?: core_types_pb.User): void;
 
+  hasActivesessions(): boolean;
+  clearActivesessions(): void;
+  getActivesessions(): number | undefined;
+  setActivesessions(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthAuthorization.AsObject;
   static toObject(includeInstance: boolean, msg: AuthAuthorization): AuthAuthorization.AsObject;
@@ -792,6 +797,7 @@ export namespace AuthAuthorization {
   export type AsObject = {
     expired?: number,
     user: core_types_pb.User.AsObject,
+    activesessions?: number,
   }
 }
 

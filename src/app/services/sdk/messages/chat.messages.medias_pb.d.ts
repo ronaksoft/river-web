@@ -150,6 +150,11 @@ export namespace DocumentAttributeFile {
 }
 
 export class DocumentAttributeAnimated extends jspb.Message {
+  hasSound(): boolean;
+  clearSound(): void;
+  getSound(): boolean | undefined;
+  setSound(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): DocumentAttributeAnimated.AsObject;
   static toObject(includeInstance: boolean, msg: DocumentAttributeAnimated): DocumentAttributeAnimated.AsObject;
@@ -162,6 +167,7 @@ export class DocumentAttributeAnimated extends jspb.Message {
 
 export namespace DocumentAttributeAnimated {
   export type AsObject = {
+    sound?: boolean,
   }
 }
 
@@ -268,38 +274,6 @@ export namespace Document {
     attributesList: Array<DocumentAttribute.AsObject>,
     thumbnail?: core_types_pb.FileLocation.AsObject,
     md5checksum?: string,
-  }
-}
-
-export class InputMediaInvoice extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputMediaInvoice.AsObject;
-  static toObject(includeInstance: boolean, msg: InputMediaInvoice): InputMediaInvoice.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputMediaInvoice, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputMediaInvoice;
-  static deserializeBinaryFromReader(message: InputMediaInvoice, reader: jspb.BinaryReader): InputMediaInvoice;
-}
-
-export namespace InputMediaInvoice {
-  export type AsObject = {
-  }
-}
-
-export class MediaInvoice extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MediaInvoice.AsObject;
-  static toObject(includeInstance: boolean, msg: MediaInvoice): MediaInvoice.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: MediaInvoice, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MediaInvoice;
-  static deserializeBinaryFromReader(message: MediaInvoice, reader: jspb.BinaryReader): MediaInvoice;
-}
-
-export namespace MediaInvoice {
-  export type AsObject = {
   }
 }
 
@@ -586,6 +560,58 @@ export namespace InputMediaDocument {
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
     thumbnail?: core_types_pb.InputFile.AsObject,
     attributesList: Array<DocumentAttribute.AsObject>,
+  }
+}
+
+export class InputMediaUploadedSealedDocument extends jspb.Message {
+  hasSealedfile(): boolean;
+  clearSealedfile(): void;
+  getSealedfile(): core_types_pb.InputFile;
+  setSealedfile(value?: core_types_pb.InputFile): void;
+
+  hasSealedthumbnail(): boolean;
+  clearSealedthumbnail(): void;
+  getSealedthumbnail(): core_types_pb.InputFile | undefined;
+  setSealedthumbnail(value?: core_types_pb.InputFile): void;
+
+  hasEncryptedmimetype(): boolean;
+  clearEncryptedmimetype(): void;
+  getEncryptedmimetype(): string | undefined;
+  setEncryptedmimetype(value: string): void;
+
+  hasEncryptedcaption(): boolean;
+  clearEncryptedcaption(): void;
+  getEncryptedcaption(): string | undefined;
+  setEncryptedcaption(value: string): void;
+
+  clearAttributesList(): void;
+  getAttributesList(): Array<DocumentAttribute>;
+  setAttributesList(value: Array<DocumentAttribute>): void;
+  addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
+  addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputMediaUploadedSealedDocument.AsObject;
+  static toObject(includeInstance: boolean, msg: InputMediaUploadedSealedDocument): InputMediaUploadedSealedDocument.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputMediaUploadedSealedDocument, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputMediaUploadedSealedDocument;
+  static deserializeBinaryFromReader(message: InputMediaUploadedSealedDocument, reader: jspb.BinaryReader): InputMediaUploadedSealedDocument;
+}
+
+export namespace InputMediaUploadedSealedDocument {
+  export type AsObject = {
+    sealedfile: core_types_pb.InputFile.AsObject,
+    sealedthumbnail?: core_types_pb.InputFile.AsObject,
+    encryptedmimetype?: string,
+    encryptedcaption?: string,
+    attributesList: Array<DocumentAttribute.AsObject>,
+    entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
 
@@ -926,90 +952,6 @@ export namespace PollAnswerVoters {
     correct?: boolean,
     option: Uint8Array | string,
     voters?: number,
-  }
-}
-
-export class InputMediaSealed extends jspb.Message {
-  hasMediatype(): boolean;
-  clearMediatype(): void;
-  getMediatype(): core_types_pb.InputMediaType | undefined;
-  setMediatype(value: core_types_pb.InputMediaType): void;
-
-  hasMedia(): boolean;
-  clearMedia(): void;
-  getMedia(): Uint8Array | string;
-  getMedia_asU8(): Uint8Array;
-  getMedia_asB64(): string;
-  setMedia(value: Uint8Array | string): void;
-
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
-  setBody(value: string): void;
-
-  clearEntitiesList(): void;
-  getEntitiesList(): Array<core_types_pb.MessageEntity>;
-  setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
-  addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputMediaSealed.AsObject;
-  static toObject(includeInstance: boolean, msg: InputMediaSealed): InputMediaSealed.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputMediaSealed, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputMediaSealed;
-  static deserializeBinaryFromReader(message: InputMediaSealed, reader: jspb.BinaryReader): InputMediaSealed;
-}
-
-export namespace InputMediaSealed {
-  export type AsObject = {
-    mediatype?: core_types_pb.InputMediaType,
-    media: Uint8Array | string,
-    body?: string,
-    entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-  }
-}
-
-export class MediaSealed extends jspb.Message {
-  hasMediatype(): boolean;
-  clearMediatype(): void;
-  getMediatype(): core_types_pb.MediaType | undefined;
-  setMediatype(value: core_types_pb.MediaType): void;
-
-  hasMedia(): boolean;
-  clearMedia(): void;
-  getMedia(): Uint8Array | string;
-  getMedia_asU8(): Uint8Array;
-  getMedia_asB64(): string;
-  setMedia(value: Uint8Array | string): void;
-
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
-  setBody(value: string): void;
-
-  clearEntitiesList(): void;
-  getEntitiesList(): Array<core_types_pb.MessageEntity>;
-  setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
-  addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MediaSealed.AsObject;
-  static toObject(includeInstance: boolean, msg: MediaSealed): MediaSealed.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: MediaSealed, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MediaSealed;
-  static deserializeBinaryFromReader(message: MediaSealed, reader: jspb.BinaryReader): MediaSealed;
-}
-
-export namespace MediaSealed {
-  export type AsObject = {
-    mediatype?: core_types_pb.MediaType,
-    media: Uint8Array | string,
-    body?: string,
-    entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
 

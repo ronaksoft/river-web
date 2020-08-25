@@ -32,6 +32,7 @@ message MessageActionGroupTitleChanged {
     required string GroupTitle = 1;
 }
 
+// MessageActionGroupPhotoChanged
 message MessageActionGroupPhotoChanged {
     optional GroupPhoto Photo = 1;
 }
@@ -53,3 +54,7 @@ message MessageActionScreenShotTaken {
     optional int64 MaxID = 2;
 }
 
+// MessageActionThreadClosed
+message MessageActionThreadClosed {
+    optional int64 ThreadID = 1;
+}

@@ -68,7 +68,7 @@ export default class UserRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private apiManager: APIManager;
-    private lastContactTimestamp: {[key: number]: number} = {};
+    private lastContactTimestamp: { [key: number]: number } = {};
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private bubbleMode: string = localStorage.getItem(C_LOCALSTORAGE.ThemeBubble) || '4';
@@ -206,6 +206,7 @@ export default class UserRepo {
         if (!users || users.length === 0) {
             return Promise.resolve();
         }
+
         // TODO merge user
         // const uniqUsers = uniqBy(users, 'id');
         const uniqUsers = users;
@@ -214,6 +215,7 @@ export default class UserRepo {
             this.actionBusy = true;
             return this.upsert(isContact, uniqUsers, force, callerId, teamId).finally(() => {
                 this.actionBusy = false;
+                this.applyActions();
             });
         }
 
@@ -480,7 +482,10 @@ export default class UserRepo {
     }
 
     private removeContactList(teamId: string) {
-        return this.db.contacts.where('[teamid+id]').between([teamId, Dexie.minKey], [teamId, Dexie.maxKey], true, true).delete();
+        return this.db.contacts.where('[teamid+id]').between([teamId, Dexie.minKey], [teamId, Dexie.maxKey], true, true).toArray((res) => {
+            const ids: any[] = res.map(o => [o.teamid, o.id]);
+            return this.db.contacts.bulkDelete(ids);
+        });
     }
 
     private searchTeamContacts(teamId: string, filterFn?: any): Promise<IUser[]> {

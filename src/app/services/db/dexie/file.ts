@@ -14,7 +14,7 @@ export class DexieFileDB extends Dexie {
     // @ts-ignore
     public files: Dexie.Table<IFile, string>;
     // @ts-ignore
-    public temps: Dexie.Table<ITempFile, string>;
+    public temps: Dexie.Table<ITempFile, [string, number]>;
     // @ts-ignore
     public fileMap: Dexie.Table<IFileMap, string>;
 

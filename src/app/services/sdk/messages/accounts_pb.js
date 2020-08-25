@@ -7855,7 +7855,7 @@ proto.msg.AccountAuthorization.prototype.hasCreatedat = function() {
 
 
 /**
- * required int64 ActiveAt = 6;
+ * optional int64 ActiveAt = 6;
  * @return {number}
  */
 proto.msg.AccountAuthorization.prototype.getActiveat = function() {

@@ -145,6 +145,7 @@ export default class GroupRepo {
             this.actionBusy = true;
             return this.upsert(groups, callerId).finally(() => {
                 this.actionBusy = false;
+                this.applyActions();
             });
         }
 

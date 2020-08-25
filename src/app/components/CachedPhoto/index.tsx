@@ -37,7 +37,6 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
     private retries: number = 0;
     private tryTimeout: any = null;
     private mounted: boolean = true;
-    private tempFileSrc: string | null = null;
     private lastSrc: string = '';
 
     constructor(props: IProps) {
@@ -59,7 +58,6 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
 
     public componentDidMount() {
         this.getFile();
-        window.console.log(this.props.fileLocation);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -80,24 +78,16 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         if (this.props.fileLocation) {
             this.cachedFileService.unmountCache(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid));
         }
-        if (this.tempFileSrc) {
-            URL.revokeObjectURL(this.tempFileSrc);
-            this.tempFileSrc = null;
-        }
-        window.console.log(this.props.fileLocation);
     }
 
     public render() {
         const {className, src} = this.state;
-        let source: any = undefined;
+        let source: any;
         if (src && src.length > 0) {
             this.lastSrc = src;
             source = src;
         } else {
             source = this.lastSrc;
-        }
-        if (!source) {
-            window.console.log(this.props.fileLocation, this.props.tempFile);
         }
         return (
             <div className={className} style={this.props.style} onClick={this.props.onClick}>
@@ -109,25 +99,11 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
 
     /* Get file from cached storage */
     private getFile = () => {
-        if (this.props.tempFile) {
-            if (this.tempFileSrc) {
-                URL.revokeObjectURL(this.tempFileSrc);
-            }
-            this.tempFileSrc = URL.createObjectURL(this.props.tempFile);
-            this.setState({
-                src: this.tempFileSrc,
-            });
-            return;
-        }
-        if (this.tempFileSrc) {
-            URL.revokeObjectURL(this.tempFileSrc);
-            this.tempFileSrc = null;
-        }
         clearTimeout(this.tryTimeout);
         const timeout = setTimeout(() => {
             this.getFile();
         }, 1000);
-        this.cachedFileService.getFile(this.props.fileLocation, '', 0, this.props.mimeType, this.props.searchTemp, this.props.blur).then((src) => {
+        this.cachedFileService.getFile(this.props.fileLocation, '', 0, this.props.mimeType, this.props.searchTemp, this.props.blur, this.props.tempFile).then((src) => {
             if (!this.mounted) {
                 return;
             }
@@ -139,7 +115,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
                     src,
                 });
             }
-        }).catch((err) => {
+        }).catch(() => {
             if (!this.mounted) {
                 return;
             }

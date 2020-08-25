@@ -8,6 +8,7 @@ import "core.types.proto";
 message GroupsCreate {
     repeated InputUser Users = 1;
     required string Title = 2;
+    optional int64 RandomID = 3;
 }
 
 // GroupsAddUser

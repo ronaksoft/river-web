@@ -191,9 +191,9 @@ message BotSendInlineResults {
     required int64 RandomID = 1;
     required int64 QueryID = 2; // Query ID from BotResults response of BotGetInlineResults
     required string ResultID = 3; // Result ID from BotResults response of BotGetInlineResults
-    required bool ClearDraft = 4;
+    optional bool ClearDraft = 4;
     required InputPeer Peer = 5; // Destination
-    required int64 ReplyTo = 6;
+    optional int64 ReplyTo = 6;
     optional bool Silent = 7; // Do not send notification
     optional bool HideVia = 8; // Hid via bot
 }
@@ -206,6 +206,18 @@ message BotUploadWallPaper {
     required bool Dark = 2;
     required bool Pattern = 3;
     required WallPaperSettings Settings = 4;
+}
+
+// BotUploadGif
+// @Function (GifBot Only)
+// @Return: FileLocation
+message BotUploadGif {
+    required string Token = 100;
+    required InputFile File = 1;
+    required InputFile Thumb = 2;
+    required uint32 Width = 3;
+    required uint32 Height = 4;
+    required string MimeType = 5;
 }
 
 // BotResults

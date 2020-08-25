@@ -1270,7 +1270,6 @@ class ChatInput extends React.Component<IProps, IState> {
                 } else {
                     this.updateBotStatus(true);
                 }
-                this.updateBotStatus(true);
             } else {
                 this.setState({
                     disableAuthority: 0x0,

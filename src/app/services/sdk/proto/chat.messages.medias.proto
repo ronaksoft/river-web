@@ -56,6 +56,7 @@ message DocumentAttributeFile {
 
 // DocumentAttributeAnimated
 message DocumentAttributeAnimated {
+    optional bool Sound = 1;
 }
 
 // DocumentAttribute
@@ -89,16 +90,6 @@ message Document {
     repeated DocumentAttribute Attributes = 8;
     optional FileLocation Thumbnail = 9;
     optional string MD5Checksum = 10;
-}
-
-// InputMediaInvoice
-message InputMediaInvoice {
-
-}
-
-// MediaInvoice
-message MediaInvoice {
-
 }
 
 // InputMediaWebDocument
@@ -159,6 +150,16 @@ message InputMediaDocument {
     repeated DocumentAttribute Attributes = 5;
 }
 
+// InputMediaUploadedSealedDocument
+message InputMediaUploadedSealedDocument {
+    required InputFile SealedFile = 1;
+    optional InputFile SealedThumbnail = 2;
+    required string EncryptedMimeType = 3;
+    required string EncryptedCaption = 4;
+    repeated DocumentAttribute Attributes = 6;
+    repeated MessageEntity Entities = 7;
+}
+
 // InputMediaMessageDocument
 message InputMediaMessageDocument {
     required InputPeer Peer = 1;
@@ -169,8 +170,8 @@ message InputMediaMessageDocument {
 
 // MediaDocument
 message MediaDocument {
-    required string Caption = 1;
-    required int32 TTLinSeconds = 2; // Seconds
+    optional string Caption = 1;
+    optional int32 TTLinSeconds = 2; // Seconds
     required Document Doc = 3;
     repeated MessageEntity Entities = 4;
 }
@@ -226,20 +227,4 @@ message PollAnswerVoters {
     required bytes Option = 3;
     required int64 Voters = 4; // Number of voters chosen this option
 
-}
-
-// InputMediaSealed
-message InputMediaSealed {
-    required InputMediaType MediaType = 1;
-    optional bytes Media = 2;
-    optional string Body = 3;
-    repeated MessageEntity Entities = 4;
-}
-
-// MediaSealed
-message MediaSealed {
-    required MediaType MediaType = 1;
-    optional bytes Media = 2;
-    optional string Body = 3;
-    repeated MessageEntity Entities = 4;
 }

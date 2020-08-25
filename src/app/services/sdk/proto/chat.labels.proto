@@ -6,6 +6,7 @@ import "core.types.proto";
 // @Function
 // @Returns Bool
 message LabelsCreate {
+    optional int64 RandomID = 1;
     required string Name = 2;
     required string Colour = 3;
 }

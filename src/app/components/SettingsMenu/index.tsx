@@ -1191,7 +1191,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                             </div>
                                                             <div className="session-row">
                                                                 <div
-                                                                    className="session-col">{this.currentAuthID === item.authid ? i18n.t('status.online') : i18n.tf('settings.last_active', TimeUtility.timeAgo(item.lastaccess))}</div>
+                                                                    className="session-col">{this.currentAuthID === item.authid ? i18n.t('status.online') : i18n.tf('settings.last_active', TimeUtility.timeAgo(item.activeat || item.createdat))}</div>
                                                             </div>
                                                         </div>
                                                         <div className="session-action">
@@ -1980,7 +1980,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
         for (let i = 2; i < sessions.length; i++) {
             for (let j = i; j < sessions.length; j++) {
-                if ((sessions[i].lastaccess || 0) < (sessions[j].lastaccess || 0)) {
+                if ((sessions[i].activeat || 0) < (sessions[j].activeat || 0)) {
                     const hold = sessions[i];
                     sessions[i] = sessions[j];
                     sessions[j] = hold;

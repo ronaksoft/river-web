@@ -223,6 +223,7 @@ proto.msg.LabelsCreate.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.LabelsCreate.toObject = function(includeInstance, msg) {
   var f, obj = {
+    randomid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     colour: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
   };
@@ -261,6 +262,10 @@ proto.msg.LabelsCreate.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setRandomid(value);
+      break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
@@ -298,6 +303,13 @@ proto.msg.LabelsCreate.prototype.serializeBinary = function() {
  */
 proto.msg.LabelsCreate.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt64(
+      1,
+      f
+    );
+  }
   f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
     writer.writeString(
@@ -312,6 +324,42 @@ proto.msg.LabelsCreate.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+};
+
+
+/**
+ * optional int64 RandomID = 1;
+ * @return {number}
+ */
+proto.msg.LabelsCreate.prototype.getRandomid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.LabelsCreate} returns this
+ */
+proto.msg.LabelsCreate.prototype.setRandomid = function(value) {
+  return jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.LabelsCreate} returns this
+ */
+proto.msg.LabelsCreate.prototype.clearRandomid = function() {
+  return jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.LabelsCreate.prototype.hasRandomid = function() {
+  return jspb.Message.getField(this, 1) != null;
 };
 
 

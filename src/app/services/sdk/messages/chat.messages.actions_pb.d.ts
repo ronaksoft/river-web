@@ -193,3 +193,25 @@ export namespace MessageActionScreenShotTaken {
   }
 }
 
+export class MessageActionThreadClosed extends jspb.Message {
+  hasThreadid(): boolean;
+  clearThreadid(): void;
+  getThreadid(): number | undefined;
+  setThreadid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessageActionThreadClosed.AsObject;
+  static toObject(includeInstance: boolean, msg: MessageActionThreadClosed): MessageActionThreadClosed.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessageActionThreadClosed, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessageActionThreadClosed;
+  static deserializeBinaryFromReader(message: MessageActionThreadClosed, reader: jspb.BinaryReader): MessageActionThreadClosed;
+}
+
+export namespace MessageActionThreadClosed {
+  export type AsObject = {
+    threadid?: number,
+  }
+}
+

@@ -51,9 +51,17 @@ import {
     ReplyKeyboardMarkup
 } from "../../services/sdk/messages/chat.messages.markups_pb";
 
+interface IClearHistory {
+    teamId: string;
+    peerId: string;
+    peerType: number;
+    id: number;
+}
+
 interface IMessageAction {
     callerId?: number;
     msgs: IMessage[];
+    clear?: IClearHistory;
     reject: any;
     resolve: any;
 }
@@ -342,9 +350,7 @@ export default class MessageRepo {
     private userId: string;
     private messageBundle: { [key: string]: IMessageBundle } = {};
     private readonly getBundleMessageThrottle: any = null;
-    // @ts-ignore
     private actionList: IMessageAction[] = [];
-    // @ts-ignore
     private actionBusy: boolean = false;
 
     private constructor() {
@@ -448,7 +454,9 @@ export default class MessageRepo {
     public removeManyByRandomId(ids: number[]) {
         return this.db.messages.where('id').between(Dexie.minKey, 0, true, true).filter((o) => {
             return ids.indexOf(o.random_id || 0) > -1;
-        }).delete();
+        }).toArray((res) => {
+            return this.db.messages.bulkDelete(res.map(o => o.id || 0));
+        });
     }
 
     public list(teamId: string, {peer, limit, before, after, withPending, localOnly}: { peer: InputPeer, limit?: number, before?: number, after?: number, withPending?: boolean, localOnly?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMessage[]> {
@@ -743,6 +751,7 @@ export default class MessageRepo {
             this.actionBusy = true;
             return this.upsert(uniqMsgs, callerId).finally(() => {
                 this.actionBusy = false;
+                this.applyActions();
             });
         }
 
@@ -805,7 +814,31 @@ export default class MessageRepo {
     }
 
     public clearHistory(teamId: string, peerId: string, peerType: number, id: number): Promise<any> {
-        return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, Dexie.minKey], [teamId, peerId, peerType, id], true, true).delete();
+        if (this.actionList.length === 0 && !this.actionBusy) {
+            this.actionBusy = true;
+            return this.executeClearHistory(teamId, peerId, peerType, id).finally(() => {
+                this.actionBusy = false;
+                this.applyActions();
+            });
+        }
+
+        let internalResolve = null;
+        let internalReject = null;
+
+        const promise = new Promise<any>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+
+        this.actionList.push({
+            clear: {teamId, peerId, peerType, id},
+            msgs: [],
+            reject: internalReject,
+            resolve: internalResolve,
+        });
+
+        this.applyActions();
+        return promise;
     }
 
     public insertDiscrete(teamId: string, messages: IMessage[]) {
@@ -872,9 +905,15 @@ export default class MessageRepo {
             const action = this.actionList.shift();
             if (action) {
                 this.actionBusy = true;
-                this.upsert(action.msgs, action.callerId).then((res) => {
+                let fn: any;
+                if (action.clear) {
+                    fn = this.executeClearHistory(action.clear.teamId, action.clear.peerId, action.clear.peerType, action.clear.id);
+                } else {
+                    fn = this.upsert(action.msgs, action.callerId);
+                }
+                fn.then((res: any) => {
                     action.resolve(res);
-                }).catch((err) => {
+                }).catch((err: any) => {
                     action.reject(err);
                 }).finally(() => {
                     this.actionBusy = false;
@@ -1072,6 +1111,13 @@ export default class MessageRepo {
             } else {
                 return this.upsert(res);
             }
+        });
+    }
+
+    private executeClearHistory(teamId: string, peerId: string, peerType: number, id: number) {
+        return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, Dexie.minKey], [teamId, peerId, peerType, id], true, true).toArray((res) => {
+            const ids = res.map(o => o.id || 0);
+            return this.db.messages.bulkDelete(ids);
         });
     }
 

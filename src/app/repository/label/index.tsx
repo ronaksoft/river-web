@@ -259,7 +259,7 @@ export default class LabelRepo {
             }
         });
         if (labelItems.length > 0) {
-            return this.db.labelItems.where('[teamid+lid+mid]').anyOf(labelItems).delete();
+            return this.db.labelItems.bulkDelete(labelItems);
         }
         return Promise.resolve();
     }
