@@ -33,8 +33,8 @@ import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 
 import './App.scss';
 
-export const C_VERSION = '0.34.26';
-export const C_ELECTRON_VERSION = '9.0.5';
+export const C_VERSION = '0.34.27';
+export const C_ELECTRON_VERSION = '10.1.0';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {
@@ -55,7 +55,7 @@ const theme = createMuiTheme({
             light: '#29c16d',
             main: '#27AE60',
         },
-        type: (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') === 'light'? 'light': 'dark',
+        type: (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') === 'light' ? 'light' : 'dark',
     },
     typography: {
         fontFamily: `'YekanBakh', 'OpenSans'`,
@@ -270,7 +270,7 @@ class App extends React.Component<{}, IState> {
                                 </Button>
                                 {Boolean(desktopDownloadLink !== '') &&
                                 <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
-                                    {I18n.tf('chat.update_dialog.download_desktop_version', '0.20.0')}
+                                    {I18n.tf('chat.update_dialog.download_desktop_version', '0.22.0')}
                                 </Button>}
                             </DialogActions>
                         </> : <>

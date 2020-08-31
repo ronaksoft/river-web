@@ -10231,7 +10231,7 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.addLabelids(value);
       break;
     case 24:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setViabotid(value);
       break;
     default:
@@ -10432,9 +10432,9 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 24));
+  f = /** @type {string} */ (jspb.Message.getField(message, 24));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       24,
       f
     );
@@ -11383,15 +11383,15 @@ proto.msg.UserMessage.prototype.clearLabelidsList = function() {
 
 /**
  * optional int64 ViaBotID = 24;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UserMessage.prototype.getViabotid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 24, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 24, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.UserMessage} returns this
  */
 proto.msg.UserMessage.prototype.setViabotid = function(value) {

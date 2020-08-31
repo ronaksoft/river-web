@@ -145,7 +145,13 @@ import {
     LabelsRemoveFromMessage
 } from "./messages/chat.labels_pb";
 import UniqueId from "../uniqueId";
-import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/chat.bot_pb";
+import {
+    BotCallbackAnswer,
+    BotGetCallbackAnswer,
+    BotGetInlineResults,
+    BotResults, BotSendInlineResults,
+    BotStart
+} from "./messages/chat.bot_pb";
 import {FileGetBySha256} from "./messages/files_pb";
 import {GifDelete, GifGetSaved, GifSave, SavedGifs} from "./messages/gif_pb";
 import {DocumentAttribute} from "./messages/chat.messages.medias_pb";
@@ -1062,6 +1068,27 @@ export default class APIManager {
         const data = new AccountGetTeams();
         this.logVerbose(data);
         return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true);
+    }
+
+    public botGetInlineResults(botPeer: InputUser, userPeer: InputPeer, query: string, offset: string): Promise<BotResults.AsObject> {
+        const data = new BotGetInlineResults();
+        data.setBot(botPeer);
+        data.setPeer(userPeer);
+        data.setQuery(query);
+        data.setOffset(offset);
+        return this.server.send(C_MSG.BotGetInlineResults, data.serializeBinary(), true);
+    }
+
+    public botSendInlineResults(randomId: number, inputPeer: InputPeer, queryId: string, resultId: string, replyTo?: number): Promise<Bool.AsObject> {
+        const data = new BotSendInlineResults();
+        data.setRandomid(randomId);
+        data.setQueryid(queryId);
+        data.setResultid(resultId);
+        data.setPeer(inputPeer);
+        if (replyTo) {
+            data.setReplyto(replyTo);
+        }
+        return this.server.send(C_MSG.BotSendInlineResults, data.serializeBinary(), true);
     }
 
     public ping(): Promise<Pong.AsObject> {

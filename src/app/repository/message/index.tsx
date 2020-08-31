@@ -13,7 +13,13 @@ import {cloneDeep, differenceBy, find, throttle, uniq, difference, groupBy} from
 import APIManager from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
-import {InputPeer, MediaType, MessageEntityType, UserMessage} from '../../services/sdk/messages/core.types_pb';
+import {
+    InputPeer,
+    MediaType,
+    MessageEntityType,
+    PeerType,
+    UserMessage
+} from '../../services/sdk/messages/core.types_pb';
 import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
 import {C_BUTTON_ACTION, C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from './consts';
@@ -927,6 +933,9 @@ export default class MessageRepo {
         const peerIdMap: { [key: string]: number[] } = {};
         const ids = msgs.map((msg) => {
             this.trimMessage(msg);
+            msg.teamid = msg.teamid || '0';
+            msg.peerid = msg.peerid || '0';
+            msg.peertype = msg.peertype || PeerType.PEERUSER;
             return msg.id || '';
         });
         return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {

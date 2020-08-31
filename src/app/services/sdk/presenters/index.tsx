@@ -24,18 +24,14 @@ import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/co
 import {
     UpdateDifference,
     UpdateGetDifference,
-    UpdateNewMessage,
-    UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
     UpdateState,
-    UpdateUserTyping,
 } from '../messages/updates_pb';
 import {File} from '../messages/files_pb';
 import {AccountAuthorizations, AccountPassword, AccountPrivacyRules} from '../messages/accounts_pb';
 import {SystemConfig, SystemInfo, SystemSalts, SystemServerTime} from '../messages/system_pb';
 import {UsersMany} from '../messages/users_pb';
 import {LabelItems, LabelsListItems} from "../messages/chat.labels_pb";
-import {BotCallbackAnswer} from "../messages/chat.bot_pb";
+import {BotCallbackAnswer, BotResults} from "../messages/chat.bot_pb";
 import {FoundGifs, SavedGifs} from "../messages/gif_pb";
 import {TeamsMany} from "../messages/team_pb";
 
@@ -126,27 +122,12 @@ export default class Presenter {
                 return SavedGifs.deserializeBinary(data);
             case C_MSG.FoundGifs:
                 return FoundGifs.deserializeBinary(data);
+            case C_MSG.BotResults:
+                return BotResults.deserializeBinary(data);
             case C_MSG.TeamsMany:
                 return TeamsMany.deserializeBinary(data);
             case C_MSG.Pong:
                 return Pong.deserializeBinary(data);
-            default:
-                return null;
-        }
-    }
-
-    public static getUpdate(constructor: number, data: Uint8Array): any {
-        switch (constructor) {
-            case C_MSG.UpdateNewMessage:
-                return UpdateNewMessage.deserializeBinary(data);
-            case C_MSG.UpdateReadHistoryInbox:
-                return UpdateReadHistoryInbox.deserializeBinary(data);
-            case C_MSG.UpdateReadHistoryOutbox:
-                return UpdateReadHistoryOutbox.deserializeBinary(data);
-            case C_MSG.UpdateUserTyping:
-                return UpdateUserTyping.deserializeBinary(data);
-            case C_MSG.UpdateMessageEdited:
-            case C_MSG.UpdateMessageID:
             default:
                 return null;
         }

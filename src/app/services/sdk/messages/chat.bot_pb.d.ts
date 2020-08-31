@@ -671,8 +671,8 @@ export class BotSendInlineResults extends jspb.Message {
 
   hasQueryid(): boolean;
   clearQueryid(): void;
-  getQueryid(): number | undefined;
-  setQueryid(value: number): void;
+  getQueryid(): string | undefined;
+  setQueryid(value: string): void;
 
   hasResultid(): boolean;
   clearResultid(): void;
@@ -717,7 +717,7 @@ export class BotSendInlineResults extends jspb.Message {
 export namespace BotSendInlineResults {
   export type AsObject = {
     randomid?: number,
-    queryid?: number,
+    queryid?: string,
     resultid?: string,
     cleardraft?: boolean,
     peer: core_types_pb.InputPeer.AsObject,
@@ -827,8 +827,8 @@ export class BotResults extends jspb.Message {
 
   hasQueryid(): boolean;
   clearQueryid(): void;
-  getQueryid(): number | undefined;
-  setQueryid(value: number): void;
+  getQueryid(): string | undefined;
+  setQueryid(value: string): void;
 
   hasNextoffset(): boolean;
   clearNextoffset(): void;
@@ -858,7 +858,7 @@ export class BotResults extends jspb.Message {
 export namespace BotResults {
   export type AsObject = {
     gallery?: boolean,
-    queryid?: number,
+    queryid?: string,
     nextoffset?: string,
     switchpm?: BotInlineSwitchPM.AsObject,
     resultsList: Array<BotInlineResult.AsObject>,

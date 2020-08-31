@@ -1337,8 +1337,8 @@ export class UserMessage extends jspb.Message {
 
   hasViabotid(): boolean;
   clearViabotid(): void;
-  getViabotid(): number | undefined;
-  setViabotid(value: number): void;
+  getViabotid(): string | undefined;
+  setViabotid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
@@ -1376,7 +1376,7 @@ export namespace UserMessage {
     replymarkup?: number,
     replymarkupdata?: Uint8Array | string,
     labelidsList?: Array<number>,
-    viabotid?: number,
+    viabotid?: string,
   }
 }
 

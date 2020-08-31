@@ -350,7 +350,7 @@ message UserMessage {
     optional int64 ReplyMarkup = 21;
     optional bytes ReplyMarkupData = 22;
     repeated int32 LabelIDs = 23;
-    optional int64 ViaBotID = 24;
+    optional int64 ViaBotID = 24 [jstype = JS_STRING];
 }
 
 // DraftMessage

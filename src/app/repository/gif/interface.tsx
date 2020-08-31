@@ -15,4 +15,12 @@ export interface IGif extends MediaDocument.AsObject{
     attributes?: any[];
     messagetype?: number;
     downloaded?: boolean;
+    remote?: boolean;
+    queryId?: string;
+    resultId?: string;
+}
+
+export interface IGifWithBot {
+    list: IGif[];
+    botId: string;
 }

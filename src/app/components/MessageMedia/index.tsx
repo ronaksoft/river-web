@@ -29,6 +29,8 @@ import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
 import {transformMimeType} from "../StreamVideo/helper";
 import {GetDbFileName} from "../../repository/file";
+import UserName from "../UserName";
+import i18n from "../../services/i18n";
 
 import './style.scss';
 
@@ -465,8 +467,11 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                          onLoad={this.cachedPhotoLoadHandler} blur={downloaded ? undefined : 10} searchTemp={true}
                          tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
             />
-            {info.animated && <div className="gif-badge">
+            {info.animated &&
+            <div className={'gif-badge' + (message.viabotid && message.viabotid !== '0' ? ' with-via' : '')}>
                 <GifRounded/>
+                {message.viabotid && message.viabotid !== '0' &&
+                <UserName className="via-user" id={message.viabotid} prefix={i18n.t('general.via_gif')} username={true} noIcon={true}/>}
             </div>}
             {this.getMediaAction()}
         </div>);

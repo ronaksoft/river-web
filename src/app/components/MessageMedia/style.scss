@@ -85,6 +85,18 @@
           font-size: 32px;
           color: var(--white);
         }
+
+        &.with-via {
+          width: auto;
+          padding-right: 6px;
+
+          .via-user {
+            padding-top: 1px;
+            color: var(--white);
+            font-size: 12px;
+            font-weight: bold;
+          }
+        }
       }
     }
 

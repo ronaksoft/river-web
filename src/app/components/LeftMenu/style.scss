@@ -137,6 +137,7 @@
   &.with-top-bar {
     .top-bar {
       display: flex;
+      justify-content: center;
     }
 
     .left-content {

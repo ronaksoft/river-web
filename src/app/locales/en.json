@@ -65,7 +65,8 @@
     "frequently_contacted": "Frequently Contacted",
     "dialogs": "Dialogs",
     "clear": "Clear",
-    "open": "Open"
+    "open": "Open",
+    "via_gif": " via @"
   },
   "chat": {
     "search": "Search",

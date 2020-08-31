@@ -1140,6 +1140,11 @@ class Chat extends React.Component<IProps, IState> {
                     // Remove dialog
                     this.dialogRemove(peerName);
                 }
+                setTimeout(() => {
+                    if (this.chatInputRef) {
+                        this.chatInputRef.updateLastMessage();
+                    }
+                }, 511);
             });
         } else
             // Increase counter when
@@ -4579,7 +4584,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private chatInputGifSelectHandler = (item: IGif) => {
+    private chatInputGifSelectHandler = (item: IGif, viaBotId?: string) => {
         const peer = cloneDeep(this.peer);
         if (!peer) {
             return;
@@ -4611,6 +4616,7 @@ class Chat extends React.Component<IProps, IState> {
             rtl: this.rtlDetector.direction(item.caption || ''),
             senderid: this.userId,
             teamid: this.teamId,
+            viabotid: viaBotId,
         };
 
         let replyTo;
@@ -4633,34 +4639,10 @@ class Chat extends React.Component<IProps, IState> {
         inputDocument.setId(item.doc.id || '0');
         inputMediaDocument.setDocument(inputDocument);
 
-        const inputMediaType = InputMediaType.INPUTMEDIATYPEDOCUMENT;
-        const data = inputMediaDocument.serializeBinary();
-
-        this.messageRepo.addPending({
-            data,
-            file_ids: [],
-            id: randomId,
-            message_id: id,
-            type: inputMediaType,
-        });
-
         // For double checking update message id
         this.updateManager.setRandomId(randomId);
-        this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
-            message.id = res.messageid;
-            this.messageMapAppend(message);
-            this.messageRepo.importBulk([message]);
-            this.updateDialogs(message, '0');
 
-            if (this.selectedPeerName === peerName) {
-                this.checkMessageOrder(message);
-                // Force update messages
-                if (this.messageRef) {
-                    this.messageRef.updateList();
-                }
-                this.newMessageLoadThrottle();
-            }
-        }).catch((err) => {
+        const fnCatch = (err: any) => {
             window.console.warn(err);
             if (!this.resolveRandomMessageIdError(err, randomId, id) && this.selectedPeerName === peerName) {
                 const messages = this.messages;
@@ -4675,7 +4657,38 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 }
             }
-        });
+        };
+
+        if (!viaBotId) {
+            const inputMediaType = InputMediaType.INPUTMEDIATYPEDOCUMENT;
+            const data = inputMediaDocument.serializeBinary();
+            this.messageRepo.addPending({
+                data,
+                file_ids: [],
+                id: randomId,
+                message_id: id,
+                type: inputMediaType,
+            });
+            this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
+                message.id = res.messageid;
+                this.messageMapAppend(message);
+                this.messageRepo.importBulk([message]);
+                this.updateDialogs(message, '0');
+
+                if (this.selectedPeerName === peerName) {
+                    this.checkMessageOrder(message);
+                    // Force update messages
+                    if (this.messageRef) {
+                        this.messageRef.updateList();
+                    }
+                    this.newMessageLoadThrottle();
+                }
+            }).catch(fnCatch);
+        } else if (item.queryId && item.resultId) {
+            this.apiManager.botSendInlineResults(randomId, peer, item.queryId, item.resultId, replyTo).then(() => {
+                //
+            });
+        }
     }
 
     /* ChatInput contact select handler */

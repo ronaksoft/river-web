@@ -224,7 +224,7 @@ interface IProps {
     previewMessageMode?: number;
     userId?: string;
     onFocus?: () => void;
-    onGifSelect: (item: IGif) => void;
+    onGifSelect: (item: IGif, viaBotId?: string) => void;
     onChatClose: () => void;
 }
 
@@ -381,15 +381,15 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.checkAuthority));
-        this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.checkAuthority));
+        this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.checkAuthority()));
+        this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.checkAuthority()));
         this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.windowResizeHandler));
         this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
         window.addEventListener(EventMouseUp, this.windowMouseUp);
         window.addEventListener(EventKeyUp, this.windowKeyUp);
         window.addEventListener(EventResize, this.windowResizeHandler);
         window.addEventListener(EventPaste, this.windowPasteHandler);
-        this.checkAuthority();
+        this.checkAuthority()();
         this.initDraft(null, this.props.peer, 0, null);
     }
 
@@ -408,7 +408,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 peer,
                 user,
             }, () => {
-                this.checkAuthority();
+                this.checkAuthority()();
             });
             if ((peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
@@ -480,7 +480,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 peer,
                 user,
             }, () => {
-                this.checkAuthority();
+                this.checkAuthority()();
             });
             if ((peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
@@ -559,7 +559,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     if ((message && message.id === dialog.topmessageid && message.replymarkup === C_REPLY_ACTION.ReplyKeyboardForceReply) && (!this.state.previewMessage || (this.state.previewMessageMode === C_MSG_MODE.Reply && this.state.previewMessage.id !== message.id))) {
                         this.props.onAction('reply', message)();
                     }
-                    this.checkAuthority();
+                    this.checkAuthority()();
                 });
             }
         }
@@ -2144,7 +2144,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.setState({
                 user,
             }, () => {
-                this.checkAuthority();
+                this.checkAuthority()();
             });
         }
     }
@@ -2269,7 +2269,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private getPickerContent() {
-        const {pickerTab, pickerAnchorPos} = this.state;
+        const {pickerTab, pickerAnchorPos, peer} = this.state;
         if (!pickerAnchorPos) {
             return <div className="picker-placeholder"/>;
         }
@@ -2280,13 +2280,13 @@ class ChatInput extends React.Component<IProps, IState> {
                 return <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
                                     showPreview={false} theme={dark ? 'dark' : 'light'}/>;
             case 1:
-                return <GifPicker onSelect={this.gifPickerSelectHandler}/>;
+                return <GifPicker onSelect={this.gifPickerSelectHandler} inputPeer={peer}/>;
         }
     }
 
-    private gifPickerSelectHandler = (item: IGif) => {
+    private gifPickerSelectHandler = (item: IGif, viaBotId?: string) => {
         setTimeout(this.emojiCloseHandler, 100);
-        this.props.onGifSelect(item);
+        this.props.onGifSelect(item, viaBotId);
     }
 }
 

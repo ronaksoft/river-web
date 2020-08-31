@@ -12,14 +12,14 @@ import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {C_MESSAGE_TYPE} from "../message/consts";
-import {IGif} from "./interface";
+import {IGif, IGifWithBot} from "./interface";
 import MessageRepo from "../message";
 import {DexieGifDB} from "../../services/db/dexie/gif";
 import Dexie from "dexie";
 import {differenceBy, find} from "lodash";
 import {kMerge} from "../../services/utilities/kDash";
 import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
-import {InputDocument, InputFileLocation} from "../../services/sdk/messages/core.types_pb";
+import {InputDocument, InputFileLocation, InputPeer, InputUser} from "../../services/sdk/messages/core.types_pb";
 import FileManager from "../../services/sdk/fileManager";
 import ProgressBroadcaster from "../../services/progress";
 import FileDownloadProgress from "../../components/FileDownloadProgress";
@@ -28,6 +28,7 @@ import {Int64BE} from "int64-buffer";
 // @ts-ignore
 import CRC from 'js-crc/build/crc.min';
 import {IGifUse} from "../../services/sdk/updateManager";
+import UserRepo from "../user";
 
 export const getGifsCrc = (list: IGif[]) => {
     const ids = list.map((item) => {
@@ -81,6 +82,7 @@ export default class GifRepo {
     private dbService: DB;
     private db: DexieGifDB;
     private apiManager: APIManager;
+    private userRepo: UserRepo;
     private fileRepo: FileRepo;
     private fileManager: FileManager;
     private progressBroadcaster: ProgressBroadcaster;
@@ -90,10 +92,52 @@ export default class GifRepo {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.apiManager = APIManager.getInstance();
+        this.userRepo = UserRepo.getInstance();
         this.fileRepo = FileRepo.getInstance();
         this.fileManager = FileManager.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.riverTime = RiverTime.getInstance();
+    }
+
+    public searchRemote(userPeer: InputPeer, query: string, offset: string): Promise<IGifWithBot> {
+        if (query.length === 0) {
+            return Promise.reject('no keywords');
+        }
+        const config = this.apiManager.getInstantSystemConfig();
+        return this.userRepo.getByUsername(config.gifbot || 'gif').then((res) => {
+            const inputUser = new InputUser();
+            inputUser.setAccesshash(res.accesshash || '0');
+            inputUser.setUserid(res.id || '0');
+            return this.apiManager.botGetInlineResults(inputUser, userPeer, query, offset).then((remoteRes) => {
+                const gifts: IGif[] = [];
+                remoteRes.resultsList.forEach((o) => {
+                    const item = MessageRepo.parseMessage({
+                        media: o.message.mediadata,
+                        mediatype: o.type,
+                    }, '0');
+                    if (item.messagetype === C_MESSAGE_TYPE.Gif) {
+                        const mediaDocument = item.mediadata as MediaDocument.AsObject;
+                        gifts.push({
+                            attributes: item.attributes,
+                            caption: mediaDocument.caption,
+                            doc: mediaDocument.doc,
+                            downloaded: false,
+                            entitiesList: mediaDocument.entitiesList,
+                            id: mediaDocument.doc.id,
+                            last_used: this.riverTime.now(),
+                            messagetype: item.messagetype,
+                            queryId: remoteRes.queryid,
+                            remote: true,
+                            resultId: o.id,
+                        });
+                    }
+                });
+                return {
+                    botId: res.id || '0',
+                    list: gifts,
+                };
+            });
+        });
     }
 
     public list(skip: number, limit: number, callback: (list: IGif[]) => void): Promise<IGif[]> {
@@ -143,13 +187,17 @@ export default class GifRepo {
         });
     }
 
-    public download(inputFile: InputFileLocation, md5: string, size: number, mimeType: string) {
+    public download(inputFile: InputFileLocation, md5: string, size: number, mimeType: string, temp?: boolean) {
         const fileName = GetDbFileName(inputFile.getFileid(), inputFile.getClusterid());
         const progressSubject = FileDownloadProgress.getUid(inputFile.toObject());
         return this.fileManager.receiveFile(inputFile, md5, size, mimeType, (progress) => {
             this.progressBroadcaster.publish(progressSubject || 0, progress);
         }).then(() => {
-            return this.markAsDownloaded(fileName);
+            if (temp) {
+                return true;
+            } else {
+                return this.markAsDownloaded(fileName);
+            }
         });
     }
 
@@ -161,8 +209,8 @@ export default class GifRepo {
         });
     }
 
-    public useGif(inputDocument: InputDocument) {
-        const fileName = GetDbFileName(inputDocument.getId(), inputDocument.getClusterid());
+    public useGif(inputDocument: InputDocument.AsObject) {
+        const fileName = GetDbFileName(inputDocument.id, inputDocument.clusterid);
         return this.db.gifs.where('id').equals(fileName).first().then((result) => {
             if (result) {
                 result.last_used = this.riverTime.now();

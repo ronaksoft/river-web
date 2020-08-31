@@ -1,41 +1,80 @@
 /* tslint:disable */
-const {app, BrowserWindow, shell, ipcMain, Menu, systemPreferences, nativeTheme} = require('electron');
+const path = require('path');
+const {app, BrowserWindow, shell, ipcMain, Menu, systemPreferences, nativeTheme, screen} = require('electron');
 const isDev = require('electron-is-dev');
 const {download} = require('electron-dl');
 const contextMenu = require('electron-context-menu');
 const unusedFilename = require('unused-filename');
+const lodash = require('lodash');
 const Store = require('electron-store');
 const store = new Store();
 
 const C_LOAD_URL = 'https://web.river.im';
 const C_LOAD_URL_KEY = 'load_url';
+const C_WINDOW_CONFIG = 'window_config';
+
+const MIN_WIDTH = 316;
+const MIN_HEIGHT = 480;
+const DEFAULT_WIDTH = 1280;
+const DEFAULT_HEIGHT = 860;
+const BOUNDS_TOLERANCE = 100;
 
 let mainWindow;
 let sizeMode = 'desktop';
 let firstTimeLoad = false;
+let windowConfig = store.get(C_WINDOW_CONFIG, {});
 
 if (isDev) {
     require('electron-debug')();
+}
+
+// Thanks to signal project
+function isVisible(window, bounds) {
+    const boundsX = lodash.get(bounds, 'x') || 0;
+    const boundsY = lodash.get(bounds, 'y') || 0;
+    const boundsWidth = lodash.get(bounds, 'width') || DEFAULT_WIDTH;
+    const boundsHeight = lodash.get(bounds, 'height') || DEFAULT_HEIGHT;
+
+    // requiring BOUNDS_BUFFER pixels on the left or right side
+    const rightSideClearOfLeftBound =
+        window.x + window.width >= boundsX + BOUNDS_TOLERANCE;
+    const leftSideClearOfRightBound =
+        window.x <= boundsX + boundsWidth - BOUNDS_TOLERANCE;
+
+    // top can't be offscreen, and must show at least BOUNDS_BUFFER pixels at bottom
+    const topClearOfUpperBound = window.y >= boundsY;
+    const topClearOfLowerBound =
+        window.y <= boundsY + boundsHeight - BOUNDS_TOLERANCE;
+
+    return (
+        rightSideClearOfLeftBound &&
+        leftSideClearOfRightBound &&
+        topClearOfUpperBound &&
+        topClearOfLowerBound
+    );
 }
 
 const callReact = (cmd, params) => {
     mainWindow.webContents.send(cmd, params);
 };
 
-const gotTheLock = app.requestSingleInstanceLock();
-
-if (!gotTheLock) {
-    app.quit();
-} else {
-    app.on('second-instance', (event, commandLine, workingDirectory) => {
-        // Someone tried to run a second instance, we should focus our window.
-        if (mainWindow) {
-            if (mainWindow.isMinimized()) {
-                mainWindow.restore();
+if (!process.mas) {
+    const gotTheLock = app.requestSingleInstanceLock();
+    if (!gotTheLock) {
+        app.exit();
+    } else {
+        app.on('second-instance', (event, commandLine, workingDirectory) => {
+            // Someone tried to run a second instance, we should focus our window.
+            if (mainWindow) {
+                if (mainWindow.isMinimized()) {
+                    mainWindow.restore();
+                }
+                mainWindow.focus();
             }
-            mainWindow.focus();
-        }
-    });
+
+            return true;
+        });
+    }
 }
 
 // Dark theme on macOS
@@ -52,29 +91,96 @@ if (process.platform === 'darwin') {
 contextMenu({});
 
 createWindow = (forceShow) => {
+    let windowIcon;
+    const OS = process.platform;
+    if (OS === 'win32') {
+        windowIcon = path.join(__dirname, 'build', 'icons', 'logo.ico');
+    } else if (OS === 'linux') {
+        windowIcon = path.join(__dirname, 'assets', 'icon.png');
+    } else {
+        windowIcon = path.join(__dirname, 'build', 'logo.png');
+    }
     firstTimeLoad = true;
-    mainWindow = new BrowserWindow({
+    const windowOptions = Object.assign({
         backgroundColor: '#27AE60',
         minWidth: 316,
         minHeight: 480,
         show: false,
         webPreferences: {
             nodeIntegration: false,
-            preload: __dirname + '/preload.js',
+            nodeIntegrationInWorker: false,
+            preload: path.join(__dirname, '/preload.js'),
             webSecurity: false,
+            backgroundThrottling: false,
+            contextIsolation: false,
         },
         height: 860,
         width: 1280,
         simpleFullscreen: true,
         vibrancy: 'dark',
         darkTheme: true,
+        icon: windowIcon,
+    }, lodash.pick(windowConfig, ['autoHideMenuBar', 'width', 'height', 'x', 'y']));
+
+    if (!lodash.isNumber(windowOptions.width) || windowOptions.width < MIN_WIDTH) {
+        windowOptions.width = DEFAULT_WIDTH;
+    }
+    if (!lodash.isNumber(windowOptions.height) || windowOptions.height < MIN_HEIGHT) {
+        windowOptions.height = DEFAULT_HEIGHT;
+    }
+    if (!lodash.isBoolean(windowOptions.autoHideMenuBar)) {
+        delete windowOptions.autoHideMenuBar;
+    }
+
+    const visibleOnAnyScreen = lodash.some(screen.getAllDisplays(), display => {
+        if (!lodash.isNumber(windowOptions.x) || !lodash.isNumber(windowOptions.y)) {
+            return false;
+        }
+        return isVisible(windowOptions, lodash.get(display, 'bounds'));
     });
 
-    mainWindow.loadURL(
-        isDev
-            ? 'http://localhost:3000'
-            : store.get(C_LOAD_URL_KEY, C_LOAD_URL),
-    );
+    if (!visibleOnAnyScreen) {
+        console.log('Location reset needed');
+        delete windowOptions.x;
+        delete windowOptions.y;
+    }
+
+    mainWindow = new BrowserWindow(windowOptions);
+
+    function captureAndSaveWindowStats() {
+        if (!mainWindow) {
+            return;
+        }
+
+        const size = mainWindow.getSize();
+        const position = mainWindow.getPosition();
+
+        // so if we need to recreate the window, we have the most recent settings
+        windowConfig = {
+            maximized: mainWindow.isMaximized(),
+            autoHideMenuBar: mainWindow.autoHideMenuBar,
+            fullscreen: mainWindow.isFullScreen(),
+            width: size[0],
+            height: size[1],
+            x: position[0],
+            y: position[1],
+        };
+
+        store.set(C_WINDOW_CONFIG, windowConfig);
+    }
+
+    const debouncedCaptureStats = lodash.debounce(captureAndSaveWindowStats, 500);
+    mainWindow.on('resize', debouncedCaptureStats);
+    mainWindow.on('move', debouncedCaptureStats);
+
+    mainWindow.loadURL(isDev ? 'http://localhost:3000' : store.get(C_LOAD_URL_KEY, C_LOAD_URL));
+
+    if (windowConfig && windowConfig.maximized) {
+        mainWindow.maximize();
+    }
+    if (windowConfig && windowConfig.fullscreen) {
+        mainWindow.setFullScreen(true);
+    }
 
     if (isDev) {
         const {
@@ -316,5 +422,3 @@ ipcMain.on('fnCall', (e, arg) => {
             break;
     }
 });
-
-

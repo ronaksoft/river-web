@@ -195,6 +195,23 @@ export default class UserRepo {
         }
     }
 
+    public getByUsername(username: string) {
+        return this.db.users.where('[is_contact+username]').between([1, username], [1, username], true, true).first().then((res) => {
+            if (res && res.username === username) {
+                return res;
+            } else {
+                return this.apiManager.contactSearch(username).then((remoteRes) => {
+                    if (remoteRes.usersList.length > 0) {
+                        this.importBulk(true, [remoteRes.usersList[0]]);
+                        return remoteRes.usersList[0] as IUser;
+                    } else {
+                        throw Error('not found');
+                    }
+                });
+            }
+        });
+    }
+
     public computeHash(teamId: string) {
         this.getContactList(teamId).then((list) => {
             this.storeContactsCrc(teamId, list);

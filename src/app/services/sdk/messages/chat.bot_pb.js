@@ -5711,7 +5711,7 @@ proto.msg.BotSendInlineResults.deserializeBinaryFromReader = function(msg, reade
       msg.setRandomid(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setQueryid(value);
       break;
     case 3:
@@ -5775,9 +5775,9 @@ proto.msg.BotSendInlineResults.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       2,
       f
     );
@@ -5866,15 +5866,15 @@ proto.msg.BotSendInlineResults.prototype.hasRandomid = function() {
 
 /**
  * required int64 QueryID = 2;
- * @return {number}
+ * @return {string}
  */
 proto.msg.BotSendInlineResults.prototype.getQueryid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.BotSendInlineResults} returns this
  */
 proto.msg.BotSendInlineResults.prototype.setQueryid = function(value) {
@@ -6895,7 +6895,7 @@ proto.msg.BotResults.deserializeBinaryFromReader = function(msg, reader) {
       msg.setGallery(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setQueryid(value);
       break;
     case 3:
@@ -6948,9 +6948,9 @@ proto.msg.BotResults.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       2,
       f
     );
@@ -7019,15 +7019,15 @@ proto.msg.BotResults.prototype.hasGallery = function() {
 
 /**
  * required int64 QueryID = 2;
- * @return {number}
+ * @return {string}
  */
 proto.msg.BotResults.prototype.getQueryid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.BotResults} returns this
  */
 proto.msg.BotResults.prototype.setQueryid = function(value) {

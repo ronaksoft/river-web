@@ -189,7 +189,7 @@ message BotSetInlineResults {
 // @Returns: Bool + Updates
 message BotSendInlineResults {
     required int64 RandomID = 1;
-    required int64 QueryID = 2; // Query ID from BotResults response of BotGetInlineResults
+    required int64 QueryID = 2 [jstype = JS_STRING]; // Query ID from BotResults response of BotGetInlineResults
     required string ResultID = 3; // Result ID from BotResults response of BotGetInlineResults
     optional bool ClearDraft = 4;
     required InputPeer Peer = 5; // Destination
@@ -223,7 +223,7 @@ message BotUploadGif {
 // BotResults
 message BotResults {
     required bool Gallery = 1;
-    required int64 QueryID = 2;
+    required int64 QueryID = 2 [jstype = JS_STRING];
     optional string NextOffset = 3; // The next offset to use when navigating through results
     optional BotInlineSwitchPM SwitchPM = 4; // Whether the bot requested the user to message him in private
     repeated BotInlineResult Results = 5; // The results

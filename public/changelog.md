@@ -1,3 +1,9 @@
+## 0.34.27
+* Inline bot add for GIF
+* GIF picker updated
+* Bot bugs fixed
+* Bug fixes and performance improvements
+
 ## 0.34.26
 * File service improvements
 * Uploader bug fixed

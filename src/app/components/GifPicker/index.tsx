@@ -10,14 +10,15 @@
 import * as React from 'react';
 import i18n from '../../services/i18n';
 import Scrollbars from "react-custom-scrollbars";
-import {throttle} from "lodash";
+import {debounce} from "lodash";
 import {MoreVert} from "@material-ui/icons";
 import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 import CachedPhoto from "../CachedPhoto";
-import {InputDocument, InputFileLocation} from "../../services/sdk/messages/core.types_pb";
+import {InputDocument, InputFileLocation, InputPeer} from "../../services/sdk/messages/core.types_pb";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import FileDownloadProgress from "../FileDownloadProgress";
 import SettingsConfigManager from "../../services/settingsConfigManager";
 import {Loading} from "../Loading";
@@ -27,13 +28,15 @@ import './style.scss';
 const C_LIMIT = 18;
 
 interface IProps {
-    onSelect: (item: IGif) => void;
+    onSelect: (item: IGif, viaBotId?: string) => void;
+    inputPeer: InputPeer | null;
 }
 
 interface IState {
+    isRemote: boolean;
+    keyword: string;
     list: IGif[];
     loading: boolean;
-    keyword: string;
     moreAnchorEl: any;
     moreAnchorPos: any;
     moreIndex: number;
@@ -42,15 +45,17 @@ interface IState {
 class GifPicker extends React.Component<IProps, IState> {
     private gifRepo: GifRepo;
     private scrollbarRef: Scrollbars | undefined;
-    private readonly searchThrottle: any;
+    private readonly searchDebounce: any;
     private hasMore: boolean = false;
     private downloadList: string[] = [];
     private settingsConfigManager: SettingsConfigManager;
+    private botId: string = '0';
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            isRemote: false,
             keyword: '',
             list: [],
             loading: false,
@@ -60,7 +65,7 @@ class GifPicker extends React.Component<IProps, IState> {
         };
 
         this.gifRepo = GifRepo.getInstance();
-        this.searchThrottle = throttle(this.search, 512);
+        this.searchDebounce = debounce(this.search, 511);
         this.settingsConfigManager = SettingsConfigManager.getInstance();
     }
 
@@ -78,11 +83,12 @@ class GifPicker extends React.Component<IProps, IState> {
                         <label className="emoji-mart-sr-only"
                                htmlFor="emoji-mart-search-1">{i18n.t('dialog.search')}</label>
                         <button className="emoji-mart-search-icon" aria-label="Clear">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 20 20"
-                                 opacity="0.5">
-                                <path
-                                    d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
-                            </svg>
+                            {loading && keyword.length > 0 ? <CircularProgress size={13} color="inherit"/> :
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 20 20"
+                                     opacity="0.5">
+                                    <path
+                                        d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
+                                </svg>}
                         </button>
                     </section>
                 </div>
@@ -104,9 +110,9 @@ class GifPicker extends React.Component<IProps, IState> {
                                 return <div key={item.id} className="gif-item"
                                             onContextMenu={this.gifContextMenuHandler(index)}
                                             onClick={this.gifClickHandler(index)}>
-                                    <div className="more">
+                                    {!item.remote && <div className="more">
                                         <MoreVert onClick={this.contextMenuHandler(index)}/>
-                                    </div>
+                                    </div>}
                                     {this.getGifContent(item, index)}
                                 </div>;
                             })}
@@ -169,6 +175,7 @@ class GifPicker extends React.Component<IProps, IState> {
                 const {list} = this.state;
                 list.push(...res);
                 this.setState({
+                    isRemote: false,
                     list,
                     loading: false,
                 }, this.checkAutoDownload);
@@ -181,6 +188,7 @@ class GifPicker extends React.Component<IProps, IState> {
             if (!offset && list.length > 0) {
                 this.hasMore = list.length >= C_LIMIT;
                 this.setState({
+                    isRemote: false,
                     list,
                     loading: false,
                 }, this.checkAutoDownload);
@@ -204,20 +212,42 @@ class GifPicker extends React.Component<IProps, IState> {
             keyword: e.currentTarget.value,
         }, () => {
             if (this.state.keyword.length === 0) {
-                this.searchThrottle.cancel();
+                this.searchDebounce.cancel();
                 this.search();
             } else {
-                this.searchThrottle();
+                this.searchDebounce();
             }
         });
     }
 
     private search = () => {
-        this.searchGif(this.state.keyword);
+        const {keyword, isRemote} = this.state;
+        if (keyword.length > 1) {
+            this.searchGif(this.state.keyword);
+        } else if (keyword.length === 0 && !isRemote) {
+            this.getList();
+        }
     }
 
     private searchGif(keyword: string) {
-        //
+        const {inputPeer} = this.props;
+        if (inputPeer && !this.state.loading) {
+            this.setState({
+                loading: true,
+            });
+            this.gifRepo.searchRemote(inputPeer, keyword, '').then((res) => {
+                this.botId = res.botId;
+                this.setState({
+                    isRemote: true,
+                    list: res.list,
+                    loading: false,
+                }, this.checkAutoDownload);
+            }).catch(() => {
+                this.setState({
+                    loading: false,
+                });
+            });
+        }
     }
 
     private gifContextMenuHandler = (index: number) => (e: any) => {
@@ -296,7 +326,7 @@ class GifPicker extends React.Component<IProps, IState> {
         inputFile.setClusterid(item.doc.clusterid || 0);
         inputFile.setFileid(item.doc.id || '0');
         inputFile.setVersion(item.doc.version || 0);
-        this.gifRepo.download(inputFile, item.doc.md5checksum || '', item.doc.filesize || 0, item.doc.mimetype || 'image/gif').then((res) => {
+        this.gifRepo.download(inputFile, item.doc.md5checksum || '', item.doc.filesize || 0, item.doc.mimetype || 'image/gif', item.remote).then((res) => {
             list[index].downloaded = true;
             this.setState({
                 list,
@@ -317,17 +347,20 @@ class GifPicker extends React.Component<IProps, IState> {
             if (!item) {
                 return;
             }
-            this.props.onSelect(item);
-            const inputDocument = new InputDocument();
-            inputDocument.setId(item.doc.id || '0');
-            inputDocument.setClusterid(item.doc.clusterid || 0);
-            inputDocument.setAccesshash(item.doc.accesshash || '0');
-            this.gifRepo.useGif(inputDocument);
+            if (!item.remote) {
+                this.props.onSelect(item);
+                this.gifRepo.useGif({
+                    clusterid: item.doc.clusterid,
+                    id: item.doc.id,
+                });
+            } else {
+                this.props.onSelect(item, this.botId);
+            }
         }
     }
 
     private scrollHandler = (e: any) => {
-        if (!this.state.loading && this.hasMore && this.scrollbarRef) {
+        if (!this.state.loading && this.hasMore && this.scrollbarRef && !this.state.isRemote) {
             const {scrollTop} = e.target;
             const {list} = this.state;
             const pos = (this.scrollbarRef.getScrollHeight() - this.scrollbarRef.getClientHeight() - 64);
