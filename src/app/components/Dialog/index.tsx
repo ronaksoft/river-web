@@ -715,7 +715,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     label_ids: msg.labelidsList,
                     last_update: msg.createdon,
                     only_contact: true,
-                    peerid: msg.peerid || '',
+                    peerid: msg.peerid || '0',
                     peertype: msg.peertype || 0,
                     preview: messageTitle.text,
                     preview_icon: messageTitle.icon,
@@ -752,7 +752,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 return {
                     accesshash: u.accesshash,
                     only_contact: true,
-                    peerid: u.id || '',
+                    peerid: u.id || '0',
                     peertype: PeerType.PEERUSER,
                     preview: noMessageText,
                     preview_me: false,

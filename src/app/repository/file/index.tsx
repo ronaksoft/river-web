@@ -95,22 +95,35 @@ export default class FileRepo {
                     sha256: file.hash,
                 };
             } else {
-                return this.getTempsById(id).then((temps) => {
-                    if (temps.length === 0) {
-                        return {
-                            md5: '',
-                            sha256: '',
-                        };
-                    }
+                let tempId = id;
+                if (tempId.indexOf('_') > -1) {
+                    tempId = id.split('_')[0];
+                }
+                const fn = (temps: ITempFile[], id2: string) => {
                     const blobs: Blob[] = [];
                     temps.forEach((temp) => {
                         blobs.push(temp.data);
                     });
                     const blob = new Blob(blobs, {type: mimeType});
                     setTimeout(() => {
-                        this.removeTempsById(id);
+                        this.removeTempsById(id2);
                     }, useBuffer ? 10000 : 1000);
                     return this.createWithHash(docName, blob);
+                };
+                return this.getTempsById(tempId).then((temps) => {
+                    if (temps.length === 0) {
+                        return this.getTempsById(id).then((temps2) => {
+                            if (temps2.length === 0) {
+                                return {
+                                    md5: '',
+                                    sha256: '',
+                                };
+                            } else {
+                                return fn(temps2, id);
+                            }
+                        });
+                    }
+                    return fn(temps, tempId);
                 });
             }
         });

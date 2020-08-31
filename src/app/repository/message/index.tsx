@@ -17,7 +17,6 @@ import {
     InputPeer,
     MediaType,
     MessageEntityType,
-    PeerType,
     UserMessage
 } from '../../services/sdk/messages/core.types_pb';
 import Dexie from 'dexie';
@@ -933,9 +932,6 @@ export default class MessageRepo {
         const peerIdMap: { [key: string]: number[] } = {};
         const ids = msgs.map((msg) => {
             this.trimMessage(msg);
-            msg.teamid = msg.teamid || '0';
-            msg.peerid = msg.peerid || '0';
-            msg.peertype = msg.peertype || PeerType.PEERUSER;
             return msg.id || '';
         });
         return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {
@@ -949,16 +945,23 @@ export default class MessageRepo {
                     return msg;
                 }
             });
+            const trimmedCreateItems: IMessage[] = [];
             createItems.forEach((msg) => {
                 this.trimMessage(msg);
-                if (msg.peerid) {
-                    if (!peerIdMap.hasOwnProperty(msg.peerid)) {
-                        peerIdMap[msg.peerid] = [];
+                if (!msg.teamid) {
+                    msg.teamid = '0';
+                }
+                if (msg.id && msg.teamid && msg.peerid && msg.peertype !== undefined) {
+                    if (msg.peerid) {
+                        if (!peerIdMap.hasOwnProperty(msg.peerid)) {
+                            peerIdMap[msg.peerid] = [];
+                        }
+                        peerIdMap[msg.peerid].push(msg.id || 0);
                     }
-                    peerIdMap[msg.peerid].push(msg.id || 0);
+                    trimmedCreateItems.push(msg);
                 }
             });
-            return this.createMany([...createItems, ...updateItems]).then((res) => {
+            return this.createMany([...trimmedCreateItems, ...updateItems]).then((res) => {
                 this.broadcastEvent('Message_DB_Added', {newMsg: peerIdMap, callerId});
                 return res;
             });
@@ -1004,6 +1007,15 @@ export default class MessageRepo {
             newMessage.contentread = true;
         }
         message.entitiesList = newMessage.entitiesList;
+        if (message.teamid && message.teamid !== '0') {
+            newMessage.teamid = message.teamid;
+        }
+        if (message.peerid && message.peerid !== '0') {
+            newMessage.peerid = message.peerid;
+        }
+        if (message.peertype) {
+            newMessage.peertype = message.peertype;
+        }
         if (newMessage.added_labels) {
             message.labelidsList = uniq([...(message.labelidsList || []), ...newMessage.added_labels]);
             delete newMessage.added_labels;

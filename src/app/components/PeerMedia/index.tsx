@@ -516,7 +516,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     download: item.downloaded || false,
                     id: item.id || 0,
                     info: getMediaInfo(item),
-                    peerId: item.peerid || '',
+                    peerId: item.peerid || '0',
                     peerType: item.peertype || 0,
                     saved: item.saved || false,
                     teamId: item.teamid || '0',

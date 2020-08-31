@@ -595,7 +595,7 @@ export default class UpdateManager {
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                     transaction.clearDialogs.push({
                         maxId: message.actiondata.maxid || 0,
-                        peerId: message.peerid || '',
+                        peerId: message.peerid || '0',
                         peerType: message.peertype || 0,
                         remove: message.actiondata.pb_delete || false,
                         teamId: message.teamid || '0',
@@ -617,7 +617,7 @@ export default class UpdateManager {
                     action_code: message.messageaction,
                     action_data: message.actiondata,
                     last_update: message.createdon,
-                    peerid: message.peerid || '',
+                    peerid: message.peerid || '0',
                     peertype: message.peertype || 0,
                     preview: messageTitle.text,
                     preview_icon: messageTitle.icon,
@@ -674,7 +674,7 @@ export default class UpdateManager {
                 transaction.editedMessageIds.push(updateMessageEdited.message.id || 0);
                 // Update to check list
                 transaction.toCheckDialogIds.push({
-                    peerid: updateMessageEdited.message.peerid || '',
+                    peerid: updateMessageEdited.message.peerid || '0',
                     peertype: updateMessageEdited.message.peertype || 0,
                     teamid: updateMessageEdited.message.teamid || '0',
                 });
@@ -697,7 +697,7 @@ export default class UpdateManager {
                 // Update to check list
                 if (updateMessagesDeleted.peer) {
                     transaction.toCheckDialogIds.push({
-                        peerid: updateMessagesDeleted.peer.id || '',
+                        peerid: updateMessagesDeleted.peer.id || '0',
                         peertype: updateMessagesDeleted.peer.type || 0,
                         teamid: updateMessagesDeleted.teamid || '0',
                     });
@@ -720,7 +720,7 @@ export default class UpdateManager {
                 this.callUpdateHandler(updateReadHistoryInbox.teamid || '0', update.constructor, updateReadHistoryInbox);
                 // Update dialog readinboxmaxid
                 this.mergeDialog(transaction.dialogs, {
-                    peerid: updateReadHistoryInbox.peer.id || '',
+                    peerid: updateReadHistoryInbox.peer.id || '0',
                     peertype: updateReadHistoryInbox.peer.type || 0,
                     readinboxmaxid: updateReadHistoryInbox.maxid,
                     teamid: updateReadHistoryInbox.teamid || '0',
@@ -731,7 +731,7 @@ export default class UpdateManager {
                 this.callUpdateHandler(updateReadHistoryOutbox.teamid || '0', update.constructor, updateReadHistoryOutbox);
                 // Update dialog readoutboxmaxid
                 this.mergeDialog(transaction.dialogs, {
-                    peerid: updateReadHistoryOutbox.peer.id || '',
+                    peerid: updateReadHistoryOutbox.peer.id || '0',
                     peertype: updateReadHistoryOutbox.peer.type || 0,
                     readoutboxmaxid: updateReadHistoryOutbox.maxid,
                     teamid: updateReadHistoryOutbox.teamid || '0',
@@ -752,7 +752,7 @@ export default class UpdateManager {
                 this.mergeDialog(transaction.dialogs, {
                     accesshash: updateNotifySettings.notifypeer.accesshash,
                     notifysettings: updateNotifySettings.settings,
-                    peerid: updateNotifySettings.notifypeer.id || '',
+                    peerid: updateNotifySettings.notifypeer.id || '0',
                     peertype: updateNotifySettings.notifypeer.type || 0,
                     teamid: updateNotifySettings.teamid || '0',
                 });
@@ -762,7 +762,7 @@ export default class UpdateManager {
                 this.callUpdateHandler(updateDialogPinned.teamid || '0', update.constructor, updateDialogPinned);
                 // Update pinned dialog
                 this.mergeDialog(transaction.dialogs, {
-                    peerid: updateDialogPinned.peer.id || '',
+                    peerid: updateDialogPinned.peer.id || '0',
                     peertype: updateDialogPinned.peer.type || 0,
                     pinned: updateDialogPinned.pinned,
                     teamid: updateDialogPinned.teamid || '0',
@@ -774,7 +774,7 @@ export default class UpdateManager {
                 // Update dialog's draft
                 this.mergeDialog(transaction.dialogs, {
                     draft: updateDraftMessage.message,
-                    peerid: updateDraftMessage.message.peerid || '',
+                    peerid: updateDraftMessage.message.peerid || '0',
                     peertype: updateDraftMessage.message.peertype || 0,
                     teamid: updateDraftMessage.message.teamid || '0',
                 });
@@ -785,7 +785,7 @@ export default class UpdateManager {
                 // Remove dialog's draft
                 this.mergeDialog(transaction.dialogs, {
                     draft: {},
-                    peerid: updateDraftMessageCleared.peer.id || '',
+                    peerid: updateDraftMessageCleared.peer.id || '0',
                     peertype: updateDraftMessageCleared.peer.type || 0,
                     teamid: updateDraftMessageCleared.teamid || '0',
                 });
@@ -894,7 +894,7 @@ export default class UpdateManager {
                         labelId: id,
                         mode: 'add',
                         msgIds: updateLabelItemsAdded.messageidsList,
-                        peerid: updateLabelItemsAdded.peer.id || '',
+                        peerid: updateLabelItemsAdded.peer.id || '0',
                         peertype: updateLabelItemsAdded.peer.type || 0,
                         teamId: updateLabelItemsAdded.teamid || '0',
                     });
@@ -924,7 +924,7 @@ export default class UpdateManager {
                         labelId: id,
                         mode: 'remove',
                         msgIds: updateLabelItemsRemoved.messageidsList,
-                        peerid: updateLabelItemsRemoved.peer.id || '',
+                        peerid: updateLabelItemsRemoved.peer.id || '0',
                         peertype: updateLabelItemsRemoved.peer.type || 0,
                         teamId: updateLabelItemsRemoved.teamid || '0',
                     });
@@ -1161,7 +1161,7 @@ export default class UpdateManager {
                             action_data: msg.actiondata,
                             force: true,
                             last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
-                            peerid: msg.peerid || '',
+                            peerid: msg.peerid || '0',
                             peertype: msg.peertype || 0,
                             preview: messageTitle.text,
                             preview_icon: messageTitle.icon,

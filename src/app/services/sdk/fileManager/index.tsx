@@ -203,6 +203,7 @@ export default class FileManager {
 
     /* Send the whole file */
     public sendFile(id: string, blob: Blob, onProgress?: (e: IFileProgress) => void) {
+        window.console.log(id);
         let internalResolve: any = null;
         let internalReject: any = null;
 
@@ -640,7 +641,7 @@ export default class FileManager {
                     this.fileRepo.persistTempFiles(name, name, downloadInfo.mimeType || 'application/octet-stream', downloadInfo.onBuffer !== undefined).then((res) => {
                         if (this.fileDownloadQueue.hasOwnProperty(name)) {
                             const downloadInfo2 = this.fileDownloadQueue[name];
-                            if (res && downloadInfo2.md5 && downloadInfo2.md5 !== '' && downloadInfo2.md5 !== res.md5) {
+                            if (res && downloadInfo2.md5 && downloadInfo2.md5 !== '' && res.md5 !== '' && downloadInfo2.md5 !== res.md5) {
                                 this.fileRepo.remove(name).finally(() => {
                                     downloadInfo2.reject(`md5 hashes are not match. ${downloadInfo2.md5}, ${res.md5}`);
                                     delete this.fileDownloadQueue[name];

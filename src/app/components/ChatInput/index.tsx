@@ -1192,7 +1192,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     if (this.state.peer) {
                         return this.dialogRepo.upsert([{
                             draft: {},
-                            peerid: this.state.peer.getId() || '',
+                            peerid: this.state.peer.getId() || '0',
                             peertype: this.state.peer.getType() || 0,
                             teamid: this.teamId,
                         }]);
@@ -1356,7 +1356,7 @@ class ChatInput extends React.Component<IProps, IState> {
             body: this.textarea ? this.textarea.value : '',
             date: this.riverTime.now(),
             entitiesList: message ? message.entitiesList : undefined,
-            peerid: oldPeerObj.id || '',
+            peerid: oldPeerObj.id || '0',
             peertype: message ? message.peertype : undefined,
             replyto: message ? message.id : undefined,
         };
@@ -1364,7 +1364,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.apiManager.saveDraft(oldPeer, draftMessage.body || '', draftMessage.replyto, draftMessage.entitiesList).then(() => {
                 this.dialogRepo.lazyUpsert([{
                     draft: draftMessage,
-                    peerid: oldPeerObj.id || '',
+                    peerid: oldPeerObj.id || '0',
                     peertype: oldPeerObj.type || 0,
                     teamid: this.teamId,
                 }]);
@@ -1381,7 +1381,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.apiManager.clearDraft(oldPeer).then(() => {
                     this.dialogRepo.lazyUpsert([{
                         draft: {},
-                        peerid: oldPeerObj.id || '',
+                        peerid: oldPeerObj.id || '0',
                         peertype: oldPeerObj.type || 0,
                         teamid: this.teamId,
                     }]);

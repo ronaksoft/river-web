@@ -389,11 +389,6 @@ class Chat extends React.Component<IProps, IState> {
 
         this.updateManager.enableLiveUpdate();
 
-        // this.messageRepo.upsert([{
-        //     id: 39397,
-        //     temp: true,
-        // }]);
-
         // Global event listeners
         window.addEventListener(EventFocus, this.windowFocusHandler);
         window.addEventListener(EventBlur, this.windowBlurHandler);
@@ -496,7 +491,6 @@ class Chat extends React.Component<IProps, IState> {
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageDBRemoved, this.updateMessageDBRemovedHandler));
 
         // TODO: add timestamp to pending message
-
 
         // Electron events
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Setting, this.electronSettingsHandler));
@@ -2190,7 +2184,7 @@ class Chat extends React.Component<IProps, IState> {
                     action_code: msg.messageaction,
                     action_data: msg.actiondata,
                     last_update: msg.createdon,
-                    peerid: msg.peerid || '',
+                    peerid: msg.peerid || '0',
                     peertype: msg.peertype || 0,
                     preview: messageTitle.text,
                     preview_icon: messageTitle.icon,
@@ -2905,7 +2899,7 @@ class Chat extends React.Component<IProps, IState> {
                 action_code: C_MESSAGE_ACTION.MessageActionGroupCreated,
                 action_data: null,
                 last_update: res.createdon,
-                peerid: res.id || '',
+                peerid: res.id || '0',
                 peertype: PeerType.PEERGROUP,
                 preview: `${i18n.t('general.you')}: ${i18n.t('message.created_the_group')}`,
                 sender_id: this.userId,
@@ -4106,7 +4100,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Download file */
-    private downloadFile(msg: IMessage, userBuffer: boolean) {
+    private downloadFile(msg: IMessage, userBuffer: boolean, downloadAfter?: boolean) {
         const mediaDocument = getMediaDocument(msg);
         if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
             const fileLocation = new InputFileLocation();
@@ -4153,8 +4147,8 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     }
                 }
-                if (msg.messagetype === C_MESSAGE_TYPE.File && this.settingsConfigManager.getDownloadSettings().auto_save_files) {
-                    this.saveFile(msg);
+                if ((msg.messagetype === C_MESSAGE_TYPE.File && this.settingsConfigManager.getDownloadSettings().auto_save_files) || downloadAfter) {
+                    this.saveFile(msg, true);
                 }
             }).catch((err: any) => {
                 window.console.debug(err);
@@ -4389,6 +4383,11 @@ class Chat extends React.Component<IProps, IState> {
             teamid: this.teamId,
             temp_file: tempImageFile,
         };
+
+        if (type === 'file' && mediaItem.path) {
+            message.saved = true;
+            message.saved_path = mediaItem.path;
+        }
 
         let replyTo: any;
         if (param.mode === C_MSG_MODE.Reply && param.message) {
@@ -4920,7 +4919,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Save file by type */
-    private saveFile(msg: IMessage) {
+    private saveFile(msg: IMessage, noRetry?: boolean) {
         const mediaDocument = getMediaDocument(msg);
         if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
             this.fileRepo.get(GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid)).then((res) => {
@@ -4930,6 +4929,8 @@ class Chat extends React.Component<IProps, IState> {
                     } else {
                         saveAs(res.data, this.getFileName(msg));
                     }
+                } else if (noRetry !== true) {
+                    this.downloadFile(msg, false, true);
                 }
             });
         }
@@ -5097,9 +5098,11 @@ class Chat extends React.Component<IProps, IState> {
     private updateDraftMessageHandler = (data: UpdateDraftMessage.AsObject) => {
         const peerName = GetPeerName(data.message.peerid, data.message.peertype);
         this.updateDialogsCounter(peerName, {draft: data.message});
-        if (this.chatInputRef && this.selectedPeerName === peerName) {
-            this.chatInputRef.checkDraft();
-        }
+        setTimeout(() => {
+            if (this.chatInputRef && this.selectedPeerName === peerName) {
+                this.chatInputRef.checkDraft();
+            }
+        }, 511);
     }
 
     /* Update dialog draft message cleared handler */

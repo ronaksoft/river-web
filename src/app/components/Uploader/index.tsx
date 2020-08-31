@@ -68,6 +68,7 @@ export interface IMediaItem {
     thumb?: IMediaThumb;
     title?: string;
     waveform?: number[];
+    path?: string;
 }
 
 export interface IUploaderFile extends FileWithPreview {
@@ -888,6 +889,7 @@ class Uploader extends React.Component<IProps, IState> {
                     fileType: items[i].mimeType || items[i].type,
                     mediaType: isFile ? 'file' : (items[i].mediaType || 'none'),
                     name: items[i].name,
+                    path: items[i].path,
                     performer: items[i].performer,
                     thumb: dist[i * 2 + 1] ? {
                         file: dist[i * 2 + 1],

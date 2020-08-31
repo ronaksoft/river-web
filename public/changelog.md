@@ -1,3 +1,9 @@
+## 0.34.28
+* Electron updated
+* Now it save and restore window stats
+* Save file bug fixed
+* Bug fixes and performance improvements 
+
 ## 0.34.27
 * Inline bot add for GIF
 * GIF picker updated
