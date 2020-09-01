@@ -110,33 +110,13 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
         return {entities: null, text: ''};
     }
     const entities: MessageEntity[] = [];
-    if (mentions.length > 0) {
-        mentions.filter((m) => {
-            return m.id.indexOf(':') === -1 && m.id.indexOf('/') === -1;
-        }).forEach((mention) => {
-            const entity = new MessageEntity();
-            entity.setOffset(mention.plainTextIndex);
-            entity.setLength(mention.display.length);
-            entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
-            entity.setUserid(mention.id);
-            entities.push(entity);
-        });
-        mentions.filter((c) => {
-            return c.id.indexOf('/') === 0;
-        }).forEach((command) => {
-            const entity = new MessageEntity();
-            entity.setOffset(command.plainTextIndex);
-            entity.setLength(command.display.length);
-            entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
-            entities.push(entity);
-        });
-    }
     // Code extractor
     const removeRange = (str: string, from: number, len: number) => {
         return str.substring(0, from) + str.substring(from + len);
     };
     const codeResult: any[] = [];
     const codeReg = XRegExp('```([\\s\\S]*?)```');
+    const codeStarts: number[] = [];
     XRegExp.forEach(text, codeReg, (match, index) => {
         const start = match.index - (6 * index);
         const len = match[1].length;
@@ -152,6 +132,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
             len,
             start,
         });
+        codeStarts.push(start);
     });
     // Make sure code stays un touched
     const underlineRange = (str: string, from: number, len: number) => {
@@ -180,6 +161,37 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
         entity.setUserid('');
         entities.push(entity);
     });
+    codeStarts.sort((a, b) => b - a);
+    const getOffsetForCode = (strt: number) => {
+        for (let i = 0; i < codeStarts.length; i++) {
+            if (strt > codeStarts[i]) {
+                return (codeStarts.length - i) * 6;
+            }
+        }
+        return 0;
+    };
+    if (mentions.length > 0) {
+        mentions.filter((m) => {
+            return m.id.indexOf(':') === -1 && m.id.indexOf('/') === -1;
+        }).forEach((mention) => {
+            const entity = new MessageEntity();
+            const offset = getOffsetForCode(mention.plainTextIndex);
+            entity.setOffset(mention.plainTextIndex - offset);
+            entity.setLength(mention.display.length);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
+            entity.setUserid(mention.id);
+            entities.push(entity);
+        });
+        mentions.filter((c) => {
+            return c.id.indexOf('/') === 0;
+        }).forEach((command) => {
+            const entity = new MessageEntity();
+            entity.setOffset(command.plainTextIndex);
+            entity.setLength(command.display.length);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
+            entities.push(entity);
+        });
+    }
     // const fn = (f: number, l: number, e: any) => {
     //     const entity = new MessageEntity();
     //     entity.setOffset(f);

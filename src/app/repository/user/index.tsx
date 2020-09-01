@@ -107,6 +107,9 @@ export default class UserRepo {
     }
 
     public get(id: string): Promise<IUser | undefined> {
+        if (!id || id === '') {
+            return Promise.reject();
+        }
         const user = this.dbService.getUser(id);
         if (user) {
             return Promise.resolve(user);
