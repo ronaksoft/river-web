@@ -224,7 +224,7 @@ class GifPicker extends React.Component<IProps, IState> {
         const {keyword, isRemote} = this.state;
         if (keyword.length > 1) {
             this.searchGif(this.state.keyword);
-        } else if (keyword.length === 0 && !isRemote) {
+        } else if (keyword.length === 0 && isRemote) {
             this.getList();
         }
     }

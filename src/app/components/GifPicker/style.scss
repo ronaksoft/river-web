@@ -143,6 +143,8 @@ html[theme="dark-night"] {
 
     .gif-search {
       .emoji-mart-search {
+        color: var(--light);
+
         input {
           background-color: var(--dark-low);
           border-color: var(--dark-high);
@@ -151,6 +153,10 @@ html[theme="dark-night"] {
 
         svg {
           fill: var(--light);
+
+          circle {
+            stroke: var(--light);
+          }
         }
       }
     }
@@ -175,6 +181,8 @@ html[theme="dark-blue"] {
 
     .gif-search {
       .emoji-mart-search {
+        color: var(--light);
+
         input {
           background-color: var(--dark-blue-low);
           border-color: var(--dark-blue-high);
@@ -183,6 +191,10 @@ html[theme="dark-blue"] {
 
         svg {
           fill: var(--light);
+
+          circle {
+            stroke: var(--light);
+          }
         }
       }
     }

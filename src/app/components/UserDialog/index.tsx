@@ -392,7 +392,7 @@ class UserDialog extends React.Component<IProps, IState> {
             inputUser.setAccesshash(user.accesshash || '');
             inputUser.setUserid(user.id || '');
             this.apiManager.contactAdd(inputUser, firstname, lastname, phone).then(() => {
-                this.userRepo.importBulk(true, [user]);
+                this.userRepo.importBulk(true, [user], false, undefined, this.props.teamId);
                 user.lastname = lastname;
                 user.firstname = firstname;
                 this.setState({

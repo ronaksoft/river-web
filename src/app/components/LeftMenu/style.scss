@@ -137,7 +137,6 @@
   &.with-top-bar {
     .top-bar {
       display: flex;
-      justify-content: center;
     }
 
     .left-content {
@@ -150,6 +149,12 @@
   }
 
   &.shrunk-menu {
+    &:not(.label-mode) {
+      .top-bar {
+        justify-content: center;
+      }
+    }
+
     .left-content {
       height: 100%;
 
@@ -194,6 +199,12 @@
 
   &.shrunk-menu:not(.label-mode) {
     width: 68px;
+
+    .dialogs {
+      .dialog-search.open, .top-peer {
+        display: none;
+      }
+    }
   }
 
   .left-overlay {

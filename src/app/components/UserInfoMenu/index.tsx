@@ -215,7 +215,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         <div className="form-control">
                                             <label>{i18n.t('general.last_name')}</label>
                                             <div className="inner">{user.lastname}</div>
-                                            {Boolean(!this.me && isInContact)  && <div className="action">
+                                            {Boolean(!this.me && isInContact) && <div className="action">
                                                 <IconButton
                                                     onClick={this.onEditHandler}
                                                 >
@@ -425,7 +425,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             inputUser.setAccesshash(user.accesshash || '');
             inputUser.setUserid(user.id || '');
             this.apiManager.contactAdd(inputUser, firstname, lastname, phone).then(() => {
-                this.userRepo.importBulk(true, [user], false, this.callerId);
+                this.userRepo.importBulk(true, [user], false, this.callerId, this.props.teamId);
                 user.lastname = lastname;
                 user.firstname = firstname;
                 this.setState({

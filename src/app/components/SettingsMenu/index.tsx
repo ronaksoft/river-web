@@ -2596,6 +2596,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             if (this.props.onError) {
                 this.props.onError(i18n.t('settings.synced_contacts_removed_successfully'));
             }
+            this.confirmDialogCloseHandler();
         });
     }
 

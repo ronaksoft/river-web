@@ -2235,30 +2235,34 @@ class ChatInput extends React.Component<IProps, IState> {
             return Promise.resolve(true);
         }
         return new Promise(resolve => {
-            navigator.permissions.query(
-                {name: 'microphone'},
-            ).then((permissionStatus) => {
-                switch (permissionStatus.state) {
-                    case 'denied':
-                        resolve(false);
-                        return;
-                    case 'granted':
-                        resolve(true);
-                        this.microphonePermission = true;
-                        return;
-                    case 'prompt':
-                        navigator.mediaDevices.getUserMedia({audio: true}).then(() => {
+            try {
+                navigator.permissions.query(
+                    {name: 'microphone'},
+                ).then((permissionStatus) => {
+                    switch (permissionStatus.state) {
+                        case 'denied':
+                            resolve(false);
+                            return;
+                        case 'granted':
                             resolve(true);
                             this.microphonePermission = true;
-                            this.setState({
-                                inputMode: 'voice',
+                            return;
+                        case 'prompt':
+                            navigator.mediaDevices.getUserMedia({audio: true}).then(() => {
+                                resolve(true);
+                                this.microphonePermission = true;
+                                this.setState({
+                                    inputMode: 'voice',
+                                });
+                            }).catch((err) => {
+                                resolve(false);
                             });
-                        }).catch((err) => {
-                            resolve(false);
-                        });
-                        return;
-                }
-            });
+                            return;
+                    }
+                });
+            } catch (e) {
+                resolve(false);
+            }
         });
     }
 
