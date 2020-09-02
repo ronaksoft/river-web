@@ -15,10 +15,10 @@ import {isTypingRender} from "../DialogMessage";
 import LastSeen from "../LastSeen";
 import i18n from "../../services/i18n";
 import Socket from "../../services/sdk/server/socket";
-
-import './style.scss';
 import Smoother from "../../services/utilities/smoother";
 import {GetPeerName} from "../../repository/dialog";
+
+import './style.scss';
 
 interface IProps {
     currentUserId: string;
@@ -119,7 +119,7 @@ class StatusBar extends React.Component<IProps, IState> {
         } else if (this.state.isUpdating) {
             return (<span>{i18n.t('status.updating')}</span>);
         } else if (ids > 0) {
-            return (isTypingRender(typingList, peer.getType() || PeerType.PEERUSER));
+            return (isTypingRender(typingList, peer.getType() || PeerType.PEERUSER, true));
         } else if (!hideStatus) {
             return (<LastSeen id={selectedId} teamId={this.props.teamId} withLastSeen={true}/>);
         } else {

@@ -381,11 +381,17 @@
     "recently": "recently",
     "online": "online",
     "typing": "typing...",
+    "typing_2": "typing",
     "recording_voice": "recording voice...",
+    "recording_voice_2": "recording voice",
     "uploading_file": "uploading...",
+    "uploading_file_2": "uploading",
     "doing": "doing something...",
     "waiting_for_network": "Waiting for network...",
-    "try_again": "(try again)"
+    "try_again": "(try again)",
+    "and_n_more": " & {0} more",
+    "type_and": " & ",
+    "type_comma": ", "
   },
   "message": {
     "voice_message": "Voice Message",

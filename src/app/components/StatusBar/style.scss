@@ -16,6 +16,13 @@
   height: 100%;
   user-select: none;
 
+  .doing-svg {
+    display: inline-block;
+    height: 6px !important;
+    width: 32px !important;
+    vertical-align: baseline;
+  }
+
   .name {
     color: var(--dark);
     line-height: 1.3em;
@@ -70,6 +77,10 @@ html[direction="rtl"] {
   .status-bar {
     align-items: flex-start;
 
+    .doing-svg {
+      transform: rotateY(-180deg);
+    }
+
     .name {
       svg {
         margin-right: 0;
@@ -83,6 +94,10 @@ html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
   .status-bar {
+    .doing-svg {
+      fill: var(--dark-mention);
+    }
+
     .online {
       color: var(--dark-mention) !important;
     }

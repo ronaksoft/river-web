@@ -240,7 +240,7 @@ const viewDocumentHandler = (labelId: number, message: IMessage) => (e: any) => 
             md5: info.md5,
             mimeType: info.mimeType,
             rtl: message.rtl,
-            thumbFileLocation: message.messagetype !== C_MESSAGE_TYPE.Picture ? info.thumbFile : undefined,
+            thumbFileLocation: message.messagetype === C_MESSAGE_TYPE.Video ? undefined : info.thumbFile,
             userId: message.senderid || '',
             width: info.width,
         }],
@@ -249,7 +249,7 @@ const viewDocumentHandler = (labelId: number, message: IMessage) => (e: any) => 
         rect: el ? el.getBoundingClientRect() : undefined,
         stream: false,
         teamId: message.teamid || '0',
-        type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
+        type: message.messagetype === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
     };
     DocumentViewerService.getInstance().loadDocument(doc);
 };

@@ -377,11 +377,17 @@
     "recently": "به تازگی",
     "online": "آنلاین",
     "typing": "در حال تایپ...",
+    "typing_2": "در حال تایپ",
     "recording_voice": "در حال ضبط صوت...",
+    "recording_voice_2": "در حال ضبط صوت",
     "uploading_file": "در حال بارگزاری...",
+    "uploading_file_2": "در حال بارگزاری",
     "doing": "در حال...",
     "waiting_for_network": "منتظر شبکه...",
-    "try_again": "(تلاش مجدد)"
+    "try_again": "(تلاش مجدد)",
+    "and_n_more": " و {0} دیگر",
+    "type_and": " و ",
+    "type_comma": "، "
   },
   "message": {
     "voice_message": "پیام صوتی",

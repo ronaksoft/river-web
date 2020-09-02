@@ -1,3 +1,7 @@
+## 0.34.32
+* New typing animation
+* Known bugs fixed 
+
 ## 0.34.31
 * Labeled GIF bug fixed
 * New method to apply random ids

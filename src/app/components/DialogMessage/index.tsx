@@ -41,9 +41,10 @@ import {localize} from '../../services/utilities/localize';
 import sdk from '../../services/sdk';
 import {Link} from "react-router-dom";
 import {IUser} from "../../repository/user/interface";
+import {GetPeerName} from "../../repository/dialog";
+import {Doing} from "../SVG/doing";
 
 import './style.scss';
-import {GetPeerName} from "../../repository/dialog";
 
 export const getMessageIcon = (icon?: number) => {
     switch (icon) {
@@ -309,7 +310,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
     );
 };
 
-export const isTypingRender = (typingList: { [key: string]: { fn: any, action: TypingAction } }, peerType: PeerType) => {
+export const isTypingRender = (typingList: { [key: string]: { fn: any, action: TypingAction } }, peerType: PeerType, withAnimation?: boolean) => {
     const ids = Object.keys(typingList);
     if (ids.length === 0) {
         return null;
@@ -318,15 +319,16 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
         switch (action) {
             default:
             case TypingAction.TYPINGACTIONTYPING:
-                return i18n.t('status.typing');
+                return i18n.t(withAnimation ? 'status.typing_2' : 'status.typing');
             case TypingAction.TYPINGACTIONRECORDINGVOICE:
-                return i18n.t('status.recording_voice');
+                return i18n.t(withAnimation ? 'status.recording_voice_2' : 'status.recording_voice');
             case TypingAction.TYPINGACTIONUPLOADING:
-                return i18n.t('status.uploading_file');
+                return i18n.t(withAnimation ? 'status.uploading_file_2' : 'status.uploading_file');
         }
     };
     if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
-        return (<span className="preview">{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}</span>);
+        return (<span className="preview">{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}
+            {withAnimation && <Doing/>}</span>);
     } else {
         const types = {};
         let distinct = 0;
@@ -342,16 +344,17 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 {ids.slice(0, 2).map((id, index) => {
                     const peerId = id.split('_')[0];
                     return (<span key={index}>
-                        {index !== 0 ? (ids.length - 1 === index ? ' & ' : ', ') : ''}
+                        {index !== 0 ? (ids.length - 1 === index ? i18n.t('genera.type_and') : i18n.t('genera.type_comma')) : ''}
                         <UserName id={peerId} onlyFirstName={true} noIcon={true}/>
                     </span>);
                 })}
-            {Boolean(ids.length > 2) && <span> & {ids.length - 2} more</span>}
+            {Boolean(ids.length > 2) &&
+            <span>{i18n.tf('general.and_n_more', String(localize(ids.length - 2)))}</span>}
             {ids.length === 1 ? ` ${i18n.t('general.is')} ` : ` ${i18n.t('general.are')} `}
-            {distinct > 1 ? ` ${i18n.t('status.doing')}` : getActionType(typingList[ids[0]].action)}
+            {distinct > 1 ? ` ${withAnimation ? '' : i18n.t('status.doing')}` : getActionType(typingList[ids[0]].action)}
+            {withAnimation && <Doing/>}
             </span>);
     }
-
 };
 
 export default DialogMessage;
