@@ -3,7 +3,7 @@ import * as React from 'react';
 export const Doing = () => {
     return (<svg className="doing-svg" viewBox="0 0 128 35">
         <g>
-            <circle fill="#27ae60" cx={17.5} cy={17.5} r={17.5}/>
+            <circle cx={17.5} cy={17.5} r={15}/>
             <animate
                 attributeName="opacity"
                 dur="1200ms"
@@ -14,7 +14,7 @@ export const Doing = () => {
             />
         </g>
         <g>
-            <circle fill="#27ae60" cx={110.5} cy={17.5} r={17.5}/>
+            <circle cx={110.5} cy={17.5} r={15}/>
             <animate
                 attributeName="opacity"
                 dur="1200ms"
@@ -25,7 +25,7 @@ export const Doing = () => {
             />
         </g>
         <g>
-            <circle fill="#27ae60" cx={64} cy={17.5} r={17.5}/>
+            <circle cx={64} cy={17.5} r={15}/>
             <animate
                 attributeName="opacity"
                 dur="1200ms"
