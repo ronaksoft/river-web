@@ -33,8 +33,8 @@ import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 
 import './App.scss';
 
-export const C_VERSION = '0.34.30';
-export const C_ELECTRON_VERSION = '10.1.0';
+export const C_VERSION = '0.34.31';
+export const C_ELECTRON_VERSION = '10.1.1';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {
@@ -270,7 +270,7 @@ class App extends React.Component<{}, IState> {
                                 </Button>
                                 {Boolean(desktopDownloadLink !== '') &&
                                 <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
-                                    {I18n.tf('chat.update_dialog.download_desktop_version', '0.22.0')}
+                                    {I18n.tf('chat.update_dialog.download_desktop_version', '0.23.0')}
                                 </Button>}
                             </DialogActions>
                         </> : <>

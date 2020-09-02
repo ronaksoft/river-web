@@ -2709,6 +2709,7 @@ class Chat extends React.Component<IProps, IState> {
                 } else {
                     this.setScrollMode('none');
                 }
+                this.updateManager.getLastUpdateId()
                 const modifiedMsgs = this.modifyMessages(this.messages, res, true);
                 res.forEach((msg) => {
                     this.downloadThumbnail(msg);

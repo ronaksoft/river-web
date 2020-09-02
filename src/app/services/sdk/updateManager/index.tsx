@@ -174,6 +174,7 @@ export default class UpdateManager {
 
     // Random MessageID Map (for preventing double message)
     private randomIdMap: { [key: number]: boolean } = {};
+    private toDeleteRandomIds: number[] = [];
 
     // Live update out of sync variables
     private outOfSync: boolean = false;
@@ -220,6 +221,17 @@ export default class UpdateManager {
             // Initialize SDK
             this.apiManager = APIManager.getInstance();
         }, 100);
+
+        setInterval(() => {
+            while (true) {
+                const d = this.toDeleteRandomIds.shift();
+                if (d) {
+                    delete this.randomIdMap[d];
+                } else {
+                    break;
+                }
+            }
+        }, 65535);
     }
 
     public setTeamId(teamId: string) {
@@ -1442,7 +1454,9 @@ export default class UpdateManager {
             try {
                 if (eventConstructor === C_MSG.UpdateNewMessage && this.randomIdMap.hasOwnProperty((data as UpdateNewMessage.AsObject).senderrefid || 0)) {
                     this.callHandlers(teamId, C_MSG.UpdateNewMessageDrop, data);
-                    delete this.randomIdMap[(data as UpdateNewMessage.AsObject).senderrefid || 0];
+                    if ((data as UpdateNewMessage.AsObject).senderrefid) {
+                        this.toDeleteRandomIds.push((data as UpdateNewMessage.AsObject).senderrefid || 0);
+                    }
                 } else {
                     this.callHandlers(teamId, eventConstructor, data);
                 }

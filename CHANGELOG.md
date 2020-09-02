@@ -1,3 +1,8 @@
+## 0.34.31
+* Labeled GIF bug fixed
+* New method to apply random ids
+* Known bugs fixed 
+
 ## 0.34.30
 * Known bugs fixed
 

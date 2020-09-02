@@ -390,6 +390,7 @@ const LabelBody = ({teamId, labelId, message, onAction}: IRootProps) => {
             return <LabelBodyLocation message={message} teamId={teamId}/>;
         case C_MESSAGE_TYPE.Picture:
         case C_MESSAGE_TYPE.Video:
+        case C_MESSAGE_TYPE.Gif:
             return <LabelBodyMedia message={message} onAction={onAction} teamId={teamId} labelId={labelId}/>;
         case C_MESSAGE_TYPE.Voice:
             return <LabelBodyVoice message={message} teamId={teamId}/>;
