@@ -1,3 +1,6 @@
+## 0.34.34
+* Typo fixed
+
 ## 0.34.33
 * UI improvements
 * Prevent duplicates in Create Groups/Label
