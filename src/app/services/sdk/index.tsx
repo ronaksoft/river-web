@@ -681,6 +681,7 @@ export default class APIManager {
         const data = new GroupsCreate();
         data.setUsersList(users);
         data.setTitle(title);
+        data.setRandomid(UniqueId.getRandomId());
         this.logVerbose(data);
         return this.server.send(C_MSG.GroupsCreate, data.serializeBinary(), true);
     }
@@ -843,6 +844,7 @@ export default class APIManager {
         const data = new LabelsCreate();
         data.setName(name);
         data.setColour(color);
+        data.setRandomid(UniqueId.getRandomId());
         this.logVerbose(data);
         return this.server.send(C_MSG.LabelsCreate, data.serializeBinary(), true);
     }

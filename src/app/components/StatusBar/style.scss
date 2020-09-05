@@ -24,6 +24,10 @@
     fill: var(--river);
   }
 
+  .preview.with-animation {
+    color: var(--river);
+  }
+
   .name {
     color: var(--dark);
     line-height: 1.3em;
@@ -97,6 +101,10 @@ html[theme="dark-blue"] {
   .status-bar {
     .doing-svg {
       fill: var(--dark-mention);
+    }
+
+    .preview.with-animation {
+      color: var(--dark-mention);
     }
 
     .online {

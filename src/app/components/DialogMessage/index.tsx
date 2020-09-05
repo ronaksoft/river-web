@@ -327,8 +327,8 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
         }
     };
     if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
-        return (<span className="preview">{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}
-            {withAnimation && <Doing/>}</span>);
+        return (<span className={'preview' + (withAnimation ? ' with-animation' : '')}
+        >{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}{withAnimation && <Doing/>}</span>);
     } else {
         const types = {};
         let distinct = 0;
@@ -340,7 +340,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 types[typingList[id].action]++;
             }
         });
-        return (<span className="preview">
+        return (<span className={'preview' + (withAnimation ? ' with-animation' : '')}>
                 {ids.slice(0, 2).map((id, index) => {
                     const peerId = id.split('_')[0];
                     return (<span key={index}>

@@ -1,3 +1,8 @@
+## 0.34.33
+* UI improvements
+* Prevent duplicates in Create Groups/Label
+* Minor bugs fixed
+
 ## 0.34.32
 * New typing animation
 * Known bugs fixed 
