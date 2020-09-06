@@ -37,6 +37,7 @@ import {
     KeyboardArrowLeftRounded,
     KeyboardArrowRightRounded,
     ArrowDropDownRounded,
+    GroupRounded,
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
@@ -113,6 +114,7 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import TeamRepo from "../../repository/team";
 import {ITeam} from "../../repository/team/interface";
 import {IPeer} from "../../repository/dialog/interface";
+import SettingsTeam from "../SettingsTeam";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -450,6 +452,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             confirmDialogMode, confirmDialogOpen, customBackgroundSrc, loading, privacy, passwordMode,
             teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName,
         } = this.state;
+        const team = teamList.find(o => o.id === teamSelectedId);
         return (
             <div className="settings-menu">
                 <DevTools ref={this.devToolsRefHandler}/>
@@ -543,6 +546,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
                                         </Link>
                                     </div>
+                                    <div className="page-anchor" onClick={this.selectPageHandler('teams')}>
+                                        <div className="icon color-teams">
+                                            <GroupRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.team.teams')}</div>
+                                    </div>
                                     <div className="page-anchor" onClick={this.selectPageHandler('storage')}>
                                         <div className="icon color-data">
                                             <DataUsageRounded/>
@@ -607,7 +616,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageContent === 'theme') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onPrevHandler}
+                                    onClick={this.prevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -784,7 +793,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageContent === 'account') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onPrevHandler}
+                                    onClick={this.prevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -848,7 +857,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 }}
                                                 value={firstname}
                                                 className="input-edit"
-                                                onChange={this.onFirstnameChangeHandler}
+                                                onChange={this.firstnameChangeHandler}
                                             />}
                                         </div>
                                         <div className="line">
@@ -969,7 +978,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageContent === 'privacy') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onPrevHandler}
+                                    onClick={this.prevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -1039,10 +1048,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 </Scrollbars>
                             </div>
                         </React.Fragment>}
+                        {Boolean(pageContent === 'teams') && <SettingsTeam team={team} onPrev={this.prevHandler}/>}
                         {Boolean(pageContent === 'storage') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onPrevHandler}
+                                    onClick={this.prevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -1091,7 +1101,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageContent === 'language') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onPrevHandler}
+                                    onClick={this.prevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -1119,7 +1129,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageContent === 'notification') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onPrevHandler}
+                                    onClick={this.prevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -1148,7 +1158,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageSubContent === 'session') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onSubPrevHandler}
+                                    onClick={this.subPrevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -1215,7 +1225,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 <React.Fragment key={item.id}>
                                     <div className="menu-header">
                                         <IconButton
-                                            onClick={this.onSubPrevHandler}
+                                            onClick={this.subPrevHandler}
                                         >
                                             <KeyboardBackspaceRounded/>
                                         </IconButton>
@@ -1274,7 +1284,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageSubContent === '2fa') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onSubPrevHandler}
+                                    onClick={this.subPrevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -1295,7 +1305,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageSubContent === 'block') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    onClick={this.onSubPrevHandler}
+                                    onClick={this.subPrevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -1435,7 +1445,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         el.setAttribute('font', String(this.state.fontSize));
     }
 
-    private onPrevHandler = () => {
+    private prevHandler = () => {
         this.setState({
             editProfile: false,
             editUsername: false,
@@ -1446,7 +1456,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private onSubPrevHandler = () => {
+    private subPrevHandler = () => {
         this.setState({
             page: '2',
             pageSubContent: 'none',
@@ -1476,6 +1486,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
             this.getUser();
         } else if (target === 'privacy') {
             this.getPrivacy();
+        } else if (target === 'teams') {
+            // todo
         }
     }
 
@@ -1537,7 +1549,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private onFirstnameChangeHandler = (e: any) => {
+    private firstnameChangeHandler = (e: any) => {
         this.setState({
             firstname: e.currentTarget.value,
         });

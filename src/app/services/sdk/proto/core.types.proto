@@ -47,8 +47,6 @@ message UpdateContainer {
     repeated Group Groups = 6;
 }
 
-
-
 // ProtoMessage
 // If AuthID == 0 then Payload is a MessageEnvelop otherwise Payload is a ProtoEncryptedPayload
 message ProtoMessage {
@@ -501,6 +499,18 @@ message GeoLocation {
     required float Long = 2;
 }
 
+// TeamFlags
+enum TeamFlags {
+    TeamFlagsEmpty = 0;
+    TeamFlagsCreator = 1;
+    TeamFlagsAdmin = 2;
+    TeamFlagsReserved1 = 3;
+    TeamFlagsReserved2 = 4;
+    TeamFlagsReserved3 = 5;
+    TeamFlagsReserved4 = 6;
+    TeamFlagsReserved5 = 7;
+}
+
 // InputTeam
 message InputTeam {
     required int64 ID = 1 [jstype = JS_STRING];
@@ -513,5 +523,6 @@ message Team {
     required string Name = 2;
     required int64 CreatorID = 3 [jstype = JS_STRING];
     required fixed64 AccessHash = 6 [jstype = JS_STRING];
+    repeated TeamFlags Flags = 7;
 }
 

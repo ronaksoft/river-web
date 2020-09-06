@@ -1901,6 +1901,11 @@ export class Team extends jspb.Message {
   getAccesshash(): string | undefined;
   setAccesshash(value: string): void;
 
+  clearFlagsList(): void;
+  getFlagsList(): Array<TeamFlags>;
+  setFlagsList(value: Array<TeamFlags>): void;
+  addFlags(value: TeamFlags, index?: number): TeamFlags;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Team.AsObject;
   static toObject(includeInstance: boolean, msg: Team): Team.AsObject;
@@ -1917,6 +1922,7 @@ export namespace Team {
     name?: string,
     creatorid?: string,
     accesshash?: string,
+    flagsList?: Array<TeamFlags>,
   }
 }
 
@@ -2039,5 +2045,16 @@ export enum PrivacyType {
   PRIVACYTYPEDISALLOWALL = 2,
   PRIVACYTYPEALLOWUSERS = 101,
   PRIVACYTYPEDISALLOWUSERS = 102,
+}
+
+export enum TeamFlags {
+  TEAMFLAGSEMPTY = 0,
+  TEAMFLAGSCREATOR = 1,
+  TEAMFLAGSADMIN = 2,
+  TEAMFLAGSRESERVED1 = 3,
+  TEAMFLAGSRESERVED2 = 4,
+  TEAMFLAGSRESERVED3 = 5,
+  TEAMFLAGSRESERVED4 = 6,
+  TEAMFLAGSRESERVED5 = 7,
 }
 

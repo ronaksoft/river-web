@@ -90,6 +90,7 @@ message Document {
     repeated DocumentAttribute Attributes = 8;
     optional FileLocation Thumbnail = 9;
     optional string MD5Checksum = 10;
+    optional bytes TinyThumbnail = 11;
 }
 
 // InputMediaWebDocument
@@ -139,6 +140,7 @@ message InputMediaUploadedDocument {
     repeated InputDocument Stickers = 5;
     repeated DocumentAttribute Attributes = 6;
     repeated MessageEntity Entities = 7;
+    optional bytes TinyThumbnail = 8;
 }
 
 // InputMediaDocument
@@ -148,16 +150,6 @@ message InputMediaDocument {
     repeated MessageEntity Entities = 3;
     optional InputFile Thumbnail = 4;
     repeated DocumentAttribute Attributes = 5;
-}
-
-// InputMediaUploadedSealedDocument
-message InputMediaUploadedSealedDocument {
-    required InputFile SealedFile = 1;
-    optional InputFile SealedThumbnail = 2;
-    required string EncryptedMimeType = 3;
-    required string EncryptedCaption = 4;
-    repeated DocumentAttribute Attributes = 6;
-    repeated MessageEntity Entities = 7;
 }
 
 // InputMediaMessageDocument

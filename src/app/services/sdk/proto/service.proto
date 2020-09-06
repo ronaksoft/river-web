@@ -1,0 +1,14 @@
+syntax = "proto2";
+package msg ;
+
+import "core.types.proto";
+
+message ServiceSendMessage {
+    required int64 OnBehalf = 100;
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    required string Body = 5;
+    optional int64 ReplyTo = 6;
+    optional bool ClearDraft = 7;
+    repeated MessageEntity Entities = 8;
+}

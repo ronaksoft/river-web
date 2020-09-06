@@ -1,0 +1,97 @@
+syntax = "proto2";
+package msg;
+import "core.types.proto";
+
+// CommunitySendMedia
+// @Function
+// @Return: CommunityMessage
+message CommunitySendMessage {
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    required string Body = 3;
+    repeated MessageEntity Entities = 5;
+    optional int64 ReplyMarkup = 6;
+    optional bytes ReplyMarkupData = 7;
+    required int64 SenderID = 8;
+    required int64 SenderMsgID = 9;
+}
+
+// CommunitySendMedia
+// @Function
+// @Return: CommunityMessage
+message CommunitySendMedia {
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    required InputMediaType MediaType = 3;
+    required bytes MediaData = 4;
+    optional int64 ReplyTo = 5;
+    optional bool ClearDraft = 6;
+    required int64 SenderID = 9;
+    required int64 SenderMsgID = 10;
+}
+
+// CommunitySetTyping
+// @Function
+// @Return: Bool
+message CommunitySetTyping {
+    required InputPeer Peer = 1;
+    required TypingAction Action = 2;
+    required int64 SenderID = 3;
+}
+
+// CommunityGetUpdates
+// @Function
+// @Return: CommunityUpdateContainer
+message CommunityGetUpdates {
+    required int32 WaitAfterInMS = 1;
+    required int32 WaitMaxInMS = 2;
+    required int32 SizeLimit = 3;
+    optional int64 OffsetID = 4;
+}
+
+// CommunityGetMembers
+// @Function
+// @Return: TeamMembers
+message CommunityGetMembers {
+    optional int32 Offset = 1;
+    optional int32 Limit = 2;
+}
+
+// CommunityRecall
+// @Function
+// @Return: Bool
+message CommunityRecall {
+    required int64 TeamID = 1;
+    required bytes AccessKey = 2;
+}
+
+// CommunityAuthorizeUser
+// @Function
+// @Return: CommunityUser
+message CommunityAuthorizeUser {
+    required string Phone = 1;
+    required string FirstName = 2;
+    optional string LastName = 3;
+    optional string Provider = 4;
+}
+
+// CommunityUser
+message CommunityUser {
+    required int64 UserID = 1;
+    required string FirstName = 2;
+    required string LastName = 3;
+    required string Phone = 4;
+}
+// CommunityUpdateEnvelope
+message CommunityUpdateEnvelope {
+    required int64 OffsetID = 1;
+    required int32 PartitionID = 2;
+    required int64 Constructor = 3;
+    optional bytes Update = 4;
+}
+
+// CommunityUpdateContainer
+message CommunityUpdateContainer {
+    repeated CommunityUpdateEnvelope Updates = 1;
+    optional bool Empty = 2;
+}

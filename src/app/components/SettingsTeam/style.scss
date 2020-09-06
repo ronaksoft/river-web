@@ -1,0 +1,141 @@
+/*
+    Creation Time: 2020 - Sep - 09
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.team-settings-section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  .team-info {
+    border-top: 1px solid #E0E0E080;
+    padding: 16px 8px;
+  }
+
+  .member-wrapper {
+    flex: 1 1;
+  }
+
+  .member-container {
+    .category-item {
+      color: var(--river);
+      font-size: 14px;
+      line-height: 16px;
+      font-weight: bold;
+      height: 26px;
+      text-align: left;
+      padding: 6px 16px 1px;
+      user-select: none;
+      background-color: var(--bg);
+      text-transform: uppercase;
+    }
+
+    .member-item {
+      position: relative;
+      height: 64px;
+      padding: 8px;
+      border-bottom: 1px solid var(--light);
+      display: flex;
+      flex-direction: row-reverse;
+
+      &:last-of-type {
+        border-color: transparent !important;
+      }
+
+      &:hover {
+        background-color: var(--color-hover);
+      }
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        margin-right: 12px;
+
+        img {
+          float: left;
+          width: 48px;
+          height: 48px;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+      }
+
+      .admin-wrapper {
+        position: absolute;
+        top: 11px;
+        left: 64px;
+        width: 16px;
+        height: 16px;
+
+        svg {
+          font-size: 16px;
+          color: var(--dark);
+        }
+      }
+
+      .member-info {
+        flex: 1 1;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-evenly;
+        flex-direction: column;
+
+        .name {
+          display: inline-block;
+          min-width: 200px;
+          font-size: 12px;
+          line-height: 23px;
+          margin: 0 0 4px;
+          color: var(--dark);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 230px;
+          font-weight: bold;
+          text-align: left;
+        }
+
+        .last-seen {
+          font-size: 12px;
+          line-height: 23px;
+
+          .online {
+            color: var(--river);
+          }
+        }
+      }
+
+      &.admin {
+        .name {
+          padding-left: 16px;
+        }
+      }
+
+      .more {
+        position: absolute;
+        top: 5px;
+        right: 8px;
+        height: 25px;
+        width: 20px;
+        display: none;
+        cursor: pointer;
+        z-index: 10;
+
+        svg {
+          height: 25px;
+          font-size: 25px;
+        }
+      }
+
+      &:hover .more {
+        display: block;
+      }
+    }
+  }
+}

@@ -252,6 +252,13 @@ export class Document extends jspb.Message {
   getMd5checksum(): string | undefined;
   setMd5checksum(value: string): void;
 
+  hasTinythumbnail(): boolean;
+  clearTinythumbnail(): void;
+  getTinythumbnail(): Uint8Array | string;
+  getTinythumbnail_asU8(): Uint8Array;
+  getTinythumbnail_asB64(): string;
+  setTinythumbnail(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Document.AsObject;
   static toObject(includeInstance: boolean, msg: Document): Document.AsObject;
@@ -274,6 +281,7 @@ export namespace Document {
     attributesList: Array<DocumentAttribute.AsObject>,
     thumbnail?: core_types_pb.FileLocation.AsObject,
     md5checksum?: string,
+    tinythumbnail: Uint8Array | string,
   }
 }
 
@@ -495,6 +503,13 @@ export class InputMediaUploadedDocument extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
+  hasTinythumbnail(): boolean;
+  clearTinythumbnail(): void;
+  getTinythumbnail(): Uint8Array | string;
+  getTinythumbnail_asU8(): Uint8Array;
+  getTinythumbnail_asB64(): string;
+  setTinythumbnail(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputMediaUploadedDocument.AsObject;
   static toObject(includeInstance: boolean, msg: InputMediaUploadedDocument): InputMediaUploadedDocument.AsObject;
@@ -514,6 +529,7 @@ export namespace InputMediaUploadedDocument {
     stickersList: Array<core_types_pb.InputDocument.AsObject>,
     attributesList: Array<DocumentAttribute.AsObject>,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
+    tinythumbnail: Uint8Array | string,
   }
 }
 
@@ -560,58 +576,6 @@ export namespace InputMediaDocument {
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
     thumbnail?: core_types_pb.InputFile.AsObject,
     attributesList: Array<DocumentAttribute.AsObject>,
-  }
-}
-
-export class InputMediaUploadedSealedDocument extends jspb.Message {
-  hasSealedfile(): boolean;
-  clearSealedfile(): void;
-  getSealedfile(): core_types_pb.InputFile;
-  setSealedfile(value?: core_types_pb.InputFile): void;
-
-  hasSealedthumbnail(): boolean;
-  clearSealedthumbnail(): void;
-  getSealedthumbnail(): core_types_pb.InputFile | undefined;
-  setSealedthumbnail(value?: core_types_pb.InputFile): void;
-
-  hasEncryptedmimetype(): boolean;
-  clearEncryptedmimetype(): void;
-  getEncryptedmimetype(): string | undefined;
-  setEncryptedmimetype(value: string): void;
-
-  hasEncryptedcaption(): boolean;
-  clearEncryptedcaption(): void;
-  getEncryptedcaption(): string | undefined;
-  setEncryptedcaption(value: string): void;
-
-  clearAttributesList(): void;
-  getAttributesList(): Array<DocumentAttribute>;
-  setAttributesList(value: Array<DocumentAttribute>): void;
-  addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
-
-  clearEntitiesList(): void;
-  getEntitiesList(): Array<core_types_pb.MessageEntity>;
-  setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
-  addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputMediaUploadedSealedDocument.AsObject;
-  static toObject(includeInstance: boolean, msg: InputMediaUploadedSealedDocument): InputMediaUploadedSealedDocument.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputMediaUploadedSealedDocument, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputMediaUploadedSealedDocument;
-  static deserializeBinaryFromReader(message: InputMediaUploadedSealedDocument, reader: jspb.BinaryReader): InputMediaUploadedSealedDocument;
-}
-
-export namespace InputMediaUploadedSealedDocument {
-  export type AsObject = {
-    sealedfile: core_types_pb.InputFile.AsObject,
-    sealedthumbnail?: core_types_pb.InputFile.AsObject,
-    encryptedmimetype?: string,
-    encryptedcaption?: string,
-    attributesList: Array<DocumentAttribute.AsObject>,
-    entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
 

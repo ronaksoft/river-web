@@ -304,7 +304,14 @@
       "q10": "What is your dream country/city you want to live after retirement?"
     },
     "badge_counter": "Badge Counter",
-    "include_muted": "Include muted"
+    "include_muted": "Include muted",
+    "team": {
+      "teams": "Teams",
+      "admins": "Admins",
+      "info": "Info",
+      "add_member": "Add Member",
+      "members": "Members ({0})"
+    }
   },
   "contact": {
     "contacts": "Contacts",
@@ -319,7 +326,10 @@
     "group_settings": "Group Settings",
     "group_title": "Group title",
     "is_not_on_river_yet": "{0} is not on River yet!",
-    "global_search": "Global Search"
+    "global_search": "Global Search",
+    "promote": "Promote",
+    "demote": "Demote",
+    "you_have_no_authority": "You have no authority!"
   },
   "media": {
     "photo_video": "Photo & Video",

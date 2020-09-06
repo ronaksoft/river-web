@@ -61,6 +61,7 @@ goog.exportSymbol('proto.msg.ProtoMessage', null, global);
 goog.exportSymbol('proto.msg.PushTokenProvider', null, global);
 goog.exportSymbol('proto.msg.RSAPublicKey', null, global);
 goog.exportSymbol('proto.msg.Team', null, global);
+goog.exportSymbol('proto.msg.TeamFlags', null, global);
 goog.exportSymbol('proto.msg.TypingAction', null, global);
 goog.exportSymbol('proto.msg.UpdateContainer', null, global);
 goog.exportSymbol('proto.msg.UpdateEnvelope', null, global);
@@ -982,7 +983,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.Team = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.Team.repeatedFields_, null);
 };
 goog.inherits(proto.msg.Team, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -15058,6 +15059,13 @@ proto.msg.InputTeam.prototype.hasAccesshash = function() {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.Team.repeatedFields_ = [7];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -15092,7 +15100,8 @@ proto.msg.Team.toObject = function(includeInstance, msg) {
     id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     creatorid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    accesshash: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
+    accesshash: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
+    flagsList: (f = jspb.Message.getRepeatedField(msg, 7)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -15144,6 +15153,10 @@ proto.msg.Team.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
+      break;
+    case 7:
+      var value = /** @type {!proto.msg.TeamFlags} */ (reader.readEnum());
+      msg.addFlags(value);
       break;
     default:
       reader.skipField();
@@ -15199,6 +15212,13 @@ proto.msg.Team.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeFixed64String(
       6,
+      f
+    );
+  }
+  f = message.getFlagsList();
+  if (f.length > 0) {
+    writer.writeRepeatedEnum(
+      7,
       f
     );
   }
@@ -15346,6 +15366,43 @@ proto.msg.Team.prototype.clearAccesshash = function() {
  */
 proto.msg.Team.prototype.hasAccesshash = function() {
   return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * repeated TeamFlags Flags = 7;
+ * @return {!Array<!proto.msg.TeamFlags>}
+ */
+proto.msg.Team.prototype.getFlagsList = function() {
+  return /** @type {!Array<!proto.msg.TeamFlags>} */ (jspb.Message.getRepeatedField(this, 7));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.TeamFlags>} value
+ * @return {!proto.msg.Team} returns this
+ */
+proto.msg.Team.prototype.setFlagsList = function(value) {
+  return jspb.Message.setField(this, 7, value || []);
+};
+
+
+/**
+ * @param {!proto.msg.TeamFlags} value
+ * @param {number=} opt_index
+ * @return {!proto.msg.Team} returns this
+ */
+proto.msg.Team.prototype.addFlags = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 7, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.Team} returns this
+ */
+proto.msg.Team.prototype.clearFlagsList = function() {
+  return this.setFlagsList([]);
 };
 
 
@@ -15501,6 +15558,20 @@ proto.msg.PrivacyType = {
   PRIVACYTYPEDISALLOWALL: 2,
   PRIVACYTYPEALLOWUSERS: 101,
   PRIVACYTYPEDISALLOWUSERS: 102
+};
+
+/**
+ * @enum {number}
+ */
+proto.msg.TeamFlags = {
+  TEAMFLAGSEMPTY: 0,
+  TEAMFLAGSCREATOR: 1,
+  TEAMFLAGSADMIN: 2,
+  TEAMFLAGSRESERVED1: 3,
+  TEAMFLAGSRESERVED2: 4,
+  TEAMFLAGSRESERVED3: 5,
+  TEAMFLAGSRESERVED4: 6,
+  TEAMFLAGSRESERVED5: 7
 };
 
 goog.object.extend(exports, proto.msg);

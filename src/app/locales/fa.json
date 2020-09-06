@@ -300,7 +300,11 @@
       "q10": "کشور و یا شهری که علاقه مند هستید پس از بازنشستگی در آنجا زندگی کنید، چیست؟"
     },
     "badge_counter": "نشانه شمارنده",
-    "include_muted": "شمارش بی‌صداها"
+    "include_muted": "شمارش بی‌صداها",
+    "team": {
+      "teams": "تیم",
+      "admins": "ادمین"
+    }
   },
   "contact": {
     "contacts": "مخاطب‌ها",
@@ -315,7 +319,10 @@
     "group_settings": "تنظیمات گروه",
     "group_title": "عنوان گروه",
     "is_not_on_river_yet": "{1}هنوز عضو ریور نشده است!",
-    "global_search": "جستجو کلی"
+    "global_search": "جستجو کلی",
+    "promote": "ترفیع",
+    "demote": "تنزل",
+    "you_have_no_authority": "شما هیچ اختیاری ندارید!"
   },
   "media": {
     "photo_video": "تصویر و ویدئو",

@@ -156,7 +156,7 @@ import {FileGetBySha256} from "./messages/files_pb";
 import {GifDelete, GifGetSaved, GifSave, SavedGifs} from "./messages/gif_pb";
 import {DocumentAttribute} from "./messages/chat.messages.medias_pb";
 import FileManager from "./fileManager";
-import {TeamsMany} from "./messages/team_pb";
+import {TeamListMembers, TeamMembers, TeamsMany} from "./messages/team_pb";
 
 export default class APIManager {
     public static getInstance() {
@@ -1091,6 +1091,12 @@ export default class APIManager {
             data.setReplyto(replyTo);
         }
         return this.server.send(C_MSG.BotSendInlineResults, data.serializeBinary(), true);
+    }
+
+    public teamListMember(teamId: string): Promise<TeamMembers.AsObject> {
+        const data = new TeamListMembers();
+        data.setTeamid(teamId);
+        return this.server.send(C_MSG.TeamListMembers, data.serializeBinary(), true);
     }
 
     public ping(): Promise<Pong.AsObject> {

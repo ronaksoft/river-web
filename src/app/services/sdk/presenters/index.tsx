@@ -33,7 +33,7 @@ import {UsersMany} from '../messages/users_pb';
 import {LabelItems, LabelsListItems} from "../messages/chat.labels_pb";
 import {BotCallbackAnswer, BotResults} from "../messages/chat.bot_pb";
 import {FoundGifs, SavedGifs} from "../messages/gif_pb";
-import {TeamsMany} from "../messages/team_pb";
+import {TeamMembers, TeamsMany} from "../messages/team_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -126,6 +126,8 @@ export default class Presenter {
                 return BotResults.deserializeBinary(data);
             case C_MSG.TeamsMany:
                 return TeamsMany.deserializeBinary(data);
+            case C_MSG.TeamMembers:
+                return TeamMembers.deserializeBinary(data);
             case C_MSG.Pong:
                 return Pong.deserializeBinary(data);
             default:

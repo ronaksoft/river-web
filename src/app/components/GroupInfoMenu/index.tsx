@@ -564,25 +564,25 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             if (currentUser.userid !== this.userId) {
                 menuItems.push({
                     cmd: 'remove',
-                    title: 'Remove',
+                    title: i18n.t('contact.remove'),
                 });
             }
             if (group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) {
                 if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
                     menuItems.push({
                         cmd: 'promote',
-                        title: 'Promote',
+                        title: i18n.t('contact.promote'),
                     });
                 }
                 if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
                     menuItems.push({
                         cmd: 'demote',
-                        title: 'Demote',
+                        title: i18n.t('contact.demote'),
                     });
                 }
             }
         } else {
-            return (<span>You have no authority!</span>);
+            return (<span>{i18n.t('contacts.you_have_no_authority')}</span>);
         }
         return menuItems.map((item, index) => {
             return (<MenuItem key={index} onClick={this.moreCmdHandler(item.cmd)}
