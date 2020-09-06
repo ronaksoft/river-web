@@ -20,13 +20,14 @@ import './style.scss';
 interface IProps {
     onDone: (contacts: IUser[], caption: string) => void;
     teamId: string;
+    title?: string;
 }
 
 interface IState {
     caption: string;
+    hiddenContacts: IUser[];
     open: boolean;
     page: string;
-    phone: string;
     recipients: IUser[];
 }
 
@@ -36,21 +37,22 @@ class ContactPicker extends React.Component<IProps, IState> {
 
         this.state = {
             caption: '',
+            hiddenContacts: [],
             open: false,
             page: '1',
-            phone: '',
             recipients: [],
         };
     }
 
-    public openDialog() {
+    public openDialog(selectedUser?: IUser[]) {
         this.setState({
+            hiddenContacts: selectedUser || [],
             open: true,
         });
     }
 
     public render() {
-        const {page, open, recipients} = this.state;
+        const {page, open, recipients, hiddenContacts} = this.state;
         return (
             <Dialog
                 className="contact-picker"
@@ -73,10 +75,10 @@ class ContactPicker extends React.Component<IProps, IState> {
                                     >
                                         <CloseRounded/>
                                     </IconButton>
-                                    {i18n.t('general.choose_recipients')}
+                                    {this.props.title || i18n.t('general.choose_recipients')}
                                 </div>
                                 <ContactList onChange={this.addRecipientChangeHandler} mode="chip"
-                                             teamId={this.props.teamId}/>
+                                             teamId={this.props.teamId} hiddenContacts={hiddenContacts}/>
                                 {Boolean(recipients.length > 0) && <div className="actions-bar">
                                     <div className="add-action send" onClick={this.doneHandler}>
                                         <SendRounded/>
@@ -92,8 +94,8 @@ class ContactPicker extends React.Component<IProps, IState> {
 
     private handleClose = () => {
         this.setState({
+            hiddenContacts: [],
             open: false,
-            phone: '',
             recipients: [],
         });
     }

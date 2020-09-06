@@ -330,6 +330,7 @@ message UserMessage {
     required int32 PeerType = 3;
     required int64 CreatedOn = 4;
     required int64 EditedOn = 5;
+    optional bool Fwd = 601;
     required int64 FwdSenderID = 6 [jstype = JS_STRING];
     required int64 FwdChannelID = 7 [jstype = JS_STRING];
     required int64 FwdChannelMessageID = 8 [jstype = JS_STRING];
@@ -373,7 +374,7 @@ enum MessageEntityType {
     MessageEntityTypeHashTag = 5;
     MessageEntityTypeCode = 6;
     MessageEntityTypeBotCommand = 7;
-    MessageEntityTypeReserved3 = 8;
+    MessageEntityTypeMentionAll = 8;
     MessageEntityTypeReserved4 = 9;
     MessageEntityTypeReserved5 = 10;
     MessageEntityTypeReserved6 = 11;

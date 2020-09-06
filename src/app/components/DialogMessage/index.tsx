@@ -344,8 +344,8 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 {ids.slice(0, 2).map((id, index) => {
                     const peerId = id.split('_')[0];
                     return (<span key={index}>
-                        {index !== 0 ? (ids.length - 1 === index ? i18n.t('general.type_and') : i18n.t('general.type_comma')) : ''}
-                        <UserName id={peerId} onlyFirstName={true} noIcon={true}/>
+                        {index !== 0 ? (ids.length - 1 === index ? i18n.t('status.type_and') : i18n.t('status.type_comma')) : ''}
+                        <UserName id={peerId} onlyFirstName={true} noIcon={true} className="type-user"/>
                     </span>);
                 })}
             {Boolean(ids.length > 2) &&

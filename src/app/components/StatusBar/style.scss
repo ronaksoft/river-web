@@ -26,6 +26,11 @@
 
   .preview.with-animation {
     color: var(--river);
+
+    .type-user {
+      color: var(--river);
+      font-weight: bold;
+    }
   }
 
   .name {
@@ -105,6 +110,10 @@ html[theme="dark-blue"] {
 
     .preview.with-animation {
       color: var(--dark-mention);
+
+      .type-user {
+        color: var(--dark-mention);
+      }
     }
 
     .online {

@@ -10,7 +10,13 @@
 import * as React from 'react';
 import {Team} from "../../services/sdk/messages/core.types_pb";
 import {IconButton, TextField} from "@material-ui/core";
-import {KeyboardBackspaceRounded, MoreVert, PersonRounded, StarRateRounded, GroupAddRounded} from "@material-ui/icons";
+import {
+    KeyboardBackspaceRounded,
+    MoreVert,
+    PersonRounded,
+    StarRateRounded,
+    GroupAddRounded,
+} from "@material-ui/icons";
 import i18n from "../../services/i18n";
 import Scrollbars from "react-custom-scrollbars";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
@@ -29,6 +35,10 @@ import LastSeen from "../LastSeen";
 import {localize} from "../../services/utilities/localize";
 import Menu from "@material-ui/core/Menu/Menu";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
+import {TeamMember} from "../../services/sdk/messages/team_pb";
+import {findIndex} from "lodash";
+import ContactPicker from "../ContactPicker";
+import {Error as RiverError} from "../../services/sdk/messages/core.types_pb";
 
 import './style.scss';
 
@@ -36,11 +46,13 @@ interface IMember {
     admin: boolean;
     id: string;
     category?: string;
+    t?: IUser;
 }
 
 interface IProps {
     onPrev: (e: any) => void;
     team: Team.AsObject | undefined;
+    onError?: (message: string) => void;
 }
 
 interface IState {
@@ -70,6 +82,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
     private list: VariableSizeList | undefined;
     private apiManager: APIManager;
     private userRepo: UserRepo;
+    private contactPickerRef: ContactPicker | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -124,7 +137,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                     </div>
                     <div
                         className="sub-page-header-alt">{i18n.tf('settings.team.members', String(localize(count)))}</div>
-                    <div className="page-anchor anchor-padding-side">
+                    <div className="page-anchor anchor-padding-side" onClick={this.addMemberHandler}>
                         <div className="icon color-session">
                             <GroupAddRounded/>
                         </div>
@@ -146,8 +159,14 @@ class SettingsTeam extends React.Component<IProps, IState> {
                 >
                     {this.contextMenuItem()}
                 </Menu>
+                <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler} teamId={'0'}
+                               title={i18n.t('settings.team.choose_contacts')}/>
             </>
         );
+    }
+
+    private contactPickerRefHandler = (ref: any) => {
+        this.contactPickerRef = ref;
     }
 
     private contextMenuItem() {
@@ -156,11 +175,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
             return null;
         }
         const member = list[moreIndex];
-        const menuItems: any[] = [{
-            cmd: 'remove',
-            color: '#cc0000',
-            title: i18n.t('contact.remove'),
-        }];
+        const menuItems: any[] = [];
         if (!member.admin) {
             menuItems.push({
                 cmd: 'promote',
@@ -172,6 +187,11 @@ class SettingsTeam extends React.Component<IProps, IState> {
                 title: i18n.t('contact.demote'),
             });
         }
+        menuItems.push({
+            cmd: 'remove',
+            color: '#cc0000',
+            title: i18n.t('contact.remove'),
+        });
         return menuItems.map((item, index) => {
             let style = {};
             if (item.color) {
@@ -345,28 +365,10 @@ class SettingsTeam extends React.Component<IProps, IState> {
         });
         this.apiManager.teamListMember(team.id || '0').then((res) => {
             this.userRepo.importBulk(false, res.membersList.map(m => m.user));
-            const admins: IUser[] = [];
-            let users: IUser[] = [];
             const count = res.membersList.length;
-            res.membersList.forEach((m) => {
-                if (m.admin) {
-                    admins.push(m.user);
-                } else {
-                    users.push(m.user);
-                }
-            });
-            users = categorizeContact(users);
-            const list: IMember[] = [{
-                admin: true,
-                category: i18n.t('settings.team.admins'),
-                id: 'admin',
-            }, ...admins.map(u => ({
-                admin: true,
-                id: u.id || '0',
-            })), ...users.map(u => ({admin: false, id: u.id || '0', category: u.category}))];
             this.setState({
                 count,
-                list,
+                list: this.trimList(res.membersList),
                 loading: false,
             });
         }).catch(() => {
@@ -376,9 +378,136 @@ class SettingsTeam extends React.Component<IProps, IState> {
         });
     }
 
+    private trimList(members: TeamMember.AsObject[]) {
+        const admins: IUser[] = [];
+        let users: IUser[] = [];
+        members.forEach((m) => {
+            if (m.admin) {
+                admins.push(m.user);
+            } else {
+                users.push(m.user);
+            }
+        });
+        users = categorizeContact(users);
+        const list: IMember[] = [{
+            admin: true,
+            category: i18n.t('settings.team.admins'),
+            id: 'admin',
+        }, ...admins.map(u => ({
+            admin: true,
+            id: u.id || '0',
+            t: u,
+        })), ...users.map(u => ({admin: false, id: u.id || '0', category: u.category, t: u}))];
+        return list;
+    }
+
+    private listToMembers(list: IMember[]): TeamMember.AsObject[] {
+        return list.filter(i => !i.category).map(i => ({
+            admin: i.admin || false,
+            user: i.t || {},
+            userid: i.id,
+        }));
+    }
+
     /* Context Menu action handler */
     private contextMenuActionHandler = (cmd: string, member: IMember) => (e: any) => {
+        const {team, list} = this.state;
+        if (!team) {
+            return;
+        }
         this.moreCloseHandler();
+        if (!window.confirm(i18n.t('general.are_you_sure'))) {
+            return;
+        }
+        switch (cmd) {
+            case 'remove':
+                this.apiManager.teamRemoveMember(team.id || '0', member.id).then(() => {
+                    const index = findIndex(list, {id: member.id});
+                    if (index > -1) {
+                        list.splice(index, 0);
+                        if (this.list) {
+                            this.list.resetAfterIndex(0, false);
+                        }
+                        this.setState({
+                            list: this.trimList(this.listToMembers(list)),
+                            loading: false,
+                        });
+                    }
+                }).catch(this.catchFunction);
+                break;
+            case 'promote':
+                this.apiManager.teamPromoteMember(team.id || '0', member.id).then(() => {
+                    const index = findIndex(list, {id: member.id});
+                    if (index > -1) {
+                        list[index].admin = true;
+                        if (this.list) {
+                            this.list.resetAfterIndex(0, false);
+                        }
+                        this.setState({
+                            list: this.trimList(this.listToMembers(list)),
+                            loading: false,
+                        });
+                    }
+                }).catch(this.catchFunction);
+                break;
+            case 'demote':
+                this.apiManager.teamDemoteMember(team.id || '0', member.id).then(() => {
+                    const index = findIndex(list, {id: member.id});
+                    if (index > -1) {
+                        list[index].admin = false;
+                        if (this.list) {
+                            this.list.resetAfterIndex(0, false);
+                        }
+                        this.setState({
+                            list: this.trimList(this.listToMembers(list)),
+                            loading: false,
+                        });
+                    }
+                }).catch(this.catchFunction);
+                break;
+        }
+    }
+
+    private addMemberHandler = () => {
+        if (!this.contactPickerRef) {
+            return;
+        }
+        this.contactPickerRef.openDialog(this.state.list.filter(o => o.t && !o.category).map(o => o.t || {}));
+    }
+
+    private contactPickerDoneHandler = (contacts: IUser[], caption: string) => {
+        const {team, list} = this.state;
+        if (!team || contacts.length === 0) {
+            return;
+        }
+        const promises: any[] = [];
+        contacts.forEach((contact) => {
+            promises.push(this.apiManager.teamAddMember(team.id || '0', contact.id || '0'));
+        });
+        if (promises.length > 0) {
+            Promise.all(promises).then(() => {
+                if (this.list) {
+                    this.list.resetAfterIndex(0, false);
+                }
+                this.setState({
+                    list: this.trimList([...contacts.map(u => ({
+                        admin: false,
+                        user: u,
+                        userid: u.id || '0',
+                    })), ...this.listToMembers(list)]),
+                    loading: false,
+                });
+            }).catch(this.catchFunction);
+        }
+    }
+
+    private catchFunction = (err: RiverError.AsObject) => {
+        if (this.props.onError) {
+            this.props.onError(JSON.stringify(err));
+        }
+        this.setState({
+            loading: false,
+        });
     }
 }
 

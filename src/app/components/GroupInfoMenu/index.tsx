@@ -69,7 +69,7 @@ interface IProps {
 }
 
 interface IState {
-    addMemberDialogEnable: boolean;
+    addMemberDialogOpen: boolean;
     avatarMenuAnchorEl: any;
     currentUser: IParticipant | null;
     dialog: IDialog | null;
@@ -120,7 +120,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            addMemberDialogEnable: false,
+            addMemberDialogOpen: false,
             avatarMenuAnchorEl: null,
             currentUser: null,
             dialog: null,
@@ -187,7 +187,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            addMemberDialogEnable, avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl,
+            addMemberDialogOpen, avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl,
             dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto, shareMediaEnabled
         } = this.state;
         const isAdmin = group ? hasAuthority(group, false) : false;
@@ -379,14 +379,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     {this.contextMenuItem()}
                 </Menu>
                 <Dialog
-                    open={addMemberDialogEnable}
+                    open={addMemberDialogOpen}
                     onClose={this.addMemberDialogCloseHandler}
                     className="add-member-dialog"
                     classes={{
                         paper: 'add-member-dialog-paper'
                     }}
                 >
-                    {addMemberDialogEnable && <div className="dialog-content">
+                    {addMemberDialogOpen && <div className="dialog-content">
                         <div className="dialog-header">
                             <PersonAddRounded/> {i18n.t('peer_info.add_member')}
                         </div>
@@ -658,14 +658,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     /* Opens the add member dialog */
     private addMemberDialogOpenHandler = () => {
         this.setState({
-            addMemberDialogEnable: true,
+            addMemberDialogOpen: true,
         });
     }
 
     /* Closes the add member dialog */
     private addMemberDialogCloseHandler = () => {
         this.setState({
-            addMemberDialogEnable: false,
+            addMemberDialogOpen: false,
         });
     }
 

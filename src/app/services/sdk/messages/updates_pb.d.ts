@@ -1671,15 +1671,25 @@ export class UpdateTeamMemberAdded extends jspb.Message {
   getTeamid(): string | undefined;
   setTeamid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
-  setUserid(value: string): void;
+  hasUser(): boolean;
+  clearUser(): void;
+  getUser(): core_types_pb.User;
+  setUser(value?: core_types_pb.User): void;
+
+  hasContact(): boolean;
+  clearContact(): void;
+  getContact(): core_types_pb.ContactUser;
+  setContact(value?: core_types_pb.ContactUser): void;
 
   hasAdderid(): boolean;
   clearAdderid(): void;
   getAdderid(): string | undefined;
   setAdderid(value: string): void;
+
+  hasHash(): boolean;
+  clearHash(): void;
+  getHash(): number | undefined;
+  setHash(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateTeamMemberAdded.AsObject;
@@ -1696,8 +1706,10 @@ export namespace UpdateTeamMemberAdded {
     ucount?: number,
     updateid?: number,
     teamid?: string,
-    userid?: string,
+    user: core_types_pb.User.AsObject,
+    contact: core_types_pb.ContactUser.AsObject,
     adderid?: string,
+    hash?: number,
   }
 }
 
@@ -1727,6 +1739,11 @@ export class UpdateTeamMemberRemoved extends jspb.Message {
   getRemoverid(): string | undefined;
   setRemoverid(value: string): void;
 
+  hasHash(): boolean;
+  clearHash(): void;
+  getHash(): number | undefined;
+  setHash(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateTeamMemberRemoved.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateTeamMemberRemoved): UpdateTeamMemberRemoved.AsObject;
@@ -1744,6 +1761,53 @@ export namespace UpdateTeamMemberRemoved {
     teamid?: string,
     userid?: string,
     removerid?: string,
+    hash?: number,
+  }
+}
+
+export class UpdateTeamMemberStatus extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
+  hasChangerid(): boolean;
+  clearChangerid(): void;
+  getChangerid(): string | undefined;
+  setChangerid(value: string): void;
+
+  hasAdmin(): boolean;
+  clearAdmin(): void;
+  getAdmin(): boolean | undefined;
+  setAdmin(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateTeamMemberStatus.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateTeamMemberStatus): UpdateTeamMemberStatus.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateTeamMemberStatus, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateTeamMemberStatus;
+  static deserializeBinaryFromReader(message: UpdateTeamMemberStatus, reader: jspb.BinaryReader): UpdateTeamMemberStatus;
+}
+
+export namespace UpdateTeamMemberStatus {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    teamid?: string,
+    changerid?: string,
+    admin?: boolean,
   }
 }
 

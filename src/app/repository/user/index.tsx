@@ -181,6 +181,9 @@ export default class UserRepo {
     }
 
     public getManyCache(teamId: string, isContact: boolean, {keyword, limit}: any): Promise<IUser[]> {
+        if (keyword) {
+            keyword = keyword.replace('\\', '');
+        }
         const reg = new RegExp(keyword || '', 'gi');
         const searchFilter = (u: IUser) => {
             if (u.id === this.apiManager.getConnInfo().UserID && reg.test('Saved Messages')) {

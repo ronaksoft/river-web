@@ -486,8 +486,8 @@ export namespace BotDeleteMessage {
 export class BotSetCallbackAnswer extends jspb.Message {
   hasQueryid(): boolean;
   clearQueryid(): void;
-  getQueryid(): number | undefined;
-  setQueryid(value: number): void;
+  getQueryid(): string | undefined;
+  setQueryid(value: string): void;
 
   hasUrl(): boolean;
   clearUrl(): void;
@@ -516,7 +516,7 @@ export class BotSetCallbackAnswer extends jspb.Message {
 
 export namespace BotSetCallbackAnswer {
   export type AsObject = {
-    queryid?: number,
+    queryid?: string,
     url?: string,
     message?: string,
     cachetime?: number,
@@ -638,8 +638,8 @@ export class BotSetInlineResults extends jspb.Message {
 
   hasQueryid(): boolean;
   clearQueryid(): void;
-  getQueryid(): number | undefined;
-  setQueryid(value: number): void;
+  getQueryid(): string | undefined;
+  setQueryid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotSetInlineResults.AsObject;
@@ -659,7 +659,7 @@ export namespace BotSetInlineResults {
     nextoffset?: string,
     resultsList: Array<InputBotInlineResult.AsObject>,
     switchpm?: BotInlineSwitchPM.AsObject,
-    queryid?: number,
+    queryid?: string,
   }
 }
 

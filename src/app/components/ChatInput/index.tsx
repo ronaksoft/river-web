@@ -178,8 +178,12 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
             const offset = getOffsetForCode(mention.plainTextIndex);
             entity.setOffset(mention.plainTextIndex - offset);
             entity.setLength(mention.display.length);
-            entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
-            entity.setUserid(mention.id);
+            if (mention.id === 'all') {
+                entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTIONALL);
+            } else {
+                entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
+                entity.setUserid(mention.id);
+            }
             entities.push(entity);
         });
         mentions.filter((c) => {
@@ -943,6 +947,15 @@ class ChatInput extends React.Component<IProps, IState> {
                     length: o.length || 0,
                     offset: o.offset || 0,
                     val: o.userid || '',
+                };
+            }));
+        }
+        if (entities.some(o => o.type === MessageEntityType.MESSAGEENTITYTYPEMENTIONALL)) {
+            text = mentionize(text, entities.filter(o => o.type === MessageEntityType.MESSAGEENTITYTYPEMENTIONALL).map(o => {
+                return {
+                    length: o.length || 0,
+                    offset: o.offset || 0,
+                    val: 'all',
                 };
             }));
         }

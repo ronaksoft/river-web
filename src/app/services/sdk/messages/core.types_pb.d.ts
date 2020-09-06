@@ -1239,6 +1239,11 @@ export class UserMessage extends jspb.Message {
   getEditedon(): number | undefined;
   setEditedon(value: number): void;
 
+  hasFwd(): boolean;
+  clearFwd(): void;
+  getFwd(): boolean | undefined;
+  setFwd(value: boolean): void;
+
   hasFwdsenderid(): boolean;
   clearFwdsenderid(): void;
   getFwdsenderid(): string | undefined;
@@ -1358,6 +1363,7 @@ export namespace UserMessage {
     peertype?: number,
     createdon?: number,
     editedon?: number,
+    fwd?: boolean,
     fwdsenderid?: string,
     fwdchannelid?: string,
     fwdchannelmessageid?: string,
@@ -2009,7 +2015,7 @@ export enum MessageEntityType {
   MESSAGEENTITYTYPEHASHTAG = 5,
   MESSAGEENTITYTYPECODE = 6,
   MESSAGEENTITYTYPEBOTCOMMAND = 7,
-  MESSAGEENTITYTYPERESERVED3 = 8,
+  MESSAGEENTITYTYPEMENTIONALL = 8,
   MESSAGEENTITYTYPERESERVED4 = 9,
   MESSAGEENTITYTYPERESERVED5 = 10,
   MESSAGEENTITYTYPERESERVED6 = 11,

@@ -4340,7 +4340,7 @@ proto.msg.BotSetCallbackAnswer.deserializeBinaryFromReader = function(msg, reade
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setQueryid(value);
       break;
     case 2:
@@ -4384,9 +4384,9 @@ proto.msg.BotSetCallbackAnswer.prototype.serializeBinary = function() {
  */
 proto.msg.BotSetCallbackAnswer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -4417,15 +4417,15 @@ proto.msg.BotSetCallbackAnswer.serializeBinaryToWriter = function(message, write
 
 /**
  * required int64 QueryID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.BotSetCallbackAnswer.prototype.getQueryid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.BotSetCallbackAnswer} returns this
  */
 proto.msg.BotSetCallbackAnswer.prototype.setQueryid = function(value) {
@@ -5289,7 +5289,7 @@ proto.msg.BotSetInlineResults.deserializeBinaryFromReader = function(msg, reader
       msg.setSwitchpm(value);
       break;
     case 7:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setQueryid(value);
       break;
     default:
@@ -5365,9 +5365,9 @@ proto.msg.BotSetInlineResults.serializeBinaryToWriter = function(message, writer
       proto.msg.BotInlineSwitchPM.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
+  f = /** @type {string} */ (jspb.Message.getField(message, 7));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       7,
       f
     );
@@ -5596,15 +5596,15 @@ proto.msg.BotSetInlineResults.prototype.hasSwitchpm = function() {
 
 /**
  * required int64 QueryID = 7;
- * @return {number}
+ * @return {string}
  */
 proto.msg.BotSetInlineResults.prototype.getQueryid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.BotSetInlineResults} returns this
  */
 proto.msg.BotSetInlineResults.prototype.setQueryid = function(value) {

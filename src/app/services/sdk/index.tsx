@@ -156,7 +156,15 @@ import {FileGetBySha256} from "./messages/files_pb";
 import {GifDelete, GifGetSaved, GifSave, SavedGifs} from "./messages/gif_pb";
 import {DocumentAttribute} from "./messages/chat.messages.medias_pb";
 import FileManager from "./fileManager";
-import {TeamListMembers, TeamMembers, TeamsMany} from "./messages/team_pb";
+import {
+    TeamAddMember,
+    TeamDemote,
+    TeamListMembers,
+    TeamMembers,
+    TeamPromote,
+    TeamRemoveMember,
+    TeamsMany
+} from "./messages/team_pb";
 
 export default class APIManager {
     public static getInstance() {
@@ -1097,6 +1105,35 @@ export default class APIManager {
         const data = new TeamListMembers();
         data.setTeamid(teamId);
         return this.server.send(C_MSG.TeamListMembers, data.serializeBinary(), true);
+    }
+
+    public teamPromoteMember(teamId: string, userId: string): Promise<Bool.AsObject> {
+        const data = new TeamPromote();
+        data.setTeamid(teamId);
+        data.setUserid(userId);
+        return this.server.send(C_MSG.TeamPromote, data.serializeBinary(), true);
+    }
+
+    public teamDemoteMember(teamId: string, userId: string): Promise<Bool.AsObject> {
+        const data = new TeamDemote();
+        data.setTeamid(teamId);
+        data.setUserid(userId);
+        return this.server.send(C_MSG.TeamDemote, data.serializeBinary(), true);
+    }
+
+    public teamAddMember(teamId: string, userId: string): Promise<Bool.AsObject> {
+        const data = new TeamAddMember();
+        data.setTeamid(teamId);
+        data.setUserid(userId);
+        data.setManager(false);
+        return this.server.send(C_MSG.TeamAddMember, data.serializeBinary(), false);
+    }
+
+    public teamRemoveMember(teamId: string, userId: string): Promise<Bool.AsObject> {
+        const data = new TeamRemoveMember();
+        data.setTeamid(teamId);
+        data.setUserid(userId);
+        return this.server.send(C_MSG.TeamRemoveMember, data.serializeBinary(), true);
     }
 
     public ping(): Promise<Pong.AsObject> {

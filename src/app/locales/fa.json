@@ -65,7 +65,8 @@
     "dialogs": "گفتگو",
     "clear": "حذف",
     "open": "بگشا",
-    "via_gif": " با @"
+    "via_gif": " با @",
+    "all": "همه"
   },
   "chat": {
     "search": "جستجو",
@@ -303,7 +304,12 @@
     "include_muted": "شمارش بی‌صداها",
     "team": {
       "teams": "تیم",
-      "admins": "ادمین"
+      "admins": "ادمین",
+      "info": "درباره تیم",
+      "add_member": "افزودن عضو",
+      "members": "اعضا ({0})",
+      "choose_contacts": "اعضا را انتخای کنید",
+      "no_members": "بدون عضو"
     }
   },
   "contact": {

@@ -136,6 +136,8 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
                                       onClick={botCommandHandler(elem.str || '')}>{elem.str}</span>);
                     case MessageEntityType.MESSAGEENTITYTYPECODE:
                         return (<CodeViewer key={i} snippet={elem.str || ''} onDone={measureFn}/>);
+                    case MessageEntityType.MESSAGEENTITYTYPEMENTIONALL:
+                        return (<span className="_mention">@all</span>);
                     default:
                         return (<span key={i}>{elem.str}</span>);
                 }

@@ -245,6 +245,13 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
         if (data && data.ids.indexOf(this.state.id) === -1) {
             return;
         }
+        if (this.state.id === 'all') {
+            this.setState({
+                user: {
+                    firstname: 'all',
+                }
+            });
+        }
 
         this.userRepo.get(this.state.id).then((user) => {
             if (!this.mounted) {

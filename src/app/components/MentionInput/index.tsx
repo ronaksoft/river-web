@@ -20,6 +20,7 @@ import {emojiList} from "../ChatInput/emojis";
 import {IUser} from "../../repository/user/interface";
 import APIManager from "../../services/sdk";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import i18n from '../../services/i18n';
 
 import './style.scss';
 
@@ -154,6 +155,13 @@ class MentionInput extends React.Component<IProps, IState> {
         }
         // Search engine
         const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
+            participants.unshift({
+                accesshash: '',
+                firstname: 'all',
+                lastname: '',
+                userid: 'all',
+                username: 'all',
+            });
             const users: any[] = [];
             const reg = new RegExp(word.replace('\\', ''), "i");
             let exactMatchIndex: number = -1;
@@ -204,7 +212,8 @@ class MentionInput extends React.Component<IProps, IState> {
                 <UserAvatar id={a.id} noDetail={true}/>
             </div>
             <div className="info">
-                <UserName id={a.id} className="name" unsafe={true} noDetail={true} noIcon={true}/>
+                {a.id === 'all' ? <span className="name">{i18n.t('general.all')}</span> :
+                    <UserName id={a.id} className="name" unsafe={true} noDetail={true} noIcon={true}/>}
                 {Boolean(a.username) && <span className="username">{a.username}</span>}
             </div>
         </div>);

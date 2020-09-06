@@ -124,7 +124,12 @@ class ContactList extends React.Component<IProps, IState> {
             globalUsers: [],
             hiddenContacts: (props.hiddenContacts || []).map((o) => {
                 // @ts-ignore
-                return {...o, id: o.userid};
+                if (o.userid) {
+                    // @ts-ignore
+                    return {...o, id: o.userid};
+                } else {
+                    return o;
+                }
             }),
             loading: false,
             moreAnchorPos: null,
@@ -152,7 +157,12 @@ class ContactList extends React.Component<IProps, IState> {
         this.setState({
             hiddenContacts: (newProps.hiddenContacts || []).map((o) => {
                 // @ts-ignore
-                return {...o, id: o.userid};
+                if (o.userid) {
+                    // @ts-ignore
+                    return {...o, id: o.userid};
+                } else {
+                    return o;
+                }
             }),
         }, () => {
             if (this.state.selectedContacts.length === 0 && !this.props.disableCheckSelected) {

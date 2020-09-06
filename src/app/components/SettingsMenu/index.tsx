@@ -67,7 +67,7 @@ import {
     PeerType,
     PrivacyKey,
     PrivacyRule,
-    PrivacyType
+    PrivacyType, TeamFlags
 } from '../../services/sdk/messages/core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import AvatarCropper from '../AvatarCropper';
@@ -452,7 +452,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             confirmDialogMode, confirmDialogOpen, customBackgroundSrc, loading, privacy, passwordMode,
             teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName,
         } = this.state;
-        const team = teamList.find(o => o.id === teamSelectedId);
+        const team = teamList.find(o => o.id === teamSelectedId && ((o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSADMIN) > -1 || (o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSCREATOR) > -1));
         return (
             <div className="settings-menu">
                 <DevTools ref={this.devToolsRefHandler}/>
@@ -546,12 +546,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
                                         </Link>
                                     </div>
+                                    {Boolean(team) &&
                                     <div className="page-anchor" onClick={this.selectPageHandler('teams')}>
                                         <div className="icon color-teams">
                                             <GroupRounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.team.teams')}</div>
-                                    </div>
+                                    </div>}
                                     <div className="page-anchor" onClick={this.selectPageHandler('storage')}>
                                         <div className="icon color-data">
                                             <DataUsageRounded/>
@@ -1048,7 +1049,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 </Scrollbars>
                             </div>
                         </React.Fragment>}
-                        {Boolean(pageContent === 'teams') && <SettingsTeam team={team} onPrev={this.prevHandler}/>}
+                        {Boolean(pageContent === 'teams') &&
+                        <SettingsTeam team={team} onPrev={this.prevHandler} onError={this.props.onError}/>}
                         {Boolean(pageContent === 'storage') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton

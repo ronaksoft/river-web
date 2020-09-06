@@ -1,3 +1,8 @@
+## 0.34.35
+* Team settings implemented
+* @all implemented
+* Bug fixes and performance improvements
+
 ## 0.34.34
 * Typo fixed
 

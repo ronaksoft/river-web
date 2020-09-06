@@ -32,8 +32,10 @@ import ElectronService from "./app/services/electron";
 import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 
 import './App.scss';
+import {ThemeChanged} from "./app/components/SettingsMenu";
+import Broadcaster from "./app/services/broadcaster";
 
-export const C_VERSION = '0.34.34';
+export const C_VERSION = '0.34.35';
 export const C_ELECTRON_VERSION = '10.1.1';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
@@ -46,21 +48,23 @@ if (isProd) {
     });
 }
 
-const theme = createMuiTheme({
-    direction: localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl' ? 'rtl' : 'ltr',
-    palette: {
-        primary: {
-            contrastText: '#FFF',
-            dark: '#2E8F57',
-            light: '#29c16d',
-            main: '#27AE60',
+const getTheme = () => {
+    return createMuiTheme({
+        direction: localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl' ? 'rtl' : 'ltr',
+        palette: {
+            primary: {
+                contrastText: '#FFF',
+                dark: '#2E8F57',
+                light: '#29c16d',
+                main: '#27AE60',
+            },
+            type: (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') === 'light' ? 'light' : 'dark',
         },
-        type: (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') === 'light' ? 'light' : 'dark',
-    },
-    typography: {
-        fontFamily: `'YekanBakh', 'OpenSans'`,
-    },
-});
+        typography: {
+            fontFamily: `'YekanBakh', 'OpenSans'`,
+        },
+    });
+};
 
 interface IState {
     alertOpen: boolean;
@@ -88,6 +92,8 @@ class App extends React.Component<{}, IState> {
     private readonly sessionId: number = 0;
     private multipleSession: boolean = false;
     private sessionsIds: number[] = [];
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: {}) {
         super(props);
@@ -101,6 +107,8 @@ class App extends React.Component<{}, IState> {
             updateContent: '',
             updateMode: '',
         };
+
+        this.broadcaster = Broadcaster.getInstance();
 
         this.mainRepo = MainRepo.getInstance();
 
@@ -143,6 +151,8 @@ class App extends React.Component<{}, IState> {
             });
         });
 
+        this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
+
         const el = document.querySelector('html');
         if (el) {
             el.setAttribute('theme', localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light');
@@ -178,6 +188,11 @@ class App extends React.Component<{}, IState> {
         window.removeEventListener(EventFocus, this.windowFocusHandler);
         window.removeEventListener(EventBlur, this.windowBlurHandler);
         window.removeEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
 
         if (this.broadcastChannel) {
             this.broadcastChannel.removeEventListener(EventMessage, this.channelMessageHandler);
@@ -217,7 +232,7 @@ class App extends React.Component<{}, IState> {
         const {alertOpen, clearingSiteData, errorMessage, hasUpdate, updateContent, desktopDownloadLink, updateMode} = this.state;
         return (
             <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
-                <MuiThemeProvider theme={theme}>
+                <MuiThemeProvider theme={getTheme()}>
                     <SnackbarProvider maxSnack={3}>
                         {Routes}
                     </SnackbarProvider>
@@ -441,6 +456,10 @@ class App extends React.Component<{}, IState> {
     private downloadDesktopHandler = (link: string) => () => {
         ElectronService.openExternal(link);
         this.updateDialogCloseHandler();
+    }
+
+    private themeChangeHandler = () => {
+        this.forceUpdate();
     }
 }
 

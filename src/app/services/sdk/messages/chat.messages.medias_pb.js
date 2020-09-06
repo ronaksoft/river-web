@@ -4528,7 +4528,8 @@ proto.msg.InputMediaDocument.toObject = function(includeInstance, msg) {
     core_types_pb.MessageEntity.toObject, includeInstance),
     thumbnail: (f = msg.getThumbnail()) && core_types_pb.InputFile.toObject(includeInstance, f),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
-    proto.msg.DocumentAttribute.toObject, includeInstance)
+    proto.msg.DocumentAttribute.toObject, includeInstance),
+    tinythumbnail: msg.getTinythumbnail_asB64()
   };
 
   if (includeInstance) {
@@ -4588,6 +4589,10 @@ proto.msg.InputMediaDocument.deserializeBinaryFromReader = function(msg, reader)
       var value = new proto.msg.DocumentAttribute;
       reader.readMessage(value,proto.msg.DocumentAttribute.deserializeBinaryFromReader);
       msg.addAttributes(value);
+      break;
+    case 6:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setTinythumbnail(value);
       break;
     default:
       reader.skipField();
@@ -4655,6 +4660,13 @@ proto.msg.InputMediaDocument.serializeBinaryToWriter = function(message, writer)
       5,
       f,
       proto.msg.DocumentAttribute.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeBytes(
+      6,
+      f
     );
   }
 };
@@ -4843,6 +4855,66 @@ proto.msg.InputMediaDocument.prototype.addAttributes = function(opt_value, opt_i
  */
 proto.msg.InputMediaDocument.prototype.clearAttributesList = function() {
   return this.setAttributesList([]);
+};
+
+
+/**
+ * optional bytes TinyThumbnail = 6;
+ * @return {!(string|Uint8Array)}
+ */
+proto.msg.InputMediaDocument.prototype.getTinythumbnail = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * optional bytes TinyThumbnail = 6;
+ * This is a type-conversion wrapper around `getTinythumbnail()`
+ * @return {string}
+ */
+proto.msg.InputMediaDocument.prototype.getTinythumbnail_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getTinythumbnail()));
+};
+
+
+/**
+ * optional bytes TinyThumbnail = 6;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getTinythumbnail()`
+ * @return {!Uint8Array}
+ */
+proto.msg.InputMediaDocument.prototype.getTinythumbnail_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getTinythumbnail()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.msg.InputMediaDocument} returns this
+ */
+proto.msg.InputMediaDocument.prototype.setTinythumbnail = function(value) {
+  return jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.InputMediaDocument} returns this
+ */
+proto.msg.InputMediaDocument.prototype.clearTinythumbnail = function() {
+  return jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.InputMediaDocument.prototype.hasTinythumbnail = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 

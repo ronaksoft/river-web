@@ -22,6 +22,8 @@
   }
 
   .member-container {
+    height: 100%;
+
     .category-item {
       color: var(--river);
       font-size: 14px;
@@ -120,7 +122,7 @@
       .more {
         position: absolute;
         top: 5px;
-        right: 8px;
+        right: 3px;
         height: 25px;
         width: 20px;
         display: none;
@@ -135,6 +137,149 @@
 
       &:hover .more {
         display: block;
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .team-settings-section {
+    .team-info {
+      border-color: var(--dark-low-op50);
+
+      label, input {
+        color: var(--white);
+      }
+    }
+
+    .member-container {
+      .category-item {
+        background-color: var(--dark-high);
+      }
+
+      .member-item {
+        background-color: var(--dark-medium);
+        border-color: var(--dark-high);
+
+        &:hover {
+          background-color: var(--dark-hover);
+        }
+
+        .admin-wrapper {
+          svg {
+            font-size: 16px;
+            color: var(--light);
+          }
+        }
+
+        .member-info {
+          .name {
+            color: var(--white);
+          }
+
+          .last-seen {
+            color: var(--light);
+          }
+        }
+
+        .more {
+          svg {
+            color: var(--white);
+          }
+        }
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .team-settings-section {
+    .member-container {
+      .category-item {
+        text-align: right;
+      }
+
+      .member-item {
+
+        .avatar {
+          margin-right: 0;
+          margin-left: 12px;
+        }
+
+        .admin-wrapper {
+          left: auto;
+          right: 64px;
+        }
+
+        .member-info {
+
+          .name {
+            text-align: right;
+          }
+        }
+
+        &.admin {
+          .name {
+            padding-left: 0;
+            padding-right: 16px;
+          }
+        }
+
+        .more {
+          right: auto;
+          left: 6px;
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .team-settings-section {
+    .team-info {
+      border-color: var(--dark-blue-low-op50);
+
+      label, input {
+        color: var(--white);
+      }
+    }
+
+    .member-container {
+      .category-item {
+        background-color: var(--dark-blue-low-op50);
+      }
+
+      .member-item {
+        background-color: var(--dark-blue-medium);
+        border-color: var(--dark-blue-low);
+
+        &:hover {
+          background-color: var(--dark-blue-hover);
+        }
+
+        .admin-wrapper {
+          svg {
+            font-size: 16px;
+            color: var(--light);
+          }
+        }
+
+        .member-info {
+          .name {
+            color: var(--white);
+          }
+
+          .last-seen {
+            color: var(--light);
+          }
+        }
+
+        .more {
+          svg {
+            color: var(--white);
+          }
+        }
       }
     }
   }

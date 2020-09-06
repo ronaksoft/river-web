@@ -668,7 +668,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.UserMessage = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.UserMessage.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, 500, proto.msg.UserMessage.repeatedFields_, null);
 };
 goog.inherits(proto.msg.UserMessage, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -10078,6 +10078,7 @@ proto.msg.UserMessage.toObject = function(includeInstance, msg) {
     peertype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
     createdon: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
     editedon: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
+    fwd: (f = jspb.Message.getBooleanField(msg, 601)) == null ? undefined : f,
     fwdsenderid: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
     fwdchannelid: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
     fwdchannelmessageid: (f = jspb.Message.getField(msg, 8)) == null ? undefined : f,
@@ -10157,6 +10158,10 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setEditedon(value);
+      break;
+    case 601:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setFwd(value);
       break;
     case 6:
       var value = /** @type {string} */ (reader.readInt64String());
@@ -10303,6 +10308,13 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt64(
       5,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 601));
+  if (f != null) {
+    writer.writeBool(
+      601,
       f
     );
   }
@@ -10656,6 +10668,42 @@ proto.msg.UserMessage.prototype.clearEditedon = function() {
  */
 proto.msg.UserMessage.prototype.hasEditedon = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional bool Fwd = 601;
+ * @return {boolean}
+ */
+proto.msg.UserMessage.prototype.getFwd = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 601, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.UserMessage} returns this
+ */
+proto.msg.UserMessage.prototype.setFwd = function(value) {
+  return jspb.Message.setField(this, 601, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UserMessage} returns this
+ */
+proto.msg.UserMessage.prototype.clearFwd = function() {
+  return jspb.Message.setField(this, 601, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UserMessage.prototype.hasFwd = function() {
+  return jspb.Message.getField(this, 601) != null;
 };
 
 
@@ -15513,7 +15561,7 @@ proto.msg.MessageEntityType = {
   MESSAGEENTITYTYPEHASHTAG: 5,
   MESSAGEENTITYTYPECODE: 6,
   MESSAGEENTITYTYPEBOTCOMMAND: 7,
-  MESSAGEENTITYTYPERESERVED3: 8,
+  MESSAGEENTITYTYPEMENTIONALL: 8,
   MESSAGEENTITYTYPERESERVED4: 9,
   MESSAGEENTITYTYPERESERVED5: 10,
   MESSAGEENTITYTYPERESERVED6: 11,

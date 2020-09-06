@@ -66,7 +66,8 @@
     "dialogs": "Dialogs",
     "clear": "Clear",
     "open": "Open",
-    "via_gif": " via @"
+    "via_gif": " via @",
+    "all": "All"
   },
   "chat": {
     "search": "Search",
@@ -310,7 +311,9 @@
       "admins": "Admins",
       "info": "Info",
       "add_member": "Add Member",
-      "members": "Members ({0})"
+      "members": "Members ({0})",
+      "choose_contacts": "Choose Members",
+      "no_members": "No Members"
     }
   },
   "contact": {

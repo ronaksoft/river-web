@@ -150,6 +150,7 @@ message InputMediaDocument {
     repeated MessageEntity Entities = 3;
     optional InputFile Thumbnail = 4;
     repeated DocumentAttribute Attributes = 5;
+    optional bytes TinyThumbnail = 6;
 }
 
 // InputMediaMessageDocument

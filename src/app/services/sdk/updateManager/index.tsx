@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import {C_LOCALSTORAGE, C_MSG} from '../const';
+import {C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../const';
 import {UpdateContainer, UpdateEnvelope, UserStatus} from '../messages/core.types_pb';
 import {
     UpdateDialogPinned,
@@ -284,7 +284,11 @@ export default class UpdateManager {
             }
             const minId = data.minupdateid || 0;
             const maxId = data.maxupdateid || 0;
-            window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId);
+            if (minId && minId === maxId && data.updatesList.length === 1) {
+                window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId, 'name:', C_MSG_NAME[data.updatesList[0].constructor || '']);
+            } else {
+                window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId);
+            }
             if (minId === 0 && maxId === 0) {
                 this.processZeroContainer(data);
                 return;

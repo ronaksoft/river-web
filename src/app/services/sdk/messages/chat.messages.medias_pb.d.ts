@@ -559,6 +559,13 @@ export class InputMediaDocument extends jspb.Message {
   setAttributesList(value: Array<DocumentAttribute>): void;
   addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
 
+  hasTinythumbnail(): boolean;
+  clearTinythumbnail(): void;
+  getTinythumbnail(): Uint8Array | string;
+  getTinythumbnail_asU8(): Uint8Array;
+  getTinythumbnail_asB64(): string;
+  setTinythumbnail(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputMediaDocument.AsObject;
   static toObject(includeInstance: boolean, msg: InputMediaDocument): InputMediaDocument.AsObject;
@@ -576,6 +583,7 @@ export namespace InputMediaDocument {
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
     thumbnail?: core_types_pb.InputFile.AsObject,
     attributesList: Array<DocumentAttribute.AsObject>,
+    tinythumbnail: Uint8Array | string,
   }
 }
 

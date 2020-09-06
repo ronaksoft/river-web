@@ -186,7 +186,8 @@ export default class MessageRepo {
         const out: IMessage = msg;
         if (msg.entitiesList && msg.entitiesList.length > 0) {
             out.mention_me = msg.entitiesList.some((entity) => {
-                return entity.type === MessageEntityType.MESSAGEENTITYTYPEMENTION && entity.userid === userId;
+                return (entity.type === MessageEntityType.MESSAGEENTITYTYPEMENTION && entity.userid === userId) ||
+                    (entity.type === MessageEntityType.MESSAGEENTITYTYPEMENTIONALL && msg.senderid !== userId);
             });
         }
         if (msg.media) {
