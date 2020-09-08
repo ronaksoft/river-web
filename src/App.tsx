@@ -30,12 +30,12 @@ import md from 'markdown-it';
 import {EventBeforeUnload, EventBlur, EventDragOver, EventDrop, EventFocus, EventMessage} from "./app/services/events";
 import ElectronService from "./app/services/electron";
 import {C_LOCALSTORAGE} from "./app/services/sdk/const";
-
-import './App.scss';
 import {ThemeChanged} from "./app/components/SettingsMenu";
 import Broadcaster from "./app/services/broadcaster";
 
-export const C_VERSION = '0.34.35';
+import './App.scss';
+
+export const C_VERSION = '0.34.36';
 export const C_ELECTRON_VERSION = '10.1.1';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');

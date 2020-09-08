@@ -1,3 +1,7 @@
+## 0.34.36
+* Tiny thumbnail implemented
+* Minor improvements
+
 ## 0.34.35
 * Team settings implemented
 * @all implemented

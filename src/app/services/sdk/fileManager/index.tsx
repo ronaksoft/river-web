@@ -203,7 +203,6 @@ export default class FileManager {
 
     /* Send the whole file */
     public sendFile(id: string, blob: Blob, onProgress?: (e: IFileProgress) => void) {
-        window.console.log(id);
         let internalResolve: any = null;
         let internalReject: any = null;
 

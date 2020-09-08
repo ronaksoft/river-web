@@ -4444,11 +4444,14 @@ class Chat extends React.Component<IProps, IState> {
                 inputThumbFile.setTotalparts(1);
                 if (sha256FileLocation) {
                     inputMediaDocument.setThumbnail(inputThumbFile);
+                    if (mediaItem.thumb.tiny) {
+                        inputMediaDocument.setTinythumbnail(mediaItem.thumb.tiny);
+                    }
                 } else {
                     inputMediaUploadedDocument.setThumbnail(inputThumbFile);
-                }
-                if (mediaItem.thumb.tiny) {
-                    inputMediaUploadedDocument.setTinythumbnail(mediaItem.thumb.tiny);
+                    if (mediaItem.thumb.tiny) {
+                        inputMediaUploadedDocument.setTinythumbnail(mediaItem.thumb.tiny);
+                    }
                 }
             }
 

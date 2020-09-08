@@ -17,7 +17,7 @@ import {
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 // @ts-ignore
-import {readAndCompressImage} from 'browser-image-resizer';
+import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
 import {IconButton, Tabs, Tab, Switch} from '@material-ui/core';
@@ -811,18 +811,22 @@ class Uploader extends React.Component<IProps, IState> {
     private generateThumbnails(image: any, config: any): Promise<[Blob, Uint8Array]> {
         const tinyConfig = {
             autoRotate: true,
-            height: 16,
-            quality: 0.6,
-            width: 16,
+            maxHeight: 24,
+            maxWidth: 24,
+            mimeType: 'image/jpeg',
+            quality: 0.7,
         };
         const promises: any[] = [];
-        promises.push(readAndCompressImage(image, config).then((res: any) => {
-            window.console.log(res);
-            return res;
-        }));
+        promises.push(readAndCompressImage(image, config));
         promises.push(readAndCompressImage(image, tinyConfig).then((res: any) => {
-            window.console.log(res);
-            return convertBlobToArrayBuffer(res);
+            if (res.size <= 1024) {
+                return convertBlobToArrayBuffer(res);
+            } else {
+                tinyConfig.quality = 0.3;
+                return readAndCompressImage(image, tinyConfig).then((smallerRes: any) => {
+                    return convertBlobToArrayBuffer(smallerRes);
+                });
+            }
         }).then((res: ArrayBuffer) => {
             return new Uint8Array(res);
         }));
@@ -862,7 +866,6 @@ class Uploader extends React.Component<IProps, IState> {
                 }
                 const thumbConfig = {
                     autoRotate: true,
-                    debug: true,
                     maxHeight: Math.min(160, maxSize),
                     maxWidth: Math.min(160, maxSize),
                     quality: 0.8,
@@ -900,7 +903,6 @@ class Uploader extends React.Component<IProps, IState> {
             }
         });
         Promise.all(promise).then((dist) => {
-            window.console.log(dist);
             const output: IMediaItem[] = [];
             for (let i = 0; i < items.length; i++) {
                 const {entities, text} = generateEntities(items[i].caption || '', items[i].mentionList || []);
@@ -925,7 +927,6 @@ class Uploader extends React.Component<IProps, IState> {
                     } : undefined,
                     title: items[i].title,
                 });
-                window.console.log(dist[i * 2 + 1].length ? dist[i * 2 + 1][1].size : 0);
             }
             this.props.onDone(output, this.options);
             this.dialogCloseHandler();
