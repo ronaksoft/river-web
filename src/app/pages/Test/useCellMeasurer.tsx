@@ -122,7 +122,7 @@ export default function useCellMeasurer({items}: { items: any[] }) {
     return {
         innerRef,
         itemCount: items.length,
-        itemSize: itemSize? itemSize : () => 0,
+        itemSize: true,
         key,
         style
     };

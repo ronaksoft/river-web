@@ -219,11 +219,88 @@ export namespace TeamListMembers {
   }
 }
 
+export class TeamEdit extends jspb.Message {
+  hasName(): boolean;
+  clearName(): void;
+  getName(): string | undefined;
+  setName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TeamEdit.AsObject;
+  static toObject(includeInstance: boolean, msg: TeamEdit): TeamEdit.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: TeamEdit, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TeamEdit;
+  static deserializeBinaryFromReader(message: TeamEdit, reader: jspb.BinaryReader): TeamEdit;
+}
+
+export namespace TeamEdit {
+  export type AsObject = {
+    name?: string,
+  }
+}
+
+export class TeamUploadPhoto extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
+  hasFile(): boolean;
+  clearFile(): void;
+  getFile(): core_types_pb.InputFile;
+  setFile(value?: core_types_pb.InputFile): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TeamUploadPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: TeamUploadPhoto): TeamUploadPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: TeamUploadPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TeamUploadPhoto;
+  static deserializeBinaryFromReader(message: TeamUploadPhoto, reader: jspb.BinaryReader): TeamUploadPhoto;
+}
+
+export namespace TeamUploadPhoto {
+  export type AsObject = {
+    teamid?: string,
+    file: core_types_pb.InputFile.AsObject,
+  }
+}
+
+export class TeamRemovePhoto extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TeamRemovePhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: TeamRemovePhoto): TeamRemovePhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: TeamRemovePhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TeamRemovePhoto;
+  static deserializeBinaryFromReader(message: TeamRemovePhoto, reader: jspb.BinaryReader): TeamRemovePhoto;
+}
+
+export namespace TeamRemovePhoto {
+  export type AsObject = {
+    teamid?: string,
+  }
+}
+
 export class TeamMembers extends jspb.Message {
   clearMembersList(): void;
   getMembersList(): Array<TeamMember>;
   setMembersList(value: Array<TeamMember>): void;
   addMembers(value?: TeamMember, index?: number): TeamMember;
+
+  clearUsersList(): void;
+  getUsersList(): Array<core_types_pb.User>;
+  setUsersList(value: Array<core_types_pb.User>): void;
+  addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TeamMembers.AsObject;
@@ -238,6 +315,7 @@ export class TeamMembers extends jspb.Message {
 export namespace TeamMembers {
   export type AsObject = {
     membersList: Array<TeamMember.AsObject>,
+    usersList: Array<core_types_pb.User.AsObject>,
   }
 }
 

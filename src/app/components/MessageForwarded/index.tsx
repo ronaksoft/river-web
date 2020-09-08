@@ -11,7 +11,6 @@ import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 import UserName from '../UserName';
-import GroupName from '../GroupName';
 import i18n from '../../services/i18n';
 
 import './style.scss';
@@ -23,7 +22,6 @@ interface IProps {
 }
 
 const MessageForwarded = ({message, peer, onDoubleClick}: IProps) => {
-    const mode = ((message.fwdsenderid || '').indexOf('-') === -1 ? 'user' : 'group');
     if (!message.fwdsenderid || message.fwdsenderid === '0') {
         return null;
     }
@@ -32,16 +30,13 @@ const MessageForwarded = ({message, peer, onDoubleClick}: IProps) => {
             <div className="forwarded-container">
                 <div className="forwarded-message-wrapper">
                     <span className="forwarded-bar"/>
-                    {Boolean(mode === 'user') && <div className="forward-message-detail">
-                        <UserName id={message.fwdsenderid} you={true} noIcon={true}
-                                  prefix={i18n.t('message.forwarded_message_from')}
-                                  defaultString={i18n.t('message.forwarded_message')}/>
-                    </div>}
-                    {Boolean(mode === 'group') && <div className="forward-message-detail">
-                        <GroupName id={message.fwdsenderid} teamId={message.teamid || '0'}
-                                   prefix={i18n.t('message.forwarded_message_from')}
-                                   defaultString={i18n.t('message.forwarded_message')} noIcon={true}/>
-                    </div>}
+                    <div className="forward-message-detail">
+                        {Boolean(!message.fwdsenderid || message.fwdsenderid === '0') ?
+                            <span>{i18n.t('message.forwarded_message')}</span>
+                            : <UserName id={message.fwdsenderid} you={true} noIcon={true}
+                                        prefix={i18n.t('message.forwarded_message_from')}
+                                        defaultString={i18n.t('message.forwarded_message')}/>}
+                    </div>
                 </div>
             </div>
         </div>

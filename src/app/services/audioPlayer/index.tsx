@@ -543,7 +543,7 @@ export default class AudioPlayer {
                         this.play(messageId, true);
                         resolve();
                     };
-                    this.audio.onerror = (err) => {
+                    this.audio.onerror = (err: any) => {
                         if (this.errFn) {
                             this.errFn({
                                 fast: false,

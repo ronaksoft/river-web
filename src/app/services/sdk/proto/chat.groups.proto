@@ -62,7 +62,7 @@ message GroupsUpdateAdmin {
 
 // GroupsUploadPhoto
 // @Function
-// @Return: Bool
+// @Return: Bool / GroupPhoto
 message GroupsUploadPhoto {
     required int64 GroupID = 1 [jstype = JS_STRING];
     required InputFile File = 2;

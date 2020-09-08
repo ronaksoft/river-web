@@ -989,7 +989,7 @@ class Message extends React.Component<IProps, IState> {
                                                     onClick={this.props.onJumpToMessage}
                                                     disableClick={this.state.selectable}
                                     />}
-                                    {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
+                                    {Boolean((message.fwdsenderid && message.fwdsenderid !== '0') || message.fwd) &&
                                     <MessageForwarded message={message} peer={peer}
                                                       onDoubleClick={this.moreCmdHandler('reply', index)}/>}
                                     <div className="bubble-body" onClick={bubbleClickHandler}>

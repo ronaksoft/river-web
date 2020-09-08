@@ -4220,6 +4220,9 @@ class Chat extends React.Component<IProps, IState> {
         tempDocument.setFilesize(mediaItem.file.size);
         tempDocument.setMimetype(mediaItem.fileType);
         tempDocument.setVersion(0);
+        if (mediaItem.thumb && mediaItem.thumb.tiny) {
+            tempDocument.setTinythumbnail(mediaItem.thumb.tiny);
+        }
 
         let tempImageFile: Blob | undefined;
 
@@ -4443,6 +4446,9 @@ class Chat extends React.Component<IProps, IState> {
                     inputMediaDocument.setThumbnail(inputThumbFile);
                 } else {
                     inputMediaUploadedDocument.setThumbnail(inputThumbFile);
+                }
+                if (mediaItem.thumb.tiny) {
+                    inputMediaUploadedDocument.setTinythumbnail(mediaItem.thumb.tiny);
                 }
             }
 

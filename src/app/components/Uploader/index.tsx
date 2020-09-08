@@ -17,7 +17,7 @@ import {
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 // @ts-ignore
-import readAndCompressImage from 'browser-image-resizer';
+import {readAndCompressImage} from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
 import {IconButton, Tabs, Tab, Switch} from '@material-ui/core';
@@ -34,6 +34,7 @@ import {measureNodeHeight} from "../ChatInput/measureHeight";
 import {generateEntities} from "../ChatInput";
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {convertBlobToArrayBuffer} from "../../services/sdk/fileManager";
 
 import './style.scss';
 
@@ -51,6 +52,7 @@ interface IMediaThumb {
     file: Blob;
     fileType: string;
     height: number;
+    tiny?: Uint8Array;
     width: number;
 }
 
@@ -806,6 +808,27 @@ class Uploader extends React.Component<IProps, IState> {
         });
     }
 
+    private generateThumbnails(image: any, config: any): Promise<[Blob, Uint8Array]> {
+        const tinyConfig = {
+            autoRotate: true,
+            height: 16,
+            quality: 0.6,
+            width: 16,
+        };
+        const promises: any[] = [];
+        promises.push(readAndCompressImage(image, config).then((res: any) => {
+            window.console.log(res);
+            return res;
+        }));
+        promises.push(readAndCompressImage(image, tinyConfig).then((res: any) => {
+            window.console.log(res);
+            return convertBlobToArrayBuffer(res);
+        }).then((res: ArrayBuffer) => {
+            return new Uint8Array(res);
+        }));
+        return Promise.all(promises) as Promise<[Blob, Uint8Array]>;
+    }
+
     /* Check button click handler */
     private doneHandler = () => {
         const {items, isFile, selected} = this.state;
@@ -839,11 +862,12 @@ class Uploader extends React.Component<IProps, IState> {
                 }
                 const thumbConfig = {
                     autoRotate: true,
+                    debug: true,
                     maxHeight: Math.min(160, maxSize),
                     maxWidth: Math.min(160, maxSize),
                     quality: 0.8,
                 };
-                promise.push(readAndCompressImage(item, thumbConfig));
+                promise.push(this.generateThumbnails(item, thumbConfig));
             } else if (item.mediaType === 'video') {
                 const videoThumbConfig = {
                     autoRotate: true,
@@ -852,7 +876,7 @@ class Uploader extends React.Component<IProps, IState> {
                     quality: 0.9,
                 };
                 promise.push(this.convertFileToBlob(item));
-                promise.push(readAndCompressImage(item.tempThumb, videoThumbConfig));
+                promise.push(this.generateThumbnails(item.tempThumb, videoThumbConfig));
             } else if (item.mediaType === 'audio') {
                 promise.push(this.convertFileToBlob(item));
                 if (item.tempThumb) {
@@ -862,7 +886,7 @@ class Uploader extends React.Component<IProps, IState> {
                         maxWidth: 360,
                         quality: 0.9,
                     };
-                    promise.push(readAndCompressImage(new Blob([item.tempThumb], {type: item.tempThumb.type}), coverThumbConfig));
+                    promise.push(this.generateThumbnails(new Blob([item.tempThumb], {type: item.tempThumb.type}), coverThumbConfig));
                 } else {
                     promise.push(new Promise((resolve) => {
                         resolve(item.tempThumb);
@@ -876,6 +900,7 @@ class Uploader extends React.Component<IProps, IState> {
             }
         });
         Promise.all(promise).then((dist) => {
+            window.console.log(dist);
             const output: IMediaItem[] = [];
             for (let i = 0; i < items.length; i++) {
                 const {entities, text} = generateEntities(items[i].caption || '', items[i].mentionList || []);
@@ -892,19 +917,23 @@ class Uploader extends React.Component<IProps, IState> {
                     path: items[i].path,
                     performer: items[i].performer,
                     thumb: dist[i * 2 + 1] ? {
-                        file: dist[i * 2 + 1],
+                        file: dist[i * 2 + 1].length ? dist[i * 2 + 1][0] : dist[i * 2 + 1],
                         fileType: 'image/jpeg',
                         height: Math.round(items[i].height || 0),
+                        tiny: dist[i * 2 + 1].length ? dist[i * 2 + 1][1] : undefined,
                         width: Math.round(items[i].width || 0),
                     } : undefined,
                     title: items[i].title,
                 });
+                window.console.log(dist[i * 2 + 1].length ? dist[i * 2 + 1][1].size : 0);
             }
             this.props.onDone(output, this.options);
             this.dialogCloseHandler();
             this.setState({
                 loading: false,
             });
+        }).catch((err) => {
+            window.console.log(err);
         });
     }
 

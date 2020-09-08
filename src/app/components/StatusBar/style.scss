@@ -27,6 +27,10 @@
   .preview.with-animation {
     color: var(--river);
 
+    span {
+      color: inherit;
+    }
+
     .type-user {
       color: var(--river);
       font-weight: bold;

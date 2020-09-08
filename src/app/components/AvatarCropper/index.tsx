@@ -126,7 +126,7 @@ class AvatarCropper extends React.Component<IProps, IState> {
                 // @ts-ignore
                 this.setState({
                     profileCropperOpen: true,
-                    profilePictureFile: fileReader.result,
+                    profilePictureFile: fileReader.result as string,
                 });
             });
             fileReader.readAsDataURL(e.target.files[0]);

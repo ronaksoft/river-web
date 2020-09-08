@@ -1811,7 +1811,7 @@ export namespace UpdateTeamMemberStatus {
   }
 }
 
-export class UpdateTeamPhotoChanged extends jspb.Message {
+export class UpdateTeamPhoto extends jspb.Message {
   hasUcount(): boolean;
   clearUcount(): void;
   getUcount(): number | undefined;
@@ -1829,25 +1829,65 @@ export class UpdateTeamPhotoChanged extends jspb.Message {
 
   hasPhoto(): boolean;
   clearPhoto(): void;
-  getPhoto(): core_types_pb.FileLocation;
-  setPhoto(value?: core_types_pb.FileLocation): void;
+  getPhoto(): core_types_pb.TeamPhoto;
+  setPhoto(value?: core_types_pb.TeamPhoto): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateTeamPhotoChanged.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateTeamPhotoChanged): UpdateTeamPhotoChanged.AsObject;
+  toObject(includeInstance?: boolean): UpdateTeamPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateTeamPhoto): UpdateTeamPhoto.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateTeamPhotoChanged, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateTeamPhotoChanged;
-  static deserializeBinaryFromReader(message: UpdateTeamPhotoChanged, reader: jspb.BinaryReader): UpdateTeamPhotoChanged;
+  static serializeBinaryToWriter(message: UpdateTeamPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateTeamPhoto;
+  static deserializeBinaryFromReader(message: UpdateTeamPhoto, reader: jspb.BinaryReader): UpdateTeamPhoto;
 }
 
-export namespace UpdateTeamPhotoChanged {
+export namespace UpdateTeamPhoto {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
     teamid?: string,
-    photo: core_types_pb.FileLocation.AsObject,
+    photo: core_types_pb.TeamPhoto.AsObject,
+  }
+}
+
+export class UpdateTeam extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
+  hasName(): boolean;
+  clearName(): void;
+  getName(): string | undefined;
+  setName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateTeam.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateTeam): UpdateTeam.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateTeam, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateTeam;
+  static deserializeBinaryFromReader(message: UpdateTeam, reader: jspb.BinaryReader): UpdateTeam;
+}
+
+export namespace UpdateTeam {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    teamid?: string,
+    name?: string,
   }
 }
 

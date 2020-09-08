@@ -124,7 +124,7 @@ class App extends React.Component<{}, IState> {
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         if (isProd) {
             Sentry.withScope((scope) => {
-                scope.setExtras(errorInfo);
+                scope.setExtra("extra", errorInfo);
                 const eventId = Sentry.captureException(error);
                 Sentry.showReportDialog({eventId});
             });

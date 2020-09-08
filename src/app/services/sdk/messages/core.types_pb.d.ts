@@ -1886,6 +1886,34 @@ export namespace InputTeam {
   }
 }
 
+export class TeamPhoto extends jspb.Message {
+  hasPhotobig(): boolean;
+  clearPhotobig(): void;
+  getPhotobig(): FileLocation;
+  setPhotobig(value?: FileLocation): void;
+
+  hasPhotosmall(): boolean;
+  clearPhotosmall(): void;
+  getPhotosmall(): FileLocation;
+  setPhotosmall(value?: FileLocation): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TeamPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: TeamPhoto): TeamPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: TeamPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TeamPhoto;
+  static deserializeBinaryFromReader(message: TeamPhoto, reader: jspb.BinaryReader): TeamPhoto;
+}
+
+export namespace TeamPhoto {
+  export type AsObject = {
+    photobig: FileLocation.AsObject,
+    photosmall: FileLocation.AsObject,
+  }
+}
+
 export class Team extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
@@ -1912,6 +1940,21 @@ export class Team extends jspb.Message {
   setFlagsList(value: Array<TeamFlags>): void;
   addFlags(value: TeamFlags, index?: number): TeamFlags;
 
+  hasCapacity(): boolean;
+  clearCapacity(): void;
+  getCapacity(): number | undefined;
+  setCapacity(value: number): void;
+
+  hasCommunity(): boolean;
+  clearCommunity(): void;
+  getCommunity(): boolean | undefined;
+  setCommunity(value: boolean): void;
+
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): TeamPhoto | undefined;
+  setPhoto(value?: TeamPhoto): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Team.AsObject;
   static toObject(includeInstance: boolean, msg: Team): Team.AsObject;
@@ -1929,6 +1972,9 @@ export namespace Team {
     creatorid?: string,
     accesshash?: string,
     flagsList?: Array<TeamFlags>,
+    capacity?: number,
+    community?: boolean,
+    photo?: TeamPhoto.AsObject,
   }
 }
 

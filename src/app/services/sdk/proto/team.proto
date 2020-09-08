@@ -65,9 +65,33 @@ message TeamListMembers {
     required int64 TeamID = 1 [jstype = JS_STRING];
 }
 
+// TeamEdit
+// @Function
+// @Returns: Team
+message TeamEdit {
+    required string Name = 1;
+    //    required bool Community = 2;
+}
+
+// TeamUploadPhoto
+// @Function
+// @Returns: TeamPhoto
+message TeamUploadPhoto {
+    required int64 TeamID = 1 [jstype = JS_STRING];
+    required InputFile File = 2;
+}
+
+// TeamRemovePhoto
+// @Function
+// @Returns: Bool
+message TeamRemovePhoto {
+    required int64 TeamID = 1 [jstype = JS_STRING];
+}
+
 // TeamMembers
 message TeamMembers {
     repeated TeamMember Members = 1;
+    repeated User Users = 2;
 }
 
 // TeamMember
