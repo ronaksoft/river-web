@@ -1056,7 +1056,7 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 });
                 this.setLoading(false);
-            }).catch(() => {
+            }).catch((err) => {
                 this.setLoading(false);
                 resolve();
             });
@@ -2175,6 +2175,16 @@ class Chat extends React.Component<IProps, IState> {
                     dialogs[index].peerid = msg.peerid || '';
                     dialogs[index].peertype = msg.peertype || 0;
                     dialogs[index].teamid = msg.teamid || '0';
+                    if (msg.mediadata) {
+                        const media = msg.mediadata as MediaDocument.AsObject;
+                        if (media.doc && media.doc.tinythumbnail) {
+                            dialogs[index].tiny_thumb = media.doc.tinythumbnail as string;
+                        } else {
+                            dialogs[index].tiny_thumb = '';
+                        }
+                    } else {
+                        dialogs[index].tiny_thumb = '';
+                    }
                 }
                 if ((!dialogs[index].accesshash || dialogs[index].accesshash === '0') && accessHash !== '0') {
                     dialogs[index].accesshash = accessHash;
@@ -2198,6 +2208,12 @@ class Chat extends React.Component<IProps, IState> {
                 };
                 if (accessHash !== '0') {
                     dialog.accesshash = accessHash;
+                }
+                if (msg.mediadata) {
+                    const media = msg.mediadata as MediaDocument.AsObject;
+                    if (media.doc && media.doc.tinythumbnail) {
+                        dialog.tiny_thumb = media.doc.tinythumbnail as string;
+                    }
                 }
                 dialogs.push(dialog);
                 this.dialogMap[peerName] = dialogs.length - 1;
@@ -4404,7 +4420,6 @@ class Chat extends React.Component<IProps, IState> {
                 return entity.toObject();
             });
             mediaDocument.setEntitiesList(mediaItem.entities);
-
         }
 
         if (peerName === this.selectedPeerName) {

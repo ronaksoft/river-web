@@ -16,10 +16,13 @@ import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
 import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
-import {getMessageTitle} from '../../components/Dialog/utils';
+import {C_MESSAGE_ICON, getMessageTitle} from '../../components/Dialog/utils';
 import {kMerge} from "../../services/utilities/kDash";
 import {PeerType} from "../../services/sdk/messages/core.types_pb";
 import Dexie from "dexie";
+import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
+
+const withThumb = [C_MESSAGE_ICON.Audio, C_MESSAGE_ICON.File, C_MESSAGE_ICON.GIF, C_MESSAGE_ICON.Photo, C_MESSAGE_ICON.Video];
 
 export default class DialogRepo {
     public static getInstance() {
@@ -214,7 +217,29 @@ export default class DialogRepo {
         const minTeam: any = teamId === 'all' ? Dexie.minKey : teamId;
         const maxTeam: any = teamId === 'all' ? Dexie.maxKey : teamId;
         return this.db.dialogs.where('[teamid+last_update]').between([minTeam, Dexie.minKey], [maxTeam, Dexie.maxKey], true, true)
-            .reverse().offset(skip || 0).limit(limit || 1000).toArray();
+            .reverse().offset(skip || 0).limit(limit || 1000).toArray().then((res) => {
+                const ids = res.filter(o => o.preview_icon && withThumb.indexOf(o.preview_icon) > -1 && o.topmessageid).map(o => o.topmessageid || 0);
+                if (ids.length > 0) {
+                    return this.messageRepo.getIn(ids, true).then((msgs) => {
+                        const msgMap: { [key: number]: string } = {};
+                        msgs.forEach((msg) => {
+                            const data = msg.mediadata as MediaDocument.AsObject;
+                            if (data && data.doc && data.doc.tinythumbnail) {
+                                msgMap[msg.id || 0] = data.doc.tinythumbnail as string;
+                            }
+                        });
+                        res.map(dialog => {
+                            if (dialog.topmessageid && msgMap.hasOwnProperty(dialog.topmessageid)) {
+                                dialog.tiny_thumb = msgMap[dialog.topmessageid];
+                            }
+                            return dialog;
+                        });
+                        return res;
+                    });
+                } else {
+                    return res;
+                }
+            });
     }
 
     public importBulk(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }): Promise<any> {
@@ -235,6 +260,7 @@ export default class DialogRepo {
         const tempDialogs = uniqBy(dialogs, 'peerid');
         const queries = dialogs.map((dialog) => {
             dialog.teamid = dialog.teamid || '0';
+            delete dialog.tiny_thumb;
             return [dialog.teamid || '0', dialog.peerid || '', dialog.peertype || 0];
         });
         return this.db.dialogs.where('[teamid+peerid+peertype]').anyOf(queries).toArray().then((result) => {

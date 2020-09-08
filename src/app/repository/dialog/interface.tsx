@@ -24,6 +24,7 @@ export interface IDialog extends Dialog.AsObject {
     scroll_pos?: number;
     sender_id?: string;
     only_contact?: boolean;
+    tiny_thumb?: string;
 }
 
 export interface IDialogWithUpdateId {

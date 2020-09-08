@@ -69,6 +69,7 @@ export interface IMediaInfo {
     size: number;
     thumbFile: FileLocation.AsObject;
     title?: string;
+    tinyThumb?: string;
     type: string;
     width: number;
 }
@@ -91,6 +92,7 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             clusterid: 1,
             fileid: '',
         },
+        tinyThumb: undefined,
         type: '',
         width: 0,
     };
@@ -117,6 +119,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             clusterid: messageMediaDocument.doc.thumbnail.clusterid,
             fileid: messageMediaDocument.doc.thumbnail.fileid,
         };
+    }
+    if (messageMediaDocument.doc.tinythumbnail) {
+        info.tinyThumb = messageMediaDocument.doc.tinythumbnail as string;
     }
     if ((message.replyto && message.deleted_reply !== true) || (message.fwdsenderid && message.fwdsenderid !== '0')) {
         info.hasRelation = true;
@@ -459,6 +464,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             <CachedPhoto className="blurred-picture" blur={10}
                          fileLocation={info.thumbFile} mimeType="image/jpeg"
                          tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
+                         tinyThumb={(message.id || 0) > 0 && !downloaded ? info.tinyThumb : undefined}
             />}
             <CachedPhoto className="picture"
                          fileLocation={((message.id || 0) < 0 || downloaded) && message.messagetype !== C_MESSAGE_TYPE.Video ? info.file : info.thumbFile}
@@ -466,12 +472,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                          style={this.pictureContentSize}
                          onLoad={this.cachedPhotoLoadHandler} blur={downloaded ? undefined : 10} searchTemp={true}
                          tempFile={(message.id || 0) < 0 ? message.temp_file : undefined}
+                         tinyThumb={(message.id || 0) > 0 && !downloaded ? info.tinyThumb : undefined}
             />
             {info.animated &&
             <div className={'gif-badge' + (message.viabotid && message.viabotid !== '0' ? ' with-via' : '')}>
                 <GifRounded/>
                 {message.viabotid && message.viabotid !== '0' &&
-                <UserName className="via-user" id={message.viabotid} prefix={i18n.t('general.via_gif')} username={true} noIcon={true}/>}
+                <UserName className="via-user" id={message.viabotid} prefix={i18n.t('general.via_gif')} username={true}
+                          noIcon={true}/>}
             </div>}
             {this.getMediaAction()}
         </div>);

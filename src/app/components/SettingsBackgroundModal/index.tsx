@@ -270,32 +270,55 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
 
     private createBlurredImage(src: string, radius: number): Promise<IBlur> {
         return new Promise<IBlur>((resolve, reject) => {
-            const canvas: HTMLCanvasElement = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                return reject('no ctx');
-            }
             const img = new Image();
             img.onload = () => {
-                ctx.canvas.height = img.height;
-                ctx.canvas.width = img.width;
-                ctx.drawImage(img, 0, 0);
-                const imageData = ctx.getImageData(0, 0, img.width, img.height);
-                glur(imageData.data, img.width, img.height, radius);
-                ctx.putImageData(imageData, 0, 0);
-                canvas.toBlob((data) => {
-                    if (data) {
+                const blurFn = (ctx: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D) => {
+                    ctx.canvas.height = img.height;
+                    ctx.canvas.width = img.width;
+                    ctx.drawImage(img, 0, 0);
+                    const imageData = ctx.getImageData(0, 0, img.width, img.height);
+                    glur(imageData.data, img.width, img.height, radius);
+                    ctx.putImageData(imageData, 0, 0);
+                };
+                if (window.OffscreenCanvas) {
+                    const canvas = new OffscreenCanvas(img.width, img.height);
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        reject('no ctx');
+                        return;
+                    }
+                    blurFn(ctx);
+                    canvas.convertToBlob({type: 'image/jpeg', quality: 0.9}).then((data) => {
                         URL.revokeObjectURL(this.lastPreview);
                         const preview = URL.createObjectURL(data);
                         resolve({
                             blob: data,
                             preview,
                         });
-                    } else {
-                        reject('cannot create blob');
+                        img.remove();
+                    });
+                } else {
+                    const canvas: HTMLCanvasElement = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        reject('no ctx');
+                        return;
                     }
-                    img.remove();
-                }, 'image/jpeg', 0.9);
+                    blurFn(ctx);
+                    canvas.toBlob((data) => {
+                        if (data) {
+                            URL.revokeObjectURL(this.lastPreview);
+                            const preview = URL.createObjectURL(data);
+                            resolve({
+                                blob: data,
+                                preview,
+                            });
+                        } else {
+                            reject('cannot create blob');
+                        }
+                        img.remove();
+                    }, 'image/jpeg', 0.9);
+                }
             };
             img.src = src;
         });

@@ -12,7 +12,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import {Link} from 'react-router-dom';
 import {clone, debounce, differenceBy, findIndex, intersectionWith, uniqWith, uniqBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
-import DialogMessage from '../DialogMessage';
+import {DialogMessage} from '../DialogMessage';
 import {ClearRounded, LabelOutlined, LabelRounded, MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';

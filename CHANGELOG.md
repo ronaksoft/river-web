@@ -1,5 +1,6 @@
 ## 0.34.36
 * Tiny thumbnail implemented
+* Blur optimization
 * Minor improvements
 
 ## 0.34.35

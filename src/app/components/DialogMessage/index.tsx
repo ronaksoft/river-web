@@ -29,6 +29,7 @@ import {
     ReplyOutlined,
     ScheduleRounded,
     VideocamOutlined,
+    PlayArrowRounded,
 } from '@material-ui/icons';
 import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -46,7 +47,16 @@ import {Doing} from "../SVG/doing";
 
 import './style.scss';
 
-export const getMessageIcon = (icon?: number) => {
+export const getMessageIcon = (icon: number | undefined, tinyThumb?: string) => {
+    if (tinyThumb) {
+        return <div className="tiny-thumb">
+            <img src={`data:image/jpeg;base64,${tinyThumb}`} alt=""/>
+            {icon === C_MESSAGE_ICON.Video &&
+            <div className="inner-cover"><PlayArrowRounded className="inner-icon"/></div>}
+            {icon === C_MESSAGE_ICON.Audio &&
+            <div className="inner-cover"><MusicNoteOutlined className="inner-icon"/></div>}
+        </div>;
+    }
     switch (icon) {
         case C_MESSAGE_ICON.Location:
             return (<LocationOnOutlined className="preview-icon"/>);
@@ -102,7 +112,7 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                     <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true}
                               noDetail={true} noIcon={true} postfix=":"/>&nbsp;
                 </span>}
-                {getMessageIcon(dialog.preview_icon)}
+                {getMessageIcon(dialog.preview_icon, dialog.tiny_thumb)}
                 {dialog.preview_icon !== C_MESSAGE_ICON.GIF &&
                 <span className="preview-inner">{dialog.preview}</span>}
             </span>
@@ -193,7 +203,7 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
             }
         default:
             return (<span className="preview-message">
-                {getMessageIcon(dialog.preview_icon)}
+                {getMessageIcon(dialog.preview_icon, dialog.tiny_thumb)}
                 {dialog.preview_icon !== C_MESSAGE_ICON.GIF &&
                 <span className="preview-inner">{dialog.preview}</span>}
             </span>);
@@ -328,7 +338,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
     };
     if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
         return (<span className={'preview' + (withAnimation ? ' with-animation' : '')}
-        >{withAnimation && <Doing/>}{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}</span>);
+        >{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}{withAnimation && <Doing/>}</span>);
     } else {
         const types = {};
         let distinct = 0;
@@ -341,20 +351,18 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
             }
         });
         return (<span className={'preview' + (withAnimation ? ' with-animation' : '')}>
-            {withAnimation && <Doing/>}
-                {ids.slice(0, 2).map((id, index) => {
-                    const peerId = id.split('_')[0];
-                    return (<span key={index}>
+            {ids.slice(0, 2).map((id, index) => {
+                const peerId = id.split('_')[0];
+                return (<span key={index}>
                         {index !== 0 ? (ids.length - 1 === index ? i18n.t('status.type_and') : i18n.t('status.type_comma')) : ''}
-                        <UserName id={peerId} onlyFirstName={true} noIcon={true} className="type-user"/>
+                    <UserName id={peerId} onlyFirstName={true} noIcon={true} className="type-user"/>
                     </span>);
-                })}
+            })}
             {Boolean(ids.length > 2) &&
             <span>{i18n.tf('general.and_n_more', String(localize(ids.length - 2)))}</span>}
             {ids.length === 1 ? ` ${i18n.t('general.is')} ` : ` ${i18n.t('general.are')} `}
             {distinct > 1 ? ` ${withAnimation ? '' : i18n.t('status.doing')}` : getActionType(typingList[ids[0]].action)}
+            {withAnimation && <Doing/>}
             </span>);
     }
 };
-
-export default DialogMessage;

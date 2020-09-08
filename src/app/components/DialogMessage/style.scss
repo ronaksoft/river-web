@@ -220,6 +220,44 @@ a.dialog-a {
         }
       }
 
+      .tiny-thumb {
+        display: inline-block;
+        margin: 0 4px 0 0;
+        height: 14px;
+        width: 14px;
+        line-height: 0;
+        border-radius: 2px;
+        overflow: hidden;
+        transform: translateY(-1px);
+        position: relative;
+
+        img {
+          height: 14px;
+          width: 14px;
+          object-fit: cover;
+          object-position: center center;
+        }
+
+        .inner-cover {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          background-color: var(--dark);
+          opacity: 0.5;
+
+          .inner-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 13px;
+            color: var(--white);
+            transform: translate(-50%, -50%);
+          }
+        }
+      }
+
       .preview-message {
         display: inline-flex;
         align-items: center;
@@ -373,6 +411,10 @@ html[direction="rtl"] {
         &.gif {
           margin-right: 4px;
         }
+      }
+
+      .tiny-thumb {
+        margin: 0 0 0 4px;
       }
 
       .system-message {

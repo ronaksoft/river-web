@@ -20,6 +20,7 @@ interface IFile {
     size: number;
     src: string;
     timeout: null;
+    tinyThumb?: string;
 }
 
 const C_MAX_RETRY = 3;
@@ -45,7 +46,7 @@ export default class CachedFileService {
     }
 
     /* Get file */
-    public getFile(fileLocation: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, searchTemp?: boolean, blurRadius?: number, tempBlob?: Blob): Promise<string> {
+    public getFile(fileLocation: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, searchTemp?: boolean, blurRadius?: number, tempBlob?: Blob, tinyThumb?: string, earlyImageCB?: (src: string) => void): Promise<string> {
         if (!fileLocation) {
             return Promise.reject();
         }
@@ -71,14 +72,16 @@ export default class CachedFileService {
                 }
             }
             if (fileName !== '0_0') {
-                this.files[fileName] = {
-                    blurSrc: {},
-                    location: fileLocation,
-                    retries: 0,
-                    size,
-                    src: '',
-                    timeout: null,
-                };
+                if (!this.files.hasOwnProperty(fileName)) {
+                    this.files[fileName] = {
+                        blurSrc: {},
+                        location: fileLocation,
+                        retries: 0,
+                        size,
+                        src: '',
+                        timeout: null,
+                    };
+                }
                 if (tempBlob) {
                     this.files[fileName].src = URL.createObjectURL(tempBlob);
                     resolve(this.files[fileName].src);
@@ -88,6 +91,13 @@ export default class CachedFileService {
                     this.getLocalFile(fileName, searchTemp, blurRadius).then((res) => {
                         resolve(res);
                     }).catch(() => {
+                        if (tinyThumb && earlyImageCB) {
+                            this.getTinyThumb(fileName, tinyThumb).then((tinySrc) => {
+                                if (earlyImageCB) {
+                                    earlyImageCB(tinySrc);
+                                }
+                            });
+                        }
                         this.getRemoteFile(fileLocation, md5, size, mimeType, blurRadius).then((res) => {
                             resolve(res);
                         }).catch(() => {
@@ -166,28 +176,51 @@ export default class CachedFileService {
     /* Create blurred image */
     private createBlurredImage(blob: Blob, radius: number): Promise<Blob> {
         return new Promise<Blob>((resolve, reject) => {
-            const canvas: HTMLCanvasElement = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                return reject('no ctx');
-            }
             const img = new Image();
             img.onload = () => {
-                ctx.canvas.height = img.height;
-                ctx.canvas.width = img.width;
-                ctx.drawImage(img, 0, 0);
-                const imageData = ctx.getImageData(0, 0, img.width, img.height);
-                glur(imageData.data, img.width, img.height, radius);
-                ctx.putImageData(imageData, 0, 0);
-                canvas.toBlob((data) => {
-                    if (data) {
-                        resolve(data);
-                    } else {
-                        reject('cannot create blob');
+                const blurFn = (ctx: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D) => {
+                    ctx.canvas.height = img.height;
+                    ctx.canvas.width = img.width;
+                    ctx.drawImage(img, 0, 0);
+                    const imageData = ctx.getImageData(0, 0, img.width, img.height);
+                    glur(imageData.data, img.width, img.height, radius);
+                    ctx.putImageData(imageData, 0, 0);
+                };
+                if (window.OffscreenCanvas) {
+                    const canvas = new OffscreenCanvas(img.width, img.height);
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        reject('no ctx');
+                        return;
                     }
-                    URL.revokeObjectURL(img.src);
-                    img.remove();
-                }, 'image/jpeg', 0.9);
+                    blurFn(ctx);
+                    canvas.convertToBlob({type: 'image/jpeg', quality: 0.9}).then((data) => {
+                        if (data) {
+                            resolve(data);
+                        } else {
+                            reject('cannot create blob');
+                        }
+                        URL.revokeObjectURL(img.src);
+                        img.remove();
+                    });
+                } else {
+                    const canvas: HTMLCanvasElement = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        reject('no ctx');
+                        return;
+                    }
+                    blurFn(ctx);
+                    canvas.toBlob((data) => {
+                        if (data) {
+                            resolve(data);
+                        } else {
+                            reject('cannot create blob');
+                        }
+                        URL.revokeObjectURL(img.src);
+                        img.remove();
+                    }, 'image/jpeg', 0.9);
+                }
             };
             img.src = URL.createObjectURL(blob);
         });
@@ -304,6 +337,51 @@ export default class CachedFileService {
                 }).catch(() => {
                     reject();
                 });
+            } else {
+                reject();
+            }
+        });
+    }
+
+    private getTinyThumb(fileName: string, src: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            if (window.OffscreenCanvas && window.createImageBitmap && this.files.hasOwnProperty(fileName)) {
+                if (this.files.hasOwnProperty(fileName) && this.files[fileName].tinyThumb) {
+                    if (this.files[fileName].tinyThumb === '') {
+                        reject();
+                    } else {
+                        resolve(this.files[fileName].tinyThumb);
+                    }
+                    return;
+                }
+                this.files[fileName].tinyThumb = '';
+                const img = new Image();
+                const scale = 10;
+                img.onload = () => {
+                    const canvas = new OffscreenCanvas(img.width * scale, img.height * scale);
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        reject('no ctx');
+                        return;
+                    }
+                    ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, img.width * scale, img.height * scale);
+                    const imageData = ctx.getImageData(0, 0, img.width * scale, img.height * scale);
+                    glur(imageData.data, img.width * scale, img.height * scale, 10);
+                    ctx.putImageData(imageData, 0, 0);
+                    canvas.convertToBlob({type: 'image/jpeg', quality: 0.9}).then((data) => {
+                        if (data) {
+                            const blurSrc = URL.createObjectURL(data);
+                            if (this.files.hasOwnProperty(fileName)) {
+                                this.files[fileName].tinyThumb = blurSrc;
+                            }
+                            resolve(blurSrc);
+                        } else {
+                            reject('cannot create blob');
+                        }
+                        img.remove();
+                    });
+                };
+                img.src = `data:image/jpeg;base64,${src}`;
             } else {
                 reject();
             }

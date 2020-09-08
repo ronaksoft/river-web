@@ -23,6 +23,7 @@ interface IProps {
     searchTemp?: boolean;
     style?: CSSProperties;
     tempFile?: Blob;
+    tinyThumb?: string;
 }
 
 interface IState {
@@ -103,7 +104,12 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         const timeout = setTimeout(() => {
             this.getFile();
         }, 1000);
-        this.cachedFileService.getFile(this.props.fileLocation, '', 0, this.props.mimeType, this.props.searchTemp, this.props.blur, this.props.tempFile).then((src) => {
+        const earlyImageFn = (src: string) => {
+            this.setState({
+                src,
+            });
+        };
+        this.cachedFileService.getFile(this.props.fileLocation, '', 0, this.props.mimeType, this.props.searchTemp, this.props.blur, this.props.tempFile, this.props.tinyThumb, earlyImageFn).then((src) => {
             if (!this.mounted) {
                 return;
             }
