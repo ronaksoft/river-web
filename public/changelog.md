@@ -1,3 +1,8 @@
+## 0.34.37
+* Active session alert on login implemented
+* Tiny thumbnail improvements
+* Bug fixes and performance improvements
+
 ## 0.34.36
 * Tiny thumbnail implemented
 * Blur optimization

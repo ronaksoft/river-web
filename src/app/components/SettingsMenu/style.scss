@@ -1025,79 +1025,6 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   }
 
-  .session-item {
-    position: relative;
-    display: flex;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    padding: 12px 12px 8px;
-    text-align: left;
-    font-size: 13px;
-
-    &.terminate-all {
-      background-color: var(--header-color);
-      text-align: center;
-      justify-content: center;
-      margin-bottom: 8px;
-
-      span {
-        color: var(--red);
-        font-weight: bold;
-        font-size: 15px;
-        cursor: pointer;
-      }
-    }
-
-    .session-current {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      color: var(--light-mention);
-    }
-
-    .session-info {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-
-      .session-row {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        width: 100%;
-        margin: 0 0 3px;
-
-        .session-col {
-          flex: 1;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          max-width: 225px;
-        }
-      }
-    }
-
-    .session-action {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-
-      .action-terminate {
-        color: var(--red);
-        font-size: 12px;
-        cursor: pointer;
-        text-transform: uppercase;
-      }
-    }
-  }
-
-  .session-placeholder {
-    text-align: center;
-    padding: 24px;
-    color: var(--grey);
-  }
-
   .settings-switch {
     .settings-switch-base {
       padding: 9px;
@@ -1365,18 +1292,6 @@ html[direction="rtl"] {
       }
     }
 
-    .session-item {
-      .session-info .session-row .session-col {
-        text-align: right;
-        line-height: 1.4em;
-      }
-
-      .session-current {
-        right: auto;
-        left: 12px;
-      }
-    }
-
     .switch-item {
       .switch {
         direction: ltr;
@@ -1620,15 +1535,6 @@ html[theme="dark-blue"] {
       background-color: var(--dark-medium);
     }
 
-    .session-item {
-      color: var(--white);
-      border-color: var(--dark-low-op50);
-
-      &.terminate-all {
-        background-color: var(--dark-low);
-      }
-    }
-
     .block-list {
       &.no-result {
         color: var(--grey);
@@ -1708,14 +1614,6 @@ html[theme="dark-night"] {
     .kk-card {
       background-color: var(--dark-night-medium);
     }
-
-    .session-item {
-      border-color: var(--dark-night-low-op50);
-
-      &.terminate-all {
-        background-color: var(--dark-night-low);
-      }
-    }
   }
 }
 
@@ -1763,14 +1661,6 @@ html[theme="dark-blue"] {
 
     .kk-card {
       background-color: var(--dark-blue-medium);
-    }
-
-    .session-item {
-      border-color: var(--dark-blue-low-op50);
-
-      &.terminate-all {
-        background-color: var(--dark-blue-low);
-      }
     }
 
     .block-list {

@@ -1,0 +1,33 @@
+/*
+    Creation Time: 2020 - Sep - 09
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.session-dialog {
+  height: 100%;
+
+  .session-container {
+    height: calc(100% - 50px);
+
+    .session-item {
+      line-height: 1.3em;
+
+      .session-info {
+        overflow: hidden;
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+
+}
+
+html[theme="dark-blue"] {
+
+}

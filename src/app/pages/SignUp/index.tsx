@@ -44,6 +44,7 @@ import {C_VERSION} from "../../../App";
 
 import './tel-input.css';
 import './style.scss';
+import SessionDialog from "../../components/SessionDialog";
 
 let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const electronVersion = ElectronService.electronVersion();
@@ -99,6 +100,8 @@ class SignUp extends React.Component<IProps, IState> {
     private devToolsRef: DevTools | undefined;
     private eventReferences: any[] = [];
     private recoveryQuestionModalRef: RecoveryQuestionModal | undefined;
+    private sessionDialogRef: SessionDialog | undefined;
+    private sessionLimit: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -407,6 +410,7 @@ class SignUp extends React.Component<IProps, IState> {
                         })}
                     </div>
                 </SettingsModal>
+                <SessionDialog ref={this.sessionDialogRefHandler}/>
             </div>
         );
     }
@@ -628,13 +632,26 @@ class SignUp extends React.Component<IProps, IState> {
             loading: false,
             tries: this.state.tries + 1,
         });
-        this.props.history.push('/chat/0/null');
-        this.dispatchWSOpenEvent();
-        // this.notification.initToken().then((token) => {
-        //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
-        // }).catch(() => {
-        this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
-        // });
+        const redirectFn = () => {
+            this.props.history.push('/chat/0/null');
+            this.dispatchWSOpenEvent();
+            // this.notification.initToken().then((token) => {
+            //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+            // }).catch(() => {
+            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+            // });
+        };
+        const maxSessions = this.apiManager.getInstantSystemConfig().maxactivesessions || 7;
+        if (maxSessions < (res.activesessions || 0)) {
+            this.sessionLimit = true;
+            if (this.sessionDialogRef) {
+                this.sessionDialogRef.openDialog(maxSessions).then(() => {
+                    redirectFn();
+                });
+            }
+        } else {
+            redirectFn();
+        }
     }
 
     private resendCodeHandler = () => {
@@ -841,7 +858,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     private wsOpenHandler = () => {
         this.apiManager.authRecall().then(() => {
-            if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
+            if ((this.apiManager.getConnInfo().UserID || 0) > 0 && !this.sessionLimit) {
                 this.props.history.push('/chat/0/null');
             }
         });
@@ -1049,6 +1066,10 @@ class SignUp extends React.Component<IProps, IState> {
                 }
             });
         });
+    }
+
+    private sessionDialogRefHandler = (ref: any) => {
+        this.sessionDialogRef = ref;
     }
 }
 

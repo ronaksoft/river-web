@@ -86,14 +86,12 @@ import {
 } from "@material-ui/core";
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import Broadcaster from '../../services/broadcaster';
-import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/accounts_pb';
-import TimeUtility from '../../services/utilities/time';
+import {AccountPrivacyRules} from '../../services/sdk/messages/accounts_pb';
 import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
 import FileRepo, {GetDbFileName} from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
 import SettingsConfigManager, {IDownloadSettings, INotificationSettings} from '../../services/settingsConfigManager';
 import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
-import {Loading} from '../Loading';
 import i18n from '../../services/i18n';
 import UserName from "../UserName";
 import ElectronService from "../../services/electron";
@@ -115,6 +113,7 @@ import TeamRepo from "../../repository/team";
 import {ITeam} from "../../repository/team/interface";
 import {IPeer} from "../../repository/dialog/interface";
 import SettingsTeam from "../SettingsTeam";
+import SettingsSession from "../SettingsSession";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -233,7 +232,6 @@ interface IState {
     selectedGradient: string;
     selectedLanguage: string;
     selectedTheme: string;
-    sessions?: AccountAuthorization.AsObject[];
     storageValues: IDownloadSettings;
     teamLoading: boolean;
     teamList: ITeam[];
@@ -251,7 +249,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private apiManager: APIManager;
     private readonly userId: string;
-    private readonly currentAuthID: string;
     private readonly usernameCheckDebounce: any;
     private fileManager: FileManager;
     private fileRepo: FileRepo;
@@ -367,8 +364,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.backgroundService = BackgroundService.getInstance();
         this.settingsConfigManger = SettingsConfigManager.getInstance();
 
-        this.currentAuthID = this.apiManager.getConnInfo().AuthID;
-
         this.electronService = ElectronService.getInstance();
         this.hasScrollbar = getScrollbarWidth() > 0;
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
@@ -431,9 +426,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (pageContent === 'account') {
             this.getUser();
         }
-        if (pageSubContent === 'session') {
-            this.getSessions();
-        }
         if (this.state.pageSubContent.indexOf('privacy_') > -1) {
             this.checkPrivacyDiff();
         }
@@ -448,8 +440,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
     public render() {
         const {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
-            lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, sessions,
-            confirmDialogMode, confirmDialogOpen, customBackgroundSrc, loading, privacy, passwordMode,
+            lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto,
+            confirmDialogMode, confirmDialogOpen, customBackgroundSrc, privacy, passwordMode,
             teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName,
         } = this.state;
         const team = teamList.find(o => o.id === teamSelectedId && ((o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSADMIN) > -1 || (o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSCREATOR) > -1));
@@ -1157,71 +1149,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         </React.Fragment>}
                     </div>
                     <div className="page page-3">
-                        {Boolean(pageSubContent === 'session') && <React.Fragment>
-                            <div className="menu-header">
-                                <IconButton
-                                    onClick={this.subPrevHandler}
-                                >
-                                    <KeyboardBackspaceRounded/>
-                                </IconButton>
-                                <label>{i18n.t('settings.active_sessions')}</label>
-                            </div>
-                            {sessions && <div className="menu-content">
-                                {Boolean(sessions.length > 0 && !loading) && <Scrollbars
-                                    autoHide={true}
-                                    rtl={this.rtl}
-                                >
-                                    <div>
-                                        {sessions.map((item, key) => {
-                                            // @ts-ignore
-                                            if (item.type === 'terminate_all') {
-                                                if (sessions.length > 2) {
-                                                    return (
-                                                        <div key={key} className="session-item terminate-all">
-                                                            <span
-                                                                onClick={this.terminateSessionConfirmHandler('0')}>{i18n.t('settings.terminate_all_other_sessions')}</span>
-                                                        </div>
-                                                    );
-                                                } else {
-                                                    return null;
-                                                }
-                                            } else {
-                                                return (
-                                                    <div key={key} className="session-item">
-                                                        {Boolean(this.currentAuthID === item.authid) &&
-                                                        <div
-                                                            className="session-current">{i18n.t('settings.current')}</div>}
-                                                        <div className="session-info">
-                                                            <div className="session-row">
-                                                                <div
-                                                                    className="session-col">{`Client: ${(item.model || '').split(':-').join(' ')}`}</div>
-                                                            </div>
-                                                            <div
-                                                                className="session-row">
-                                                                <div
-                                                                    className="session-col">{i18n.tf('settings.ip_at', [item.clientip || '', TimeUtility.dynamic(item.createdat)])}</div>
-                                                            </div>
-                                                            <div className="session-row">
-                                                                <div
-                                                                    className="session-col">{this.currentAuthID === item.authid ? i18n.t('status.online') : i18n.tf('settings.last_active', TimeUtility.timeAgo(item.activeat || item.createdat))}</div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="session-action">
-                                                            <span className="action-terminate"
-                                                                  onClick={this.terminateSessionConfirmHandler(item.authid)}>{i18n.t('settings.terminate')}</span>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            }
-                                        })}
-                                    </div>
-                                </Scrollbars>}
-                                {Boolean(sessions.length === 0) &&
-                                <div
-                                    className="session-placeholder">{i18n.t('settings.you_have_no_active_sessions')}</div>}
-                            </div>}
-                            {loading && <Loading/>}
-                        </React.Fragment>}
+                        {Boolean(pageSubContent === 'session') && <SettingsSession onPrev={this.subPrevHandler}/>}
                         {pageSubContent.indexOf('privacy_') > -1 && privacyItems.filter(o => o.id === pageSubContent).map((item) => {
                             return (
                                 <React.Fragment key={item.id}>
@@ -1338,17 +1266,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         paper: 'confirm-dialog-paper'
                     }}
                 >
-                    {Boolean(confirmDialogMode === 'terminate_session') && <>
-                        <DialogTitle>{this.state.confirmDialogSelectedId === '0' ? i18n.t('settings.terminate_all_other_sessions') : i18n.t('settings.terminate_session')}</DialogTitle>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.disagree')}
-                            </Button>
-                            <Button onClick={this.terminateSessionHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.agree')}
-                            </Button>
-                        </DialogActions>
-                    </>}
                     {Boolean(confirmDialogMode === 'remove_synced_contacts') && <>
                         <DialogTitle>{i18n.t('settings.remove_synced_contacts')}?</DialogTitle>
                         <DialogActions>
@@ -1500,9 +1417,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }, () => {
             this.dispatchSubPlaceChange();
         });
-        if (target === 'session') {
-            this.getSessions();
-        } else if (target === '2fa') {
+        if (target === '2fa') {
             this.getPasswordSettings();
         } else if (target === 'block') {
             this.getBlockedUsers();
@@ -1977,91 +1892,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (this.props.onAction) {
             this.props.onAction('logout');
         }
-    }
-
-    /* Modify Sessions */
-    private modifySessions(sessions: AccountAuthorization.AsObject[]) {
-        const index = findIndex(sessions, {authid: this.currentAuthID});
-        if (index > 0) {
-            const currentSession = sessions[index];
-            sessions.splice(index, 1);
-            // @ts-ignore
-            sessions.unshift({type: 'terminate_all'});
-            sessions.unshift(currentSession);
-        } else {
-            // @ts-ignore
-            sessions.splice(1, 0, {type: 'terminate_all'});
-        }
-        for (let i = 2; i < sessions.length; i++) {
-            for (let j = i; j < sessions.length; j++) {
-                if ((sessions[i].activeat || 0) < (sessions[j].activeat || 0)) {
-                    const hold = sessions[i];
-                    sessions[i] = sessions[j];
-                    sessions[j] = hold;
-                }
-            }
-        }
-        return sessions;
-    }
-
-    /* Get All Sessions */
-    private getSessions() {
-        if (this.state.loading) {
-            return;
-        }
-        this.setState({
-            loading: true,
-        });
-
-        this.apiManager.sessionGetAll().then((res) => {
-            this.setState({
-                loading: false,
-                sessions: this.modifySessions(res.authorizationsList),
-            });
-        }).catch(() => {
-            this.setState({
-                loading: false,
-            });
-        });
-    }
-
-    /* Open confirm dialog for terminate session by Id */
-    private terminateSessionConfirmHandler = (id: string | undefined) => (e: any) => {
-        if (!id) {
-            return;
-        }
-        this.setState({
-            confirmDialogMode: 'terminate_session',
-            confirmDialogOpen: true,
-            confirmDialogSelectedId: id
-        });
-    }
-
-    /* Terminate session selected session */
-    private terminateSessionHandler = () => {
-        const {confirmDialogSelectedId} = this.state;
-        if (confirmDialogSelectedId !== '') {
-            this.apiManager.sessionTerminate(confirmDialogSelectedId).then(() => {
-                const {sessions} = this.state;
-                if (confirmDialogSelectedId !== '0') {
-                    const index = findIndex(sessions, {authid: confirmDialogSelectedId});
-                    if (sessions && index > -1) {
-                        sessions.splice(index, 1);
-                        this.setState({
-                            sessions,
-                        });
-                    }
-                } else {
-                    const index = findIndex(sessions, {authid: this.currentAuthID});
-                    if (sessions && index > -1) {
-                        this.setState({
-                            sessions: [sessions[index]],
-                        });
-                    }
-                }
-            });
-        }
-        this.confirmDialogCloseHandler();
     }
 
     /* Confirm dialog close handler */

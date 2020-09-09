@@ -283,7 +283,7 @@ export default class APIManager {
         return this.server.send(C_MSG.AuthCheckPhone, data.serializeBinary(), true);
     }
 
-    public register(phone: string, phoneCode: string, phoneCodeHash: string, fName: string, lName: string, lang: string): Promise<any> {
+    public register(phone: string, phoneCode: string, phoneCodeHash: string, fName: string, lName: string, lang: string): Promise<AuthAuthorization.AsObject> {
         const data = new AuthRegister();
         data.setPhone(phone);
         data.setPhonecode(phoneCode);

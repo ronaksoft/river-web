@@ -178,6 +178,10 @@ export default class DialogRepo {
                 const msg = messageMap[dialog.topmessageid || 0];
                 if (msg) {
                     dialog = this.applyMessage(dialog, msg);
+                    const data = msg.mediadata as MediaDocument.AsObject;
+                    if (data && data.doc && data.doc.tinythumbnail) {
+                        dialog.tiny_thumb = data.doc.tinythumbnail as string;
+                    }
                 }
                 return dialog;
             });
