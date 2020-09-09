@@ -126,7 +126,7 @@ class SettingsSession extends React.Component<IProps, IState> {
                     <div
                         className="session-placeholder">{i18n.t('settings.you_have_no_active_sessions')}</div>}
                     {Boolean(this.props.onDone) && <div className="session-done-container">
-                        <Button color="primary" variant="outlined" onClick={this.doneHandler} fullWidth={true}
+                        <Button color="secondary" variant="outlined" onClick={this.doneHandler} fullWidth={true}
                                 disabled={sessions.length > (this.props.limit || 0) + 1}>
                             {i18n.t('general.next')}
                         </Button>
