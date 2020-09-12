@@ -5787,21 +5787,23 @@ class Chat extends React.Component<IProps, IState> {
         if (this.dialogRef) {
             this.dialogRef.setDialogs([], undefined, true);
         }
-        this.teamId = team.id || '0';
-        this.updateManager.setTeamId(this.teamId);
-        if (this.hasSnapshotRecord(this.teamId)) {
-            this.initDialogs().then(() => {
-                this.initDialogCounter();
-            });
-        } else {
-            this.snapshot(true).then(() => {
-                setTimeout(() => {
-                    this.initDialogs().then(() => {
-                        this.initDialogCounter();
-                    });
-                }, 512);
-            });
-        }
+        setTimeout(() => {
+            this.teamId = team.id || '0';
+            this.updateManager.setTeamId(this.teamId);
+            if (this.hasSnapshotRecord(this.teamId)) {
+                this.initDialogs().then(() => {
+                    this.initDialogCounter();
+                });
+            } else {
+                this.snapshot(true).then(() => {
+                    setTimeout(() => {
+                        this.initDialogs().then(() => {
+                            this.initDialogCounter();
+                        });
+                    }, 512);
+                });
+            }
+        }, 10);
         this.closePeerHandler();
     }
 

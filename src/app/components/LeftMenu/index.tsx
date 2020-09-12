@@ -681,11 +681,14 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }));
         this.teamId = item.id || '0';
         this.setState({
+            hasUpdate: this.state.teamList.some(o => o.id !== this.teamId && o.unread_counter),
             teamMoreAnchorEl: null,
         });
-        if (this.props.onTeamChange) {
-            this.props.onTeamChange(item);
-        }
+        setTimeout(() => {
+            if (this.props.onTeamChange) {
+                this.props.onTeamChange(item);
+            }
+        }, 10);
     }
 
     private settingsMenuTeamUpdateHandler = () => {
