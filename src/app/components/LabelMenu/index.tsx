@@ -116,9 +116,10 @@ class LabelMenu extends React.Component<IProps, IState> {
 
     public render() {
         const {page, confirmOpen, search, list, loading, selectedIds, label} = this.state;
+        const currentCount = label ? (label.counter ? (label.counter[this.props.teamId] || 0) : 0) : 0;
         return (
             <div className="label-menu" onMouseEnter={this.props.onMouseEnter}>
-                <LabelCreate ref={this.labelCreateRefHandler} onError={this.props.onError}
+                <LabelCreate ref={this.labelCreateRefHandler} onError={this.props.onError} teamId={this.props.teamId}
                              onDone={this.labelCreateDoneHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
@@ -162,6 +163,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                                 universal={true}
                             >
                                 {list.map((lbl, key) => {
+                                    const count = lbl.counter ? (lbl.counter[this.props.teamId] || 0) : 0;
                                     return (<div key={key} className="label-item">
                                         <div className="label-icon">
                                             <div className="label-circle label-mode"
@@ -176,7 +178,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                                         <div className="label-info" onClick={this.listLabelHandler(lbl)}>
                                             <div className="label-name">{lbl.name}</div>
                                             <div className="label-counter">
-                                                {i18n.tf(lbl.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(lbl.count || 0)))}</div>
+                                                {i18n.tf(count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(count)))}</div>
                                         </div>
                                         <div className="label-action">
                                             <Checkbox
@@ -229,7 +231,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                                 <div className="header-label-info" onClick={this.listLabelHandler(label)}>
                                     <div className="label-name">{label.name}</div>
                                     <div className="label-counter">
-                                        {i18n.tf(label.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(label.count || 0)))}</div>
+                                        {i18n.tf(currentCount === 1 ? 'label.label_count' : 'label.label_counts', String(localize(currentCount)))}</div>
                                 </div>
                             </>}
                         </div>

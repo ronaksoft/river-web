@@ -181,6 +181,14 @@ const privacyDefault: { [key: string]: IPrivacy } = {
     },
 };
 
+export const switchClasses: any = {
+    checked: 'settings-switch-checked',
+    root: 'settings-switch',
+    switchBase: 'settings-switch-base',
+    thumb: 'settings-switch-thumb',
+    track: 'settings-switch-track',
+};
+
 interface IPrivacy {
     excludeIds: string[];
     includeIds: string[];
@@ -196,6 +204,7 @@ interface IProps {
     onReloadDialog?: (peerIds: IPeer[]) => void;
     onSubPlaceChange?: (sub: string, subChild: string) => void;
     onTeamChange?: (team: ITeam) => void;
+    onTeamUpdate?: () => void;
     teamId: string;
 }
 
@@ -279,7 +288,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private readonly isMobile: boolean = false;
     private contactHasMore: boolean = false;
-    private readonly switchClasses: any = {};
     private avatarService: AvatarService;
 
     constructor(props: IProps) {
@@ -369,14 +377,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
         this.isMobile = this.isMobile = IsMobile.isAny();
         this.avatarService = AvatarService.getInstance();
-
-        this.switchClasses = {
-            checked: 'settings-switch-checked',
-            root: 'settings-switch',
-            switchBase: 'settings-switch-base',
-            thumb: 'settings-switch-thumb',
-            track: 'settings-switch-track',
-        };
     }
 
     public componentDidMount() {
@@ -592,7 +592,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 checked={Boolean(this.state.selectedTheme !== 'light')}
                                                 color="default"
                                                 onChange={this.nightModeHandler}
-                                                classes={this.switchClasses}
+                                                classes={switchClasses}
                                                 className={Boolean(this.state.selectedTheme !== 'light') ? 'root-settings-switch-checked' : ''}
                                             />
                                         </div>
@@ -1042,7 +1042,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             </div>
                         </React.Fragment>}
                         {Boolean(pageContent === 'teams') &&
-                        <SettingsTeam team={team} onPrev={this.prevHandler} onError={this.props.onError}/>}
+                        <SettingsTeam team={team} onPrev={this.prevHandler} onError={this.props.onError}
+                                      onUpdate={this.props.onTeamUpdate}/>}
                         {Boolean(pageContent === 'storage') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
@@ -1070,7 +1071,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                 checked={checked}
                                                                 color="default"
                                                                 onChange={this.storageToggleHandler(item.id)}
-                                                                classes={this.switchClasses}
+                                                                classes={switchClasses}
                                                                 className={checked ? 'root-settings-switch-checked' : ''}
                                                             />
                                                         </div>
@@ -1140,7 +1141,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             checked={this.state.notificationValues.count_muted}
                                             color="default"
                                             onChange={this.notificationMuteCountToggleHandler}
-                                            classes={this.switchClasses}
+                                            classes={switchClasses}
                                             className={this.state.notificationValues.count_muted ? 'root-settings-switch-checked' : ''}
                                         />
                                     </div>

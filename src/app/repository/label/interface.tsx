@@ -14,6 +14,8 @@ export interface ILabel extends Label.AsObject {
     increase_counter?: number;
     min?: number;
     max?: number;
+    teamid?: string;
+    counter?: {[key: string]: number};
 }
 
 export interface ILabelItem {

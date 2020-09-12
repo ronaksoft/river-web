@@ -600,7 +600,9 @@ export default class UpdateManager {
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                 const message = MessageRepo.parseMessage(updateNewMessage.message, this.userId);
                 updateNewMessage.message = message;
-                this.callUpdateHandler(message.teamid || '0', update.constructor, updateNewMessage);
+                if (!this.callUpdateHandler(message.teamid || '0', update.constructor, updateNewMessage)) {
+                    this.callHandlers('all', C_MSG.UpdateNewMessageOther, updateNewMessage);
+                }
                 // Add message
                 this.mergeMessage(transaction.messages, transaction.incomingIds, message);
                 // Add random message
@@ -733,7 +735,9 @@ export default class UpdateManager {
             /** Dialogs **/
             case C_MSG.UpdateReadHistoryInbox:
                 const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
-                this.callUpdateHandler(updateReadHistoryInbox.teamid || '0', update.constructor, updateReadHistoryInbox);
+                if (!this.callUpdateHandler(updateReadHistoryInbox.teamid || '0', update.constructor, updateReadHistoryInbox)) {
+                    this.callHandlers('all', C_MSG.UpdateReadHistoryInboxOther, updateReadHistoryInbox);
+                }
                 // Update dialog readinboxmaxid
                 this.mergeDialog(transaction.dialogs, {
                     peerid: updateReadHistoryInbox.peer.id || '0',
@@ -916,7 +920,8 @@ export default class UpdateManager {
                     });
                 });
                 // Add label
-                updateLabelItemsAdded.labelsList.forEach((label) => {
+                updateLabelItemsAdded.labelsList.forEach((label: ILabel) => {
+                    label.teamid = updateLabelItemsAdded.teamid || '0';
                     this.mergeLabel(transaction.labels, label);
                 });
                 break;
@@ -946,7 +951,8 @@ export default class UpdateManager {
                     });
                 });
                 // Add label
-                updateLabelItemsRemoved.labelsList.forEach((label) => {
+                updateLabelItemsRemoved.labelsList.forEach((label: ILabel) => {
+                    label.teamid = updateLabelItemsAdded.teamid || '0';
                     this.mergeLabel(transaction.labels, label);
                 });
                 break;
@@ -1454,30 +1460,33 @@ export default class UpdateManager {
     }
 
     private callUpdateHandler(teamId: string, eventConstructor: number, data: any) {
+        let ok = !this.isLive;
         if (this.isLive && (this.teamId === teamId || teamId === 'all')) {
             try {
                 if (eventConstructor === C_MSG.UpdateNewMessage && this.randomIdMap.hasOwnProperty((data as UpdateNewMessage.AsObject).senderrefid || 0)) {
-                    this.callHandlers(teamId, C_MSG.UpdateNewMessageDrop, data);
+                    ok = this.callHandlers(teamId, C_MSG.UpdateNewMessageDrop, data);
                     if ((data as UpdateNewMessage.AsObject).senderrefid) {
                         this.toDeleteRandomIds.push((data as UpdateNewMessage.AsObject).senderrefid || 0);
                     }
                 } else {
-                    this.callHandlers(teamId, eventConstructor, data);
+                    ok = this.callHandlers(teamId, eventConstructor, data);
                 }
             } catch (e) {
                 window.console.warn(e);
             }
         }
+        return ok;
     }
 
     private callHandlers(teamId: string, eventConstructor: number, data: any) {
         if ((this.teamId !== teamId && teamId !== 'all') || !this.listenerList[eventConstructor]) {
-            return;
+            return false;
         }
         Object.values(this.listenerList[eventConstructor]).forEach((fn) => {
             if (fn) {
                 fn(data);
             }
         });
+        return true;
     }
 }

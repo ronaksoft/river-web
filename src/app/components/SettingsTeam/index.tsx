@@ -8,8 +8,7 @@
 */
 
 import * as React from 'react';
-import {Team} from "../../services/sdk/messages/core.types_pb";
-import {IconButton, TextField} from "@material-ui/core";
+import {IconButton, Switch, TextField} from "@material-ui/core";
 import {
     KeyboardBackspaceRounded,
     MoreVert,
@@ -39,6 +38,9 @@ import {TeamMember} from "../../services/sdk/messages/team_pb";
 import {findIndex} from "lodash";
 import ContactPicker from "../ContactPicker";
 import {Error as RiverError} from "../../services/sdk/messages/core.types_pb";
+import {ITeam} from "../../repository/team/interface";
+import {switchClasses} from "../SettingsMenu";
+import TeamRepo from "../../repository/team";
 
 import './style.scss';
 
@@ -51,8 +53,9 @@ interface IMember {
 
 interface IProps {
     onPrev: (e: any) => void;
-    team: Team.AsObject | undefined;
+    team: ITeam | undefined;
     onError?: (message: string) => void;
+    onUpdate?: () => void;
 }
 
 interface IState {
@@ -61,7 +64,7 @@ interface IState {
     loading: boolean;
     moreAnchorPos: any;
     moreIndex: number;
-    team: Team.AsObject | undefined;
+    team: ITeam | undefined;
 }
 
 const listStyle: React.CSSProperties = {
@@ -83,6 +86,8 @@ class SettingsTeam extends React.Component<IProps, IState> {
     private apiManager: APIManager;
     private userRepo: UserRepo;
     private contactPickerRef: ContactPicker | undefined;
+    private teamRepo: TeamRepo;
+    private hasUpdate: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -102,6 +107,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
 
         this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.teamRepo = TeamRepo.getInstance();
     }
 
     public componentDidMount() {
@@ -117,7 +123,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
             <>
                 <div className="menu-header">
                     <IconButton
-                        onClick={this.props.onPrev}
+                        onClick={this.prevHandler}
                     >
                         <KeyboardBackspaceRounded/>
                     </IconButton>
@@ -132,6 +138,33 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                 fullWidth={true}
                                 value={team.name || ''}
                                 className="input-edit"
+                            />
+                        </div>
+                    </div>
+                    <div className="sub-page-header-alt">{i18n.t('settings.team.background_service')}</div>
+                    <div className="switch-item with-border">
+                        <div
+                            className="switch-label">{i18n.t('settings.team.notification')}</div>
+                        <div className="switch">
+                            <Switch
+                                checked={team.notify || false}
+                                color="default"
+                                onChange={this.toggleNotifyHandler}
+                                classes={switchClasses}
+                                className={team.notify ? 'root-settings-switch-checked' : ''}
+                            />
+                        </div>
+                    </div>
+                    <div className="switch-item">
+                        <div
+                            className="switch-label">{i18n.t('settings.team.count_unread')}</div>
+                        <div className="switch">
+                            <Switch
+                                checked={team.count_unread || false}
+                                color="default"
+                                onChange={this.toggleCountUnreadHandler}
+                                classes={switchClasses}
+                                className={team.count_unread ? 'root-settings-switch-checked' : ''}
                             />
                         </div>
                     </div>
@@ -508,6 +541,41 @@ class SettingsTeam extends React.Component<IProps, IState> {
         this.setState({
             loading: false,
         });
+    }
+
+    private toggleNotifyHandler = (e: any, checked: boolean) => {
+        const {team} = this.state;
+        if (!team) {
+            return;
+        }
+        team.notify = checked;
+        this.teamRepo.update(team);
+        this.setState({
+            team,
+        });
+        this.hasUpdate = true;
+    }
+
+    private toggleCountUnreadHandler = (e: any, checked: boolean) => {
+        const {team} = this.state;
+        if (!team) {
+            return;
+        }
+        team.count_unread = checked;
+        this.teamRepo.update(team);
+        this.setState({
+            team,
+        });
+        this.hasUpdate = true;
+    }
+
+    private prevHandler = (e: any) => {
+        if (this.hasUpdate && this.props.onUpdate) {
+            this.props.onUpdate();
+        }
+        if (this.props.onPrev) {
+            this.props.onPrev(e);
+        }
     }
 }
 

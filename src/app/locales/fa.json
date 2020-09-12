@@ -309,7 +309,10 @@
       "add_member": "افزودن عضو",
       "members": "اعضا ({0})",
       "choose_contacts": "اعضا را انتخای کنید",
-      "no_members": "بدون عضو"
+      "no_members": "بدون عضو",
+      "background_service": "زمینه خدمات",
+      "notification": "اعلان",
+      "count_unread": "شمارش خوانده نشده‌"
     }
   },
   "contact": {

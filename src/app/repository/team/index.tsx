@@ -12,6 +12,9 @@ import APIManager from "../../services/sdk";
 import {ITeam} from "./interface";
 import {DexieTeamDB} from "../../services/db/dexie/team";
 import {cloneDeep} from "lodash";
+import {kMerge} from "../../services/utilities/kDash";
+import MessageRepo from "../message";
+import i18n from "../../services/i18n";
 
 const C_TEAM_TTL = 60 * 60 * 12;
 
@@ -41,20 +44,64 @@ export default class TeamRepo {
         return this.db.teams.get(id);
     }
 
-    public getCachedTeam(earlyResponse?: (teamList: ITeam[]) => void): Promise<ITeam[]> {
-        if (earlyResponse) {
-            this.db.teams.toArray().then((res) => {
-                earlyResponse(res);
+    public getCachedTeam(earlyResponse?: (teamList: ITeam[]) => void, withCounter?: boolean, withPrivate?: boolean): Promise<ITeam[]> {
+        const countFn = (teamList: ITeam[]) => {
+            if (withPrivate) {
+                teamList.unshift({
+                    accesshash: '0',
+                    creatorid: '0',
+                    id: '0',
+                    name: i18n.t('team.private'),
+                    notify: true,
+                    unread_counter: 0,
+                });
+            }
+            const promises: any[] = [];
+            teamList.forEach((team) => {
+                promises.push(MessageRepo.getInstance().getUnreadCounterByTeam(team.id || '0'));
             });
-        }
-        const d = Date.now() - this.teamTtl;
-        if (d < C_TEAM_TTL) {
-            return this.db.teams.toArray();
-        }
-        return this.apiManager.accountGetTeams().then((res) => {
-            this.teamTtl = Date.now();
-            this.createMany(cloneDeep(res.teamsList));
-            return res.teamsList;
+            return Promise.all(promises).then((res) => {
+                res.forEach((count, index) => {
+                    teamList[index].unread_counter = count;
+                });
+                return teamList;
+            });
+        };
+        return this.db.teams.toArray().then((res) => {
+            if (earlyResponse) {
+                earlyResponse(res);
+            }
+            const d = Date.now() - this.teamTtl;
+            if (d < C_TEAM_TTL) {
+                if (withCounter) {
+                    return this.db.teams.toArray().then((tt) => {
+                        return countFn(tt);
+                    });
+                } else {
+                    return this.db.teams.toArray();
+                }
+            }
+            return this.apiManager.accountGetTeams().then((teams) => {
+                this.teamTtl = Date.now();
+                teams.teamsList.map((team: ITeam) => {
+                    const t = res.find(o => o.id === team.id);
+                    if (t) {
+                        team.unread_counter = t.unread_counter;
+                        team.notify = t.notify;
+                        team.count_unread = t.count_unread;
+                    } else {
+                        team.notify = true;
+                        team.count_unread = true;
+                    }
+                    return team;
+                });
+                this.createMany(cloneDeep(teams.teamsList));
+                if (withCounter) {
+                    return countFn(teams.teamsList);
+                } else {
+                    return teams.teamsList;
+                }
+            });
         });
     }
 
@@ -72,5 +119,16 @@ export default class TeamRepo {
 
     public createMany(teams: ITeam[]) {
         return this.db.teams.bulkPut(teams);
+    }
+
+    public update(team: ITeam) {
+        return this.db.teams.get(team.id || '0').then((res) => {
+            if (res) {
+                team = kMerge(res, team);
+                return this.db.teams.put(team);
+            } else {
+                return res;
+            }
+        });
     }
 }

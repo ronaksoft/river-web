@@ -55,6 +55,7 @@ import {
     ReplyInlineMarkup, ReplyKeyboardForceReply, ReplyKeyboardHide,
     ReplyKeyboardMarkup
 } from "../../services/sdk/messages/chat.messages.markups_pb";
+import DialogRepo from "../dialog";
 
 interface IClearHistory {
     teamId: string;
@@ -816,6 +817,24 @@ export default class MessageRepo {
                     message: count
                 });
             }).catch(reject);
+        });
+    }
+
+    public getUnreadCounterByTeam(teamId: string): Promise<number> {
+        return DialogRepo.getInstance().getManyCache(teamId, {}).then((dialogs) => {
+            const promises: any[] = [];
+            dialogs.forEach((dialog) => {
+                promises.push(this.getUnreadCount(dialog.teamid || '0', dialog.peerid || '0', dialog.peertype || 0, dialog.readinboxmaxid || 0, dialog.topmessageid || 0).then((res) => {
+                    return res.message;
+                }));
+            });
+            return Promise.all(promises).then((res) => {
+                let count: number = 0;
+                res.forEach((cnt) => {
+                    count += cnt;
+                });
+                return count;
+            });
         });
     }
 

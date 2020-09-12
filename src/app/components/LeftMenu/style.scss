@@ -80,9 +80,20 @@
         }
 
         .team-select-icon {
+          position: relative;
           height: 24px;
           margin: 0 8px 0 0;
           padding-top: 4px;
+
+          .team-badge {
+            position: absolute;
+            top: 4px;
+            right: 0;
+            height: 6px;
+            width: 6px;
+            border-radius: 4px;
+            background-color: var(--notif-yellow);
+          }
 
           svg {
             font-size: 24px;
@@ -367,6 +378,31 @@
   }
 }
 
+.kk-context-menu.top-bar-team {
+  .context-item {
+    display: flex;
+    padding: 4px 6px;
+
+    .team-name {
+      flex: 1 1;
+    }
+
+    .team-unread-counter {
+      margin: 0 0 0 8px;
+      background-color: var(--notif-yellow);
+      min-width: 16px;
+      line-height: 1em;
+      padding: 3px 2px;
+      border-radius: 10px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dark);
+    }
+  }
+}
+
 html[direction="rtl"] {
   .column-left {
     .left-overlay {
@@ -465,6 +501,14 @@ html[direction="rtl"] {
   .container.mobile-view .column-left .top .info-bar {
     padding-right: 42px;
     padding-left: 8px;
+  }
+
+  .kk-context-menu.top-bar-team {
+    .context-item {
+      .team-unread-counter {
+        margin: 0 8px 0 0;
+      }
+    }
   }
 }
 

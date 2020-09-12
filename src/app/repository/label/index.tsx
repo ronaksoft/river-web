@@ -78,9 +78,12 @@ export default class LabelRepo {
         });
     }
 
-    public getLabels(): Promise<ILabel[]> {
+    public getLabels(teamId: string): Promise<ILabel[]> {
         return this.apiManager.labelGet().then((res) => {
-            this.upsert(res.labelsList);
+            this.upsert(res.labelsList.map((o: ILabel) => {
+                o.teamid = teamId;
+                return o;
+            }));
             return res.labelsList;
         });
     }
@@ -200,6 +203,13 @@ export default class LabelRepo {
             return Promise.resolve();
         }
         const ids = labels.map((label) => {
+            if (label.teamid !== undefined) {
+                if (!label.counter) {
+                    label.counter = {};
+                }
+                label.counter[label.teamid || '0'] = label.count || 0;
+                delete label.teamid;
+            }
             return label.id || 0;
         });
         return this.db.labels.where('id').anyOf(ids).toArray().then((result) => {

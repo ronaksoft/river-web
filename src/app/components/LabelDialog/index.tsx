@@ -27,6 +27,7 @@ interface IProps {
     onClose?: () => void;
     onDone?: (msgIds: number[], addIds: number[], removeIds: number[]) => void;
     onError?: (message: string) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -102,7 +103,7 @@ class LabelDialog extends React.Component<IProps, IState> {
                            height="400px"
                            noScrollbar={true}
             >
-                <LabelCreate ref={this.labelCreateRefHandler} onError={this.props.onError}
+                <LabelCreate ref={this.labelCreateRefHandler} onError={this.props.onError} teamId={this.props.teamId}
                              onDone={this.labelCreateDoneHandler}/>
                 <div className="label-dialog">
                     <div className="label-search">
@@ -128,6 +129,7 @@ class LabelDialog extends React.Component<IProps, IState> {
                             universal={true}
                         >
                             {list.map((label, key) => {
+                                const count = label.counter ? (label.counter[this.props.teamId] || 0) : 0;
                                 return (<div key={key} className="label-item">
                                     <div className="label-icon" style={{backgroundColor: label.colour}}>
                                         <LabelRounded/>
@@ -135,7 +137,7 @@ class LabelDialog extends React.Component<IProps, IState> {
                                     <div className="label-info">
                                         <div className="label-name">{label.name}</div>
                                         <div className="label-counter">
-                                            {i18n.tf(label.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(label.count || 0)))}</div>
+                                            {i18n.tf(count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(count)))}</div>
                                     </div>
                                     <div className="label-action">
                                         <Checkbox

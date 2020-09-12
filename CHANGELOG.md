@@ -1,3 +1,9 @@
+## 0.34.40
+* Team counter patched
+* New team settings (background service)
+* New notification service
+* Performance improvements
+
 ## 0.34.39
 * WASM updated
 * Active session hint added

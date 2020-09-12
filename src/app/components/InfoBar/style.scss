@@ -47,10 +47,15 @@
     position: absolute;
     top: 0;
     right: 0;
-    float: right;
-    line-height: 0;
+    height: 48px;
+    width: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     button {
+      padding: 8px;
+
       svg {
         opacity: 0.3;
       }

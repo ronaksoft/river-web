@@ -5,14 +5,20 @@ import (
 	"crypto/cipher"
 	"crypto/sha256"
 	"crypto/sha512"
+	"fmt"
 	"math/big"
 	mathRand "math/rand"
+	"syscall/js"
 	"time"
 )
 
 const (
 	DIGITS        = "0123456789"
 	ALPHANUMERICS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+)
+
+var (
+	beforeUnloadCh = make(chan struct{})
 )
 
 // _SplitPQ
@@ -249,5 +255,17 @@ func _RandomID(n int) string {
 func main() {
 	key := []byte{1, 1, 1, 1, 1, 1, 1, 1}
 	_, _ = _AES256GCMDecrypt(key, key, key)
+
+	initCB := js.FuncOf(initSDK)
+	defer initCB.Release()
+	js.Global().Get("setInitSDK").Invoke(initCB)
+
+	<-beforeUnloadCh
 	return
+}
+
+func initSDK(this js.Value, args []js.Value) interface{} {
+	timeInput := uint64(args[0].Int())
+	fmt.Println(timeInput)
+	return nil
 }

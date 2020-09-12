@@ -313,7 +313,10 @@
       "add_member": "Add Member",
       "members": "Members ({0})",
       "choose_contacts": "Choose Members",
-      "no_members": "No Members"
+      "no_members": "No Members",
+      "background_service": "Background Service",
+      "notification": "Notification",
+      "count_unread": "Count Unread"
     }
   },
   "contact": {

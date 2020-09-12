@@ -16,6 +16,8 @@
 // UpdateMessageDB: -7,
 // UpdateMessageDBRemoved: -8,
 // UpdateMessageIdDB: -9,
+// UpdateNewMessageOther: -10
+// UpdateReadHistoryInboxOther: -11
 /* tslint:disable-next-line */
 export const C_MSG = {
     AccountAuthorization: 275571966,
@@ -393,8 +395,10 @@ export const C_MSG = {
     UpdateMessagesDeleted: 670568714,
     UpdateNewMessage: 3426925183,
     UpdateNewMessageDrop: -3,
+    UpdateNewMessageOther: -10,
     UpdateNotifySettings: 3187524885,
     UpdateReadHistoryInbox: 1529128378,
+    UpdateReadHistoryInboxOther: -11,
     UpdateReadHistoryOutbox: 510866108,
     UpdateReadMessagesContents: 2991403048,
     UpdateState: 1837585836,

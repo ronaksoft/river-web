@@ -294,6 +294,38 @@ export default class DialogRepo {
         this.updateThrottle();
     }
 
+    public updateCounter(teamId: string, peerId: string, peerType: number, action: { unreadCount?: number, mentionCount?: number, addUnreadCount?: number, addMentionCount?: number }) {
+        return this.db.dialogs.where('[teamid+peerid+peertype]').equals([teamId, peerId, peerType]).first().then((result) => {
+            if (result) {
+                if (action.addUnreadCount) {
+                    if (result.unreadcount) {
+                        result.unreadcount++;
+                    } else {
+                        result.unreadcount = 1;
+                    }
+                }
+                if (action.unreadCount) {
+                    result.unreadcount = action.unreadCount;
+                }
+                if (action.addMentionCount) {
+                    if (result.mentionedcount) {
+                        result.mentionedcount++;
+                    } else {
+                        result.mentionedcount = 1;
+                    }
+                }
+                if (action.mentionCount) {
+                    result.unreadcount = action.mentionCount;
+                }
+                const mapId = `${teamId}_${peerId}_${peerType}`;
+                this.lazyMap[mapId] = result;
+                return this.db.dialogs.put(result);
+            } else {
+                return result;
+            }
+        });
+    }
+
     private mergeCheck(dialog: IDialog, newDialog: IDialog): IDialog {
         if (newDialog.force !== true && dialog.topmessageid && newDialog.topmessageid && dialog.topmessageid > newDialog.topmessageid) {
             return dialog;

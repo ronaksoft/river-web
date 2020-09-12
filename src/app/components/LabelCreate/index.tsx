@@ -25,6 +25,7 @@ interface IProps {
     onClose?: () => void;
     onDone?: (label: ILabel) => void;
     onError?: (message: string) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -161,6 +162,7 @@ class LabelCreate extends React.Component<IProps, IState> {
             });
         } else {
             this.apiManager.labelEdit(label.id || 0, label.name || '', label.colour || '').then(() => {
+                label.teamid = this.props.teamId;
                 this.labelRepo.upsert([label]);
                 this.modalCloseHandler();
                 if (this.props.onDone) {

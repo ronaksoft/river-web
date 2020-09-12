@@ -286,6 +286,7 @@ class Chat extends React.Component<IProps, IState> {
     private smoother: Smoother;
     private uploaderRef: Uploader | undefined;
     private readonly userId: string = '0';
+    private teamMap: { [key: string]: ITeam } = {};
 
     constructor(props: IProps) {
         super(props);
@@ -418,6 +419,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: New Message Received
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, this.updateNewMessageHandler));
 
+        // Update: New Message Received (from teams other than current one)
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageOther, this.updateNewMessageOtherHandler));
+
         // Update: Message Dropped (internal)
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageDrop, this.updateMessageDropHandler));
 
@@ -429,6 +433,9 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: Read Inbox History
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, this.updateReadInboxHandler));
+
+        // Update: Read Inbox History (from teams other than current one)
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInboxOther, this.updateReadInboxOtherHandler));
 
         // Update: Read Outbox History
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, this.updateReadOutboxHandler));
@@ -614,6 +621,7 @@ class Chat extends React.Component<IProps, IState> {
                                   onDrop={this.leftMenuDropHandler}
                                   onMediaAction={this.messageAttachmentActionHandler}
                                   onTeamChange={this.leftMenuTeamChangeHandler}
+                                  onTeamLoad={this.leftMenuTeamLoadHandler}
                         />
                         {this.selectedPeerName !== 'null' &&
                         <div
@@ -876,7 +884,7 @@ class Chat extends React.Component<IProps, IState> {
                                 onError={this.textErrorHandler}/>
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
-                             onClose={this.forwardDialogCloseHandler}/>
+                             onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
                 <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
             </div>
         );
@@ -1157,6 +1165,31 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    /* Update new message other handler */
+    private updateNewMessageOtherHandler = (data: UpdateNewMessage.AsObject) => {
+        const message: IMessage = data.message;
+        // Notify user if possible
+        this.notifyMessageOtherTeam(data);
+        if (!message || !message.id) {
+            return;
+        }
+        this.downloadThumbnail(message);
+        // Clear the message history
+        if (!message.me && message.messageaction !== C_MESSAGE_ACTION.MessageActionClearHistory) {
+            this.messageRepo.exists(message.id || 0).then((exists) => {
+                if (!exists) {
+                    this.dialogRepo.updateCounter(message.teamid || '0', message.peerid || '0', message.peertype || 0, {
+                        addUnreadCount: 1,
+                        addMentionCount: message.mention_me ? 1 : 0
+                    });
+                    if (this.leftMenuRef) {
+                        this.leftMenuRef.setUpdateFlag(true);
+                    }
+                }
+            });
+        }
+    }
+
     /* Update drop message */
     private updateMessageDropHandler = (data: UpdateNewMessage.AsObject) => {
         if (data.message) {
@@ -1294,6 +1327,22 @@ class Chat extends React.Component<IProps, IState> {
         } else {
             fn();
         }
+    }
+
+    /* Update read history inbox other handler */
+    private updateReadInboxOtherHandler = (data: UpdateReadHistoryInbox.AsObject) => {
+        const peerId = data.peer.id || '0';
+        const peerType = data.peer.type || 0;
+        this.dialogRepo.get(data.teamid || '0', peerId, peerType).then((dialog) => {
+            if (dialog) {
+                this.messageRepo.getUnreadCount(data.teamid || '0', peerId, peerType, data.maxid || 0, dialog.topmessageid || 0).then((res) => {
+                    this.dialogRepo.updateCounter(data.teamid || '0', peerId, peerType, {
+                        mentionCount: res.mention,
+                        unreadCount: res.message,
+                    });
+                });
+            }
+        });
     }
 
     /* Update read history outbox handler */
@@ -2516,7 +2565,7 @@ class Chat extends React.Component<IProps, IState> {
                     });
                 });
             });
-            this.labelRepo.getLabels();
+            this.labelRepo.getLabels(this.teamId);
             this.getRemoteTopPeers();
         });
     }
@@ -2725,7 +2774,7 @@ class Chat extends React.Component<IProps, IState> {
                 } else {
                     this.setScrollMode('none');
                 }
-                this.updateManager.getLastUpdateId()
+                this.updateManager.getLastUpdateId();
                 const modifiedMsgs = this.modifyMessages(this.messages, res, true);
                 res.forEach((msg) => {
                     this.downloadThumbnail(msg);
@@ -2840,7 +2889,6 @@ class Chat extends React.Component<IProps, IState> {
                 if (group) {
                     groupTitle = group.title || 'Group';
                 }
-                // if (data.messages.length === 1) {
                 const messageTitle = getMessageTitle(message);
                 if (message.mention_me === true) {
                     this.notify(
@@ -2851,10 +2899,6 @@ class Chat extends React.Component<IProps, IState> {
                         `New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`,
                         messageTitle.text, GetPeerName(message.peerid, message.peertype));
                 }
-                // } else {
-                //     this.notify(
-                //         `${data.messages.length} new messages in ${groupTitle}`, '', data.messages[0].peerid || 'null');
-                // }
             });
         } else {
             if (!message.me) {
@@ -2862,15 +2906,49 @@ class Chat extends React.Component<IProps, IState> {
                 this.notify(
                     `New message from ${data.sender.firstname} ${data.sender.lastname}`,
                     messageTitle.text, GetPeerName(message.peerid, message.peertype));
-                // } else {
-                //     this.notify(
-                //         `${data.messages.length} new messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
-                // }
             }
         }
     }
 
-    private notify = (title: string, body: string, id: string) => {
+    /* Notify on new message received in other teams */
+    private notifyMessageOtherTeam(data: UpdateNewMessage.AsObject) {
+        const message: IMessage = data.message;
+        if (this.teamMap.hasOwnProperty(message.teamid || '0') && !this.teamMap[message.teamid || '0'].notify) {
+            return;
+        }
+        const teamName = this.teamMap[message.teamid || '0'].name || '';
+        this.canNotifyOtherTeam(message).then((ok) => {
+            if (ok) {
+                if (message.peertype === PeerType.PEERGROUP) {
+                    this.groupRepo.get(this.teamId, message.peerid || '').then((group) => {
+                        let groupTitle = 'Group';
+                        if (group) {
+                            groupTitle = group.title || 'Group';
+                        }
+                        const messageTitle = getMessageTitle(message);
+                        if (message.mention_me === true) {
+                            this.notify(
+                                `${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle} | ${teamName}`,
+                                messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
+                        } else if (!message.me) {
+                            this.notify(
+                                `New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle} | ${teamName}`,
+                                messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
+                        }
+                    });
+                } else {
+                    if (!message.me) {
+                        const messageTitle = getMessageTitle(message);
+                        this.notify(
+                            `New message from ${data.sender.firstname} ${data.sender.lastname} | ${teamName}`,
+                            messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
+                    }
+                }
+            }
+        });
+    }
+
+    private notify = (title: string, body: string, id: string, teamId?: string) => {
         if (Notification.permission === 'granted') {
             const options = {
                 body,
@@ -2880,7 +2958,7 @@ class Chat extends React.Component<IProps, IState> {
             const notification = new Notification(title, options);
             notification.onclick = () => {
                 window.focus();
-                this.props.history.push(`/chat/${this.teamId}/${id}`);
+                this.props.history.push(`/chat/${teamId || this.teamId}/${id}`);
             };
         }
     }
@@ -3723,6 +3801,20 @@ class Chat extends React.Component<IProps, IState> {
             return !isMuted(dialog.notifysettings);
         }
         return true;
+    }
+
+    /* Check if can notify user */
+    private canNotifyOtherTeam(msg: IMessage) {
+        return new Promise(resolve => {
+            this.dialogRepo.get(msg.teamid || '0', msg.peerid || '0', msg.peertype || 0).then((dialog) => {
+                if (dialog) {
+                    resolve(!isMuted(dialog.notifysettings));
+                }
+                resolve(true);
+            }).catch(() => {
+                resolve(false);
+            });
+        });
     }
 
     /* Jump to message handler */
@@ -5711,6 +5803,12 @@ class Chat extends React.Component<IProps, IState> {
             });
         }
         this.closePeerHandler();
+    }
+
+    private leftMenuTeamLoadHandler = (teams: ITeam[]) => {
+        teams.forEach((team) => {
+            this.teamMap[team.id || ''] = team;
+        });
     }
 
     private sendAllPendingMessages() {

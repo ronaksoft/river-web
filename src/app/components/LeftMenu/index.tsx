@@ -37,9 +37,10 @@ import {RiverTextLogo} from "../SVG/river";
 import {ITeam} from "../../repository/team/interface";
 import TeamName from "../TeamName";
 import TeamRepo from "../../repository/team";
+import {CircularProgress} from "@material-ui/core";
 
 import './style.scss';
-import {CircularProgress} from "@material-ui/core";
+import {localize} from "../../services/utilities/localize";
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -61,6 +62,7 @@ interface IProps {
     onDrop: (peerId: string, files: File[], hasData: boolean) => void;
     onMediaAction?: (cmd: 'download', message: IMessage) => void;
     onTeamChange?: (team: ITeam) => void;
+    onTeamLoad?: (teams: ITeam[]) => void;
 }
 
 interface IState {
@@ -79,6 +81,7 @@ interface IState {
     teamLoading: boolean;
     teamList: ITeam[];
     teamMoreAnchorEl: any;
+    hasUpdate: boolean;
 }
 
 class LeftMenu extends React.PureComponent<IProps, IState> {
@@ -118,6 +121,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             connectionStatus: false,
             connectionStatusHide: false,
             dialogHover: false,
+            hasUpdate: false,
             iframeActive: props.iframeActive,
             isConnecting: false,
             isOnline: false,
@@ -175,6 +179,14 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     public setTeam(teamId: string) {
         this.teamId = teamId;
         this.forceUpdate();
+    }
+
+    public setUpdateFlag(enable: boolean) {
+        if (this.state.hasUpdate !== enable) {
+            this.setState({
+                hasUpdate: enable,
+            });
+        }
     }
 
     public componentDidMount(): void {
@@ -245,7 +257,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl} = this.state;
+        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl, hasUpdate} = this.state;
         const className = (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (overlayMode ? ' label-mode' : '') + (dialogHover ? ' dialog-hover' : '') + (shrunkMenu ? ' shrunk-menu' : '');
         return (
             <div className={'column-left ' + className}>
@@ -284,7 +296,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             {this.teamId !== '0' &&
                             <TeamName id={this.teamId} className="team-name" prefix="(" postfix=")"/>}
                             {Boolean(teamList.length > 0) &&
-                            <div className="team-select-icon" onClick={this.teamOpenHandler}><ArrowDropDownRounded/></div>}
+                            <div className="team-select-icon" onClick={this.teamOpenHandler}><ArrowDropDownRounded/>
+                                {hasUpdate && <div className="team-badge"/>}
+                            </div>}
                         </div>
                     </span>
                     <div className="actions">
@@ -376,7 +390,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     }}
                     open={Boolean(teamMoreAnchorEl)}
                     onClose={this.teamCloseHandler}
-                    className="kk-context-menu darker"
+                    className="kk-context-menu darker top-bar-team"
                     classes={{
                         paper: 'kk-context-menu-paper'
                     }}
@@ -384,7 +398,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     {teamList.map((item) => {
                         return (<MenuItem key={item.id} className="context-item"
                                           onClick={this.teamSelectHandler(item)}
-                                          selected={this.teamId === item.id}>{item.name}</MenuItem>);
+                                          selected={this.teamId === item.id}>
+                            <div className="team-name">{item.name}</div>
+                            {item.unread_counter &&
+                            <div className="team-unread-counter">{localize(item.unread_counter)}</div>}
+                        </MenuItem>);
                     })}
                     {teamLoading && <div style={{
                         alignItems: 'center',
@@ -413,6 +431,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                               onReloadDialog={this.props.onReloadDialog}
                               onSubPlaceChange={this.settingsSubPlaceChangeHandler}
                               onTeamChange={this.props.onTeamChange}
+                              onTeamUpdate={this.settingsMenuTeamUpdateHandler}
                               teamId={this.teamId}
                 />}
                 {leftMenu === 'contacts' &&
@@ -619,13 +638,6 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             teamLoading: true,
         });
         const fn = (loading: boolean) => (res: ITeam[]) => {
-            res.unshift({
-                accesshash: '0',
-                creatorid: '0',
-                id: '0',
-                name: i18n.t('team.private'),
-                unread_counter: 0,
-            });
             const q: any = {
                 teamList: res,
                 teamLoading: loading,
@@ -636,8 +648,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 q.teamSelectedName = item.name;
             }
             this.setState(q);
+            if (!loading && this.props.onTeamLoad) {
+                this.props.onTeamLoad(res);
+            }
         };
-        this.teamRepo.getCachedTeam(fn(true)).then(fn(false)).catch(() => {
+        this.teamRepo.getCachedTeam(fn(true), true, true).then(fn(false)).catch(() => {
             this.setState({
                 teamLoading: false,
             });
@@ -646,6 +661,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private teamOpenHandler = (e: any) => {
         this.setState({
+            hasUpdate: false,
             teamMoreAnchorEl: e.currentTarget,
         });
     }
@@ -669,6 +685,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         if (this.props.onTeamChange) {
             this.props.onTeamChange(item);
         }
+    }
+
+    private settingsMenuTeamUpdateHandler = () => {
+        this.getTeamList();
     }
 }
 
