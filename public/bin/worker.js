@@ -1,4 +1,4 @@
-importScripts('/bin/wasm_exec.js?v5');
+importScripts('/bin/wasm_exec.js?v6');
 
 let run;
 let initSDK = null;
@@ -37,7 +37,7 @@ self.onmessage = function (e) {
     switch (d.cmd) {
         case 'init':
             console.time('init');
-            fetch('river.wasm?v29').then((response) => {
+            fetch('river.wasm?v30').then((response) => {
                 WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
                     console.timeEnd('init');
                     run = go.run(res.instance);

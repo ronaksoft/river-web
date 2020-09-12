@@ -58,7 +58,7 @@ export default class Http {
         this.shareWorker = shareWorker;
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v22');
+        this.worker = new Worker('/bin/worker.js?v23');
         this.workerId = id;
 
         if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0 || fileUrl.indexOf('localhost') > -1)) {

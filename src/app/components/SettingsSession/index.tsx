@@ -26,6 +26,7 @@ interface IProps {
     onPrev?: (e: any) => void;
     onDone?: () => void;
     limit?: number;
+    onSetCount?: (count: number) => void;
 }
 
 interface IState {
@@ -190,6 +191,9 @@ class SettingsSession extends React.Component<IProps, IState> {
         });
 
         this.apiManager.sessionGetAll().then((res) => {
+            if (this.props.onSetCount) {
+                this.props.onSetCount(res.authorizationsList.length);
+            }
             this.setState({
                 loading: false,
                 sessions: this.modifySessions(res.authorizationsList),

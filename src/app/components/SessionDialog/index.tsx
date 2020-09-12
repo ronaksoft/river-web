@@ -12,10 +12,12 @@ import SettingsModal from '../SettingsModal';
 import {ClearAllRounded} from '@material-ui/icons';
 import SettingsSession from "../SettingsSession";
 import i18n from "../../services/i18n";
+import {localize} from "../../services/utilities/localize";
 
 import './style.scss';
 
 interface IState {
+    count: number;
     limit: number;
     open: boolean;
 }
@@ -27,6 +29,7 @@ class SessionDialog extends React.Component<any, IState> {
         super(props);
 
         this.state = {
+            count: 0,
             limit: 7,
             open: false,
         };
@@ -43,7 +46,7 @@ class SessionDialog extends React.Component<any, IState> {
     }
 
     public render() {
-        const {open, limit} = this.state;
+        const {open, limit, count} = this.state;
         return (
             <SettingsModal open={open} title={i18n.t('settings.active_sessions')}
                            icon={<ClearAllRounded/>}
@@ -52,7 +55,9 @@ class SessionDialog extends React.Component<any, IState> {
                            noScrollbar={true}
             >
                 <div className="session-dialog">
-                    <SettingsSession onDone={this.doneHandler} limit={limit}/>
+                    <div
+                        className="session-hint">{i18n.tf('sign_up.sessions_hint', [String(localize(limit)), String(localize(count))])}</div>
+                    <SettingsSession onDone={this.doneHandler} limit={limit} onSetCount={this.setCountHandler}/>
                 </div>
             </SettingsModal>
         );
@@ -66,6 +71,12 @@ class SessionDialog extends React.Component<any, IState> {
         if (this.resolve) {
             this.resolve();
         }
+    }
+
+    private setCountHandler = (count: number) => {
+        this.setState({
+            count,
+        });
     }
 }
 

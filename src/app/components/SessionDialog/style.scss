@@ -10,8 +10,22 @@
 .session-dialog {
   height: 100%;
 
+  .session-hint {
+    margin: 8px;
+    padding: 12px 8px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 320px;
+    line-height: 1.3em;
+    border: 1px solid var(--grey-low);
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
   .session-container {
-    height: calc(100% - 50px);
+    height: calc(100% - 138px);
 
     .session-item {
       line-height: 1.3em;
@@ -19,6 +33,16 @@
       .session-info {
         overflow: hidden;
       }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .session-dialog {
+    .session-hint {
+      text-align: center;
+      direction: rtl;
+      font-size: 15px;
     }
   }
 }

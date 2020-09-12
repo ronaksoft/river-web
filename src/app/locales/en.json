@@ -384,7 +384,8 @@
     "password_note": "You have enabled Two-Step Verification, so your account is protected with an additional password.",
     "timeout": "Internet Timeout",
     "please_fill_the_form": "Please fill the form",
-    "incorrect_password": "Incorrect password"
+    "incorrect_password": "Incorrect password",
+    "sessions_hint": "Users with more than {0} active sessions may function improperly, please terminate at least {1} session(s)."
   },
   "status": {
     "members": "{0} members",

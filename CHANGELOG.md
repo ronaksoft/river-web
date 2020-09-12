@@ -1,3 +1,7 @@
+## 0.34.39
+* WASM updated
+* Active session hint added
+
 ## 0.34.38
 * New select team design
 * Bug fixes and performance improvements
