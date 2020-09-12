@@ -13,7 +13,7 @@
     height: 48px;
     display: none;
     align-items: center;
-    padding: 0 8px;
+    padding: 0 0 0 8px;
     background-color: var(--header-color);
 
     &:after {
@@ -71,18 +71,33 @@
 
         .team-name {
           font-size: 10px;
-          padding: 0 6px;
+          padding: 0 0 0 6px;
           color: var(--gale);
           max-width: 68px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
         }
+
+        .team-select-icon {
+          height: 24px;
+          margin: 0 8px 0 0;
+          padding-top: 4px;
+
+          svg {
+            font-size: 24px;
+            color: var(--gale);
+          }
+        }
       }
     }
 
     .actions {
-      width: 96px;
+      width: 86px;
+
+      button {
+        padding: 8px;
+      }
     }
   }
 
@@ -151,6 +166,7 @@
   &.shrunk-menu {
     &:not(.label-mode) {
       .top-bar {
+        padding: 0 !important;
         justify-content: center;
       }
     }
@@ -360,6 +376,8 @@ html[direction="rtl"] {
     }
 
     .top-bar {
+      padding: 0 8px 0 0;
+
       .close-btn {
         margin-left: 6px;
         margin-right: -4px;
@@ -370,8 +388,16 @@ html[direction="rtl"] {
       }
 
       .new-message {
-        svg {
+        .text-logo {
           transform: translateX(-24px);
+
+          .team-name {
+            padding: 0 6px 0 0;
+          }
+
+          .team-select-icon {
+            margin: 0 0 0 8px;
+          }
         }
       }
     }

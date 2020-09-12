@@ -22,22 +22,24 @@ import {
     MoreVertRounded,
     SearchRounded,
     MenuRounded,
-    MenuOpenRounded
+    MenuOpenRounded, ArrowDropDownRounded
 } from "@material-ui/icons";
 import Menu from "@material-ui/core/Menu";
 import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
 import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
-import {omitBy, isNil, debounce} from "lodash";
+import {omitBy, isNil, debounce, find} from "lodash";
 import LabelMenu from "../LabelMenu";
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {RiverTextLogo} from "../SVG/river";
 import {ITeam} from "../../repository/team/interface";
 import TeamName from "../TeamName";
+import TeamRepo from "../../repository/team";
 
 import './style.scss';
+import {CircularProgress} from "@material-ui/core";
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -74,6 +76,9 @@ interface IState {
     overlayMode: number;
     shrunkMenu: boolean;
     anchorFrom: 'chat' | 'settings';
+    teamLoading: boolean;
+    teamList: ITeam[];
+    teamMoreAnchorEl: any;
 }
 
 class LeftMenu extends React.PureComponent<IProps, IState> {
@@ -100,6 +105,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private chatMoreMenuItem: any[];
     private timeout: any = null;
     private unreadCounter: number = 0;
+    private teamRepo: TeamRepo;
     private readonly mouseEnterDebounce: any;
     private readonly mouseLeaveDebounce: any;
 
@@ -119,6 +125,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             leftMenu: 'chat',
             overlayMode: 0,
             shrunkMenu: false,
+            teamList: [],
+            teamLoading: false,
+            teamMoreAnchorEl: null,
         };
 
         this.chatTopIcons = [{
@@ -157,6 +166,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             title: i18n.t('chat.log_out'),
         }];
 
+        this.teamRepo = TeamRepo.getInstance();
+
         this.mouseEnterDebounce = debounce(this.mouseEnterDebounceHandler, 320);
         this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
     }
@@ -177,6 +188,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 shrunkMenu: false,
             });
         }
+        this.getTeamList();
     }
 
     public setMenu(menu: menuItems, pageContent?: string, pageSubContent?: string) {
@@ -233,7 +245,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover} = this.state;
+        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl} = this.state;
         const className = (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (overlayMode ? ' label-mode' : '') + (dialogHover ? ' dialog-hover' : '') + (shrunkMenu ? ' shrunk-menu' : '');
         return (
             <div className={'column-left ' + className}>
@@ -271,6 +283,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             {!iframeActive && <RiverTextLogo/>}
                             {this.teamId !== '0' &&
                             <TeamName id={this.teamId} className="team-name" prefix="(" postfix=")"/>}
+                            {Boolean(teamList.length > 0) &&
+                            <div className="team-select-icon" onClick={this.teamOpenHandler}><ArrowDropDownRounded/></div>}
                         </div>
                     </span>
                     <div className="actions">
@@ -350,6 +364,36 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
                                onAction={this.props.onMediaAction} teamId={this.teamId}/>}
                 </div>
+                {Boolean(teamList.length > 0) && <Menu
+                    anchorEl={teamMoreAnchorEl}
+                    anchorOrigin={{
+                        horizontal: 'center',
+                        vertical: 'top',
+                    }}
+                    transformOrigin={{
+                        horizontal: 'center',
+                        vertical: 'top',
+                    }}
+                    open={Boolean(teamMoreAnchorEl)}
+                    onClose={this.teamCloseHandler}
+                    className="kk-context-menu darker"
+                    classes={{
+                        paper: 'kk-context-menu-paper'
+                    }}
+                >
+                    {teamList.map((item) => {
+                        return (<MenuItem key={item.id} className="context-item"
+                                          onClick={this.teamSelectHandler(item)}
+                                          selected={this.teamId === item.id}>{item.name}</MenuItem>);
+                    })}
+                    {teamLoading && <div style={{
+                        alignItems: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }}>
+                        <CircularProgress size={16}/>
+                    </div>}
+                </Menu>}
             </div>
         );
     }
@@ -568,6 +612,63 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.setState({
             leftMenu: 'chat',
         });
+    }
+
+    private getTeamList() {
+        this.setState({
+            teamLoading: true,
+        });
+        const fn = (loading: boolean) => (res: ITeam[]) => {
+            res.unshift({
+                accesshash: '0',
+                creatorid: '0',
+                id: '0',
+                name: i18n.t('team.private'),
+                unread_counter: 0,
+            });
+            const q: any = {
+                teamList: res,
+                teamLoading: loading,
+            };
+            const item = find(res, {id: this.teamId});
+            if (item) {
+                q.teamSelectedId = item.id;
+                q.teamSelectedName = item.name;
+            }
+            this.setState(q);
+        };
+        this.teamRepo.getCachedTeam(fn(true)).then(fn(false)).catch(() => {
+            this.setState({
+                teamLoading: false,
+            });
+        });
+    }
+
+    private teamOpenHandler = (e: any) => {
+        this.setState({
+            teamMoreAnchorEl: e.currentTarget,
+        });
+    }
+
+    private teamCloseHandler = () => {
+        this.setState({
+            teamMoreAnchorEl: null,
+        });
+    }
+
+    private teamSelectHandler = (item: ITeam) => (e: any) => {
+        localStorage.setItem(C_LOCALSTORAGE.TeamId, item.id || '0');
+        localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
+            accesshash: item.accesshash,
+            id: item.id,
+        }));
+        this.teamId = item.id || '0';
+        this.setState({
+            teamMoreAnchorEl: null,
+        });
+        if (this.props.onTeamChange) {
+            this.props.onTeamChange(item);
+        }
     }
 }
 

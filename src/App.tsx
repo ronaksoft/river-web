@@ -35,8 +35,8 @@ import Broadcaster from "./app/services/broadcaster";
 
 import './App.scss';
 
-export const C_VERSION = '0.34.37';
-export const C_ELECTRON_VERSION = '10.1.1';
+export const C_VERSION = '0.34.38';
+export const C_ELECTRON_VERSIONS = ['10.1.1', '8.5.1'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {
@@ -414,7 +414,7 @@ class App extends React.Component<{}, IState> {
         if (!this.isElectron) {
             return '';
         }
-        if (ElectronService.electronVersion() === C_ELECTRON_VERSION) {
+        if (C_ELECTRON_VERSIONS.indexOf(ElectronService.electronVersion() || '') > -1) {
             return '';
         }
         const userAgent = window.navigator.userAgent;

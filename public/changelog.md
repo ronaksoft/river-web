@@ -1,3 +1,7 @@
+## 0.34.38
+* New select team design
+* Bug fixes and performance improvements
+
 ## 0.34.37
 * Active session alert on login implemented
 * Tiny thumbnail improvements

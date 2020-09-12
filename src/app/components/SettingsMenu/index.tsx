@@ -2500,9 +2500,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (this.props.onTeamChange) {
             this.props.onTeamChange(item);
         }
-        if (this.props.onClose) {
-            this.props.onClose(e);
-        }
     }
 }
 

@@ -7,9 +7,10 @@
     Copyright Ronak Software Group 2020
 */
 
-code {
+code.code-viewer {
   direction: ltr;
   display: block;
+  text-align: right;
   font-family: 'CourierNewPSMT' !important;
 
   table tr {
@@ -32,7 +33,7 @@ html[theme="light"] {
   /*
   github.com style (c) Vasily Polovnyov <vast@whiteants.net>
   */
-  code {
+  code.code-viewer {
     color: #333;
 
     table tr {
@@ -149,7 +150,7 @@ http://zenorocha.mit-license.org
 @author Éverton Ribeiro <nuxlli@gmail.com>
 @author Zeno Rocha <hi@zenorocha.com>
 */
-  code {
+  code.code-viewer {
     direction: ltr;
     display: block;
     color: var(--light);
@@ -243,7 +244,7 @@ http://zenorocha.mit-license.org
   html[theme="light"] {
     &[gradient="#{$i}"]:not([bubble="5"]) {
       .me {
-        code {
+        code.code-viewer {
           padding: 4px;
           background: rgba(255, 255, 255, 0.53);
           border-radius: 3px;
@@ -259,7 +260,7 @@ http://zenorocha.mit-license.org
   html[theme="dark-blue"] {
     &[gradient="#{$i}"]:not([bubble="5"]) {
       .me {
-        code {
+        code.code-viewer {
           padding: 4px;
           background: rgba(40, 42, 54, 0.67);
           border-radius: 3px;

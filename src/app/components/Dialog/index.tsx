@@ -210,7 +210,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 this.firstTimeTimeout = setTimeout(() => {
                     this.firstTimeLoad = false;
                     this.forceUpdate();
-                }, 5000);
+                }, 2000);
             }
             if (this.firstTimeInit && dialogs.length > 0) {
                 this.initScrollPos();

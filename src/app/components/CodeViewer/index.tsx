@@ -64,11 +64,11 @@ class CodeViewer extends React.Component<IProps, IState> {
         const {html} = this.state;
         if (html.length > 0) {
             return (
-                <code dangerouslySetInnerHTML={{__html: html}}/>
+                <code className="code-viewer" dangerouslySetInnerHTML={{__html: html}}/>
             );
         } else {
             return (
-                <code>{snippet}</code>
+                <code className="code-viewer">{snippet}</code>
             );
         }
     }
