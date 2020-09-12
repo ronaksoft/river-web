@@ -647,6 +647,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 q.teamSelectedId = item.id;
                 q.teamSelectedName = item.name;
             }
+            q.hasUpdate = res.some(o => o.id !== this.teamId && o.unread_counter);
             this.setState(q);
             if (!loading && this.props.onTeamLoad) {
                 this.props.onTeamLoad(res);
