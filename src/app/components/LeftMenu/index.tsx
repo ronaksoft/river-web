@@ -295,8 +295,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             {!iframeActive && <RiverTextLogo/>}
                             {this.teamId !== '0' &&
                             <TeamName id={this.teamId} className="team-name" prefix="(" postfix=")"/>}
-                            {Boolean(teamList.length > 0) &&
-                            <div className="team-select-icon" onClick={this.teamOpenHandler}><ArrowDropDownRounded/>
+                            {Boolean(teamList.length > 1) &&
+                            <div className="team-select-icon"><ArrowDropDownRounded onClick={this.teamOpenHandler}/>
                                 {hasUpdate && <div className="team-badge"/>}
                             </div>}
                         </div>
@@ -369,7 +369,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     {this.getContent()}
                 </div>
                 {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
-                                           selected={this.state.leftMenu}/>}
+                                           selected={this.state.leftMenu} teamId={this.teamId}/>}
                 <div className="left-overlay">
                     {Boolean(overlayMode === 1) &&
                     <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
@@ -378,7 +378,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
                                onAction={this.props.onMediaAction} teamId={this.teamId}/>}
                 </div>
-                {Boolean(teamList.length > 0) && <Menu
+                {Boolean(teamList.length > 1) && <Menu
                     anchorEl={teamMoreAnchorEl}
                     anchorOrigin={{
                         horizontal: 'center',

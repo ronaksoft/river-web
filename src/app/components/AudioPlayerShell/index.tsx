@@ -13,7 +13,6 @@ import {
     CloseRounded,
     PauseRounded,
     PlayArrowRounded,
-    SlowMotionVideoRounded,
     SkipNextRounded,
     SkipPreviousRounded, MusicNoteRounded,
     BarChartRounded,
@@ -28,6 +27,7 @@ import DownloadProgress from '../DownloadProgress';
 import {findIndex} from 'lodash';
 import i18n from '../../services/i18n';
 import {IPeer} from "../../repository/dialog/interface";
+import {X2Icon} from "../SVG/2x";
 
 import './style.scss';
 
@@ -163,7 +163,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                         </div>}
                     </div>
                     <div className="audio-player-action">
-                        <SlowMotionVideoRounded className={(fast ? 'enable' : '')} onClick={this.fastToggleHandler}/>
+                        <X2Icon className={(fast ? 'enable' : '')} onClick={this.fastToggleHandler}/>
                         <CloseRounded className="action" onClick={this.cancelHandler}/>
                     </div>
                 </div>

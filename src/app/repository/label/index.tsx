@@ -84,7 +84,11 @@ export default class LabelRepo {
                 o.teamid = teamId;
                 return o;
             }));
-            return res.labelsList;
+            return res.labelsList.map((label: ILabel) => {
+                label.counter = {};
+                label.counter[teamId] = label.count || 0;
+                return label;
+            });
         });
     }
 

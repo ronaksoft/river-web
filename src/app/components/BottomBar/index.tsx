@@ -19,6 +19,7 @@ import './style.scss';
 interface IProps {
     selected: string;
     onSelect: (item: menuItems) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -46,7 +47,7 @@ class BottomBar extends React.Component<IProps, IState> {
         this.items = [{
             icon: <PersonRounded/>,
             page: 'contacts',
-            title: i18n.t('general.contacts'),
+            title: this.props.teamId === '0' ? i18n.t('general.contacts') : i18n.t('general.members'),
         }, {
             badge: true,
             icon: <QuestionAnswerRounded/>,

@@ -357,7 +357,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid rgba(172, 176, 180, 0.2);
+        border: 1px solid var(--gale);
         border-radius: 4px;
         font-size: 12px;
         line-height: 14px;
@@ -365,13 +365,14 @@
 
         .select-label {
           flex: 1;
-          color: var(--gale);
+          color: var(--grey);
         }
 
         .select-icon {
           position: absolute;
           top: 0px;
           right: 0;
+
           svg {
             color: var(--gale);
           }
@@ -1337,6 +1338,14 @@ html[theme="dark-blue"] {
       }
     }
 
+    .account-summary {
+      .team-select {
+        .select-input {
+          border-color: var(--grey-low);
+        }
+      }
+    }
+
     .menu-header {
       background-color: var(--dark-medium);
       color: var(--white);
@@ -1552,6 +1561,7 @@ html[theme="dark-blue"] {
 
         .name {
           color: var(--light);
+
           .last-seen {
             .online {
               color: var(--river);
