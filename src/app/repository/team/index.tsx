@@ -33,6 +33,7 @@ export default class TeamRepo {
     private db: DexieTeamDB;
     private apiManager: APIManager;
     private teamTtl: number = 0;
+    private teamCache: { [key: string]: ITeam } = {};
 
     private constructor() {
         this.dbService = DB.getInstance();
@@ -41,6 +42,9 @@ export default class TeamRepo {
     }
 
     public get(id: string): Promise<ITeam | undefined> {
+        if (this.teamCache.hasOwnProperty(id)) {
+            return Promise.resolve(this.teamCache[id]);
+        }
         return this.db.teams.get(id);
     }
 
@@ -69,7 +73,14 @@ export default class TeamRepo {
         };
         return this.db.teams.toArray().then((res) => {
             if (earlyResponse) {
-                earlyResponse(res);
+                earlyResponse([{
+                    accesshash: '0',
+                    creatorid: '0',
+                    id: '0',
+                    name: i18n.t('team.private'),
+                    notify: true,
+                    unread_counter: 0,
+                }, ...res]);
             }
             const d = Date.now() - this.teamTtl;
             if (d < C_TEAM_TTL) {
@@ -93,6 +104,7 @@ export default class TeamRepo {
                         team.notify = true;
                         team.count_unread = true;
                     }
+                    this.teamCache[team.id || '0'] = team;
                     return team;
                 });
                 this.createMany(cloneDeep(teams.teamsList));

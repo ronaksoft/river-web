@@ -25,45 +25,42 @@ interface IProps {
 interface IState {
     selected: string;
     unreadCounter: number;
+    teamId: string;
 }
 
 class BottomBar extends React.Component<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
         return {
             selected: props.selected,
+            teamId: props.teamId,
         };
     }
 
-    private items: Array<{ badge?: boolean, icon: any, page: menuItems, title: string }>;
+    private items: Array<{ badge?: boolean, icon: any, page: menuItems, title: string }> = [];
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             selected: props.selected,
+            teamId: props.teamId,
             unreadCounter: 0,
         };
+    }
 
-        this.items = [{
-            icon: <PersonRounded/>,
-            page: 'contacts',
-            title: this.props.teamId === '0' ? i18n.t('general.contacts') : i18n.t('general.members'),
-        }, {
-            badge: true,
-            icon: <QuestionAnswerRounded/>,
-            page: 'chat',
-            title: i18n.t('general.chats'),
-        }, {
-            icon: <SettingsRounded/>,
-            page: 'settings',
-            title: i18n.t('general.settings'),
-        }];
+    public componentDidMount() {
+        this.getItems();
     }
 
     public setUnreadCounter(counter: number) {
         this.setState({
             unreadCounter: counter,
         });
+    }
+
+    public reload() {
+        this.getItems();
+        this.forceUpdate();
     }
 
     public render() {
@@ -87,6 +84,23 @@ class BottomBar extends React.Component<IProps, IState> {
         if (this.props.onSelect) {
             this.props.onSelect(item);
         }
+    }
+
+    private getItems() {
+        this.items = [{
+            icon: <PersonRounded/>,
+            page: 'contacts',
+            title: this.state.teamId === '0' ? i18n.t('general.contacts') : i18n.t('general.members'),
+        }, {
+            badge: true,
+            icon: <QuestionAnswerRounded/>,
+            page: 'chat',
+            title: i18n.t('general.chats'),
+        }, {
+            icon: <SettingsRounded/>,
+            page: 'settings',
+            title: i18n.t('general.settings'),
+        }];
     }
 }
 
