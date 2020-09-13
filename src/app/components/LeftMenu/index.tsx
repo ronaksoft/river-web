@@ -400,8 +400,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                                           onClick={this.teamSelectHandler(item)}
                                           selected={this.teamId === item.id}>
                             <div className="team-name">{item.name}</div>
-                            {item.unread_counter &&
-                            <div className="team-unread-counter">{localize(item.unread_counter)}</div>}
+                            {Boolean(item.unread_counter) &&
+                            <div className="team-unread-counter">{localize(item.unread_counter || 0)}</div>}
                         </MenuItem>);
                     })}
                     {teamLoading && <div style={{
@@ -661,6 +661,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     private teamOpenHandler = (e: any) => {
+        if (this.state.hasUpdate) {
+            this.getTeamList();
+        }
         this.setState({
             hasUpdate: false,
             teamMoreAnchorEl: e.currentTarget,

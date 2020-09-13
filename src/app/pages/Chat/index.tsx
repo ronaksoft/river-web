@@ -1179,8 +1179,8 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.exists(message.id || 0).then((exists) => {
                 if (!exists) {
                     this.dialogRepo.updateCounter(message.teamid || '0', message.peerid || '0', message.peertype || 0, {
+                        addMentionCount: message.mention_me ? 1 : 0,
                         addUnreadCount: 1,
-                        addMentionCount: message.mention_me ? 1 : 0
                     });
                     if (this.leftMenuRef) {
                         this.leftMenuRef.setUpdateFlag(true);
@@ -2928,11 +2928,11 @@ class Chat extends React.Component<IProps, IState> {
                         const messageTitle = getMessageTitle(message);
                         if (message.mention_me === true) {
                             this.notify(
-                                `${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle} | ${teamName}`,
+                                `${teamName} | ${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle}`,
                                 messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                         } else if (!message.me) {
                             this.notify(
-                                `New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle} | ${teamName}`,
+                                `${teamName} | New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`,
                                 messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                         }
                     });
@@ -2940,7 +2940,7 @@ class Chat extends React.Component<IProps, IState> {
                     if (!message.me) {
                         const messageTitle = getMessageTitle(message);
                         this.notify(
-                            `New message from ${data.sender.firstname} ${data.sender.lastname} | ${teamName}`,
+                            `${teamName} | New message from ${data.sender.firstname} ${data.sender.lastname}`,
                             messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                     }
                 }
@@ -5783,12 +5783,12 @@ class Chat extends React.Component<IProps, IState> {
             accesshash: team.accesshash,
             id: team.id || '0',
         });
+        this.teamId = team.id || '0';
         this.setChatParams(this.teamId, this.selectedPeerName, null, false, {});
         if (this.dialogRef) {
             this.dialogRef.setDialogs([], undefined, true);
         }
         setTimeout(() => {
-            this.teamId = team.id || '0';
             this.updateManager.setTeamId(this.teamId);
             if (this.hasSnapshotRecord(this.teamId)) {
                 this.initDialogs().then(() => {

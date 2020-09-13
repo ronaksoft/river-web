@@ -820,21 +820,29 @@ export default class MessageRepo {
         });
     }
 
-    public getUnreadCounterByTeam(teamId: string): Promise<number> {
+    public getUnreadCounterByTeam(teamId: string, recompute?: boolean): Promise<number> {
         return DialogRepo.getInstance().getManyCache(teamId, {}).then((dialogs) => {
-            const promises: any[] = [];
-            dialogs.forEach((dialog) => {
-                promises.push(this.getUnreadCount(dialog.teamid || '0', dialog.peerid || '0', dialog.peertype || 0, dialog.readinboxmaxid || 0, dialog.topmessageid || 0).then((res) => {
-                    return res.message;
-                }));
-            });
-            return Promise.all(promises).then((res) => {
+            if (recompute) {
+                const promises: any[] = [];
+                dialogs.forEach((dialog) => {
+                    promises.push(this.getUnreadCount(dialog.teamid || '0', dialog.peerid || '0', dialog.peertype || 0, dialog.readinboxmaxid || 0, dialog.topmessageid || 0).then((res) => {
+                        return res.message;
+                    }));
+                });
+                return Promise.all(promises).then((res) => {
+                    let count: number = 0;
+                    res.forEach((cnt) => {
+                        count += cnt;
+                    });
+                    return count;
+                });
+            } else {
                 let count: number = 0;
-                res.forEach((cnt) => {
-                    count += cnt;
+                dialogs.forEach((dialog) => {
+                    count += (dialog.unreadcount || 0);
                 });
                 return count;
-            });
+            }
         });
     }
 
