@@ -199,6 +199,8 @@ export default class UpdateManager {
     // SDK
     private apiManager: APIManager | undefined;
 
+    private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
+
     public constructor() {
         window.console.debug('Update manager started');
         this.lastUpdateId = this.loadLastUpdateId();
@@ -555,6 +557,12 @@ export default class UpdateManager {
         data.groupsList.forEach((group) => {
             this.mergeGroup(transaction.groups, group);
         });
+        if (this.verboseAPI) {
+            window.console.log(data.updatesList.map((o: any) => {
+                o.updateName = C_MSG_NAME[o.constructor || 0];
+                return o;
+            }));
+        }
         data.updatesList.forEach((update) => {
             this.process(transaction, update);
         });
@@ -590,14 +598,17 @@ export default class UpdateManager {
                 this.callHandlers(updateUserTyping.teamid || '0', C_MSG.UpdateUserTyping, updateUserTyping);
                 break;
             case C_MSG.UpdateTooLong:
+                this.logVerbose(update.constructor, null);
                 this.callOutOfSync();
                 break;
             case C_MSG.UpdateAuthorizationReset:
+                this.logVerbose(update.constructor, null);
                 this.callHandlers('all', C_MSG.UpdateAuthorizationReset, {});
                 break;
             /** Messages **/
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateNewMessage);
                 const message = MessageRepo.parseMessage(updateNewMessage.message, this.userId);
                 updateNewMessage.message = message;
                 if (!this.callUpdateHandler(message.teamid || '0', update.constructor, updateNewMessage)) {
@@ -684,6 +695,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateMessageEdited);
                 updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, this.userId);
                 this.callUpdateHandler(updateMessageEdited.message.teamid || '0', update.constructor, updateMessageEdited);
                 // Update message
@@ -699,6 +711,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateMessagesDeleted:
                 const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateMessagesDeleted);
                 this.callUpdateHandler(updateMessagesDeleted.teamid || '0', update.constructor, updateMessagesDeleted);
                 // Delete message(s)
                 updateMessagesDeleted.messageidsList.forEach((id) => {
@@ -723,6 +736,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateReadMessagesContents:
                 const updateReadMessagesContents = UpdateReadMessagesContents.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateReadMessagesContents);
                 this.callUpdateHandler(updateReadMessagesContents.teamid || '0', update.constructor, updateReadMessagesContents);
                 // Set messages content read
                 updateReadMessagesContents.messageidsList.forEach((id) => {
@@ -735,6 +749,7 @@ export default class UpdateManager {
             /** Dialogs **/
             case C_MSG.UpdateReadHistoryInbox:
                 const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateReadHistoryInbox);
                 if (!this.callUpdateHandler(updateReadHistoryInbox.teamid || '0', update.constructor, updateReadHistoryInbox)) {
                     this.callHandlers('all', C_MSG.UpdateReadHistoryInboxOther, updateReadHistoryInbox);
                 }
@@ -748,6 +763,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateReadHistoryOutbox:
                 const updateReadHistoryOutbox = UpdateReadHistoryOutbox.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateReadHistoryOutbox);
                 this.callUpdateHandler(updateReadHistoryOutbox.teamid || '0', update.constructor, updateReadHistoryOutbox);
                 // Update dialog readoutboxmaxid
                 this.mergeDialog(transaction.dialogs, {
@@ -766,6 +782,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateNotifySettings:
                 const updateNotifySettings = UpdateNotifySettings.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateNotifySettings);
                 this.callUpdateHandler(updateNotifySettings.teamid || '0', update.constructor, updateNotifySettings);
                 // TODO: teamid
                 // Update dialog notification
@@ -779,6 +796,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateDialogPinned:
                 const updateDialogPinned = UpdateDialogPinned.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateDialogPinned);
                 this.callUpdateHandler(updateDialogPinned.teamid || '0', update.constructor, updateDialogPinned);
                 // Update pinned dialog
                 this.mergeDialog(transaction.dialogs, {
@@ -790,6 +808,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateDraftMessage:
                 const updateDraftMessage = UpdateDraftMessage.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateDraftMessage);
                 this.callUpdateHandler(updateDraftMessage.message.teamid || '0', update.constructor, updateDraftMessage);
                 // Update dialog's draft
                 this.mergeDialog(transaction.dialogs, {
@@ -801,6 +820,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateDraftMessageCleared:
                 const updateDraftMessageCleared = UpdateDraftMessageCleared.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateDraftMessageCleared);
                 this.callUpdateHandler(updateDraftMessageCleared.teamid || '0', update.constructor, updateDraftMessageCleared);
                 // Remove dialog's draft
                 this.mergeDialog(transaction.dialogs, {
@@ -813,6 +833,7 @@ export default class UpdateManager {
             /** Users **/
             case C_MSG.UpdateUsername:
                 const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateUsername);
                 this.callUpdateHandler('all', update.constructor, updateUsername);
                 // Update user
                 this.mergeUser(transaction.users, {
@@ -831,6 +852,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateUserPhoto:
                 const updateUserPhoto = UpdateUserPhoto.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateUserPhoto);
                 this.callUpdateHandler('all', update.constructor, updateUserPhoto);
                 // Update user's photo
                 this.mergeUser(transaction.users, {
@@ -841,6 +863,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateUserBlocked:
                 const updateUserBlocked = UpdateUserBlocked.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateUserBlocked);
                 this.callUpdateHandler('all', update.constructor, updateUserBlocked);
                 // Update user block status
                 this.mergeUser(transaction.users, {
@@ -851,6 +874,7 @@ export default class UpdateManager {
             /** Groups **/
             case C_MSG.UpdateGroupPhoto:
                 const updateGroupPhoto = UpdateGroupPhoto.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateGroupPhoto);
                 this.callUpdateHandler('all', update.constructor, updateGroupPhoto);
                 // Update group's photo
                 this.mergeGroup(transaction.groups, {
@@ -861,6 +885,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateGroupParticipantAdd:
                 const updateGroupParticipantAdd = UpdateGroupParticipantAdd.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateGroupParticipantAdd);
                 this.callUpdateHandler('all', update.constructor, updateGroupParticipantAdd);
                 // Set groups's need updated flag
                 this.mergeGroup(transaction.groups, {
@@ -870,6 +895,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateGroupParticipantDeleted:
                 const updateGroupParticipantDeleted = UpdateGroupParticipantDeleted.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateGroupParticipantDeleted);
                 this.callUpdateHandler('all', update.constructor, updateGroupParticipantDeleted);
                 // Set groups's need updated flag
                 this.mergeGroup(transaction.groups, {
@@ -880,6 +906,7 @@ export default class UpdateManager {
             /** Labels **/
             case C_MSG.UpdateLabelSet:
                 const updateLabelSet = UpdateLabelSet.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateLabelSet);
                 this.callUpdateHandler('all', update.constructor, updateLabelSet);
                 // Add label
                 updateLabelSet.labelsList.forEach((label) => {
@@ -888,6 +915,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateLabelDeleted:
                 const updateLabelDeleted = UpdateLabelDeleted.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateLabelDeleted);
                 this.callUpdateHandler('all', update.constructor, updateLabelDeleted);
                 // Remove label
                 updateLabelDeleted.labelidsList.forEach((id) => {
@@ -896,6 +924,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateLabelItemsAdded:
                 const updateLabelItemsAdded = UpdateLabelItemsAdded.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateLabelItemsAdded);
                 this.callUpdateHandler(updateLabelItemsAdded.teamid || '0', update.constructor, updateLabelItemsAdded);
                 // Update message label list
                 updateLabelItemsAdded.messageidsList.forEach((id) => {
@@ -927,6 +956,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateLabelItemsRemoved:
                 const updateLabelItemsRemoved = UpdateLabelItemsRemoved.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateLabelItemsRemoved);
                 this.callUpdateHandler(updateLabelItemsRemoved.teamid || '0', update.constructor, updateLabelItemsRemoved);
                 // Update message label list
                 updateLabelItemsRemoved.messageidsList.forEach((id) => {
@@ -1494,5 +1524,18 @@ export default class UpdateManager {
             }
         });
         return true;
+    }
+
+    private logVerbose(constructor: number | undefined, data: any) {
+        if (this.verboseAPI && data && data.toObject) {
+            if (constructor === C_MSG.UpdateNewMessage || constructor === C_MSG.UpdateMessageEdited) {
+                const dd = cloneDeep(data);
+                dd.body = 'filtered';
+                window.console.info('%cUpdate', 'background-color: #AA8A00', C_MSG_NAME[constructor || 0], dd);
+            } else {
+                window.console.info('%cUpdate', 'background-color: #AA8A00', C_MSG_NAME[constructor || 0], data);
+            }
+
+        }
     }
 }
