@@ -2545,7 +2545,9 @@ class Chat extends React.Component<IProps, IState> {
                     if (ignoreViewUpdate !== true) {
                         this.dialogsSort(res.dialogs);
                     }
-                    this.updateManager.setLastUpdateId(res.updateid || 0);
+                    if (!ignoreViewUpdate) {
+                        this.updateManager.setLastUpdateId(res.updateid || 0);
+                    }
                     this.updateManager.enableLiveUpdate();
                     this.setAppStatus({
                         isUpdating: false,

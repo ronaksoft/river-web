@@ -1,5 +1,8 @@
+## 0.34.45
+* Typo in changelog fixed
+
 ## 0.34.44
-* Critical bug in updating removed
+* Critical bug in updating fixed
 
 ## 0.34.43
 * Opus Recorder updated
