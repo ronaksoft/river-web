@@ -1527,7 +1527,7 @@ export default class UpdateManager {
     }
 
     private logVerbose(constructor: number | undefined, data: any) {
-        if (this.verboseAPI && data && data.toObject) {
+        if (this.verboseAPI) {
             if (constructor === C_MSG.UpdateNewMessage || constructor === C_MSG.UpdateMessageEdited) {
                 const dd = cloneDeep(data);
                 dd.body = 'filtered';
@@ -1535,7 +1535,6 @@ export default class UpdateManager {
             } else {
                 window.console.info('%cUpdate', 'background-color: #AA8A00', C_MSG_NAME[constructor || 0], data);
             }
-
         }
     }
 }
