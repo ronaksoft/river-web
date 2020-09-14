@@ -465,7 +465,7 @@ export default class UpdateManager {
             try {
                 this.responseUpdateMessageID(update);
             } catch (e) {
-                //
+                window.console.log('responseUpdateMessageID', e);
             }
         });
         this.processContainer(data, true);
@@ -1142,6 +1142,8 @@ export default class UpdateManager {
             if (promises.length > 0) {
                 Promise.all(promises).then(() => {
                     this.processTransactionStep2(transaction, transactionResolve, doneFn);
+                }).catch((err) => {
+                    window.console.log('processTransaction', err);
                 });
             } else {
                 this.processTransactionStep2(transaction, transactionResolve, doneFn);
@@ -1160,6 +1162,8 @@ export default class UpdateManager {
         if (promises.length > 0) {
             Promise.all(promises).then(() => {
                 this.processTransactionStep3(transaction, transactionResolve, doneFn);
+            }).catch((err) => {
+                window.console.log('processTransaction2', err);
             });
         } else {
             this.processTransactionStep3(transaction, transactionResolve, doneFn);
@@ -1204,6 +1208,8 @@ export default class UpdateManager {
                     });
                     this.processTransactionStep4(transaction, transactionResolve, doneFn);
                 });
+            }).catch((err) => {
+                window.console.log('processTransactionStep3', err);
             });
         } else {
             this.processTransactionStep4(transaction, transactionResolve, doneFn);
