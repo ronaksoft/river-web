@@ -7,6 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
+/* eslint import/no-webpack-loader-syntax: off */
 import * as React from 'react';
 import {Picker as EmojiPicker} from 'emoji-mart';
 import {cloneDeep, range, throttle} from 'lodash';
@@ -84,6 +85,8 @@ import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@materia
 import GifPicker from "../GifPicker";
 import {IGif} from "../../repository/gif/interface";
 import {Sticker} from "../SVG/sticker";
+// @ts-ignore
+import * as workerPath from 'file-loader?name=[name].js!./worker/encoderWorker.min';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
@@ -1479,6 +1482,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.bars = [];
         this.maxBarVal = 0;
         try {
+            this.recorder.stop();
             this.recorder.start().then(() => {
                 this.startTimer();
                 const audioAnalyser = this.recorder.audioContext.createAnalyser();
@@ -1702,16 +1706,13 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Initialize opus recorder and bind listeners */
     private initRecorder() {
         this.recorder = new Recorder({
-            encoderPath: '/recorder/encoderWorker.min.js',
+            encoderPath: workerPath,
             maxFramesPerPage: 16,
             monitorGain: 0,
             numberOfChannels: 1,
             recordingGain: 1,
-            reuseWorker: true,
             wavBitDepth: 16,
         });
-
-        this.recorder.loadWorker();
 
         this.recorder.ondataavailable = (typedArray: any) => {
             if (this.voiceCanceled) {

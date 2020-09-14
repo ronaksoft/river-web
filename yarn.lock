@@ -9922,10 +9922,10 @@ optjs@~3.2.2:
   resolved "https://registry.yarnpkg.com/optjs/-/optjs-3.2.2.tgz#69a6ce89c442a44403141ad2f9b370bd5bb6f4ee"
   integrity sha1-aabOicRCpEQDFBrS+bNwvVu29O4=
 
-opus-recorder@^6.1.1:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/opus-recorder/-/opus-recorder-6.2.0.tgz#45949b43c08079ec87e63ff7ca18ee6a19daa1d3"
-  integrity sha512-890khMXgmkqarxvocdTc9iADKIxbhzX8DyBcjVcE5nyuOVfVAkvyIAI1jF8qUscdsgaRM+tVy20QM6LZy1Gp9A==
+opus-recorder@^8.0.3:
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/opus-recorder/-/opus-recorder-8.0.3.tgz#f7b44f8f68500c9b96a15042a69f915fd9c1716d"
+  integrity sha512-8vXGiRwlJAavT9D3yYzukNVXQ8vEcKHcsQL/zXO24DQtJ0PLXvoPHNQPJrbMCdB4ypJgWDExvHF4JitQDL7dng==
 
 original@^1.0.0:
   version "1.0.2"

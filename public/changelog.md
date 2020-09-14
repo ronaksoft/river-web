@@ -1,3 +1,6 @@
+## 0.34.43
+* Opus Recorder updated
+
 ## 0.34.42
 * Change private to personal
 

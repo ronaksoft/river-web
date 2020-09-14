@@ -58,7 +58,7 @@
     "moment-jalaali": "^0.8.3",
     "music-metadata-browser": "^1.2.1",
     "notistack": "^0.9.9",
-    "opus-recorder": "^6.1.1",
+    "opus-recorder": "^8.0.3",
     "path": "^0.12.7",
     "protobufjs": "^6.8.9",
     "react": "^16.13.1",
