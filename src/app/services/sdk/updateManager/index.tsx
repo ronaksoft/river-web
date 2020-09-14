@@ -279,11 +279,11 @@ export default class UpdateManager {
     }
 
     public parseUpdate(bytes: string) {
+        if (!this.isLive) {
+            return;
+        }
         try {
             const data = UpdateContainer.deserializeBinary(base64ToU8a(bytes)).toObject();
-            if (!this.isLive) {
-                return;
-            }
             const minId = data.minupdateid || 0;
             const maxId = data.maxupdateid || 0;
             if (minId && minId === maxId && data.updatesList.length === 1) {
@@ -389,6 +389,9 @@ export default class UpdateManager {
             this.applyDiffUpdate(res.toObject()).then((id) => {
                 this.startSyncing(id, limit);
             }).catch((err2) => {
+                if (this.verboseAPI) {
+                    window.console.log('startSyncing err2:', err2);
+                }
                 this.enableLiveUpdate();
                 this.isDiffUpdating = false;
                 this.callHandlers('all', C_MSG.UpdateManagerStatus, {
@@ -409,6 +412,10 @@ export default class UpdateManager {
                                 this.callHandlers('all', C_MSG.UpdateManagerStatus, {
                                     isUpdating: false,
                                 });
+                            }
+                        } else {
+                            if (this.verboseAPI) {
+                                window.console.log('startSyncing', err2);
                             }
                         }
                     });
@@ -515,6 +522,10 @@ export default class UpdateManager {
         }).catch((err) => {
             if (err.err === 'too_soon') {
                 this.enableLiveUpdate();
+            } else {
+                if (this.verboseAPI) {
+                    window.console.log('callOutOfSync', err);
+                }
             }
         });
     }

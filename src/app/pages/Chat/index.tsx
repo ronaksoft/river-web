@@ -2558,7 +2558,8 @@ class Chat extends React.Component<IProps, IState> {
                         this.addSnapshotRecord(this.teamId);
                         resolve();
                     });
-                }).catch(() => {
+                }).catch((err) => {
+                    window.console.log('snapshot', err);
                     this.updateManager.enableLiveUpdate();
                     this.setAppStatus({
                         isUpdating: false,
