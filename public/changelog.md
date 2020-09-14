@@ -1,3 +1,6 @@
+## 0.34.42
+* Change private to personal
+
 ## 0.34.41
 * Bug fixes and performance improvements
 
