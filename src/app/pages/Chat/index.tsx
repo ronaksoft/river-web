@@ -1809,7 +1809,7 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 if (!this.messageMapExist(msg)) {
                     defaultMessages.splice(addition, 0, msg);
-                    if (addition > 0 && !msg.avatar) {
+                    if (addition > 0 && !msg.avatar && defaultMessages[addition]) {
                         defaultMessages[addition].avatar = this.isAvatar(addition);
                     }
                     unshiftCheck = true;

@@ -1,3 +1,6 @@
+## 0.34.44
+* Critical bug in updating removed
+
 ## 0.34.43
 * Opus Recorder updated
 

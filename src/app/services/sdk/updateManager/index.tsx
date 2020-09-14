@@ -993,7 +993,7 @@ export default class UpdateManager {
                 });
                 // Add label
                 updateLabelItemsRemoved.labelsList.forEach((label: ILabel) => {
-                    label.teamid = updateLabelItemsAdded.teamid || '0';
+                    label.teamid = updateLabelItemsRemoved.teamid || '0';
                     this.mergeLabel(transaction.labels, label);
                 });
                 break;
