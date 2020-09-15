@@ -295,7 +295,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
             } else {
                 return (<AutoSizer>
                     {({width, height}: any) => (
-                        <div className="contacts-inner" style={{
+                        <div className="members-inner" style={{
                             height: height + 'px',
                             width: width + 'px',
                         }}>
@@ -315,8 +315,9 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                     overscanCount={32}
                                     width={width}
                                     height={height}
-                                    className="contact-container"
+                                    className="member-container"
                                     style={listStyle}
+                                    direction={this.rtl ? 'ltr' : 'rtl'}
                                 >{({index, style}) => {
                                     return this.rowRender({index, style, key: index});
                                 }}
@@ -457,7 +458,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                 this.apiManager.teamRemoveMember(team.id || '0', member.id).then(() => {
                     const index = findIndex(list, {id: member.id});
                     if (index > -1) {
-                        list.splice(index, 0);
+                        list.splice(index, 1);
                         if (this.list) {
                             this.list.resetAfterIndex(0, false);
                         }

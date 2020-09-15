@@ -1,3 +1,7 @@
+## 0.34.46
+* Team UI bug in Windows/Linux fixed
+* Bug fixes
+
 ## 0.34.45
 * Typo in changelog fixed
 
