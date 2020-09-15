@@ -14,7 +14,7 @@ import TeamRepo from "../../repository/team";
 interface IProps {
     className?: string;
     id: string;
-    onClick?: (id: string) => void;
+    onClick?: (e: any) => void;
     onLoad?: (team: ITeam) => void;
     prefix?: string;
     postfix?: string;
@@ -107,7 +107,7 @@ class TeamName extends React.PureComponent<IProps, IState> {
             return;
         }
         if (this.props.onClick) {
-            this.props.onClick(team.id || '0');
+            this.props.onClick(e);
         }
         e.stopPropagation();
         e.preventDefault();

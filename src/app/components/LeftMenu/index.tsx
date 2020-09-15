@@ -300,7 +300,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             </a>}
                             {!iframeActive && <RiverTextLogo/>}
                             {teamId !== '0' &&
-                            <TeamName id={teamId} className="team-name" prefix="(" postfix=")"/>}
+                            <TeamName id={teamId} className="team-name" prefix="(" postfix=")"
+                                      onClick={this.teamOpenHandler}/>}
                             {Boolean(teamList.length > 1) &&
                             <div className="team-select-icon" onClick={this.teamOpenHandler}><ArrowDropDownRounded/>
                                 {hasUpdate && <div className="team-badge"/>}
