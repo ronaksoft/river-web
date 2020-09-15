@@ -259,22 +259,22 @@
         //     document: true,
         //     eventLag: false
         // };
-        window.clearLoading = () => {
-            const elems = [document.querySelector('#pace-js'), document.querySelector('#pace-css'), document.querySelector('body > .pace'), document.querySelector('body > .splash-river-logo')];
-            elems.forEach((elem) => {
-                if (elem) {
-                    elem.remove();
-                }
-            });
-            const refEl = document.querySelector('#refresh');
-            if (refEl) {
-                refEl.classList.remove('hide');
-            }
-            const paceEl = document.querySelector('.pace');
-            if (paceEl) {
-                paceEl.remove();
-            }
-        };
+        // window.clearLoading = () => {
+        //     const elems = [document.querySelector('#pace-js'), document.querySelector('#pace-css'), document.querySelector('body > .pace'), document.querySelector('body > .splash-river-logo')];
+        //     elems.forEach((elem) => {
+        //         if (elem) {
+        //             elem.remove();
+        //         }
+        //     });
+        //     const refEl = document.querySelector('#refresh');
+        //     if (refEl) {
+        //         refEl.classList.remove('hide');
+        //     }
+        //     const paceEl = document.querySelector('.pace');
+        //     if (paceEl) {
+        //         paceEl.remove();
+        //     }
+        // };
         // Pace.on('done', function () {
         //     window.clearLoading();
         // });
