@@ -319,7 +319,7 @@ export default class MessageRepo {
                 type: msgType,
             }]);
         }
-        if (out.body) {
+        if (out.body && out.body.length > 0) {
             out.rtl = RTLDetector.getInstance().direction(out.body);
         }
         if (out.mediadata && out.mediadata.caption && out.mediadata.caption.length > 0) {
