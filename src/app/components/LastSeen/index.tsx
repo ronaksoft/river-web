@@ -18,6 +18,8 @@ import Broadcaster from '../../services/broadcaster';
 import {IGroup} from '../../repository/group/interface';
 import i18n from "../../services/i18n";
 import {localize} from "../../services/utilities/localize";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {LastSeenFormatChange} from "../SettingsMenu";
 
 interface IProps {
     className?: string;
@@ -42,6 +44,7 @@ class LastSeen extends React.PureComponent<IProps, IState> {
     private tryTimeout: any = null;
     private tryCount: number = 0;
     private broadcaster: Broadcaster;
+    private lastSeenFormat: string = localStorage.getItem(C_LOCALSTORAGE.LastSeenFormat) || 'estimated';
     private eventReferences: any[] = [];
 
     constructor(props: IProps) {
@@ -66,6 +69,7 @@ class LastSeen extends React.PureComponent<IProps, IState> {
         this.getData();
         this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
         this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.getGroup));
+        this.eventReferences.push(this.broadcaster.listen(LastSeenFormatChange, this.updateLastSeenFormatHandler));
     }
 
     public UNSAFE_componentWillReceiveProps(newProps: IProps) {
@@ -107,8 +111,10 @@ class LastSeen extends React.PureComponent<IProps, IState> {
                 return (<span className="online">{i18n.t('status.online')}</span>);
             } else if (!user.status_last_modified) {
                 return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${i18n.t('status.recently')}`;
-            } else {
+            } else if (this.lastSeenFormat === 'estimated') {
                 return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${TimeUtility.timeAgo(user.status_last_modified || 0)}`;
+            } else {
+                return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${TimeUtility.exactTimeAgo(user.status_last_modified || 0)}`;
             }
         }
     }
@@ -203,6 +209,11 @@ class LastSeen extends React.PureComponent<IProps, IState> {
                 }, 1000);
             }
         });
+    }
+
+    private updateLastSeenFormatHandler = () => {
+        this.lastSeenFormat = localStorage.getItem(C_LOCALSTORAGE.LastSeenFormat) || 'estimated';
+        this.forceUpdate();
     }
 }
 

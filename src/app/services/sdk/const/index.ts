@@ -938,6 +938,7 @@ export const C_LOCALSTORAGE = {
     GifHash: 'river.gif.hash',
     Lang: 'river.lang',
     LangDir: 'river.lang.dir',
+    LastSeenFormat: 'river.last_seen_format',
     LastUpdateId: 'river.last_update_id',
     ServerKeys: 'river.server_keys',
     ServerMode: 'river.server_mode',

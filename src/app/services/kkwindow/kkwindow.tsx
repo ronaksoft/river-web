@@ -278,7 +278,7 @@ class KKWindow extends React.Component<IProps, IState> {
         const {width, height} = this.props;
         return (
             <div style={containerStyle}>
-                <div ref={this.snapshotRefHandler} style={snapshotStyle} className="snappshot"/>
+                <div ref={this.snapshotRefHandler} style={snapshotStyle} className="snapshot"/>
                 <div ref={this.containerRefHandler}
                      className={this.props.className}
                      style={{

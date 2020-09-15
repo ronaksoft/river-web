@@ -318,6 +318,11 @@
       "background_service": "Background Service",
       "notification": "Notification",
       "count_unread": "Count Unread"
+    },
+    "last_seen": {
+      "format": "Last Seen Format",
+      "estimated": "Estimated",
+      "exact": "Exact"
     }
   },
   "contact": {

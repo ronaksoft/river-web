@@ -168,6 +168,57 @@ class TimeUntiles {
         }
     }
 
+    public exactTimeAgo(timestamp: number | undefined) {
+        if (!timestamp) {
+            return '';
+        }
+
+        const date = moment(timestamp * 1000);
+        const current = this.riverTime.milliNow();
+
+        const minute = moment(current).subtract(1, 'minutes');
+        if (date.isSameOrAfter(minute)) {
+            if (this.lang === 'en') {
+                return 'Just now';
+            } else {
+                return 'به تازگی';
+            }
+        }
+
+        const today = moment(current).startOf('day');
+        if (date.isSameOrAfter(today)) {
+            if (this.lang === 'en') {
+                return date.format('[Today at] HH:mm');
+            } else {
+                return date.format('HH:mm [امروز]');
+            }
+        }
+
+        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        if (date.isSameOrAfter(yesterday)) {
+            if (this.lang === 'en') {
+                return date.format('[Yesterday at] HH:mm');
+            } else {
+                return date.format('[دیروز] HH:mm');
+            }
+        }
+
+        const thisYear = moment(current).startOf('year');
+        if (date.isSameOrAfter(thisYear)) {
+            if (this.lang === 'en') {
+                return date.format('MMM DD');
+            } else {
+                return date.format('jDD jMMMM');
+            }
+        }
+
+        if (this.lang === 'en') {
+            return date.format('DD[/]MM[/]YYYY');
+        } else {
+            return date.format('jDD[/]jMM[/]jYYYY');
+        }
+    }
+
     public timeAgo(timestamp: number | undefined) {
         if (!timestamp) {
             return '';
@@ -195,6 +246,24 @@ class TimeUntiles {
                 return date.format('[Yesterday] HH:mm');
             } else {
                 return date.format('[دیروز] HH:mm');
+            }
+        }
+
+        const week = moment(current).startOf('day').subtract(7, 'days');
+        if (date.isSameOrAfter(week)) {
+            if (this.lang === 'en') {
+                return 'Within a week';
+            } else {
+                return 'هفته گذشته';
+            }
+        }
+
+        const month = moment(current).startOf('day').subtract(7, 'months');
+        if (date.isSameOrAfter(month)) {
+            if (this.lang === 'en') {
+                return 'Within a month';
+            } else {
+                return 'ماه گذشته';
             }
         }
 

@@ -354,3 +354,11 @@ export const privacyRuleItems = [{
     id: 'no_one',
     title: 'settings.privacy_no_one'
 }];
+
+export const lastSeenFormat = [{
+    id: 'estimated',
+    title: 'settings.last_seen.estimated'
+}, {
+    id: 'exact',
+    title: 'settings.last_seen.exact'
+}];

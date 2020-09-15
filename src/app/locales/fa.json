@@ -314,6 +314,11 @@
       "background_service": "زمینه خدمات",
       "notification": "اعلان",
       "count_unread": "شمارش خوانده نشده‌"
+    },
+    "last_seen": {
+      "format": "قالب آخرین مشاهده",
+      "estimated": "تخمینی",
+      "exact": "دقیق"
     }
   },
   "contact": {

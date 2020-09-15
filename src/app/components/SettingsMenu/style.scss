@@ -228,6 +228,10 @@
         background-color: #4CAF50;
       }
 
+      &.color-last-seen-type {
+        background-color: #00838F;
+      }
+
       &.color-theme-type {
         background-color: #2196F3;
       }
@@ -357,7 +361,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid var(--gale);
+        border: 1px solid var(--light-bg);
         border-radius: 4px;
         font-size: 12px;
         line-height: 14px;

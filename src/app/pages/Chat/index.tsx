@@ -287,6 +287,7 @@ class Chat extends React.Component<IProps, IState> {
     private uploaderRef: Uploader | undefined;
     private readonly userId: string = '0';
     private teamMap: { [key: string]: ITeam } = {};
+    private onlineStatusInterval: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -522,6 +523,10 @@ class Chat extends React.Component<IProps, IState> {
             isOnline: this.isOnline,
             isUpdating: this.isUpdating,
         });
+
+        if (this.isInChat) {
+            this.setOnlineStatus(true, true);
+        }
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -3073,6 +3078,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private windowFocusHandler = () => {
+        this.setOnlineStatus(true);
         this.isInChat = true;
         // if (this.readHistoryMaxId) {
         //     const {peer} = this.state;
@@ -3091,6 +3097,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private windowBlurHandler = () => {
+        this.setOnlineStatus(false);
         this.isInChat = false;
     }
 
@@ -5822,6 +5829,20 @@ class Chat extends React.Component<IProps, IState> {
                 this.resendMessage(message);
             });
         });
+    }
+
+    private setOnlineStatus(online: boolean, force?: boolean) {
+        if (online && (!this.isInChat || force)) {
+            this.apiManager.updateStatus(true);
+            this.onlineStatusInterval = setInterval(() => {
+                this.apiManager.updateStatus(true);
+            }, (this.apiManager.getInstantSystemConfig().onlineupdateperiodinsec || 90) * 1000);
+        } else if (!online && this.isInChat) {
+            if (this.onlineStatusInterval) {
+                clearInterval(this.onlineStatusInterval);
+            }
+            this.apiManager.updateStatus(false);
+        }
     }
 }
 

@@ -38,6 +38,7 @@ import {
     KeyboardArrowRightRounded,
     ArrowDropDownRounded,
     GroupRounded,
+    AccessTimeRounded,
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
@@ -48,7 +49,7 @@ import {
     bgTypes,
     bubbles,
     C_CUSTOM_BG,
-    gradients,
+    gradients, lastSeenFormat,
     privacyItems,
     privacyRuleItems,
     storageItems,
@@ -119,6 +120,7 @@ import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
 export const ThemeChanged = 'Theme_Changed';
+export const LastSeenFormatChange = 'Last_Seen_Format_Changed';
 
 const C_BLOCKED_USER_LIST_LIMIT = 50;
 
@@ -240,6 +242,7 @@ interface IState {
     selectedCustomBackgroundBlur: number;
     selectedGradient: string;
     selectedLanguage: string;
+    selectedLastSeenFormat: string;
     selectedTheme: string;
     storageValues: IDownloadSettings;
     teamLoading: boolean;
@@ -333,6 +336,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedCustomBackgroundBlur: parseInt(localStorage.getItem(C_LOCALSTORAGE.ThemeBgBlur) || '0', 10),
             selectedGradient: localStorage.getItem(C_LOCALSTORAGE.ThemeGradient) || '0',
             selectedLanguage: localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en',
+            selectedLastSeenFormat: localStorage.getItem(C_LOCALSTORAGE.LastSeenFormat) || 'estimated',
             selectedTheme: localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light',
             storageValues: {
                 auto_save_files: false,
@@ -442,7 +446,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
             lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto,
             confirmDialogMode, confirmDialogOpen, customBackgroundSrc, privacy, passwordMode,
-            teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName,
+            teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName, selectedLastSeenFormat,
         } = this.state;
         const team = teamList.find(o => o.id === teamSelectedId && ((o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSADMIN) > -1 || (o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSCREATOR) > -1));
         return (
@@ -656,6 +660,37 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             </div>
                                             <div className="anchor-label">{i18n.t('settings.toggle_menu_bar')}</div>
                                         </div>}
+                                        <div className="page-content">
+                                            <div className="page-anchor">
+                                                <div className="icon color-last-seen-type">
+                                                    <AccessTimeRounded/>
+                                                </div>
+                                                <div
+                                                    className="anchor-label">{i18n.t('settings.last_seen.format')}</div>
+                                            </div>
+                                            <div className="radio-item">
+                                                {lastSeenFormat.map((format) => {
+                                                    return (
+                                                        <div
+                                                            key={format.id}
+                                                            className="pr-radio-wrapper"
+                                                        >
+                                                            <Radio
+                                                                checked={format.id === selectedLastSeenFormat}
+                                                                value={format.id}
+                                                                color="primary"
+                                                                className="pr-radio"
+                                                                classes={{
+                                                                    checked: 'pr-radio-checked',
+                                                                }}
+                                                                onChange={this.lastSeenFormatChangeHandler(format.id)}
+                                                            />
+                                                            <div className="pr-radio-label"
+                                                                 onClick={this.lastSeenFormatChangeHandler(format.id)}>{i18n.t(format.title)}</div>
+                                                        </div>);
+                                                })}
+                                            </div>
+                                        </div>
                                         <div className="page-content">
                                             <div className="page-anchor">
                                                 <div className="icon color-theme-type">
@@ -2501,6 +2536,14 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (this.props.onTeamChange && this.state.teamSelectedId !== item.id) {
             this.props.onTeamChange(item);
         }
+    }
+
+    private lastSeenFormatChangeHandler = (value: string) => (e: any) => {
+        this.setState({
+            selectedLastSeenFormat: value,
+        });
+        localStorage.setItem(C_LOCALSTORAGE.LastSeenFormat, value);
+        this.broadcastEvent(LastSeenFormatChange, null);
     }
 }
 

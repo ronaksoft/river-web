@@ -106,7 +106,7 @@ import {
     AccountSetPrivacy,
     AccountUpdatePasswordSettings,
     AccountUpdatePhoto,
-    AccountUpdateProfile,
+    AccountUpdateProfile, AccountUpdateStatus,
     AccountUpdateUsername,
     AccountUploadPhoto,
     SecurityAnswer,
@@ -330,6 +330,13 @@ export default class APIManager {
         data.setAuthid(id);
         this.logVerbose(data);
         return this.server.send(C_MSG.AccountResetAuthorization, data.serializeBinary(), true);
+    }
+
+    public updateStatus(online: boolean): Promise<Bool.AsObject> {
+        const data = new AccountUpdateStatus();
+        data.setOnline(online);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.AccountUpdateStatus, data.serializeBinary(), true);
     }
 
     public contactImport(replace: boolean, contacts: PhoneContact.AsObject[]): Promise<ContactsImported.AsObject> {

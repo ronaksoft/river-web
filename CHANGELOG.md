@@ -1,3 +1,7 @@
+## 0.34.47
+* Last seen format added in settings
+* Bug fixes
+
 ## 0.34.46
 * Team UI bug in Windows/Linux fixed
 * Bug fixes

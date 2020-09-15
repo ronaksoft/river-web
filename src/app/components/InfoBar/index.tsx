@@ -80,13 +80,9 @@ class InfoBar extends React.Component<IProps, IState> {
                         </IconButton>
                     </div>
                 }
-                <StatusBar ref={this.props.statusBarRefHandler} isConnecting={isConnecting}
-                           isOnline={isOnline}
-                           isUpdating={isUpdating}
-                           onAction={this.props.onAction}
-                           peer={peer}
-                           teamId={this.teamId}
-                           currentUserId={this.currentUserId}
+                <StatusBar ref={this.props.statusBarRefHandler} onAction={this.props.onAction}
+                           isConnecting={isConnecting} isOnline={isOnline} isUpdating={isUpdating}
+                           peer={peer} teamId={this.teamId} currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
                     <Tooltip
