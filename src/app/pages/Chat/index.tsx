@@ -2783,16 +2783,21 @@ class Chat extends React.Component<IProps, IState> {
                     this.setScrollMode('none');
                 }
                 this.updateManager.getLastUpdateId();
-                const modifiedMsgs = this.modifyMessages(this.messages, res, true);
-                res.forEach((msg) => {
-                    this.downloadThumbnail(msg);
-                    this.checkMessageOrder(msg);
-                });
-                this.messageRef.setMessages(modifiedMsgs.msgs, () => {
-                    if (this.messageRef) {
-                        this.messageRef.updateList();
+                const mRes = res.filter(m => !this.messageMapExist(m));
+                if (mRes.length > 0) {
+                    const modifiedMsgs = this.modifyMessages(this.messages, mRes, true);
+                    if (modifiedMsgs.msgs.length > 0) {
+                        mRes.forEach((msg) => {
+                            this.downloadThumbnail(msg);
+                            this.checkMessageOrder(msg);
+                        });
+                        this.messageRef.setMessages(modifiedMsgs.msgs, () => {
+                            if (this.messageRef) {
+                                this.messageRef.updateList();
+                            }
+                        });
                     }
-                });
+                }
             });
             if (data.editedIds.length > 0) {
                 this.messageRepo.getIn(data.editedIds, false).then((res) => {
