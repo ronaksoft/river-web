@@ -384,7 +384,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
                                onAction={this.props.onMediaAction} teamId={teamId}/>}
                 </div>
-                <Menu
+                {Boolean(teamList.length > 1) && <Menu
                     anchorEl={teamMoreAnchorEl}
                     anchorOrigin={{
                         horizontal: 'center',
@@ -417,7 +417,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     }}>
                         <CircularProgress size={16}/>
                     </div>}
-                </Menu>
+                </Menu>}
             </div>
         );
     }
@@ -699,11 +699,13 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 this.bottomBarRef.reload();
             }
         });
-        setTimeout(() => {
-            if (this.props.onTeamChange) {
-                this.props.onTeamChange(item);
-            }
-        }, 10);
+        if (this.state.teamId !== item.id) {
+            setTimeout(() => {
+                if (this.props.onTeamChange) {
+                    this.props.onTeamChange(item);
+                }
+            }, 10);
+        }
     }
 
     private settingsMenuTeamUpdateHandler = () => {

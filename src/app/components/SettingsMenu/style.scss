@@ -366,11 +366,12 @@
         .select-label {
           flex: 1;
           color: var(--grey);
+          user-select: none;
         }
 
         .select-icon {
           position: absolute;
-          top: 0px;
+          top: 0;
           right: 0;
 
           svg {

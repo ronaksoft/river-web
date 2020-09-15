@@ -2498,7 +2498,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             teamSelectedId: item.id || '0',
             teamSelectedName: item.name || '',
         });
-        if (this.props.onTeamChange) {
+        if (this.props.onTeamChange && this.state.teamSelectedId !== item.id) {
             this.props.onTeamChange(item);
         }
     }
