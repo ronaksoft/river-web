@@ -205,6 +205,12 @@ a.dialog-a {
         .preview-inner {
           direction: rtl;
         }
+
+        .preview-message {
+          .tiny-thumb {
+            margin: 0 0 0 4px;
+          }
+        }
       }
 
       .preview-icon {

@@ -317,7 +317,7 @@
     },
     "last_seen": {
       "format": "قالب آخرین مشاهده",
-      "estimated": "تخمینی",
+      "estimated": "نسبی",
       "exact": "دقیق"
     }
   },

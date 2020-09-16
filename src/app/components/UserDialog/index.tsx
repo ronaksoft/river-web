@@ -408,6 +408,14 @@ class UserDialog extends React.Component<IProps, IState> {
                 });
             });
         } else {
+            if (phone === '') {
+                this.setState({
+                    edit: false,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
+                });
+                return;
+            }
             const contacts: PhoneContact.AsObject[] = [];
             contacts.push({
                 clientid: isInContact ? user.clientid : String(UniqueId.getRandomId()),

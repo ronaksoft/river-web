@@ -1,3 +1,8 @@
+## 0.34.48
+* Last seen format updated
+* Label counter bug fixed
+* Bug fixes and performance improvements
+
 ## 0.34.47
 * Last seen format added in settings
 * Bug fixes

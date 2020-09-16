@@ -240,16 +240,16 @@ class TimeUntiles {
             return date.format('HH:mm');
         }
 
-        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        const yesterday = moment(current).startOf('day').subtract(7, 'days');
         if (date.isSameOrAfter(yesterday)) {
             if (this.lang === 'en') {
-                return date.format('[Yesterday] HH:mm');
+                return `${date.from(current, true)} ago`;
             } else {
-                return date.format('[دیروز] HH:mm');
+                return `${date.from(current, true)} پیش `;
             }
         }
 
-        const week = moment(current).startOf('day').subtract(7, 'days');
+        const week = moment(current).startOf('day').subtract(14, 'days');
         if (date.isSameOrAfter(week)) {
             if (this.lang === 'en') {
                 return 'Within a week';
@@ -258,7 +258,7 @@ class TimeUntiles {
             }
         }
 
-        const month = moment(current).startOf('day').subtract(7, 'months');
+        const month = moment(current).startOf('day').subtract(1, 'months');
         if (date.isSameOrAfter(month)) {
             if (this.lang === 'en') {
                 return 'Within a month';
@@ -267,19 +267,10 @@ class TimeUntiles {
             }
         }
 
-        const thisYear = moment(current).startOf('year');
-        if (date.isSameOrAfter(thisYear)) {
-            if (this.lang === 'en') {
-                return date.format('MMM DD');
-            } else {
-                return date.format('jDD jMMMM');
-            }
-        }
-
         if (this.lang === 'en') {
-            return date.format('DD[/]MM[/]YYYY');
+            return 'Long time ago';
         } else {
-            return date.format('jDD[/]jMM[/]jYYYY');
+            return 'خیلی وقت پیش';
         }
     }
 

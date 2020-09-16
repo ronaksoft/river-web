@@ -91,7 +91,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                         </div>
                         <div className="contact-box">
                             <ContactList onChange={this.contactListChangeHandler} mode="chip"
-                                         teamId={this.props.teamId}/>
+                                         teamId={this.props.teamId} hideYou={true}/>
                         </div>
                         {Boolean(selectedContacts.length > 0) && <div className="actions-bar">
                             <div className="add-action" onClick={this.onNextHandler}>

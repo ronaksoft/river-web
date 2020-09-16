@@ -48,6 +48,7 @@ interface IProps {
     onContextMenuAction?: (cmd: string, contact: IUser) => void;
     globalSearch?: boolean;
     teamId: string;
+    hideYou?: boolean;
 }
 
 interface IState {
@@ -115,14 +116,23 @@ class ContactList extends React.Component<IProps, IState> {
     private readonly isMobile: boolean = false;
     private readonly hasScrollbar: boolean = false;
     private readonly rtl: boolean = false;
+    private extraHidden: IUser[] = [];
 
     constructor(props: IProps) {
         super(props);
 
+        this.userRepo = UserRepo.getInstance();
+
+        if (props.hideYou) {
+            this.extraHidden = [{
+                id: this.userRepo.getCurrentUserId(),
+            }];
+        }
+
         this.state = {
             contacts: [],
             globalUsers: [],
-            hiddenContacts: (props.hiddenContacts || []).map((o) => {
+            hiddenContacts: [...(props.hiddenContacts || []), ...this.extraHidden].map((o) => {
                 // @ts-ignore
                 if (o.userid) {
                     // @ts-ignore
@@ -143,7 +153,6 @@ class ContactList extends React.Component<IProps, IState> {
         this.hasScrollbar = getScrollbarWidth() > 0;
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
 
-        this.userRepo = UserRepo.getInstance();
         this.searchRepo = SearchRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
     }
@@ -155,7 +164,7 @@ class ContactList extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
-            hiddenContacts: (newProps.hiddenContacts || []).map((o) => {
+            hiddenContacts: [...(newProps.hiddenContacts || []), ...this.extraHidden].map((o) => {
                 // @ts-ignore
                 if (o.userid) {
                     // @ts-ignore

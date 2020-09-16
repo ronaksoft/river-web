@@ -578,7 +578,7 @@ export default class UpdateManager {
             this.process(transaction, update);
         });
         if (doneFn) {
-            this.processTransaction(transaction, doneFn);
+            this.preProcessTransaction(transaction, doneFn);
         } else {
             this.queueTransaction(transaction);
         }
@@ -1107,7 +1107,35 @@ export default class UpdateManager {
     private applyTransactions() {
         const transaction = this.transactionList.shift();
         if (transaction) {
-            this.processTransaction(transaction);
+            this.preProcessTransaction(transaction);
+        }
+    }
+
+    private preProcessTransaction(transaction: ITransactionPayload, doneFn?: any) {
+        if (this.messageRepo && Object.keys(transaction.removedMessages).length > 0) {
+            const ids: number[] = [];
+            Object.values(transaction.removedMessages).forEach((removedMessage) => {
+                ids.push(...removedMessage);
+            });
+            return this.messageRepo.getIn(ids, true).then((res) => {
+                res.forEach((msg) => {
+                    if (msg.labelidsList && msg.labelidsList.length > 0) {
+                        msg.labelidsList.forEach((labelId) => {
+                            this.mergeLabel(transaction.labels, {
+                                id: labelId,
+                                increase_counter: -1,
+                                teamid: msg.teamid || '0',
+                            });
+                        });
+                    }
+                });
+                return this.processTransaction(transaction, doneFn);
+            }).catch((err) => {
+                window.console.log('preProcessTransaction', err);
+                return this.processTransaction(transaction, doneFn);
+            });
+        } else {
+            return this.processTransaction(transaction, doneFn);
         }
     }
 

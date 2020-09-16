@@ -38,6 +38,9 @@ import {convertBlobToArrayBuffer} from "../../services/sdk/fileManager";
 
 import './style.scss';
 
+// @ts-ignore
+const EXIF = require('browser-image-resizer/build/exif');
+
 const thumbnailReadyMIMEs = 'image/png,image/jpeg,image/jpg,image/webp,image/gif,video/webm,video/mp4,audio/mp4,audio/ogg,audio/mp3'.split(',');
 
 export interface IUploaderOptions {
@@ -572,13 +575,21 @@ class Uploader extends React.Component<IProps, IState> {
         img.onload = () => {
             const {items} = this.state;
             if (items[index]) {
-                items[index].height = img.height;
-                items[index].width = img.width;
-                items[index].ready = true;
-                this.setState({
-                    items,
-                }, () => {
-                    img.remove();
+                EXIF.getData(img, () => {
+                    const orientation = EXIF.getTag(img, 'Orientation');
+                    if (orientation > 4) {
+                        items[index].height = img.width;
+                        items[index].width = img.height;
+                    } else {
+                        items[index].height = img.height;
+                        items[index].width = img.width;
+                    }
+                    items[index].ready = true;
+                    this.setState({
+                        items,
+                    }, () => {
+                        img.remove();
+                    });
                 });
             } else {
                 img.remove();
@@ -813,7 +824,6 @@ class Uploader extends React.Component<IProps, IState> {
             autoRotate: true,
             maxHeight: 24,
             maxWidth: 24,
-            mimeType: 'image/jpeg',
             quality: 0.7,
         };
         const promises: any[] = [];

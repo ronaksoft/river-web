@@ -212,7 +212,6 @@ export default class LabelRepo {
                     label.counter = {};
                 }
                 label.counter[label.teamid || '0'] = label.count || 0;
-                delete label.teamid;
             }
             return label.id || 0;
         });
@@ -228,6 +227,7 @@ export default class LabelRepo {
             });
             const list = [...createItems, ...updateItems];
             list.forEach((item) => {
+                delete item.teamid;
                 this.dbService.setLabel(item);
                 LabelRepo.labelColors[item.id || 0] = item.colour || '';
             });
@@ -322,6 +322,12 @@ export default class LabelRepo {
     private mergeCheck(label: ILabel, newLabel: ILabel): ILabel {
         if (newLabel.increase_counter) {
             newLabel.count = (label.count || 0) + newLabel.increase_counter;
+            if (newLabel.teamid !== undefined) {
+                if (!newLabel.counter) {
+                    newLabel.counter = {};
+                }
+                newLabel.counter[newLabel.teamid || '0'] = newLabel.count;
+            }
         }
         const d = kMerge(label, newLabel);
         return d;

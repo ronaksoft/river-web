@@ -321,7 +321,7 @@
     },
     "last_seen": {
       "format": "Last Seen Format",
-      "estimated": "Estimated",
+      "estimated": "Relative",
       "exact": "Exact"
     }
   },

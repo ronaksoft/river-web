@@ -95,7 +95,7 @@ export default class UserRepo {
     }
 
     public getCurrentUserId(): string {
-        return this.apiManager.getConnInfo().UserID || '';
+        return this.apiManager.getConnInfo().UserID || '0';
     }
 
     public create(user: IUser) {
