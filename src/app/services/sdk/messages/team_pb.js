@@ -1851,7 +1851,8 @@ proto.msg.TeamEdit.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamEdit.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1889,6 +1890,10 @@ proto.msg.TeamEdit.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setTeamid(value);
+      break;
+    case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
@@ -1923,8 +1928,15 @@ proto.msg.TeamEdit.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeString(
+    writer.writeInt64String(
       1,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
       f
     );
   }
@@ -1932,11 +1944,11 @@ proto.msg.TeamEdit.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Name = 1;
+ * required int64 TeamID = 1;
  * @return {string}
  */
-proto.msg.TeamEdit.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.msg.TeamEdit.prototype.getTeamid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
@@ -1944,7 +1956,7 @@ proto.msg.TeamEdit.prototype.getName = function() {
  * @param {string} value
  * @return {!proto.msg.TeamEdit} returns this
  */
-proto.msg.TeamEdit.prototype.setName = function(value) {
+proto.msg.TeamEdit.prototype.setTeamid = function(value) {
   return jspb.Message.setField(this, 1, value);
 };
 
@@ -1953,7 +1965,7 @@ proto.msg.TeamEdit.prototype.setName = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.msg.TeamEdit} returns this
  */
-proto.msg.TeamEdit.prototype.clearName = function() {
+proto.msg.TeamEdit.prototype.clearTeamid = function() {
   return jspb.Message.setField(this, 1, undefined);
 };
 
@@ -1962,8 +1974,44 @@ proto.msg.TeamEdit.prototype.clearName = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.msg.TeamEdit.prototype.hasName = function() {
+proto.msg.TeamEdit.prototype.hasTeamid = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required string Name = 2;
+ * @return {string}
+ */
+proto.msg.TeamEdit.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.TeamEdit} returns this
+ */
+proto.msg.TeamEdit.prototype.setName = function(value) {
+  return jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.TeamEdit} returns this
+ */
+proto.msg.TeamEdit.prototype.clearName = function() {
+  return jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.TeamEdit.prototype.hasName = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

@@ -340,7 +340,7 @@ message UpdateTeamMemberAdded {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
     required int64 TeamID = 1 [jstype = JS_STRING];
-    required User User = 2 ;
+    required User User = 2;
     required ContactUser Contact = 3;
     required int64 AdderID = 4 [jstype = JS_STRING];
     required fixed32 Hash = 5;
@@ -381,7 +381,6 @@ message UpdateTeam {
     required string Name = 2;
 }
 
-
 // UpdateCommunityMessage
 message UpdateCommunityMessage {
     required int64 TeamID = 100;
@@ -409,6 +408,16 @@ message UpdateCommunityTyping {
     required int64 ReceiverID = 2;
     required TypingAction Action = 3;
 }
+
+// UpdateReaction
+message UpdateReaction {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required int64 MessageID = 1;
+    repeated ReactionCounter Counter = 2;
+    optional int64 TeamID = 3;
+}
+
 
 // UpdateCalendarEventAdded
 message UpdateCalendarEventAdded {

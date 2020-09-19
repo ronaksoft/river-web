@@ -69,8 +69,8 @@ message TeamListMembers {
 // @Function
 // @Returns: Team
 message TeamEdit {
-    required string Name = 1;
-    //    required bool Community = 2;
+    required int64 TeamID = 1 [jstype = JS_STRING];
+    required string Name = 2;
 }
 
 // TeamUploadPhoto

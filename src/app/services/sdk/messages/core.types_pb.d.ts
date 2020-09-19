@@ -1345,6 +1345,11 @@ export class UserMessage extends jspb.Message {
   getViabotid(): string | undefined;
   setViabotid(value: string): void;
 
+  clearReactionsList(): void;
+  getReactionsList(): Array<ReactionCounter>;
+  setReactionsList(value: Array<ReactionCounter>): void;
+  addReactions(value?: ReactionCounter, index?: number): ReactionCounter;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -1383,6 +1388,35 @@ export namespace UserMessage {
     replymarkupdata?: Uint8Array | string,
     labelidsList?: Array<number>,
     viabotid?: string,
+    reactionsList?: Array<ReactionCounter.AsObject>,
+  }
+}
+
+export class ReactionCounter extends jspb.Message {
+  hasReaction(): boolean;
+  clearReaction(): void;
+  getReaction(): string | undefined;
+  setReaction(value: string): void;
+
+  hasTotal(): boolean;
+  clearTotal(): void;
+  getTotal(): number | undefined;
+  setTotal(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ReactionCounter.AsObject;
+  static toObject(includeInstance: boolean, msg: ReactionCounter): ReactionCounter.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ReactionCounter, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ReactionCounter;
+  static deserializeBinaryFromReader(message: ReactionCounter, reader: jspb.BinaryReader): ReactionCounter;
+}
+
+export namespace ReactionCounter {
+  export type AsObject = {
+    reaction?: string,
+    total?: number,
   }
 }
 

@@ -220,6 +220,11 @@ export namespace TeamListMembers {
 }
 
 export class TeamEdit extends jspb.Message {
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
   hasName(): boolean;
   clearName(): void;
   getName(): string | undefined;
@@ -237,6 +242,7 @@ export class TeamEdit extends jspb.Message {
 
 export namespace TeamEdit {
   export type AsObject = {
+    teamid?: string,
     name?: string,
   }
 }

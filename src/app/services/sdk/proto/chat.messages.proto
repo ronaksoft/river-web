@@ -174,6 +174,26 @@ message MessagesSendScreenShotNotification {
     optional int64 MaxID = 5;
 }
 
+// MessageSendReaction
+// @Function
+// @Returns: Bool
+message MessagesSendReaction {
+    required InputPeer Peer = 1;
+    required int64 MessageID = 2;
+    required string reaction = 3;
+}
+
+// MessagesGetReactionList
+// @Function
+// @Return: MessagesReactionList
+message MessagesGetReactionList {
+    required InputPeer Peer = 1;
+    required int64 MessageID = 2;
+    required string Reaction = 3;
+    required int32 Offset = 4;
+    required int32 Limit = 5;
+}
+
 // MessagesDialogs
 message MessagesDialogs {
     repeated Dialog Dialogs = 1;
@@ -198,5 +218,10 @@ message MessagesMany {
     repeated Group Groups = 3;
     optional bool Continuous = 4;
     optional bool Empty = 5;
+}
+
+// MessagesReactionList
+message MessagesReactionList {
+    repeated User Users = 1;
 }
 

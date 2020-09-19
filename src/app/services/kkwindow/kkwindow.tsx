@@ -310,7 +310,7 @@ class KKWindow extends React.Component<IProps, IState> {
                              ref={this.cellMeasurer.cellRefHandler(index, id)}>
                     <Fragment visFn={this.cellMeasurer.visibleHandler(index)}
                               defaultVisible={this.cellMeasurer.isVisible(index)}
-                              body={this.props.renderer(index)}/>
+                              body={this.props.renderer(index)} id={id}/>
                 </div>);
             });
         }

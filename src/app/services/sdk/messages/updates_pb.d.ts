@@ -2035,6 +2035,52 @@ export namespace UpdateCommunityTyping {
   }
 }
 
+export class UpdateReaction extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  clearCounterList(): void;
+  getCounterList(): Array<core_types_pb.ReactionCounter>;
+  setCounterList(value: Array<core_types_pb.ReactionCounter>): void;
+  addCounter(value?: core_types_pb.ReactionCounter, index?: number): core_types_pb.ReactionCounter;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): number | undefined;
+  setTeamid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateReaction.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateReaction): UpdateReaction.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateReaction, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateReaction;
+  static deserializeBinaryFromReader(message: UpdateReaction, reader: jspb.BinaryReader): UpdateReaction;
+}
+
+export namespace UpdateReaction {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    messageid?: number,
+    counterList: Array<core_types_pb.ReactionCounter.AsObject>,
+    teamid?: number,
+  }
+}
+
 export class UpdateCalendarEventAdded extends jspb.Message {
   hasUcount(): boolean;
   clearUcount(): void;

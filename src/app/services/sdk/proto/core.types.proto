@@ -350,6 +350,13 @@ message UserMessage {
     optional bytes ReplyMarkupData = 22;
     repeated int32 LabelIDs = 23;
     optional int64 ViaBotID = 24 [jstype = JS_STRING];
+    repeated ReactionCounter Reactions = 25;
+}
+
+// ReactionCounter
+message ReactionCounter {
+    required string Reaction = 1;
+    required int32 Total = 2;
 }
 
 // DraftMessage
