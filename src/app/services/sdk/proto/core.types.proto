@@ -351,6 +351,7 @@ message UserMessage {
     repeated int32 LabelIDs = 23;
     optional int64 ViaBotID = 24 [jstype = JS_STRING];
     repeated ReactionCounter Reactions = 25;
+    repeated string YourReactions = 26;
 }
 
 // ReactionCounter

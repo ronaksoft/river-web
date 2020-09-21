@@ -416,8 +416,9 @@ message UpdateReaction {
     required int64 MessageID = 1;
     repeated ReactionCounter Counter = 2;
     optional int64 TeamID = 3 [jstype = JS_STRING];
+    optional Peer Peer = 4;
+    optional User Sender = 5;
 }
-
 
 // UpdateCalendarEventAdded
 message UpdateCalendarEventAdded {
@@ -439,3 +440,6 @@ message UpdateCalendarEventEdited {
     required int64 UpdateID = 101;
     required CalendarEvent Event = 1;
 }
+
+
+

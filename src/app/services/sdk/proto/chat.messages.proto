@@ -180,7 +180,16 @@ message MessagesSendScreenShotNotification {
 message MessagesSendReaction {
     required InputPeer Peer = 1;
     required int64 MessageID = 2;
-    required string reaction = 3;
+    required string Reaction = 3;
+}
+
+// MessagesDeleteReaction
+// @Function
+// @Returns: Bool
+message MessagesDeleteReaction {
+    required InputPeer Peer = 1;
+    required int64 MessageID = 2;
+    repeated string Reactions = 3;
 }
 
 // MessagesGetReactionList
@@ -189,9 +198,7 @@ message MessagesSendReaction {
 message MessagesGetReactionList {
     required InputPeer Peer = 1;
     required int64 MessageID = 2;
-    required string Reaction = 3;
-    required int32 Offset = 4;
-    required int32 Limit = 5;
+    required int32 Hash = 3;
 }
 
 // MessagesDialogs
@@ -222,6 +229,14 @@ message MessagesMany {
 
 // MessagesReactionList
 message MessagesReactionList {
-    repeated User Users = 1;
+    repeated ReactionList List = 1;
+    repeated User Users = 2;
+    required int32 Hash = 3;
+    required bool Modified = 4;
 }
 
+// ReactionList
+message ReactionList {
+    required string Reaction = 1;
+    repeated int64 UserIDs = 2 [jstype = JS_STRING];
+}

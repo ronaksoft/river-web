@@ -1,0 +1,50 @@
+.reaction-list-dialog {
+  .reaction-item {
+    display: flex;
+    padding: 8px 0 4px 8px;
+    border-bottom: 1px solid var(--light);
+
+    .reaction-value {
+      width: 48px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      margin: 0 6px;
+
+      .reaction-chip {
+        position: relative;
+        background-color: var(--grey);
+        line-height: 1em;
+        color: var(--white);
+        margin-right: 4px;
+
+        &:after {
+          content: ':';
+          position: absolute;
+          top: 50%;
+          right: -6px;
+          transform: translateY(-50%);
+          font-size: 14px;
+          color: var(--dark);
+        }
+      }
+
+      .reaction-emoji {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .reaction-user {
+      margin-left: 4px;
+      flex: 1 1;
+      line-height: 1em;
+
+      .user-chip {
+        background-color: var(--light);
+        margin: 0 4px 4px 0;
+      }
+    }
+  }
+}

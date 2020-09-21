@@ -96,8 +96,8 @@ export const getMediaDocument = (msg: IMessage) => {
     return mediaDocument;
 };
 
-export const sortReactions = (reactions: ReactionCounter.AsObject[]): ReactionCounter.AsObject[] => {
-    return reactions.sort((a, b) => {
+export const modifyReactions = (reactions: ReactionCounter.AsObject[]): ReactionCounter.AsObject[] => {
+    return reactions.filter(o => o.reaction && o.reaction.length > 0).sort((a, b) => {
         return (a.total || 0) - (b.total || 0);
     });
 };
@@ -337,7 +337,7 @@ export default class MessageRepo {
         }
         out.me = (userId === out.senderid);
         if (out.reactionsList) {
-            out.reactionsList = sortReactions(out.reactionsList);
+            out.reactionsList = modifyReactions(out.reactionsList);
         }
         return out;
     }
@@ -988,6 +988,7 @@ export default class MessageRepo {
                 if (!msg.teamid) {
                     msg.teamid = '0';
                 }
+                // remove corrupted data
                 if (msg.id && msg.teamid && msg.peerid && msg.peertype !== undefined) {
                     if (msg.peerid) {
                         if (!peerIdMap.hasOwnProperty(msg.peerid)) {
@@ -1053,15 +1054,29 @@ export default class MessageRepo {
         if (message.peertype) {
             newMessage.peertype = message.peertype;
         }
+        // process added labels
         if (newMessage.added_labels) {
             message.labelidsList = uniq([...(message.labelidsList || []), ...newMessage.added_labels]);
             delete newMessage.added_labels;
             delete newMessage.labelidsList;
         }
+        // process removed labels
         if (newMessage.removed_labels) {
             message.labelidsList = difference(message.labelidsList || [], newMessage.removed_labels);
             delete newMessage.removed_labels;
             delete newMessage.labelidsList;
+        }
+        // process added reaction if sender is you
+        if (newMessage.added_reactions) {
+            message.yourreactionsList = uniq([...(message.yourreactionsList || []), ...newMessage.added_reactions]);
+            delete newMessage.added_reactions;
+            delete newMessage.yourreactionsList;
+        }
+        // process removed reaction if sender is you
+        if (newMessage.removed_reactions) {
+            message.yourreactionsList = uniq([...(message.yourreactionsList || []), ...newMessage.removed_reactions]);
+            delete newMessage.removed_reactions;
+            delete newMessage.yourreactionsList;
         }
         const d = kMerge(message, newMessage);
         return d;

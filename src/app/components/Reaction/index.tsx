@@ -15,14 +15,16 @@ import './style.scss';
 
 interface IProps {
     message: IMessage;
+    onContextMenu: (e?: any) => void;
+    onClick: (e?: any) => void;
 }
 
-export const Reaction = ({message}: IProps) => {
-    if (!message.reactionsList || message.reactionsList.length === 0 || message.reactionsList[0].reaction === "") {
+export const Reaction = ({message, onContextMenu, onClick}: IProps) => {
+    if (!message.reactionsList || message.reactionsList.length === 0) {
         return null;
     }
     return (
-        <div className="message-reaction">
+        <div className="message-reaction" onContextMenu={onContextMenu} onClick={onClick}>
             {message.reactionsList.map((item) => {
                 return (<div key={item.reaction} className="reaction-item">
                     <div className="reaction-wrapper">

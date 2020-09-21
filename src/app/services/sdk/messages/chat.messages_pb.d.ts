@@ -693,6 +693,40 @@ export namespace MessagesSendReaction {
   }
 }
 
+export class MessagesDeleteReaction extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  clearReactionsList(): void;
+  getReactionsList(): Array<string>;
+  setReactionsList(value: Array<string>): void;
+  addReactions(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesDeleteReaction.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesDeleteReaction): MessagesDeleteReaction.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesDeleteReaction, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesDeleteReaction;
+  static deserializeBinaryFromReader(message: MessagesDeleteReaction, reader: jspb.BinaryReader): MessagesDeleteReaction;
+}
+
+export namespace MessagesDeleteReaction {
+  export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
+    messageid?: number,
+    reactionsList: Array<string>,
+  }
+}
+
 export class MessagesGetReactionList extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
@@ -704,20 +738,10 @@ export class MessagesGetReactionList extends jspb.Message {
   getMessageid(): number | undefined;
   setMessageid(value: number): void;
 
-  hasReaction(): boolean;
-  clearReaction(): void;
-  getReaction(): string | undefined;
-  setReaction(value: string): void;
-
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): number | undefined;
-  setOffset(value: number): void;
-
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
-  setLimit(value: number): void;
+  hasHash(): boolean;
+  clearHash(): void;
+  getHash(): number | undefined;
+  setHash(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesGetReactionList.AsObject;
@@ -733,9 +757,7 @@ export namespace MessagesGetReactionList {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     messageid?: number,
-    reaction?: string,
-    offset?: number,
-    limit?: number,
+    hash?: number,
   }
 }
 
@@ -872,10 +894,25 @@ export namespace MessagesMany {
 }
 
 export class MessagesReactionList extends jspb.Message {
+  clearListList(): void;
+  getListList(): Array<ReactionList>;
+  setListList(value: Array<ReactionList>): void;
+  addList(value?: ReactionList, index?: number): ReactionList;
+
   clearUsersList(): void;
   getUsersList(): Array<core_types_pb.User>;
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
+
+  hasHash(): boolean;
+  clearHash(): void;
+  getHash(): number | undefined;
+  setHash(value: number): void;
+
+  hasModified(): boolean;
+  clearModified(): void;
+  getModified(): boolean | undefined;
+  setModified(value: boolean): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesReactionList.AsObject;
@@ -889,7 +926,38 @@ export class MessagesReactionList extends jspb.Message {
 
 export namespace MessagesReactionList {
   export type AsObject = {
+    listList: Array<ReactionList.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
+    hash?: number,
+    modified?: boolean,
+  }
+}
+
+export class ReactionList extends jspb.Message {
+  hasReaction(): boolean;
+  clearReaction(): void;
+  getReaction(): string | undefined;
+  setReaction(value: string): void;
+
+  clearUseridsList(): void;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ReactionList.AsObject;
+  static toObject(includeInstance: boolean, msg: ReactionList): ReactionList.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ReactionList, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ReactionList;
+  static deserializeBinaryFromReader(message: ReactionList, reader: jspb.BinaryReader): ReactionList;
+}
+
+export namespace ReactionList {
+  export type AsObject = {
+    reaction?: string,
+    useridsList: Array<string>,
   }
 }
 

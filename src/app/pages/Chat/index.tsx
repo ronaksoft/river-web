@@ -11,7 +11,7 @@ import * as React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
-import MessageRepo, {getMediaDocument, sortReactions} from '../../repository/message/index';
+import MessageRepo, {getMediaDocument, modifyReactions} from '../../repository/message/index';
 import DialogRepo, {GetPeerName, GetPeerNameByPeer} from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import ChatInput, {C_TYPING_INTERVAL, C_TYPING_INTERVAL_OFFSET, IMessageParam} from '../../components/ChatInput/index';
@@ -1218,13 +1218,13 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update message edit */
     private updateMessageEditHandler = (data: UpdateMessageEdited.AsObject) => {
-        const dialog = this.getDialogByPeerName(data.message.peerid || '');
+        const peerName = GetPeerName(data.message.peerid, data.message.peertype);
+        const dialog = this.getDialogByPeerName(peerName);
         if (dialog) {
             if (dialog.topmessageid === data.message.id) {
                 this.updateDialogs(data.message, dialog.accesshash || '0', true);
             }
         }
-        const peerName = GetPeerName(data.message.peerid, data.message.peertype);
         if (this.selectedPeerName === peerName) {
             // Update and broadcast changes in cache
             this.cachedMessageService.updateMessage(data.message);
@@ -1245,33 +1245,25 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    /* Update message edit */
+    /* Update message reaction */
     private updateReactionHandler = (data: UpdateReaction.AsObject) => {
-        // const dialog = this.getDialogByPeerName(data.message.peerid || '');
-        // if (dialog) {
-        //     if (dialog.topmessageid === data.message.id) {
-        //         this.updateDialogs(data.message, dialog.accesshash || '0', true);
-        //     }
-        // }
-        // const peerName = GetPeerName(data.message.peerid, data.message.peertype);
-        // if (this.selectedPeerName === peerName) {
-        //     // Update and broadcast changes in cache
-        //     this.cachedMessageService.updateMessage(data.message);
-        //
-        //     const messages = this.messages;
-        //     const index = findIndex(messages, (o) => {
-        //         return o.id === data.message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-        //     });
-        //     if (index > -1) {
-        //         const avatar = messages[index].avatar;
-        //         messages[index] = data.message;
-        //         messages[index].avatar = avatar;
-        //         if (this.messageRef) {
-        //             this.messageRef.clear(index);
-        //             this.messageRef.updateList();
-        //         }
-        //     }
-        // }
+        if (!data.peer) {
+            return;
+        }
+        const peerName = GetPeerName(data.peer.id, data.peer.type);
+        if (this.selectedPeerName === peerName) {
+            const messages = this.messages;
+            const index = findLastIndex(messages, (o) => {
+                return o.id === data.messageid && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
+            if (index > -1 && messages[index]) {
+                messages[index].reactionsList = data.counterList;
+                if (this.messageRef) {
+                    this.messageRef.clear(index);
+                    this.messageRef.updateList();
+                }
+            }
+        }
     }
 
     /* Update user typing */
@@ -3367,11 +3359,12 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Message reaction select */
-    private messageReactionSelectHandler = (id: number, reaction: string) => {
+    private messageReactionSelectHandler = (id: number, reaction: string, remove: boolean) => {
         if (!this.peer) {
             return;
         }
-        this.apiManager.reactionAdd(this.peer, id, reaction).then((res) => {
+        const api = remove ? this.apiManager.reactionRemove(this.peer, id, [reaction]) : this.apiManager.reactionAdd(this.peer, id, reaction);
+        api.then((res) => {
             const messages = this.messages;
             const index = findLastIndex(messages, (o) => {
                 return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -3379,15 +3372,40 @@ class Chat extends React.Component<IProps, IState> {
             if (index > -1) {
                 let reactions = messages[index].reactionsList || [];
                 const reactionIndex = findIndex(reactions, {reaction});
-                if (reactionIndex > -1 && reactions[reactionIndex] && reactions[reactionIndex].total !== undefined) {
-                    // @ts-ignore
-                    reactions[reactionIndex].total++;
-                } else if (reactions.length > 0) {
-                    reactions = [...reactions, {reaction, total: 1}];
+                if (remove) {
+                    if (reactionIndex > -1 && reactions[reactionIndex] && reactions[reactionIndex].total !== undefined) {
+                        // @ts-ignore
+                        reactions[reactionIndex].total--;
+                        // remove reaction is total count is zero
+                        if (reactions[reactionIndex].total === 0) {
+                            reactions.splice(reactionIndex, 1);
+                        }
+                    }
                 } else {
-                    reactions = [{reaction, total: 1}];
+                    if (reactionIndex > -1 && reactions[reactionIndex] && reactions[reactionIndex].total !== undefined) {
+                        // @ts-ignore
+                        reactions[reactionIndex].total++;
+                    } else if (reactions.length > 0) {
+                        reactions = [...reactions, {reaction, total: 1}];
+                    } else {
+                        reactions = [{reaction, total: 1}];
+                    }
                 }
-                messages[index].reactionsList = sortReactions(reactions);
+                messages[index].reactionsList = modifyReactions(reactions);
+                if (remove) {
+                    const yourReactionIndex = (messages[index].yourreactionsList || []).indexOf(reaction);
+                    if (yourReactionIndex > -1 && messages[index].yourreactionsList) {
+                        // @ts-ignore
+                        messages[index].yourreactionsList.splice(yourReactionIndex, 1);
+                    }
+                } else {
+                    if (messages[index].yourreactionsList) {
+                        // @ts-ignore
+                        messages[index].yourreactionsList.push(reaction);
+                    } else {
+                        messages[index].yourreactionsList = [reaction];
+                    }
+                }
                 if (this.messageRef) {
                     this.messageRef.clear(index);
                     this.messageRef.updateList();

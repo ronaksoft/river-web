@@ -67,15 +67,15 @@ import {
 import {
     MessagesClearDraft,
     MessagesClearHistory,
-    MessagesDelete,
+    MessagesDelete, MessagesDeleteReaction,
     MessagesDialogs,
     MessagesEdit,
     MessagesForward,
     MessagesGet,
     MessagesGetDialogs,
     MessagesGetHistory,
-    MessagesGetPinnedDialogs,
-    MessagesMany,
+    MessagesGetPinnedDialogs, MessagesGetReactionList,
+    MessagesMany, MessagesReactionList,
     MessagesReadContents,
     MessagesReadHistory,
     MessagesSaveDraft,
@@ -1118,6 +1118,24 @@ export default class APIManager {
         data.setReaction(reaction);
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesSendReaction, data.serializeBinary(), true);
+    }
+
+    public reactionRemove(inputPeer: InputPeer, id: number, reactions: string[]): Promise<Bool.AsObject> {
+        const data = new MessagesDeleteReaction();
+        data.setMessageid(id);
+        data.setPeer(inputPeer);
+        data.setReactionsList(reactions);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.MessagesDeleteReaction, data.serializeBinary(), true);
+    }
+
+    public reactionList(inputPeer: InputPeer, id: number, hash: number): Promise<MessagesReactionList.AsObject> {
+        const data = new MessagesGetReactionList();
+        data.setMessageid(id);
+        data.setPeer(inputPeer);
+        data.setHash(hash);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.MessagesGetReactionList, data.serializeBinary(), true);
     }
 
     public teamListMember(teamId: string): Promise<TeamMembers.AsObject> {

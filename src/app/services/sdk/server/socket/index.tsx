@@ -100,13 +100,7 @@ export default class Socket {
         if (connection) {
             connection.addEventListener('change', () => {
                 window.console.log('connection changed!');
-                if (navigator.onLine !== undefined && this.online !== navigator.onLine) {
-                    this.online = navigator.onLine;
-                    this.dispatchEvent(EventNetworkStatus, {online: navigator.onLine});
-                }
-                if (this.online) {
-                    this.closeWire();
-                }
+                this.dispatchEvent(EventCheckNetwork, {});
             });
         }
 

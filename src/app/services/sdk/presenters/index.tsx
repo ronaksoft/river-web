@@ -19,7 +19,13 @@ import {
     MessageContainer, Pong,
     UserPhoto
 } from '../messages/core.types_pb';
-import {MessagesDialogs, MessagesGetDialogs, MessagesMany, MessagesSent} from '../messages/chat.messages_pb';
+import {
+    MessagesDialogs,
+    MessagesGetDialogs,
+    MessagesMany,
+    MessagesReactionList,
+    MessagesSent
+} from '../messages/chat.messages_pb';
 import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/core.types_pb';
 import {
     UpdateDifference,
@@ -122,6 +128,8 @@ export default class Presenter {
                 return SavedGifs.deserializeBinary(data);
             case C_MSG.FoundGifs:
                 return FoundGifs.deserializeBinary(data);
+            case C_MSG.MessagesReactionList:
+                return MessagesReactionList.deserializeBinary(data);
             case C_MSG.BotResults:
                 return BotResults.deserializeBinary(data);
             case C_MSG.TeamsMany:

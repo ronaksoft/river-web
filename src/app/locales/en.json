@@ -490,5 +490,8 @@
   },
   "team": {
     "private": "Personal"
+  },
+  "reaction": {
+    "list": "Reaction List"
   }
 }

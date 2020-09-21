@@ -1350,6 +1350,11 @@ export class UserMessage extends jspb.Message {
   setReactionsList(value: Array<ReactionCounter>): void;
   addReactions(value?: ReactionCounter, index?: number): ReactionCounter;
 
+  clearYourreactionsList(): void;
+  getYourreactionsList(): Array<string>;
+  setYourreactionsList(value: Array<string>): void;
+  addYourreactions(value: string, index?: number): string;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -1389,6 +1394,7 @@ export namespace UserMessage {
     labelidsList?: Array<number>,
     viabotid?: string,
     reactionsList?: Array<ReactionCounter.AsObject>,
+    yourreactionsList?: Array<string>,
   }
 }
 

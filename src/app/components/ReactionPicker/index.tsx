@@ -18,13 +18,14 @@ const defaultReactions = ['😂', '😡', '👎', '👍', '❤️'];
 const allReactions = [...defaultReactions, '😢', '🙋‍♀', '🙋‍♂️', '🛢', '🤐', '😖', '🙁', '🥳', '🤩', '😋', '😏'];
 
 interface IProps {
-    onSelect?: (id: number, reaction: string) => void;
+    onSelect?: (id: number, reaction: string, remove: boolean) => void;
 }
 
 interface IState {
     message: IMessage;
     more: boolean;
     position: PopoverPosition | undefined;
+    selectedReactions: { [key: string]: boolean };
 }
 
 class ReactionPicker extends React.PureComponent<IProps, IState> {
@@ -35,26 +36,34 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
             message: {},
             more: false,
             position: undefined,
+            selectedReactions: {},
         };
     }
 
     public open(position: PopoverPosition, message: IMessage) {
+        const selectedReactions: { [key: string]: boolean } = {};
+        (message.yourreactionsList || []).forEach((reaction) => {
+            selectedReactions[reaction || ''] = true;
+        });
         this.setState({
             message,
             position,
+            selectedReactions,
         });
     }
 
     public render() {
-        const {position, more} = this.state;
+        const {position, more, selectedReactions} = this.state;
         return (
             <Popover open={Boolean(position)} anchorPosition={position} anchorReference="anchorPosition"
                      onClose={this.closeHandler} classes={{paper: 'reaction-picker-popover'}}>
                 <div className={'reaction-picker' + (more ? ' full' : '')}>
                     {(more ? allReactions : defaultReactions).map((item) => {
-                        return (<div className="reaction-item" key={item} onClick={this.selectHandler(item)}>
-                            <div className="reaction-emoji">{item}</div>
-                        </div>);
+                        return (
+                            <div className={'reaction-item' + (selectedReactions[item] ? ' selected' : '')} key={item}
+                                 onClick={this.selectHandler(item)}>
+                                <div className="reaction-emoji">{item}</div>
+                            </div>);
                     })}
                     <div className="reaction-more" onClick={this.toggleMoreHandler}>
                         <MoreVertRounded/>
@@ -69,6 +78,7 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
             message: {},
             more: false,
             position: undefined,
+            selectedReactions: {},
         });
     }
 
@@ -80,9 +90,9 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
 
     private selectHandler = (reaction: string) => () => {
         this.closeHandler();
-        const {message} = this.state;
+        const {message, selectedReactions} = this.state;
         if (this.props.onSelect && message) {
-            this.props.onSelect(message.id || 0, reaction);
+            this.props.onSelect(message.id || 0, reaction, selectedReactions[reaction]);
         }
     }
 }

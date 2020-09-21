@@ -51,6 +51,7 @@ import {spanMessageEntities} from "../../services/utilities/entity";
 import ResizeObserver from "resize-observer-polyfill";
 import Reaction from "../Reaction";
 import ReactionPicker from "../ReactionPicker";
+import ReactionList from "../ReactionList";
 
 import './style.scss';
 
@@ -172,7 +173,7 @@ interface IProps {
     isMobileView: boolean;
     userId?: string;
     isBot: boolean;
-    onReactionSelect?: (id: number, reaction: string) => void;
+    onReactionSelect?: (id: number, reaction: string, remove: boolean) => void;
 }
 
 interface IState {
@@ -260,6 +261,7 @@ class Message extends React.Component<IProps, IState> {
     private readonly containerResizeThrottle: any;
     private isLarge?: boolean;
     private reactionPickerRef: ReactionPicker | undefined;
+    private reactionListRef: ReactionList | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -652,6 +654,7 @@ class Message extends React.Component<IProps, IState> {
                     <Loading/>
                 </div>}
                 <ReactionPicker ref={this.reactionPickerRefHandler} onSelect={this.props.onReactionSelect}/>
+                <ReactionList ref={this.reactionListRefHandler}/>
             </div>
         );
     }
@@ -712,6 +715,9 @@ class Message extends React.Component<IProps, IState> {
         }
         if (message.avatar) {
             height += 6;
+        }
+        if (message.reactionsList && message.reactionsList.length > 0) {
+            height += 10;
         }
         return height;
     }
@@ -925,7 +931,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div
-                            className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error && (message.id || 0) < 0) ? ' has-error' : '') + ((message.em_le || 0) > 0 ? ' large-emoji' : '')}
+                            className={'bubble-wrapper _bubble' + this.getMessageClassName(message)}
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
                             onDoubleClick={this.selectMessage(index)}
                         >
@@ -978,6 +984,27 @@ class Message extends React.Component<IProps, IState> {
                     );
                 }
         }
+    }
+
+    private getMessageClassName(message: IMessage) {
+        let cn: string = message.me && !this.isSimplified ? ' me' : ' you';
+        if (message.avatar) {
+            cn += ' avatar';
+        }
+        if (this.state.selectedIds.hasOwnProperty(message.id || 0)) {
+            cn += ' selected';
+        }
+        cn += this.getMessageType(message);
+        if ((message.me && message.error && (message.id || 0) < 0)) {
+            cn += ' has-error';
+        }
+        if ((message.em_le || 0) > 0) {
+            cn += ' large-emoji';
+        }
+        if (message.reactionsList && message.reactionsList.length > 0) {
+            cn += ' with-reaction';
+        }
+        return cn;
     }
 
     private contextMenuHandler = (index: number) => (e: any) => {
@@ -1542,11 +1569,11 @@ class Message extends React.Component<IProps, IState> {
 
     private reactionContent(message: IMessage) {
         return (<>
-            <Reaction message={message}/>
-            <div className="reaction-anchor" onClick={this.reactionPickerOpenHandler(message)}
-                 onContextMenu={this.reactionPickerOpenHandler(message)}>
+            <Reaction message={message} onContextMenu={this.reactionPickerOpenHandler(message)} onClick={this.reactionListOpenHandler(message)}/>
+            {!message.me && <div className="reaction-anchor" onClick={this.reactionPickerOpenHandler(message)}
+                                 onContextMenu={this.reactionPickerOpenHandler(message)}>
                 <TagFacesRounded/>
-            </div>
+            </div>}
         </>);
     }
 
@@ -1565,6 +1592,17 @@ class Message extends React.Component<IProps, IState> {
             left: pos.left + 8,
             top: pos.top,
         }, message);
+    }
+
+    private reactionListRefHandler = (ref: any) => {
+        this.reactionListRef = ref;
+    }
+
+    private reactionListOpenHandler = (message: IMessage) => () => {
+        if (!this.reactionListRef || !this.inputPeer) {
+            return;
+        }
+        this.reactionListRef.openDialog(this.inputPeer, message);
     }
 }
 

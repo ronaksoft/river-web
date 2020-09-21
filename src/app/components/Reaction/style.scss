@@ -1,10 +1,13 @@
 .message-reaction {
   position: relative;
   display: flex;
-  margin: 4px 0 -8px;
-  z-index: 10;
   align-items: center;
   justify-content: flex-end;
+  user-select: none;
+  height: 0;
+  z-index: 100;
+  transform: translateY(-2px);
+  cursor: pointer;
 
   .reaction-item {
     height: 18px;

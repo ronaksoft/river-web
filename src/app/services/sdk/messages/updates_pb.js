@@ -16342,7 +16342,9 @@ proto.msg.UpdateReaction.toObject = function(includeInstance, msg) {
     messageid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     counterList: jspb.Message.toObjectList(msg.getCounterList(),
     core_types_pb.ReactionCounter.toObject, includeInstance),
-    teamid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    teamid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
+    sender: (f = msg.getSender()) && core_types_pb.User.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -16399,6 +16401,16 @@ proto.msg.UpdateReaction.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setTeamid(value);
+      break;
+    case 4:
+      var value = new core_types_pb.Peer;
+      reader.readMessage(value,core_types_pb.Peer.deserializeBinaryFromReader);
+      msg.setPeer(value);
+      break;
+    case 5:
+      var value = new core_types_pb.User;
+      reader.readMessage(value,core_types_pb.User.deserializeBinaryFromReader);
+      msg.setSender(value);
       break;
     default:
       reader.skipField();
@@ -16463,6 +16475,22 @@ proto.msg.UpdateReaction.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt64String(
       3,
       f
+    );
+  }
+  f = message.getPeer();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      core_types_pb.Peer.serializeBinaryToWriter
+    );
+  }
+  f = message.getSender();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      core_types_pb.User.serializeBinaryToWriter
     );
   }
 };
@@ -16647,6 +16675,80 @@ proto.msg.UpdateReaction.prototype.clearTeamid = function() {
  */
 proto.msg.UpdateReaction.prototype.hasTeamid = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional Peer Peer = 4;
+ * @return {?proto.msg.Peer}
+ */
+proto.msg.UpdateReaction.prototype.getPeer = function() {
+  return /** @type{?proto.msg.Peer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.Peer, 4));
+};
+
+
+/**
+ * @param {?proto.msg.Peer|undefined} value
+ * @return {!proto.msg.UpdateReaction} returns this
+*/
+proto.msg.UpdateReaction.prototype.setPeer = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.msg.UpdateReaction} returns this
+ */
+proto.msg.UpdateReaction.prototype.clearPeer = function() {
+  return this.setPeer(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateReaction.prototype.hasPeer = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional User Sender = 5;
+ * @return {?proto.msg.User}
+ */
+proto.msg.UpdateReaction.prototype.getSender = function() {
+  return /** @type{?proto.msg.User} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.User, 5));
+};
+
+
+/**
+ * @param {?proto.msg.User|undefined} value
+ * @return {!proto.msg.UpdateReaction} returns this
+*/
+proto.msg.UpdateReaction.prototype.setSender = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.msg.UpdateReaction} returns this
+ */
+proto.msg.UpdateReaction.prototype.clearSender = function() {
+  return this.setSender(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateReaction.prototype.hasSender = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

@@ -34,8 +34,8 @@ import {
     UpdateUserPhoto,
     UpdateUserTyping,
 } from '../messages/updates_pb';
-import {cloneDeep, uniq} from 'lodash';
-import MessageRepo, {getMediaDocument, sortReactions} from '../../../repository/message';
+import {cloneDeep, uniq, difference, differenceWith} from 'lodash';
+import MessageRepo, {getMediaDocument, modifyReactions} from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';
 import {IDialog, IPeer} from "../../../repository/dialog/interface";
 import {IMessage} from "../../../repository/message/interface";
@@ -142,6 +142,10 @@ interface ITransactionPayload {
     topPeers: ITopPeerWithType[];
     updateId: number;
     users: { [key: string]: IUser };
+}
+
+interface IUpdateMessage extends IMessage {
+    your_reaction_check?: boolean;
 }
 
 export default class UpdateManager {
@@ -999,12 +1003,14 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateReaction:
                 const updateReaction = UpdateReaction.deserializeBinary(data).toObject();
+                updateReaction.counterList = modifyReactions(updateReaction.counterList || []);
                 this.logVerbose(update.constructor, updateReaction);
                 this.callUpdateHandler(updateReaction.teamid || '0', update.constructor, updateReaction);
                 // Update message
                 this.mergeMessage(transaction.messages, undefined, {
                     id: updateReaction.messageid,
-                    reactionsList: sortReactions(updateReaction.counterList || []),
+                    reactionsList: updateReaction.counterList,
+                    your_reaction_check: updateReaction.sender && updateReaction.sender.id === this.userId,
                 });
                 // Update edited message list
                 transaction.editedMessageIds.push(updateReaction.messageid || 0);
@@ -1040,8 +1046,29 @@ export default class UpdateManager {
         delete dialogs[peerId];
     }
 
-    private mergeMessage(messages: { [key: number]: IMessage }, incomingIds: { [key: string]: number[] } | undefined, message: IMessage) {
+    private mergeMessage(messages: { [key: number]: IUpdateMessage }, incomingIds: { [key: string]: number[] } | undefined, message: IUpdateMessage) {
         const m = messages[message.id || 0];
+        const applyReaction = (mIn: IUpdateMessage) => {
+            if (message.your_reaction_check !== undefined) {
+                if (message.your_reaction_check) {
+                    const addedReaction = differenceWith(message.reactionsList || [], mIn.reactionsList || [], (i1, i2) => i1.reaction === i2.reaction && i1.total === i2.total);
+                    if (addedReaction.length > 0) {
+                        const reactions = addedReaction.map(o => o.reaction || '');
+                        mIn.removed_reactions = difference(mIn.removed_reactions || [], reactions);
+                        mIn.added_reactions = reactions;
+                    } else {
+                        const removedReaction = differenceWith(mIn.reactionsList || [], message.reactionsList || [], (i1, i2) => i1.reaction === i2.reaction && i1.total === i2.total);
+                        if (removedReaction) {
+                            const reactions = removedReaction.map(o => o.reaction || '');
+                            mIn.added_reactions = difference(mIn.added_reactions || [], reactions);
+                            mIn.removed_reactions = reactions;
+                        }
+                    }
+                }
+                delete message.your_reaction_check;
+            }
+            return mIn;
+        };
         if (m) {
             if (m.added_labels) {
                 m.added_labels = uniq([...(m.added_labels || []), ...(message.added_labels || [])]);
@@ -1049,9 +1076,9 @@ export default class UpdateManager {
             if (m.removed_labels) {
                 m.removed_labels = uniq([...(m.removed_labels || []), ...(message.removed_labels || [])]);
             }
-            messages[m.id || 0] = kMerge(m, message);
+            messages[m.id || 0] = kMerge(applyReaction(m), message);
         } else {
-            messages[message.id || 0] = message;
+            messages[message.id || 0] = applyReaction(message);
         }
         if (incomingIds && !message.me) {
             const peerName = GetPeerName(message.peerid, message.peertype);
