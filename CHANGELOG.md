@@ -1,5 +1,5 @@
 ## 0.34.49
-* Reaction implemented
+* Recactoin implemented
 
 ## 0.34.48
 * Last seen format updated
