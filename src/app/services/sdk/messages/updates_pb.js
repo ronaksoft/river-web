@@ -15303,7 +15303,7 @@ proto.msg.UpdateCommunityMessage.deserializeBinaryFromReader = function(msg, rea
     var field = reader.getFieldNumber();
     switch (field) {
     case 100:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setTeamid(value);
       break;
     case 1:
@@ -15364,9 +15364,9 @@ proto.msg.UpdateCommunityMessage.prototype.serializeBinary = function() {
  */
 proto.msg.UpdateCommunityMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 100));
+  f = /** @type {string} */ (jspb.Message.getField(message, 100));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       100,
       f
     );
@@ -15426,15 +15426,15 @@ proto.msg.UpdateCommunityMessage.serializeBinaryToWriter = function(message, wri
 
 /**
  * required int64 TeamID = 100;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateCommunityMessage.prototype.getTeamid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 100, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.UpdateCommunityMessage} returns this
  */
 proto.msg.UpdateCommunityMessage.prototype.setTeamid = function(value) {
@@ -15787,7 +15787,7 @@ proto.msg.UpdateCommunityReadOutbox.deserializeBinaryFromReader = function(msg, 
     var field = reader.getFieldNumber();
     switch (field) {
     case 100:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setTeamid(value);
       break;
     case 1:
@@ -15831,9 +15831,9 @@ proto.msg.UpdateCommunityReadOutbox.prototype.serializeBinary = function() {
  */
 proto.msg.UpdateCommunityReadOutbox.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 100));
+  f = /** @type {string} */ (jspb.Message.getField(message, 100));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       100,
       f
     );
@@ -15864,15 +15864,15 @@ proto.msg.UpdateCommunityReadOutbox.serializeBinaryToWriter = function(message, 
 
 /**
  * required int64 TeamID = 100;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateCommunityReadOutbox.prototype.getTeamid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 100, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.UpdateCommunityReadOutbox} returns this
  */
 proto.msg.UpdateCommunityReadOutbox.prototype.setTeamid = function(value) {
@@ -16079,7 +16079,7 @@ proto.msg.UpdateCommunityTyping.deserializeBinaryFromReader = function(msg, read
     var field = reader.getFieldNumber();
     switch (field) {
     case 100:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setTeamid(value);
       break;
     case 1:
@@ -16123,9 +16123,9 @@ proto.msg.UpdateCommunityTyping.prototype.serializeBinary = function() {
  */
 proto.msg.UpdateCommunityTyping.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 100));
+  f = /** @type {string} */ (jspb.Message.getField(message, 100));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       100,
       f
     );
@@ -16156,15 +16156,15 @@ proto.msg.UpdateCommunityTyping.serializeBinaryToWriter = function(message, writ
 
 /**
  * required int64 TeamID = 100;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateCommunityTyping.prototype.getTeamid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 100, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.UpdateCommunityTyping} returns this
  */
 proto.msg.UpdateCommunityTyping.prototype.setTeamid = function(value) {
@@ -16397,7 +16397,7 @@ proto.msg.UpdateReaction.deserializeBinaryFromReader = function(msg, reader) {
       msg.addCounter(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setTeamid(value);
       break;
     default:
@@ -16458,9 +16458,9 @@ proto.msg.UpdateReaction.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.ReactionCounter.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       3,
       f
     );
@@ -16616,15 +16616,15 @@ proto.msg.UpdateReaction.prototype.clearCounterList = function() {
 
 /**
  * optional int64 TeamID = 3;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateReaction.prototype.getTeamid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.UpdateReaction} returns this
  */
 proto.msg.UpdateReaction.prototype.setTeamid = function(value) {

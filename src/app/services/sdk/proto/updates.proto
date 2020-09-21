@@ -383,7 +383,7 @@ message UpdateTeam {
 
 // UpdateCommunityMessage
 message UpdateCommunityMessage {
-    required int64 TeamID = 100;
+    required int64 TeamID = 100 [jstype = JS_STRING];
     required int64 SenderID = 1;
     required int64 ReceiverID = 2;
     required string Body = 3;
@@ -395,7 +395,7 @@ message UpdateCommunityMessage {
 
 // UpdateCommunityReadOutbox
 message UpdateCommunityReadOutbox {
-    required int64 TeamID = 100;
+    required int64 TeamID = 100 [jstype = JS_STRING];
     required int64 SenderID = 1;
     required int64 ReceiverID = 2;
     required int64 SenderMsgID = 3;
@@ -403,7 +403,7 @@ message UpdateCommunityReadOutbox {
 
 // UpdateCommunityTyping
 message UpdateCommunityTyping {
-    required int64 TeamID = 100;
+    required int64 TeamID = 100 [jstype = JS_STRING];
     required int64 SenderID = 1;
     required int64 ReceiverID = 2;
     required TypingAction Action = 3;
@@ -415,7 +415,7 @@ message UpdateReaction {
     required int64 UpdateID = 101;
     required int64 MessageID = 1;
     repeated ReactionCounter Counter = 2;
-    optional int64 TeamID = 3;
+    optional int64 TeamID = 3 [jstype = JS_STRING];
 }
 
 
@@ -439,6 +439,3 @@ message UpdateCalendarEventEdited {
     required int64 UpdateID = 101;
     required CalendarEvent Event = 1;
 }
-
-
-

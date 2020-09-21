@@ -25,7 +25,7 @@ import {
     UpdateMessageID,
     UpdateMessagesDeleted,
     UpdateNewMessage,
-    UpdateNotifySettings,
+    UpdateNotifySettings, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateReadMessagesContents,
@@ -35,7 +35,7 @@ import {
     UpdateUserTyping,
 } from '../messages/updates_pb';
 import {cloneDeep, uniq} from 'lodash';
-import MessageRepo, {getMediaDocument} from '../../../repository/message';
+import MessageRepo, {getMediaDocument, sortReactions} from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';
 import {IDialog, IPeer} from "../../../repository/dialog/interface";
 import {IMessage} from "../../../repository/message/interface";
@@ -996,6 +996,18 @@ export default class UpdateManager {
                     label.teamid = updateLabelItemsRemoved.teamid || '0';
                     this.mergeLabel(transaction.labels, label);
                 });
+                break;
+            case C_MSG.UpdateReaction:
+                const updateReaction = UpdateReaction.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateReaction);
+                this.callUpdateHandler(updateReaction.teamid || '0', update.constructor, updateReaction);
+                // Update message
+                this.mergeMessage(transaction.messages, undefined, {
+                    id: updateReaction.messageid,
+                    reactionsList: sortReactions(updateReaction.counterList || []),
+                });
+                // Update edited message list
+                transaction.editedMessageIds.push(updateReaction.messageid || 0);
                 break;
             default:
                 break;

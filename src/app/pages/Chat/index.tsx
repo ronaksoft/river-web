@@ -11,7 +11,7 @@ import * as React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
-import MessageRepo, {getMediaDocument} from '../../repository/message/index';
+import MessageRepo, {getMediaDocument, sortReactions} from '../../repository/message/index';
 import DialogRepo, {GetPeerName, GetPeerNameByPeer} from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import ChatInput, {C_TYPING_INTERVAL, C_TYPING_INTERVAL_OFFSET, IMessageParam} from '../../components/ChatInput/index';
@@ -141,7 +141,7 @@ import {
     UpdateMessageEdited,
     UpdateMessagesDeleted,
     UpdateNewMessage,
-    UpdateNotifySettings,
+    UpdateNotifySettings, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateReadMessagesContents,
@@ -429,6 +429,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: Message Edited
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageEdited, this.updateMessageEditHandler));
 
+        // Update: Message Reaction
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReaction, this.updateReactionHandler));
+
         // Update: User is typing
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, this.updateUserTypeHandler));
 
@@ -665,6 +668,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onBotCommand={this.messageBotCommandHandler}
                                          onBotButtonAction={this.messageBotButtonActionHandler}
                                          onMessageDrop={this.messageMessageDropHandler}
+                                         onReactionSelect={this.messageReactionSelectHandler}
                                          onError={this.textErrorHandler}
                                          userId={this.userId}
                                          isBot={this.isBot}
@@ -1239,6 +1243,35 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
         }
+    }
+
+    /* Update message edit */
+    private updateReactionHandler = (data: UpdateReaction.AsObject) => {
+        // const dialog = this.getDialogByPeerName(data.message.peerid || '');
+        // if (dialog) {
+        //     if (dialog.topmessageid === data.message.id) {
+        //         this.updateDialogs(data.message, dialog.accesshash || '0', true);
+        //     }
+        // }
+        // const peerName = GetPeerName(data.message.peerid, data.message.peertype);
+        // if (this.selectedPeerName === peerName) {
+        //     // Update and broadcast changes in cache
+        //     this.cachedMessageService.updateMessage(data.message);
+        //
+        //     const messages = this.messages;
+        //     const index = findIndex(messages, (o) => {
+        //         return o.id === data.message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+        //     });
+        //     if (index > -1) {
+        //         const avatar = messages[index].avatar;
+        //         messages[index] = data.message;
+        //         messages[index].avatar = avatar;
+        //         if (this.messageRef) {
+        //             this.messageRef.clear(index);
+        //             this.messageRef.updateList();
+        //         }
+        //     }
+        // }
     }
 
     /* Update user typing */
@@ -3331,6 +3364,36 @@ class Chat extends React.Component<IProps, IState> {
         if (this.chatInputRef) {
             this.chatInputRef.loadMessage(id);
         }
+    }
+
+    /* Message reaction select */
+    private messageReactionSelectHandler = (id: number, reaction: string) => {
+        if (!this.peer) {
+            return;
+        }
+        this.apiManager.reactionAdd(this.peer, id, reaction).then((res) => {
+            const messages = this.messages;
+            const index = findLastIndex(messages, (o) => {
+                return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
+            if (index > -1) {
+                let reactions = messages[index].reactionsList || [];
+                const reactionIndex = findIndex(reactions, {reaction});
+                if (reactionIndex > -1 && reactions[reactionIndex] && reactions[reactionIndex].total !== undefined) {
+                    // @ts-ignore
+                    reactions[reactionIndex].total++;
+                } else if (reactions.length > 0) {
+                    reactions = [...reactions, {reaction, total: 1}];
+                } else {
+                    reactions = [{reaction, total: 1}];
+                }
+                messages[index].reactionsList = sortReactions(reactions);
+                if (this.messageRef) {
+                    this.messageRef.clear(index);
+                    this.messageRef.updateList();
+                }
+            }
+        });
     }
 
     /* Message on bot button click handler */

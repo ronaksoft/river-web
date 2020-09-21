@@ -1,3 +1,6 @@
+## 0.34.49
+* Reaction implemented
+
 ## 0.34.48
 * Last seen format updated
 * Label counter bug fixed

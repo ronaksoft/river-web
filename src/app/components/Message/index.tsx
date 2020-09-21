@@ -21,13 +21,12 @@ import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
 import MessagePreview from '../MessagePreview';
 import MessageStatus from '../MessageStatus';
-import {MoreVert} from '@material-ui/icons';
+import {MoreVert, ErrorRounded, TagFacesRounded} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
 import MessageVoice from '../MessageVoice';
 import RiverTime from '../../services/utilities/river_time';
-import {ErrorRounded} from '@material-ui/icons';
 import MessageFile from '../MessageFile';
 import MessageContact from '../MessageContact';
 import CachedPhoto from '../CachedPhoto';
@@ -50,6 +49,8 @@ import {ThemeChanged} from "../SettingsMenu";
 import CodeViewer from "../CodeViewer";
 import {spanMessageEntities} from "../../services/utilities/entity";
 import ResizeObserver from "resize-observer-polyfill";
+import Reaction from "../Reaction";
+import ReactionPicker from "../ReactionPicker";
 
 import './style.scss';
 
@@ -171,6 +172,7 @@ interface IProps {
     isMobileView: boolean;
     userId?: string;
     isBot: boolean;
+    onReactionSelect?: (id: number, reaction: string) => void;
 }
 
 interface IState {
@@ -220,45 +222,6 @@ export const highlightMessage = (id: number) => {
     }
 };
 
-export const highlightMessageText = (id: number, text: string) => {
-    document.querySelectorAll(`.bubble-wrapper .bubble .bubble-body .inner.text-highlight`).forEach((elem) => {
-        elem.remove();
-    });
-    if (id < 0 || !text) {
-        return;
-    }
-    const wrapperEl = document.querySelector(`.bubble-wrapper .bubble.b_${id} .bubble-body`);
-    const el = document.querySelector(`.bubble-wrapper .bubble.b_${id} .bubble-body .inner`);
-    let className: string = 'inner text-highlight';
-    if (el && wrapperEl && el.innerHTML && wrapperEl.parentElement) {
-        if (el.classList.contains('rtl')) {
-            className += ' rtl';
-        } else {
-            className += ' ltr';
-        }
-
-        text = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const re = new RegExp(text, 'ig');
-
-        if (text.length > 0) {
-            const fragment = document.createElement('div');
-            const childPos = el.getBoundingClientRect();
-            const parentPos = wrapperEl.parentElement.getBoundingClientRect();
-            const childOffset = {
-                left: childPos.left - parentPos.left,
-                top: childPos.top - parentPos.top,
-            };
-            fragment.classList.value = className;
-            fragment.style.height = `${childPos.height}px`;
-            fragment.style.left = `${childOffset.left}px`;
-            fragment.style.top = `${childOffset.top}px`;
-            fragment.style.width = `${childPos.width}px`;
-            fragment.innerHTML = el.innerHTML.replace(re, `<mark>$&</mark>`);
-            wrapperEl.appendChild(fragment);
-        }
-    }
-};
-
 class Message extends React.Component<IProps, IState> {
     public list: KKWindow | undefined;
     private containerRef: any = null;
@@ -296,6 +259,7 @@ class Message extends React.Component<IProps, IState> {
     private resizeObserver: ResizeObserver | undefined;
     private readonly containerResizeThrottle: any;
     private isLarge?: boolean;
+    private reactionPickerRef: ReactionPicker | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -656,7 +620,7 @@ class Message extends React.Component<IProps, IState> {
                         keyMapper={this.keyMapperHandler}
                         estimatedItemSize={41}
                         estimatedItemSizeFunc={this.getHeight}
-                        loadBeforeLimit={10}
+                        loadBeforeLimit={16}
                         onLoadBefore={this.kkWindowBeforeHandler}
                         onLoadAfter={this.props.onLoadMoreAfter}
                         onScrollPos={this.scrollPosHandler}
@@ -687,6 +651,7 @@ class Message extends React.Component<IProps, IState> {
                 {loadingOverlay && <div className="messages-overlay-loading">
                     <Loading/>
                 </div>}
+                <ReactionPicker ref={this.reactionPickerRefHandler} onSelect={this.props.onReactionSelect}/>
             </div>
         );
     }
@@ -975,6 +940,7 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.me && message.error && (message.id || 0) < 0) &&
                             <span className="error" onClick={this.contextMenuHandler(index)}><ErrorRounded/></span>}
                             <div className="message-container">
+                                {this.reactionContent(message)}
                                 <div ref={parenElRefHandler}
                                      className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture || message.messagetype === C_MESSAGE_TYPE.Gif) ? ' media-message' : '')}
                                      onContextMenu={this.messageContextMenuHandler(index)}>
@@ -1573,6 +1539,72 @@ class Message extends React.Component<IProps, IState> {
             enableDrag: false,
         });
     }
+
+    private reactionContent(message: IMessage) {
+        return (<>
+            <Reaction message={message}/>
+            <div className="reaction-anchor" onClick={this.reactionPickerOpenHandler(message)}
+                 onContextMenu={this.reactionPickerOpenHandler(message)}>
+                <TagFacesRounded/>
+            </div>
+        </>);
+    }
+
+    private reactionPickerRefHandler = (ref: any) => {
+        this.reactionPickerRef = ref;
+    }
+
+    private reactionPickerOpenHandler = (message: IMessage) => (e: any) => {
+        if (!this.reactionPickerRef) {
+            return;
+        }
+        e.stopPropagation();
+        e.preventDefault();
+        const pos = e.target.getBoundingClientRect();
+        this.reactionPickerRef.open({
+            left: pos.left + 8,
+            top: pos.top,
+        }, message);
+    }
 }
+
+export const highlightMessageText = (id: number, text: string) => {
+    document.querySelectorAll(`.bubble-wrapper .bubble .bubble-body .inner.text-highlight`).forEach((elem) => {
+        elem.remove();
+    });
+    if (id < 0 || !text) {
+        return;
+    }
+    const wrapperEl = document.querySelector(`.bubble-wrapper .bubble.b_${id} .bubble-body`);
+    const el = document.querySelector(`.bubble-wrapper .bubble.b_${id} .bubble-body .inner`);
+    let className: string = 'inner text-highlight';
+    if (el && wrapperEl && el.innerHTML && wrapperEl.parentElement) {
+        if (el.classList.contains('rtl')) {
+            className += ' rtl';
+        } else {
+            className += ' ltr';
+        }
+
+        text = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(text, 'ig');
+
+        if (text.length > 0) {
+            const fragment = document.createElement('div');
+            const childPos = el.getBoundingClientRect();
+            const parentPos = wrapperEl.parentElement.getBoundingClientRect();
+            const childOffset = {
+                left: childPos.left - parentPos.left,
+                top: childPos.top - parentPos.top,
+            };
+            fragment.classList.value = className;
+            fragment.style.height = `${childPos.height}px`;
+            fragment.style.left = `${childOffset.left}px`;
+            fragment.style.top = `${childOffset.top}px`;
+            fragment.style.width = `${childPos.width}px`;
+            fragment.innerHTML = el.innerHTML.replace(re, `<mark>$&</mark>`);
+            wrapperEl.appendChild(fragment);
+        }
+    }
+};
 
 export default Message;

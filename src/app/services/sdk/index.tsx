@@ -80,7 +80,7 @@ import {
     MessagesReadHistory,
     MessagesSaveDraft,
     MessagesSend,
-    MessagesSendMedia,
+    MessagesSendMedia, MessagesSendReaction,
     MessagesSent,
     MessagesSetTyping,
     MessagesToggleDialogPin
@@ -1093,11 +1093,13 @@ export default class APIManager {
         data.setPeer(userPeer);
         data.setQuery(query);
         data.setOffset(offset);
+        this.logVerbose(data);
         return this.server.send(C_MSG.BotGetInlineResults, data.serializeBinary(), true);
     }
 
     public botSendInlineResults(randomId: number, inputPeer: InputPeer, queryId: string, resultId: string, replyTo?: number): Promise<Bool.AsObject> {
         const data = new BotSendInlineResults();
+        this.logVerbose(data);
         data.setRandomid(randomId);
         data.setQueryid(queryId);
         data.setResultid(resultId);
@@ -1105,12 +1107,23 @@ export default class APIManager {
         if (replyTo) {
             data.setReplyto(replyTo);
         }
+        this.logVerbose(data);
         return this.server.send(C_MSG.BotSendInlineResults, data.serializeBinary(), true);
+    }
+
+    public reactionAdd(inputPeer: InputPeer, id: number, reaction: string): Promise<Bool.AsObject> {
+        const data = new MessagesSendReaction();
+        data.setMessageid(id);
+        data.setPeer(inputPeer);
+        data.setReaction(reaction);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.MessagesSendReaction, data.serializeBinary(), true);
     }
 
     public teamListMember(teamId: string): Promise<TeamMembers.AsObject> {
         const data = new TeamListMembers();
         data.setTeamid(teamId);
+        this.logVerbose(data);
         return this.server.send(C_MSG.TeamListMembers, data.serializeBinary(), true);
     }
 
@@ -1118,6 +1131,7 @@ export default class APIManager {
         const data = new TeamPromote();
         data.setTeamid(teamId);
         data.setUserid(userId);
+        this.logVerbose(data);
         return this.server.send(C_MSG.TeamPromote, data.serializeBinary(), true);
     }
 
@@ -1125,6 +1139,7 @@ export default class APIManager {
         const data = new TeamDemote();
         data.setTeamid(teamId);
         data.setUserid(userId);
+        this.logVerbose(data);
         return this.server.send(C_MSG.TeamDemote, data.serializeBinary(), true);
     }
 
@@ -1133,6 +1148,7 @@ export default class APIManager {
         data.setTeamid(teamId);
         data.setUserid(userId);
         data.setManager(false);
+        this.logVerbose(data);
         return this.server.send(C_MSG.TeamAddMember, data.serializeBinary(), false);
     }
 
@@ -1140,6 +1156,7 @@ export default class APIManager {
         const data = new TeamRemoveMember();
         data.setTeamid(teamId);
         data.setUserid(userId);
+        this.logVerbose(data);
         return this.server.send(C_MSG.TeamRemoveMember, data.serializeBinary(), true);
     }
 

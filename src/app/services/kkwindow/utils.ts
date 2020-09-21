@@ -243,9 +243,9 @@ export class CellMeasurer {
         if (this.scrollPosFn) {
             this.dispatchFn(this.scrollPosFn);
         }
-        // requestAnimationFrame(() => {
-        //     this.setVisibleList(force);
-        // });
+        requestAnimationFrame(() => {
+            this.setVisibleList(force);
+        });
     }
 
     private setVisibleList(force?: boolean) {

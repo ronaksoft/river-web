@@ -1894,8 +1894,8 @@ export namespace UpdateTeam {
 export class UpdateCommunityMessage extends jspb.Message {
   hasTeamid(): boolean;
   clearTeamid(): void;
-  getTeamid(): number | undefined;
-  setTeamid(value: number): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   hasSenderid(): boolean;
   clearSenderid(): void;
@@ -1944,7 +1944,7 @@ export class UpdateCommunityMessage extends jspb.Message {
 
 export namespace UpdateCommunityMessage {
   export type AsObject = {
-    teamid?: number,
+    teamid?: string,
     senderid?: number,
     receiverid?: number,
     body?: string,
@@ -1958,8 +1958,8 @@ export namespace UpdateCommunityMessage {
 export class UpdateCommunityReadOutbox extends jspb.Message {
   hasTeamid(): boolean;
   clearTeamid(): void;
-  getTeamid(): number | undefined;
-  setTeamid(value: number): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   hasSenderid(): boolean;
   clearSenderid(): void;
@@ -1988,7 +1988,7 @@ export class UpdateCommunityReadOutbox extends jspb.Message {
 
 export namespace UpdateCommunityReadOutbox {
   export type AsObject = {
-    teamid?: number,
+    teamid?: string,
     senderid?: number,
     receiverid?: number,
     sendermsgid?: number,
@@ -1998,8 +1998,8 @@ export namespace UpdateCommunityReadOutbox {
 export class UpdateCommunityTyping extends jspb.Message {
   hasTeamid(): boolean;
   clearTeamid(): void;
-  getTeamid(): number | undefined;
-  setTeamid(value: number): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   hasSenderid(): boolean;
   clearSenderid(): void;
@@ -2028,7 +2028,7 @@ export class UpdateCommunityTyping extends jspb.Message {
 
 export namespace UpdateCommunityTyping {
   export type AsObject = {
-    teamid?: number,
+    teamid?: string,
     senderid?: number,
     receiverid?: number,
     action?: core_types_pb.TypingAction,
@@ -2058,8 +2058,8 @@ export class UpdateReaction extends jspb.Message {
 
   hasTeamid(): boolean;
   clearTeamid(): void;
-  getTeamid(): number | undefined;
-  setTeamid(value: number): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateReaction.AsObject;
@@ -2077,7 +2077,7 @@ export namespace UpdateReaction {
     updateid?: number,
     messageid?: number,
     counterList: Array<core_types_pb.ReactionCounter.AsObject>,
-    teamid?: number,
+    teamid?: string,
   }
 }
 

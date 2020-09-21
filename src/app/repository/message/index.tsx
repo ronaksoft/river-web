@@ -16,7 +16,7 @@ import RTLDetector from '../../services/utilities/rtl_detector';
 import {
     InputPeer,
     MediaType,
-    MessageEntityType,
+    MessageEntityType, ReactionCounter,
     UserMessage
 } from '../../services/sdk/messages/core.types_pb';
 import Dexie from 'dexie';
@@ -94,6 +94,12 @@ export const getMediaDocument = (msg: IMessage) => {
         mediaDocument = msg.mediadata;
     }
     return mediaDocument;
+};
+
+export const sortReactions = (reactions: ReactionCounter.AsObject[]): ReactionCounter.AsObject[] => {
+    return reactions.sort((a, b) => {
+        return (a.total || 0) - (b.total || 0);
+    });
 };
 
 export default class MessageRepo {
@@ -330,6 +336,9 @@ export default class MessageRepo {
             out.em_le = emLe;
         }
         out.me = (userId === out.senderid);
+        if (out.reactionsList) {
+            out.reactionsList = sortReactions(out.reactionsList);
+        }
         return out;
     }
 
