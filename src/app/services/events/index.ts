@@ -17,3 +17,4 @@ export const EventWebSocketOpen = 'wsOpen';
 export const EventWebSocketClose = 'wsClose';
 export const EventNetworkStatus = 'networkStatus';
 export const EventCheckNetwork = 'checkNetwork';
+export const EventShowChangelog = 'showChangelog';

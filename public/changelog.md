@@ -1,3 +1,8 @@
+## 0.34.49
+* 🎉 Message reaction implemented
+* Last seen theme updated
+* Bug fixes and performance improvements
+
 ## 0.34.48
 * Last seen format updated
 * Label counter bug fixed

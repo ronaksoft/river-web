@@ -418,6 +418,7 @@ message UpdateReaction {
     optional int64 TeamID = 3 [jstype = JS_STRING];
     optional Peer Peer = 4;
     optional User Sender = 5;
+    repeated string YourReactions = 6;
 }
 
 // UpdateCalendarEventAdded

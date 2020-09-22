@@ -322,7 +322,9 @@
     "last_seen": {
       "format": "Last Seen Format",
       "estimated": "Relative",
-      "exact": "Exact"
+      "exact": "Exact",
+      "estimated_hint": "Last seen an hour ago",
+      "exact_hint": "Last seen Today at 23:00"
     }
   },
   "contact": {

@@ -34,7 +34,7 @@ import {
     UpdateUserPhoto,
     UpdateUserTyping,
 } from '../messages/updates_pb';
-import {cloneDeep, uniq, difference, differenceWith} from 'lodash';
+import {cloneDeep, uniq} from 'lodash';
 import MessageRepo, {getMediaDocument, modifyReactions} from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';
 import {IDialog, IPeer} from "../../../repository/dialog/interface";
@@ -144,10 +144,6 @@ interface ITransactionPayload {
     users: { [key: string]: IUser };
 }
 
-interface IUpdateMessage extends IMessage {
-    your_reaction_check?: boolean;
-}
-
 export default class UpdateManager {
     public static getInstance() {
         if (!this.instance) {
@@ -186,6 +182,7 @@ export default class UpdateManager {
 
     // Transaction vars
     private transactionList: ITransactionPayload[] = [];
+    private queueBusy: boolean = false;
 
     // Repositories
     private dialogRepo: DialogRepo | undefined;
@@ -521,6 +518,7 @@ export default class UpdateManager {
         this.outOfSync = false;
         this.outOfSyncTimeout = null;
         this.transactionList = [];
+        this.queueBusy = false;
         this.canSync().then(() => {
             this.disableLiveUpdate();
         }).catch((err) => {
@@ -1009,8 +1007,9 @@ export default class UpdateManager {
                 // Update message
                 this.mergeMessage(transaction.messages, undefined, {
                     id: updateReaction.messageid,
+                    reaction_updated: true,
                     reactionsList: updateReaction.counterList,
-                    your_reaction_check: updateReaction.sender && updateReaction.sender.id === this.userId,
+                    yourreactionsList: updateReaction.yourreactionsList,
                 });
                 // Update edited message list
                 transaction.editedMessageIds.push(updateReaction.messageid || 0);
@@ -1046,29 +1045,8 @@ export default class UpdateManager {
         delete dialogs[peerId];
     }
 
-    private mergeMessage(messages: { [key: number]: IUpdateMessage }, incomingIds: { [key: string]: number[] } | undefined, message: IUpdateMessage) {
+    private mergeMessage(messages: { [key: number]: IMessage }, incomingIds: { [key: string]: number[] } | undefined, message: IMessage) {
         const m = messages[message.id || 0];
-        const applyReaction = (mIn: IUpdateMessage) => {
-            if (message.your_reaction_check !== undefined) {
-                if (message.your_reaction_check) {
-                    const addedReaction = differenceWith(message.reactionsList || [], mIn.reactionsList || [], (i1, i2) => i1.reaction === i2.reaction && i1.total === i2.total);
-                    if (addedReaction.length > 0) {
-                        const reactions = addedReaction.map(o => o.reaction || '');
-                        mIn.removed_reactions = difference(mIn.removed_reactions || [], reactions);
-                        mIn.added_reactions = reactions;
-                    } else {
-                        const removedReaction = differenceWith(mIn.reactionsList || [], message.reactionsList || [], (i1, i2) => i1.reaction === i2.reaction && i1.total === i2.total);
-                        if (removedReaction) {
-                            const reactions = removedReaction.map(o => o.reaction || '');
-                            mIn.added_reactions = difference(mIn.added_reactions || [], reactions);
-                            mIn.removed_reactions = reactions;
-                        }
-                    }
-                }
-                delete message.your_reaction_check;
-            }
-            return mIn;
-        };
         if (m) {
             if (m.added_labels) {
                 m.added_labels = uniq([...(m.added_labels || []), ...(message.added_labels || [])]);
@@ -1076,9 +1054,9 @@ export default class UpdateManager {
             if (m.removed_labels) {
                 m.removed_labels = uniq([...(m.removed_labels || []), ...(message.removed_labels || [])]);
             }
-            messages[m.id || 0] = kMerge(applyReaction(m), message);
+            messages[m.id || 0] = kMerge(m, message);
         } else {
-            messages[message.id || 0] = applyReaction(message);
+            messages[message.id || 0] = message;
         }
         if (incomingIds && !message.me) {
             const peerName = GetPeerName(message.peerid, message.peertype);
@@ -1139,14 +1117,22 @@ export default class UpdateManager {
     }
 
     private queueTransaction(transaction: ITransactionPayload) {
+        if (this.transactionList.length === 0 && !this.queueBusy) {
+            this.queueBusy = true;
+            this.preProcessTransaction(transaction);
+            return;
+        }
         this.transactionList.push(transaction);
         this.applyTransactions();
     }
 
     private applyTransactions() {
-        const transaction = this.transactionList.shift();
-        if (transaction) {
-            this.preProcessTransaction(transaction);
+        if (!this.queueBusy && this.transactionList.length > 0) {
+            const transaction = this.transactionList.shift();
+            if (transaction) {
+                this.queueBusy = true;
+                this.preProcessTransaction(transaction);
+            }
         }
     }
 
@@ -1333,6 +1319,7 @@ export default class UpdateManager {
             }
         }
         if (!doneFn) {
+            this.queueBusy = false;
             this.applyTransactions();
         }
         transactionResolve();

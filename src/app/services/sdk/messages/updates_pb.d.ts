@@ -2071,6 +2071,11 @@ export class UpdateReaction extends jspb.Message {
   getSender(): core_types_pb.User | undefined;
   setSender(value?: core_types_pb.User): void;
 
+  clearYourreactionsList(): void;
+  getYourreactionsList(): Array<string>;
+  setYourreactionsList(value: Array<string>): void;
+  addYourreactions(value: string, index?: number): string;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateReaction.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateReaction): UpdateReaction.AsObject;
@@ -2090,6 +2095,7 @@ export namespace UpdateReaction {
     teamid?: string,
     peer?: core_types_pb.Peer.AsObject,
     sender?: core_types_pb.User.AsObject,
+    yourreactionsList: Array<string>,
   }
 }
 

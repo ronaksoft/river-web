@@ -13,7 +13,6 @@ import {ReactionList} from "../../services/sdk/messages/chat.messages_pb";
 export interface IMessage extends UserMessage.AsObject {
     actiondata?: any;
     added_labels?: number[];
-    added_reactions?: string[];
     attributes?: any[];
     avatar?: boolean;
     deleted_reply?: boolean;
@@ -26,7 +25,6 @@ export interface IMessage extends UserMessage.AsObject {
     mention_me?: boolean;
     random_id?: number;
     removed_labels?: number[];
-    removed_reactions?: string[];
     replydata?: any;
     req_id?: number;
     rtl?: boolean;
@@ -34,7 +32,7 @@ export interface IMessage extends UserMessage.AsObject {
     saved_path?: string;
     temp_file?: Blob;
     reaction_updated?: boolean;
-    reaction_list?: ReactionList.AsObject[];
+    reaction_list?: IReactionInfo[];
 }
 
 export interface IPendingMessage {
@@ -54,4 +52,8 @@ export interface IMessageWithCount {
 export interface IMessageBotCol {
     constructor?: number;
     buttondata?: any;
+}
+
+export interface IReactionInfo extends ReactionList.AsObject {
+    counter?: number;
 }

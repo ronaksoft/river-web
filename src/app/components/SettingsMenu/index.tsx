@@ -115,6 +115,7 @@ import {ITeam} from "../../repository/team/interface";
 import {IPeer} from "../../repository/dialog/interface";
 import SettingsTeam from "../SettingsTeam";
 import SettingsSession from "../SettingsSession";
+import {EventShowChangelog} from "../../services/events";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -272,7 +273,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private fileId: string = '';
     private cropperRef: AvatarCropper | undefined;
     private documentViewerService: DocumentViewerService;
-    private versionClickTimeout: any = null;
+    private devToolsDebouncer: any = null;
     private versionClickCounter: number = 0;
     private broadcaster: Broadcaster;
     private settingsBackgroundModalRef: SettingsBackgroundModal | undefined;
@@ -381,6 +382,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
         this.isMobile = this.isMobile = IsMobile.isAny();
         this.avatarService = AvatarService.getInstance();
+
+        this.devToolsDebouncer = debounce(this.showVersionHandler, 512);
     }
 
     public componentDidMount() {
@@ -668,7 +671,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div
                                                     className="anchor-label">{i18n.t('settings.last_seen.format')}</div>
                                             </div>
-                                            <div className="radio-item">
+                                            <div className="radio-item last-seen-item">
                                                 {lastSeenFormat.map((format) => {
                                                     return (
                                                         <div
@@ -687,6 +690,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                             />
                                                             <div className="pr-radio-label"
                                                                  onClick={this.lastSeenFormatChangeHandler(format.id)}>{i18n.t(format.title)}</div>
+                                                            <div className="pr-hint">{i18n.t(format.hint)}</div>
                                                         </div>);
                                                 })}
                                             </div>
@@ -1905,22 +1909,21 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     /* Version click handler */
     private versionClickHandler = () => {
-        if (!this.versionClickTimeout) {
-            this.versionClickTimeout = setTimeout(() => {
-                clearTimeout(this.versionClickTimeout);
-                this.versionClickTimeout = null;
-                this.versionClickCounter = 0;
-            }, 6000);
-        }
+        this.devToolsDebouncer();
         this.versionClickCounter++;
         if (this.versionClickCounter >= 10) {
-            clearTimeout(this.versionClickTimeout);
-            this.versionClickTimeout = null;
+            this.devToolsDebouncer.cancel();
             this.versionClickCounter = 0;
             if (this.devToolsRef) {
                 this.devToolsRef.open();
             }
         }
+    }
+
+    private showVersionHandler = () => {
+        this.versionClickCounter = 0;
+        const authErrorEvent = new CustomEvent(EventShowChangelog, {});
+        window.dispatchEvent(authErrorEvent);
     }
 
     /* Logout handler */

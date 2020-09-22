@@ -27,7 +27,15 @@ import Server from "./app/services/sdk/server";
 import {SnackbarProvider} from 'notistack';
 // @ts-ignore
 import md from 'markdown-it';
-import {EventBeforeUnload, EventBlur, EventDragOver, EventDrop, EventFocus, EventMessage} from "./app/services/events";
+import {
+    EventBeforeUnload,
+    EventBlur,
+    EventDragOver,
+    EventDrop,
+    EventFocus,
+    EventMessage,
+    EventShowChangelog
+} from "./app/services/events";
 import ElectronService from "./app/services/electron";
 import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 import {ThemeChanged} from "./app/components/SettingsMenu";
@@ -137,6 +145,7 @@ class App extends React.Component<{}, IState> {
         window.addEventListener(EventFocus, this.windowFocusHandler);
         window.addEventListener(EventBlur, this.windowBlurHandler);
         window.addEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
+        window.addEventListener(EventShowChangelog, this.updateDialog);
         window.addEventListener('authErrorEvent', (event: any) => {
             this.setState({
                 alertOpen: true,
@@ -182,6 +191,7 @@ class App extends React.Component<{}, IState> {
         window.removeEventListener(EventFocus, this.windowFocusHandler);
         window.removeEventListener(EventBlur, this.windowBlurHandler);
         window.removeEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
+        window.removeEventListener(EventShowChangelog, this.updateDialog);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
@@ -194,7 +204,7 @@ class App extends React.Component<{}, IState> {
         }
     }
 
-    public updateDialog() {
+    public updateDialog = () => {
         fetch(`/changelog.md?${Date.now()}`).then((res) => {
             return res.text();
         }).then((text) => {
@@ -203,6 +213,19 @@ class App extends React.Component<{}, IState> {
                 hasUpdate: true,
                 updateContent: md().render(text),
                 updateMode: 'notif',
+            }, () => {
+                setTimeout(() => {
+                    const el = document.querySelector('.confirm-dialog .markdown-body h2:first-child');
+                    if (el && C_VERSION === el.textContent) {
+                        const elTitle = document.querySelector('.confirm-dialog .update-title');
+                        if (elTitle) {
+                            elTitle.remove();
+                        }
+                        this.setState({
+                            updateMode: 'changelog',
+                        });
+                    }
+                }, 10);
             });
         }).catch(() => {
             this.setState({
@@ -260,10 +283,10 @@ class App extends React.Component<{}, IState> {
                             paper: 'confirm-dialog-paper'
                         }}
                     >
-                        {updateMode === 'notif' ? <>
+                        {updateMode === 'notif' || updateMode === 'changelog' ? <>
                             <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
                             <DialogContent>
-                                <DialogContentText>
+                                <DialogContentText className="update-title">
                                     {I18n.t('chat.update_dialog.body')}
                                 </DialogContentText>
                                 {Boolean(updateContent !== '') && <DialogContentText>
@@ -274,9 +297,10 @@ class App extends React.Component<{}, IState> {
                                 <Button onClick={this.updateDialogCloseHandler} color="secondary">
                                     {I18n.t('general.cancel')}
                                 </Button>
+                                {Boolean(updateMode === 'notif') &&
                                 <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
                                     {I18n.t('chat.update_dialog.update')}
-                                </Button>
+                                </Button>}
                                 {Boolean(desktopDownloadLink !== '') &&
                                 <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
                                     {I18n.tf('chat.update_dialog.download_desktop_version', '0.23.0')}

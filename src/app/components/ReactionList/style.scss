@@ -45,6 +45,82 @@
         background-color: var(--light);
         margin: 0 4px 4px 0;
       }
+
+      .river-loading {
+        transform: scale(0.5);
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .reaction-list-dialog {
+    .reaction-item {
+      flex-direction: row-reverse;
+      padding: 8px 8px 4px 0;
+
+      .reaction-chip {
+        margin-right: 0;
+        margin-left: 4px;
+
+        &:after {
+          right: 0;
+          left: -6px;
+        }
+      }
+
+      .reaction-user {
+        text-align: right;
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .reaction-list-dialog {
+    .reaction-item {
+      border-color: var(--dark-low);
+
+      .reaction-value {
+        .reaction-chip {
+          background-color: var(--dark-low);
+
+          &:after {
+            color: var(--light);
+          }
+        }
+      }
+
+      .reaction-user {
+        .user-chip {
+          background-color: var(--grey-low);
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .reaction-list-dialog {
+    .reaction-item {
+      border-color: var(--dark-blue-low);
+
+      .reaction-value {
+        .reaction-chip {
+          background-color: var(--dark-blue-low);
+
+          &:after {
+            color: var(--light);
+          }
+        }
+      }
+
+      .reaction-user {
+        .user-chip {
+          background-color: var(--dark-blue-accent-medium);
+        }
+      }
     }
   }
 }

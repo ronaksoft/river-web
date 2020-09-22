@@ -318,7 +318,9 @@
     "last_seen": {
       "format": "قالب آخرین مشاهده",
       "estimated": "نسبی",
-      "exact": "دقیق"
+      "exact": "دقیق",
+      "estimated_hint": "آخرین مشاهده یک ساعت پیش",
+      "exact_hint": "آخرین مشاهده امروز ۲۳:۰۰"
     }
   },
   "contact": {

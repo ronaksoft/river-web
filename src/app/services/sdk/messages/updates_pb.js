@@ -16304,7 +16304,7 @@ proto.msg.UpdateCommunityTyping.prototype.hasAction = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.UpdateReaction.repeatedFields_ = [2];
+proto.msg.UpdateReaction.repeatedFields_ = [2,6];
 
 
 
@@ -16344,7 +16344,8 @@ proto.msg.UpdateReaction.toObject = function(includeInstance, msg) {
     core_types_pb.ReactionCounter.toObject, includeInstance),
     teamid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
-    sender: (f = msg.getSender()) && core_types_pb.User.toObject(includeInstance, f)
+    sender: (f = msg.getSender()) && core_types_pb.User.toObject(includeInstance, f),
+    yourreactionsList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -16411,6 +16412,10 @@ proto.msg.UpdateReaction.deserializeBinaryFromReader = function(msg, reader) {
       var value = new core_types_pb.User;
       reader.readMessage(value,core_types_pb.User.deserializeBinaryFromReader);
       msg.setSender(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addYourreactions(value);
       break;
     default:
       reader.skipField();
@@ -16491,6 +16496,13 @@ proto.msg.UpdateReaction.serializeBinaryToWriter = function(message, writer) {
       5,
       f,
       core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = message.getYourreactionsList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      6,
+      f
     );
   }
 };
@@ -16749,6 +16761,43 @@ proto.msg.UpdateReaction.prototype.clearSender = function() {
  */
 proto.msg.UpdateReaction.prototype.hasSender = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * repeated string YourReactions = 6;
+ * @return {!Array<string>}
+ */
+proto.msg.UpdateReaction.prototype.getYourreactionsList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 6));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.msg.UpdateReaction} returns this
+ */
+proto.msg.UpdateReaction.prototype.setYourreactionsList = function(value) {
+  return jspb.Message.setField(this, 6, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.msg.UpdateReaction} returns this
+ */
+proto.msg.UpdateReaction.prototype.addYourreactions = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 6, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.UpdateReaction} returns this
+ */
+proto.msg.UpdateReaction.prototype.clearYourreactionsList = function() {
+  return this.setYourreactionsList([]);
 };
 
 

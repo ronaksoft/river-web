@@ -81,3 +81,70 @@
     }
   }
 }
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .reaction-picker-popover {
+
+    .reaction-picker {
+      background-color: var(--dark-medium);
+
+      .reaction-item {
+        &.selected, &:hover {
+          background-color: var(--dark-hover-light);
+        }
+
+        &.selected {
+          &:after {
+            background-color: var(--light);
+          }
+        }
+      }
+
+      .reaction-more {
+        svg {
+          color: var(--light);
+        }
+
+        &:hover {
+          svg {
+            color: var(--light-alt);
+          }
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .reaction-picker-popover {
+
+    .reaction-picker {
+      background-color: var(--dark-blue-medium);
+
+      .reaction-item {
+        &.selected, &:hover {
+          background-color: var(--dark-blue-hover-light);
+        }
+
+        &.selected {
+          &:after {
+            background-color: var(--light);
+          }
+        }
+      }
+
+      .reaction-more {
+        svg {
+          color: var(--light);
+        }
+
+        &:hover {
+          svg {
+            color: var(--light-alt);
+          }
+        }
+      }
+    }
+  }
+}

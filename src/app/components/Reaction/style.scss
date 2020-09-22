@@ -51,3 +51,24 @@
     }
   }
 }
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .message-reaction {
+    .reaction-item {
+      .reaction-wrapper {
+        background-color: var(--dark-medium);
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .message-reaction {
+    .reaction-item {
+      .reaction-wrapper {
+        background-color: var(--dark-blue-medium);
+      }
+    }
+  }
+}

@@ -356,9 +356,11 @@ export const privacyRuleItems = [{
 }];
 
 export const lastSeenFormat = [{
+    hint: 'settings.last_seen.estimated_hint',
     id: 'estimated',
     title: 'settings.last_seen.estimated'
 }, {
+    hint: 'settings.last_seen.exact_hint',
     id: 'exact',
     title: 'settings.last_seen.exact'
 }];

@@ -1,5 +1,7 @@
 ## 0.34.49
-* Recactoin implemented
+* 🎉 Message reaction implemented
+* Last seen theme updated
+* Bug fixes and performance improvements
 
 ## 0.34.48
 * Last seen format updated

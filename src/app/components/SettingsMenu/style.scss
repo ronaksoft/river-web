@@ -75,6 +75,11 @@
     height: 48px;
     color: var(--dark-medium);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+    > button {
+      padding: 6px;
+      margin: 6px;
+    }
   }
 
   .menu-content {
@@ -509,7 +514,7 @@
   }
 
   .radio-item {
-    padding: 0 12px;
+    padding: 0;
 
     .pr-radio-wrapper {
       display: flex;
@@ -525,6 +530,36 @@
 
       .pr-radio:not(.pr-radio-checked) {
         color: rgba(0, 0, 0, 0.54);
+      }
+    }
+
+    &.last-seen-item {
+      padding: 0 4px;
+
+      .pr-radio-wrapper {
+        border-bottom: 1px solid var(--light);
+        flex-wrap: wrap;
+
+        &:first-of-type {
+          padding-bottom: 12px;
+        }
+
+        &:last-of-type {
+          border: none;
+          padding-top: 12px;
+        }
+
+        .pr-radio {
+          padding: 8px;
+        }
+
+        .pr-hint {
+          flex-basis: 100%;
+          padding: 0 40px;
+          margin-top: -4px;
+          color: var(--gale);
+          font-size: 14px;
+        }
       }
     }
   }
@@ -1326,6 +1361,16 @@ html[direction="rtl"] {
     .sub-page-header, .sub-page-header-alt {
       .header-label, .header-hint {
         text-align: right;
+      }
+    }
+
+    .radio-item {
+      &.last-seen-item {
+        .pr-radio-wrapper {
+          .pr-hint {
+            text-align: right;
+          }
+        }
       }
     }
   }

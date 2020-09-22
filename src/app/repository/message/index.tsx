@@ -8,7 +8,7 @@
 */
 
 import MessageDB from '../../services/db/message';
-import {IMessage, IPendingMessage} from './interface';
+import {IMessage, IPendingMessage, IReactionInfo} from './interface';
 import {cloneDeep, differenceBy, find, throttle, uniq, difference, groupBy} from 'lodash';
 import APIManager from '../../services/sdk';
 import UserRepo from '../user';
@@ -338,6 +338,7 @@ export default class MessageRepo {
         out.me = (userId === out.senderid);
         if (out.reactionsList) {
             out.reactionsList = modifyReactions(out.reactionsList);
+            out.reaction_updated = true;
         }
         return out;
     }
@@ -441,6 +442,33 @@ export default class MessageRepo {
 
     public truncate() {
         return this.db.messages.clear();
+    }
+
+    public getReactionList(inputPeer: InputPeer, id: number): Promise<IReactionInfo[]> {
+        return this.get(id, inputPeer).then((message) => {
+            if (!message) {
+                throw Error('not found');
+            }
+            if (message.reaction_updated) {
+                return this.apiManager.reactionList(inputPeer, id, 0).then((res) => {
+                    const list = (res.listList || []).map((item: IReactionInfo) => {
+                        const t = find(message.reactionsList || [], {reaction: item.reaction});
+                        if (t) {
+                            item.counter = t.total;
+                        }
+                        return item;
+                    });
+                    this.importBulk([{
+                        id,
+                        reaction_list: list,
+                        reaction_updated: false,
+                    }]);
+                    return list;
+                });
+            } else {
+                return message.reaction_list || [];
+            }
+        });
     }
 
     public exists(id: number) {
@@ -1065,18 +1093,6 @@ export default class MessageRepo {
             message.labelidsList = difference(message.labelidsList || [], newMessage.removed_labels);
             delete newMessage.removed_labels;
             delete newMessage.labelidsList;
-        }
-        // process added reaction if sender is you
-        if (newMessage.added_reactions) {
-            message.yourreactionsList = uniq([...(message.yourreactionsList || []), ...newMessage.added_reactions]);
-            delete newMessage.added_reactions;
-            delete newMessage.yourreactionsList;
-        }
-        // process removed reaction if sender is you
-        if (newMessage.removed_reactions) {
-            message.yourreactionsList = uniq([...(message.yourreactionsList || []), ...newMessage.removed_reactions]);
-            delete newMessage.removed_reactions;
-            delete newMessage.yourreactionsList;
         }
         const d = kMerge(message, newMessage);
         return d;
