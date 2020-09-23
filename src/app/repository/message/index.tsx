@@ -338,8 +338,8 @@ export default class MessageRepo {
             out.em_le = emLe;
         }
         out.me = (userId === out.senderid);
-        if (msg.reactionsList) {
-            out.reactionsList = modifyReactions(msg.reactionsList);
+        if (out.reactionsList) {
+            out.reactionsList = modifyReactions(out.reactionsList || []);
             out.reaction_updated = true;
         }
         return out;
@@ -1002,6 +1002,9 @@ export default class MessageRepo {
             this.trimMessage(msg);
             return msg.id || '';
         });
+        if (msgs.some(o => o.reactionsList && o.reactionsList.some(o2 => o2.reaction === ""))) {
+            window.console.trace();
+        }
         return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IMessage[] = differenceBy(msgs, result, 'id');
             const updateItems: IMessage[] = result.map((msg: IMessage) => {
@@ -1053,7 +1056,11 @@ export default class MessageRepo {
             this.groupRepo.importBulk(remoteMessages.groupsList);
             remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, this.userId);
             return this.importBulk(remoteMessages.messagesList).then(() => {
-                return [...messages, ...remoteMessages.messagesList];
+                if (asc) {
+                    return [...messages, ...remoteMessages.messagesList];
+                } else {
+                    return [...messages, ...remoteMessages.messagesList.slice(1)];
+                }
             });
         });
     }
@@ -1201,7 +1208,7 @@ export default class MessageRepo {
                     return this.upsert(messages);
                 });
             } else {
-                return this.upsert(res);
+                return this.upsert(MessageRepo.parseMessageMany(res, this.userId));
             }
         });
     }

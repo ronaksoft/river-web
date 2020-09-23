@@ -21,6 +21,7 @@ import {IUser} from '../../repository/user/interface';
 import Broadcaster from '../../services/broadcaster';
 import SettingsModal from '../SettingsModal';
 import i18n from '../../services/i18n';
+import {extractPhoneNumber} from "../../services/utilities/localize";
 
 import './style.scss';
 
@@ -182,7 +183,7 @@ class ContactMenus extends React.Component<IProps, IState> {
 
     private phoneHandleChange = (e: any) => {
         this.setState({
-            phone: e.currentTarget.value,
+            phone: extractPhoneNumber(e.currentTarget.value),
         });
     }
 

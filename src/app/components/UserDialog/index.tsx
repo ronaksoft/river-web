@@ -40,6 +40,7 @@ import Broadcaster from '../../services/broadcaster';
 import i18n from '../../services/i18n';
 import {notifyOptions} from "../../pages/Chat";
 import {OfficialIcon} from "../SVG/official";
+import {extractPhoneNumber} from "../../services/utilities/localize";
 
 import './style.scss';
 
@@ -164,7 +165,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <OfficialIcon/>}</div>
                                 {isInContact && <div className="action">
                                     <IconButton
-                                        onClick={this.onEditHandler}
+                                        onClick={this.editHandler}
                                     >
                                         <EditRounded/>
                                     </IconButton>
@@ -179,7 +180,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 }}
                                 value={firstname}
                                 className="input-edit"
-                                onChange={this.onFirstnameChangeHandler}
+                                onChange={this.firstnameChangeHandler}
                             />}
                         </div>
                         {Boolean(edit || (user && (user.lastname || '').length > 0)) &&
@@ -190,7 +191,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <div className="inner">{user.lastname}</div>
                                 {isInContact && <div className="action">
                                     <IconButton
-                                        onClick={this.onEditHandler}
+                                        onClick={this.editHandler}
                                     >
                                         <EditRounded/>
                                     </IconButton>
@@ -205,7 +206,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 }}
                                 value={lastname}
                                 className="input-edit"
-                                onChange={this.onLastnameChangeHandler}
+                                onChange={this.lastnameChangeHandler}
                             />}
                         </div>}
                         {Boolean(edit || (isInContact && (user.phone || '').length > 0)) &&
@@ -224,7 +225,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 }}
                                 value={phone}
                                 className="input-edit"
-                                onChange={this.onPhoneChangeHandler}
+                                onChange={this.phoneChangeHandler}
                             />}
                         </div>}
                         {Boolean(user.username && (user.username || '').length > 0) && <div className="line">
@@ -358,27 +359,27 @@ class UserDialog extends React.Component<IProps, IState> {
         }
     }
 
-    private onEditHandler = () => {
+    private editHandler = () => {
         this.setState({
             edit: true,
         });
     }
 
-    private onFirstnameChangeHandler = (e: any) => {
+    private firstnameChangeHandler = (e: any) => {
         this.setState({
             firstname: e.currentTarget.value,
         });
     }
 
-    private onLastnameChangeHandler = (e: any) => {
+    private lastnameChangeHandler = (e: any) => {
         this.setState({
             lastname: e.currentTarget.value,
         });
     }
 
-    private onPhoneChangeHandler = (e: any) => {
+    private phoneChangeHandler = (e: any) => {
         this.setState({
-            phone: e.currentTarget.value,
+            phone: extractPhoneNumber(e.currentTarget.value),
         });
     }
 

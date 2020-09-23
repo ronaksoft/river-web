@@ -1,3 +1,8 @@
+## 0.34.50
+* Better flow in loading messages
+* Message repo bug fixed
+* Bug fixes and performance improvements
+
 ## 0.34.49
 * 🎉 Message reaction implemented
 * Last seen theme updated

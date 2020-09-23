@@ -1793,8 +1793,8 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             // date breakpoint
-            if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 || (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
-                || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
+            if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
+                || (key === 0 && !push) || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
                 const t: IMessage = {
                     createdon: msg.createdon,
                     id: msg.id,
@@ -1826,7 +1826,6 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
 
-            let unshiftCheck = false;
             if (push) {
                 if (!this.messageMapExist(msg)) {
                     defaultMessages.push(msg);
@@ -1835,7 +1834,6 @@ class Chat extends React.Component<IProps, IState> {
                         len--;
                         defaultMessages[len].avatar = this.isAvatar(len);
                     }
-                    unshiftCheck = true;
                 }
             } else {
                 if (!this.messageMapExist(msg)) {
@@ -1843,21 +1841,19 @@ class Chat extends React.Component<IProps, IState> {
                     if (addition > 0 && !msg.avatar && defaultMessages[addition]) {
                         defaultMessages[addition].avatar = this.isAvatar(addition);
                     }
-                    unshiftCheck = true;
                 }
             }
 
             addition++;
-            if (unshiftCheck && messages.length === key + 1) {
-                window.console.log(defaultMessages[addition - 1], defaultMessages[addition]);
-                if (defaultMessages[addition - 1] && defaultMessages[addition] && defaultMessages[addition].messagetype === C_MESSAGE_TYPE.Date && TimeUtility.isInSameDay(defaultMessages[addition - 1].createdon, defaultMessages[addition].createdon)) {
-                    defaultMessages.splice(addition, 1);
+            if (!push && messages.length === key + 1) {
+                if (defaultMessages[addition - 1] && defaultMessages[addition] && defaultMessages[addition - 1].messagetype === C_MESSAGE_TYPE.Date && TimeUtility.isInSameDay(defaultMessages[addition - 1].createdon, defaultMessages[addition].createdon)) {
+                    defaultMessages.splice(addition - 1, 1);
                     addition--;
                 }
-                if (defaultMessages[addition + 1]) {
+                if (defaultMessages[addition]) {
+                    defaultMessages[addition].avatar = this.isAvatar(addition);
+                } else if (defaultMessages[addition + 1]) {
                     defaultMessages[addition + 1].avatar = this.isAvatar(addition + 1);
-                } else if (defaultMessages[addition]) {
-                    defaultMessages[addition].avatar = this.isAvatar(addition + 1);
                 }
             }
         });
@@ -5761,7 +5757,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!message.id) {
             return;
         }
-        this.messageMap[(message.id * 100) + (message.messagetype || 0)] = true;
+        this.messageMap[(message.id * 100) + (message.messagetype || 0) + 32] = true;
         if (message.random_id) {
             this.messageRandomIdMap[message.random_id] = true;
         }
@@ -5771,7 +5767,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!message.id) {
             return false;
         }
-        if (this.messageMap[(message.id * 100) + (message.messagetype || 0)]) {
+        if (this.messageMap[(message.id * 100) + (message.messagetype || 0) + 32]) {
             return true;
         }
         if (message.random_id && this.messageRandomIdMap[message.random_id]) {
