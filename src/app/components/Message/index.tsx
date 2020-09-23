@@ -1582,7 +1582,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private reactionPickerOpenHandler = (message: IMessage) => (e: any) => {
-        if (!this.reactionPickerRef) {
+        if (!this.reactionPickerRef || message.me) {
             return;
         }
         e.stopPropagation();
@@ -1590,7 +1590,7 @@ class Message extends React.Component<IProps, IState> {
         const pos = e.target.getBoundingClientRect();
         this.reactionPickerRef.open({
             left: pos.left + 8,
-            top: pos.top,
+            top: pos.top - 4,
         }, message);
     }
 

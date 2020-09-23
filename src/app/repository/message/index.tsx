@@ -97,7 +97,8 @@ export const getMediaDocument = (msg: IMessage) => {
 };
 
 export const modifyReactions = (reactions: ReactionCounter.AsObject[]): ReactionCounter.AsObject[] => {
-    return reactions.filter(o => o.reaction && o.reaction.length > 0).sort((a, b) => {
+    reactions = reactions.filter(o => o.reaction && o.reaction.length > 0 && o.total);
+    return reactions.sort((a, b) => {
         return (a.total || 0) - (b.total || 0);
     });
 };
@@ -241,6 +242,7 @@ export default class MessageRepo {
                     break;
             }
             delete out.media;
+            delete msg.media;
         }
         if (msg.messageactiondata) {
             // @ts-ignore
@@ -336,8 +338,8 @@ export default class MessageRepo {
             out.em_le = emLe;
         }
         out.me = (userId === out.senderid);
-        if (out.reactionsList) {
-            out.reactionsList = modifyReactions(out.reactionsList);
+        if (msg.reactionsList) {
+            out.reactionsList = modifyReactions(msg.reactionsList);
             out.reaction_updated = true;
         }
         return out;
@@ -458,6 +460,7 @@ export default class MessageRepo {
                         }
                         return item;
                     });
+                    this.userRepo.importBulk(false, res.usersList || []);
                     this.importBulk([{
                         id,
                         reaction_list: list,

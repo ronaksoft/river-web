@@ -15,7 +15,7 @@ import {IMessage} from "../../repository/message/interface";
 import './style.scss';
 
 const defaultReactions = ['😂', '😡', '👎', '👍', '❤️'];
-const allReactions = [...defaultReactions, '😢', '🙋‍♀', '🙋‍♂️', '🛢', '🤐', '😖', '🙁', '🥳', '🤩', '😋', '😏'];
+const allReactions = [...defaultReactions, '😢', '🙋‍♀️', '🙋‍♂️', '🛢', '🤐', '😖', '🙁', '🥳', '🤩', '😋', '😏'];
 
 interface IProps {
     onSelect?: (id: number, reaction: string, remove: boolean) => void;

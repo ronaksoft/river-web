@@ -343,6 +343,9 @@ export default class DialogRepo {
             dialog.draft = {};
             newDialog.draft = {};
         }
+        if (newDialog.unreadcount === 0 && (dialog.unreadcount || 0) > 0) {
+            dialog.scroll_pos = -1;
+        }
         const d = kMerge(dialog, newDialog);
         if (newDialog.force === true) {
             delete d.force;

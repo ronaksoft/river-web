@@ -532,7 +532,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         const selectedPeerName = newProps.match.params.id;
         const teamId = newProps.match.params.tid;
         const selectedMessageId = newProps.match.params.mid;
@@ -1793,7 +1793,7 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             // date breakpoint
-            if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
+            if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 || (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
                 || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
                 const t: IMessage = {
                     createdon: msg.createdon,
@@ -1835,6 +1835,7 @@ class Chat extends React.Component<IProps, IState> {
                         len--;
                         defaultMessages[len].avatar = this.isAvatar(len);
                     }
+                    unshiftCheck = true;
                 }
             } else {
                 if (!this.messageMapExist(msg)) {
@@ -1848,6 +1849,7 @@ class Chat extends React.Component<IProps, IState> {
 
             addition++;
             if (unshiftCheck && messages.length === key + 1) {
+                window.console.log(defaultMessages[addition - 1], defaultMessages[addition]);
                 if (defaultMessages[addition - 1] && defaultMessages[addition] && defaultMessages[addition].messagetype === C_MESSAGE_TYPE.Date && TimeUtility.isInSameDay(defaultMessages[addition - 1].createdon, defaultMessages[addition].createdon)) {
                     defaultMessages.splice(addition, 1);
                     addition--;
@@ -2036,7 +2038,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messages.push(message);
         }
         if (gapNumber) {
-            this.messageLoadMoreBeforeHandler(gapNumber);
+            this.messageLoadMoreBeforeHandler(gapNumber + 1);
         }
         this.setScrollMode('none');
         this.messageRef.setMessages(this.messages);
