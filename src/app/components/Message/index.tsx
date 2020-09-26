@@ -746,7 +746,7 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 10) {
-                    if (copiable && hasCopy) {
+                    if (hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 11) {
@@ -775,7 +775,7 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 10) {
-                    if (copiable && hasCopy) {
+                    if (hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 11) {
@@ -801,7 +801,7 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 10) {
-                    if (copiable && hasCopy) {
+                    if (hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 11) {

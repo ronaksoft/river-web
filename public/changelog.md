@@ -1,3 +1,6 @@
+## 0.34.51
+* Bug fixes and performance improvements
+
 ## 0.34.50
 * Better flow in loading messages
 * Message repo bug fixed

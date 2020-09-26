@@ -2246,7 +2246,7 @@ class Chat extends React.Component<IProps, IState> {
                     dialogs[index].preview = messageTitle.text;
                     dialogs[index].preview_icon = messageTitle.icon;
                     dialogs[index].preview_me = msg.me;
-                    dialogs[index].preview_rtl = msg.rtl;
+                    dialogs[index].preview_rtl = msg.rtl || false;
                     dialogs[index].sender_id = msg.senderid;
                     dialogs[index].last_update = msg.createdon;
                     dialogs[index].peerid = msg.peerid || '';
@@ -2276,7 +2276,7 @@ class Chat extends React.Component<IProps, IState> {
                     preview: messageTitle.text,
                     preview_icon: messageTitle.icon,
                     preview_me: msg.me,
-                    preview_rtl: msg.rtl,
+                    preview_rtl: msg.rtl || false,
                     saved_messages: (this.userId === msg.peerid),
                     sender_id: msg.senderid,
                     teamid: msg.teamid || '0',
