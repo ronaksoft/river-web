@@ -1,3 +1,7 @@
+## 0.34.54
+* Default settings modified
+* Minor improvements
+
 ## 0.34.53
 * Team notification badge bug fixed
 

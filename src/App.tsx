@@ -43,7 +43,7 @@ import Broadcaster from "./app/services/broadcaster";
 
 import './App.scss';
 
-export const C_VERSION = '0.34.53';
+export const C_VERSION = '0.34.54';
 export const C_ELECTRON_VERSIONS = ['10.1.1', '8.5.1'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
@@ -169,7 +169,7 @@ class App extends React.Component<{}, IState> {
             el.setAttribute('bg', localStorage.getItem(C_LOCALSTORAGE.ThemeBg) || '15');
             el.setAttribute('bubble', localStorage.getItem(C_LOCALSTORAGE.ThemeBubble) || '4');
             el.setAttribute('gradient', localStorage.getItem(C_LOCALSTORAGE.ThemeGradient) || '0');
-            el.setAttribute('reaction', localStorage.getItem(C_LOCALSTORAGE.ThemeReaction) || '0');
+            el.setAttribute('reaction', localStorage.getItem(C_LOCALSTORAGE.ThemeReaction) || '1');
             el.setAttribute('direction', localStorage.getItem(C_LOCALSTORAGE.LangDir) || 'ltr');
         }
 

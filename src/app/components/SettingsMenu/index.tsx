@@ -340,7 +340,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedGradient: localStorage.getItem(C_LOCALSTORAGE.ThemeGradient) || '0',
             selectedLanguage: localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en',
             selectedLastSeenFormat: localStorage.getItem(C_LOCALSTORAGE.LastSeenFormat) || 'estimated',
-            selectedReaction: localStorage.getItem(C_LOCALSTORAGE.ThemeReaction) || '0',
+            selectedReaction: localStorage.getItem(C_LOCALSTORAGE.ThemeReaction) || '1',
             selectedTheme: localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light',
             storageValues: {
                 auto_save_files: false,
