@@ -1,3 +1,6 @@
+## 0.34.53
+* Team notification badge bug fixed
+
 ## 0.34.52
 * Reaction settings implemented
 * Bug fixes and performance improvements

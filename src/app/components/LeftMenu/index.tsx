@@ -111,6 +111,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private teamRepo: TeamRepo;
     private readonly mouseEnterDebounce: any;
     private readonly mouseLeaveDebounce: any;
+    private isCountExpired: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -230,6 +231,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.unreadCounter = counter;
         if (this.bottomBarRef) {
             this.bottomBarRef.setUnreadCounter(counter);
+        }
+        if (!this.isCountExpired) {
+            this.isCountExpired = true;
         }
     }
 
@@ -670,7 +674,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     private teamOpenHandler = (e: any) => {
-        if (this.state.hasUpdate) {
+        if (this.state.hasUpdate || this.isCountExpired) {
             this.getTeamList(true);
         }
         this.setState({

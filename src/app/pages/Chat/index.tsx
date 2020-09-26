@@ -2483,7 +2483,6 @@ class Chat extends React.Component<IProps, IState> {
 
         if (this.leftMenuRef) {
             this.leftMenuRef.setUnreadCounter(unreadCounter);
-            this.leftMenuRef.setUpdateFlag(true);
         }
 
         this.iframeService.setUnreadCounter(unreadCounter);
