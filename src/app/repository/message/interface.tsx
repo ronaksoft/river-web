@@ -33,6 +33,7 @@ export interface IMessage extends UserMessage.AsObject {
     temp_file?: Blob;
     reaction_updated?: boolean;
     reaction_list?: IReactionInfo[];
+    reacted?: boolean;
 }
 
 export interface IPendingMessage {

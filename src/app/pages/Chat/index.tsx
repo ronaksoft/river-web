@@ -1264,6 +1264,19 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
         }
+        if (data.peer && data.sender && (this.selectedPeerName !== peerName || !this.isInChat)) {
+            const message: IMessage = {
+                body: 'reacted to your message',
+                me: data.sender.id === this.userId,
+                peerid: data.peer.id,
+                peertype: data.peer.type,
+                reacted: true,
+            };
+            this.notifyMessage({
+                message,
+                sender: data.sender,
+            });
+        }
     }
 
     /* Update user typing */
@@ -2470,6 +2483,7 @@ class Chat extends React.Component<IProps, IState> {
 
         if (this.leftMenuRef) {
             this.leftMenuRef.setUnreadCounter(unreadCounter);
+            this.leftMenuRef.setUpdateFlag(true);
         }
 
         this.iframeService.setUnreadCounter(unreadCounter);
@@ -2931,17 +2945,15 @@ class Chat extends React.Component<IProps, IState> {
                         `${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle}`,
                         messageTitle.text, GetPeerName(message.peerid, message.peertype));
                 } else if (!message.me) {
-                    this.notify(
-                        `New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`,
-                        messageTitle.text, GetPeerName(message.peerid, message.peertype));
+                    const text = message.reacted ? `${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}` : `New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`;
+                    this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype));
                 }
             });
         } else {
             if (!message.me) {
                 const messageTitle = getMessageTitle(message);
-                this.notify(
-                    `New message from ${data.sender.firstname} ${data.sender.lastname}`,
-                    messageTitle.text, GetPeerName(message.peerid, message.peertype));
+                const text = message.reacted ? `${data.sender.firstname} ${data.sender.lastname}` : `New message from ${data.sender.firstname} ${data.sender.lastname}`;
+                this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype));
             }
         }
     }
@@ -2967,17 +2979,15 @@ class Chat extends React.Component<IProps, IState> {
                                 `${teamName} | ${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle}`,
                                 messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                         } else if (!message.me) {
-                            this.notify(
-                                `${teamName} | New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`,
-                                messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
+                            const text = message.reacted ? `${teamName} | ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}` : `${teamName} | New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`;
+                            this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                         }
                     });
                 } else {
                     if (!message.me) {
                         const messageTitle = getMessageTitle(message);
-                        this.notify(
-                            `${teamName} | New message from ${data.sender.firstname} ${data.sender.lastname}`,
-                            messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
+                        const text = message.reacted ? `${teamName} | ${data.sender.firstname} ${data.sender.lastname}` : `${teamName} | New message from ${data.sender.firstname} ${data.sender.lastname}`;
+                        this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                     }
                 }
             }

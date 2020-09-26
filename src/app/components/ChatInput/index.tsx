@@ -85,8 +85,6 @@ import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@materia
 import GifPicker from "../GifPicker";
 import {IGif} from "../../repository/gif/interface";
 import {Sticker} from "../SVG/sticker";
-// @ts-ignore
-import * as workerPath from 'file-loader?name=[name].js!./worker/encoderWorker.min';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
@@ -1706,7 +1704,7 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Initialize opus recorder and bind listeners */
     private initRecorder() {
         this.recorder = new Recorder({
-            encoderPath: workerPath,
+            encoderPath: '/recorder/encoderWorker.min.js?v8',
             maxFramesPerPage: 16,
             monitorGain: 0,
             numberOfChannels: 1,
