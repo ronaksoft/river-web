@@ -359,7 +359,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                     </span>);
             })}
             {Boolean(ids.length > 2) &&
-            <span>{i18n.tf('general.and_n_more', String(localize(ids.length - 2)))}</span>}
+            <span>{i18n.tf('status.and_n_more', String(localize(ids.length - 2)))}</span>}
             {ids.length === 1 ? ` ${i18n.t('general.is')} ` : ` ${i18n.t('general.are')} `}
             {distinct > 1 ? ` ${withAnimation ? '' : i18n.t('status.doing')}` : getActionType(typingList[ids[0]].action)}
             {withAnimation && <Doing/>}
