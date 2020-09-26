@@ -16,7 +16,7 @@ import {
     FileLocation, GroupPhoto,
     Label,
     LabelsMany,
-    MessageContainer, Pong,
+    MessageContainer, Pong, Team,
     UserPhoto
 } from '../messages/core.types_pb';
 import {
@@ -132,6 +132,8 @@ export default class Presenter {
                 return MessagesReactionList.deserializeBinary(data);
             case C_MSG.BotResults:
                 return BotResults.deserializeBinary(data);
+            case C_MSG.Team:
+                return Team.deserializeBinary(data);
             case C_MSG.TeamsMany:
                 return TeamsMany.deserializeBinary(data);
             case C_MSG.TeamMembers:

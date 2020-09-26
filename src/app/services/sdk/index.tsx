@@ -158,7 +158,7 @@ import {DocumentAttribute} from "./messages/chat.messages.medias_pb";
 import FileManager from "./fileManager";
 import {
     TeamAddMember,
-    TeamDemote,
+    TeamDemote, TeamEdit,
     TeamListMembers,
     TeamMembers,
     TeamPromote,
@@ -1176,6 +1176,14 @@ export default class APIManager {
         data.setUserid(userId);
         this.logVerbose(data);
         return this.server.send(C_MSG.TeamRemoveMember, data.serializeBinary(), true);
+    }
+
+    public teamEdit(teamId: string, name: string): Promise<Bool.AsObject> {
+        const data = new TeamEdit();
+        data.setTeamid(teamId);
+        data.setName(name);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true);
     }
 
     public ping(): Promise<Pong.AsObject> {

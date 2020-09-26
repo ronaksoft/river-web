@@ -15,6 +15,7 @@ import {
     PersonRounded,
     StarRateRounded,
     GroupAddRounded,
+    GroupRounded,
 } from "@material-ui/icons";
 import i18n from "../../services/i18n";
 import Scrollbars from "react-custom-scrollbars";
@@ -64,6 +65,7 @@ interface IState {
     loading: boolean;
     moreAnchorPos: any;
     moreIndex: number;
+    page: number;
     team: ITeam | undefined;
 }
 
@@ -88,6 +90,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
     private contactPickerRef: ContactPicker | undefined;
     private teamRepo: TeamRepo;
     private hasUpdate: boolean = false;
+    private defaultTeamName: string = '';
 
     constructor(props: IProps) {
         super(props);
@@ -98,6 +101,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
             loading: false,
             moreAnchorPos: null,
             moreIndex: -1,
+            page: 1,
             team: props.team,
         };
 
@@ -111,73 +115,97 @@ class SettingsTeam extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
+        if (this.state.team) {
+            this.defaultTeamName = this.state.team.name || '';
+        }
         this.getMembers();
     }
 
     public render() {
-        const {team, count, moreAnchorPos} = this.state;
+        const {team, count, moreAnchorPos, page} = this.state;
         if (!team) {
             return null;
         }
         return (
-            <>
-                <div className="menu-header">
-                    <IconButton
-                        onClick={this.prevHandler}
-                    >
-                        <KeyboardBackspaceRounded/>
-                    </IconButton>
-                    <label>{i18n.t('settings.team.teams')}</label>
+            <div className={`page-container page-${page}`}>
+                <div className="page page-1">
+                    <div className="menu-header">
+                        <IconButton
+                            onClick={this.prevHandler}
+                        >
+                            <KeyboardBackspaceRounded/>
+                        </IconButton>
+                        <label>{i18n.t('settings.team.teams')}</label>
+                    </div>
+                    <div className="menu-content team-settings-section">
+                        <div className="sub-page-header-alt">{i18n.t('settings.team.info')}</div>
+                        <div className="team-info">
+                            <div className="line">
+                                <TextField
+                                    label={i18n.t('general.title')}
+                                    fullWidth={true}
+                                    value={team.name || ''}
+                                    onChange={this.nameChangeHandler}
+                                    variant="outlined"
+                                    className="input-edit"
+                                />
+                            </div>
+                        </div>
+                        <div className="sub-page-header-alt">{i18n.t('settings.team.background_service')}</div>
+                        <div className="switch-item with-border">
+                            <div
+                                className="switch-label">{i18n.t('settings.team.notification')}</div>
+                            <div className="switch">
+                                <Switch
+                                    checked={team.notify || false}
+                                    color="default"
+                                    onChange={this.toggleNotifyHandler}
+                                    classes={switchClasses}
+                                    className={team.notify ? 'root-settings-switch-checked' : ''}
+                                />
+                            </div>
+                        </div>
+                        <div className="switch-item">
+                            <div
+                                className="switch-label">{i18n.t('settings.team.count_unread')}</div>
+                            <div className="switch">
+                                <Switch
+                                    checked={team.count_unread || false}
+                                    color="default"
+                                    onChange={this.toggleCountUnreadHandler}
+                                    classes={switchClasses}
+                                    className={team.count_unread ? 'root-settings-switch-checked' : ''}
+                                />
+                            </div>
+                        </div>
+                        <div className="page-anchor anchor-padding-side" onClick={this.nextPageHandler}>
+                            <div className="icon color-session">
+                                <GroupRounded/>
+                            </div>
+                            <div
+                                className="anchor-label">{i18n.tf('settings.team.members', String(localize(count)))}</div>
+                        </div>
+                    </div>
                 </div>
-                <div className="menu-content team-settings-section">
-                    <div className="sub-page-header-alt">{i18n.t('settings.team.info')}</div>
-                    <div className="team-info">
-                        <div className="line">
-                            <TextField
-                                label={i18n.t('general.title')}
-                                fullWidth={true}
-                                value={team.name || ''}
-                                className="input-edit"
-                            />
-                        </div>
+                <div className="page page-2">
+                    <div className="menu-header">
+                        <IconButton
+                            onClick={this.prevPageHandler}
+                        >
+                            <KeyboardBackspaceRounded/>
+                        </IconButton>
+                        <label>{i18n.tf('settings.team.members', String(localize(count)))}</label>
                     </div>
-                    <div className="sub-page-header-alt">{i18n.t('settings.team.background_service')}</div>
-                    <div className="switch-item with-border">
-                        <div
-                            className="switch-label">{i18n.t('settings.team.notification')}</div>
-                        <div className="switch">
-                            <Switch
-                                checked={team.notify || false}
-                                color="default"
-                                onChange={this.toggleNotifyHandler}
-                                classes={switchClasses}
-                                className={team.notify ? 'root-settings-switch-checked' : ''}
-                            />
+                    <div className="menu-content team-settings-section">
+                        <div className="page-anchor anchor-padding-side" onClick={this.addMemberHandler}>
+                            <div className="icon color-session">
+                                <GroupAddRounded/>
+                            </div>
+                            <div className="anchor-label">{i18n.t('settings.team.add_member')}</div>
                         </div>
-                    </div>
-                    <div className="switch-item">
-                        <div
-                            className="switch-label">{i18n.t('settings.team.count_unread')}</div>
-                        <div className="switch">
-                            <Switch
-                                checked={team.count_unread || false}
-                                color="default"
-                                onChange={this.toggleCountUnreadHandler}
-                                classes={switchClasses}
-                                className={team.count_unread ? 'root-settings-switch-checked' : ''}
-                            />
+                        <div className="member-wrapper">
+                            {this.getWrapper()}
                         </div>
-                    </div>
-                    <div
-                        className="sub-page-header-alt">{i18n.tf('settings.team.members', String(localize(count)))}</div>
-                    <div className="page-anchor anchor-padding-side" onClick={this.addMemberHandler}>
-                        <div className="icon color-session">
-                            <GroupAddRounded/>
-                        </div>
-                        <div className="anchor-label">{i18n.t('settings.team.add_member')}</div>
-                    </div>
-                    <div className="member-wrapper">
-                        {this.getWrapper()}
                     </div>
                 </div>
                 <Menu
@@ -192,9 +220,9 @@ class SettingsTeam extends React.Component<IProps, IState> {
                 >
                     {this.contextMenuItem()}
                 </Menu>
-                <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler} teamId={'0'}
-                               title={i18n.t('settings.team.choose_contacts')}/>
-            </>
+                <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
+                               teamId={'0'} title={i18n.t('settings.team.choose_contacts')}/>
+            </div>
         );
     }
 
@@ -570,9 +598,39 @@ class SettingsTeam extends React.Component<IProps, IState> {
         this.hasUpdate = true;
     }
 
+    private nameChangeHandler = (e: any) => {
+        const {team} = this.state;
+        if (team) {
+            team.name = e.target.value;
+            this.setState({
+                team,
+            });
+        }
+    }
+
+    private prevPageHandler = () => {
+        this.setState({
+            page: 1,
+        });
+    }
+
+    private nextPageHandler = () => {
+        this.setState({
+            page: 2,
+        });
+    }
+
     private prevHandler = (e: any) => {
         if (this.hasUpdate && this.props.onUpdate) {
             this.props.onUpdate();
+        }
+        if (this.state.team && this.state.team.name !== this.defaultTeamName) {
+            this.defaultTeamName = this.state.team.name || '';
+            this.apiManager.teamEdit(this.state.team.id || '0', this.state.team.name || '').catch((err) => {
+                if (this.props.onError) {
+                    this.props.onError(JSON.stringify(err));
+                }
+            });
         }
         if (this.props.onPrev) {
             this.props.onPrev(e);
