@@ -846,7 +846,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                             </div>
                                                             <div
                                                                 className={`item reaction-${reaction.id} gradient-${this.state.selectedGradient} bubble-${this.state.selectedBubble} theme-${this.state.selectedTheme} bg-${this.state.selectedBackground}`}>
-                                                                <div className="reaction-sample"><span>👍️</span></div>
+                                                                <div className="reaction-sample"><span
+                                                                    role="img">👍️</span></div>
                                                             </div>
                                                         </div>
                                                     ))}
