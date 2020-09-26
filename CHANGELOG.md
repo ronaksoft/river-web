@@ -1,4 +1,5 @@
 ## 0.34.51
+* Team settings updated
 * Bug fixes and performance improvements
 
 ## 0.34.50
