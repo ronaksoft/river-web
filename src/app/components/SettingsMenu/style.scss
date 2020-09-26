@@ -257,6 +257,10 @@
         background-color: #EB5757;
       }
 
+      &.color-reaction {
+        background-color: #303ca6;
+      }
+
       &.color-language {
         background-color: #BB6BD9;
       }
@@ -839,6 +843,31 @@
         width: 100%;
         object-fit: cover;
         object-position: center center;
+      }
+
+      .reaction-sample {
+        position: absolute;
+        top: 50%;
+        left: 80%;
+        transform: translate(-50%, -50%);
+      }
+
+      &.reaction-0 {
+        .reaction-sample {
+          font-size: 12px;
+        }
+      }
+
+      &.reaction-2 {
+        .reaction-sample {
+          font-size: 15px;
+        }
+      }
+
+      &.reaction-2 {
+        .reaction-sample {
+          font-size: 18px;
+        }
       }
 
       &:after, &:before {

@@ -217,6 +217,17 @@ export const themes = [{
     title: 'settings.dark_blue'
 }];
 
+export const reactions = [{
+    id: '0',
+    title: 'settings.small'
+}, {
+    id: '1',
+    title: 'settings.medium'
+}, {
+    id: '2',
+    title: 'settings.large'
+}];
+
 export const bgPics = [{
     id: '1',
     src: bg1

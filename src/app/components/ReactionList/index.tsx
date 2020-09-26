@@ -112,7 +112,10 @@ class ReactionList extends React.Component<IProps, IState> {
 
     private getHeight() {
         const {reactionList} = this.state;
-        let h = reactionList.length * 49;
+        let h = 0;
+        reactionList.forEach((item) => {
+            h += (item.counter || 0) * 49;
+        });
         if (h > 225) {
             h = 225;
         }

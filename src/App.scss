@@ -176,6 +176,7 @@ table {
     line-height: 1em;
     color: #27AE60;
     font-size: 12px;
+    transform: translateY(-3px);
   }
 }
 
@@ -1132,4 +1133,17 @@ table {
 
 .markdown-body .pl-12 {
   padding-left: 128px !important;
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .markdown-body h2 {
+    border-bottom-color: var(--dark-high) !important;
+  }
+}
+
+html[theme="dark-blue"] {
+  .markdown-body h2 {
+    border-bottom-color: var(--dark-blue-medium) !important;
+  }
 }

@@ -3,6 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-direction: row-reverse;
   user-select: none;
   height: 0;
   z-index: 100;
@@ -23,12 +24,13 @@
       height: 22px;
       width: 22px;
       overflow: hidden;
-      border-radius: 50%;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: -2px 0 -2px -2px;
       box-shadow: 0 1px 3px rgba(0, 2px, 0, 0.1);
+      transition: all 0.1s;
 
       .reaction-emoji {
         transform: translateY(2px);
@@ -37,6 +39,8 @@
         align-items: center;
         justify-content: center;
         font-size: 12px;
+        text-align: center;
+        letter-spacing: 0;
       }
     }
 
@@ -44,10 +48,81 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 6px 0 5px;
+      margin: 0 6px 0 3px;
       color: var(--white);
       font-size: 12px;
       transform: translateY(1px);
+    }
+
+    &.ellipsis {
+      .reaction-wrapper {
+        width: auto;
+        padding: 0 4px;
+
+        svg {
+          color: inherit;
+        }
+      }
+    }
+  }
+}
+
+.bubble-wrapper {
+  &.you {
+    .message-reaction {
+      justify-content: flex-start;
+    }
+  }
+}
+
+html[reaction="1"] {
+  .message-reaction {
+    transform: translateY(-4px);
+
+    .reaction-item {
+
+      .reaction-wrapper {
+        height: 26px;
+        width: 26px;
+        border-radius: 16px;
+        margin: -4px 0 -4px -2px;
+
+        .reaction-emoji {
+          font-size: 18px;
+        }
+      }
+
+      &.ellipsis {
+        .reaction-wrapper {
+          height: 22px;
+        }
+      }
+    }
+  }
+}
+
+html[reaction="2"] {
+  .message-reaction {
+    transform: translateY(-7px);
+
+    .reaction-item {
+
+      .reaction-wrapper {
+        height: 30px;
+        width: 30px;
+        border-radius: 16px;
+        margin: -6px 0 -6px -2px;
+
+        .reaction-emoji {
+          font-size: 20px;
+        }
+      }
+
+      &.ellipsis {
+        .reaction-wrapper {
+          height: 22px;
+        }
+      }
     }
   }
 }
@@ -56,8 +131,18 @@ html[theme="dark"],
 html[theme="dark-night"] {
   .message-reaction {
     .reaction-item {
+      background-color: var(--dark-high);
+
       .reaction-wrapper {
         background-color: var(--dark-medium);
+      }
+
+      &.ellipsis {
+        .reaction-wrapper {
+          svg {
+            color: var(--white);
+          }
+        }
       }
     }
   }
@@ -66,8 +151,18 @@ html[theme="dark-night"] {
 html[theme="dark-blue"] {
   .message-reaction {
     .reaction-item {
+      background-color: var(--dark-blue-high);
+
       .reaction-wrapper {
         background-color: var(--dark-blue-medium);
+      }
+
+      &.ellipsis {
+        .reaction-wrapper {
+          svg {
+            color: var(--white);
+          }
+        }
       }
     }
   }

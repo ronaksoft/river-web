@@ -39,6 +39,7 @@ import {
     ArrowDropDownRounded,
     GroupRounded,
     AccessTimeRounded,
+    TagFacesRounded,
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
@@ -51,7 +52,7 @@ import {
     C_CUSTOM_BG,
     gradients, lastSeenFormat,
     privacyItems,
-    privacyRuleItems,
+    privacyRuleItems, reactions,
     storageItems,
     themes
 } from './vars/theme';
@@ -242,6 +243,7 @@ interface IState {
     selectedCustomBackground: string;
     selectedCustomBackgroundBlur: number;
     selectedGradient: string;
+    selectedReaction: string;
     selectedLanguage: string;
     selectedLastSeenFormat: string;
     selectedTheme: string;
@@ -338,6 +340,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedGradient: localStorage.getItem(C_LOCALSTORAGE.ThemeGradient) || '0',
             selectedLanguage: localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en',
             selectedLastSeenFormat: localStorage.getItem(C_LOCALSTORAGE.LastSeenFormat) || 'estimated',
+            selectedReaction: localStorage.getItem(C_LOCALSTORAGE.ThemeReaction) || '0',
             selectedTheme: localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light',
             storageValues: {
                 auto_save_files: false,
@@ -813,6 +816,38 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                             </div>
                                                             <div
                                                                 className={`item gradient-${gradient.id} bubble-${this.state.selectedBubble} theme-${this.state.selectedTheme} bg-${this.state.selectedBackground}`}/>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="page-content">
+                                            <div className="page-anchor">
+                                                <div className="icon color-reaction">
+                                                    <TagFacesRounded/>
+                                                </div>
+                                                <div className="anchor-label">{i18n.t('settings.reaction')}</div>
+                                            </div>
+                                            <div className="page-content-inner">
+                                                <div
+                                                    className="theme-container"
+                                                >
+                                                    {reactions.map((reaction, index) => (
+                                                        <div key={index}
+                                                             className={'radio-item ' + (this.state.selectedReaction === reaction.id ? 'selected' : '')}
+                                                             onClick={this.selectReactionHandler(reaction.id)}
+                                                        >
+                                                            <div className="radio-label">
+                                                                <Radio color="primary"
+                                                                       className={'radio ' + (this.state.selectedReaction === reaction.id ? 'checked' : '')}
+                                                                       checked={(this.state.selectedReaction === reaction.id)}/>
+                                                                <div
+                                                                    className="radio-title">{i18n.t(reaction.title)}</div>
+                                                            </div>
+                                                            <div
+                                                                className={`item reaction-${reaction.id} gradient-${this.state.selectedGradient} bubble-${this.state.selectedBubble} theme-${this.state.selectedTheme} bg-${this.state.selectedBackground}`}>
+                                                                <div className="reaction-sample"><span>👍️</span></div>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -1632,6 +1667,20 @@ class SettingsMenu extends React.Component<IProps, IState> {
             }
             localStorage.setItem(C_LOCALSTORAGE.ThemeGradient, id);
             el.setAttribute('gradient', id);
+            this.broadcastEvent(ThemeChanged, null);
+        });
+    }
+
+    private selectReactionHandler = (id: string) => (e: any) => {
+        this.setState({
+            selectedReaction: id,
+        }, () => {
+            const el = document.querySelector('html');
+            if (!el) {
+                return;
+            }
+            localStorage.setItem(C_LOCALSTORAGE.ThemeReaction, id);
+            el.setAttribute('reaction', id);
             this.broadcastEvent(ThemeChanged, null);
         });
     }

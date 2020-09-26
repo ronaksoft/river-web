@@ -169,6 +169,7 @@ class App extends React.Component<{}, IState> {
             el.setAttribute('bg', localStorage.getItem(C_LOCALSTORAGE.ThemeBg) || '15');
             el.setAttribute('bubble', localStorage.getItem(C_LOCALSTORAGE.ThemeBubble) || '4');
             el.setAttribute('gradient', localStorage.getItem(C_LOCALSTORAGE.ThemeGradient) || '0');
+            el.setAttribute('reaction', localStorage.getItem(C_LOCALSTORAGE.ThemeReaction) || '0');
             el.setAttribute('direction', localStorage.getItem(C_LOCALSTORAGE.LangDir) || 'ltr');
         }
 

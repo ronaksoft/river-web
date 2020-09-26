@@ -246,18 +246,26 @@
     }
   }
 
-  &.you .arrow {
-    position: absolute;
-    top: 6px;
-    right: auto;
-    left: 34px;
-    overflow: hidden;
+  &.you {
+    .arrow {
+      position: absolute;
+      top: 6px;
+      right: auto;
+      left: 34px;
+      overflow: hidden;
 
-    &:after {
-      background-color: var(--message-chat);
-      box-shadow: -1px 2px 0px rgba(0, 0, 0, 0.1);
-      transform: rotate(-45deg);
-      left: 5px
+      &:after {
+        background-color: var(--message-chat);
+        box-shadow: -1px 2px 0px rgba(0, 0, 0, 0.1);
+        transform: rotate(-45deg);
+        left: 5px
+      }
+    }
+  }
+
+  &.with-reaction {
+    .arrow {
+      top: 16px;
     }
   }
 
@@ -454,7 +462,7 @@
   }
 
   &.with-reaction {
-    padding-top: 16px;
+    padding-top: 16px !important;
   }
 
   &.you {
@@ -786,6 +794,38 @@
   justify-content: center;
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 40;
+}
+
+.bubble-wrapper:hover .message-container .reaction-anchor {
+  svg {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    svg {
+      opacity: 0.7;
+    }
+  }
+}
+
+html[reaction="1"] {
+  .bubble-wrapper .message-container .reaction-anchor {
+    right: -24px;
+
+    svg {
+      font-size: 20px;
+    }
+  }
+}
+
+html[reaction="2"] {
+  .bubble-wrapper .message-container .reaction-anchor {
+    right: -28px;
+
+    svg {
+      font-size: 24px;
+    }
+  }
 }
 
 html[direction="rtl"] {
