@@ -1320,6 +1320,9 @@ class ChatInput extends React.Component<IProps, IState> {
         }, () => {
             this.computeLines();
         });
+        if (e.target.valueOf && e.target.value.length === 0) {
+            this.setTyping(TypingAction.TYPINGACTIONCANCEL);
+        }
     }
 
     /* Compute line height based on break lines */

@@ -1,4 +1,5 @@
 ## 0.34.55
+* Cancel typing improved
 * Minor improvements
 
 ## 0.34.54
