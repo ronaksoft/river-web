@@ -1,3 +1,6 @@
+## 0.34.56
+* Reaction notification bug fixed
+
 ## 0.34.55
 * Reaction frequency added
 * Cancel typing improved

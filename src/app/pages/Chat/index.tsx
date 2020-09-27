@@ -1267,7 +1267,7 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peer && data.sender && (this.selectedPeerName !== peerName || !this.isInChat)) {
             const message: IMessage = {
                 body: 'reacted to your message',
-                me: data.sender.id === this.userId,
+                me: data.sender.id !== this.userId,
                 peerid: data.peer.id,
                 peertype: data.peer.type,
                 reacted: true,
