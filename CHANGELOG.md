@@ -1,3 +1,6 @@
+## 0.34.55
+* Minor improvements
+
 ## 0.34.54
 * Default settings modified
 * Minor improvements

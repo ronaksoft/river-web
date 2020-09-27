@@ -97,8 +97,7 @@ export const getMediaDocument = (msg: IMessage) => {
 };
 
 export const modifyReactions = (reactions: ReactionCounter.AsObject[]): ReactionCounter.AsObject[] => {
-    reactions = reactions.filter(o => o.reaction && o.reaction.length > 0 && o.total);
-    return reactions.sort((a, b) => {
+    return reactions.filter(o => o.reaction && o.reaction.length > 0 && o.total).sort((a, b) => {
         return (a.total || 0) - (b.total || 0);
     });
 };
@@ -242,7 +241,6 @@ export default class MessageRepo {
                     break;
             }
             delete out.media;
-            delete msg.media;
         }
         if (msg.messageactiondata) {
             // @ts-ignore
@@ -1002,9 +1000,6 @@ export default class MessageRepo {
             this.trimMessage(msg);
             return msg.id || '';
         });
-        if (msgs.some(o => o.reactionsList && o.reactionsList.some(o2 => o2.reaction === ""))) {
-            window.console.trace();
-        }
         return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IMessage[] = differenceBy(msgs, result, 'id');
             const updateItems: IMessage[] = result.map((msg: IMessage) => {
@@ -1083,6 +1078,8 @@ export default class MessageRepo {
             newMessage.contentread = true;
         }
         message.entitiesList = newMessage.entitiesList;
+        message.reactionsList = newMessage.reactionsList;
+        message.yourreactionsList = newMessage.yourreactionsList;
         if (message.teamid && message.teamid !== '0') {
             newMessage.teamid = message.teamid;
         }
