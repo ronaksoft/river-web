@@ -1077,9 +1077,15 @@ export default class MessageRepo {
         if (message.contentread) {
             newMessage.contentread = true;
         }
-        message.entitiesList = newMessage.entitiesList;
-        message.reactionsList = newMessage.reactionsList;
-        message.yourreactionsList = newMessage.yourreactionsList;
+        if (newMessage.entitiesList) {
+            message.entitiesList = newMessage.entitiesList;
+        }
+        if (newMessage.reactionsList) {
+            message.reactionsList = newMessage.reactionsList;
+        }
+        if (newMessage.yourreactionsList) {
+            message.yourreactionsList = newMessage.yourreactionsList;
+        }
         if (message.teamid && message.teamid !== '0') {
             newMessage.teamid = message.teamid;
         }

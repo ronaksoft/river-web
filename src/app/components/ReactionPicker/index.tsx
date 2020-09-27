@@ -11,6 +11,8 @@ import React from 'react';
 import {Popover, PopoverPosition} from '@material-ui/core';
 import {MoreVertRounded} from '@material-ui/icons';
 import {IMessage} from "../../repository/message/interface";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {clone, sortBy} from "lodash";
 
 import './style.scss';
 
@@ -29,6 +31,8 @@ interface IState {
 }
 
 class ReactionPicker extends React.PureComponent<IProps, IState> {
+    private frequency: { [key: string]: number } = {};
+
     constructor(props: IProps) {
         super(props);
 
@@ -52,13 +56,24 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         });
     }
 
+    public componentDidMount() {
+        const data = localStorage.getItem(C_LOCALSTORAGE.ReactionFrequently);
+        if (data) {
+            try {
+                this.frequency = JSON.parse(data);
+            } catch (e) {
+                //
+            }
+        }
+    }
+
     public render() {
         const {position, more, selectedReactions} = this.state;
         return (
             <Popover open={Boolean(position)} anchorPosition={position} anchorReference="anchorPosition"
                      onClose={this.closeHandler} classes={{paper: 'reaction-picker-popover'}}>
                 <div className={'reaction-picker' + (more ? ' full' : '')}>
-                    {(more ? allReactions : defaultReactions).map((item) => {
+                    {this.getSortedReactions(more).map((item) => {
                         return (
                             <div className={'reaction-item' + (selectedReactions[item] ? ' selected' : '')} key={item}
                                  onClick={this.selectHandler(item)}>
@@ -82,6 +97,22 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         });
     }
 
+    private getSortedReactions(complete: boolean): string[] {
+        const temp: any[] = [];
+        const list: string[] = clone(allReactions);
+        for (const [reaction, frequency] of Object.entries(this.frequency)) {
+            const index = list.indexOf(reaction);
+            if (index > -1) {
+                list.splice(index, 1);
+                temp.push({
+                    cnt: frequency,
+                    val: reaction,
+                });
+            }
+        }
+        return [...sortBy(temp, 'cnt').map(o => o.val), ...list].slice(0, complete ? 48 : 5);
+    }
+
     private toggleMoreHandler = () => {
         this.setState({
             more: !this.state.more,
@@ -92,8 +123,30 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         this.closeHandler();
         const {message, selectedReactions} = this.state;
         if (this.props.onSelect && message) {
+            if (!selectedReactions[reaction]) {
+                this.updateFrequency(reaction);
+            }
             this.props.onSelect(message.id || 0, reaction, selectedReactions[reaction]);
         }
+    }
+
+    private updateFrequency(reaction: string) {
+        let frequency: any = {};
+        const data = localStorage.getItem(C_LOCALSTORAGE.ReactionFrequently);
+        if (data) {
+            try {
+                frequency = JSON.parse(data);
+            } catch (e) {
+                //
+            }
+        }
+        if (frequency.hasOwnProperty(reaction)) {
+            frequency[reaction]++;
+        } else {
+            frequency[reaction] = 1;
+        }
+        this.frequency = frequency;
+        localStorage.setItem(C_LOCALSTORAGE.ReactionFrequently, JSON.stringify(frequency));
     }
 }
 

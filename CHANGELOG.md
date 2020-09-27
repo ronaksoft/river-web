@@ -1,4 +1,5 @@
 ## 0.34.55
+* Reaction frequency added
 * Cancel typing improved
 * Minor improvements
 
