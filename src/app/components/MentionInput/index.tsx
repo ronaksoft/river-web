@@ -11,7 +11,7 @@ import * as React from 'react';
 import {GroupParticipant, InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';
-import {sortBy, uniqBy} from "lodash";
+import {orderBy, uniqBy} from "lodash";
 import GroupRepo from "../../repository/group";
 import UserRepo from "../../repository/user";
 import UserAvatar from "../UserAvatar";
@@ -245,7 +245,7 @@ class MentionInput extends React.Component<IProps, IState> {
                         val: key,
                     });
                 });
-                freqList = sortBy(freqList, 'cnt').reverse();
+                freqList = orderBy(freqList, 'cnt', 'desc').reverse();
                 for (let i = 0; i < freqList.length && emojis.length < emojiLimit; i++) {
                     const emoji = emojiMap[freqList[i].val];
                     if (emoji) {

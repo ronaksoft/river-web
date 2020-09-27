@@ -1,3 +1,7 @@
+## 0.34.57
+* Reaction frequency bug fixed
+* Minor improvements in sorted lists
+
 ## 0.34.56
 * Reaction notification bug fixed
 

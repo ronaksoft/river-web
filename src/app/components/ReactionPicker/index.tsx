@@ -12,7 +12,7 @@ import {Popover, PopoverPosition} from '@material-ui/core';
 import {MoreVertRounded} from '@material-ui/icons';
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
-import {clone, sortBy} from "lodash";
+import {clone, orderBy} from "lodash";
 
 import './style.scss';
 
@@ -28,6 +28,7 @@ interface IState {
     more: boolean;
     position: PopoverPosition | undefined;
     selectedReactions: { [key: string]: boolean };
+    reactions: string[];
 }
 
 class ReactionPicker extends React.PureComponent<IProps, IState> {
@@ -40,6 +41,7 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
             message: {},
             more: false,
             position: undefined,
+            reactions: [],
             selectedReactions: {},
         };
     }
@@ -52,6 +54,7 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         this.setState({
             message,
             position,
+            reactions: this.getSortedReactions(false),
             selectedReactions,
         });
     }
@@ -68,12 +71,12 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {position, more, selectedReactions} = this.state;
+        const {position, more, selectedReactions, reactions} = this.state;
         return (
             <Popover open={Boolean(position)} anchorPosition={position} anchorReference="anchorPosition"
                      onClose={this.closeHandler} classes={{paper: 'reaction-picker-popover'}}>
                 <div className={'reaction-picker' + (more ? ' full' : '')}>
-                    {this.getSortedReactions(more).map((item) => {
+                    {reactions.map((item) => {
                         return (
                             <div className={'reaction-item' + (selectedReactions[item] ? ' selected' : '')} key={item}
                                  onClick={this.selectHandler(item)}>
@@ -103,6 +106,7 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         for (const [reaction, frequency] of Object.entries(this.frequency)) {
             const index = list.indexOf(reaction);
             if (index > -1) {
+                window.console.log(frequency, reaction);
                 list.splice(index, 1);
                 temp.push({
                     cnt: frequency,
@@ -110,12 +114,13 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
                 });
             }
         }
-        return [...sortBy(temp, 'cnt').map(o => o.val), ...list].slice(0, complete ? 48 : 5);
+        return [...orderBy(temp, 'cnt', 'desc').map(o => o.val), ...list].slice(0, complete ? 48 : 5);
     }
 
     private toggleMoreHandler = () => {
         this.setState({
             more: !this.state.more,
+            reactions: this.getSortedReactions(!this.state.more),
         });
     }
 
