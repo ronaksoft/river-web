@@ -132,7 +132,6 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
             v = 88;
             if (this.props.onComplete) {
                 this.props.onComplete(this.props.id);
-                return;
             }
         }
         if (v < 3) {

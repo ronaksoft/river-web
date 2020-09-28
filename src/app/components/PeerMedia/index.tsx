@@ -33,9 +33,12 @@ import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import i18n from '../../services/i18n';
 import {IPeer} from "../../repository/dialog/interface";
+import {GetDbFileName} from "../../repository/file";
+import ElectronService from "../../services/electron";
+import {findIndex} from "lodash";
 
 import './style.scss';
-import {GetDbFileName} from "../../repository/file";
+import SettingsConfigManager from "../../services/settingsConfigManager";
 
 interface IMedia {
     _modified?: boolean;
@@ -386,6 +389,9 @@ class PeerMedia extends React.Component<IProps, IState> {
         const {items} = this.state;
         const index = this.itemMap[id];
         items[index].download = true;
+        if (items[index].type === C_MESSAGE_TYPE.File && ElectronService.isElectron() && SettingsConfigManager.getInstance().getDownloadSettings().auto_save_files) {
+            items[index].saved = true;
+        }
         this.setState({
             items,
         });
@@ -428,6 +434,23 @@ class PeerMedia extends React.Component<IProps, IState> {
     private mediaActionClickHandler = (id: number, cmd: 'view' | 'open') => (e: any) => {
         if (this.props.onAction) {
             this.props.onAction(cmd, id);
+            if (cmd === 'view') {
+                this.updateItemSaveStatus(id);
+            }
+        }
+    }
+
+    private updateItemSaveStatus(id: number) {
+        if (!ElectronService.isElectron()) {
+            return;
+        }
+        const {items} = this.state;
+        const index = findIndex(items, {id});
+        if (index > -1) {
+            items[index].saved = true;
+            this.setState({
+                items,
+            });
         }
     }
 

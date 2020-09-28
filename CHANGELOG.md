@@ -1,3 +1,6 @@
+## 0.34.58
+* PeerMedia save item bug fixed
+
 ## 0.34.57
 * Reaction frequency bug fixed
 * Minor improvements in sorted lists
