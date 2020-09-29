@@ -1,5 +1,6 @@
 .seen-by-list-dialog {
   height: 100%;
+  padding: 6px;
 
   .river-loading {
     transform: scale(0.5);
@@ -8,6 +9,8 @@
   .user-chip {
     background-color: var(--light);
     margin: 0 4px 4px 0;
+    line-height: 1em;
+    color: inherit;
   }
 }
 

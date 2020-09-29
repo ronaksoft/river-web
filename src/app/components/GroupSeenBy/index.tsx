@@ -51,7 +51,7 @@ class GroupSeenBy extends React.Component<any, IState> {
         this.apiManager.groupSeenBy(groupId).then((res) => {
             this.userRepo.importBulk(false, res.usersList);
             this.setState({
-                list: res.statsList.filter(o => (o.messageid || 0) <= messageId).map(o => o.userid || '0'),
+                list: res.statsList.filter(o => (o.messageid || 0) >= messageId).map(o => o.userid || '0'),
                 loading: false,
             });
         }).catch(() => {
