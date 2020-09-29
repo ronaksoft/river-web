@@ -2619,7 +2619,8 @@ proto.msg.GroupsHistoryStats.toObject = function(includeInstance, msg) {
     statsList: jspb.Message.toObjectList(msg.getStatsList(),
     proto.msg.ReadHistoryStat.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    core_types_pb.User.toObject, includeInstance)
+    core_types_pb.User.toObject, includeInstance),
+    empty: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2666,6 +2667,10 @@ proto.msg.GroupsHistoryStats.deserializeBinaryFromReader = function(msg, reader)
       reader.readMessage(value,core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEmpty(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2709,6 +2714,13 @@ proto.msg.GroupsHistoryStats.serializeBinaryToWriter = function(message, writer)
       2,
       f,
       core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeBool(
+      3,
+      f
     );
   }
 };
@@ -2787,6 +2799,42 @@ proto.msg.GroupsHistoryStats.prototype.addUsers = function(opt_value, opt_index)
  */
 proto.msg.GroupsHistoryStats.prototype.clearUsersList = function() {
   return this.setUsersList([]);
+};
+
+
+/**
+ * required bool Empty = 3;
+ * @return {boolean}
+ */
+proto.msg.GroupsHistoryStats.prototype.getEmpty = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.GroupsHistoryStats} returns this
+ */
+proto.msg.GroupsHistoryStats.prototype.setEmpty = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.GroupsHistoryStats} returns this
+ */
+proto.msg.GroupsHistoryStats.prototype.clearEmpty = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.GroupsHistoryStats.prototype.hasEmpty = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

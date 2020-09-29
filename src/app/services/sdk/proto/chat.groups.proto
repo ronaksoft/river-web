@@ -96,6 +96,7 @@ message GroupsGetReadHistoryStats {
 message GroupsHistoryStats {
     repeated ReadHistoryStat Stats = 1;
     repeated User Users = 2;
+    required bool Empty = 3;
 }
 
 // ReadHistoryStat

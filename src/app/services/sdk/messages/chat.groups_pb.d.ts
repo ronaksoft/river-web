@@ -336,6 +336,11 @@ export class GroupsHistoryStats extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsHistoryStats.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsHistoryStats): GroupsHistoryStats.AsObject;
@@ -350,6 +355,7 @@ export namespace GroupsHistoryStats {
   export type AsObject = {
     statsList: Array<ReadHistoryStat.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
+    empty?: boolean,
   }
 }
 
