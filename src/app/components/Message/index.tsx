@@ -1591,8 +1591,9 @@ class Message extends React.Component<IProps, IState> {
         return (<>
             <Reaction message={message} onContextMenu={this.reactionPickerOpenHandler(message)}
                       onClick={this.reactionListOpenHandler(message)}/>
-            {!message.me && <div className="reaction-anchor" onClick={this.reactionPickerOpenHandler(message)}
-                                 onContextMenu={this.reactionPickerOpenHandler(message)}>
+            {Boolean(!message.me && message.peerid !== '2374' && !this.props.isBot) &&
+            <div className="reaction-anchor" onClick={this.reactionPickerOpenHandler(message)}
+                 onContextMenu={this.reactionPickerOpenHandler(message)}>
                 <TagFacesRounded/>
             </div>}
         </>);

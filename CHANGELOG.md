@@ -1,3 +1,6 @@
+## 0.34.60
+* Reaction removed from bots and few other dialogs
+
 ## 0.34.59
 * Last seen added in user dialog
 * Group Seen By implemented
