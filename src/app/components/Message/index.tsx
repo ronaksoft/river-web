@@ -13,7 +13,13 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {
-    GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntity, MessageEntityType, PeerType,
+    GroupPhoto,
+    InputFileLocation,
+    InputPeer,
+    MediaType,
+    MessageEntity,
+    MessageEntityType,
+    PeerType,
 } from '../../services/sdk/messages/core.types_pb';
 import {findLastIndex, throttle} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
@@ -21,7 +27,7 @@ import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
 import MessagePreview from '../MessagePreview';
 import MessageStatus from '../MessageStatus';
-import {MoreVert, ErrorRounded, TagFacesRounded} from '@material-ui/icons';
+import {ErrorRounded, MoreVert, TagFacesRounded} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
@@ -54,6 +60,7 @@ import ReactionPicker from "../ReactionPicker";
 import ReactionList from "../ReactionList";
 
 import './style.scss';
+import GroupSeenBy from "../GroupSeenBy";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -262,6 +269,7 @@ class Message extends React.Component<IProps, IState> {
     private isLarge?: boolean;
     private reactionPickerRef: ReactionPicker | undefined;
     private reactionListRef: ReactionList | undefined;
+    private groupSeenByRef: GroupSeenBy | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -347,6 +355,10 @@ class Message extends React.Component<IProps, IState> {
             13: {
                 cmd: 'save_gif',
                 title: i18n.t('general.save_gif'),
+            },
+            14: {
+                cmd: 'seen_by',
+                title: i18n.t('chat.seen_by'),
             },
         };
     }
@@ -655,6 +667,7 @@ class Message extends React.Component<IProps, IState> {
                 </div>}
                 <ReactionPicker ref={this.reactionPickerRefHandler} onSelect={this.props.onReactionSelect}/>
                 <ReactionList ref={this.reactionListRefHandler}/>
+                <GroupSeenBy ref={this.groupSeenByRefHandler}/>
             </div>
         );
     }
@@ -728,7 +741,7 @@ class Message extends React.Component<IProps, IState> {
             return null;
         }
         const menuTypes = {
-            1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11],
+            1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11, 14],
             2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11],
             3: [6, 5, 9, 10, 11],
         };
@@ -736,10 +749,11 @@ class Message extends React.Component<IProps, IState> {
         const hasCopy = Boolean(selection && selection.type === 'Range');
         const copiable = items[moreIndex] && (items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal || !items[moreIndex].messagetype);
         const menuItems: any[] = [];
-        const id = items[moreIndex].id;
-        const me = items[moreIndex].me;
+        const id = items[moreIndex].id || 0;
+        const me = items[moreIndex].me || false;
         const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio, C_MESSAGE_TYPE.Video, C_MESSAGE_TYPE.Picture];
-        if (id && id < 0) {
+        const isGroup = this.inputPeer && this.inputPeer.getType() === PeerType.PEERGROUP;
+        if (id < 0) {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {
                     if (items[moreIndex].error || (this.riverTime.now() - (items[moreIndex].createdon || 0)) > 30) {
@@ -757,7 +771,7 @@ class Message extends React.Component<IProps, IState> {
                     menuItems.push(this.menuItem[key]);
                 }
             });
-        } else if (me === true && id && id > 0) {
+        } else if (me && id > 0) {
             menuTypes[1].forEach((key) => {
                 if (key === 3) {
                     if ((this.riverTime.now() - (items[moreIndex].createdon || 0)) < 86400 &&
@@ -786,11 +800,15 @@ class Message extends React.Component<IProps, IState> {
                     if (items[moreIndex].messagetype === C_MESSAGE_TYPE.Gif) {
                         menuItems.push(this.menuItem[key]);
                     }
+                } else if (key === 14) {
+                    if (isGroup) {
+                        menuItems.push(this.menuItem[key]);
+                    }
                 } else {
                     menuItems.push(this.menuItem[key]);
                 }
             });
-        } else if (me === false && id && id > 0) {
+        } else if (!me && id > 0) {
             menuTypes[2].forEach((key) => {
                 if (key === 7) {
                     if (!items[moreIndex].downloaded && saveAndDownloadFilter.indexOf(items[moreIndex].messagetype || 0) > -1) {
@@ -1045,6 +1063,8 @@ class Message extends React.Component<IProps, IState> {
                 this.selectAll(el);
                 this.copy();
             }
+        } else if (cmd === 'seen_by' && this.groupSeenByRef) {
+            this.groupSeenByRef.openDialog(this.state.items[index].peerid || '0', this.state.items[index].id || 0);
         }
         this.setState({
             moreAnchorEl: null,
@@ -1569,7 +1589,8 @@ class Message extends React.Component<IProps, IState> {
 
     private reactionContent(message: IMessage) {
         return (<>
-            <Reaction message={message} onContextMenu={this.reactionPickerOpenHandler(message)} onClick={this.reactionListOpenHandler(message)}/>
+            <Reaction message={message} onContextMenu={this.reactionPickerOpenHandler(message)}
+                      onClick={this.reactionListOpenHandler(message)}/>
             {!message.me && <div className="reaction-anchor" onClick={this.reactionPickerOpenHandler(message)}
                                  onContextMenu={this.reactionPickerOpenHandler(message)}>
                 <TagFacesRounded/>
@@ -1603,6 +1624,10 @@ class Message extends React.Component<IProps, IState> {
             return;
         }
         this.reactionListRef.openDialog(this.inputPeer, message);
+    }
+
+    private groupSeenByRefHandler = (ref: any) => {
+        this.groupSeenByRef = ref;
     }
 }
 

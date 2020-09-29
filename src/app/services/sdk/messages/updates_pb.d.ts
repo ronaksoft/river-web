@@ -385,6 +385,11 @@ export class UpdateReadHistoryOutbox extends jspb.Message {
   getMaxid(): number | undefined;
   setMaxid(value: number): void;
 
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateReadHistoryOutbox.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateReadHistoryOutbox): UpdateReadHistoryOutbox.AsObject;
@@ -402,6 +407,65 @@ export namespace UpdateReadHistoryOutbox {
     teamid?: string,
     peer: core_types_pb.Peer.AsObject,
     maxid?: number,
+    userid?: number,
+  }
+}
+
+export class UpdateMessagePinned extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.Peer;
+  setPeer(value?: core_types_pb.Peer): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasMsgid(): boolean;
+  clearMsgid(): void;
+  getMsgid(): number | undefined;
+  setMsgid(value: number): void;
+
+  hasVersion(): boolean;
+  clearVersion(): void;
+  getVersion(): number | undefined;
+  setVersion(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateMessagePinned.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateMessagePinned): UpdateMessagePinned.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateMessagePinned, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateMessagePinned;
+  static deserializeBinaryFromReader(message: UpdateMessagePinned, reader: jspb.BinaryReader): UpdateMessagePinned;
+}
+
+export namespace UpdateMessagePinned {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    teamid?: string,
+    peer: core_types_pb.Peer.AsObject,
+    userid?: number,
+    msgid?: number,
+    version?: number,
   }
 }
 

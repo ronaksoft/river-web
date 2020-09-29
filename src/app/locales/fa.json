@@ -118,7 +118,8 @@
       "download_desktop_version": "دانلود نسخه {0} دسکتاپ",
       "reload": "بارگیری مجدد",
       "reload_text": "باموفقیت آپدیت شد"
-    }
+    },
+    "seen_by": "مشاهده کنندگان"
   },
   "peer_info": {
     "notify_settings": "تنظیمات اعلان‌ها",

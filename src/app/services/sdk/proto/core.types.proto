@@ -102,6 +102,7 @@ message Dialog {
     optional int32 MentionedCount = 9;
     required bool Pinned = 10;
     optional DraftMessage Draft = 11;
+    optional int64 PinnedMessageID = 12;
 }
 
 // PeerType

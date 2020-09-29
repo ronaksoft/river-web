@@ -201,6 +201,15 @@ message MessagesGetReactionList {
     required int32 Hash = 3;
 }
 
+// MessagesPin
+// @Function
+// @Return: Bool
+message MessagesTogglePin {
+    required InputPeer Peer = 1;
+    required int64 MessageID = 2;
+    required bool Silent = 3;
+}
+
 // MessagesDialogs
 message MessagesDialogs {
     repeated Dialog Dialogs = 1;

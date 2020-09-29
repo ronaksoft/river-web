@@ -303,3 +303,81 @@ export namespace GroupsUpdatePhoto {
   }
 }
 
+export class GroupsGetReadHistoryStats extends jspb.Message {
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupsGetReadHistoryStats.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsGetReadHistoryStats): GroupsGetReadHistoryStats.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupsGetReadHistoryStats, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsGetReadHistoryStats;
+  static deserializeBinaryFromReader(message: GroupsGetReadHistoryStats, reader: jspb.BinaryReader): GroupsGetReadHistoryStats;
+}
+
+export namespace GroupsGetReadHistoryStats {
+  export type AsObject = {
+    groupid?: string,
+  }
+}
+
+export class GroupsHistoryStats extends jspb.Message {
+  clearStatsList(): void;
+  getStatsList(): Array<ReadHistoryStat>;
+  setStatsList(value: Array<ReadHistoryStat>): void;
+  addStats(value?: ReadHistoryStat, index?: number): ReadHistoryStat;
+
+  clearUsersList(): void;
+  getUsersList(): Array<core_types_pb.User>;
+  setUsersList(value: Array<core_types_pb.User>): void;
+  addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupsHistoryStats.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsHistoryStats): GroupsHistoryStats.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupsHistoryStats, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsHistoryStats;
+  static deserializeBinaryFromReader(message: GroupsHistoryStats, reader: jspb.BinaryReader): GroupsHistoryStats;
+}
+
+export namespace GroupsHistoryStats {
+  export type AsObject = {
+    statsList: Array<ReadHistoryStat.AsObject>,
+    usersList: Array<core_types_pb.User.AsObject>,
+  }
+}
+
+export class ReadHistoryStat extends jspb.Message {
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ReadHistoryStat.AsObject;
+  static toObject(includeInstance: boolean, msg: ReadHistoryStat): ReadHistoryStat.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ReadHistoryStat, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ReadHistoryStat;
+  static deserializeBinaryFromReader(message: ReadHistoryStat, reader: jspb.BinaryReader): ReadHistoryStat;
+}
+
+export namespace ReadHistoryStat {
+  export type AsObject = {
+    userid?: string,
+    messageid?: number,
+  }
+}
+

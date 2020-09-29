@@ -1,0 +1,32 @@
+.seen-by-list-dialog {
+  height: 100%;
+
+  .river-loading {
+    transform: scale(0.5);
+  }
+
+  .user-chip {
+    background-color: var(--light);
+    margin: 0 4px 4px 0;
+  }
+}
+
+html[direction="rtl"] {
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .seen-by-list-dialog {
+    .user-chip {
+      background-color: var(--dark-high);
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .seen-by-list-dialog {
+    .user-chip {
+      background-color: var(--dark-blue-accent-medium);
+    }
+  }
+}

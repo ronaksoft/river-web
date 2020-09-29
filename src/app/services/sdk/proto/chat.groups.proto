@@ -85,3 +85,21 @@ message GroupsUpdatePhoto {
     required int64 GroupID = 2 [jstype = JS_STRING];
 }
 
+// GroupsGetHistoryStats
+// @Function
+// @Return: GroupsHistoryStats
+message GroupsGetReadHistoryStats {
+    required int64 GroupID = 1 [jstype = JS_STRING];
+}
+
+// GroupsHistoryStats
+message GroupsHistoryStats {
+    repeated ReadHistoryStat Stats = 1;
+    repeated User Users = 2;
+}
+
+// ReadHistoryStat
+message ReadHistoryStat {
+    required int64 UserID = 1 [jstype = JS_STRING];
+    required int64 MessageID = 2;
+}

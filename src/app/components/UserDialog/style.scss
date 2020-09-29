@@ -41,6 +41,19 @@
         width: 100%;
         min-height: 48px;
 
+        .last-seen {
+          padding: 8px 0;
+          display: block;
+          text-align: center;
+          background-color: var(--color-hover);
+          border-radius: 6px;
+          font-size: 13px;
+
+          .online {
+            color: var(--river);
+          }
+        }
+
         .input-edit {
           margin-bottom: 10px;
         }
@@ -195,6 +208,14 @@ html[theme="dark-blue"] {
         .line, .input-edit input, .input-edit label, .input-edit svg {
           color: var(--white);
         }
+
+        .line .last-seen {
+          background-color: var(--dark-hover);
+
+          .online {
+            color: var(--dark-mention);
+          }
+        }
       }
 
       .notify-settings {
@@ -241,6 +262,12 @@ html[theme="dark-blue"] {
 
       .kk-card {
         background-color: var(--dark-blue-medium);
+      }
+
+      .info {
+        .line .last-seen {
+          background-color: var(--dark-blue-hover-alt);
+        }
       }
     }
 

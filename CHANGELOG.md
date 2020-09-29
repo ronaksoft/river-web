@@ -1,3 +1,7 @@
+## 0.34.59
+* Last seen added in user dialog
+* Group Seen By implemented
+
 ## 0.34.58
 * PeerMedia save item bug fixed
 

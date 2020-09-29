@@ -3764,7 +3764,8 @@ proto.msg.Dialog.toObject = function(includeInstance, msg) {
     notifysettings: (f = msg.getNotifysettings()) && proto.msg.PeerNotifySettings.toObject(includeInstance, f),
     mentionedcount: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
     pinned: (f = jspb.Message.getBooleanField(msg, 10)) == null ? undefined : f,
-    draft: (f = msg.getDraft()) && proto.msg.DraftMessage.toObject(includeInstance, f)
+    draft: (f = msg.getDraft()) && proto.msg.DraftMessage.toObject(includeInstance, f),
+    pinnedmessageid: (f = jspb.Message.getField(msg, 12)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -3850,6 +3851,10 @@ proto.msg.Dialog.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.DraftMessage;
       reader.readMessage(value,proto.msg.DraftMessage.deserializeBinaryFromReader);
       msg.setDraft(value);
+      break;
+    case 12:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPinnedmessageid(value);
       break;
     default:
       reader.skipField();
@@ -3964,6 +3969,13 @@ proto.msg.Dialog.serializeBinaryToWriter = function(message, writer) {
       11,
       f,
       proto.msg.DraftMessage.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 12));
+  if (f != null) {
+    writer.writeInt64(
+      12,
+      f
     );
   }
 };
@@ -4400,6 +4412,42 @@ proto.msg.Dialog.prototype.clearDraft = function() {
  */
 proto.msg.Dialog.prototype.hasDraft = function() {
   return jspb.Message.getField(this, 11) != null;
+};
+
+
+/**
+ * optional int64 PinnedMessageID = 12;
+ * @return {number}
+ */
+proto.msg.Dialog.prototype.getPinnedmessageid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.Dialog} returns this
+ */
+proto.msg.Dialog.prototype.setPinnedmessageid = function(value) {
+  return jspb.Message.setField(this, 12, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.Dialog} returns this
+ */
+proto.msg.Dialog.prototype.clearPinnedmessageid = function() {
+  return jspb.Message.setField(this, 12, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.Dialog.prototype.hasPinnedmessageid = function() {
+  return jspb.Message.getField(this, 12) != null;
 };
 
 

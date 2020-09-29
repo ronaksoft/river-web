@@ -41,6 +41,7 @@ import i18n from '../../services/i18n';
 import {notifyOptions} from "../../pages/Chat";
 import {OfficialIcon} from "../SVG/official";
 import {extractPhoneNumber} from "../../services/utilities/localize";
+import LastSeen from "../LastSeen";
 
 import './style.scss';
 
@@ -156,7 +157,11 @@ class UserDialog extends React.Component<IProps, IState> {
                     {user && <div className="info kk-card">
                         <div className={'avatar' + (Boolean(user && user.photo) ? ' pointer-cursor' : '')}
                              onClick={this.showAvatarHandler}>
-                            <UserAvatar id={user.id || ''} noDetail={true}/>
+                            <UserAvatar id={user.id || '0'} noDetail={true}/>
+                        </div>
+                        <div className="line">
+                            <LastSeen className="last-seen" id={user.id || '0'} teamId={this.props.teamId}
+                                      withLastSeen={true}/>
                         </div>
                         <div className="line">
                             {!edit && <div className="form-control">
@@ -607,7 +612,7 @@ class UserDialog extends React.Component<IProps, IState> {
             this.apiManager.accountUnblock(inputUser).then(() => {
                 this.userRepo.importBulk(false, [{
                     blocked: false,
-                    id: user.id || '',
+                    id: user.id || '0',
                 }]);
                 user.blocked = false;
                 this.setState({
@@ -618,7 +623,7 @@ class UserDialog extends React.Component<IProps, IState> {
             this.apiManager.accountBlock(inputUser).then(() => {
                 this.userRepo.importBulk(false, [{
                     blocked: true,
-                    id: user.id || '',
+                    id: user.id || '0',
                 }]);
                 user.blocked = true;
                 this.setState({

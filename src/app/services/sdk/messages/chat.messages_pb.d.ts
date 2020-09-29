@@ -761,6 +761,40 @@ export namespace MessagesGetReactionList {
   }
 }
 
+export class MessagesTogglePin extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  hasSilent(): boolean;
+  clearSilent(): void;
+  getSilent(): boolean | undefined;
+  setSilent(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesTogglePin.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesTogglePin): MessagesTogglePin.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesTogglePin, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesTogglePin;
+  static deserializeBinaryFromReader(message: MessagesTogglePin, reader: jspb.BinaryReader): MessagesTogglePin;
+}
+
+export namespace MessagesTogglePin {
+  export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
+    messageid?: number,
+    silent?: boolean,
+  }
+}
+
 export class MessagesDialogs extends jspb.Message {
   clearDialogsList(): void;
   getDialogsList(): Array<core_types_pb.Dialog>;

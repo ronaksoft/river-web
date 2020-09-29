@@ -40,6 +40,7 @@ import {LabelItems, LabelsListItems} from "../messages/chat.labels_pb";
 import {BotCallbackAnswer, BotResults} from "../messages/chat.bot_pb";
 import {FoundGifs, SavedGifs} from "../messages/gif_pb";
 import {TeamMembers, TeamsMany} from "../messages/team_pb";
+import {GroupsHistoryStats} from "../messages/chat.groups_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -110,6 +111,8 @@ export default class Presenter {
                 return UserPhoto.deserializeBinary(data);
             case C_MSG.GroupPhoto:
                 return GroupPhoto.deserializeBinary(data);
+            case C_MSG.GroupsHistoryStats:
+                return GroupsHistoryStats.deserializeBinary(data);
             case C_MSG.BotCallbackAnswer:
                 return BotCallbackAnswer.deserializeBinary(data);
             case C_MSG.FileLocation:

@@ -117,7 +117,7 @@ import {
     GroupsCreate,
     GroupsDeleteUser,
     GroupsEditTitle,
-    GroupsGetFull,
+    GroupsGetFull, GroupsGetReadHistoryStats, GroupsHistoryStats,
     GroupsRemovePhoto,
     GroupsToggleAdmins,
     GroupsUpdateAdmin,
@@ -773,6 +773,13 @@ export default class APIManager {
         data.setPhotoid(id || '0');
         this.logVerbose(data);
         return this.server.send(C_MSG.GroupsRemovePhoto, data.serializeBinary(), true);
+    }
+
+    public groupSeenBy(groupId: string): Promise<GroupsHistoryStats.AsObject> {
+        const data = new GroupsGetReadHistoryStats();
+        data.setGroupid(groupId);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.GroupsGetReadHistoryStats, data.serializeBinary(), true);
     }
 
     public systemGetInfo(useCache?: boolean): Promise<SystemInfo.AsObject> {

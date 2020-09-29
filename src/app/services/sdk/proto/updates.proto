@@ -88,6 +88,18 @@ message UpdateReadHistoryOutbox {
     optional int64 TeamID = 102 [jstype = JS_STRING];
     required Peer Peer = 1;
     required int64 MaxID = 2;
+    optional int64 UserID = 3;
+}
+
+// UpdateMessagePinned
+message UpdateMessagePinned {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    optional int64 TeamID = 102 [jstype = JS_STRING];
+    required Peer Peer = 1;
+    required int64 UserID = 2;
+    required int64 MsgID = 3;
+    required int64 Version = 5;
 }
 
 // UpdateUserTyping

@@ -119,7 +119,8 @@
       "download_desktop_version": "Download desktop version {0}",
       "reload": "Reload",
       "reload_text": "Successfully updated"
-    }
+    },
+    "seen_by": "Seen by"
   },
   "peer_info": {
     "notify_settings": "Notify Settings",

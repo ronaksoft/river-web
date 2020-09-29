@@ -429,6 +429,11 @@ export class Dialog extends jspb.Message {
   getDraft(): DraftMessage | undefined;
   setDraft(value?: DraftMessage): void;
 
+  hasPinnedmessageid(): boolean;
+  clearPinnedmessageid(): void;
+  getPinnedmessageid(): number | undefined;
+  setPinnedmessageid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
   static toObject(includeInstance: boolean, msg: Dialog): Dialog.AsObject;
@@ -453,6 +458,7 @@ export namespace Dialog {
     mentionedcount?: number,
     pinned?: boolean,
     draft?: DraftMessage.AsObject,
+    pinnedmessageid?: number,
   }
 }
 
