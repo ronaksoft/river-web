@@ -335,6 +335,11 @@ export class SystemConfig extends jspb.Message {
   getMaxactivesessions(): number | undefined;
   setMaxactivesessions(value: number): void;
 
+  clearReactionsList(): void;
+  getReactionsList(): Array<string>;
+  setReactionsList(value: Array<string>): void;
+  addReactions(value: string, index?: number): string;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SystemConfig.AsObject;
   static toObject(includeInstance: boolean, msg: SystemConfig): SystemConfig.AsObject;
@@ -366,6 +371,7 @@ export namespace SystemConfig {
     toppeerdecayrate?: number,
     toppeermaxstep?: number,
     maxactivesessions?: number,
+    reactionsList?: Array<string>,
   }
 }
 

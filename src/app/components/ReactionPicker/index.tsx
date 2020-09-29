@@ -13,11 +13,11 @@ import {MoreVertRounded} from '@material-ui/icons';
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {clone, orderBy} from "lodash";
+import APIManager from "../../services/sdk";
 
 import './style.scss';
 
-const defaultReactions = ['😂', '😡', '👎', '👍', '❤️'];
-const allReactions = [...defaultReactions, '😢', '🙋‍♀️', '🙋‍♂️', '🛢', '🤐', '😖', '🙁', '🥳', '🤩', '😋', '😏'];
+const allReactions = ['😂', '😡', '👎', '👍', '❤️', '😢', '🙋‍♀️', '🙋‍♂️', '🛢', '🤐', '😖', '🙁', '🥳', '🤩', '😋', '😏'];
 
 interface IProps {
     onSelect?: (id: number, reaction: string, remove: boolean) => void;
@@ -32,6 +32,7 @@ interface IState {
 }
 
 class ReactionPicker extends React.PureComponent<IProps, IState> {
+    private apiManager: APIManager;
     private frequency: { [key: string]: number } = {};
 
     constructor(props: IProps) {
@@ -44,6 +45,8 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
             reactions: [],
             selectedReactions: {},
         };
+
+        this.apiManager = APIManager.getInstance();
     }
 
     public open(position: PopoverPosition, message: IMessage) {
@@ -75,7 +78,7 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         return (
             <Popover open={Boolean(position)} anchorPosition={position} anchorReference="anchorPosition"
                      onClose={this.closeHandler} classes={{paper: 'reaction-picker-popover'}}>
-                <div className={'reaction-picker' + (more ? ' full' : '')}>
+                <div className={'reaction-picker' + (more ? ' full' : '')} style={{height: this.getHeight()}}>
                     {reactions.map((item) => {
                         return (
                             <div className={'reaction-item' + (selectedReactions[item] ? ' selected' : '')} key={item}
@@ -100,13 +103,17 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         });
     }
 
+    private getHeight() {
+        return `${(Math.ceil((this.state.reactions.length + 1) / 5) - 1) * 30 + 36}px`;
+    }
+
     private getSortedReactions(complete: boolean): string[] {
         const temp: any[] = [];
-        const list: string[] = clone(allReactions);
+        const serverReactions = this.apiManager.getInstantSystemConfig().reactionsList || [];
+        const list: string[] = clone(serverReactions.length > 0 ? serverReactions : allReactions);
         for (const [reaction, frequency] of Object.entries(this.frequency)) {
             const index = list.indexOf(reaction);
             if (index > -1) {
-                window.console.log(frequency, reaction);
                 list.splice(index, 1);
                 temp.push({
                     cnt: frequency,

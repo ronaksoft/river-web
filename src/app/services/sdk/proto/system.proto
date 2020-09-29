@@ -90,6 +90,7 @@ message SystemConfig {
     required float TopPeerDecayRate = 15;
     required float TopPeerMaxStep = 16;
     optional uint32 MaxActiveSessions = 17;
+    repeated string Reactions = 18;
 }
 
 // DataCenter

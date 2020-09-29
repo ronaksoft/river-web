@@ -2041,7 +2041,7 @@ proto.msg.ClientUsage.prototype.hasDownloadbytes = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.SystemConfig.repeatedFields_ = [13];
+proto.msg.SystemConfig.repeatedFields_ = [13,18];
 
 
 
@@ -2093,7 +2093,8 @@ proto.msg.SystemConfig.toObject = function(includeInstance, msg) {
     maxlabels: (f = jspb.Message.getField(msg, 14)) == null ? undefined : f,
     toppeerdecayrate: (f = jspb.Message.getOptionalFloatingPointField(msg, 15)) == null ? undefined : f,
     toppeermaxstep: (f = jspb.Message.getOptionalFloatingPointField(msg, 16)) == null ? undefined : f,
-    maxactivesessions: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f
+    maxactivesessions: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
+    reactionsList: (f = jspb.Message.getRepeatedField(msg, 18)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2206,6 +2207,10 @@ proto.msg.SystemConfig.deserializeBinaryFromReader = function(msg, reader) {
     case 17:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setMaxactivesessions(value);
+      break;
+    case 18:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addReactions(value);
       break;
     default:
       reader.skipField();
@@ -2367,6 +2372,13 @@ proto.msg.SystemConfig.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeUint32(
       17,
+      f
+    );
+  }
+  f = message.getReactionsList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      18,
       f
     );
   }
@@ -3056,6 +3068,43 @@ proto.msg.SystemConfig.prototype.clearMaxactivesessions = function() {
  */
 proto.msg.SystemConfig.prototype.hasMaxactivesessions = function() {
   return jspb.Message.getField(this, 17) != null;
+};
+
+
+/**
+ * repeated string Reactions = 18;
+ * @return {!Array<string>}
+ */
+proto.msg.SystemConfig.prototype.getReactionsList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 18));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.msg.SystemConfig} returns this
+ */
+proto.msg.SystemConfig.prototype.setReactionsList = function(value) {
+  return jspb.Message.setField(this, 18, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.msg.SystemConfig} returns this
+ */
+proto.msg.SystemConfig.prototype.addReactions = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 18, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.SystemConfig} returns this
+ */
+proto.msg.SystemConfig.prototype.clearReactionsList = function() {
+  return this.setReactionsList([]);
 };
 
 

@@ -8,7 +8,6 @@
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     min-height: 36px;
-    height: 36px;
     width: 176px;
     border-radius: 12px;
     display: flex;
@@ -20,8 +19,8 @@
     overflow: hidden;
     transition: all 0.2s;
 
-    &.full {
-      height: 92px;
+    &:not(.full) {
+      height: 36px !important;
     }
 
     .reaction-item {
@@ -58,6 +57,12 @@
           background-color: var(--grey-low);
           transform: translateX(-50%);
         }
+      }
+    }
+
+    &.full {
+      .reaction-item {
+        margin: 0 2px 2px 0;
       }
     }
 

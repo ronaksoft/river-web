@@ -1,3 +1,6 @@
+## 0.34.61
+* Get valid reactions from system config
+
 ## 0.34.60
 * Reaction removed from bots and few other dialogs
 
