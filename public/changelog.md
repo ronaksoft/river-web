@@ -1,3 +1,6 @@
+## 0.34.63
+* Pin message implemented
+
 ## 0.34.62
 * Conversion bug fixed
 
