@@ -1,3 +1,6 @@
+## 0.34.62
+* Conversion bug fixed
+
 ## 0.34.61
 * Get valid reactions from system config
 

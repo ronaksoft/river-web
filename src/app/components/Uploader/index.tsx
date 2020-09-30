@@ -16,8 +16,6 @@ import {
     PhotoOutlined, InsertDriveFileOutlined, SendRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
-// @ts-ignore
-import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
 import {IconButton, Tabs, Tab, Switch} from '@material-ui/core';
@@ -35,6 +33,8 @@ import {generateEntities} from "../ChatInput";
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {convertBlobToArrayBuffer} from "../../services/sdk/fileManager";
+// @ts-ignore
+import readAndCompressImage from './resizer';
 
 import './style.scss';
 

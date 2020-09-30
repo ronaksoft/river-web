@@ -39,6 +39,7 @@
     "electron-is-dev": "^1.2.0",
     "electron-store": "^5.1.0",
     "emoji-mart": "^3.0.0",
+    "exifreader": "^3.12.2",
     "file-saver": "^2.0.2",
     "fine-uploader": "^5.16.2",
     "fine-uploader-wrappers": "^1.0.1",
