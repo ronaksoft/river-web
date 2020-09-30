@@ -5978,7 +5978,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private pinnedMessageCloseHandler = (id: number) => {
         if (this.peer) {
-            this.pinMessage(this.peer, id);
+            this.pinMessage(this.peer, 0);
         }
     }
 
