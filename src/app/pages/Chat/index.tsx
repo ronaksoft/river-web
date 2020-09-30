@@ -647,7 +647,7 @@ class Chat extends React.Component<IProps, IState> {
                                 <AudioPlayerShell key="audio-player-shell" ref={this.audioPlayerShellRefHandler}
                                                   onVisible={this.audioPlayerVisibleHandler}
                                                   onAction={this.messageAttachmentActionHandler}/>
-                                <PinnedMessage ref={this.pinnedMessageRefHandler} peer={this.peer} teamId={this.teamId}
+                                <PinnedMessage ref={this.pinnedMessageRefHandler} teamId={this.teamId}
                                                disableClick={false} onClose={this.pinnedMessageCloseHandler}
                                                onClick={this.pinnedMessageClickHandler}/>
                             </div>
@@ -1596,7 +1596,7 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         if (dialog && this.pinnedMessageRef) {
-            this.pinnedMessageRef.open(dialog.pinnedmessageid || 0);
+            this.pinnedMessageRef.open(peer, dialog.pinnedmessageid || 0);
         }
 
         let minId: number = 0;
@@ -5449,7 +5449,7 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
         if (this.selectedPeerName === GetPeerName(peerId, peerType) && this.pinnedMessageRef) {
-            this.pinnedMessageRef.open(msgId);
+            this.pinnedMessageRef.open(this.peer, msgId);
         }
     }
 

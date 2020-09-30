@@ -80,8 +80,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     public UNSAFE_componentWillReceiveProps(newProps: IProps) {
-        window.console.log(this.lastId, newProps.message.id);
-        if ((!this.props.pinnedMessage && this.lastId !== newProps.message.replyto) && (this.props.pinnedMessage && this.lastId !== newProps.message.id)) {
+        if ((!this.props.pinnedMessage && this.lastId !== newProps.message.replyto) || (this.props.pinnedMessage && this.lastId !== newProps.message.id)) {
             this.lastId = this.props.pinnedMessage ? (newProps.message.id || 0) : (newProps.message.replyto || 0);
             this.cachedMessageService.unmountCache(this.state.message.replyto || 0);
             this.removeAllListeners();
@@ -232,7 +231,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                 error: true,
                 previewMessage: null,
             });
-            if (message.id) {
+            if (message.id && !this.props.pinnedMessage) {
                 this.messageRepo.importBulk([{
                     deleted_reply: true,
                     id: message.id,

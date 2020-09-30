@@ -19,7 +19,6 @@ import './style.scss';
 interface IProps {
     onClose?: (id: number) => void;
     onClick?: (id: number, e: any) => void;
-    peer: InputPeer | null;
     teamId: string;
     disableClick: boolean;
 }
@@ -41,6 +40,8 @@ class PinnedMessage extends React.PureComponent<IProps, IState> {
         };
     }
 
+    private peer: InputPeer | null = null;
+
     constructor(props: IProps) {
         super(props);
 
@@ -52,7 +53,8 @@ class PinnedMessage extends React.PureComponent<IProps, IState> {
         };
     }
 
-    public open(id: number) {
+    public open(peer: InputPeer | null, id: number) {
+        this.peer = peer;
         if (id === 0) {
             if (this.state.open) {
                 this.setState({
@@ -80,7 +82,7 @@ class PinnedMessage extends React.PureComponent<IProps, IState> {
         const {disableClick, open, message} = this.state;
         return (<div className={'pinned-message' + (open ? ' open' : '')}>
             {message && <>
-                <MessagePreview disableClick={disableClick} message={message} peer={this.props.peer}
+                <MessagePreview disableClick={disableClick} message={message} peer={this.peer}
                                 teamId={this.props.teamId} pinnedMessage={true} onClick={this.props.onClick}/>
                 <div className="pinned-message-icon">
                     <IconButton onClick={this.closeHandler}>
