@@ -58,9 +58,9 @@ import ResizeObserver from "resize-observer-polyfill";
 import Reaction from "../Reaction";
 import ReactionPicker from "../ReactionPicker";
 import ReactionList from "../ReactionList";
+import GroupSeenBy from "../GroupSeenBy";
 
 import './style.scss';
-import GroupSeenBy from "../GroupSeenBy";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -359,6 +359,10 @@ class Message extends React.Component<IProps, IState> {
             14: {
                 cmd: 'seen_by',
                 title: i18n.t('chat.seen_by'),
+            },
+            15: {
+                cmd: 'pin_message',
+                title: i18n.t('chat.pin'),
             },
         };
     }
@@ -741,8 +745,8 @@ class Message extends React.Component<IProps, IState> {
             return null;
         }
         const menuTypes = {
-            1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11, 14],
-            2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11],
+            1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11, 14, 15],
+            2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11, 15],
             3: [6, 5, 9, 10, 11],
         };
         const selection = window.getSelection();

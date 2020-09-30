@@ -1,0 +1,75 @@
+.pinned-message {
+  display: flex;
+  overflow: hidden;
+  height: 0;
+  transition: height 0.1s;
+
+  &.open {
+    border-top: 1px solid var(--light);
+    height: 46px;
+  }
+
+  .message-preview {
+    margin: 3px 0 1px 8px !important;
+    flex: 1 1;
+
+    .preview-container .preview-message-wrapper .preview-thumbnail .thumbnail {
+      width: 36px;
+      height: 36px;
+    }
+
+    .preview-message {
+      display: flex;
+      justify-content: space-between !important;
+    }
+  }
+
+  .pinned-message-icon {
+    width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+
+    > button {
+      padding: 4px;
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .pinned-message {
+    .message-preview {
+      margin: 3px 8px 1px 0 !important;
+
+      .preview-container .preview-message-wrapper {
+        .preview-message {
+          border-radius: 5px 0 0 5px;
+
+          .preview-message-user {
+            text-align: right;
+          }
+        }
+
+        .preview-bar {
+          border-radius: 0 7.5px 7.5px 0;
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .pinned-message {
+    border-color: var(--dark-medium);
+    color: var(--white);
+  }
+}
+
+html[theme="dark-blue"] {
+  .pinned-message {
+    border-color: var(--dark-blue-medium);
+    color: var(--white);
+  }
+}

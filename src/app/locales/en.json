@@ -120,7 +120,8 @@
       "reload": "Reload",
       "reload_text": "Successfully updated"
     },
-    "seen_by": "Seen by"
+    "seen_by": "Seen by",
+    "pin": "Pin"
   },
   "peer_info": {
     "notify_settings": "Notify Settings",

@@ -83,7 +83,7 @@ import {
     MessagesSendMedia, MessagesSendReaction,
     MessagesSent,
     MessagesSetTyping,
-    MessagesToggleDialogPin
+    MessagesToggleDialogPin, MessagesTogglePin
 } from './messages/chat.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/updates_pb';
 import {
@@ -1143,6 +1143,15 @@ export default class APIManager {
         data.setHash(hash);
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesGetReactionList, data.serializeBinary(), true);
+    }
+
+    public messagePin(inputPeer: InputPeer, id: number, silent: boolean): Promise<Bool.AsObject> {
+        const data = new MessagesTogglePin();
+        data.setPeer(inputPeer);
+        data.setMessageid(id);
+        data.setSilent(silent);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.MessagesTogglePin, data.serializeBinary(), true);
     }
 
     public teamListMember(teamId: string): Promise<TeamMembers.AsObject> {

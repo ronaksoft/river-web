@@ -22,7 +22,7 @@ import {
     UpdateLabelItemsRemoved,
     UpdateLabelSet,
     UpdateMessageEdited,
-    UpdateMessageID,
+    UpdateMessageID, UpdateMessagePinned,
     UpdateMessagesDeleted,
     UpdateNewMessage,
     UpdateNotifySettings, UpdateReaction,
@@ -1013,6 +1013,16 @@ export default class UpdateManager {
                 });
                 // Update edited message list
                 transaction.editedMessageIds.push(updateReaction.messageid || 0);
+                break;
+            case C_MSG.UpdateMessagePinned:
+                const updateMessagePinned = UpdateMessagePinned.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateMessagePinned);
+                this.mergeDialog(transaction.dialogs, {
+                    peerid: updateMessagePinned.peer.id || '0',
+                    peertype: updateMessagePinned.peer.type || 0,
+                    pinnedmessageid: updateMessagePinned.msgid || 0,
+                    teamid: updateMessagePinned.teamid || '0',
+                });
                 break;
             default:
                 break;

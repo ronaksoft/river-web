@@ -18,6 +18,7 @@ import {getMediaInfo, IMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
 import CachedMessageService, {ICachedMessageServiceBroadcastItemData} from '../../services/cachedMessageService';
 import i18n from '../../services/i18n';
+import {GetPeerName} from "../../repository/dialog";
 
 import './style.scss';
 
@@ -28,6 +29,7 @@ interface IProps {
     onDoubleClick?: (e: any) => void;
     peer: InputPeer | null;
     teamId: string;
+    pinnedMessage?: boolean;
 }
 
 interface IState {
@@ -50,10 +52,14 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
 
         let message = null;
-        if (this.props.message && this.props.message.replyto !== 0 && this.props.message.deleted_reply !== true) {
+        if (!this.props.pinnedMessage && this.props.message && this.props.message.replyto !== 0 && this.props.message.deleted_reply !== true) {
             this.lastId = this.props.message.replyto || 0;
-            message = this.cachedMessageService.getMessage(this.props.message.peerid || '', this.props.message.replyto || 0);
+            message = this.cachedMessageService.getMessage(GetPeerName(this.props.message.peerid, this.props.message.peertype), this.props.message.replyto || 0);
             this.eventReferences.push(this.cachedMessageService.listen(this.props.message.replyto || 0, this.cachedMessageServiceHandler));
+        } else if (this.props.pinnedMessage && this.props.message.id !== 0 && props.peer) {
+            this.lastId = this.props.message.id || 0;
+            message = this.cachedMessageService.getMessage(GetPeerName(props.peer.getId(), props.peer.getType()), this.props.message.id || 0);
+            this.eventReferences.push(this.cachedMessageService.listen(this.props.message.id || 0, this.cachedMessageServiceHandler));
         }
         this.state = {
             error: false,
@@ -68,20 +74,34 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         this.userId = this.messageRepo.getCurrentUserId();
         if (!this.state.previewMessage && this.state.message.replyto && this.state.message.replyto !== 0) {
             this.getMessage();
+        } else if (this.props.pinnedMessage && this.state.message.id !== 0) {
+            this.getMessage();
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        if (this.lastId !== newProps.message.replyto) {
-            this.lastId = newProps.message.replyto || 0;
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
+        window.console.log(this.lastId, newProps.message.id);
+        if ((!this.props.pinnedMessage && this.lastId !== newProps.message.replyto) && (this.props.pinnedMessage && this.lastId !== newProps.message.id)) {
+            this.lastId = this.props.pinnedMessage ? (newProps.message.id || 0) : (newProps.message.replyto || 0);
             this.cachedMessageService.unmountCache(this.state.message.replyto || 0);
             this.removeAllListeners();
             this.setState({
                 message: newProps.message,
             }, () => {
-                if (this.state.message.replyto && this.state.message.replyto !== 0 && this.state.message.deleted_reply !== true) {
+                if (!this.props.pinnedMessage && this.state.message.replyto && this.state.message.replyto !== 0 && this.state.message.deleted_reply !== true) {
                     this.eventReferences.push(this.cachedMessageService.listen(this.state.message.replyto, this.cachedMessageServiceHandler));
                     const message = this.cachedMessageService.getMessage(this.state.message.peerid || '', this.state.message.replyto || 0);
+                    if (message) {
+                        this.setState({
+                            error: false,
+                            previewMessage: message,
+                        });
+                    } else {
+                        this.getMessage();
+                    }
+                } else if (this.props.pinnedMessage && this.props.peer && this.state.message.id && this.state.message.id !== 0) {
+                    this.eventReferences.push(this.cachedMessageService.listen(this.state.message.id, this.cachedMessageServiceHandler));
+                    const message = this.cachedMessageService.getMessage(GetPeerName(this.props.peer.getId(), this.props.peer.getType()), this.state.message.id || 0);
                     if (message) {
                         this.setState({
                             error: false,
@@ -98,14 +118,19 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     public componentWillUnmount() {
         this.mounted = false;
         if (this.state.message) {
-            this.cachedMessageService.unmountCache(this.state.message.replyto || 0);
+            if (this.props.pinnedMessage) {
+                this.cachedMessageService.unmountCache(this.state.message.id || 0);
+            } else {
+                this.cachedMessageService.unmountCache(this.state.message.replyto || 0);
+            }
         }
         this.removeAllListeners();
     }
 
     public render() {
+        const {pinnedMessage} = this.props;
         const {message, previewMessage, error} = this.state;
-        if (!message.replyto || message.replyto === 0) {
+        if ((pinnedMessage && (!message.id || message.id === 0)) || (!pinnedMessage && (!message.replyto || message.replyto === 0))) {
             return null;
         }
         if (!previewMessage && error) {
@@ -184,9 +209,9 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     private getMessage() {
-        const {teamId, peer} = this.props;
+        const {teamId, peer, pinnedMessage} = this.props;
         const {message} = this.state;
-        this.messageRepo.get(message.replyto || 0, peer, teamId).then((res) => {
+        this.messageRepo.get(pinnedMessage ? (message.id || 0) : (message.replyto || 0), peer, teamId).then((res) => {
             if (!this.mounted) {
                 return;
             }
@@ -263,7 +288,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
 
     private clickHandler = (e: any) => {
         if (!this.props.disableClick && this.props.onClick && !this.state.error) {
-            this.props.onClick(this.props.message.replyto || 0, e);
+            this.props.onClick(this.props.pinnedMessage ? this.props.message.id || 0 : this.props.message.replyto || 0, e);
         }
     }
 
@@ -283,8 +308,15 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                 previewMessage: null,
             });
         } else if (data.mode === 'updated') {
-            if (this.props.message && this.props.message.replyto !== 0 && this.props.message.deleted_reply !== true) {
+            if (!this.props.pinnedMessage && this.props.message && this.props.message.replyto !== 0 && this.props.message.deleted_reply !== true) {
                 const previewMessage = this.cachedMessageService.getMessage(this.props.message.peerid || '', this.props.message.replyto || 0);
+                if (previewMessage) {
+                    this.setState({
+                        previewMessage,
+                    });
+                }
+            } else if (this.props.pinnedMessage && this.props.peer && this.props.message && this.props.message.id !== 0) {
+                const previewMessage = this.cachedMessageService.getMessage(GetPeerName(this.props.peer.getId(), this.props.peer.getType()), this.props.message.id || 0);
                 if (previewMessage) {
                     this.setState({
                         previewMessage,

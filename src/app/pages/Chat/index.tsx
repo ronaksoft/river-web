@@ -138,7 +138,7 @@ import {
     UpdateLabelItemsAdded,
     UpdateLabelItemsRemoved,
     UpdateLabelSet,
-    UpdateMessageEdited,
+    UpdateMessageEdited, UpdateMessagePinned,
     UpdateMessagesDeleted,
     UpdateNewMessage,
     UpdateNotifySettings, UpdateReaction,
@@ -173,6 +173,7 @@ import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 import {ITeam} from "../../repository/team/interface";
 import Socket from "../../services/sdk/server/socket";
+import PinnedMessage from "../../components/PinnedMessage";
 
 import './style.scss';
 
@@ -288,6 +289,7 @@ class Chat extends React.Component<IProps, IState> {
     private readonly userId: string = '0';
     private teamMap: { [key: string]: ITeam } = {};
     private onlineStatusInterval: any = null;
+    private pinnedMessageRef: PinnedMessage | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -486,6 +488,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: label items removed
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateLabelItemsRemoved, this.updateLabelItemsRemovedHandler));
 
+        // Update: message pinned
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessagePinned, this.updateMessagePinnedHandler));
+
         // Update: sync status
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateManagerStatus, this.updateManagerStatusHandler));
 
@@ -642,6 +647,9 @@ class Chat extends React.Component<IProps, IState> {
                                 <AudioPlayerShell key="audio-player-shell" ref={this.audioPlayerShellRefHandler}
                                                   onVisible={this.audioPlayerVisibleHandler}
                                                   onAction={this.messageAttachmentActionHandler}/>
+                                <PinnedMessage ref={this.pinnedMessageRefHandler} peer={this.peer} teamId={this.teamId}
+                                               disableClick={false} onClose={this.pinnedMessageCloseHandler}
+                                               onClick={this.pinnedMessageClickHandler}/>
                             </div>
                             <div ref={this.conversationRefHandler} className="conversation">
                                 <PopUpDate key="pop-up-date" ref={this.popUpDateRefHandler}/>
@@ -1585,6 +1593,10 @@ class Chat extends React.Component<IProps, IState> {
                     before = dialog.scroll_pos || 1000000000;
                 }
             }
+        }
+
+        if (dialog && this.pinnedMessageRef) {
+            this.pinnedMessageRef.open(dialog.pinnedmessageid || 0);
         }
 
         let minId: number = 0;
@@ -3298,6 +3310,9 @@ class Chat extends React.Component<IProps, IState> {
             case 'save_gif':
                 this.saveGifHandler(message);
                 break;
+            case 'pin_message':
+                this.pinMessage(peer, message.id || 0);
+                break;
         }
     }
 
@@ -4051,7 +4066,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'pin':
                 this.apiManager.dialogTogglePin(peer, true).then(() => {
-                    this.pinDialog(peer.getId() || '', true, true);
+                    this.pinDialog(peer.getId() || '', peer.getType() || 0, true, true);
                 }).catch((err) => {
                     if (err.code === C_ERR.ErrCodeInternal && err.items === 'max pinned dialogs reached') {
                         if (this.props.enqueueSnackbar) {
@@ -4062,7 +4077,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'unpin':
                 this.apiManager.dialogTogglePin(peer, false).then(() => {
-                    this.pinDialog(peer.getId() || '', false, true);
+                    this.pinDialog(peer.getId() || '', peer.getType() || 0, false, true);
                 });
                 break;
             case 'mute':
@@ -5311,7 +5326,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update dialog pinned handler */
     private updateDialogPinnedHandler = (data: UpdateDialogPinned.AsObject) => {
-        this.pinDialog(data.peer.id || '', data.pinned);
+        this.pinDialog(data.peer.id || '0', data.peer.type || 0, data.pinned);
     }
 
     /* Update dialog draft message handler */
@@ -5387,15 +5402,19 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private updateMessagePinnedHandler = (data: UpdateMessagePinned.AsObject) => {
+        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0);
+    }
+
     private updateManagerStatusHandler = ({isUpdating}: { isUpdating: boolean }) => {
         this.setAppStatus({
             isUpdating,
         });
     }
 
-    private pinDialog(peerId: string, pinned: boolean | undefined, force?: boolean) {
+    private pinDialog(peerId: string, peerType: number, pinned: boolean | undefined, force?: boolean) {
         const dialogs = this.dialogs;
-        const index = findIndex(dialogs, {peerid: peerId});
+        const index = findIndex(dialogs, {peerid: peerId, peertype: peerType});
         if (index > -1) {
             let update = false;
             if (pinned === undefined) {
@@ -5416,6 +5435,21 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 this.dialogsSort(dialogs);
             }
+        }
+    }
+
+    private pinMessageDialog(peerId: string, peerType: number, msgId: number) {
+        const dialogs = this.dialogs;
+        const index = findIndex(dialogs, {peerid: peerId, peertype: peerType});
+        if (index > -1) {
+            if (dialogs[index].pinnedmessageid === msgId) {
+                dialogs[index].pinnedmessageid = 0;
+            } else {
+                dialogs[index].pinnedmessageid = msgId;
+            }
+        }
+        if (this.selectedPeerName === GetPeerName(peerId, peerType) && this.pinnedMessageRef) {
+            this.pinnedMessageRef.open(msgId);
         }
     }
 
@@ -5936,6 +5970,27 @@ class Chat extends React.Component<IProps, IState> {
             }
             this.apiManager.updateStatus(false);
         }
+    }
+
+    private pinnedMessageRefHandler = (ref: any) => {
+        this.pinnedMessageRef = ref;
+    }
+
+    private pinnedMessageCloseHandler = (id: number) => {
+        if (this.peer) {
+            this.pinMessage(this.peer, id);
+        }
+    }
+
+    private pinnedMessageClickHandler = (id: number, e: any) => {
+        e.stopPropagation();
+        this.messageJumpToMessageHandler(id);
+    }
+
+    private pinMessage(peer: InputPeer, msgId: number) {
+        this.apiManager.messagePin(peer, msgId, true).then(() => {
+            this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, msgId);
+        });
     }
 }
 
