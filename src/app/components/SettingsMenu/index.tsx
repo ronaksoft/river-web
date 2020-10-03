@@ -541,7 +541,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>}
                                     </div>
                                     <div className="page-anchor">
-                                        <Link to={`/chat/${this.props.teamId}/${this.userId}/${PeerType.PEERUSER}`}>
+                                        <Link to={`/chat/${this.props.teamId}/${this.userId}_${PeerType.PEERUSER}`}>
                                             <div className="icon color-saved-messages">
                                                 <BookmarkBorderRounded/>
                                             </div>
