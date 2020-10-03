@@ -1,3 +1,6 @@
+## 0.34.66
+* Known bugs fixed
+
 ## 0.34.65
 * Reaction notification bug fixed
 

@@ -2946,7 +2946,7 @@ class Chat extends React.Component<IProps, IState> {
     private notifyMessage(data: UpdateNewMessage.AsObject) {
         const message: IMessage = data.message;
         const peerName = GetPeerName(message.peerid, message.peertype);
-        if (!(!this.isInChat && data.sender.id !== this.userId && this.canNotify(peerName)) && (message.mention_me !== true)) {
+        if (this.isInChat && this.selectedPeerName === peerName && message.mention_me !== true && !this.canNotify(peerName)) {
             return;
         }
         if (message.peertype === PeerType.PEERGROUP) {
