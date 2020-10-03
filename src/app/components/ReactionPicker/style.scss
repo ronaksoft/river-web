@@ -162,13 +162,13 @@ html[theme="dark-night"] {
         }
 
         &.full {
-          &:after {
+          &:after, &:after {
             background-color: var(--light);
           }
         }
 
         &:hover {
-          &:after {
+          &:after, &:after {
             background-color: var(--light-alt);
           }
         }
