@@ -1272,17 +1272,22 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
         }
-        if (data.peer && data.sender && (this.selectedPeerName !== peerName || !this.isInChat)) {
-            const message: IMessage = {
-                body: 'reacted to your message',
-                me: data.sender.id !== this.userId,
-                peerid: data.peer.id,
-                peertype: data.peer.type,
-                reacted: true,
-            };
-            this.notifyMessage({
-                message,
-                sender: data.sender,
+        if (this.selectedPeerName !== peerName || !this.isInChat) {
+            this.messageRepo.get(data.messageid || 0).then((msg) => {
+                if (!data.peer || !data.sender || !msg || !msg.me) {
+                    return;
+                }
+                const message: IMessage = {
+                    body: 'reacted to your message',
+                    me: false,
+                    peerid: data.peer.id,
+                    peertype: data.peer.type,
+                    reacted: true,
+                };
+                this.notifyMessage({
+                    message,
+                    sender: data.sender,
+                });
             });
         }
     }

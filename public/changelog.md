@@ -1,3 +1,6 @@
+## 0.34.65
+* Reaction notification bug fixed
+
 ## 0.34.64
 * Minor improvements in UI and performance
 
