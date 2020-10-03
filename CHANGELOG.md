@@ -1,3 +1,6 @@
+## 0.34.64
+* Minor improvements in UI and performance
+
 ## 0.34.63
 * Pin message implemented
 

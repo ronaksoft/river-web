@@ -43,8 +43,8 @@ import Broadcaster from "./app/services/broadcaster";
 
 import './App.scss';
 
-export const C_VERSION = '0.34.63';
-export const C_ELECTRON_VERSIONS = ['10.1.1', '8.5.1'];
+export const C_VERSION = '0.34.64';
+export const C_ELECTRON_VERSIONS = ['10.1.1', '8.5.2'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {

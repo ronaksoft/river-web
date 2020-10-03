@@ -58,6 +58,11 @@ const callReact = (cmd, params) => {
     mainWindow.webContents.send(cmd, params);
 };
 
+const resetConfig = () => {
+    store.delete(C_LOAD_URL_KEY);
+    store.delete(C_WINDOW_CONFIG);
+};
+
 if (!process.mas) {
     const gotTheLock = app.requestSingleInstanceLock();
     if (!gotTheLock) {
@@ -291,6 +296,12 @@ const generateMenu = () => {
                 {role: 'togglefullscreen'},
                 {type: 'separator'},
                 {role: 'toggledevtools'},
+                {
+                    click() {
+                        resetConfig();
+                    },
+                    label: 'Reset To Default Configs',
+                },
             ],
         },
         {

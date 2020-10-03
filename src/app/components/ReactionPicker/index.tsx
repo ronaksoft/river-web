@@ -86,7 +86,7 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
                                 <div className="reaction-emoji">{item}</div>
                             </div>);
                     })}
-                    <div className="reaction-more" onClick={this.toggleMoreHandler}>
+                    <div className={'reaction-more' + (more ? ' full' : '')} onClick={this.toggleMoreHandler}>
                         <MoreVertRounded/>
                     </div>
                 </div>

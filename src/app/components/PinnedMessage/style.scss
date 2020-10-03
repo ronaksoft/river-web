@@ -12,6 +12,7 @@
   .message-preview {
     margin: 3px 0 1px 8px !important;
     flex: 1 1;
+    max-width: unset;
 
     .preview-container .preview-message-wrapper .preview-thumbnail .thumbnail {
       width: 36px;
