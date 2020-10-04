@@ -2372,6 +2372,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             let shouldUpdate = false;
             let counterAction = false;
+            let shouldSort = false;
             if (unreadCounter !== undefined) {
                 shouldUpdate = true;
                 counterAction = true;
@@ -2423,9 +2424,10 @@ class Chat extends React.Component<IProps, IState> {
             if (draft !== undefined) {
                 dialogs[index].draft = draft;
                 shouldUpdate = true;
+                shouldSort = true;
             }
             if (shouldUpdate) {
-                this.dialogsSort(dialogs, undefined, true);
+                this.dialogsSort(dialogs, undefined, !shouldSort);
                 if (this.dialogRef) {
                     this.dialogRef.forceRender();
                 }
@@ -2460,6 +2462,14 @@ class Chat extends React.Component<IProps, IState> {
                         return 1;
                     }
                     if (p1 > p2) {
+                        return -1;
+                    }
+                    const d1 = i1.draft && i1.draft.body ? 1 : 0;
+                    const d2 = i2.draft && i2.draft.body ? 1 : 0;
+                    if (d1 < d2) {
+                        return 1;
+                    }
+                    if (d1 > d2) {
                         return -1;
                     }
                     if (!i1.topmessageid || !i2.topmessageid) {

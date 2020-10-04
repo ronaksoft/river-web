@@ -1,3 +1,6 @@
+## 0.34.67
+* New sort mechanism in dialogs
+
 ## 0.34.66
 * Known bugs fixed
 
