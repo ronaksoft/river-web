@@ -456,7 +456,8 @@
     "replied_message": "Replied message",
     "took_an_screenshot": "took an screenshot",
     "unsupported_file": "Unsupported file",
-    "drop_here": "Drop here"
+    "drop_here": "Drop here",
+    "pinned_message": "Pinned Message"
   },
   "uploader": {
     "converting": "Converting...",

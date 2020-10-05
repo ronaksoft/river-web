@@ -2702,6 +2702,9 @@ class Chat extends React.Component<IProps, IState> {
                                     });
                                 });
                             }
+                            if (this.pinnedMessageRef && dialog && !dialog.pinnedmessageid) {
+                                this.pinnedMessageRef.open(null, 0);
+                            }
                         }
                     });
                 }
@@ -6008,6 +6011,10 @@ class Chat extends React.Component<IProps, IState> {
     private pinMessage(peer: InputPeer, msgId: number) {
         this.apiManager.messagePin(peer, msgId, true).then(() => {
             this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, msgId);
+        }).catch((err: RiverError.AsObject) => {
+            if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMessage) {
+                this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, 0);
+            }
         });
     }
 }

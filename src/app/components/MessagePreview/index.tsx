@@ -141,7 +141,8 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                             <div className="preview-message">
                                 <span className="preview-message-user">{i18n.t('general.error')}</span>
                                 <div className="preview-message-body">
-                                    <div className="preview-inner ltr">{i18n.t('message.replied_message')}</div>
+                                    <div
+                                        className="preview-inner ltr">{i18n.t(this.props.pinnedMessage ? 'message.replied_message' : 'message.replied_message')}</div>
                                 </div>
                             </div>
                         </div>

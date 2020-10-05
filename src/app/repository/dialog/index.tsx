@@ -151,6 +151,10 @@ export default class DialogRepo {
         });
     }
 
+    public getIn(inputs: Array<[string, string, number]>): Promise<IDialog[]> {
+        return this.db.dialogs.bulkGet(inputs);
+    }
+
     public getManyForSnapshot(teamId: string, {skip, limit}: { skip?: number, limit?: number }): Promise<IDialogWithUpdateId> {
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();

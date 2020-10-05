@@ -1275,14 +1275,14 @@ export default class UpdateManager {
     }
 
     private processTransactionStep3(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
-        if (transaction.toCheckDialogIds.length > 0) {
+        if (transaction.toCheckDialogIds.length > 0 && this.dialogRepo) {
             const lastMessagePromise: any[] = [];
             transaction.toCheckDialogIds.forEach((toCheck) => {
                 if (this.messageRepo) {
                     lastMessagePromise.push(this.messageRepo.getLastMessage(toCheck.teamid, toCheck.peerid, toCheck.peertype));
                 }
             });
-            Promise.all(lastMessagePromise).then((arr) => {
+            const messagePromise = Promise.all(lastMessagePromise).then((arr) => {
                 arr.forEach((msg: IMessage | undefined) => {
                     if (msg) {
                         const messageTitle = getMessageTitle(msg);
@@ -1293,6 +1293,7 @@ export default class UpdateManager {
                             last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
                             peerid: msg.peerid || '0',
                             peertype: msg.peertype || 0,
+                            pinnedmessageid: undefined,
                             preview: messageTitle.text,
                             preview_icon: messageTitle.icon,
                             preview_me: (this.userId === msg.senderid),
@@ -1304,13 +1305,31 @@ export default class UpdateManager {
                         });
                     }
                 });
-                this.applyDialogs(transaction.dialogs).then((peers) => {
+                return Promise.resolve();
+            });
+            const dialogPromise = this.dialogRepo.getIn(transaction.toCheckDialogIds.map(o => [o.teamid, o.peerid, o.peertype])).then((dialogs) => {
+                dialogs.forEach((dialog) => {
+                    const peerName = GetPeerName(dialog.peerid, dialog.peertype);
+                    if (transaction.removedMessages.hasOwnProperty(peerName) && transaction.removedMessages[peerName].indexOf(dialog.pinnedmessageid || 0) > -1) {
+                        this.mergeDialog(transaction.dialogs, {
+                            peerid: dialog.peerid || '0',
+                            peertype: dialog.peertype || 0,
+                            pinnedmessageid: 0,
+                            teamid: dialog.teamid || '0',
+                        });
+                    }
+                });
+                return Promise.resolve();
+            });
+            Promise.all([messagePromise, dialogPromise]).then(() => {
+                return this.applyDialogs(transaction.dialogs).then((peers) => {
                     this.callHandlers('all', C_MSG.UpdateDialogDB, {
                         counters: transaction.live ? true : transaction.lastOne,
                         incomingIds: transaction.incomingIds,
                         peers,
                     });
                     this.processTransactionStep4(transaction, transactionResolve, doneFn);
+                    return Promise.resolve();
                 });
             }).catch((err) => {
                 window.console.log('processTransactionStep3', err);

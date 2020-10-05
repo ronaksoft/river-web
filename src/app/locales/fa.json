@@ -452,7 +452,8 @@
     "replied_message": "پیام پاسخ داده شده",
     "took_an_screenshot": "از صفحه عکس گرفت",
     "unsupported_file": "این فایل پشتیبانی نمی‌شود",
-    "drop_here": "اینجا رها کنید"
+    "drop_here": "اینجا رها کنید",
+    "pinned_message": "پیام سنجاق شده"
   },
   "uploader": {
     "converting": "درحال تبدیل کردن...",

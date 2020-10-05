@@ -1,3 +1,6 @@
+## 0.34.69
+* Pinned message improvements
+
 ## 0.34.68
 * Notification bug fixed
 * Minor improvements in reaction
