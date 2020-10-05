@@ -1,3 +1,7 @@
+## 0.34.68
+* Notification bug fixed
+* Minor improvements in reaction
+
 ## 0.34.67
 * New sort mechanism in dialogs
 

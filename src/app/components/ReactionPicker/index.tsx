@@ -57,7 +57,7 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         this.setState({
             message,
             position,
-            reactions: this.getSortedReactions(false),
+            reactions: this.getSortedReactions(false, clone(selectedReactions)),
             selectedReactions,
         });
     }
@@ -107,21 +107,37 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         return `${(Math.ceil((this.state.reactions.length + 1) / 5) - 1) * 30 + 36}px`;
     }
 
-    private getSortedReactions(complete: boolean): string[] {
+    private getSortedReactions(complete: boolean, selected?: { [key: string]: boolean }): string[] {
         const temp: any[] = [];
         const serverReactions = this.apiManager.getInstantSystemConfig().reactionsList || [];
         const list: string[] = clone(serverReactions.length > 0 ? serverReactions : allReactions);
+        if (!selected) {
+            selected = clone(this.state.selectedReactions);
+        }
         for (const [reaction, frequency] of Object.entries(this.frequency)) {
             const index = list.indexOf(reaction);
             if (index > -1) {
                 list.splice(index, 1);
                 temp.push({
                     cnt: frequency,
+                    used: selected.hasOwnProperty(reaction) ? 1 : 0,
+                    val: reaction,
+                });
+                delete selected[reaction];
+            }
+        }
+        for (const [reaction] of Object.keys(selected)) {
+            const index = list.indexOf(reaction);
+            if (index > -1) {
+                list.splice(index, 1);
+                temp.push({
+                    cnt: 1,
+                    used: 1,
                     val: reaction,
                 });
             }
         }
-        return [...orderBy(temp, 'cnt', 'desc').map(o => o.val), ...list].slice(0, complete ? 48 : 5);
+        return [...orderBy(temp, ['used', 'cnt'], ['desc', 'desc']).map(o => o.val), ...list].slice(0, complete ? undefined : 5);
     }
 
     private toggleMoreHandler = () => {
