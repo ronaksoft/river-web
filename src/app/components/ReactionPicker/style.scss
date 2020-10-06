@@ -39,7 +39,6 @@
       cursor: pointer;
 
       .reaction-emoji {
-        transform: translateY(2px);
         line-height: 0;
         display: flex;
         align-items: center;
@@ -154,6 +153,24 @@
               transform: rotate(7deg);
             }
           }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (-webkit-max-device-pixel-ratio: 1) and (min-color-index: 0) {
+  .reaction-picker-popover {
+    .reaction-picker {
+      .reaction-item {
+        box-sizing: content-box;
+        line-height: 1;
+        display: grid;
+        justify-items: center;
+        align-items: center;
+
+        .reaction-emoji {
+          transform: translateY(2px);
         }
       }
     }

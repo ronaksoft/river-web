@@ -31,14 +31,13 @@
       margin: -2px 0 -2px -2px;
       box-shadow: 0 1px 3px rgba(0, 2px, 0, 0.1);
       transition: all 0.1s;
+      font-size: 12px;
 
       .reaction-emoji {
-        transform: translateY(2px);
         line-height: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
         text-align: center;
         letter-spacing: 0;
       }
@@ -82,14 +81,11 @@ html[reaction="1"] {
     .reaction-item {
 
       .reaction-wrapper {
-        height: 26px;
-        width: 26px;
+        height: 28px;
+        width: 28px;
         border-radius: 16px;
         margin: -4px 0 -4px -2px;
-
-        .reaction-emoji {
-          font-size: 18px;
-        }
+        font-size: 17px;
       }
 
       &.ellipsis {
@@ -112,15 +108,30 @@ html[reaction="2"] {
         width: 30px;
         border-radius: 16px;
         margin: -6px 0 -6px -2px;
-
-        .reaction-emoji {
-          font-size: 20px;
-        }
+        font-size: 20px;
       }
 
       &.ellipsis {
         .reaction-wrapper {
           height: 22px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (-webkit-max-device-pixel-ratio: 1) and (min-color-index: 0) {
+  .message-reaction {
+    .reaction-item {
+      .reaction-wrapper {
+        box-sizing: content-box;
+        line-height: 1;
+        display: grid;
+        justify-items: center;
+        align-items: center;
+
+        .reaction-emoji {
+          transform: translateY(2px);
         }
       }
     }

@@ -1,3 +1,6 @@
+## 0.34.71
+* Reaction alignment in mac optimized
+
 ## 0.34.70
 * Various improvements in UI/UX
 * Know bugs fixed
