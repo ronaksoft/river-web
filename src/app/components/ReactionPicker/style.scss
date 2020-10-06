@@ -4,6 +4,11 @@
   transform-origin: center bottom !important;
   border-radius: 12px !important;
 
+  &.from-bottom {
+    transform: translate(-50%, 30px) !important;
+    transform-origin: center top !important;
+  }
+
   .reaction-picker {
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -124,6 +129,30 @@
 
           &:before {
             transform: rotate(-7deg);
+          }
+        }
+      }
+    }
+  }
+
+  &.from-bottom {
+    .reaction-picker {
+      .reaction-more {
+        &.full {
+          order: -1;
+
+          &:after, &:before {
+            bottom: 40%;
+          }
+
+          &:hover {
+            &:after {
+              transform: rotate(-7deg);
+            }
+
+            &:before {
+              transform: rotate(7deg);
+            }
           }
         }
       }

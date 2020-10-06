@@ -101,10 +101,10 @@ import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
 import {
     EventBlur,
-    EventCheckNetwork,
+    EventCheckNetwork, EventFileDownloaded,
     EventFocus,
     EventMouseWheel,
-    EventNetworkStatus,
+    EventNetworkStatus, EventRightMenuToggled,
     EventWasmInit,
     EventWasmStarted,
     EventWebSocketClose,
@@ -965,6 +965,9 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         this.messageRef.clearAll();
+        setTimeout(() => {
+            this.broadcastEvent(EventRightMenuToggled, {});
+        }, 255);
         // this.messageRef.animateToEnd();
         if (shrink) {
             this.setState({
@@ -3974,7 +3977,9 @@ class Chat extends React.Component<IProps, IState> {
                 setTimeout(() => {
                     highlightMessage(id);
                     if (typeof text === 'string' && text !== '') {
-                        highlightMessageText(id, text);
+                        setTimeout(() => {
+                            highlightMessageText(id, text);
+                        }, 255);
                     }
                 }, Math.abs(this.scrollInfo.end - index) < 20 ? 100 : 1500);
             }
@@ -4010,7 +4015,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.setScrollMode('none');
                     highlightMessage(id);
                     if (typeof text === 'string' && text !== '') {
-                        highlightMessageText(id, text);
+                        setTimeout(() => {
+                            highlightMessageText(id, text);
+                        }, 255);
                     }
                     this.messageLoadMoreBeforeHandler();
                     if (this.messageRef) {
@@ -4369,7 +4376,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
             downloadPromise.then(() => {
-                this.broadcastEvent('File_Downloaded', {id: msg.id});
+                this.broadcastEvent(EventFileDownloaded, {id: msg.id});
                 this.progressBroadcaster.remove(msg.id || 0);
                 this.bufferProgressBroadcaster.remove(msg.id || 0);
                 this.messageRepo.importBulk([{
@@ -5231,7 +5238,7 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             // Just to make sure subscribers will update their view
-            this.broadcastEvent('File_Downloaded', {id: message.id});
+            this.broadcastEvent(EventFileDownloaded, {id: message.id});
         }).catch((err) => {
             window.console.log(err);
         });
@@ -5459,7 +5466,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private pinMessageDialog(peerId: string, peerType: number, msgId: number) {
+    private pinMessageDialog(peerId: string, peerType: number, msgId: number, store?: boolean) {
         const dialogs = this.dialogs;
         const index = findIndex(dialogs, {peerid: peerId, peertype: peerType});
         if (index > -1) {
@@ -5467,6 +5474,9 @@ class Chat extends React.Component<IProps, IState> {
                 dialogs[index].pinnedmessageid = 0;
             } else {
                 dialogs[index].pinnedmessageid = msgId;
+            }
+            if (store) {
+                this.dialogRepo.lazyUpsert([dialogs[index]]);
             }
         }
         if (this.selectedPeerName === GetPeerName(peerId, peerType) && this.pinnedMessageRef) {
@@ -6013,7 +6023,7 @@ class Chat extends React.Component<IProps, IState> {
             this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, msgId);
         }).catch((err: RiverError.AsObject) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMessage) {
-                this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, 0);
+                this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, 0, true);
             }
         });
     }

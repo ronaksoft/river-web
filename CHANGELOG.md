@@ -1,3 +1,7 @@
+## 0.34.70
+* Various improvements in UI/UX
+* Know bugs fixed
+
 ## 0.34.69
 * Pinned message improvements
 

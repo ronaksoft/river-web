@@ -748,6 +748,7 @@ class Message extends React.Component<IProps, IState> {
             1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11, 14, 15],
             2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11, 15],
             3: [6, 5, 9, 10, 11],
+            4: [4, 9, 14],
         };
         const selection = window.getSelection();
         const hasCopy = Boolean(selection && selection.type === 'Range');
@@ -757,6 +758,7 @@ class Message extends React.Component<IProps, IState> {
         const me = items[moreIndex].me || false;
         const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio, C_MESSAGE_TYPE.Video, C_MESSAGE_TYPE.Picture];
         const isGroup = this.inputPeer && this.inputPeer.getType() === PeerType.PEERGROUP;
+        const isSystemMessage = (items[moreIndex].messageaction || C_MESSAGE_ACTION.MessageActionNope) !== C_MESSAGE_ACTION.MessageActionNope;
         if (id < 0) {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {
@@ -769,6 +771,16 @@ class Message extends React.Component<IProps, IState> {
                     }
                 } else if (key === 11) {
                     if (copiable && !hasCopy) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else {
+                    menuItems.push(this.menuItem[key]);
+                }
+            });
+        } else if (isSystemMessage) {
+            menuTypes[4].forEach((key) => {
+                if (key === 14) {
+                    if (me) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -808,6 +820,10 @@ class Message extends React.Component<IProps, IState> {
                     if (isGroup) {
                         menuItems.push(this.menuItem[key]);
                     }
+                } else if (key === 15) {
+                    if (isGroup) {
+                        menuItems.push(this.menuItem[key]);
+                    }
                 } else {
                     menuItems.push(this.menuItem[key]);
                 }
@@ -832,6 +848,10 @@ class Message extends React.Component<IProps, IState> {
                     }
                 } else if (key === 13) {
                     if (items[moreIndex].messagetype === C_MESSAGE_TYPE.Gif) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 15) {
+                    if (isGroup) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -942,7 +962,8 @@ class Message extends React.Component<IProps, IState> {
                         <div
                             className={'bubble-wrapper' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '')}
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
-                            onDoubleClick={this.selectMessage(index)}>
+                            onDoubleClick={this.selectMessage(index)}
+                            onContextMenu={this.messageContextMenuHandler(index)}>
                             {this.state.selectable && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}

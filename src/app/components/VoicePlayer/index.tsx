@@ -18,7 +18,7 @@ import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import SettingsConfigManager from '../../services/settingsConfigManager';
 import {ThemeChanged} from "../SettingsMenu";
-import {EventMouseUp} from "../../services/events";
+import {EventMouseUp, EventRightMenuToggled} from "../../services/events";
 import {
     DocumentAttributeAudio,
     DocumentAttributeType,
@@ -135,6 +135,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
     public componentDidMount() {
         window.addEventListener(EventMouseUp, this.windowMouseUpHandler);
+        window.addEventListener(EventRightMenuToggled, this.themeChangedHandler);
         this.themeChangeEvent = this.broadcaster.listen(ThemeChanged, this.themeChangedHandler);
         if (this.props.message && (this.props.message.id || 0) > 0) {
             this.eventReferences.push(this.audioPlayer.listen(this.props.message.id || 0, this.audioPlayerHandler));
@@ -161,6 +162,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             this.themeChangeEvent();
         }
         window.removeEventListener(EventMouseUp, this.windowMouseUpHandler);
+        window.removeEventListener(EventRightMenuToggled, this.themeChangedHandler);
     }
 
     /* Set voice metadata and file */
@@ -289,6 +291,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             return;
         }
         const el = this.canvasRef.parentElement;
+        window.console.log(el);
         if (el) {
             this.canvasConfig.height = el.clientHeight;
             this.canvasConfig.width = el.clientWidth;
@@ -318,7 +321,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         this.canvasRef = ref;
         this.canvasCtx = ref.getContext('2d');
         if (this.canvasCtx) {
-            setTimeout(this.windowResizeHandler, 10);
+            requestAnimationFrame(this.windowResizeHandler);
         }
     }
 

@@ -36,9 +36,10 @@ import {IPeer} from "../../repository/dialog/interface";
 import {GetDbFileName} from "../../repository/file";
 import ElectronService from "../../services/electron";
 import {findIndex} from "lodash";
+import SettingsConfigManager from "../../services/settingsConfigManager";
+import {EventFileDownloaded, EventMediaDBUpdated} from "../../services/events";
 
 import './style.scss';
-import SettingsConfigManager from "../../services/settingsConfigManager";
 
 interface IMedia {
     _modified?: boolean;
@@ -103,8 +104,8 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.getMedias();
-        window.addEventListener('File_Downloaded', this.fileDownloadedHandler);
-        window.addEventListener('Media_DB_Updated', this.mediaDBUpdatedHandler);
+        window.addEventListener(EventFileDownloaded, this.fileDownloadedHandler);
+        window.addEventListener(EventMediaDBUpdated, this.mediaDBUpdatedHandler);
         this.eventReferences.push(this.audioPlayer.globalListen(this.audioPlayerHandler));
     }
 
@@ -119,8 +120,8 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('File_Downloaded', this.fileDownloadedHandler);
-        window.removeEventListener('Media_DB_Updated', this.mediaDBUpdatedHandler);
+        window.removeEventListener(EventFileDownloaded, this.fileDownloadedHandler);
+        window.removeEventListener(EventMediaDBUpdated, this.mediaDBUpdatedHandler);
         this.removeAllListeners();
     }
 

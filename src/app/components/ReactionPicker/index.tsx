@@ -24,6 +24,7 @@ interface IProps {
 }
 
 interface IState {
+    bottom: boolean;
     message: IMessage;
     more: boolean;
     position: PopoverPosition | undefined;
@@ -39,6 +40,7 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         super(props);
 
         this.state = {
+            bottom: false,
             message: {},
             more: false,
             position: undefined,
@@ -54,7 +56,9 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
         (message.yourreactionsList || []).forEach((reaction) => {
             selectedReactions[reaction || ''] = true;
         });
+        const bottom = position.top < 300;
         this.setState({
+            bottom,
             message,
             position,
             reactions: this.getSortedReactions(false, clone(selectedReactions)),
@@ -74,10 +78,11 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {position, more, selectedReactions, reactions} = this.state;
+        const {position, more, selectedReactions, reactions, bottom} = this.state;
         return (
             <Popover open={Boolean(position)} anchorPosition={position} anchorReference="anchorPosition"
-                     onClose={this.closeHandler} classes={{paper: 'reaction-picker-popover'}}>
+                     onClose={this.closeHandler}
+                     classes={{paper: 'reaction-picker-popover' + (bottom ? ' from-bottom' : '')}}>
                 <div className={'reaction-picker' + (more ? ' full' : '')} style={{height: this.getHeight()}}>
                     {reactions.map((item) => {
                         return (

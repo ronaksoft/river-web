@@ -16,6 +16,7 @@ import MessageRepo from '../message';
 import {kMerge} from "../../services/utilities/kDash";
 import {IMessage} from "../message/interface";
 import {IPeer} from "../dialog/interface";
+import {EventMediaDBUpdated} from "../../services/events";
 
 interface IMediaWithCount {
     count: number;
@@ -185,7 +186,7 @@ export default class MediaRepo {
             });
             return this.createMany(list);
         }).then((res) => {
-            this.broadcastEvent('Media_DB_Updated', {ids: newIds, peerids: Object.keys(peerIdMap), callerId});
+            this.broadcastEvent(EventMediaDBUpdated, {ids: newIds, peerids: Object.keys(peerIdMap), callerId});
             return res;
         });
     }
