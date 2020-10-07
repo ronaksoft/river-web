@@ -12,6 +12,7 @@ import Dialog from '@material-ui/core/Dialog/Dialog';
 // @ts-ignore
 import ReactCrop from 'react-image-crop';
 import {CheckRounded} from '@material-ui/icons';
+import i18n from '../../services/i18n';
 
 import './style.scss';
 
@@ -77,9 +78,7 @@ class Cropper extends React.Component<IProps, IState> {
                         paper: 'picture-crop-dialog-paper'
                     }}
                 >
-                    <div className="picture-crop-header">
-                        Crop Picture
-                    </div>
+                    <div className="picture-crop-header">{i18n.t('uploader.crop_picture')}</div>
                     {Boolean(profilePictureFile) &&
                     <ReactCrop
                         src={profilePictureFile || ''} crop={profilePictureCrop}

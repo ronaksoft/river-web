@@ -25,10 +25,6 @@ import {ILabel} from "../../repository/label/interface";
 import LabelRepo from "../../repository/label";
 import Broadcaster from "../../services/broadcaster";
 import Checkbox from "@material-ui/core/Checkbox";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog/Dialog";
 import AutoSizer from "react-virtualized-auto-sizer";
 import DialogSkeleton from "../DialogSkeleton";
 import {IMessage} from "../../repository/message/interface";
@@ -39,6 +35,7 @@ import LabelCreate from "../LabelCreate";
 import {kMerge} from "../../services/utilities/kDash";
 import {LabelMessageItem} from "../LabelItem";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 
@@ -51,7 +48,6 @@ interface IProps {
 }
 
 interface IState {
-    confirmOpen: boolean;
     label?: ILabel;
     labelList: IMessage[];
     labelLoading: boolean;
@@ -76,12 +72,12 @@ class LabelMenu extends React.Component<IProps, IState> {
     private labelHasMore: boolean = false;
     private labelCreateRef: LabelCreate | undefined;
     private scrollbarRef: Scrollbars | undefined;
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            confirmOpen: false,
             labelList: [],
             labelLoading: false,
             list: [],
@@ -96,6 +92,7 @@ class LabelMenu extends React.Component<IProps, IState> {
         this.apiManager = APIManager.getInstance();
         this.labelRepo = LabelRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
+        this.modalityService = ModalityService.getInstance();
         this.searchThrottle = throttle(this.searchIt, 512);
 
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
@@ -115,7 +112,7 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, confirmOpen, search, list, loading, selectedIds, label} = this.state;
+        const {page, search, list, loading, selectedIds, label} = this.state;
         const currentCount = label ? (label.counter ? (label.counter[this.props.teamId] || 0) : 0) : 0;
         return (
             <div className="label-menu" onMouseEnter={this.props.onMouseEnter}>
@@ -240,21 +237,6 @@ class LabelMenu extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                 </div>
-                <Dialog
-                    open={confirmOpen}
-                    onClose={this.confirmCloseHandler}
-                    className="kk-context-menu"
-                    classes={{
-                        paper: 'kk-context-menu-paper'
-                    }}
-                >
-                    <DialogTitle>{i18n.t('general.are_you_sure')}</DialogTitle>
-                    <DialogActions>
-                        <Button onClick={this.confirmCloseHandler} color="secondary">{i18n.t('general.cancel')}</Button>
-                        <Button onClick={this.confirmAcceptHandler} color="primary"
-                                autoFocus={true}>{i18n.t('general.yes')}</Button>
-                    </DialogActions>
-                </Dialog>
             </div>
         );
     }
@@ -277,8 +259,14 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     private removeLabelHandler = () => {
-        this.setState({
-            confirmOpen: true,
+        this.modalityService.open({
+            cancelText: i18n.t('general.cancel'),
+            confirmText: i18n.t('general.yes'),
+            title: i18n.t('general.are_you_sure'),
+        }).then((modalRes) => {
+            if (modalRes === 'confirm') {
+                this.confirmAcceptHandler();
+            }
         });
     }
 
@@ -353,12 +341,6 @@ class LabelMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private confirmCloseHandler = () => {
-        this.setState({
-            confirmOpen: false,
-        });
-    }
-
     private confirmAcceptHandler = () => {
         const {selectedIds} = this.state;
         this.apiManager.labelDelete(selectedIds).then(() => {
@@ -370,7 +352,6 @@ class LabelMenu extends React.Component<IProps, IState> {
                 }
             });
             this.setState({
-                confirmOpen: false,
                 list,
                 selectedIds: [],
             });

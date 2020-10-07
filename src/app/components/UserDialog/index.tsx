@@ -10,7 +10,6 @@
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import {AddRounded, CheckRounded, EditRounded, SendRounded} from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
     InputPeer,
     InputUser,
@@ -21,17 +20,8 @@ import {
 import APIManager from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
-import TextField from '@material-ui/core/TextField/TextField';
 import UniqueId from '../../services/uniqueId';
-import Checkbox from '@material-ui/core/Checkbox/Checkbox';
-import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
-import Dialog from '@material-ui/core/Dialog/Dialog';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Button from '@material-ui/core/Button/Button';
-import DialogActions from '@material-ui/core/DialogActions/DialogActions';
+import {Button, FormControlLabel, RadioGroup, Radio, Dialog, Checkbox, TextField, IconButton} from '@material-ui/core';
 import {Link} from 'react-router-dom';
 import RiverTime from '../../services/utilities/river_time';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
@@ -42,6 +32,7 @@ import {notifyOptions} from "../../pages/Chat";
 import {OfficialIcon} from "../SVG/official";
 import {extractPhoneNumber} from "../../services/utilities/localize";
 import LastSeen from "../LastSeen";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 
@@ -57,7 +48,6 @@ interface IState {
     isInContact: boolean;
     lastname: string;
     notifySetting: PeerNotifySettings.AsObject | null;
-    notifySettingDialogOpen: boolean;
     notifyValue: string;
     peer: InputPeer | null;
     phone: string;
@@ -74,6 +64,7 @@ class UserDialog extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private me: boolean = false;
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
@@ -84,7 +75,6 @@ class UserDialog extends React.Component<IProps, IState> {
             isInContact: false,
             lastname: '',
             notifySetting: null,
-            notifySettingDialogOpen: false,
             notifyValue: '-1',
             peer: null,
             phone: '',
@@ -102,6 +92,8 @@ class UserDialog extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
 
         this.broadcaster = Broadcaster.getInstance();
+
+        this.modalityService = ModalityService.getInstance();
     }
 
     public componentDidMount() {
@@ -126,7 +118,6 @@ class UserDialog extends React.Component<IProps, IState> {
             firstname: '',
             isInContact: false,
             lastname: '',
-            notifySettingDialogOpen: false,
             notifyValue: '-1',
             peer,
             phone: '',
@@ -139,7 +130,7 @@ class UserDialog extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {user, edit, firstname, lastname, phone, isInContact, notifySetting, notifySettingDialogOpen, notifyValue, userDialogOpen, sendMessageEnable} = this.state;
+        const {user, edit, firstname, lastname, phone, isInContact, notifySetting, userDialogOpen, sendMessageEnable} = this.state;
         // if (!dialog) {
         //     return '';
         // }
@@ -281,37 +272,6 @@ class UserDialog extends React.Component<IProps, IState> {
                             <SendRounded/> {i18n.t('general.send_message')}
                         </Link>
                     </div>}
-                    <Dialog
-                        open={notifySettingDialogOpen}
-                        onClose={this.notifySettingDialogCloseHandler}
-                        maxWidth="xs"
-                        className="notify-setting-dialog"
-                        classes={{
-                            paper: 'notify-setting-dialog-paper'
-                        }}
-                    >
-                        <DialogTitle>{i18n.t('peer_info.notify_settings')}</DialogTitle>
-                        <DialogContent className="dialog-content">
-                            <RadioGroup
-                                name="notify-setting"
-                                value={notifyValue}
-                                onChange={this.notifyValueChangeHandler}
-                            >
-                                {notifyOptions.map((item: any, key: number) => {
-                                    return (<FormControlLabel key={key} value={item.val} label={item.title}
-                                                              control={<Radio color="primary"/>}/>);
-                                })}
-                            </RadioGroup>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.notifySettingDialogCloseHandler} color="secondary">
-                                {i18n.t('general.disagree')}
-                            </Button>
-                            <Button onClick={this.applyNotifySettings} color="primary" autoFocus={true}>
-                                {i18n.t('general.apply')}
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
                 </div>
             </Dialog>
         );
@@ -467,17 +427,31 @@ class UserDialog extends React.Component<IProps, IState> {
         if (e.currentTarget.checked) {
             const notifyValue = String(notifySetting.muteuntil || -1);
             this.setState({
-                notifySettingDialogOpen: true,
                 notifyValue,
+            }, ()=> {
+                this.modalityService.open({
+                    cancelText: i18n.t('general.disagree'),
+                    confirmText: i18n.t('general.apply'),
+                    description: <RadioGroup
+                        name="notify-setting"
+                        value={this.state.notifyValue}
+                        onChange={this.notifyValueChangeHandler}
+                    >
+                        {notifyOptions.map((item: any, key: number) => {
+                            return (<FormControlLabel key={key} value={item.val} label={item.title}
+                                                      control={<Radio color="primary"/>}/>);
+                        })}
+                    </RadioGroup>,
+                    title: i18n.t('peer_info.notify_settings'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        this.saveNotifySettings(parseInt(this.state.notifyValue, 10));
+                    }
+                });
             });
         } else {
             this.saveNotifySettings(-1);
         }
-    }
-
-    /* Apply notify settings */
-    private applyNotifySettings = () => {
-        this.saveNotifySettings(parseInt(this.state.notifyValue, 10));
     }
 
     /* Save notify settings */
@@ -500,12 +474,10 @@ class UserDialog extends React.Component<IProps, IState> {
                 notifySetting: settings.toObject(),
             });
             this.setState({
-                notifySettingDialogOpen: false,
                 notifyValue: String(settings.toObject().muteuntil),
             });
         }).catch(() => {
             this.setState({
-                notifySettingDialogOpen: false,
                 notifyValue: '-1',
             });
         });
@@ -515,13 +487,6 @@ class UserDialog extends React.Component<IProps, IState> {
     private notifyValueChangeHandler = (e: any, val: string) => {
         this.setState({
             notifyValue: val,
-        });
-    }
-
-    /* Close notify settings */
-    private notifySettingDialogCloseHandler = () => {
-        this.setState({
-            notifySettingDialogOpen: false,
         });
     }
 

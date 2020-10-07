@@ -362,7 +362,7 @@ class Message extends React.Component<IProps, IState> {
             },
             15: {
                 cmd: 'pin_message',
-                title: i18n.t('chat.pin'),
+                title: i18n.t('chat.toggle_pin'),
             },
         };
     }

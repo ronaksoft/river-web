@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {Button, DialogActions, DialogTitle, IconButton} from "@material-ui/core";
+import {Button, IconButton} from "@material-ui/core";
 import {KeyboardBackspaceRounded} from "@material-ui/icons";
 import i18n from "../../services/i18n";
 import Scrollbars from "react-custom-scrollbars";
@@ -18,7 +18,7 @@ import {Loading} from "../Loading";
 import {findIndex} from "lodash";
 import {AccountAuthorization} from "../../services/sdk/messages/accounts_pb";
 import TimeUtility from "../../services/utilities/time";
-import OverlayDialog from "@material-ui/core/Dialog/Dialog";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 
@@ -30,8 +30,6 @@ interface IProps {
 }
 
 interface IState {
-    confirmDialogOpen: boolean;
-    confirmDialogSelectedId: string;
     loading: boolean;
     sessions: AccountAuthorization.AsObject[];
 }
@@ -41,13 +39,12 @@ class SettingsSession extends React.Component<IProps, IState> {
     private readonly rtl: boolean = false;
     private readonly currentAuthID: string;
     private apiManager: APIManager;
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            confirmDialogOpen: false,
-            confirmDialogSelectedId: '',
             loading: false,
             sessions: [],
         };
@@ -55,6 +52,8 @@ class SettingsSession extends React.Component<IProps, IState> {
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
         this.apiManager = APIManager.getInstance();
         this.currentAuthID = this.apiManager.getConnInfo().AuthID;
+
+        this.modalityService = ModalityService.getInstance();
     }
 
     public componentDidMount() {
@@ -62,7 +61,7 @@ class SettingsSession extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {sessions, loading, confirmDialogOpen} = this.state;
+        const {sessions, loading} = this.state;
         return (
             <>
                 {Boolean(this.props.onPrev) && <div className="menu-header">
@@ -134,24 +133,6 @@ class SettingsSession extends React.Component<IProps, IState> {
                     </div>}
                 </div>}
                 {loading && <Loading/>}
-                <OverlayDialog
-                    open={confirmDialogOpen}
-                    onClose={this.confirmDialogCloseHandler}
-                    className="confirm-dialog"
-                    classes={{
-                        paper: 'confirm-dialog-paper'
-                    }}
-                >
-                    <DialogTitle>{this.state.confirmDialogSelectedId === '0' ? i18n.t('settings.terminate_all_other_sessions') : i18n.t('settings.terminate_session')}</DialogTitle>
-                    <DialogActions>
-                        <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                            {i18n.t('general.disagree')}
-                        </Button>
-                        <Button onClick={this.terminateSessionHandler} color="primary" autoFocus={true}>
-                            {i18n.t('general.agree')}
-                        </Button>
-                    </DialogActions>
-                </OverlayDialog>
             </>
         );
     }
@@ -210,20 +191,24 @@ class SettingsSession extends React.Component<IProps, IState> {
         if (!id) {
             return;
         }
-        this.setState({
-            confirmDialogOpen: true,
-            confirmDialogSelectedId: id
+        this.modalityService.open({
+            cancelText: i18n.t('general.disagree'),
+            confirmText: i18n.t('general.agree'),
+            title: id === '0' ? i18n.t('settings.terminate_all_other_sessions') : i18n.t('settings.terminate_session'),
+        }).then((modalRes) => {
+            if (modalRes === 'confirm') {
+                this.terminateSessionHandler(id);
+            }
         });
     }
 
     /* Terminate session selected session */
-    private terminateSessionHandler = () => {
-        const {confirmDialogSelectedId} = this.state;
-        if (confirmDialogSelectedId !== '') {
-            this.apiManager.sessionTerminate(confirmDialogSelectedId).then(() => {
+    private terminateSessionHandler = (selectedId: string) => {
+        if (selectedId !== '') {
+            this.apiManager.sessionTerminate(selectedId).then(() => {
                 const {sessions} = this.state;
-                if (confirmDialogSelectedId !== '0') {
-                    const index = findIndex(sessions, {authid: confirmDialogSelectedId});
+                if (selectedId !== '0') {
+                    const index = findIndex(sessions, {authid: selectedId});
                     if (sessions && index > -1) {
                         sessions.splice(index, 1);
                         this.setState({
@@ -240,14 +225,6 @@ class SettingsSession extends React.Component<IProps, IState> {
                 }
             });
         }
-        this.confirmDialogCloseHandler();
-    }
-
-    /* Confirm dialog close handler */
-    private confirmDialogCloseHandler = () => {
-        this.setState({
-            confirmDialogOpen: false,
-        });
     }
 
     private doneHandler = () => {

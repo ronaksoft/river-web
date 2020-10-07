@@ -120,7 +120,8 @@
       "reload_text": "باموفقیت آپدیت شد"
     },
     "seen_by": "مشاهده کنندگان",
-    "pin": "سنجاق"
+    "pin": "سنجاق",
+    "toggle_pin": "تغییر سنجاق"
   },
   "peer_info": {
     "notify_settings": "تنظیمات اعلان‌ها",
@@ -466,7 +467,8 @@
     "edit_photo": "اصلاح تصویر",
     "select_video_frame": "انتخاب فریم ویدئو",
     "add_it": "اضافه کن",
-    "animated": "متحرک"
+    "animated": "متحرک",
+    "crop_picture": "کراپ تصویر"
   },
   "label": {
     "labels": "برچسب‌ها",

@@ -121,7 +121,8 @@
       "reload_text": "Successfully updated"
     },
     "seen_by": "Seen by",
-    "pin": "Pin"
+    "pin": "Pin",
+    "toggle_pin": "Toggle Pin"
   },
   "peer_info": {
     "notify_settings": "Notify Settings",
@@ -470,7 +471,8 @@
     "edit_photo": "Edit Photo",
     "select_video_frame": "Select Video Frame",
     "add_it": "Add It",
-    "animated": "Animated"
+    "animated": "Animated",
+    "crop_picture": "Crop Picture"
   },
   "label": {
     "labels": "Labels",

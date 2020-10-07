@@ -77,8 +77,6 @@ import {
     CircularProgress,
     Slider,
     Radio,
-    DialogActions,
-    DialogTitle,
     MenuItem,
     Menu,
     IconButton,
@@ -86,7 +84,6 @@ import {
     Switch,
     Button,
 } from "@material-ui/core";
-import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import Broadcaster from '../../services/broadcaster';
 import {AccountPrivacyRules} from '../../services/sdk/messages/accounts_pb';
 import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
@@ -117,6 +114,7 @@ import {IPeer} from "../../repository/dialog/interface";
 import SettingsTeam from "../SettingsTeam";
 import SettingsSession from "../SettingsSession";
 import {EventShowChangelog} from "../../services/events";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -215,8 +213,6 @@ interface IProps {
 interface IState {
     avatarMenuAnchorEl: any;
     bio: string;
-    confirmDialogMode: '' | 'terminate_session' | 'remove_synced_contacts';
-    confirmDialogOpen: boolean;
     confirmDialogSelectedId: string;
     contactList: IUser[];
     customBackgroundSrc?: string;
@@ -295,6 +291,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private readonly isMobile: boolean = false;
     private contactHasMore: boolean = false;
     private avatarService: AvatarService;
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
@@ -305,8 +302,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.state = {
             avatarMenuAnchorEl: null,
             bio: '',
-            confirmDialogMode: '',
-            confirmDialogOpen: false,
             confirmDialogSelectedId: '',
             contactList: [],
             editProfile: false,
@@ -385,6 +380,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
         this.isMobile = this.isMobile = IsMobile.isAny();
         this.avatarService = AvatarService.getInstance();
+        this.modalityService = ModalityService.getInstance();
 
         this.devToolsDebouncer = debounce(this.showVersionHandler, 512);
     }
@@ -450,9 +446,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
     public render() {
         const {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
-            lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto,
-            confirmDialogMode, confirmDialogOpen, customBackgroundSrc, privacy, passwordMode,
-            teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName, selectedLastSeenFormat,
+            lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, customBackgroundSrc, privacy,
+            passwordMode, teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName, selectedLastSeenFormat,
         } = this.state;
         const team = teamList.find(o => o.id === teamSelectedId && ((o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSADMIN) > -1 || (o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSCREATOR) > -1));
         return (
@@ -1334,26 +1329,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 >
                     {this.avatarContextMenuItem()}
                 </Menu>
-                <OverlayDialog
-                    open={confirmDialogOpen}
-                    onClose={this.confirmDialogCloseHandler}
-                    className="confirm-dialog"
-                    classes={{
-                        paper: 'confirm-dialog-paper'
-                    }}
-                >
-                    {Boolean(confirmDialogMode === 'remove_synced_contacts') && <>
-                        <DialogTitle>{i18n.t('settings.remove_synced_contacts')}?</DialogTitle>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.cancel')}
-                            </Button>
-                            <Button onClick={this.removeSyncedContactsHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.yes')}
-                            </Button>
-                        </DialogActions>
-                    </>}
-                </OverlayDialog>
             </div>
         );
     }
@@ -1983,13 +1958,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
     }
 
-    /* Confirm dialog close handler */
-    private confirmDialogCloseHandler = () => {
-        this.setState({
-            confirmDialogOpen: false,
-        });
-    }
-
     /* Broadcast Global Event */
     private broadcastEvent(name: string, data: any) {
         this.broadcaster.publish(name, data);
@@ -2516,9 +2484,14 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     /* Open confirm dialog for remove synced contacts */
     private removeSyncedContactsConfirmHandler = (e: any) => {
-        this.setState({
-            confirmDialogMode: 'remove_synced_contacts',
-            confirmDialogOpen: true,
+        this.modalityService.open({
+            cancelText: i18n.t('general.cancel'),
+            confirmText: i18n.t('general.yes'),
+            title: `${i18n.t('settings.remove_synced_contacts')}?`,
+        }).then((modalRes) => {
+            if (modalRes === 'confirm') {
+                this.removeSyncedContactsHandler();
+            }
         });
     }
 
@@ -2529,7 +2502,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
             if (this.props.onError) {
                 this.props.onError(i18n.t('settings.synced_contacts_removed_successfully'));
             }
-            this.confirmDialogCloseHandler();
         });
     }
 

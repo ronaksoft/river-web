@@ -34,9 +34,6 @@ import GroupRepo from "../../repository/group";
 import {IUser} from "../../repository/user/interface";
 import {IGroup} from "../../repository/group/interface";
 import Tooltip from "@material-ui/core/Tooltip";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
 import {hasAuthority} from "../GroupInfoMenu";
 import {findIndex} from "lodash";
 import UserName from "../UserName";
@@ -48,9 +45,10 @@ import {EventKeyDown, EventMouseMove, EventMouseUp} from "../../services/events"
 import StreamVideo from "../StreamVideo";
 import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
+import {GetDbFileName} from "../../repository/file";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
-import {GetDbFileName} from "../../repository/file";
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -141,6 +139,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private removeTooltipTimeout: any = null;
     private downloadProgressRef: DownloadProgress | undefined;
     private isElectron: boolean = ElectronService.isElectron();
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
@@ -163,6 +162,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
+        this.modalityService = ModalityService.getInstance();
     }
 
     public componentDidMount() {
@@ -495,24 +495,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         );
                     })}
                 </Menu>
-                <Dialog
-                    open={this.state.confirmDialogOpen}
-                    onClose={this.confirmDialogCloseHandler}
-                    className="confirm-dialog"
-                    classes={{
-                        paper: 'confirm-dialog'
-                    }}
-                >
-                    <DialogTitle>{i18n.t('settings.remove_photo')}</DialogTitle>
-                    <DialogActions>
-                        <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                            {i18n.t('general.cancel')}
-                        </Button>
-                        <Button onClick={this.removePhotoHandler} color="primary" autoFocus={true}>
-                            {i18n.t('general.yes')}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
             </div>
         );
     }
@@ -1034,9 +1016,18 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 }
                 break;
             case 'remove_photo':
-                this.setState({
-                    confirmDialogIndex: this.state.gallerySelect,
-                    confirmDialogOpen: true,
+                this.modalityService.open({
+                    cancelText: i18n.t('general.cancel'),
+                    confirmText: i18n.t('general.yes'),
+                    title: i18n.t('settings.remove_photo'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        this.removePhotoHandler(this.state.gallerySelect);
+                    } else {
+                        this.setState({
+                            confirmDialogOpen: false,
+                        });
+                    }
                 });
                 break;
             case 'set_as_avatar':
@@ -1282,8 +1273,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     /* Remove photo handler */
-    private removePhotoHandler = () => {
-        const index = this.state.confirmDialogIndex;
+    private removePhotoHandler = (index: number) => {
         const {galleryList, gallerySelect, doc} = this.state;
         if (!doc || !doc.inputPeer || !galleryList[index]) {
             return;

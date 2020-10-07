@@ -9,18 +9,12 @@
 
 import * as React from 'react';
 import Routes from './app/routes';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {CircularProgress, DialogContentText} from '@material-ui/core';
 import MainRepo from './app/repository';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {ErrorInfo} from 'react';
 import * as Sentry from '@sentry/browser';
-import I18n from "./app/services/i18n";
+import i18n from "./app/services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from "./app/services/iframe";
 import UniqueId from "./app/services/uniqueId";
 import Server from "./app/services/sdk/server";
@@ -40,10 +34,11 @@ import ElectronService from "./app/services/electron";
 import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 import {ThemeChanged} from "./app/components/SettingsMenu";
 import Broadcaster from "./app/services/broadcaster";
+import {Modality, ModalityService} from "kk-modality";
 
 import './App.scss';
 
-export const C_VERSION = '0.34.71';
+export const C_VERSION = '0.34.72';
 export const C_ELECTRON_VERSIONS = ['10.1.1', '8.5.2'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
@@ -75,16 +70,14 @@ const getTheme = () => {
 };
 
 interface IState {
-    alertOpen: boolean;
     clearingSiteData: boolean;
-    errorMessage: string;
     hasUpdate: boolean;
     updateContent: string;
     updateMode: string;
     desktopDownloadLink: string;
 }
 
-I18n.init({
+i18n.init({
     defLang: localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en',
     dictionaries: {
         en: require('./app/locales/en.json'),
@@ -107,10 +100,8 @@ class App extends React.Component<{}, IState> {
         super(props);
 
         this.state = {
-            alertOpen: false,
             clearingSiteData: false,
             desktopDownloadLink: '',
-            errorMessage: `You are receiving "Auth Error", do you like to clear all site data?`,
             hasUpdate: false,
             updateContent: '',
             updateMode: '',
@@ -146,19 +137,8 @@ class App extends React.Component<{}, IState> {
         window.addEventListener(EventBlur, this.windowBlurHandler);
         window.addEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
         window.addEventListener(EventShowChangelog, this.updateDialog);
-        window.addEventListener('authErrorEvent', (event: any) => {
-            this.setState({
-                alertOpen: true,
-                errorMessage: `You are receiving "Auth Error", do you like to clear all site data?`,
-            });
-        });
-
-        window.addEventListener('fnDecryptError', (event: any) => {
-            this.setState({
-                alertOpen: true,
-                errorMessage: `You are receiving "Decrypt Error", do you like to clear all site data?`,
-            });
-        });
+        window.addEventListener('authErrorEvent', this.decryptErrorHandler);
+        window.addEventListener('fnDecryptError', this.decryptErrorHandler);
 
         this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
 
@@ -193,6 +173,8 @@ class App extends React.Component<{}, IState> {
         window.removeEventListener(EventBlur, this.windowBlurHandler);
         window.removeEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
         window.removeEventListener(EventShowChangelog, this.updateDialog);
+        window.removeEventListener('authErrorEvent', this.decryptErrorHandler);
+        window.removeEventListener('fnDecryptError', this.decryptErrorHandler);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
@@ -211,7 +193,6 @@ class App extends React.Component<{}, IState> {
         }).then((text) => {
             this.setState({
                 desktopDownloadLink: this.getDesktopLink(),
-                hasUpdate: true,
                 updateContent: md().render(text),
                 updateMode: 'notif',
             }, () => {
@@ -224,6 +205,8 @@ class App extends React.Component<{}, IState> {
                         }
                         this.setState({
                             updateMode: 'changelog',
+                        }, () => {
+                            this.showUpdateDialog();
                         });
                     }
                 }, 10);
@@ -231,9 +214,10 @@ class App extends React.Component<{}, IState> {
         }).catch(() => {
             this.setState({
                 desktopDownloadLink: this.getDesktopLink(),
-                hasUpdate: true,
                 updateContent: '',
                 updateMode: 'notif',
+            }, () => {
+                this.showUpdateDialog();
             });
         });
     }
@@ -247,92 +231,16 @@ class App extends React.Component<{}, IState> {
     }
 
     public render() {
-        const {alertOpen, clearingSiteData, errorMessage, hasUpdate, updateContent, desktopDownloadLink, updateMode} = this.state;
         return (
             <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                 <MuiThemeProvider theme={getTheme()}>
                     <SnackbarProvider maxSnack={3}>
                         {Routes}
                     </SnackbarProvider>
-                    <Dialog open={alertOpen} onClose={this.alertCloseHandler}>
-                        <DialogTitle>Critical Error</DialogTitle>
-                        <DialogContent>
-                            {!clearingSiteData && <DialogContentText>
-                                {errorMessage}<br/>
-                                <i>This probably fix your problem!</i>
-                            </DialogContentText>}
-                        </DialogContent>
-                        {!clearingSiteData && <DialogActions>
-                            <Button onClick={this.alertCloseHandler}
-                                    color="secondary">{I18n.t('general.disagree')}</Button>
-                            <Button onClick={this.clearSiteDataHandler} color="primary"
-                                    autoFocus={true}>{I18n.t('general.agree')}</Button>
-                        </DialogActions>}
-                        {clearingSiteData &&
-                        <DialogActions style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            <CircularProgress/>
-                        </DialogActions>}
-                    </Dialog>
-                    <Dialog
-                        key="overlay-dialog"
-                        open={hasUpdate}
-                        onClose={this.updateDialogCloseHandler}
-                        className="confirm-dialog"
-                        disableBackdropClick={true}
-                        disableEscapeKeyDown={true}
-                        classes={{
-                            paper: 'confirm-dialog-paper'
-                        }}
-                    >
-                        {updateMode === 'notif' || updateMode === 'changelog' ? <>
-                            <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText className="update-title">
-                                    {I18n.t('chat.update_dialog.body')}
-                                </DialogContentText>
-                                {Boolean(updateContent !== '') && <DialogContentText>
-                                    <div className="markdown-body" dangerouslySetInnerHTML={{__html: updateContent}}/>
-                                </DialogContentText>}
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={this.updateDialogCloseHandler} color="secondary">
-                                    {I18n.t('general.cancel')}
-                                </Button>
-                                {Boolean(updateMode === 'notif') &&
-                                <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
-                                    {I18n.t('chat.update_dialog.update')}
-                                </Button>}
-                                {Boolean(desktopDownloadLink !== '') &&
-                                <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
-                                    {I18n.tf('chat.update_dialog.download_desktop_version', '0.25.0')}
-                                </Button>}
-                            </DialogActions>
-                        </> : <>
-                            <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    {I18n.t('chat.update_dialog.reload_text')}
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={this.updateDialogCloseHandler} color="secondary">
-                                    {I18n.t('general.cancel')}
-                                </Button>
-                                <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
-                                    {I18n.t('chat.update_dialog.reload')}
-                                </Button>
-                            </DialogActions>
-                        </>}
-                    </Dialog>
+                    <Modality queueSize={5} dialogClasses={{root: 'confirm-dialog', paper: 'confirm-dialog-paper'}}/>
                 </MuiThemeProvider>
             </div>
         );
-    }
-
-    private alertCloseHandler = () => {
-        this.setState({
-            alertOpen: false,
-        });
     }
 
     private clearSiteDataHandler = () => {
@@ -353,11 +261,7 @@ class App extends React.Component<{}, IState> {
                 localStorage.setItem(C_LOCALSTORAGE.ServerKeys, serverKeys);
             }
             localStorage.setItem(C_LOCALSTORAGE.DebugVerboseAPI, verboseMode);
-            this.setState({
-                alertOpen: false,
-            }, () => {
-                window.location.reload();
-            });
+            window.location.reload();
         });
     }
 
@@ -479,6 +383,56 @@ class App extends React.Component<{}, IState> {
 
     private themeChangeHandler = () => {
         this.forceUpdate();
+    }
+
+    private decryptErrorHandler = () => {
+        ModalityService.getInstance().open({
+            cancelText: i18n.t('general.disagree'),
+            confirmText: i18n.t('general.agree'),
+            description: <>{this.state.clearingSiteData ? <CircularProgress/> : <DialogContentText>
+                {`You are receiving "Auth Error", do you like to clear all site data?`}<br/>
+                <i>This probably fix your problem!</i>
+            </DialogContentText>}</>,
+            title: 'Critical Error',
+        }).then((modalRes) => {
+            if (modalRes === 'confirm') {
+                this.clearSiteDataHandler();
+            }
+        });
+    }
+
+    private showUpdateDialog() {
+        const {updateMode, desktopDownloadLink, updateContent} = this.state;
+        const isUpdate = (updateMode === 'notif' || updateMode === 'changelog');
+        ModalityService.getInstance().open({
+            buttons: desktopDownloadLink !== '' ? [{
+                action: 'download_electron',
+                props: {
+                    color: 'secondary'
+                },
+                text: i18n.tf('chat.update_dialog.download_desktop_version', '0.25.0'),
+            }] : undefined,
+            cancelText: i18n.t('general.disagree'),
+            confirmText: i18n.t(isUpdate ? 'chat.update_dialog.update' : 'chat.update_dialog.reload'),
+            description: isUpdate ? <><DialogContentText
+                className="update-title">{i18n.t('chat.update_dialog.body')}</DialogContentText>
+                {Boolean(updateContent !== '') && <DialogContentText>
+                    <div className="markdown-body" dangerouslySetInnerHTML={{__html: updateContent}}/>
+                </DialogContentText>}</> : <DialogContentText>
+                {i18n.t('chat.update_dialog.reload_text')}
+            </DialogContentText>,
+            title: i18n.t('chat.update_dialog.title'),
+        }).then((modalRes) => {
+            if (modalRes === 'confirm') {
+                if (isUpdate) {
+                    this.updateDialogAcceptHandler();
+                } else {
+                    this.updateDialogAcceptHandler();
+                }
+            } else if (modalRes === 'download_electron') {
+                this.downloadDesktopHandler(desktopDownloadLink);
+            }
+        });
     }
 }
 

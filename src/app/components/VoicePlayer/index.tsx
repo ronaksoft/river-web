@@ -291,7 +291,6 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             return;
         }
         const el = this.canvasRef.parentElement;
-        window.console.log(el);
         if (el) {
             this.canvasConfig.height = el.clientHeight;
             this.canvasConfig.width = el.clientWidth;

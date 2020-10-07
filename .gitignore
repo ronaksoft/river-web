@@ -27,4 +27,3 @@ yarn-error.log*
 .sass-cache/
 .idea/
 .tmp/
-.DS_Store

@@ -1,3 +1,8 @@
+## 0.34.72
+* 🎉 Brand new modals thanks to `KK-Modality`
+* Code deeply refactored
+* Known bugs fixed
+
 ## 0.34.71
 * Reaction alignment in mac optimized
 

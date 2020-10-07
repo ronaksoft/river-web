@@ -12,7 +12,6 @@ import {
     AddRounded, CheckRounded, CloseRounded, EditRounded, ExitToAppRounded, KeyboardBackspaceRounded, MoreVert,
     PersonAddRounded, PhotoCameraRounded, StarRateRounded, StarsRounded,
 } from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
     GroupFlags, InputFile, InputPeer, InputUser, ParticipantType, PeerNotifySettings, PeerType,
 } from '../../services/sdk/messages/core.types_pb';
@@ -21,29 +20,29 @@ import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import TimeUtility from '../../services/utilities/time';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FormControl from '@material-ui/core/FormControl';
 import {IParticipant, IUser} from '../../repository/user/interface';
 import UserAvatar from '../UserAvatar';
-import Menu from '@material-ui/core/Menu/Menu';
-import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {findIndex, trimStart} from 'lodash';
-import Dialog from '@material-ui/core/Dialog/Dialog';
 import ContactList from '../ContactList';
-import Checkbox from '@material-ui/core/Checkbox/Checkbox';
 import {isMuted} from '../UserInfoMenu';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogRepo from '../../repository/dialog';
-import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
-import RadioGroup from '@material-ui/core/RadioGroup/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
-import Radio from '@material-ui/core/Radio/Radio';
-import DialogActions from '@material-ui/core/DialogActions/DialogActions';
-import Button from '@material-ui/core/Button/Button';
-import Switch from '@material-ui/core/Switch/Switch';
+import {
+    Switch,
+    Button,
+    Radio,
+    FormControlLabel,
+    RadioGroup,
+    Checkbox,
+    Dialog,
+    MenuItem,
+    Menu,
+    FormControl,
+    InputAdornment,
+    InputLabel,
+    Input,
+    IconButton
+} from '@material-ui/core';
 import UserRepo from '../../repository/user';
 import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
@@ -57,6 +56,7 @@ import Broadcaster from '../../services/broadcaster';
 import {notifyOptions} from '../../pages/Chat';
 import i18n from '../../services/i18n';
 import {C_AVATAR_SIZE} from "../SettingsMenu";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 
@@ -77,7 +77,6 @@ interface IState {
     group: IGroup | null;
     moreAnchorEl: any;
     newMembers: IUser[];
-    notifySettingDialogOpen: boolean;
     notifyValue: string;
     page: string;
     participants: IParticipant[];
@@ -115,6 +114,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private readonly callerId: number = 0;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
@@ -128,7 +128,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             group: null,
             moreAnchorEl: null,
             newMembers: [],
-            notifySettingDialogOpen: false,
             notifyValue: '-1',
             page: '1',
             participants: [],
@@ -159,6 +158,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.callerId = UniqueId.getRandomId();
 
         this.broadcaster = Broadcaster.getInstance();
+
+        this.modalityService = ModalityService.getInstance();
     }
 
     public componentDidMount() {
@@ -188,7 +189,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     public render() {
         const {
             addMemberDialogOpen, avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl,
-            dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto, shareMediaEnabled
+            dialog, uploadingPhoto, shareMediaEnabled
         } = this.state;
         const isAdmin = group ? hasAuthority(group, false) : false;
         const hasAccess = group ? hasAuthority(group, true) : false;
@@ -398,37 +399,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>}
                     </div>}
-                </Dialog>
-                <Dialog
-                    open={notifySettingDialogOpen}
-                    onClose={this.notifySettingDialogCloseHandler}
-                    maxWidth="xs"
-                    className="notify-setting-dialog"
-                    classes={{
-                        paper: 'notify-setting-dialog-paper'
-                    }}
-                >
-                    <DialogTitle>{i18n.t('peer_info.notify_settings')}</DialogTitle>
-                    <DialogContent className="dialog-content">
-                        <RadioGroup
-                            name="notify-setting"
-                            value={notifyValue}
-                            onChange={this.notifyValueChangeHandler}
-                        >
-                            {notifyOptions.map((item, key) => {
-                                return (<FormControlLabel key={key} value={item.val} label={item.title}
-                                                          control={<Radio color="primary"/>}/>);
-                            })}
-                        </RadioGroup>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.notifySettingDialogCloseHandler} color="secondary">
-                            {i18n.t('general.cancel')}
-                        </Button>
-                        <Button onClick={this.applyNotifySettings} color="primary" autoFocus={true}>
-                            {i18n.t('general.apply')}
-                        </Button>
-                    </DialogActions>
                 </Dialog>
                 <Menu
                     anchorEl={avatarMenuAnchorEl}
@@ -733,17 +703,31 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 notifyValue = String(dialog.notifysettings.muteuntil || -1);
             }
             this.setState({
-                notifySettingDialogOpen: true,
                 notifyValue,
+            }, () => {
+                this.modalityService.open({
+                    cancelText: i18n.t('general.cancel'),
+                    confirmText: i18n.t('general.apply'),
+                    description: <RadioGroup
+                        name="notify-setting"
+                        value={this.state.notifyValue}
+                        onChange={this.notifyValueChangeHandler}
+                    >
+                        {notifyOptions.map((item, key) => {
+                            return (<FormControlLabel key={key} value={item.val} label={item.title}
+                                                      control={<Radio color="primary"/>}/>);
+                        })}
+                    </RadioGroup>,
+                    title: i18n.t('peer_info.notify_settings'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        this.saveNotifySettings(parseInt(this.state.notifyValue, 10));
+                    }
+                });
             });
         } else {
             this.saveNotifySettings(-1);
         }
-    }
-
-    /* Apply notify settings */
-    private applyNotifySettings = () => {
-        this.saveNotifySettings(parseInt(this.state.notifyValue, 10));
     }
 
     /* Save notify settings */
@@ -767,12 +751,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 dialog,
             });
             this.setState({
-                notifySettingDialogOpen: false,
                 notifyValue: String(dialog.notifysettings.muteuntil),
             });
         }).catch(() => {
             this.setState({
-                notifySettingDialogOpen: false,
                 notifyValue: '-1',
             });
         });
@@ -782,13 +764,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private notifyValueChangeHandler = (e: any, val: string) => {
         this.setState({
             notifyValue: val,
-        });
-    }
-
-    /* Close notify settings */
-    private notifySettingDialogCloseHandler = () => {
-        this.setState({
-            notifySettingDialogOpen: false,
         });
     }
 

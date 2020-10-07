@@ -49,12 +49,6 @@ import PopUpDate from '../../components/PopUpDate';
 import GroupRepo from '../../repository/group';
 import GroupName from '../../components/GroupName';
 import {isMuted} from '../../components/UserInfoMenu';
-import OverlayDialog from '@material-ui/core/Dialog/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions/DialogActions';
-import Button from '@material-ui/core/Button/Button';
 import UserDialog from '../../components/UserDialog';
 import {IInputPeer} from '../../components/SearchList';
 import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
@@ -174,6 +168,7 @@ import {IGif} from "../../repository/gif/interface";
 import {ITeam} from "../../repository/team/interface";
 import Socket from "../../services/sdk/server/socket";
 import PinnedMessage from "../../components/PinnedMessage";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 
@@ -189,11 +184,8 @@ interface IProps {
 interface IState {
     botAlertMessage: string;
     chatMoreAnchorEl: any;
-    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'remove_message_pending' | 'delete_exit_group' | 'delete_user' | 'cancel_recording' | 'bot_alert' | 'bot_send_phone' | 'bot_send_location';
-    confirmDialogOpen: boolean;
     forwardRecipientDialogOpen: boolean;
     iframeActive: boolean;
-    leftMenuSelectedDialogId: string;
     openNewMessage: boolean;
     rightMenuShrink: boolean;
 }
@@ -290,6 +282,7 @@ class Chat extends React.Component<IProps, IState> {
     private teamMap: { [key: string]: ITeam } = {};
     private onlineStatusInterval: any = null;
     private pinnedMessageRef: PinnedMessage | undefined;
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
@@ -299,11 +292,8 @@ class Chat extends React.Component<IProps, IState> {
         this.state = {
             botAlertMessage: '',
             chatMoreAnchorEl: null,
-            confirmDialogMode: 'none',
-            confirmDialogOpen: false,
             forwardRecipientDialogOpen: false,
             iframeActive: this.iframeService.isActive(),
-            leftMenuSelectedDialogId: '',
             openNewMessage: false,
             rightMenuShrink: false,
         };
@@ -338,6 +328,7 @@ class Chat extends React.Component<IProps, IState> {
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 128);
         this.cachedMessageService = CachedMessageService.getInstance();
         this.avatarService = AvatarService.getInstance();
+        this.modalityService = ModalityService.getInstance();
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
@@ -557,9 +548,16 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isRecording && this.upcomingPeerName !== '!' + selectedPeerName) {
             this.props.history.push(`/chat/${this.teamId}/${this.selectedPeerName}`);
             this.upcomingPeerName = selectedPeerName;
-            this.setState({
-                confirmDialogMode: 'cancel_recording',
-                confirmDialogOpen: true,
+            this.modalityService.open({
+                cancelText: i18n.t('general.cancel'),
+                confirmText: i18n.t('general.yes'),
+                description: i18n.t('chat.cancel_recording_dialog.p'),
+                title: i18n.t('chat.cancel_recording_dialog.title'),
+            }).then((modalRes) => {
+                if (modalRes === 'confirm') {
+                    this.cancelRecordingHandler();
+                }
+                this.resetSelectedMessages();
             });
             return;
         }
@@ -612,7 +610,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {confirmDialogMode, confirmDialogOpen, rightMenuShrink} = this.state;
+        const {rightMenuShrink} = this.state;
         return (
             <div className="bg">
                 <div className="wrapper">
@@ -644,14 +642,14 @@ class Chat extends React.Component<IProps, IState> {
                                          onClose={this.closePeerHandler} onAction={this.messageMoreActionHandler}
                                          statusBarRefHandler={this.statusBarRefHandler}
                                          isMobileView={this.isMobileView}/>
-                                <AudioPlayerShell key="audio-player-shell" ref={this.audioPlayerShellRefHandler}
-                                                  onVisible={this.audioPlayerVisibleHandler}
-                                                  onAction={this.messageAttachmentActionHandler}/>
                                 <PinnedMessage ref={this.pinnedMessageRefHandler} teamId={this.teamId}
                                                disableClick={false} onClose={this.pinnedMessageCloseHandler}
                                                onClick={this.pinnedMessageClickHandler}/>
                             </div>
                             <div ref={this.conversationRefHandler} className="conversation">
+                                <AudioPlayerShell key="audio-player-shell" ref={this.audioPlayerShellRefHandler}
+                                                  onVisible={this.audioPlayerVisibleHandler}
+                                                  onAction={this.messageAttachmentActionHandler}/>
                                 <PopUpDate key="pop-up-date" ref={this.popUpDateRefHandler}/>
                                 <PopUpNewMessage key="pop-up-new-message" ref={this.popUpNewMessageRefHandler}
                                                  onClick={this.popUpNewMessageClickHandler}/>
@@ -727,168 +725,6 @@ class Chat extends React.Component<IProps, IState> {
                     <NewMessage key="new-message" open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessageHandler} teamId={this.teamId}/>
                 </div>
-                <OverlayDialog
-                    key="overlay-dialog"
-                    open={confirmDialogOpen}
-                    onClose={this.confirmDialogCloseHandler}
-                    className="confirm-dialog"
-                    classes={{
-                        paper: 'confirm-dialog-paper'
-                    }}
-                >
-                    {Boolean(confirmDialogMode === 'bot_alert') && <>
-                        <DialogTitle>{i18n.t('bot.alert')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>{this.state.botAlertMessage}</DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="primary">
-                                {i18n.t('general.ok')}
-                            </Button>
-                        </DialogActions>
-                    </>}
-                    {Boolean(confirmDialogMode === 'logout') && <>
-                        <DialogTitle>{i18n.t('chat.logout_dialog.title')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                {i18n.t('chat.logout_dialog.p1')}<br/>
-                                {i18n.t('chat.logout_dialog.p2')}<br/>
-                                {i18n.t('chat.logout_dialog.p3')}
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.disagree')}
-                            </Button>
-                            <Button onClick={this.confirmDialogAcceptHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.agree')}
-                            </Button>
-                        </DialogActions>
-                    </>}
-                    {Boolean(confirmDialogMode === 'remove_message' || confirmDialogMode === 'remove_message_revoke' || confirmDialogMode === 'remove_message_pending') &&
-                    <>
-                        <DialogTitle>{i18n.t('chat.remove_message_dialog.title')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                {i18n.tf('chat.remove_message_dialog.content', String(Object.keys(this.messageSelectedIds).length))}<br/>
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.disagree')}
-                            </Button>
-                            <Button onClick={this.removeMessageHandler(0)} color="primary"
-                                    autoFocus={true}>
-                                {i18n.t('chat.remove_message_dialog.remove')}
-                            </Button>
-                            {Boolean(confirmDialogMode === 'remove_message_revoke' && this.selectedPeerName !== `${this.userId}_${PeerType.PEERUSER}`) &&
-                            <Button onClick={this.removeMessageHandler(1)} color="primary">
-                                {(this.peer && (this.peer.getType() === PeerType.PEERUSER || this.peer.getType() === PeerType.PEEREXTERNALUSER)) ?
-                                    <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
-                                        <UserName noDetail={true} id={this.selectedPeerName} noIcon={true}
-                                                  peerName={true}
-                                        /></> : i18n.t('chat.remove_message_dialog.remove_for_all')}
-                            </Button>}
-                            {Boolean(confirmDialogMode === 'remove_message_pending') &&
-                            <Button onClick={this.removeMessageHandler(2)} color="primary">
-                                {i18n.t('chat.remove_message_dialog.remove_all_pending')}
-                            </Button>}
-                        </DialogActions>
-                    </>}
-                    {Boolean(confirmDialogMode === 'delete_exit_group') && <>
-                        <DialogTitle>{i18n.t('chat.exit_group_dialog.title')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                {i18n.t('chat.exit_group_dialog.p1')}
-                                <GroupName className="group-name" id={this.state.leftMenuSelectedDialogId.split('_')[0]}
-                                           teamId={this.teamId}/> ?<br/>
-                                {i18n.t('chat.exit_group_dialog.p2')}
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.disagree')}
-                            </Button>
-                            <Button onClick={this.deleteAndExitGroupHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.agree')}
-                            </Button>
-                        </DialogActions>
-                    </>}
-                    {Boolean(confirmDialogMode === 'delete_user') && <>
-                        <DialogTitle>{i18n.t('chat.delete_dialog.title')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                {i18n.t('chat.delete_dialog.p1')}
-                                <UserName className="group-name"
-                                          id={this.state.leftMenuSelectedDialogId.split('_')[0]}
-                                          you={this.state.leftMenuSelectedDialogId === `${this.userId}_1`}
-                                          youPlaceholder={i18n.t('general.saved_messages')}
-                                          noIcon={true}
-                                          noDetail={true}
-                                /> ?<br/>
-                                {i18n.t('chat.delete_dialog.p2')}
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.disagree')}
-                            </Button>
-                            <Button onClick={this.deleteUserConversationHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.agree')}
-                            </Button>
-                        </DialogActions>
-                    </>}
-                    {Boolean(confirmDialogMode === 'cancel_recording') && <>
-                        <DialogTitle>{i18n.t('chat.cancel_recording_dialog.title')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                {i18n.t('chat.cancel_recording_dialog.p')}
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.cancel')}
-                            </Button>
-                            <Button onClick={this.cancelRecordingHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.yes')}
-                            </Button>
-                        </DialogActions>
-                    </>}
-                    {Boolean(confirmDialogMode === 'bot_send_phone') && <>
-                        <DialogTitle>{i18n.t('bot.alert')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                <UserName id={this.selectedPeerName || ''} noIcon={true} peerName={true}
-                                          noDetail={true}/> {i18n.t('bot.bot_wants_your_phone')}
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.cancel')}
-                            </Button>
-                            <Button onClick={this.botSendPhoneHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.send')}
-                            </Button>
-                        </DialogActions>
-                    </>}
-                    {Boolean(confirmDialogMode === 'bot_send_location') && <>
-                        <DialogTitle>{i18n.t('bot.alert')}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                <UserName id={this.selectedPeerName || ''} noIcon={true} peerName={true}
-                                          noDetail={true}/> {i18n.t('bot.bot_wants_your_location')}
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                {i18n.t('general.cancel')}
-                            </Button>
-                            <Button onClick={this.botSendLocationHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.send')}
-                            </Button>
-                        </DialogActions>
-                    </>}
-                </OverlayDialog>
                 <SelectPeerDialog key="forward-dialog" ref={this.forwardDialogRefHandler} enableTopPeer={true}
                                   onDone={this.forwardDialogDoneHandler} topPeerType={TopPeerType.Forward}
                                   onClose={this.forwardDialogCloseHandler} title={i18n.t('general.recipient')}
@@ -3047,9 +2883,18 @@ class Chat extends React.Component<IProps, IState> {
     private bottomBarSelectHandler = (item: string) => (e?: any): void => {
         switch (item) {
             case 'logout':
-                this.setState({
-                    confirmDialogMode: 'logout',
-                    confirmDialogOpen: true,
+                this.modalityService.open({
+                    cancelText: i18n.t('general.disagree'),
+                    confirmText: i18n.t('general.agree'),
+                    description: <>{i18n.t('chat.logout_dialog.p1')}<br/>
+                        {i18n.t('chat.logout_dialog.p2')}<br/>
+                        {i18n.t('chat.logout_dialog.p3')}</>,
+                    title: i18n.t('chat.logout_dialog.title'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        this.logOutHandler();
+                    }
+                    this.resetSelectedMessages();
                 });
                 break;
             case 'chat':
@@ -3290,15 +3135,30 @@ class Chat extends React.Component<IProps, IState> {
             case 'remove':
                 const messageSelectedIds = {};
                 messageSelectedIds[message.id || 0] = true;
-                let removeMode: any = 'remove_message';
-                if ((this.riverTime.now() - (message.createdon || 0)) < 86400 && message.me === true && !message.messageaction) {
-                    removeMode = 'remove_message_revoke';
-                }
-                this.messageSelectedIds = cloneDeep(messageSelectedIds);
+                const withForAll = ((this.riverTime.now() - (message.createdon || 0)) < 86400 && message.me === true && !message.messageaction && this.selectedPeerName !== GetPeerName(this.userId, PeerType.PEERUSER));
                 this.propagateSelectedMessage();
-                this.setState({
-                    confirmDialogMode: removeMode,
-                    confirmDialogOpen: true,
+                this.messageSelectedIds = cloneDeep(messageSelectedIds);
+                this.modalityService.open({
+                    buttons: withForAll ? [{
+                        action: 'for_all',
+                        text: (this.peer && (this.peer.getType() === PeerType.PEERUSER || this.peer.getType() === PeerType.PEEREXTERNALUSER)) ?
+                            <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
+                                <UserName noDetail={true} id={this.selectedPeerName} noIcon={true}
+                                          peerName={true}
+                                /></> : i18n.t('chat.remove_message_dialog.remove_for_all'),
+                    }] : undefined,
+                    cancelText: i18n.t('general.disagree'),
+                    confirmText: i18n.t('chat.remove_message_dialog.remove'),
+                    description: i18n.tf('chat.remove_message_dialog.content', String(Object.keys(this.messageSelectedIds).length)),
+                    title: i18n.t('chat.remove_message_dialog.title'),
+                }).then((modalityRes) => {
+                    if (modalityRes === 'confirm') {
+                        this.removeMessageHandler(0);
+                    } else if (modalityRes === 'for_all') {
+                        this.removeMessageHandler(1);
+                    } else {
+                        this.resetSelectedMessages();
+                    }
                 });
                 return;
             case 'forward':
@@ -3478,15 +3338,31 @@ class Chat extends React.Component<IProps, IState> {
             //     const buttonSwitchInline: ButtonSwitchInline.AsObject = data;
             //     break;
             case C_BUTTON_ACTION.ButtonRequestPhone:
-                this.setState({
-                    confirmDialogMode: 'bot_send_phone',
-                    confirmDialogOpen: true,
+                this.modalityService.open({
+                    cancelText: i18n.t('general.cancel'),
+                    confirmText: i18n.t('general.send'),
+                    description: <><UserName id={this.selectedPeerName || ''} noIcon={true} peerName={true}
+                                             noDetail={true}/> {i18n.t('bot.bot_wants_your_phone')}</>,
+                    title: i18n.t('bot.alert'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        this.botSendPhoneHandler();
+                    }
+                    this.resetSelectedMessages();
                 });
                 break;
             case C_BUTTON_ACTION.ButtonRequestGeoLocation:
-                this.setState({
-                    confirmDialogMode: 'bot_send_location',
-                    confirmDialogOpen: true,
+                this.modalityService.open({
+                    cancelText: i18n.t('general.cancel'),
+                    confirmText: i18n.t('general.send'),
+                    description: <><UserName id={this.selectedPeerName || ''} noIcon={true} peerName={true}
+                                             noDetail={true}/> {i18n.t('bot.bot_wants_your_location')}</>,
+                    title: i18n.t('bot.alert'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        this.botSendLocationHandler();
+                    }
+                    this.resetSelectedMessages();
                 });
                 break;
             // case C_BUTTON_ACTION.ButtonBuy:
@@ -3496,10 +3372,11 @@ class Chat extends React.Component<IProps, IState> {
                 const buttonCallback: ButtonCallback.AsObject = data;
                 this.apiManager.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId).then((res) => {
                     if ((res.message || '').length > 0) {
-                        this.setState({
-                            botAlertMessage: res.message || '',
-                            confirmDialogMode: 'bot_alert',
-                            confirmDialogOpen: true,
+                        this.modalityService.open({
+                            cancelText: i18n.t('general.ok'),
+                            title: i18n.t('bot.alert'),
+                        }).then((modalRes) => {
+                            this.resetSelectedMessages();
                         });
                     }
                     this.openLink(res.url || '');
@@ -3563,7 +3440,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private botSendPhoneHandler = () => {
-        this.confirmDialogCloseHandler();
         this.chatInputContactSelectHandler([{
             firstname: this.connInfo.FirstName || '',
             id: this.userId,
@@ -3573,7 +3449,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private botSendLocationHandler = () => {
-        this.confirmDialogCloseHandler();
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
                 this.chatInputMapSelectHandler({
@@ -3703,10 +3578,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
             case "logout":
-                this.setState({
-                    confirmDialogMode: 'logout',
-                    confirmDialogOpen: true,
-                });
+                this.bottomBarSelectHandler('logout')();
                 break;
         }
     }
@@ -3738,18 +3610,6 @@ class Chat extends React.Component<IProps, IState> {
                 this.props.history.push(`/chat/${this.teamId}/null`);
             }
         }
-    }
-
-    private confirmDialogCloseHandler = () => {
-        this.setState({
-            confirmDialogMode: 'none',
-            confirmDialogOpen: false,
-        });
-        this.resetSelectedMessages();
-    }
-
-    private confirmDialogAcceptHandler = () => {
-        this.logOutHandler();
     }
 
     /* On message selected ids change */
@@ -3795,16 +3655,29 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     }
                 }
-                let mode: any = 'remove_message';
-                if (allPending) {
-                    mode = 'remove_message_pending';
-                }
-                if (noRevoke) {
-                    mode = 'remove_message_revoke';
-                }
-                this.setState({
-                    confirmDialogMode: mode,
-                    confirmDialogOpen: true,
+                this.modalityService.open({
+                    buttons: noRevoke ? [{
+                        action: noRevoke ? 'for_all' : 'remove_pending',
+                        text: (this.peer && (this.peer.getType() === PeerType.PEERUSER || this.peer.getType() === PeerType.PEEREXTERNALUSER)) ?
+                            <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
+                                <UserName noDetail={true} id={this.selectedPeerName} noIcon={true}
+                                          peerName={true}
+                                /></> : i18n.t('chat.remove_message_dialog.remove_for_all'),
+                    }] : allPending ? i18n.t('chat.remove_message_dialog.remove_all_pending') : undefined,
+                    cancelText: i18n.t('general.disagree'),
+                    confirmText: i18n.t('chat.remove_message_dialog.remove'),
+                    description: i18n.tf('chat.remove_message_dialog.content', String(Object.keys(this.messageSelectedIds).length)),
+                    title: i18n.t('chat.remove_message_dialog.title'),
+                }).then((modalityRes) => {
+                    if (modalityRes === 'confirm') {
+                        this.removeMessageHandler(0);
+                    } else if (modalityRes === 'for_all') {
+                        this.removeMessageHandler(1);
+                    } else if (modalityRes === 'remove_pending') {
+                        this.removeMessageHandler(2);
+                    } else {
+                        this.resetSelectedMessages();
+                    }
                 });
                 break;
             case 'close':
@@ -3893,7 +3766,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private removeMessageHandler = (mode: number) => (e: any) => {
+    private removeMessageHandler = (mode: number) => {
         const peer = this.peer;
         const messageSelectedIds = this.messageSelectedIds;
         if (!peer) {
@@ -3930,7 +3803,6 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
         }
-        this.confirmDialogCloseHandler();
     }
 
     /* Check if can notify user */
@@ -4080,11 +3952,34 @@ class Chat extends React.Component<IProps, IState> {
             case 'block':
                 break;
             case 'remove':
-                this.setLeftMenu('chat');
-                this.setState({
-                    confirmDialogMode: (dialog.peertype === PeerType.PEERGROUP) ? 'delete_exit_group' : 'delete_user',
-                    confirmDialogOpen: true,
-                    leftMenuSelectedDialogId: GetPeerName(dialog.peerid, dialog.peertype),
+                const isGroup = (dialog.peertype === PeerType.PEERGROUP);
+                this.modalityService.open({
+                    cancelText: i18n.t('general.disagree'),
+                    confirmText: i18n.t('general.agree'),
+                    description: isGroup ? <>{i18n.t('chat.exit_group_dialog.p1')}
+                        <GroupName className="group-name" id={dialog.peerid || '0'}
+                                   teamId={this.teamId}/> ?<br/>
+                        {i18n.t('chat.exit_group_dialog.p2')}</> : <>
+                        {i18n.t('chat.delete_dialog.p1')}
+                        <UserName className="group-name"
+                                  id={dialog.peerid || '0'}
+                                  you={dialog.peerid === this.userId}
+                                  youPlaceholder={i18n.t('general.saved_messages')}
+                                  noIcon={true}
+                                  noDetail={true}
+                        /> ?<br/>
+                        {i18n.t('chat.delete_dialog.p2')}
+                    </>,
+                    title: i18n.t(isGroup ? 'chat.exit_group_dialog.title' : 'chat.delete_dialog.title'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        if (isGroup) {
+                            this.deleteAndExitGroupHandler(GetPeerName(dialog.peerid, dialog.peertype));
+                        } else {
+                            this.deleteUserConversationHandler(GetPeerName(dialog.peerid, dialog.peertype));
+                        }
+                    }
+                    this.resetSelectedMessages();
                 });
                 break;
             case 'clear':
@@ -5275,12 +5170,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Delete and exit group handler */
-    private deleteAndExitGroupHandler = () => {
-        const {leftMenuSelectedDialogId} = this.state;
-        if (leftMenuSelectedDialogId === '') {
-            return;
-        }
-        const peer = this.getPeerByName(leftMenuSelectedDialogId);
+    private deleteAndExitGroupHandler = (peerName: string) => {
+        const peer = this.getPeerByName(peerName);
         const inputPeer = peer.peer;
         if (!inputPeer) {
             return;
@@ -5290,54 +5181,46 @@ class Chat extends React.Component<IProps, IState> {
         user.setUserid(id);
         user.setAccesshash('');
         this.apiManager.groupRemoveMember(inputPeer, user).then(() => {
-            const dialog = this.getDialogByPeerName(leftMenuSelectedDialogId);
+            const dialog = this.getDialogByPeerName(peerName);
             if (dialog && dialog.topmessageid) {
                 this.apiManager.clearMessage(inputPeer, dialog.topmessageid, true);
             }
         }).catch((err) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMember) {
-                const dialog = this.getDialogByPeerName(leftMenuSelectedDialogId);
+                const dialog = this.getDialogByPeerName(peerName);
                 if (dialog) {
                     this.dialogRepo.remove(this.teamId, dialog.peerid || '', dialog.peertype || 0);
                     this.messageRepo.clearHistory(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid || 0);
                 }
             }
         });
-        this.confirmDialogCloseHandler();
     }
 
     /* Delete user conversation handler */
-    private deleteUserConversationHandler = () => {
-        const {leftMenuSelectedDialogId} = this.state;
-        if (leftMenuSelectedDialogId === '') {
-            return;
-        }
-        const peer = this.getPeerByName(leftMenuSelectedDialogId);
+    private deleteUserConversationHandler = (peerName: string) => {
+        const peer = this.getPeerByName(peerName);
         if (!peer.peer) {
             return;
         }
-        const dialog = this.getDialogByPeerName(leftMenuSelectedDialogId);
+        const dialog = this.getDialogByPeerName(peerName);
         if (dialog && dialog.topmessageid) {
             this.apiManager.clearMessage(peer.peer, dialog.topmessageid, true);
         }
-        this.confirmDialogCloseHandler();
     }
 
     /* Cancel recording handler */
     private cancelRecordingHandler = () => {
-        this.props.history.push(`/chat/${this.teamId}/${this.upcomingPeerName}`);
+        const hold = this.upcomingPeerName;
         this.upcomingPeerName = '!' + this.upcomingPeerName;
-        this.confirmDialogCloseHandler();
+        this.props.history.push(`/chat/${this.teamId}/${hold}`);
     }
 
     /* GroupInfo delete and exit handler */
     private groupInfoDeleteAndExitHandler = () => {
-        this.setLeftMenu('chat');
-        this.setState({
-            confirmDialogMode: 'delete_exit_group',
-            confirmDialogOpen: true,
-            leftMenuSelectedDialogId: this.selectedPeerName,
-        });
+        const dialog = this.getDialogByPeerName(this.selectedPeerName);
+        if (dialog) {
+            this.dialogContextMenuHandler('remove', dialog);
+        }
     }
 
     /* RightMenu toggle menu handler */

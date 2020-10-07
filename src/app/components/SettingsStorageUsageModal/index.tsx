@@ -18,19 +18,13 @@ import UserName from '../UserName';
 import GroupName from '../GroupName';
 import {getHumanReadableSize} from '../MessageFile';
 import {findIndex, throttle} from 'lodash';
-import Checkbox from '@material-ui/core/Checkbox';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import Button from '@material-ui/core/Button';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import OverlayDialog from '@material-ui/core/Dialog/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import {Button, Checkbox, LinearProgress, DialogContentText} from '@material-ui/core';
 import i18n from "../../services/i18n";
 import {localize} from '../../services/utilities/localize';
 import {IPeer} from "../../repository/dialog/interface";
 import {GetPeerNameByPeer} from "../../repository/dialog";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 
@@ -39,7 +33,6 @@ interface IProps {
 }
 
 interface IState {
-    confirmOpen: boolean;
     list: IDialogInfo[];
     loading: boolean;
     loadingProgress?: { percent: number, filesTotal: number };
@@ -56,12 +49,12 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     private teamId: string = '0';
     private storageUsageService: StorageUsageService;
     private readonly progressThrottle: any;
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            confirmOpen: false,
             list: [],
             loading: false,
             open: false,
@@ -75,6 +68,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
             totalSize: 0,
         };
         this.storageUsageService = StorageUsageService.getInstance();
+        this.modalityService = ModalityService.getInstance();
 
         this.progressThrottle = throttle(this.displayProgress, 100);
     }
@@ -89,7 +83,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {loading, loadingProgress, open, list, selectedDialog, progress, confirmOpen} = this.state;
+        const {loading, open, list, selectedDialog, progress} = this.state;
         return (
             <React.Fragment>
                 <SettingsModal open={open} title={i18n.t('settings.storage_usage')}
@@ -173,30 +167,6 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                         </div>
                     </div>
                 </SettingsModal>}
-                <OverlayDialog
-                    open={confirmOpen}
-                    onClose={this.confirmCloseHandler}
-                    className="confirm-dialog"
-                    disableEscapeKeyDown={Boolean(loadingProgress)}
-                    disableBackdropClick={Boolean(loadingProgress)}
-                    classes={{
-                        paper: 'confirm-dialog-paper'
-                    }}
-                >
-                    <DialogTitle>{i18n.t('general.are_you_sure')}</DialogTitle>
-                    <DialogContent className="cache-dialog-content">
-                        {!loadingProgress && <DialogContentText>
-                            {i18n.t('settings.clear_cache_confirm_text')}<br/>{i18n.t('settings.clear_cache_confirm_text2')}
-                        </DialogContentText>}
-                        {loadingProgress && <LinearProgress variant="determinate" value={loadingProgress.percent}/>}
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.confirmCloseHandler} color="secondary"
-                                disabled={Boolean(loadingProgress)}>{i18n.t('general.cancel')}</Button>
-                        <Button onClick={this.confirmAcceptHandler} color="primary" autoFocus={true}
-                                disabled={Boolean(loadingProgress)}>{i18n.t('general.yes')}</Button>
-                    </DialogActions>
-                </OverlayDialog>
             </React.Fragment>
         );
     }
@@ -384,14 +354,18 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     }
 
     private clearCacheHandler = () => {
-        this.setState({
-            confirmOpen: true,
-        });
-    }
-
-    private confirmCloseHandler = () => {
-        this.setState({
-            confirmOpen: false,
+        this.modalityService.open({
+            cancelText: i18n.t('general.disagree'),
+            confirmText: i18n.t('general.agree'),
+            description: <>{!this.state.loadingProgress && <DialogContentText>
+                {i18n.t('settings.clear_cache_confirm_text')}<br/>{i18n.t('settings.clear_cache_confirm_text2')}
+            </DialogContentText>}
+                {this.state.loadingProgress && <LinearProgress variant="determinate" value={this.state.loadingProgress.percent}/>}</>,
+            title: i18n.t('general.are_you_sure'),
+        }).then((modalRes) => {
+            if (modalRes === 'confirm') {
+                this.confirmAcceptHandler();
+            }
         });
     }
 
@@ -433,7 +407,6 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         }
         this.storageUsageService.clearCache(items, this.clearStorageProgressHandler).then(() => {
             this.setState({
-                confirmOpen: false,
                 list,
                 loadingProgress: undefined,
                 open: Boolean(list.length !== 0),

@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {IconButton, Switch, TextField} from "@material-ui/core";
+import {IconButton, Switch, TextField, MenuItem, Menu} from "@material-ui/core";
 import {
     KeyboardBackspaceRounded,
     MoreVert,
@@ -33,8 +33,6 @@ import IsMobile from "../../services/isMobile";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import LastSeen from "../LastSeen";
 import {localize} from "../../services/utilities/localize";
-import Menu from "@material-ui/core/Menu/Menu";
-import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import {TeamMember} from "../../services/sdk/messages/team_pb";
 import {findIndex} from "lodash";
 import ContactPicker from "../ContactPicker";
@@ -42,6 +40,7 @@ import {Error as RiverError} from "../../services/sdk/messages/core.types_pb";
 import {ITeam} from "../../repository/team/interface";
 import {switchClasses} from "../SettingsMenu";
 import TeamRepo from "../../repository/team";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 
@@ -91,6 +90,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
     private teamRepo: TeamRepo;
     private hasUpdate: boolean = false;
     private defaultTeamName: string = '';
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
@@ -112,6 +112,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
         this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.teamRepo = TeamRepo.getInstance();
+        this.modalityService = ModalityService.getInstance();
     }
 
     public componentDidMount() {
@@ -478,56 +479,61 @@ class SettingsTeam extends React.Component<IProps, IState> {
             return;
         }
         this.moreCloseHandler();
-        if (!window.confirm(i18n.t('general.are_you_sure'))) {
-            return;
-        }
-        switch (cmd) {
-            case 'remove':
-                this.apiManager.teamRemoveMember(team.id || '0', member.id).then(() => {
-                    const index = findIndex(list, {id: member.id});
-                    if (index > -1) {
-                        list.splice(index, 1);
-                        if (this.list) {
-                            this.list.resetAfterIndex(0, false);
-                        }
-                        this.setState({
-                            list: this.trimList(this.listToMembers(list)),
-                            loading: false,
-                        });
-                    }
-                }).catch(this.catchFunction);
-                break;
-            case 'promote':
-                this.apiManager.teamPromoteMember(team.id || '0', member.id).then(() => {
-                    const index = findIndex(list, {id: member.id});
-                    if (index > -1) {
-                        list[index].admin = true;
-                        if (this.list) {
-                            this.list.resetAfterIndex(0, false);
-                        }
-                        this.setState({
-                            list: this.trimList(this.listToMembers(list)),
-                            loading: false,
-                        });
-                    }
-                }).catch(this.catchFunction);
-                break;
-            case 'demote':
-                this.apiManager.teamDemoteMember(team.id || '0', member.id).then(() => {
-                    const index = findIndex(list, {id: member.id});
-                    if (index > -1) {
-                        list[index].admin = false;
-                        if (this.list) {
-                            this.list.resetAfterIndex(0, false);
-                        }
-                        this.setState({
-                            list: this.trimList(this.listToMembers(list)),
-                            loading: false,
-                        });
-                    }
-                }).catch(this.catchFunction);
-                break;
-        }
+        this.modalityService.open({
+            cancelText: i18n.t('general.cancel'),
+            confirmText: i18n.t('general.yes'),
+            title: i18n.t('general.are_you_sure'),
+        }).then((modalRes) => {
+            if (modalRes === 'confirm') {
+                switch (cmd) {
+                    case 'remove':
+                        this.apiManager.teamRemoveMember(team.id || '0', member.id).then(() => {
+                            const index = findIndex(list, {id: member.id});
+                            if (index > -1) {
+                                list.splice(index, 1);
+                                if (this.list) {
+                                    this.list.resetAfterIndex(0, false);
+                                }
+                                this.setState({
+                                    list: this.trimList(this.listToMembers(list)),
+                                    loading: false,
+                                });
+                            }
+                        }).catch(this.catchFunction);
+                        break;
+                    case 'promote':
+                        this.apiManager.teamPromoteMember(team.id || '0', member.id).then(() => {
+                            const index = findIndex(list, {id: member.id});
+                            if (index > -1) {
+                                list[index].admin = true;
+                                if (this.list) {
+                                    this.list.resetAfterIndex(0, false);
+                                }
+                                this.setState({
+                                    list: this.trimList(this.listToMembers(list)),
+                                    loading: false,
+                                });
+                            }
+                        }).catch(this.catchFunction);
+                        break;
+                    case 'demote':
+                        this.apiManager.teamDemoteMember(team.id || '0', member.id).then(() => {
+                            const index = findIndex(list, {id: member.id});
+                            if (index > -1) {
+                                list[index].admin = false;
+                                if (this.list) {
+                                    this.list.resetAfterIndex(0, false);
+                                }
+                                this.setState({
+                                    list: this.trimList(this.listToMembers(list)),
+                                    loading: false,
+                                });
+                            }
+                        }).catch(this.catchFunction);
+                        break;
+                }
+            }
+        });
     }
 
     private addMemberHandler = () => {
