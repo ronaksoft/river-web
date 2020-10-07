@@ -178,7 +178,9 @@
       }
 
       .top {
-        padding-left: 40px;
+        .info-bar {
+          padding-left: 40px;
+        }
       }
     }
   }
