@@ -203,13 +203,16 @@ class App extends React.Component<{}, IState> {
                         if (elTitle) {
                             elTitle.remove();
                         }
+                        const updateButtonEl = document.getElementById('update-button');
+                        if (updateButtonEl) {
+                            updateButtonEl.remove();
+                        }
                         this.setState({
                             updateMode: 'changelog',
-                        }, () => {
-                            this.showUpdateDialog();
                         });
                     }
                 }, 10);
+                this.showUpdateDialog();
             });
         }).catch(() => {
             this.setState({
@@ -412,7 +415,10 @@ class App extends React.Component<{}, IState> {
                 },
                 text: i18n.tf('chat.update_dialog.download_desktop_version', '0.25.0'),
             }] : undefined,
-            cancelText: i18n.t('general.disagree'),
+            cancelText: i18n.t('general.cancel'),
+            confirmProps: {
+                id: 'update-button',
+            },
             confirmText: i18n.t(isUpdate ? 'chat.update_dialog.update' : 'chat.update_dialog.reload'),
             description: isUpdate ? <><DialogContentText
                 className="update-title">{i18n.t('chat.update_dialog.body')}</DialogContentText>
