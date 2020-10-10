@@ -122,7 +122,7 @@
     },
     "seen_by": "Seen by",
     "pin": "Pin",
-    "toggle_pin": "Toggle Pin"
+    "unpin": "Unpin"
   },
   "peer_info": {
     "notify_settings": "Notify Settings",
@@ -458,7 +458,10 @@
     "took_an_screenshot": "took an screenshot",
     "unsupported_file": "Unsupported file",
     "drop_here": "Drop here",
-    "pinned_message": "Pinned Message"
+    "pinned_message": "Pinned Message",
+    "pin_message": "Pin Message",
+    "pin_only": "Pin Only",
+    "pin_alert": "Pin this message and notify all members of the group"
   },
   "uploader": {
     "converting": "Converting...",

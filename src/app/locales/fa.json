@@ -121,7 +121,7 @@
     },
     "seen_by": "مشاهده کنندگان",
     "pin": "سنجاق",
-    "toggle_pin": "تغییر سنجاق"
+    "unpin": "برداشتن سنجاق"
   },
   "peer_info": {
     "notify_settings": "تنظیمات اعلان‌ها",
@@ -454,7 +454,10 @@
     "took_an_screenshot": "از صفحه عکس گرفت",
     "unsupported_file": "این فایل پشتیبانی نمی‌شود",
     "drop_here": "اینجا رها کنید",
-    "pinned_message": "پیام سنجاق شده"
+    "pinned_message": "پیام سنجاق شده",
+    "pin_message": "سنجاق کردن پیام",
+    "pin_only": "فقط سنجاق",
+    "pin_alert": "این پیام را سنجاق کرده و به همه اعضای گروه اطلاع بده"
   },
   "uploader": {
     "converting": "درحال تبدیل کردن...",

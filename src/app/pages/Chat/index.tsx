@@ -1443,6 +1443,10 @@ class Chat extends React.Component<IProps, IState> {
             this.pinnedMessageRef.open(peer, dialog.pinnedmessageid || 0);
         }
 
+        if (dialog && this.messageRef) {
+            this.messageRef.setPinnedMessageId(dialog.pinnedmessageid || 0);
+        }
+
         let minId: number = 0;
         this.setChatView(true);
 
@@ -2543,6 +2547,9 @@ class Chat extends React.Component<IProps, IState> {
                             }
                             if (this.pinnedMessageRef && dialog && !dialog.pinnedmessageid) {
                                 this.pinnedMessageRef.open(null, 0);
+                                if (this.messageRef) {
+                                    this.messageRef.setPinnedMessageId(0);
+                                }
                             }
                         }
                     });
@@ -3195,7 +3202,26 @@ class Chat extends React.Component<IProps, IState> {
                 this.saveGifHandler(message);
                 break;
             case 'pin_message':
-                this.pinMessage(peer, message.id || 0);
+                this.modalityService.open({
+                    buttons: [{
+                        action: 'with_notif',
+                        props: {
+                            color: 'primary',
+                        },
+                        text: i18n.t('general.yes'),
+                    }],
+                    cancelText: i18n.t('general.disagree'),
+                    confirmText: i18n.t('message.pin_only'),
+                    description: i18n.t('message.pin_alert'),
+                    title: i18n.t('message.pin_message'),
+                }).then((modalRes) => {
+                    if (modalRes !== 'cancel') {
+                        this.pinMessage(peer, message.id || 0, modalRes !== 'with_notif');
+                    }
+                });
+                break;
+            case 'unpin_message':
+                this.pinMessage(peer, 0, true);
                 break;
         }
     }
@@ -5364,6 +5390,9 @@ class Chat extends React.Component<IProps, IState> {
         }
         if (this.selectedPeerName === GetPeerName(peerId, peerType) && this.pinnedMessageRef) {
             this.pinnedMessageRef.open(this.peer, msgId);
+            if (this.messageRef) {
+                this.messageRef.setPinnedMessageId(msgId);
+            }
         }
     }
 
@@ -5892,7 +5921,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private pinnedMessageCloseHandler = (id: number) => {
         if (this.peer) {
-            this.pinMessage(this.peer, 0);
+            this.pinMessage(this.peer, 0, true);
         }
     }
 
@@ -5901,8 +5930,8 @@ class Chat extends React.Component<IProps, IState> {
         this.messageJumpToMessageHandler(id);
     }
 
-    private pinMessage(peer: InputPeer, msgId: number) {
-        this.apiManager.messagePin(peer, msgId, true).then(() => {
+    private pinMessage(peer: InputPeer, msgId: number, silent: boolean) {
+        this.apiManager.messagePin(peer, msgId, silent).then(() => {
             this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, msgId);
         }).catch((err: RiverError.AsObject) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMessage) {

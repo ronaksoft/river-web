@@ -270,6 +270,7 @@ class Message extends React.Component<IProps, IState> {
     private reactionPickerRef: ReactionPicker | undefined;
     private reactionListRef: ReactionList | undefined;
     private groupSeenByRef: GroupSeenBy | undefined;
+    private pinnedMessageId: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -362,7 +363,11 @@ class Message extends React.Component<IProps, IState> {
             },
             15: {
                 cmd: 'pin_message',
-                title: i18n.t('chat.toggle_pin'),
+                title: i18n.t('chat.pin'),
+            },
+            16: {
+                cmd: 'unpin_message',
+                title: i18n.t('chat.unpin'),
             },
         };
     }
@@ -402,8 +407,12 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    public setTopMessage(topMessageId: number) {
-        this.topMessageId = topMessageId;
+    public setTopMessage(id: number) {
+        this.topMessageId = id;
+    }
+
+    public setPinnedMessageId(id: number) {
+        this.pinnedMessageId = id;
     }
 
     public setMessages(items: IMessage[], callback?: () => void, ignoreLastUpdates?: boolean) {
@@ -745,8 +754,8 @@ class Message extends React.Component<IProps, IState> {
             return null;
         }
         const menuTypes = {
-            1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11, 14, 15],
-            2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11, 15],
+            1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11, 14, 15, 16],
+            2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11, 15, 16],
             3: [6, 5, 9, 10, 11],
             4: [4, 9, 14],
         };
@@ -821,7 +830,11 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 15) {
-                    if (isGroup) {
+                    if (isGroup && this.pinnedMessageId !== items[moreIndex].id) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 16) {
+                    if (isGroup && this.pinnedMessageId === items[moreIndex].id) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -851,7 +864,11 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 15) {
-                    if (isGroup) {
+                    if (isGroup && this.pinnedMessageId !== items[moreIndex].id) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 16) {
+                    if (isGroup && this.pinnedMessageId === items[moreIndex].id) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {

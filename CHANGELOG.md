@@ -1,3 +1,6 @@
+## 0.34.73
+* Pin message improvements
+
 ## 0.34.72
 * 🎉 Brand new modals thanks to `KK-Modality`
 * Code deeply refactored
