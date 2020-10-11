@@ -1,3 +1,6 @@
+## 0.34.74
+* Auto height modal added to `Reaction List` and `Seen By`
+
 ## 0.34.73
 * Pin message improvements
 

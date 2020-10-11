@@ -14,6 +14,8 @@ import {
     CloseRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
+import ResizeObserver from "resize-observer-polyfill";
+import {isProd} from "../../../App";
 
 import './style.scss';
 
@@ -26,6 +28,9 @@ interface IProps {
     onDone?: () => void;
     open: boolean;
     title: any;
+    autoHeight?: boolean;
+    minHeight?: number;
+    maxHeight?: number;
 }
 
 interface IState {
@@ -40,12 +45,25 @@ class SettingsModal extends React.Component<IProps, IState> {
         };
     }
 
+    private readonly resizeObserver: ResizeObserver | undefined;
+    private autoHeight: number = 0;
+
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             open: props.open,
         };
+
+        if (props.autoHeight && !props.noScrollbar) {
+            this.resizeObserver = new ResizeObserver(this.resizeHandler);
+        }
+    }
+
+    public componentWillUnmount() {
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
     }
 
     public render() {
@@ -70,7 +88,9 @@ class SettingsModal extends React.Component<IProps, IState> {
                             {icon || <AppsRounded/>}
                         </div>}
                     </div>
-                    {Boolean(!noScrollbar) && <div className="setting-content" style={{height: this.props.height}}>
+                    {Boolean(!noScrollbar) &&
+                    <div className="setting-content" ref={this.scrollWrapperRefHandler}
+                         style={{height: this.autoHeight ? `${this.autoHeight}px` : this.props.height}}>
                         <Scrollbars
                             style={{
                                 height: '100%',
@@ -86,6 +106,42 @@ class SettingsModal extends React.Component<IProps, IState> {
                 </React.Fragment>
             </Dialog>
         );
+    }
+
+    private scrollWrapperRefHandler = (ref: any) => {
+        if (!ref || !this.props.autoHeight) {
+            return;
+        }
+        try {
+            const el = (ref as HTMLElement)?.firstElementChild?.firstElementChild?.firstElementChild;
+            if (this.resizeObserver && el) {
+                this.resizeObserver.observe(el);
+            }
+        } catch (e) {
+            if (!isProd) {
+                window.console.log(e);
+            }
+        }
+    }
+
+    private resizeHandler = (e: any) => {
+        if (this.autoHeight) {
+            return;
+        }
+        try {
+            this.autoHeight = e?.[0]?.borderBoxSize?.[0].blockSize;
+            if (this.props.minHeight && this.autoHeight < this.props.minHeight) {
+                this.autoHeight = this.props.minHeight;
+            }
+            if (this.props.maxHeight && this.autoHeight > this.props.maxHeight) {
+                this.autoHeight = this.props.maxHeight;
+            }
+            this.forceUpdate();
+        } catch (e) {
+            if (!isProd) {
+                window.console.log(e);
+            }
+        }
     }
 }
 

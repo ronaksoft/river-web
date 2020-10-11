@@ -80,6 +80,7 @@ class ReactionList extends React.Component<IProps, IState> {
         return (
             <SettingsModal open={open} title={i18n.t('reaction.list')}
                            icon={<TagFacesRounded/>} onClose={this.modalCloseHandler} height={this.getHeight()}
+                           autoHeight={true} minHeight={49} maxHeight={225}
             >
                 <div className="reaction-list-dialog">
                     {reactionList.map((item) => {

@@ -54,6 +54,9 @@ class GroupSeenBy extends React.Component<any, IState> {
                 list: res.statsList.filter(o => (o.messageid || 0) >= messageId).map(o => o.userid || '0'),
                 loading: false,
             });
+            setTimeout(() => {
+                this.forceUpdate();
+            }, 2000);
         }).catch(() => {
             this.setState({
                 loading: false,
@@ -66,6 +69,7 @@ class GroupSeenBy extends React.Component<any, IState> {
         return (
             <SettingsModal open={open} title={i18n.t('chat.seen_by')}
                            icon={<VisibilityRounded/>} onClose={this.modalCloseHandler} height={this.getHeight()}
+                           autoHeight={true} minHeight={49} maxHeight={225}
             >
                 <div className="seen-by-list-dialog">
                     {loading ? <Loading/> : list.map((id) => {
