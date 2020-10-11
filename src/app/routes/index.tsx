@@ -9,11 +9,11 @@
 
 import * as React from 'react';
 import {Route, Switch, Redirect} from 'react-router-dom';
-
 import Chat from '../pages/Chat';
 import SignUp from './../pages/SignUp';
 import Loading from './../pages/Loading';
-import Test from './../pages/Test2';
+import Test from "../pages/Test";
+import RTC from "../pages/RTC";
 
 /* tslint:disable:jsx-no-lambda */
 export default (
@@ -29,6 +29,9 @@ export default (
         )}/>
         <Route path="/test" component={(props: any) => (
             <Test {...props}/>
+        )}/>
+        <Route path="/rtc" component={(props: any) => (
+            <RTC {...props}/>
         )}/>
         <Redirect from="/" to="/loading"/>
     </Switch>
