@@ -1317,17 +1317,20 @@ class Chat extends React.Component<IProps, IState> {
     /* Update content read handler */
     private updateContentReadHandler = (data: UpdateReadMessagesContents.AsObject) => {
         let updateView = false;
-        const messages = this.messages;
         const peerName = GetPeerName(data.peer.id, data.peer.type);
+        if (this.selectedPeerName !== peerName) {
+            return;
+        }
         data.messageidsList.forEach((id) => {
-            if (this.selectedPeerName === peerName) {
-                const index = findIndex(messages, (o) => {
-                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                });
-                if (index > -1) {
-                    messages[index].contentread = true;
-                    updateView = true;
+            const index = findLastIndex(this.messages, (o) => {
+                return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
+            if (index > -1) {
+                this.messages[index].contentread = true;
+                if (this.messageRef) {
+                    this.messageRef.clear(index);
                 }
+                updateView = true;
             }
         });
         if (updateView && this.messageRef) {
@@ -3148,6 +3151,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.modalityService.open({
                     buttons: withForAll ? [{
                         action: 'for_all',
+                        props: {
+                            color: 'primary',
+                        },
                         text: (this.peer && (this.peer.getType() === PeerType.PEERUSER || this.peer.getType() === PeerType.PEEREXTERNALUSER)) ?
                             <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
                                 <UserName noDetail={true} id={this.selectedPeerName} noIcon={true}
@@ -3684,6 +3690,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.modalityService.open({
                     buttons: noRevoke ? [{
                         action: noRevoke ? 'for_all' : 'remove_pending',
+                        props: {
+                            color: 'primary',
+                        },
                         text: (this.peer && (this.peer.getType() === PeerType.PEERUSER || this.peer.getType() === PeerType.PEEREXTERNALUSER)) ?
                             <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
                                 <UserName noDetail={true} id={this.selectedPeerName} noIcon={true}
@@ -3701,9 +3710,8 @@ class Chat extends React.Component<IProps, IState> {
                         this.removeMessageHandler(1);
                     } else if (modalityRes === 'remove_pending') {
                         this.removeMessageHandler(2);
-                    } else {
-                        this.resetSelectedMessages();
                     }
+                    this.resetSelectedMessages();
                 });
                 break;
             case 'close':

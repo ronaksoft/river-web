@@ -151,6 +151,7 @@ class App extends React.Component<{}, IState> {
             el.setAttribute('gradient', localStorage.getItem(C_LOCALSTORAGE.ThemeGradient) || '0');
             el.setAttribute('reaction', localStorage.getItem(C_LOCALSTORAGE.ThemeReaction) || '1');
             el.setAttribute('direction', localStorage.getItem(C_LOCALSTORAGE.LangDir) || 'ltr');
+            el.setAttribute('mac', navigator.platform.indexOf('Mac') > -1 ? '1' : '0');
         }
 
         const refreshEl = document.querySelector('#refresh');

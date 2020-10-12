@@ -413,7 +413,9 @@ export default class FileManager {
                 }
                 this.startUploading(id);
             }
-            this.startUploadQueue();
+            requestAnimationFrame(() => {
+                this.startUploadQueue();
+            });
         }
     }
 
@@ -427,7 +429,9 @@ export default class FileManager {
                 }
                 this.startDownloading(id);
             }
-            this.startDownloadQueue();
+            requestAnimationFrame(() => {
+                this.startDownloadQueue();
+            });
         }
     }
 
@@ -440,7 +444,9 @@ export default class FileManager {
                 }
                 this.startDownloading(id);
             }
-            this.startInstanceDownloadQueue();
+            requestAnimationFrame(() => {
+                this.startInstanceDownloadQueue();
+            });
         }
     }
 

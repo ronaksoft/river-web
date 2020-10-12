@@ -175,7 +175,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             this.windowResizeHandler();
             this.displayCompleteBars(true);
             this.displayCompleteBars(false);
-        }, 100);
+        }, 196);
         if (data.voice) {
             this.voice = data.voice;
             this.removeAllListeners();

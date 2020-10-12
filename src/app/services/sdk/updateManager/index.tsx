@@ -410,10 +410,10 @@ export default class UpdateManager {
                             this.enableLiveUpdate();
                             if (this.isDiffUpdating) {
                                 this.isDiffUpdating = false;
-                                this.callHandlers('all', C_MSG.UpdateManagerStatus, {
-                                    isUpdating: false,
-                                });
                             }
+                            this.callHandlers('all', C_MSG.UpdateManagerStatus, {
+                                isUpdating: false,
+                            });
                         } else {
                             if (this.verboseAPI) {
                                 window.console.log('startSyncing', err2);

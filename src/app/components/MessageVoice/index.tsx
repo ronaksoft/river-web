@@ -60,7 +60,7 @@ class MessageVoice extends React.Component<IProps, IState> {
         }
     }
 
-    public USAFE_componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         const {message} = this.state;
         const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
         if ((newProps.message && this.lastId !== newProps.message.id) || (messageMediaDocument && messageMediaDocument.doc && GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid) !== this.dbFileName)) {
@@ -90,8 +90,6 @@ class MessageVoice extends React.Component<IProps, IState> {
             this.contentRead = (newProps.message.contentread || false);
             this.setState({
                 message: newProps.message,
-            }, () => {
-                this.forceUpdate();
             });
         }
     }

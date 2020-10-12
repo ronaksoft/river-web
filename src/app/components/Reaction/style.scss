@@ -120,7 +120,7 @@ html[reaction="2"] {
   }
 }
 
-@media screen and (-webkit-max-device-pixel-ratio: 1) and (min-color-index: 0) {
+html[mac="1"] {
   .message-reaction {
     .reaction-item {
       .reaction-wrapper {

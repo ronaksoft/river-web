@@ -18,7 +18,6 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    font-size: 16px;
     flex-wrap: wrap;
     padding: 4px;
     overflow: hidden;
@@ -37,6 +36,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      font-size: 16px;
 
       .reaction-emoji {
         line-height: 0;
@@ -159,7 +159,7 @@
   }
 }
 
-@media screen and (-webkit-max-device-pixel-ratio: 1) and (min-color-index: 0) {
+html[mac="1"] {
   .reaction-picker-popover {
     .reaction-picker {
       .reaction-item {
@@ -172,6 +172,26 @@
         .reaction-emoji {
           transform: translateY(2px);
         }
+      }
+    }
+  }
+}
+
+html[reaction="1"] {
+  .reaction-picker-popover {
+    .reaction-picker {
+      .reaction-item {
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+html[reaction="2"] {
+  .reaction-picker-popover {
+    .reaction-picker {
+      .reaction-item {
+        font-size: 24px;
       }
     }
   }
