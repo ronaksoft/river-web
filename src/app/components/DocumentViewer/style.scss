@@ -257,29 +257,6 @@
       max-height: 128px;
       overflow-x: auto;
 
-      .sender-container {
-        display: flex;
-        align-content: center;
-        justify-content: center;
-        flex-direction: column;
-        line-height: 1.2em;
-        margin: 0 -2px -3px;
-        font-size: 13px;
-
-        .caption-user {
-          color: var(--white);
-          font-weight: bold;
-          text-align: center;
-        }
-
-        .caption-date {
-          color: var(--white);
-          font-weight: 100;
-          text-align: center;
-          margin-top: 2px;
-        }
-      }
-
       .caption {
         font-size: 14px;
         line-height: 20px;
@@ -451,7 +428,8 @@
     height: 49px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
+    flex-direction: row-reverse;
     z-index: 1400;
     background-color: rgba(0, 0, 0, 0.24);
 
@@ -472,6 +450,39 @@
 
         svg {
           color: var(--white);
+        }
+      }
+    }
+
+    .sender-container {
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      line-height: 1.3em;
+      font-size: 13px;
+      padding: 0 0 0 8px;
+
+      .sender-avatar {
+        height: 36px;
+        width: 36px;
+      }
+
+      .sender-info {
+        display: flex;
+        align-content: center;
+        justify-content: flex-end;
+        flex-direction: column;
+        padding: 0 0 0 8px;
+
+        .sender-user {
+          color: var(--white);
+          font-weight: bold;
+        }
+
+        .sender-date {
+          color: var(--white);
+          font-weight: 100;
+          margin-top: 2px;
         }
       }
     }

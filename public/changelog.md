@@ -3,6 +3,7 @@
 * Message content read bug fixed
 * Reaction UI updated
 * Notification settings bugs fixed
+* Document viewer updated
 
 ## 0.34.74
 * Auto height modal added to `Reaction List` and `Seen By`

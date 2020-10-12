@@ -47,6 +47,7 @@ import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
 import {GetDbFileName} from "../../repository/file";
 import {ModalityService} from "kk-modality";
+import UserAvatar from "../UserAvatar";
 
 import './style.scss';
 
@@ -477,6 +478,15 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         <VisibilityOutlined/>
                     </div>}
                 </div>
+                {Boolean(doc.type !== 'avatar') && <div className="sender-container">
+                    {Boolean(doc.items[0].userId) && <div className="sender-container">
+                        <UserAvatar className="sender-avatar" id={doc.items[0].userId || '0'}/>
+                        <div className="sender-info">
+                            <UserName className="sender-user" id={doc.items[0].userId || ''} noIcon={true} you={true}/>
+                            <div className="sender-date">{TimeUtility.dynamicDate(doc.items[0].createdon || 0)}</div>
+                        </div>
+                    </div>}
+                </div>}
                 <Menu
                     anchorEl={contextMenuAnchorEl}
                     open={Boolean(contextMenuAnchorEl)}
@@ -501,20 +511,15 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private initCaption() {
         const {doc} = this.state;
-        if (!doc || doc.items.length === 0 || ((doc.items[0].caption || '').length === 0 && !doc.items[0].userId)) {
+        if (!doc || doc.items.length === 0 || ((doc.items[0].caption || '').length === 0)) {
             return null;
         }
         return (
             <div className="document-viewer-caption" onClick={this.preventClosing}>
                 <div className="caption-wrapper">
-                    {Boolean((doc.items[0].caption || '').length !== 0) &&
                     <div className={'caption ' + (doc.items[0].rtl ? 'rtl' : 'ltr')}>
                         {renderBody(doc.items[0].caption, doc.items[0].entityList, this.isElectron, this.bodyActionHandler, undefined)}
-                    </div>}
-                    {Boolean(doc.items[0].userId) && <div className="sender-container">
-                        <UserName className="caption-user" id={doc.items[0].userId || ''} noIcon={true}/>
-                        <div className="caption-date">{TimeUtility.dynamicDate(doc.items[0].createdon || 0)}</div>
-                    </div>}
+                    </div>
                 </div>
             </div>
         );
