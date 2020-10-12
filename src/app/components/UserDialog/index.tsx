@@ -21,18 +21,18 @@ import APIManager from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
 import UniqueId from '../../services/uniqueId';
-import {Button, FormControlLabel, RadioGroup, Radio, Dialog, Checkbox, TextField, IconButton} from '@material-ui/core';
+import {Button, Dialog, Checkbox, TextField, IconButton} from '@material-ui/core';
 import {Link} from 'react-router-dom';
 import RiverTime from '../../services/utilities/river_time';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import {isMuted} from '../UserInfoMenu';
 import Broadcaster from '../../services/broadcaster';
 import i18n from '../../services/i18n';
-import {notifyOptions} from "../../pages/Chat";
 import {OfficialIcon} from "../SVG/official";
 import {extractPhoneNumber} from "../../services/utilities/localize";
 import LastSeen from "../LastSeen";
 import {ModalityService} from "kk-modality";
+import {NotifyContent} from "../GroupInfoMenu";
 
 import './style.scss';
 
@@ -428,20 +428,12 @@ class UserDialog extends React.Component<IProps, IState> {
             const notifyValue = String(notifySetting.muteuntil || -1);
             this.setState({
                 notifyValue,
-            }, ()=> {
+            }, () => {
                 this.modalityService.open({
                     cancelText: i18n.t('general.disagree'),
                     confirmText: i18n.t('general.apply'),
-                    description: <RadioGroup
-                        name="notify-setting"
-                        value={this.state.notifyValue}
-                        onChange={this.notifyValueChangeHandler}
-                    >
-                        {notifyOptions.map((item: any, key: number) => {
-                            return (<FormControlLabel key={key} value={item.val} label={item.title}
-                                                      control={<Radio color="primary"/>}/>);
-                        })}
-                    </RadioGroup>,
+                    description: <NotifyContent value={this.state.notifyValue}
+                                                onChange={this.notifyValueChangeHandler}/>,
                     title: i18n.t('peer_info.notify_settings'),
                 }).then((modalRes) => {
                     if (modalRes === 'confirm') {
@@ -484,7 +476,7 @@ class UserDialog extends React.Component<IProps, IState> {
     }
 
     /* Notify settings Radio group change value handler */
-    private notifyValueChangeHandler = (e: any, val: string) => {
+    private notifyValueChangeHandler = (val: string) => {
         this.setState({
             notifyValue: val,
         });

@@ -69,9 +69,15 @@
     }
   }
 
-  .setting-switch-checked {
-    .setting-switch-thumb {
-      color: var(--river-light);
+  .setting-switch {
+    > span {
+      padding: 9px 8px 6px;
+    }
+
+    .setting-switch-checked {
+      .setting-switch-thumb {
+        color: var(--river-light);
+      }
     }
   }
 

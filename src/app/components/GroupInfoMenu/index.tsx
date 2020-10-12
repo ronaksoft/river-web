@@ -8,6 +8,7 @@
 */
 
 import * as React from 'react';
+import {useState} from "react";
 import {
     AddRounded, CheckRounded, CloseRounded, EditRounded, ExitToAppRounded, KeyboardBackspaceRounded, MoreVert,
     PersonAddRounded, PhotoCameraRounded, StarRateRounded, StarsRounded,
@@ -94,6 +95,24 @@ export const hasAuthority = (group: IGroup, checkAllAdmin: boolean) => {
     } else {
         return false;
     }
+};
+
+export const NotifyContent = ({value, onChange}: { value: string, onChange: (val: string) => void }) => {
+    const [val, setVal] = useState<string>(value);
+    const notifyValueChangeHandler = (e: any, v: string) => {
+        setVal(v);
+        onChange(v);
+    };
+    return <RadioGroup
+        name="notify-setting"
+        value={val}
+        onChange={notifyValueChangeHandler}
+    >
+        {notifyOptions.map((item, key) => {
+            return (<FormControlLabel key={key} value={item.val} label={item.title}
+                                      control={<Radio color="primary"/>}/>);
+        })}
+    </RadioGroup>;
 };
 
 class GroupInfoMenu extends React.Component<IProps, IState> {
@@ -708,16 +727,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 this.modalityService.open({
                     cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('general.apply'),
-                    description: <RadioGroup
-                        name="notify-setting"
-                        value={this.state.notifyValue}
-                        onChange={this.notifyValueChangeHandler}
-                    >
-                        {notifyOptions.map((item, key) => {
-                            return (<FormControlLabel key={key} value={item.val} label={item.title}
-                                                      control={<Radio color="primary"/>}/>);
-                        })}
-                    </RadioGroup>,
+                    description: <NotifyContent value={this.state.notifyValue}
+                                                onChange={this.notifyValueChangeHandler}/>,
                     title: i18n.t('peer_info.notify_settings'),
                 }).then((modalRes) => {
                     if (modalRes === 'confirm') {
@@ -761,7 +772,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     /* Notify settings Radio group change value handler */
-    private notifyValueChangeHandler = (e: any, val: string) => {
+    private notifyValueChangeHandler = (val: string) => {
         this.setState({
             notifyValue: val,
         });

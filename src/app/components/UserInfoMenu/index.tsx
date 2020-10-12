@@ -29,17 +29,17 @@ import UserRepo, {UserDBUpdated} from '../../repository/user';
 import UniqueId from '../../services/uniqueId';
 import DialogRepo from '../../repository/dialog';
 import {IDialog} from '../../repository/dialog/interface';
-import {Button, FormControlLabel, RadioGroup, Radio, Checkbox, TextField, IconButton} from '@material-ui/core';
+import {Button, Checkbox, TextField, IconButton} from '@material-ui/core';
 import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import PeerMedia from '../PeerMedia';
 import i18n from "../../services/i18n";
-import {notifyOptions} from "../../pages/Chat";
 import Broadcaster from "../../services/broadcaster";
 import {OfficialIcon} from "../SVG/official";
 import {extractPhoneNumber} from "../../services/utilities/localize";
 import {ModalityService} from "kk-modality";
+import {NotifyContent} from "../GroupInfoMenu";
 
 import './style.scss';
 
@@ -463,16 +463,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 this.modalityService.open({
                     cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('general.apply'),
-                    description: <RadioGroup
-                        name="notify-setting"
-                        value={this.state.notifyValue}
-                        onChange={this.notifyValueChangeHandler}
-                    >
-                        {notifyOptions.map((item: any, key: number) => {
-                            return (<FormControlLabel key={key} value={item.val} label={item.title}
-                                                      control={<Radio color="primary"/>}/>);
-                        })}
-                    </RadioGroup>,
+                    description: <NotifyContent value={this.state.notifyValue}
+                                                onChange={this.notifyValueChangeHandler}/>,
                     title: i18n.t('peer_info.notify_settings'),
                 }).then((modalRes) => {
                     if (modalRes === 'confirm') {
@@ -516,7 +508,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     }
 
     /* Notify settings Radio group change value handler */
-    private notifyValueChangeHandler = (e: any, val: string) => {
+    private notifyValueChangeHandler = (val: string) => {
         this.setState({
             notifyValue: val,
         });

@@ -1135,15 +1135,27 @@ table {
   padding-left: 128px !important;
 }
 
+.MuiIconButton-colorPrimary:not(.Mui-checked) {
+  color: rgba(0, 0, 0, 0.54);
+}
+
 html[theme="dark"],
 html[theme="dark-night"] {
   .markdown-body h2 {
     border-bottom-color: var(--dark-high) !important;
+  }
+
+  .MuiIconButton-colorPrimary:not(.Mui-checked) {
+    color: var(--white);
   }
 }
 
 html[theme="dark-blue"] {
   .markdown-body h2 {
     border-bottom-color: var(--dark-blue-medium) !important;
+  }
+
+  .MuiIconButton-colorPrimary:not(.Mui-checked) {
+    color: var(--white);
   }
 }
