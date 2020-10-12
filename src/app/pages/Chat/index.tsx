@@ -5349,6 +5349,11 @@ class Chat extends React.Component<IProps, IState> {
 
     private updateMessagePinnedHandler = (data: UpdateMessagePinned.AsObject) => {
         this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0);
+        // TODO modify server for silent pin
+        // const peerName = GetPeerName(data.peer.id, data.peer.type);
+        // if (this.selectedPeerName === peerName) {
+        //     return;
+        // }
     }
 
     private updateManagerStatusHandler = ({isUpdating}: { isUpdating: boolean }) => {

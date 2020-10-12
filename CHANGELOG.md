@@ -1,3 +1,8 @@
+## 0.34.75
+* Download/Upload throttle implemented
+* Message content read bug fixed
+* Reaction UI updated
+
 ## 0.34.74
 * Auto height modal added to `Reaction List` and `Seen By`
 
