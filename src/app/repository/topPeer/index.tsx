@@ -104,6 +104,7 @@ export default class TopPeerRepo {
         }
         if (topPeers.length === 1) {
             const type = topPeers[0].type;
+            // @ts-ignore
             delete topPeers[0].type;
             return this.importBulk(type, topPeers);
         } else {

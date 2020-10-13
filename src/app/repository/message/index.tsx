@@ -138,6 +138,7 @@ export default class MessageRepo {
                         replyInline.rowsList[i].buttonsList[j].buttondata = ButtonUrl.deserializeBinary(data).toObject();
                         break;
                 }
+                // @ts-ignore
                 delete r2.data;
             });
         });
@@ -184,6 +185,7 @@ export default class MessageRepo {
                     flags.type = C_MESSAGE_TYPE.Gif;
                     break;
             }
+            // @ts-ignore
             delete attr.data;
         });
         return attrOut;

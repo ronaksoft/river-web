@@ -1,3 +1,6 @@
+## 0.34.76
+* Updated to latest typescript
+
 ## 0.34.75
 * Download/Upload throttle implemented
 * Message content read bug fixed

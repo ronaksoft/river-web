@@ -59,6 +59,7 @@ export default class GifRepo {
             out.messagetype = flags.type;
         }
         out.id = GetDbFileName(gifDoc.doc.id, gifDoc.doc.clusterid);
+        // @ts-ignore
         delete out.entitiesList;
         return out;
     }
