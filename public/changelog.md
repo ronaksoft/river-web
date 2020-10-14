@@ -1,3 +1,6 @@
+## 0.34.79
+* Few UI bugs fixed
+
 ## 0.34.78
 * Modal auto height bug fixed
 

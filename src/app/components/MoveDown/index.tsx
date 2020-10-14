@@ -74,6 +74,7 @@ class MoveDown extends React.Component<IProps, IState> {
             }
             return (<div ref={this.refHandler} className="move-down" onClick={this.props.onClick}>
                 <Badge color="primary" badgeContent={unreadCounter}
+                       classes={{root: 'move-down-badge'}}
                        invisible={Boolean(unreadCounter === 0)}>
                     <ExpandMoreRounded/>
                 </Badge>
