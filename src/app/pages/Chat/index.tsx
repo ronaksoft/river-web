@@ -739,9 +739,16 @@ class Chat extends React.Component<IProps, IState> {
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
                 <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
             </div>
         );
     }
+
+    // private toggleLiveUpdateHandler = () => {
+    //     if (this.updateManager) {
+    //         this.updateManager.toggleLiveUpdate();
+    //     }
+    // }
 
     private containerRefHandler = (ref: any) => {
         this.containerRef = ref;
@@ -1098,10 +1105,11 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const peerName = GetPeerName(data.peer.id, data.peer.type);
+        const msgId = data.messageid || 0;
         if (this.selectedPeerName === peerName) {
             const messages = this.messages;
             const index = findLastIndex(messages, (o) => {
-                return o.id === data.messageid && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                return o.id === msgId && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
             });
             if (index > -1 && messages[index]) {
                 messages[index].reactionsList = data.counterList;
@@ -1112,12 +1120,13 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
         if (this.selectedPeerName !== peerName || !this.isInChat) {
-            this.messageRepo.get(data.messageid || 0).then((msg) => {
-                if (!data.peer || !data.sender || !msg || !msg.me) {
+            this.messageRepo.get(msgId).then((msg) => {
+                if (!data.peer || !data.sender || !msg || !msg.me || data.reaction === '') {
                     return;
                 }
                 const message: IMessage = {
-                    body: 'reacted to your message',
+                    body: `reacted to your message with ${data.reaction}`,
+                    id: msgId,
                     me: false,
                     peerid: data.peer.id,
                     peertype: data.peer.type,
@@ -1128,6 +1137,16 @@ class Chat extends React.Component<IProps, IState> {
                     sender: data.sender,
                 });
             });
+        } else if (this.moveDownRef && this.popUpDateRef && this.scrollInfo && data.reaction && data.reaction !== '') {
+            const fromId = this.messages[this.scrollInfo.start] ? this.messages[this.scrollInfo.start].id || 0 : 0;
+            const toId = this.messages[this.scrollInfo.end] ? this.messages[this.scrollInfo.end].id || 0 : 0;
+            if (fromId > 0 && toId > 0) {
+                if (msgId > toId) {
+                    this.moveDownRef.addReaction(data.reaction);
+                } else if (msgId < fromId) {
+                    this.popUpDateRef.addReaction(data.reaction);
+                }
+            }
         }
     }
 
@@ -2698,7 +2717,7 @@ class Chat extends React.Component<IProps, IState> {
                     this.setScrollMode('none');
                 }
                 this.updateManager.getLastUpdateId();
-                const mRes = res.filter(m => !this.messageMapExist(m));
+                const mRes = res.filter(m => !this.messageMapExist(m, true));
                 if (mRes.length > 0) {
                     const modifiedMsgs = this.modifyMessages(this.messages, mRes, true);
                     if (modifiedMsgs.msgs.length > 0) {
@@ -4349,7 +4368,7 @@ class Chat extends React.Component<IProps, IState> {
     private cancelDownloadFile(msg: IMessage) {
         const mediaDocument = getMediaDocument(msg);
         if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-            this.fileManager.cancel(mediaDocument.doc.id);
+            this.fileManager.cancel(GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid));
         }
     }
 
@@ -5762,7 +5781,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private messageMapExist(message: IMessage) {
+    private messageMapExist(message: IMessage, noAppend?: boolean) {
         if (!message.id) {
             return false;
         }
@@ -5772,7 +5791,9 @@ class Chat extends React.Component<IProps, IState> {
         if (message.random_id && this.messageRandomIdMap[message.random_id]) {
             return true;
         }
-        this.messageMapAppend(message);
+        if (noAppend !== true) {
+            this.messageMapAppend(message);
+        }
         return false;
     }
 

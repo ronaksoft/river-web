@@ -160,6 +160,7 @@ export default class UpdateManager {
 
     // Flags and counters
     private isLive: boolean = true;
+    private forceDisable: boolean = false;
     private lastUpdateId: number = 0;
     private internalUpdateId: number = 0;
     private userId: string = '';
@@ -280,7 +281,7 @@ export default class UpdateManager {
     }
 
     public parseUpdate(bytes: string) {
-        if (!this.isLive) {
+        if (!this.isLive || this.forceDisable) {
             return;
         }
         try {
@@ -337,6 +338,10 @@ export default class UpdateManager {
 
     public forceLogOut() {
         this.callHandlers('all', C_MSG.UpdateAuthorizationReset, {});
+    }
+
+    public toggleLiveUpdate() {
+        this.forceDisable = !this.forceDisable;
     }
 
     public disableLiveUpdate() {

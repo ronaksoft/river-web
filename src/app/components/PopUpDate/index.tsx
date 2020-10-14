@@ -24,6 +24,7 @@ interface IState {
 class PopUpDate extends React.PureComponent<IProps, IState> {
     private popUpDateTimeout: any;
     private lastTimestamp: number | null | undefined;
+    private ref: any;
 
     constructor(props: IProps) {
         super(props);
@@ -58,15 +59,33 @@ class PopUpDate extends React.PureComponent<IProps, IState> {
         }
     }
 
+    public addReaction(reaction: string) {
+        if (this.ref) {
+            const el = document.createElement('div');
+            el.classList.add('offscreen-reaction');
+            el.innerHTML = reaction;
+            setTimeout(() => {
+                el.remove();
+            }, 950);
+            this.ref.appendChild(el);
+        }
+    }
+
     public render() {
         const {className, timestamp} = this.state;
         return (
-            <div className="pop-up-date-container">
+            <div className="pop-up-date" ref={this.refHandler}>
+                <div className="pop-up-date-container">
                 <span className={'pop-up-date ' + className + (timestamp ? ' down' : '')}>
                     {timestamp ? TimeUtility.dynamicDate(timestamp) : TimeUtility.dynamicDate(this.lastTimestamp || 0)}
                 </span>
+                </div>
             </div>
         );
+    }
+
+    private refHandler = (ref: any) => {
+        this.ref = ref;
     }
 }
 

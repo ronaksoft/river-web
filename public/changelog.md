@@ -1,3 +1,8 @@
+## 0.34.77
+* New reaction animation
+* Update Manager bug fixed
+* Voice player bug fixed
+
 ## 0.34.76
 * Updated to latest typescript
 

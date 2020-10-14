@@ -12,9 +12,9 @@ import {IMessage} from '../../repository/message/interface';
 import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 import VoicePlayer, {getVoiceInfo} from '../VoicePlayer';
 import {MediaDocument} from '../../services/sdk/messages/chat.messages.medias_pb';
+import {GetDbFileName} from "../../repository/file";
 
 import './style.scss';
-import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     message: IMessage;

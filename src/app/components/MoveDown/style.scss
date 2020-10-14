@@ -1,38 +1,98 @@
-.right-menu {
+.move-down {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 120;
-  width: 0;
-  overflow: hidden;
-  transition: width 0.05s linear;
-  display: block;
+  bottom: 12px;
+  right: 12px;
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  background-color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.1s, transform 0.2s;
+  transform: scale(0);
+  transform-origin: center 100%;
+  z-index: 20;
 
-  &.active {
-    width: 318px;
-  }
-}
-
-.container.mobile-view {
-  .right-menu {
+  &:before {
     position: absolute;
+    content: '';
     top: 0;
     right: 0;
     bottom: 0;
-    z-index: 120;
+    left: 0;
+    border-radius: 50%;
+    background-color: var(--white);
+    z-index: 2;
+  }
 
-    &.active {
-      width: 100vw;
+  svg {
+    position: relative;
+    z-index: 3;
+  }
+
+  &.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .offscreen-reaction {
+    position: absolute;
+    animation-name: reactionAnimateUp;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    z-index: 1;
+  }
+}
+
+@keyframes reactionAnimateUp {
+  from {
+    transform: translate(0, 0) scale(0.7);
+    opacity: 1;
+  }
+  25% {
+    transform: translate(5px, -25px) scale(1.025);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-5px, -50px) scale(1.35);
+  }
+  95% {
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, -100px) scale(2);
+    opacity: 0;
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .move-down {
+    background-color: var(--dark-medium);
+
+    &:before {
+      background-color: var(--dark-medium);
+    }
+
+    svg {
+      color: var(--light);
     }
   }
 }
 
-html[direction="rtl"] {
-  .container {
-    .right-menu {
-      left: 0;
-      right: auto;
+html[theme="dark-blue"] {
+  .move-down {
+    background-color: var(--dark-blue-medium);
+
+    &:before {
+      background-color: var(--dark-blue-medium);
+    }
+
+    svg {
+      color: var(--light);
     }
   }
 }

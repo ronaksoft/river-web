@@ -69,29 +69,6 @@
       &.no-result {
         //background-image: none !important;
       }
-
-      .move-down {
-        position: absolute;
-        bottom: 12px;
-        right: 12px;
-        height: 32px;
-        width: 32px;
-        border-radius: 50%;
-        background-color: var(--white);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: opacity 0.1s, transform 0.2s;
-        transform: scale(0);
-        transform-origin: center 100%;
-        z-index: 20;
-
-        &.visible {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
     }
 
     .attachments {
@@ -557,14 +534,6 @@ html[theme="dark-blue"] {
 
       .conversation {
         background-color: var(--dark-low);
-
-        .move-down {
-          background-color: var(--dark-medium);
-
-          svg {
-            color: var(--light);
-          }
-        }
       }
 
       .start-messaging {
@@ -647,14 +616,6 @@ html[theme="dark-blue"] {
 
       .conversation {
         background-color: var(--dark-blue-low);
-
-        .move-down {
-          background-color: var(--dark-blue-medium);
-
-          svg {
-            color: var(--light);
-          }
-        }
       }
 
       .start-messaging {

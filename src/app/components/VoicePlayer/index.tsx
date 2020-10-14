@@ -120,7 +120,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
         this.state = {
             className: props.className || '',
-            playState: 'pause',
+            playState: 'download',
         };
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();

@@ -411,11 +411,11 @@ export default class FileManager {
                 if (this.onWireUploads.indexOf(id) === -1) {
                     this.onWireUploads.push(id);
                 }
-                this.startUploading(id);
+                requestAnimationFrame(() => {
+                    this.startUploading(id);
+                });
             }
-            requestAnimationFrame(() => {
-                this.startUploadQueue();
-            });
+            this.startUploadQueue();
         }
     }
 
@@ -427,11 +427,11 @@ export default class FileManager {
                 if (this.onWireDownloads.indexOf(id) === -1) {
                     this.onWireDownloads.push(id);
                 }
-                this.startDownloading(id);
+                requestAnimationFrame(() => {
+                    this.startDownloading(id);
+                });
             }
-            requestAnimationFrame(() => {
-                this.startDownloadQueue();
-            });
+            this.startDownloadQueue();
         }
     }
 
@@ -442,11 +442,11 @@ export default class FileManager {
                 if (this.onWireInstantDownloads.indexOf(id) === -1) {
                     this.onWireInstantDownloads.push(id);
                 }
-                this.startDownloading(id);
+                requestAnimationFrame(() => {
+                    this.startDownloading(id);
+                });
             }
-            requestAnimationFrame(() => {
-                this.startInstanceDownloadQueue();
-            });
+            this.startInstanceDownloadQueue();
         }
     }
 

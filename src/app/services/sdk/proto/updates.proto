@@ -431,6 +431,7 @@ message UpdateReaction {
     optional Peer Peer = 4;
     optional User Sender = 5;
     repeated string YourReactions = 6;
+    optional string Reaction = 7;
 }
 
 // UpdateCalendarEventAdded
@@ -454,5 +455,29 @@ message UpdateCalendarEventEdited {
     required CalendarEvent Event = 1;
 }
 
+// RedirectTarget
+enum RedirectTarget {
+    RedirectTargetRpc = 0;
+    RedirectTargetFile = 1;
+    RedirectTargetProxy = 2;
+    RedirectTargetReserved1 = 3;
+    RedirectTargetReserved2 = 4;
+    RedirectTargetReserved3 = 5;
+    RedirectTargetReserved4 = 6;
+}
 
+// UpdateRedirect
+message UpdateRedirect {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    repeated ClientRedirect Redirects = 1;
+    required bool Empty = 2;
+}
 
+// ClientRedirect
+message ClientRedirect {
+    required string HostPort = 1;
+    required bool Permanent = 2;
+    required RedirectTarget Target = 3;
+    repeated string Alternatives = 4;
+}

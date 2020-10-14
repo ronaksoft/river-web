@@ -53,6 +53,18 @@ class MoveDown extends React.Component<IProps, IState> {
         }
     }
 
+    public addReaction(reaction: string) {
+        if (this.ref) {
+            const el = document.createElement('div');
+            el.classList.add('offscreen-reaction');
+            el.innerHTML = reaction;
+            setTimeout(() => {
+                el.remove();
+            }, 950);
+            this.ref.appendChild(el);
+        }
+    }
+
     public render() {
         let unreadCounter = 0;
         const {dialog} = this.state;

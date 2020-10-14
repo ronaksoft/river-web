@@ -2140,6 +2140,11 @@ export class UpdateReaction extends jspb.Message {
   setYourreactionsList(value: Array<string>): void;
   addYourreactions(value: string, index?: number): string;
 
+  hasReaction(): boolean;
+  clearReaction(): void;
+  getReaction(): string | undefined;
+  setReaction(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateReaction.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateReaction): UpdateReaction.AsObject;
@@ -2160,6 +2165,7 @@ export namespace UpdateReaction {
     peer?: core_types_pb.Peer.AsObject,
     sender?: core_types_pb.User.AsObject,
     yourreactionsList: Array<string>,
+    reaction?: string,
   }
 }
 
@@ -2263,5 +2269,95 @@ export namespace UpdateCalendarEventEdited {
     updateid?: number,
     event: calendar_pb.CalendarEvent.AsObject,
   }
+}
+
+export class UpdateRedirect extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  clearRedirectsList(): void;
+  getRedirectsList(): Array<ClientRedirect>;
+  setRedirectsList(value: Array<ClientRedirect>): void;
+  addRedirects(value?: ClientRedirect, index?: number): ClientRedirect;
+
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateRedirect.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateRedirect): UpdateRedirect.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateRedirect, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateRedirect;
+  static deserializeBinaryFromReader(message: UpdateRedirect, reader: jspb.BinaryReader): UpdateRedirect;
+}
+
+export namespace UpdateRedirect {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    redirectsList: Array<ClientRedirect.AsObject>,
+    empty?: boolean,
+  }
+}
+
+export class ClientRedirect extends jspb.Message {
+  hasHostport(): boolean;
+  clearHostport(): void;
+  getHostport(): string | undefined;
+  setHostport(value: string): void;
+
+  hasPermanent(): boolean;
+  clearPermanent(): void;
+  getPermanent(): boolean | undefined;
+  setPermanent(value: boolean): void;
+
+  hasTarget(): boolean;
+  clearTarget(): void;
+  getTarget(): RedirectTarget | undefined;
+  setTarget(value: RedirectTarget): void;
+
+  clearAlternativesList(): void;
+  getAlternativesList(): Array<string>;
+  setAlternativesList(value: Array<string>): void;
+  addAlternatives(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ClientRedirect.AsObject;
+  static toObject(includeInstance: boolean, msg: ClientRedirect): ClientRedirect.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ClientRedirect, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ClientRedirect;
+  static deserializeBinaryFromReader(message: ClientRedirect, reader: jspb.BinaryReader): ClientRedirect;
+}
+
+export namespace ClientRedirect {
+  export type AsObject = {
+    hostport?: string,
+    permanent?: boolean,
+    target?: RedirectTarget,
+    alternativesList: Array<string>,
+  }
+}
+
+export enum RedirectTarget {
+  REDIRECTTARGETRPC = 0,
+  REDIRECTTARGETFILE = 1,
+  REDIRECTTARGETPROXY = 2,
+  REDIRECTTARGETRESERVED1 = 3,
+  REDIRECTTARGETRESERVED2 = 4,
+  REDIRECTTARGETRESERVED3 = 5,
+  REDIRECTTARGETRESERVED4 = 6,
 }
 
