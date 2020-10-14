@@ -47,6 +47,7 @@ class SettingsModal extends React.Component<IProps, IState> {
 
     private readonly resizeObserver: ResizeObserver | undefined;
     private autoHeight: number = 0;
+    private ref: any;
 
     constructor(props: IProps) {
         super(props);
@@ -112,6 +113,7 @@ class SettingsModal extends React.Component<IProps, IState> {
         if (!ref || !this.props.autoHeight) {
             return;
         }
+        this.ref = ref;
         try {
             const el = (ref as HTMLElement)?.firstElementChild?.firstElementChild?.firstElementChild;
             if (this.resizeObserver && el) {
@@ -128,20 +130,22 @@ class SettingsModal extends React.Component<IProps, IState> {
         if (this.autoHeight) {
             return;
         }
-        try {
-            this.autoHeight = e?.[0]?.borderBoxSize?.[0].blockSize;
-            if (this.props.minHeight && this.autoHeight < this.props.minHeight) {
-                this.autoHeight = this.props.minHeight;
+        setTimeout(() => {
+            try {
+                this.autoHeight = this.ref?.firstElementChild?.firstElementChild?.firstElementChild?.getBoundingClientRect().height;
+                if (this.props.minHeight && this.autoHeight < this.props.minHeight) {
+                    this.autoHeight = this.props.minHeight;
+                }
+                if (this.props.maxHeight && this.autoHeight > this.props.maxHeight) {
+                    this.autoHeight = this.props.maxHeight;
+                }
+                this.forceUpdate();
+            } catch (e) {
+                if (!isProd) {
+                    window.console.log(e);
+                }
             }
-            if (this.props.maxHeight && this.autoHeight > this.props.maxHeight) {
-                this.autoHeight = this.props.maxHeight;
-            }
-            this.forceUpdate();
-        } catch (e) {
-            if (!isProd) {
-                window.console.log(e);
-            }
-        }
+        }, 100);
     }
 }
 

@@ -1,3 +1,6 @@
+## 0.34.78
+* Modal auto height bug fixed
+
 ## 0.34.77
 * New reaction animation
 * Update Manager bug fixed
