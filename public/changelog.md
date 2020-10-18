@@ -1,3 +1,7 @@
+## 0.34.80
+* UI improvements
+* Some labels updated
+
 ## 0.34.79
 * Few UI bugs fixed
 

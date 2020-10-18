@@ -90,7 +90,7 @@ class BottomBar extends React.Component<IProps, IState> {
         this.items = [{
             icon: <PersonRounded/>,
             page: 'contacts',
-            title: this.state.teamId === '0' ? i18n.t('general.contacts') : i18n.t('general.members'),
+            title: i18n.t(this.state.teamId === '0' ? 'general.contacts' : 'general.members'),
         }, {
             badge: true,
             icon: <QuestionAnswerRounded/>,

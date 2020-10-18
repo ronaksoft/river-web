@@ -61,7 +61,6 @@ class ContactMenus extends React.Component<IProps, IState> {
 
         this.userRepo = UserRepo.getInstance();
         this.apiManager = APIManager.getInstance();
-
         this.broadcaster = Broadcaster.getInstance();
     }
 
@@ -76,19 +75,15 @@ class ContactMenus extends React.Component<IProps, IState> {
         return (
             <div className="contacts">
                 <div className="menu-header">
-                    <IconButton
-                        onClick={this.props.onClose}
-                    >
+                    <IconButton onClick={this.props.onClose}>
                         <KeyboardBackspaceRounded/>
                     </IconButton>
-                    <label>{i18n.t('contact.contacts')}</label>
+                    <label>{i18n.t(this.props.teamId === '0' ? 'general.contacts' : 'general.members')}</label>
                     {this.props.teamId === '0' && <Tooltip
                         title={i18n.t('contact.new_contact')}
                         placement="bottom"
                     >
-                        <IconButton
-                            onClick={this.newContactOpenHandler}
-                        >
+                        <IconButton onClick={this.newContactOpenHandler}>
                             <PersonAddRounded/>
                         </IconButton>
                     </Tooltip>}
