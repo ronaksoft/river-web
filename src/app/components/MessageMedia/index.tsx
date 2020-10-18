@@ -31,8 +31,10 @@ import {transformMimeType} from "../StreamVideo/helper";
 import {GetDbFileName} from "../../repository/file";
 import UserName from "../UserName";
 import i18n from "../../services/i18n";
+import Broadcaster from "../../services/broadcaster";
 
 import './style.scss';
+import {MESSAGE_ORIENTATION_UPDATED} from "../DocumentViewer";
 
 export const C_MEDIA_BREAKPOINT = 1116;
 const C_MIN_HEIGHT_TINY = 102;
@@ -65,11 +67,12 @@ export interface IMediaInfo {
     height: number;
     md5?: string;
     mimeType?: string;
+    orientation?: number;
     performer?: string;
     size: number;
     thumbFile: FileLocation.AsObject;
-    title?: string;
     tinyThumb?: string;
+    title?: string;
     type: string;
     width: number;
 }
@@ -96,6 +99,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
         type: '',
         width: 0,
     };
+    if (message.orientation) {
+        info.orientation = message.orientation;
+    }
     const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
     if (!messageMediaDocument) {
         return info;
@@ -283,6 +289,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private settingsConfigManager: SettingsConfigManager;
     private transitionTimeout: any = null;
     private isElectron: boolean = ElectronService.isElectron();
+    private broadcaster: Broadcaster;
 
     constructor(props: IProps) {
         super(props);
@@ -319,6 +326,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
         this.settingsConfigManager = SettingsConfigManager.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
@@ -330,6 +338,8 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         this.displayFileSize(0);
         this.dbFileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
         this.initProgress();
+        // Orientation event
+        this.eventReferences.push(this.broadcaster.listen(MESSAGE_ORIENTATION_UPDATED, this.messageOrientationUpdateHandler));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -371,13 +381,13 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             forceUpdate = true;
         }
         if ((newProps.message.saved || false) !== this.saved) {
-            this.saved = (newProps.message.saved || false);
+            this.saved = newProps.message.saved || false;
             state.fileState = this.getFileState(newProps.message);
             state.message = newProps.message;
             updateState = true;
         }
         if ((newProps.message.contentread || false) !== this.contentRead) {
-            this.contentRead = (newProps.message.contentread || false);
+            this.contentRead = newProps.message.contentread || false;
             state.message = newProps.message;
             forceUpdate = true;
             updateState = true;
@@ -771,6 +781,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 id: message.id || 0,
                 md5: info.md5,
                 mimeType: info.mimeType,
+                orientation: info.orientation,
                 rtl: message.rtl,
                 thumbFileLocation: message.messagetype === C_MESSAGE_TYPE.Video ? undefined : info.thumbFile,
                 userId: message.senderid || '',
@@ -813,6 +824,18 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             return false;
         }
         return MediaSource.isTypeSupported(transformMimeType(mimeType));
+    }
+
+    private messageOrientationUpdateHandler = (data: { id: number, orientation: number }) => {
+        if (this.props.message.id !== data.id) {
+            return;
+        }
+        const {message} = this.state;
+        message.orientation = data.orientation;
+        this.setState({
+            info: getMediaInfo(message),
+            message,
+        });
     }
 }
 

@@ -14,9 +14,10 @@ import {IPeer} from "../../repository/dialog/interface";
 
 interface IDocumentItem {
     caption: string;
-    entityList?: MessageEntity.AsObject[];
+    createdon?: number;
     downloaded?: boolean;
     duration?: number;
+    entityList?: MessageEntity.AsObject[];
     fileLocation: InputFileLocation.AsObject;
     fileSize?: number;
     geo?: google.maps.LatLngLiteral;
@@ -24,12 +25,12 @@ interface IDocumentItem {
     id?: number;
     md5?: string;
     mimeType?: string;
+    orientation?: number;
     rtl?: boolean;
-    thumbFileLocation?: InputFileLocation.AsObject;
-    width?: number;
-    userId?: string;
-    createdon?: number;
     snippet?: string;
+    thumbFileLocation?: InputFileLocation.AsObject;
+    userId?: string;
+    width?: number;
 }
 
 export interface IDocument {

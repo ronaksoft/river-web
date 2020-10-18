@@ -29,8 +29,8 @@ export default class Broadcaster {
     private constructor() {
     }
 
-    public publish(name: string, item: IBroadcastItem) {
-        this.callHandlers(name, item);
+    public publish(name: string, payload: any) {
+        this.callHandlers(name, payload);
     }
 
     public listen(name: string, fn: any): (() => void) | null {
@@ -61,14 +61,21 @@ export default class Broadcaster {
 
     private callHandlers(name: string, data: any) {
         if (!this.listeners.hasOwnProperty(name)) {
-            return;
+            return Promise.reject();
         }
-        this.listeners[name].data = data;
-        const keys = Object.keys(this.listeners[name].fnQueue);
-        keys.forEach((key) => {
-            const fn = this.listeners[name].fnQueue[key];
-            if (fn) {
-                fn(data);
+        return new Promise((resolve, reject) => {
+            try {
+                this.listeners[name].data = data;
+                const keys = Object.keys(this.listeners[name].fnQueue);
+                keys.forEach((key) => {
+                    const fn = this.listeners[name].fnQueue[key];
+                    if (fn) {
+                        fn(data);
+                    }
+                });
+                resolve();
+            } catch (e) {
+                reject(e);
             }
         });
     }

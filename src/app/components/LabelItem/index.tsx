@@ -239,6 +239,7 @@ const viewDocumentHandler = (labelId: number, message: IMessage) => (e: any) => 
             id: message.id || 0,
             md5: info.md5,
             mimeType: info.mimeType,
+            orientation: info.orientation,
             rtl: message.rtl,
             thumbFileLocation: message.messagetype === C_MESSAGE_TYPE.Video ? undefined : info.thumbFile,
             userId: message.senderid || '',

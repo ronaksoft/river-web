@@ -151,7 +151,7 @@ export default class DialogRepo {
         });
     }
 
-    public getIn(inputs: Array<[string, string, number]>): Promise<IDialog[]> {
+    public getIn(inputs: Array<[string, string, number]>): Promise<Array<IDialog | undefined>> {
         return this.db.dialogs.bulkGet(inputs);
     }
 

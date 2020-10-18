@@ -48,8 +48,12 @@ import ElectronService from "../../services/electron";
 import {GetDbFileName} from "../../repository/file";
 import {ModalityService} from "kk-modality";
 import UserAvatar from "../UserAvatar";
+import MessageRepo from "../../repository/message";
+import Broadcaster from "../../services/broadcaster";
 
 import './style.scss';
+
+export const MESSAGE_ORIENTATION_UPDATED = 'Message_Orientation_Updated';
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -141,6 +145,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private downloadProgressRef: DownloadProgress | undefined;
     private isElectron: boolean = ElectronService.isElectron();
     private modalityService: ModalityService;
+    private messageRepo: MessageRepo;
 
     constructor(props: IProps) {
         super(props);
@@ -164,6 +169,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.modalityService = ModalityService.getInstance();
+        this.messageRepo = MessageRepo.getInstance();
     }
 
     public componentDidMount() {
@@ -216,6 +222,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private documentContainerRefHandler = (ref: any) => {
         this.documentContainerRef = ref;
+        if (this.mediaTransform.rotate) {
+            this.documentContainerRef.style.transform = `translate(${this.mediaTransform.pan.x}px, ${this.mediaTransform.pan.y}px) scale(${this.mediaTransform.zoom}) rotate(${this.mediaTransform.rotate}deg)`;
+        }
     }
 
     private getContent() {
@@ -629,7 +638,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.floatPictureRef.style.width = size.width;
         this.floatPictureRef.style.top = `50%`;
         this.floatPictureRef.style.left = `50%`;
-        this.floatPictureRef.style.transform = `translate(-50%, -50%)`;
+        this.floatPictureRef.style.transform = `translate(-50%, -50%) rotate(${this.mediaTransform.rotate}deg)`;
         this.floatPictureRef.style.borderRadius = `0`;
         this.floatPictureRef.style.opacity = '1';
         setTimeout(() => {
@@ -702,6 +711,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         };
         const {doc} = this.state;
         if (doc && (doc.type === 'picture' || doc.type === 'video')) {
+            this.storeOrientation();
             this.animateOutFloatPicture(() => {
                 closeDialog();
             });
@@ -713,6 +723,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private dialogOpen = (doc: IDocument) => {
         const download = (doc.items.length > 0 && doc.items[0].downloaded === false);
         this.lastAnchorType = doc.anchor;
+        if (doc.items.length > 0 && doc.items[0].orientation) {
+            this.mediaTransform.rotate = doc.items[0].orientation;
+        }
         this.setState({
             dialogOpen: true,
             doc,
@@ -802,6 +815,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (this.isTransitioning) {
             return;
         }
+        this.storeOrientation();
         this.animateSlide(false, () => {
             if (this.state.prev) {
                 this.loadMedia(this.state.prev);
@@ -813,11 +827,26 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (this.isTransitioning) {
             return;
         }
+        this.storeOrientation();
         this.animateSlide(true, () => {
             if (this.state.next) {
                 this.loadMedia(this.state.next);
             }
         });
+    }
+
+    private storeOrientation() {
+        const {doc} = this.state;
+        if (doc && doc.items.length > 0 && (doc.type === 'picture' || doc.type === 'video') && (doc.items[0].orientation || 0) !== this.mediaTransform.rotate) {
+            this.messageRepo.importBulk([{
+                id: doc.items[0].id,
+                orientation: this.mediaTransform.rotate,
+            }]);
+            Broadcaster.getInstance().publish(MESSAGE_ORIENTATION_UPDATED, {
+                id: doc.items[0].id,
+                orientation: this.mediaTransform.rotate,
+            });
+        }
     }
 
     private windowKeyDownHandler = (e: any) => {
@@ -861,6 +890,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 id: message.id || 0,
                 md5: info.md5,
                 mimeType: info.mimeType,
+                orientation: info.orientation,
                 thumbFileLocation: info.thumbFile,
                 userId: message.senderid || '',
                 width: info.width,

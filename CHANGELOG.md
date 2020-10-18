@@ -1,3 +1,8 @@
+## 0.34.81
+* DB driver updated
+* Media orientation now is being saved
+* Minor bugs fixed
+
 ## 0.34.80
 * UI improvements
 * Some labels updated

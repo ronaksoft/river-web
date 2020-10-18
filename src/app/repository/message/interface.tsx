@@ -23,7 +23,11 @@ export interface IMessage extends UserMessage.AsObject {
     me?: boolean;
     mediadata?: any;
     mention_me?: boolean;
+    orientation?: number;
     random_id?: number;
+    reacted?: boolean;
+    reaction_list?: IReactionInfo[];
+    reaction_updated?: boolean;
     removed_labels?: number[];
     replydata?: any;
     req_id?: number;
@@ -31,9 +35,6 @@ export interface IMessage extends UserMessage.AsObject {
     saved?: boolean;
     saved_path?: string;
     temp_file?: Blob;
-    reaction_updated?: boolean;
-    reaction_list?: IReactionInfo[];
-    reacted?: boolean;
 }
 
 export interface IPendingMessage {

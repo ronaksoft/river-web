@@ -395,9 +395,6 @@ export default class UpdateManager {
             this.applyDiffUpdate(res.toObject()).then((id) => {
                 this.startSyncing(id, limit);
             }).catch((err2) => {
-                if (this.verboseAPI) {
-                    window.console.log('startSyncing err2:', err2);
-                }
                 this.enableLiveUpdate();
                 this.isDiffUpdating = false;
                 this.callHandlers('all', C_MSG.UpdateManagerStatus, {
@@ -420,11 +417,15 @@ export default class UpdateManager {
                                 isUpdating: false,
                             });
                         } else {
-                            if (this.verboseAPI) {
-                                window.console.log('startSyncing', err2);
-                            }
+                            // if (this.verboseAPI) {
+                            window.console.log('startSyncing', err);
+                            // }
                         }
                     });
+                } else {
+                    // if (this.verboseAPI) {
+                    window.console.log('startSyncing err2:', err2);
+                    // }
                 }
             });
         });
@@ -530,9 +531,9 @@ export default class UpdateManager {
             if (err.err === 'too_soon') {
                 this.enableLiveUpdate();
             } else {
-                if (this.verboseAPI) {
-                    window.console.log('callOutOfSync', err);
-                }
+                // if (this.verboseAPI) {
+                window.console.log('callOutOfSync', err);
+                // }
             }
         });
     }
@@ -1314,6 +1315,9 @@ export default class UpdateManager {
             });
             const dialogPromise = this.dialogRepo.getIn(transaction.toCheckDialogIds.map(o => [o.teamid, o.peerid, o.peertype])).then((dialogs) => {
                 dialogs.forEach((dialog) => {
+                    if (!dialog) {
+                        return;
+                    }
                     const peerName = GetPeerName(dialog.peerid, dialog.peertype);
                     if (transaction.removedMessages.hasOwnProperty(peerName) && transaction.removedMessages[peerName].indexOf(dialog.pinnedmessageid || 0) > -1) {
                         this.mergeDialog(transaction.dialogs, {
