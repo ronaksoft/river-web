@@ -56,6 +56,8 @@ import {IFileMap} from "../../../repository/file/interface";
 import TopPeerRepo, {ITopPeerWithType, TopPeerType} from "../../../repository/topPeer";
 import {Document, MediaDocument} from "../messages/chat.messages.medias_pb";
 import GifRepo from "../../../repository/gif";
+import * as Sentry from "@sentry/browser";
+import {isProd} from "../../../../App";
 
 const C_MAX_UPDATE_DIFF = 5000;
 const C_DIFF_AMOUNT = 100;
@@ -313,6 +315,13 @@ export default class UpdateManager {
             this.applyUpdates(data);
         } catch (e) {
             window.console.debug(e);
+            try {
+                Sentry.captureMessage(`parseUpdate | err: ${JSON.stringify(e)})}`, Sentry.Severity.Error);
+            } catch (e) {
+                if (!isProd) {
+                    window.console.log(e);
+                }
+            }
             this.callOutOfSync();
         }
     }
@@ -419,12 +428,26 @@ export default class UpdateManager {
                         } else {
                             // if (this.verboseAPI) {
                             window.console.log('startSyncing', err);
+                            try {
+                                Sentry.captureMessage(`startSyncing | err: ${JSON.stringify(err)})}`, Sentry.Severity.Error);
+                            } catch (e) {
+                                if (!isProd) {
+                                    window.console.log(e);
+                                }
+                            }
                             // }
                         }
                     });
                 } else {
                     // if (this.verboseAPI) {
                     window.console.log('startSyncing err2:', err2);
+                    try {
+                        Sentry.captureMessage(`startSyncing | err2: ${JSON.stringify(err2)})}`, Sentry.Severity.Error);
+                    } catch (e) {
+                        if (!isProd) {
+                            window.console.log(e);
+                        }
+                    }
                     // }
                 }
             });
@@ -534,6 +557,13 @@ export default class UpdateManager {
                 // if (this.verboseAPI) {
                 window.console.log('callOutOfSync', err);
                 // }
+                try {
+                    Sentry.captureMessage(`canSync | err: ${JSON.stringify(err)})}`, Sentry.Severity.Error);
+                } catch (e) {
+                    if (!isProd) {
+                        window.console.log(e);
+                    }
+                }
             }
         });
     }

@@ -1,3 +1,6 @@
+## 0.34.82
+* More sentry logs
+
 ## 0.34.81
 * DB driver updated
 * Media orientation now is being saved
