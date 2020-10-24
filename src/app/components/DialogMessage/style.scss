@@ -57,6 +57,22 @@ a.dialog-a {
     }
   }
 
+  &.has-unread {
+    .dialog-wrapper {
+      .preview {
+        width: 73%;
+      }
+    }
+  }
+
+  &.has-mention {
+    .dialog-wrapper {
+      .preview {
+        width: 67%;
+      }
+    }
+  }
+
   .dialog-wrapper {
     position: relative;
     height: 48px;
@@ -277,12 +293,6 @@ a.dialog-a {
             padding: 0 3px;
           }
         }
-      }
-    }
-
-    &.has-mention {
-      .preview {
-        width: 68%;
       }
     }
 

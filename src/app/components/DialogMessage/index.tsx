@@ -279,10 +279,10 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
               onDrop={dropHandler}
         >
             <div
-                className={'dialog' + (peerName === selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}
+                className={'dialog' + (peerName === selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '') + (muted ? ' muted' : '') + ((dialog.unreadcount || 0) > 0 ? ' has-unread' : '') + (hasMention ? ' has-mention' : '')}
             >
                 <div
-                    className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
+                    className="dialog-wrapper">
                     {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF || dialog.peertype === PeerType.PEEREXTERNALUSER) &&
                     <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true} peerType={dialog.peertype}
                                 savedMessages={dialog.saved_messages} onlineIndicator={selectedPeerName !== ''}/>}
@@ -355,7 +355,8 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 const peerId = id.split('_')[0];
                 return (<span key={index}>
                         {index !== 0 ? (ids.length - 1 === index ? i18n.t('status.type_and') : i18n.t('status.type_comma')) : ''}
-                    <UserName id={peerId} onlyFirstName={true} noIcon={true} className="type-user" noDetail={!withAnimation}/>
+                    <UserName id={peerId} onlyFirstName={true} noIcon={true} className="type-user"
+                              noDetail={!withAnimation}/>
                     </span>);
             })}
             {Boolean(ids.length > 2) &&

@@ -553,7 +553,13 @@ export default class APIManager {
     public getUpdateState(): Promise<UpdateState.AsObject> {
         const data = new UpdateGetState();
         this.logVerbose(data);
-        return this.server.send(C_MSG.UpdateGetState, data.serializeBinary(), true);
+        return this.server.send(C_MSG.UpdateGetState, data.serializeBinary(), true, {
+            retry: 3,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+        });
     }
 
     public getUpdateDifference(from: number, limit: number): Promise<UpdateDifference> {

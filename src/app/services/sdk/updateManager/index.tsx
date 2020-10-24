@@ -451,6 +451,15 @@ export default class UpdateManager {
                     // }
                 }
             });
+        }).catch((uErr) => {
+            window.console.log('getUpdateDifference', uErr);
+            try {
+                Sentry.captureMessage(`getUpdateDifference | uErr: ${JSON.stringify(uErr)})}`, Sentry.Severity.Error);
+            } catch (e) {
+                if (!isProd) {
+                    window.console.log(e);
+                }
+            }
         });
     }
 

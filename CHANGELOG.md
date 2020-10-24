@@ -1,3 +1,7 @@
+## 0.34.83
+* Minor improvements in dialog UI
+* Minor improvements in Update Manager
+
 ## 0.34.82
 * More sentry logs
 
