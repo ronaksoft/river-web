@@ -179,7 +179,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                                 <UserName id={previewMessage.senderid || ''} you={true} noIcon={true}/>
                             </div>
                             <div className="preview-message-body">
-                                {this.getMessageBody(previewMessage)}
+                                {this.getMessageBody(previewMessage, 128)}
                             </div>
                         </div>
                     </div>
@@ -242,9 +242,10 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     /* Get message body */
-    private getMessageBody(msg: IMessage) {
+    private getMessageBody(msg: IMessage, maxChars?: number) {
         if ((msg.body || '').length > 0) {
-            return (<div className={'preview-inner ' + (msg.rtl ? 'rtl' : 'ltr')}>{msg.body}</div>);
+            return (<div
+                className={'preview-inner ' + (msg.rtl ? 'rtl' : 'ltr')}>{(msg.body || '').substr(0, maxChars)}{maxChars && (msg.body || '').length > maxChars ? '...' : ''}</div>);
         } else {
             return (<div className={'preview-inner'}>{getMessageTitle(msg).text}</div>);
         }

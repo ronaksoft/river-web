@@ -81,7 +81,7 @@ const getSystemMessageTitle = (message: IMessage) => {
     }
 };
 
-export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean): { text: string, icon: number } => {
+export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean, maxChars?: number): { text: string, icon: number } => {
     const messageIcon: { text: string, icon: number } = {text: '', icon: C_MESSAGE_ICON.None};
     if (message.messagetype === C_MESSAGE_TYPE.System) {
         messageIcon.text = getSystemMessageTitle(message);
@@ -89,7 +89,7 @@ export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean): { t
         switch (message.mediatype) {
             default:
             case MediaType.MEDIATYPEEMPTY:
-                messageIcon.text = (message.body || '').substr(0, 64);
+                messageIcon.text = (message.body || '').substr(0, maxChars || 64);
                 if (message.fwdsenderid && message.fwdsenderid !== "" && message.fwdsenderid !== "0") {
                     messageIcon.icon = C_MESSAGE_ICON.Forwarded;
                 } else if (message.replyto) {
@@ -142,7 +142,7 @@ export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean): { t
                     }
                 }
                 if (ignoreCaption !== true && messageMediaDocument.caption && messageMediaDocument.caption.length > 0) {
-                    messageIcon.text = (messageMediaDocument.caption || '').substr(0, 64);
+                    messageIcon.text = (messageMediaDocument.caption || '').substr(0, maxChars || 64);
                 }
                 break;
             case MediaType.MEDIATYPECONTACT:

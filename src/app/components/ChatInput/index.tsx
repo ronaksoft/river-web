@@ -770,7 +770,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                               you={true}/>
                                     <div className="preview-message-body">
                                         <div className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}
-                                        >{getMessageTitle(previewMessage).text}</div>
+                                        >{getMessageTitle(previewMessage, undefined, 196).text}</div>
                                     </div>
                                 </div>}
                                 {Boolean(previewMessageMode === C_MSG_MODE.Edit) && <div className="preview-message">
