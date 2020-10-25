@@ -1,3 +1,6 @@
+## 0.35.0
+* 🎉 New React
+
 ## 0.34.84
 * Known bugs fixed
 
