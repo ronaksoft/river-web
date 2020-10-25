@@ -3684,7 +3684,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 break;
             case 'remove':
-                let noRevoke = true;
+                let removeForAll = true;
                 let allPending = true;
                 const messages = this.messages;
                 const now = this.riverTime.now();
@@ -3692,32 +3692,38 @@ class Chat extends React.Component<IProps, IState> {
                 for (const i in this.messageSelectedIds) {
                     if (this.messageSelectedIds.hasOwnProperty(i)) {
                         const msg = messages[this.messageSelectedIds[i]];
-                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0) && !msg.messageaction) {
-                            noRevoke = false;
+                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0 || msg.peerid === this.userId) && !msg.messageaction) {
+                            removeForAll = false;
                             if (!allPending) {
                                 break;
                             }
                         }
                         if (msg && (msg.id || 0) > 0) {
                             allPending = false;
-                            if (!noRevoke) {
+                            if (!removeForAll) {
                                 break;
                             }
                         }
                     }
                 }
                 this.modalityService.open({
-                    buttons: noRevoke ? [{
-                        action: noRevoke ? 'for_all' : 'remove_pending',
+                    buttons: removeForAll ? [{
+                        action: allPending ? 'for_all' : 'remove_pending',
                         props: {
                             color: 'primary',
                         },
-                        text: (this.peer && (this.peer.getType() === PeerType.PEERUSER || this.peer.getType() === PeerType.PEEREXTERNALUSER)) ?
+                        text: allPending ? i18n.t('chat.remove_message_dialog.remove_all_pending') : (this.peer && (this.peer.getType() === PeerType.PEERUSER || this.peer.getType() === PeerType.PEEREXTERNALUSER)) ?
                             <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
                                 <UserName noDetail={true} id={this.selectedPeerName} noIcon={true}
                                           peerName={true}
                                 /></> : i18n.t('chat.remove_message_dialog.remove_for_all'),
-                    }] : allPending ? i18n.t('chat.remove_message_dialog.remove_all_pending') : undefined,
+                    }] : allPending ? [{
+                        action: 'remove_pending',
+                        props: {
+                            color: 'primary',
+                        },
+                        text: i18n.t('chat.remove_message_dialog.remove_all_pending'),
+                    }] : undefined,
                     cancelText: i18n.t('general.disagree'),
                     confirmText: i18n.t('chat.remove_message_dialog.remove'),
                     description: i18n.tf('chat.remove_message_dialog.content', String(Object.keys(this.messageSelectedIds).length)),

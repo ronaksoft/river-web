@@ -121,6 +121,7 @@
       "reload_text": "Successfully updated"
     },
     "seen_by": "Seen by",
+    "seen_by_placeholder": "no one",
     "pin": "Pin",
     "unpin": "Unpin"
   },

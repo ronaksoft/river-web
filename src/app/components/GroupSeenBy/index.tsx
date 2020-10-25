@@ -72,11 +72,11 @@ class GroupSeenBy extends React.Component<any, IState> {
                            autoHeight={true} minHeight={49} maxHeight={225}
             >
                 <div className="seen-by-list-dialog">
-                    {loading ? <Loading/> : list.map((id) => {
+                    {loading ? <Loading/> : list.length > 0 ? list.map((id) => {
                         return (<Chip key={id} avatar={<UserAvatar id={id}/>}
                                       tabIndex={-1} className="user-chip"
                                       label={<UserName id={id} you={true} unsafe={true}/>}/>);
-                    })}
+                    }) : <div className="seen-by-placeholder">{i18n.t('chat.seen_by_placeholder')}</div>}
                 </div>
             </SettingsModal>
         );

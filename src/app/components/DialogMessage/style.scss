@@ -35,6 +35,12 @@ a.dialog-a {
 
   &.pinned {
     background-color: var(--header-color);
+
+    .dialog-wrapper {
+      .preview {
+        width: 73%;
+      }
+    }
   }
 
   &:hover {
@@ -299,7 +305,7 @@ a.dialog-a {
     .unread {
       font-size: 11px;
       position: absolute;
-      top: 26px;
+      top: 25px;
       right: -1px;
       height: 16px;
       min-width: 16px;
@@ -317,7 +323,7 @@ a.dialog-a {
     .pin {
       font-size: 20px;
       position: absolute;
-      top: 26px;
+      top: 25px;
       right: -2px;
       color: #C6C6C6;
     }
@@ -330,7 +336,7 @@ a.dialog-a {
 
     .mention {
       position: absolute;
-      top: 26px;
+      top: 25px;
       right: 21px;
       background-color: var(--river);
       height: 16px;

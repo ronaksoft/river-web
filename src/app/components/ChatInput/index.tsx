@@ -554,15 +554,17 @@ class ChatInput extends React.Component<IProps, IState> {
         };
     }
 
-    public focus() {
+    public focus(pos?: number) {
         setTimeout(() => {
             if (!this.textarea) {
                 return;
             }
-            this.textarea.focus();
-            if (this.textarea.value && this.textarea.selectionStart === 0) {
+            if (pos) {
+                this.textarea.setSelectionRange(pos, pos);
+            } else if (this.textarea.value && this.textarea.selectionStart === 0) {
                 this.textarea.setSelectionRange(this.textarea.value.length, this.textarea.value.length);
             }
+            this.textarea.focus();
         }, 100);
     }
 
@@ -1180,9 +1182,9 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private emojiSelectHandler = (data: any) => {
-        this.insertAtCursor(data.native);
+        const pos = this.insertAtCursor(data.native);
         this.computeLines();
-        this.focus();
+        this.focus(pos);
     }
 
     private emojiCloseHandler = () => {
@@ -2226,6 +2228,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.textarea) {
             return;
         }
+        let pos: number = 0;
         let textVal: string = this.textarea.value;
         if (!this.startPosHold) {
             this.startPosHold = this.textarea.selectionStart;
@@ -2248,6 +2251,7 @@ class ChatInput extends React.Component<IProps, IState> {
             textVal = textVal.substring(0, startPos)
                 + text
                 + textVal.substring(endPos, textVal.length);
+            pos = startPos;
         } else {
             textVal += text;
         }
@@ -2255,6 +2259,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.setState({
             textareaValue: textVal,
         });
+        return pos;
     }
 
     private checkMicrophonePermission() {

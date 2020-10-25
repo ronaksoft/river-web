@@ -1,3 +1,6 @@
+## 0.34.84
+* Known bugs fixed
+
 ## 0.34.83
 * Minor improvements in dialog UI
 * Minor improvements in Update Manager

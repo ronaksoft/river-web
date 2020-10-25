@@ -12,6 +12,14 @@
     line-height: 1em;
     color: inherit;
   }
+
+  .seen-by-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    line-height: 2em;
+  }
 }
 
 html[direction="rtl"] {
