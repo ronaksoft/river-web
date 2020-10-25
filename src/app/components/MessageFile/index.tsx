@@ -229,7 +229,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
         this.initProgress();
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
             const info = getFileInfo(newProps.message);

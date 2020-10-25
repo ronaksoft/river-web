@@ -176,7 +176,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if ((!this.props.savedMessages && this.state.id !== newProps.id) || this.props.forceReload) {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);

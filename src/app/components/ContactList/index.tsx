@@ -162,7 +162,7 @@ class ContactList extends React.Component<IProps, IState> {
         this.getDefault();
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         this.setState({
             hiddenContacts: [...(newProps.hiddenContacts || []), ...this.extraHidden].map((o) => {
                 // @ts-ignore

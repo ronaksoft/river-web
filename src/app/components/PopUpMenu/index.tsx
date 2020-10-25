@@ -32,7 +32,7 @@ class PopUpMenu extends React.Component<IProps, IState> {
         };
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         this.setState({
             anchorEl: newProps.anchorEl,
         }, () => {

@@ -61,7 +61,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         this.getFile();
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (newProps.fileLocation) {
             const fileName = GetDbFileName(newProps.fileLocation.fileid, newProps.fileLocation.clusterid);
             if (this.lastFileName !== fileName || (newProps.blur || 0) !== this.lastBlur) {

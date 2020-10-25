@@ -342,7 +342,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen(MESSAGE_ORIENTATION_UPDATED, this.messageOrientationUpdateHandler));
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         // @ts-ignore
         const state: IState = {};
         let updateState: boolean = false;

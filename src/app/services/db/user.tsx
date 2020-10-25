@@ -43,10 +43,14 @@ export default class UserDB {
     }
 
     public setGroup(group: IGroup) {
-        this.groups[group.id || 0] = group;
+        this.groups[this.getTeamId(group.teamid || '0', group.id || '0')] = group;
     }
 
-    public getGroup(id: string): IGroup | null {
-        return this.groups[id];
+    public getGroup(teamId: string, id: string): IGroup | null {
+        return this.groups[this.getTeamId(teamId, id)];
+    }
+
+    private getTeamId(teamId: string, id: string) {
+        return `${teamId}_${id}`;
     }
 }

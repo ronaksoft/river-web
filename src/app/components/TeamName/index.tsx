@@ -46,7 +46,7 @@ class TeamName extends React.PureComponent<IProps, IState> {
         this.getTeam();
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (this.state.id !== newProps.id) {
             this.setState({
                 id: newProps.id,

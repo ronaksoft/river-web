@@ -61,7 +61,7 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen(AvatarSrcUpdated, this.getGroupPhoto));
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (this.state.id !== newProps.id || this.props.forceReload) {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);

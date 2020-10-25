@@ -56,7 +56,7 @@ class GroupName extends React.PureComponent<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.getGroup));
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (this.state.id !== newProps.id) {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);

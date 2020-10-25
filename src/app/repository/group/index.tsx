@@ -66,7 +66,7 @@ export default class GroupRepo {
     }
 
     public get(teamId: string, id: string): Promise<IGroup | undefined> {
-        const group = this.dbService.getGroup(this.getTeamId(teamId, id));
+        const group = this.dbService.getGroup(teamId, id);
         if (group) {
             return Promise.resolve(group);
         }
@@ -251,9 +251,5 @@ export default class GroupRepo {
 
     private broadcastEvent(name: string, data: any) {
         this.broadcaster.publish(name, data);
-    }
-
-    private getTeamId(teamId: string, id: string) {
-        return `${teamId}_${id}`;
     }
 }

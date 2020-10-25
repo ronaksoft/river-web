@@ -186,7 +186,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.getGroup();
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (this.state.peer === newProps.peer) {
             return;
         }

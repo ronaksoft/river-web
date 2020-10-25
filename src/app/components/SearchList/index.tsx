@@ -130,7 +130,7 @@ class SearchList extends React.Component<IProps, IState> {
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (newProps.selectedIds && this.props.selectedIds !== this.selectedIds) {
             this.selectedIds = newProps.selectedIds;
             this.getSelectedInputPeersFromUserId(newProps.selectedIds).then((selectedInputPeers) => {

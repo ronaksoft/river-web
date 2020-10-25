@@ -129,7 +129,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
         if (this.state.peer === newProps.peer) {
             return;
         }
