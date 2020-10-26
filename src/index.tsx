@@ -25,7 +25,7 @@ ReactDOM.render((
             <App ref={appRefHandler}/>
         </HashRouter>
     ),
-    document.getElementById('root') as HTMLElement
+    document.getElementById('root') as HTMLElement,
 );
 
 const onUpdate = (registration: ServiceWorkerRegistration) => {

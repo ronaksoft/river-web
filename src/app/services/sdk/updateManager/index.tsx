@@ -7,6 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
+// eslint-disable-next-line
 import {C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../const';
 import {UpdateContainer, UpdateEnvelope, UserStatus} from '../messages/core.types_pb';
 import {
@@ -1062,6 +1063,7 @@ export default class UpdateManager {
             case C_MSG.UpdateMessagePinned:
                 const updateMessagePinned = UpdateMessagePinned.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateMessagePinned);
+                this.callUpdateHandler(updateMessagePinned.teamid || '0', update.constructor, updateMessagePinned);
                 this.mergeDialog(transaction.dialogs, {
                     peerid: updateMessagePinned.peer.id || '0',
                     peertype: updateMessagePinned.peer.type || 0,
