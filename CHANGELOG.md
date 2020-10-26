@@ -1,3 +1,6 @@
+## 0.35.2
+* Remove for all bug fixed
+
 ## 0.35.1
 * Pinned message bug fixed
 * A bug in Document Viewer fixed

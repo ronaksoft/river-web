@@ -3708,7 +3708,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 this.modalityService.open({
                     buttons: removeForAll ? [{
-                        action: allPending ? 'for_all' : 'remove_pending',
+                        action: allPending ? 'remove_pending' : 'for_all',
                         props: {
                             color: 'primary',
                         },
