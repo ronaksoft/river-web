@@ -137,7 +137,9 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
         if (v < 3) {
             v = 3;
         }
-        this.circleProgressRef.style.strokeDasharray = `${v} 88`;
+        if (this.circleProgressRef) {
+            this.circleProgressRef.style.strokeDasharray = `${v} 88`;
+        }
     }
 
     /* Download file handler */

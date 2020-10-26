@@ -19,6 +19,7 @@ import APIManager from "../../services/sdk";
 import UserRepo from "../../repository/user";
 
 import './style.scss';
+import {ThreeDot} from "../SVG/3dot";
 
 interface IState {
     list: string[];
@@ -76,7 +77,9 @@ class GroupSeenBy extends React.Component<any, IState> {
                         return (<Chip key={id} avatar={<UserAvatar id={id}/>}
                                       tabIndex={-1} className="user-chip"
                                       label={<UserName id={id} you={true} unsafe={true}/>}/>);
-                    }) : <div className="seen-by-placeholder">{i18n.t('chat.seen_by_placeholder')}</div>}
+                    }) : <div className="seen-by-placeholder">
+                        <ThreeDot/>
+                    </div>}
                 </div>
             </SettingsModal>
         );

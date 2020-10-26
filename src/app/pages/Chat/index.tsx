@@ -7,7 +7,6 @@
     Copyright Ronak Software Group 2018
 */
 
-// eslint-disable-next-line
 import * as React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
@@ -5374,7 +5373,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateMessagePinnedHandler = (data: UpdateMessagePinned.AsObject) => {
-        window.console.log(data);
         this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0);
         // TODO modify server for silent pin
         // const peerName = GetPeerName(data.peer.id, data.peer.type);

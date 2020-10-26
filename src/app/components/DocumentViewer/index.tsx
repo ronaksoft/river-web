@@ -726,6 +726,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (doc.items.length > 0 && doc.items[0].orientation) {
             this.mediaTransform.rotate = doc.items[0].orientation;
         }
+        this.preventClose = true;
         this.setState({
             dialogOpen: true,
             doc,
@@ -740,6 +741,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.initAvatar(doc.photoId);
                 this.checkAccess();
             }
+            setTimeout(() => {
+                this.preventClose = false;
+            }, 255);
         });
     }
 

@@ -17,8 +17,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    line-height: 2em;
+    height: 26px;
+
+    svg {
+      font-size: 28px;
+    }
   }
 }
 
