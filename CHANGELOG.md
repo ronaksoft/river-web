@@ -1,3 +1,8 @@
+## 0.35.1
+* Pinned message bug fixed
+* A bug in Document Viewer fixed
+* Render improvements
+
 ## 0.35.0
 * 🎉 New React 
 
