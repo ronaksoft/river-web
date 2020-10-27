@@ -1063,10 +1063,8 @@ class Chat extends React.Component<IProps, IState> {
             const index = findLastIndex(this.messages, {random_id: data.senderrefid});
             if (index > -1) {
                 this.messages[index].id = data.message.id;
+                this.updateVisibleRows([index]);
             }
-        }
-        if (this.messageRef) {
-            this.messageRef.updateList();
         }
     }
 
@@ -1082,7 +1080,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.selectedPeerName === peerName) {
             // Update and broadcast changes in cache
             this.cachedMessageService.updateMessage(data.message);
-
             const messages = this.messages;
             const index = findIndex(messages, (o) => {
                 return o.id === data.message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -1091,10 +1088,7 @@ class Chat extends React.Component<IProps, IState> {
                 const avatar = messages[index].avatar;
                 messages[index] = data.message;
                 messages[index].avatar = avatar;
-                if (this.messageRef) {
-                    this.messageRef.clear(index);
-                    this.messageRef.updateList();
-                }
+                this.updateVisibleRows([index], true);
             }
         }
     }
@@ -1113,10 +1107,7 @@ class Chat extends React.Component<IProps, IState> {
             });
             if (index > -1 && messages[index]) {
                 messages[index].reactionsList = data.counterList;
-                if (this.messageRef) {
-                    this.messageRef.clear(index);
-                    this.messageRef.updateList();
-                }
+                this.updateVisibleRows([index], true);
             }
         }
         if (this.selectedPeerName !== peerName || !this.isInChat) {
@@ -1335,26 +1326,21 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update content read handler */
     private updateContentReadHandler = (data: UpdateReadMessagesContents.AsObject) => {
-        let updateView = false;
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         if (this.selectedPeerName !== peerName) {
             return;
         }
+        const indexes: number[] = [];
         data.messageidsList.forEach((id) => {
             const index = findLastIndex(this.messages, (o) => {
                 return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
             });
             if (index > -1) {
                 this.messages[index].contentread = true;
-                if (this.messageRef) {
-                    this.messageRef.clear(index);
-                }
-                updateView = true;
+                indexes.push(index);
             }
         });
-        if (updateView && this.messageRef) {
-            this.messageRef.updateList();
-        }
+        this.updateVisibleRows(indexes, true);
     }
 
     // /* Update user handler */
@@ -1801,9 +1787,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 if (index > -1) {
                     messages[index] = message;
-                    if (this.messageRef) {
-                        this.messageRef.updateList();
-                    }
+                    this.updateVisibleRows([index]);
                     if (this.chatInputRef && index + 1 === this.messages.length) {
                         this.chatInputRef.updateLastMessage();
                     }
@@ -1948,9 +1932,7 @@ class Chat extends React.Component<IProps, IState> {
             });
             if (index > -1) {
                 this.messages[index].mark_as_sent = true;
-                if (this.messageRef) {
-                    this.messageRef.updateList();
-                }
+                this.updateVisibleRows([index]);
             }
             return true;
         }
@@ -2735,19 +2717,17 @@ class Chat extends React.Component<IProps, IState> {
             });
             if (data.editedIds.length > 0) {
                 this.messageRepo.getIn(data.editedIds, false).then((res) => {
-                    let shouldUpdate = false;
+                    const indexes: number[] = [];
                     res.forEach((msg) => {
                         const index = findLastIndex(this.messages, (o) => {
                             return o.id === msg.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
                         });
                         if (index > -1) {
-                            shouldUpdate = true;
                             this.messages[index] = msg;
+                            indexes.push(index);
                         }
                     });
-                    if (shouldUpdate && this.messageRef) {
-                        this.messageRef.updateList();
-                    }
+                    this.updateVisibleRows(indexes);
                 });
             }
         }
@@ -3363,10 +3343,7 @@ class Chat extends React.Component<IProps, IState> {
                         messages[index].yourreactionsList = [reaction];
                     }
                 }
-                if (this.messageRef) {
-                    this.messageRef.clear(index);
-                    this.messageRef.updateList();
-                }
+                this.updateVisibleRows([index], true);
             }
         });
     }
@@ -4169,9 +4146,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]]);
-                    if (this.messageRef) {
-                        this.messageRef.updateList();
-                    }
+                    this.updateVisibleRows([index]);
                 }
             }
         });
@@ -4187,9 +4162,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 if (index > -1) {
                     messages[index].error = false;
-                    if (this.messageRef) {
-                        this.messageRef.updateList();
-                    }
+                    this.updateVisibleRows([index]);
                 }
                 if (res.file_ids && res.file_ids.length > 0 && message.mediatype !== MediaType.MEDIATYPEEMPTY && message.messagetype !== 0 && message.messagetype !== C_MESSAGE_TYPE.Normal) {
                     this.resendMediaMessage(res.id, message, res.file_ids, res.data, res.type);
@@ -4350,10 +4323,7 @@ class Chat extends React.Component<IProps, IState> {
                     const index = findIndex(messages, {id: msg.id, messagetype: msg.messagetype});
                     if (index > -1) {
                         messages[index].downloaded = true;
-                        // Force update messages
-                        if (this.messageRef) {
-                            this.messageRef.updateList();
-                        }
+                        this.updateVisibleRows([index]);
                     }
                 }
                 if ((msg.messagetype === C_MESSAGE_TYPE.File && this.settingsConfigManager.getDownloadSettings().auto_save_files) || downloadAfter) {
@@ -4764,9 +4734,7 @@ class Chat extends React.Component<IProps, IState> {
                         if (index > -1) {
                             messages[index].error = true;
                             this.messageRepo.importBulk([messages[index]]);
-                            if (this.messageRef) {
-                                this.messageRef.updateList();
-                            }
+                            this.updateVisibleRows([index]);
                         }
                     }
                 });
@@ -4781,9 +4749,7 @@ class Chat extends React.Component<IProps, IState> {
                     if (index > -1) {
                         messages[index].error = true;
                         this.messageRepo.importBulk([messages[index]]);
-                        if (this.messageRef) {
-                            this.messageRef.updateList();
-                        }
+                        this.updateVisibleRows([index]);
                     }
                 }
             });
@@ -4868,9 +4834,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]]);
-                    if (this.messageRef) {
-                        this.messageRef.updateList();
-                    }
+                    this.updateVisibleRows([index]);
                 }
             }
         };
@@ -5025,9 +4989,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]]);
-                    if (this.messageRef) {
-                        this.messageRef.updateList();
-                    }
+                    this.updateVisibleRows([index]);
                 }
             }
         });
@@ -5110,9 +5072,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]]);
-                    if (this.messageRef) {
-                        this.messageRef.updateList();
-                    }
+                    this.updateVisibleRows([index]);
                 }
             }
         });
@@ -5338,18 +5298,15 @@ class Chat extends React.Component<IProps, IState> {
     private updateLabelItemsAddedHandler = (data: UpdateLabelItemsAdded.AsObject) => {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         if (peerName === this.selectedPeerName) {
+            const indexes: number[] = [];
             data.messageidsList.forEach((id) => {
                 const index = findLastIndex(this.messages, {id});
                 if (index > -1) {
                     this.messages[index].labelidsList = uniq([...(this.messages[index].labelidsList || []), ...data.labelidsList]);
-                    if (this.messageRef) {
-                        this.messageRef.clear(index);
-                    }
+                    indexes.push(index);
                 }
             });
-            if (this.messageRef) {
-                this.messageRef.updateList();
-            }
+            this.updateVisibleRows(indexes, true);
         }
     }
 
@@ -5357,18 +5314,15 @@ class Chat extends React.Component<IProps, IState> {
     private updateLabelItemsRemovedHandler = (data: UpdateLabelItemsRemoved.AsObject) => {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         if (peerName === this.selectedPeerName) {
+            const indexes: number[] = [];
             data.messageidsList.forEach((id) => {
                 const index = findLastIndex(this.messages, {id});
                 if (index > -1) {
                     this.messages[index].labelidsList = difference(this.messages[index].labelidsList || [], data.labelidsList);
-                    if (this.messageRef) {
-                        this.messageRef.clear(index);
-                    }
+                    indexes.push(index);
                 }
             });
-            if (this.messageRef) {
-                this.messageRef.updateList();
-            }
+            this.updateVisibleRows(indexes);
         }
     }
 
@@ -5549,7 +5503,7 @@ class Chat extends React.Component<IProps, IState> {
             if (index > -1 && this.messageRef) {
                 this.messages[index].downloaded = false;
                 this.messages[index].saved = false;
-                this.messageRef.updateList();
+                this.updateVisibleRows([index]);
             }
         }
     }
@@ -5712,6 +5666,7 @@ class Chat extends React.Component<IProps, IState> {
             promises.push(this.apiManager.labelRemoveFromMessage(this.peer, removeIds, ids));
         }
         Promise.all(promises).then((res) => {
+            const indexes: number[] = [];
             ids.forEach((id) => {
                 const index = findLastIndex(this.messages, {id});
                 if (index > -1) {
@@ -5721,14 +5676,10 @@ class Chat extends React.Component<IProps, IState> {
                     if (removeIds.length > 0) {
                         this.messages[index].labelidsList = difference(this.messages[index].labelidsList || [], removeIds);
                     }
-                    if (this.messageRef) {
-                        this.messageRef.clear(index);
-                    }
+                    indexes.push(index);
                 }
             });
-            if (this.messageRef) {
-                this.messageRef.updateList();
-            }
+            this.updateVisibleRows(indexes, true);
         });
     }
 
@@ -5978,6 +5929,27 @@ class Chat extends React.Component<IProps, IState> {
                 this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, 0, true);
             }
         });
+    }
+
+    private updateVisibleRows(indexes: number[], withClear?: boolean) {
+        if (!this.messageRef) {
+            return;
+        }
+        const fromId = this.messages[this.scrollInfo.overscanStart] ? this.messages[this.scrollInfo.overscanStart].id || 0 : 0;
+        const toId = this.messages[this.scrollInfo.overscanEnd] ? this.messages[this.scrollInfo.overscanEnd].id || 0 : 0;
+        let update = false;
+        indexes.forEach((index) => {
+            const id = this.messages[index] ? this.messages[index].id || 0 : 0;
+            if (fromId < 0 || toId < 0 || (id >= fromId && id <= toId)) {
+                update = true;
+                if (withClear && this.messageRef) {
+                    this.messageRef.clear(index);
+                }
+            }
+        });
+        if (update) {
+            this.messageRef.updateList();
+        }
     }
 }
 

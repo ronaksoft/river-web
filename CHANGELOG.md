@@ -1,3 +1,6 @@
+## 0.35.3
+* Improvements in visible rows render
+
 ## 0.35.2
 * Remove for all bug fixed
 
