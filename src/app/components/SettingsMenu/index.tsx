@@ -536,7 +536,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>}
                                     </div>
                                     <div className="page-anchor">
-                                        <Link to={`/chat/${this.props.teamId}/${this.userId}_${PeerType.PEERUSER}`}>
+                                        <Link to={`/chat/${this.props.teamId}/${this.userId}_${PeerType.PEERUSER}`}
+                                              onClick={this.savedMessageClickHandler}>
                                             <div className="icon color-saved-messages">
                                                 <BookmarkBorderRounded/>
                                             </div>
@@ -2569,6 +2570,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
         localStorage.setItem(C_LOCALSTORAGE.LastSeenFormat, value);
         this.broadcastEvent(LastSeenFormatChange, null);
+    }
+
+    private savedMessageClickHandler = (e: any) => {
+        if (this.props.onClose) {
+            this.props.onClose(e);
+        }
     }
 }
 
