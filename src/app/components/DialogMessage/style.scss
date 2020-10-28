@@ -79,6 +79,14 @@ a.dialog-a {
     }
   }
 
+  &.muted {
+    .dialog-wrapper {
+      .unread {
+        background-color: #C6C6C6;
+      }
+    }
+  }
+
   .dialog-wrapper {
     position: relative;
     height: 48px;
@@ -174,14 +182,6 @@ a.dialog-a {
         font-size: 11px;
         color: var(--grey);
         transition: right 0.2s;
-      }
-    }
-
-    &.muted {
-      .dialog-top-bar {
-        .name {
-          padding-left: 4px;
-        }
       }
     }
 
@@ -329,12 +329,6 @@ a.dialog-a {
       color: #C6C6C6;
     }
 
-    &.muted {
-      .unread {
-        background-color: #C6C6C6;
-      }
-    }
-
     .mention {
       position: absolute;
       top: 25px;
@@ -418,15 +412,6 @@ html[direction="rtl"] {
         svg {
           margin-right: 0;
           margin-left: 6px;
-        }
-      }
-    }
-
-    &.muted {
-      .dialog-top-bar {
-        .name {
-          padding-left: 0;
-          padding-right: 4px;
         }
       }
     }
@@ -522,8 +507,10 @@ html[theme="dark-night"] {
           color: var(--white);
         }
       }
+    }
 
-      &.muted {
+    &.muted {
+      .dialog-wrapper {
         .unread {
           color: var(--dark);
         }
@@ -589,8 +576,10 @@ html[theme="dark-blue"] {
           color: var(--white);
         }
       }
+    }
 
-      &.muted {
+    &.muted {
+      .dialog-wrapper {
         .unread {
           color: var(--dark);
         }
