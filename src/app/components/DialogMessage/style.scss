@@ -133,9 +133,10 @@ a.dialog-a {
       .muted-wrapper {
         height: 16px;
         width: 16px;
+        margin: 0 4px 0 0;
 
         svg {
-          font-size: 16px;
+          font-size: 15px;
           color: var(--dark);
         }
       }
@@ -409,6 +410,10 @@ html[direction="rtl"] {
     }
 
     .dialog-top-bar {
+      .muted-wrapper {
+        margin: 0 0 0 4px;
+      }
+
       .name {
         svg {
           margin-right: 0;

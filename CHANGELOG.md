@@ -1,3 +1,7 @@
+## 0.35.4
+* UI improvements in muted dialogs and preview message
+* Desktop app now asks for microphone permission on start up
+
 ## 0.35.3
 * Improvements in visible rows render
 

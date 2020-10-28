@@ -363,6 +363,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
+        if (ElectronService.isElectron()) {
+            this.checkMicrophonePermission();
+        }
+
         if (this.connInfo.AuthID === '0' || this.connInfo.UserID === '0') {
             this.props.history.push('/signup/null');
             return;
@@ -5950,6 +5954,37 @@ class Chat extends React.Component<IProps, IState> {
         if (update) {
             this.messageRef.updateList();
         }
+    }
+
+    private checkMicrophonePermission() {
+        if (!navigator.permissions) {
+            return Promise.resolve(true);
+        }
+        return new Promise(resolve => {
+            try {
+                navigator.permissions.query(
+                    {name: 'microphone'},
+                ).then((permissionStatus) => {
+                    switch (permissionStatus.state) {
+                        case 'denied':
+                            resolve(false);
+                            return;
+                        case 'granted':
+                            resolve(true);
+                            return;
+                        case 'prompt':
+                            navigator.mediaDevices.getUserMedia({audio: true}).then(() => {
+                                resolve(true);
+                            }).catch((err) => {
+                                resolve(false);
+                            });
+                            return;
+                    }
+                });
+            } catch (e) {
+                resolve(false);
+            }
+        });
     }
 }
 
