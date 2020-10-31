@@ -39,7 +39,7 @@ import TeamName from "../TeamName";
 import TeamRepo from "../../repository/team";
 import {CircularProgress} from "@material-ui/core";
 import {localize} from "../../services/utilities/localize";
-import LeftPanel from "../LastPanel";
+import LeftPanel from "../LeftPanel";
 
 import './style.scss';
 
