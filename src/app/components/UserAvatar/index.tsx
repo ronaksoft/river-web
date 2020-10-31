@@ -105,7 +105,7 @@ const GetUniqueColor = (str: string, list: string[]) => {
     return list[sumChars(str) % list.length];
 };
 
-const TextAvatar = (fname?: string, lname?: string) => {
+const TextAvatar = ({fname, lname}: { fname?: string, lname?: string }) => {
     const str = fname || '' + lname || '';
     let name = 'NA';
     if (fname && lname) {
@@ -227,7 +227,8 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
                     <div className={'uac' + (className ? ` ${className}` : '')}
                          onClick={this.clickHandler}>{(user && photo) ?
                         <img className="avatar-image" src={photo} alt="avatar" draggable={false}
-                             onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}
+                             onError={this.imgErrorHandler}/> :
+                        <TextAvatar fname={user.firstname} lname={user.lastname}/>}
                         {Boolean(peerType === PeerType.PEEREXTERNALUSER) && <div className="external-user-overlay">
                             <FaceRounded/>
                         </div>}

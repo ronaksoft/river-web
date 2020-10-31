@@ -208,6 +208,7 @@ interface IProps {
     onTeamChange?: (team: ITeam) => void;
     onTeamUpdate?: () => void;
     teamId: string;
+    onPanelToggle: (visible: boolean) => void;
 }
 
 interface IState {
@@ -243,6 +244,7 @@ interface IState {
     selectedLanguage: string;
     selectedLastSeenFormat: string;
     selectedTheme: string;
+    leftPanelVisible: string;
     storageValues: IDownloadSettings;
     teamLoading: boolean;
     teamList: ITeam[];
@@ -309,6 +311,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             firstname: '',
             fontSize: 2,
             lastname: '',
+            leftPanelVisible: localStorage.getItem(C_LOCALSTORAGE.SettingsLeftPanelVisible) || 'false',
             loading: false,
             notificationValues: {
                 count_muted: true,
@@ -588,6 +591,21 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.language')}</div>
                                     </div>
+                                    {Boolean(teamList.length > 1) && <div className="page-anchor">
+                                        <div className="icon color-left-panel">
+                                            <GroupRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.left_panel')}</div>
+                                        <div className="settings-switch-label">
+                                            <Switch
+                                                checked={Boolean(this.state.leftPanelVisible === 'true')}
+                                                color="default"
+                                                onChange={this.leftPanelToggleHandler}
+                                                classes={switchClasses}
+                                                className={Boolean(this.state.leftPanelVisible === 'true') ? 'root-settings-switch-checked' : ''}
+                                            />
+                                        </div>
+                                    </div>}
                                     <div className="page-anchor">
                                         <div className="icon color-night-mode">
                                             <Brightness2Rounded/>
@@ -2576,6 +2594,16 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (this.props.onClose) {
             this.props.onClose(e);
         }
+    }
+
+    private leftPanelToggleHandler = (e: any) => {
+        this.setState({
+            leftPanelVisible: e.currentTarget.checked ? 'true' : 'false',
+        }, () => {
+            localStorage.setItem(C_LOCALSTORAGE.SettingsLeftPanelVisible, this.state.leftPanelVisible);
+            this.props.onPanelToggle(this.state.leftPanelVisible === 'true');
+            //
+        });
     }
 }
 

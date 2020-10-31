@@ -41,6 +41,8 @@ import {CircularProgress} from "@material-ui/core";
 
 import './style.scss';
 import {localize} from "../../services/utilities/localize";
+import Badge from "@material-ui/core/Badge";
+import {TextAvatar} from "../UserAvatar";
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -83,6 +85,8 @@ interface IState {
     teamMoreAnchorEl: any;
     hasUpdate: boolean;
     teamId: string;
+    withPanel: boolean;
+    panelFocus: boolean;
 }
 
 class LeftMenu extends React.PureComponent<IProps, IState> {
@@ -128,11 +132,13 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             isUpdating: false,
             leftMenu: 'chat',
             overlayMode: 0,
+            panelFocus: false,
             shrunkMenu: false,
             teamId: '0',
             teamList: [],
             teamLoading: false,
             teamMoreAnchorEl: null,
+            withPanel: true,
         };
 
         this.chatTopIcons = [{
@@ -263,10 +269,12 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl, hasUpdate, teamId} = this.state;
+        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl, hasUpdate, teamId, withPanel, panelFocus} = this.state;
         const className = (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (overlayMode ? ' label-mode' : '') + (dialogHover ? ' dialog-hover' : '') + (shrunkMenu ? ' shrunk-menu' : '');
         return (
-            <div className={'column-left ' + className}>
+            <div
+                className={'column-left ' + className + (withPanel ? ' with-panel' : '') + (panelFocus ? ' panel-focus' : '')}>
+                {this.getLeftPanelContent()}
                 {!shrunkMenu && <div className="top-bar">
                     {iframeActive &&
                     <span className="close-btn">
@@ -439,6 +447,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                               onSubPlaceChange={this.settingsSubPlaceChangeHandler}
                               onTeamChange={this.props.onTeamChange}
                               onTeamUpdate={this.settingsMenuTeamUpdateHandler}
+                              onPanelToggle={this.settingsPanelToggleHandler}
                               teamId={teamId}
                 />}
                 {leftMenu === 'contacts' &&
@@ -711,6 +720,47 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private settingsMenuTeamUpdateHandler = () => {
         this.getTeamList();
+    }
+
+    private settingsPanelToggleHandler = (visible: boolean) => {
+        this.setState({
+            withPanel: visible,
+        });
+    }
+
+    private getLeftPanelContent = () => {
+        const {teamList, withPanel} = this.state;
+        if (!withPanel) {
+            return null;
+        }
+        return (<div className="left-panel" onMouseEnter={this.panelMouseEnterHandler}
+                     onMouseLeave={this.panelMouseLeaveHandler}>
+            <div className="folder-container">
+                {teamList.map((team) => {
+                    return (<Badge key={team.id} color="primary" badgeContent={localize(team.unread_counter || 0)}
+                                   invisible={!team.unread_counter}>
+                        <div className="folder-item">
+                            <TextAvatar fname={team.name}/>
+                            <div className="folder-name">
+                                <div className="inner">{team.name}</div>
+                            </div>
+                        </div>
+                    </Badge>);
+                })}
+            </div>
+        </div>);
+    }
+
+    private panelMouseEnterHandler = () => {
+        this.setState({
+            panelFocus: true,
+        });
+    }
+
+    private panelMouseLeaveHandler = () => {
+        this.setState({
+            panelFocus: false,
+        });
     }
 }
 
