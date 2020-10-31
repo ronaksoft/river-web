@@ -359,110 +359,13 @@
       }
     }
   }
+}
+
+.left-menu {
+  position: relative;
 
   &.with-panel {
     padding-left: 40px;
-    width: 358px;
-  }
-
-  .left-panel {
-    position: absolute;
-    top: -1px;
-    left: -1px;
-    bottom: -1px;
-    width: 40px;
-    background-color: var(--grey-low);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 64px;
-    z-index: 20;
-    transition: all 0.1s;
-    will-change: width;
-
-    .folder-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-
-      .folder-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-direction: column;
-        margin: 0 0 24px;
-        width: 36px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all 0.1s;
-        filter: grayscale(1);
-
-        .text-avatar {
-          margin: 2px 0;
-          height: 24px;
-          width: 24px;
-          border-radius: 4px;
-          font-size: 13px;
-          transition: all 0.1s;
-          box-shadow: 0 0 4px rgba(15, 15, 15, 0.3);
-          opacity: 0.5;
-        }
-
-        .folder-name {
-          margin: 8px 0 0;
-          padding: 0 6px;
-          font-size: 12px;
-          width: 100%;
-          color: var(--white);
-          overflow: hidden;
-          display: none;
-
-          .inner {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-align: right;
-          }
-        }
-      }
-    }
-  }
-
-  &.panel-focus {
-    .left-panel {
-      width: 64px;
-      box-shadow: 3px 0 3px rgba(0, 0, 0, 0.3);
-
-      .folder-container {
-        .folder-item {
-          filter: grayscale(0);
-          width: 64px;
-          height: 64px;
-          margin-bottom: 16px;
-
-          .text-avatar {
-            margin: 9px 0;
-            opacity: 1;
-          }
-
-          .folder-name {
-            display: block;
-          }
-
-          &:hover {
-            .text-avatar {
-              margin: 2px 0;
-              height: 40px;
-              width: 40px;
-              font-size: 16px;
-              border-radius: 8px;
-            }
-          }
-        }
-      }
-    }
   }
 }
 
@@ -600,11 +503,6 @@ html[direction="rtl"] {
         }
       }
     }
-
-    .left-panel {
-      right: -1px;
-      left: auto;
-    }
   }
 
   .container.mobile-view .column-left .top .info-bar {
@@ -617,6 +515,13 @@ html[direction="rtl"] {
       .team-unread-counter {
         margin: 0 8px 0 0;
       }
+    }
+  }
+
+  .left-menu {
+    &.with-panel {
+      padding-right: 40px;
+      padding-left: 0;
     }
   }
 }
@@ -678,25 +583,6 @@ html[theme="dark-blue"] {
   }
 }
 
-html[theme="dark-blue"] {
-  .column-left {
-    background-color: var(--dark-blue-medium);
-
-    .top-bar {
-      background-color: var(--dark-blue-medium);
-      border-color: var(--dark-blue-low-op50);
-
-      &:after {
-        background-color: var(--dark-blue-medium);
-      }
-    }
-
-    .left-overlay {
-      background-color: var(--dark-blue-medium);
-    }
-  }
-}
-
 html[theme="dark"] {
   .column-left {
     &.shrunk-menu .left-content .dialog-wrapper {
@@ -712,7 +598,9 @@ html[theme="dark"] {
         }
       }
     }
+  }
 
+  .left-menu {
     .left-panel {
       background-color: var(--dark-low);
     }
@@ -734,14 +622,27 @@ html[theme="dark-night"] {
         }
       }
     }
-
-    .left-panel {
-      background-color: var(--dark-low);
-    }
   }
 }
 
 html[theme="dark-blue"] {
+  .column-left {
+    background-color: var(--dark-blue-medium);
+
+    .top-bar {
+      background-color: var(--dark-blue-medium);
+      border-color: var(--dark-blue-low-op50);
+
+      &:after {
+        background-color: var(--dark-blue-medium);
+      }
+    }
+
+    .left-overlay {
+      background-color: var(--dark-blue-medium);
+    }
+  }
+
   .column-left {
     &.shrunk-menu .left-content .dialog-wrapper {
       .unread, .mention {
@@ -755,10 +656,6 @@ html[theme="dark-blue"] {
           background-color: var(--dark-blue-medium);
         }
       }
-    }
-
-    .left-panel {
-      background-color: var(--dark-blue-low);
     }
   }
 }
