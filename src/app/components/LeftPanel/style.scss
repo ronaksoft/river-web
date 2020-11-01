@@ -46,6 +46,7 @@
       cursor: pointer;
       transition: all 0.1s;
       filter: grayscale(1);
+      will-change: auto;
 
       .text-avatar {
         margin: 2px 0;

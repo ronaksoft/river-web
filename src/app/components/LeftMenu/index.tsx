@@ -136,7 +136,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             teamList: [],
             teamLoading: false,
             teamMoreAnchorEl: null,
-            withPanel: true,
+            withPanel: localStorage.getItem(C_LOCALSTORAGE.SettingsLeftPanelVisible) === 'true',
         };
 
         this.chatTopIcons = [{
@@ -191,11 +191,14 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         });
     }
 
-    public setUpdateFlag(enable: boolean) {
+    public setUpdateFlag(enable: boolean, teamId: string) {
         if (this.state.hasUpdate !== enable) {
             this.setState({
                 hasUpdate: enable,
             });
+            if (this.leftPanelRef) {
+                this.leftPanelRef.setUpdateFlag(enable, teamId);
+            }
         }
     }
 
@@ -235,6 +238,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         if (this.bottomBarRef) {
             this.bottomBarRef.setUnreadCounter(counter);
         }
+        if (this.leftPanelRef) {
+            this.leftPanelRef.setUnreadCounter(counter, this.state.teamId);
+        }
     }
 
     public setStatus(state: {
@@ -271,7 +277,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         const className = (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (overlayMode ? ' label-mode' : '') + (dialogHover ? ' dialog-hover' : '') + (shrunkMenu ? ' shrunk-menu' : '');
         return (
             <div className={'left-menu' + (withPanel ? ' with-panel' : '')}>
-                {withPanel &&
+                {withPanel && teamList.length > 1 &&
                 <LeftPanel ref={this.leftPanelRefHandler} selectedTeamId={teamId}
                            onTeamChange={this.leftPanelTeamChangeHandler}/>}
                 <div
@@ -734,6 +740,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     private leftPanelTeamChangeHandler = (team: ITeam) => {
+        localStorage.setItem(C_LOCALSTORAGE.TeamId, team.id || '0');
+        localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
+            accesshash: team.accesshash,
+            id: team.id,
+        }));
         this.setState({
             teamId: team.id || '0',
         });
@@ -750,6 +761,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.leftPanelRef = ref;
         if (this.leftPanelRef) {
             this.leftPanelRef.setTeamList(this.state.teamList);
+            this.leftPanelRef.setUnreadCounter(this.unreadCounter, this.state.teamId);
         }
     }
 }

@@ -12,6 +12,7 @@ import {localize} from "../../services/utilities/localize";
 import Badge from "@material-ui/core/Badge";
 import {TextAvatar} from "../UserAvatar";
 import {ITeam} from "../../repository/team/interface";
+import {findIndex} from "lodash";
 
 import './style.scss';
 
@@ -26,7 +27,7 @@ interface IState {
     selectedTeamId: string;
 }
 
-class LeftPanel extends React.PureComponent<IProps, IState> {
+class LeftPanel extends React.Component<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
         if (state.selectedTeamId === props.selectedTeamId) {
             return null;
@@ -46,18 +47,34 @@ class LeftPanel extends React.PureComponent<IProps, IState> {
         };
     }
 
-    public componentDidMount() {
-        //
-    }
-
-    public componentWillUnmount() {
-        //
-    }
-
     public setTeamList(list: ITeam[]) {
         this.setState({
             teamList: list,
         });
+    }
+
+    public setUpdateFlag(enable: boolean, teamId: string) {
+        const {teamList} = this.state;
+        const index = findIndex(teamList, {id: teamId});
+        if (index > -1) {
+            if (Boolean(teamList[index].unread_counter) !== enable) {
+                teamList[index].unread_counter = enable ? 1 : 0;
+                this.setState({
+                    teamList,
+                });
+            }
+        }
+    }
+
+    public setUnreadCounter(counter: number, teamId: string) {
+        const {teamList} = this.state;
+        const index = findIndex(teamList, {id: teamId});
+        if (index > -1) {
+            teamList[index].unread_counter = counter;
+            this.setState({
+                teamList,
+            });
+        }
     }
 
     public render() {
@@ -69,7 +86,8 @@ class LeftPanel extends React.PureComponent<IProps, IState> {
                 <div className="folder-container">
                     {teamList.map((team) => {
                         return (<Badge key={team.id} color="primary" badgeContent={localize(team.unread_counter || 0)}
-                                       invisible={!team.unread_counter}>
+                                       invisible={!Boolean(team.unread_counter)}
+                                       variant={selectedTeamId === team.id && panelFocus ? 'standard' : 'dot'}>
                             <div className={'folder-item' + (selectedTeamId === team.id ? ' selected' : '')}
                                  onClick={this.selectTeamHandler(team)}>
                                 <TextAvatar fname={team.name}/>

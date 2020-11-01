@@ -24,6 +24,10 @@ import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb
 
 const withThumb = [C_MESSAGE_ICON.Audio, C_MESSAGE_ICON.File, C_MESSAGE_ICON.GIF, C_MESSAGE_ICON.Photo, C_MESSAGE_ICON.Video];
 
+const getDialogKey = (teamId: string | undefined, peerId: string | undefined, peerType: number | undefined) => {
+    return `${teamId || '0'}_${peerId || '0'}_${peerType || 0}`;
+};
+
 export default class DialogRepo {
     public static getInstance() {
         if (!this.instance) {
@@ -82,9 +86,9 @@ export default class DialogRepo {
         return this.db.dialogs.put(dialog);
     }
 
-    public remove(teamId: string, id: string, peerType: number) {
-        delete this.lazyMap[`${teamId}_${id}_${peerType}`];
-        return this.db.dialogs.delete([teamId, id, peerType]);
+    public remove(teamId: string, peerId: string, peerType: number) {
+        delete this.lazyMap[getDialogKey(teamId, peerId, peerType)];
+        return this.db.dialogs.delete([teamId, peerId, peerType]);
     }
 
     public createMany(dialogs: IDialog[]) {
@@ -93,7 +97,7 @@ export default class DialogRepo {
 
     public get(teamId: string, peerId: string, peerType: number): Promise<IDialog | undefined> {
         return this.db.dialogs.get([teamId, peerId, peerType]).then((dialog) => {
-            const mapId = `${teamId}_${peerId}_${peerType}`;
+            const mapId = getDialogKey(teamId, peerId, peerType);
             if (this.lazyMap.hasOwnProperty(mapId) && dialog) {
                 return this.mergeCheck(dialog, this.lazyMap[mapId]);
             } else {
@@ -281,6 +285,7 @@ export default class DialogRepo {
                     return dialog;
                 }
             });
+            window.console.log([...createItems, ...updateItems], queries);
             return this.createMany([...createItems, ...updateItems]);
         });
     }
@@ -299,35 +304,50 @@ export default class DialogRepo {
     }
 
     public updateCounter(teamId: string, peerId: string, peerType: number, action: { unreadCount?: number, mentionCount?: number, addUnreadCount?: number, addMentionCount?: number }) {
-        return this.db.dialogs.where('[teamid+peerid+peertype]').equals([teamId, peerId, peerType]).first().then((result) => {
-            if (result) {
-                if (action.addUnreadCount) {
-                    if (result.unreadcount) {
-                        result.unreadcount++;
-                    } else {
-                        result.unreadcount = 1;
-                    }
-                }
-                if (action.unreadCount) {
-                    result.unreadcount = action.unreadCount;
-                }
-                if (action.addMentionCount) {
-                    if (result.mentionedcount) {
-                        result.mentionedcount++;
-                    } else {
-                        result.mentionedcount = 1;
-                    }
-                }
-                if (action.mentionCount) {
-                    result.unreadcount = action.mentionCount;
-                }
-                const mapId = `${teamId}_${peerId}_${peerType}`;
-                this.lazyMap[mapId] = result;
-                return this.db.dialogs.put(result);
-            } else {
-                return result;
-            }
-        });
+        this.lazyUpsert([{
+            add_mention_count: action.addMentionCount,
+            add_unread_count: action.addUnreadCount,
+            mentionedcount: action.mentionCount,
+            peerid: peerId,
+            peertype: peerType,
+            teamid: teamId,
+            unreadcount: action.unreadCount,
+        }]);
+        // return this.db.dialogs.where('[teamid+peerid+peertype]').equals([teamId, peerId, peerType]).first().then((result) => {
+        //     if (result) {
+        //         if (action.addUnreadCount) {
+        //             if (result.unreadcount) {
+        //                 result.unreadcount++;
+        //             } else {
+        //                 result.unreadcount = 1;
+        //             }
+        //         }
+        //         if (action.unreadCount) {
+        //             result.unreadcount = action.unreadCount;
+        //         }
+        //         if (action.addMentionCount) {
+        //             if (result.mentionedcount) {
+        //                 result.mentionedcount++;
+        //             } else {
+        //                 result.mentionedcount = 1;
+        //             }
+        //         }
+        //         if (action.mentionCount) {
+        //             result.unreadcount = action.mentionCount;
+        //         }
+        //         const mapId = getDialogKey(teamId, peerId, peerType);
+        //         if (this.lazyMap.hasOwnProperty(mapId)) {
+        //             const t = this.lazyMap[mapId];
+        //             this.lazyMap[mapId] = this.mergeCheck(t, result);
+        //         } else {
+        //             this.lazyMap[mapId] = result;
+        //         }
+        //         window.console.log(result);
+        //         return this.db.dialogs.put(result);
+        //     } else {
+        //         return result;
+        //     }
+        // });
     }
 
     private mergeCheck(dialog: IDialog, newDialog: IDialog): IDialog {
@@ -350,6 +370,22 @@ export default class DialogRepo {
         if (newDialog.unreadcount === 0 && (dialog.unreadcount || 0) > 0) {
             dialog.scroll_pos = -1;
         }
+        if (newDialog.add_unread_count) {
+            if (dialog.unreadcount) {
+                dialog.unreadcount += newDialog.add_unread_count;
+            } else {
+                dialog.unreadcount = newDialog.add_unread_count;
+            }
+            delete newDialog.add_unread_count;
+        }
+        if (newDialog.add_mention_count) {
+            if (dialog.mentionedcount) {
+                dialog.mentionedcount += newDialog.add_mention_count;
+            } else {
+                dialog.mentionedcount = newDialog.add_mention_count;
+            }
+            delete newDialog.add_mention_count;
+        }
         const d = kMerge(dialog, newDialog);
         if (newDialog.force === true) {
             delete d.force;
@@ -365,12 +401,12 @@ export default class DialogRepo {
                 dialog = this.applyMessage(dialog, msg);
             }
         }
-        const dialogId = `${dialog.teamid || '0'}_${dialog.peerid || '0'}_${dialog.peertype || 0}`;
-        if (this.lazyMap.hasOwnProperty(dialogId)) {
-            const t = this.lazyMap[dialogId];
-            this.lazyMap[dialogId] = this.mergeCheck(t, dialog);
+        const mapId = getDialogKey(dialog.teamid, dialog.peerid, dialog.peertype);
+        if (this.lazyMap.hasOwnProperty(mapId)) {
+            const t = this.lazyMap[mapId];
+            this.lazyMap[mapId] = this.mergeCheck(t, dialog);
         } else {
-            this.lazyMap[dialogId] = dialog;
+            this.lazyMap[mapId] = dialog;
         }
     }
 
