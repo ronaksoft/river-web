@@ -1008,6 +1008,7 @@ export const C_LOCALSTORAGE = {
     ServerKeys: 'river.server_keys',
     ServerMode: 'river.server_mode',
     SettingsDownload: 'river.settings.download',
+    SettingsLeftPanelVisible: 'river.settings.left_panel.visible',
     SettingsNotification: 'river.settings.notification',
     ShrunkMenu: 'river.shrunk_menu',
     SnapshotRecord: 'river.snapshot_record',

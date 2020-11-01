@@ -361,6 +361,14 @@
   }
 }
 
+.left-menu {
+  position: relative;
+
+  &.with-panel {
+    padding-left: 40px;
+  }
+}
+
 .container.mobile-view {
   .column-left {
     width: 100vw;
@@ -509,6 +517,13 @@ html[direction="rtl"] {
       }
     }
   }
+
+  .left-menu {
+    &.with-panel {
+      padding-right: 40px;
+      padding-left: 0;
+    }
+  }
 }
 
 html[theme="dark"],
@@ -568,25 +583,6 @@ html[theme="dark-blue"] {
   }
 }
 
-html[theme="dark-blue"] {
-  .column-left {
-    background-color: var(--dark-blue-medium);
-
-    .top-bar {
-      background-color: var(--dark-blue-medium);
-      border-color: var(--dark-blue-low-op50);
-
-      &:after {
-        background-color: var(--dark-blue-medium);
-      }
-    }
-
-    .left-overlay {
-      background-color: var(--dark-blue-medium);
-    }
-  }
-}
-
 html[theme="dark"] {
   .column-left {
     &.shrunk-menu .left-content .dialog-wrapper {
@@ -601,6 +597,12 @@ html[theme="dark"] {
           background-color: var(--dark-medium);
         }
       }
+    }
+  }
+
+  .left-menu {
+    .left-panel {
+      background-color: var(--dark-low);
     }
   }
 }
@@ -624,6 +626,23 @@ html[theme="dark-night"] {
 }
 
 html[theme="dark-blue"] {
+  .column-left {
+    background-color: var(--dark-blue-medium);
+
+    .top-bar {
+      background-color: var(--dark-blue-medium);
+      border-color: var(--dark-blue-low-op50);
+
+      &:after {
+        background-color: var(--dark-blue-medium);
+      }
+    }
+
+    .left-overlay {
+      background-color: var(--dark-blue-medium);
+    }
+  }
+
   .column-left {
     &.shrunk-menu .left-content .dialog-wrapper {
       .unread, .mention {

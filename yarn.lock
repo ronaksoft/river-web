@@ -4901,10 +4901,10 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
-dexie@3.0.3-rc.2:
-  version "3.0.3-rc.2"
-  resolved "https://registry.yarnpkg.com/dexie/-/dexie-3.0.3-rc.2.tgz#28e15d979d18b61474900afa64e913982073ae7a"
-  integrity sha512-Qj7l/Unm5G3CT66UoNgnrI0MEVxQpk6UXIg0MuAgTrYS3j9heQfA0D5ggCs2K1KDIZ0CYHPvUGiLlu71FcED6w==
+dexie@3.0.3-rc.4:
+  version "3.0.3-rc.4"
+  resolved "https://registry.yarnpkg.com/dexie/-/dexie-3.0.3-rc.4.tgz#fe81891369fb9803143d4064448e33b1ec96bae2"
+  integrity sha512-HSRr0T940RZuqApowjP5DlcsmRTC43pZKrXCm8ctJPpV5zhya1aitB9SLrUsMwXWDX24FK90GJN4i+Fhexba/w==
 
 diff-sequences@^24.9.0:
   version "24.9.0"

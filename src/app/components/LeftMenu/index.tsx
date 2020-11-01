@@ -38,9 +38,10 @@ import {ITeam} from "../../repository/team/interface";
 import TeamName from "../TeamName";
 import TeamRepo from "../../repository/team";
 import {CircularProgress} from "@material-ui/core";
+import {localize} from "../../services/utilities/localize";
+import LeftPanel from "../LeftPanel";
 
 import './style.scss';
-import {localize} from "../../services/utilities/localize";
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -83,6 +84,7 @@ interface IState {
     teamMoreAnchorEl: any;
     hasUpdate: boolean;
     teamId: string;
+    withPanel: boolean;
 }
 
 class LeftMenu extends React.PureComponent<IProps, IState> {
@@ -111,6 +113,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private teamRepo: TeamRepo;
     private readonly mouseEnterDebounce: any;
     private readonly mouseLeaveDebounce: any;
+    private leftPanelRef: LeftPanel | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -133,6 +136,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             teamList: [],
             teamLoading: false,
             teamMoreAnchorEl: null,
+            withPanel: localStorage.getItem(C_LOCALSTORAGE.SettingsLeftPanelVisible) === 'true',
         };
 
         this.chatTopIcons = [{
@@ -187,11 +191,14 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         });
     }
 
-    public setUpdateFlag(enable: boolean) {
+    public setUpdateFlag(enable: boolean, teamId: string) {
         if (this.state.hasUpdate !== enable) {
             this.setState({
                 hasUpdate: enable,
             });
+            if (this.leftPanelRef) {
+                this.leftPanelRef.setUpdateFlag(enable, teamId);
+            }
         }
     }
 
@@ -231,6 +238,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         if (this.bottomBarRef) {
             this.bottomBarRef.setUnreadCounter(counter);
         }
+        if (this.leftPanelRef) {
+            this.leftPanelRef.setUnreadCounter(counter, this.state.teamId);
+        }
     }
 
     public setStatus(state: {
@@ -263,13 +273,18 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl, hasUpdate, teamId} = this.state;
+        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl, hasUpdate, teamId, withPanel} = this.state;
         const className = (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (overlayMode ? ' label-mode' : '') + (dialogHover ? ' dialog-hover' : '') + (shrunkMenu ? ' shrunk-menu' : '');
         return (
-            <div className={'column-left ' + className}>
-                {!shrunkMenu && <div className="top-bar">
-                    {iframeActive &&
-                    <span className="close-btn">
+            <div className={'left-menu' + (withPanel ? ' with-panel' : '')}>
+                {withPanel && teamList.length > 1 &&
+                <LeftPanel ref={this.leftPanelRefHandler} selectedTeamId={teamId}
+                           onTeamChange={this.leftPanelTeamChangeHandler}/>}
+                <div
+                    className={'column-left ' + className}>
+                    {!shrunkMenu && <div className="top-bar">
+                        {iframeActive &&
+                        <span className="close-btn">
                         <Tooltip
                             title={i18n.t('general.close')}
                             placement="bottom"
@@ -280,8 +295,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             </IconButton>
                         </Tooltip>
                     </span>}
-                    {Boolean(!iframeActive && !this.props.mobileView) &&
-                    <span className="menu-btn">
+                        {Boolean(!iframeActive && !this.props.mobileView) &&
+                        <span className="menu-btn">
                         <Tooltip
                             title={i18n.t('general.collapse')}
                             placement="bottom"
@@ -292,7 +307,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             </IconButton>
                         </Tooltip>
                     </span>}
-                    <span className="new-message">
+                        <span className="new-message">
                         <div className="text-logo">
                             {iframeActive &&
                             <a href="/" target="_blank">
@@ -302,52 +317,52 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             {teamId !== '0' &&
                             <TeamName id={teamId} className="team-name" prefix="(" postfix=")"
                                       onClick={this.teamOpenHandler}/>}
-                            {Boolean(teamList.length > 1) &&
+                            {Boolean(!withPanel && teamList.length > 1) &&
                             <div className="team-select-icon" onClick={this.teamOpenHandler}><ArrowDropDownRounded/>
                                 {hasUpdate && <div className="team-badge"/>}
                             </div>}
                         </div>
                     </span>
-                    <div className="actions">
-                        {this.chatTopIcons.map((item, key) => {
-                            return (
-                                <Tooltip
-                                    key={key}
-                                    title={item.tooltip}
-                                    placement="bottom"
-                                >
-                                    <IconButton
-                                        onClick={this.chatTopIconActionHandler(item.cmd)}
-                                    >{item.icon}</IconButton>
-                                </Tooltip>
-                            );
-                        })}
-                        <Menu
-                            anchorEl={chatMoreAnchorEl}
-                            open={Boolean(chatMoreAnchorEl)}
-                            onClose={this.chatMoreCloseHandler}
-                            className="kk-context-menu darker"
-                            classes={{
-                                paper: 'kk-context-menu-paper'
-                            }}
-                        >
-                            {this.chatMoreMenuItem.map((item, key) => {
-                                if (item.role === 'divider') {
-                                    return (<Divider key={key}/>);
-                                } else {
-                                    return (
-                                        <MenuItem key={key}
-                                                  onClick={this.chatMoreActionHandler(item.cmd)}
-                                                  className="context-item"
-                                        >{item.title}</MenuItem>
-                                    );
-                                }
+                        <div className="actions">
+                            {this.chatTopIcons.map((item, key) => {
+                                return (
+                                    <Tooltip
+                                        key={key}
+                                        title={item.tooltip}
+                                        placement="bottom"
+                                    >
+                                        <IconButton
+                                            onClick={this.chatTopIconActionHandler(item.cmd)}
+                                        >{item.icon}</IconButton>
+                                    </Tooltip>
+                                );
                             })}
-                        </Menu>
-                    </div>
-                </div>}
-                {shrunkMenu && <div className="top-bar" onMouseEnter={this.contentMouseEnterHandler}
-                                    onMouseLeave={this.contentMouseLeaveHandler}>
+                            <Menu
+                                anchorEl={chatMoreAnchorEl}
+                                open={Boolean(chatMoreAnchorEl)}
+                                onClose={this.chatMoreCloseHandler}
+                                className="kk-context-menu darker"
+                                classes={{
+                                    paper: 'kk-context-menu-paper'
+                                }}
+                            >
+                                {this.chatMoreMenuItem.map((item, key) => {
+                                    if (item.role === 'divider') {
+                                        return (<Divider key={key}/>);
+                                    } else {
+                                        return (
+                                            <MenuItem key={key}
+                                                      onClick={this.chatMoreActionHandler(item.cmd)}
+                                                      className="context-item"
+                                            >{item.title}</MenuItem>
+                                        );
+                                    }
+                                })}
+                            </Menu>
+                        </div>
+                    </div>}
+                    {shrunkMenu && <div className="top-bar" onMouseEnter={this.contentMouseEnterHandler}
+                                        onMouseLeave={this.contentMouseLeaveHandler}>
                     <span className="menu-btn">
                         <Tooltip
                             title={i18n.t('general.expand')}
@@ -359,66 +374,67 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             </IconButton>
                         </Tooltip>
                     </span>
-                    {Boolean(overlayMode === 2) && <div className="actions">
-                        <Tooltip
-                            title={i18n.t('chat.search')}
-                            placement="bottom"
-                        >
-                            <IconButton
-                                onClick={this.chatTopIconActionHandler('search')}
-                            ><SearchRounded/></IconButton>
-                        </Tooltip>
+                        {Boolean(overlayMode === 2) && <div className="actions">
+                            <Tooltip
+                                title={i18n.t('chat.search')}
+                                placement="bottom"
+                            >
+                                <IconButton
+                                    onClick={this.chatTopIconActionHandler('search')}
+                                ><SearchRounded/></IconButton>
+                            </Tooltip>
+                        </div>}
                     </div>}
-                </div>}
-                <div className="left-content" onMouseEnter={this.contentMouseEnterHandler}
-                     onMouseLeave={this.contentMouseLeaveHandler}>
-                    {this.connectionStatus()}
-                    {this.getContent()}
+                    <div className="left-content" onMouseEnter={this.contentMouseEnterHandler}
+                         onMouseLeave={this.contentMouseLeaveHandler}>
+                        {this.connectionStatus()}
+                        {this.getContent()}
+                    </div>
+                    {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
+                                               selected={this.state.leftMenu} teamId={teamId}/>}
+                    <div className="left-overlay">
+                        {Boolean(overlayMode === 1) &&
+                        <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
+                                      teamId={teamId}/>}
+                        {Boolean(overlayMode === 2) &&
+                        <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
+                                   onAction={this.props.onMediaAction} teamId={teamId}/>}
+                    </div>
+                    {Boolean(teamList.length > 1) && <Menu
+                        anchorEl={teamMoreAnchorEl}
+                        anchorOrigin={{
+                            horizontal: 'center',
+                            vertical: 'top',
+                        }}
+                        transformOrigin={{
+                            horizontal: 'center',
+                            vertical: 'top',
+                        }}
+                        open={Boolean(teamMoreAnchorEl)}
+                        onClose={this.teamCloseHandler}
+                        className="kk-context-menu darker top-bar-team"
+                        classes={{
+                            paper: 'kk-context-menu-paper'
+                        }}
+                    >
+                        {teamList.map((item) => {
+                            return (<MenuItem key={item.id} className="context-item"
+                                              onClick={this.teamSelectHandler(item)}
+                                              selected={teamId === item.id}>
+                                <div className="team-name">{item.name}</div>
+                                {Boolean(teamId !== item.id && item.unread_counter) &&
+                                <div className="team-unread-counter">{localize(item.unread_counter || 0)}</div>}
+                            </MenuItem>);
+                        })}
+                        {teamLoading && <div style={{
+                            alignItems: 'center',
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}>
+                            <CircularProgress size={16}/>
+                        </div>}
+                    </Menu>}
                 </div>
-                {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
-                                           selected={this.state.leftMenu} teamId={teamId}/>}
-                <div className="left-overlay">
-                    {Boolean(overlayMode === 1) &&
-                    <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
-                                  teamId={teamId}/>}
-                    {Boolean(overlayMode === 2) &&
-                    <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
-                               onAction={this.props.onMediaAction} teamId={teamId}/>}
-                </div>
-                {Boolean(teamList.length > 1) && <Menu
-                    anchorEl={teamMoreAnchorEl}
-                    anchorOrigin={{
-                        horizontal: 'center',
-                        vertical: 'top',
-                    }}
-                    transformOrigin={{
-                        horizontal: 'center',
-                        vertical: 'top',
-                    }}
-                    open={Boolean(teamMoreAnchorEl)}
-                    onClose={this.teamCloseHandler}
-                    className="kk-context-menu darker top-bar-team"
-                    classes={{
-                        paper: 'kk-context-menu-paper'
-                    }}
-                >
-                    {teamList.map((item) => {
-                        return (<MenuItem key={item.id} className="context-item"
-                                          onClick={this.teamSelectHandler(item)}
-                                          selected={teamId === item.id}>
-                            <div className="team-name">{item.name}</div>
-                            {Boolean(teamId !== item.id && item.unread_counter) &&
-                            <div className="team-unread-counter">{localize(item.unread_counter || 0)}</div>}
-                        </MenuItem>);
-                    })}
-                    {teamLoading && <div style={{
-                        alignItems: 'center',
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }}>
-                        <CircularProgress size={16}/>
-                    </div>}
-                </Menu>}
             </div>
         );
     }
@@ -439,6 +455,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                               onSubPlaceChange={this.settingsSubPlaceChangeHandler}
                               onTeamChange={this.props.onTeamChange}
                               onTeamUpdate={this.settingsMenuTeamUpdateHandler}
+                              onPanelToggle={this.settingsPanelToggleHandler}
                               teamId={teamId}
                 />}
                 {leftMenu === 'contacts' &&
@@ -645,6 +662,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             teamLoading: true,
         });
         const fn = (loading: boolean) => (res: ITeam[]) => {
+            if (this.leftPanelRef) {
+                this.leftPanelRef.setTeamList(res);
+            }
             const q: any = {
                 teamList: res,
                 teamLoading: loading,
@@ -711,6 +731,38 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private settingsMenuTeamUpdateHandler = () => {
         this.getTeamList();
+    }
+
+    private settingsPanelToggleHandler = (visible: boolean) => {
+        this.setState({
+            withPanel: visible,
+        });
+    }
+
+    private leftPanelTeamChangeHandler = (team: ITeam) => {
+        localStorage.setItem(C_LOCALSTORAGE.TeamId, team.id || '0');
+        localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
+            accesshash: team.accesshash,
+            id: team.id,
+        }));
+        this.setState({
+            teamId: team.id || '0',
+        });
+        if (this.state.teamId !== team.id) {
+            setTimeout(() => {
+                if (this.props.onTeamChange) {
+                    this.props.onTeamChange(team);
+                }
+            }, 10);
+        }
+    }
+
+    private leftPanelRefHandler = (ref: any) => {
+        this.leftPanelRef = ref;
+        if (this.leftPanelRef) {
+            this.leftPanelRef.setTeamList(this.state.teamList);
+            this.leftPanelRef.setUnreadCounter(this.unreadCounter, this.state.teamId);
+        }
     }
 }
 

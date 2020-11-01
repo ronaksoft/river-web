@@ -333,7 +333,8 @@
       "exact": "Exact",
       "estimated_hint": "Last seen an hour ago",
       "exact_hint": "Last seen Today at 23:00"
-    }
+    },
+    "left_panel": "Show Team Panel"
   },
   "contact": {
     "contacts": "Contacts",

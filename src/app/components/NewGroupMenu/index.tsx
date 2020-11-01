@@ -110,8 +110,10 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                         </div>
                         <div className="avatar-container">
                             <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
-                                {this.profileTempPhoto ? <img src={this.profileTempPhoto} className="avatar-image"
-                                                              alt="avatar" draggable={false}/> : TextAvatar(title)}
+                                {this.profileTempPhoto ?
+                                    <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"
+                                         draggable={false}/> :
+                                    <TextAvatar fname={title}/>}
                                 <div className={'overlay' + (uploadingPhoto ? ' show' : '')}>
                                     {!uploadingPhoto && <React.Fragment>
                                         <PhotoCameraRounded/>

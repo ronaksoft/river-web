@@ -25,6 +25,8 @@ export interface IDialog extends Dialog.AsObject {
     sender_id?: string;
     only_contact?: boolean;
     tiny_thumb?: string;
+    add_unread_count?: number;
+    add_mention_count?: number;
 }
 
 export interface IDialogWithUpdateId {

@@ -1050,7 +1050,7 @@ class Chat extends React.Component<IProps, IState> {
                         addUnreadCount: 1,
                     });
                     if (this.leftMenuRef) {
-                        this.leftMenuRef.setUpdateFlag(true);
+                        this.leftMenuRef.setUpdateFlag(true, data.message.teamid || '0');
                     }
                 }
             });
@@ -2206,7 +2206,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateDialogsCounter(peerName: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft}: any) {
+    private updateDialogsCounter(peerName: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft}: any, throttle?: boolean) {
         if (this.dialogMap.hasOwnProperty(peerName)) {
             const dialogs = this.dialogs;
             let index = this.dialogMap[peerName];
@@ -2224,6 +2224,7 @@ class Chat extends React.Component<IProps, IState> {
             let shouldUpdate = false;
             let counterAction = false;
             let shouldSort = false;
+            let shouldRerender = false;
             if (unreadCounter !== undefined) {
                 shouldUpdate = true;
                 counterAction = true;
@@ -2240,9 +2241,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (maxOutbox && maxOutbox > (dialogs[index].readoutboxmaxid || 0)) {
                 dialogs[index].readoutboxmaxid = maxOutbox;
-                if (this.dialogRef) {
-                    this.dialogRef.forceRender();
-                }
+                shouldRerender = true;
             }
             if (unreadCounterIncrease === 1) {
                 shouldUpdate = true;
@@ -2277,23 +2276,28 @@ class Chat extends React.Component<IProps, IState> {
                 shouldUpdate = true;
                 shouldSort = true;
             }
-            if (shouldUpdate) {
-                this.dialogsSort(dialogs, undefined, !shouldSort);
-                if (this.dialogRef) {
+            if (throttle !== true) {
+                if (shouldUpdate) {
+                    this.dialogsSort(dialogs, undefined, !shouldSort);
+                } else if (shouldRerender && this.dialogRef) {
                     this.dialogRef.forceRender();
                 }
-            }
-            if (this.selectedPeerName === peerName) {
-                if (unreadCounter === 0 && this.endOfMessage && this.moveDownRef) {
-                    this.moveDownRef.setVisible(false);
-                } else if (unreadCounter && this.endOfMessage && this.moveDownRef) {
-                    this.moveDownRef.setVisible(true);
+                if (this.selectedPeerName === peerName) {
+                    if (unreadCounter === 0 && this.endOfMessage && this.moveDownRef) {
+                        this.moveDownRef.setVisible(false);
+                    } else if (unreadCounter && this.endOfMessage && this.moveDownRef) {
+                        this.moveDownRef.setVisible(true);
+                    }
                 }
+                if (counterAction && peerName === this.selectedPeerName && this.moveDownRef) {
+                    this.moveDownRef.setDialog(dialogs[index]);
+                }
+                this.dialogRepo.lazyUpsert([dialogs[index]]);
+            } else {
+                setTimeout(() => {
+                    this.dialogsSortThrottle(dialogs);
+                }, 256);
             }
-            if (counterAction && peerName === this.selectedPeerName && this.moveDownRef) {
-                this.moveDownRef.setDialog(dialogs[index]);
-            }
-            this.dialogRepo.lazyUpsert([dialogs[index]]);
             return dialogs[index];
         }
         return null;
@@ -5823,9 +5827,8 @@ class Chat extends React.Component<IProps, IState> {
         let data: any = {};
         if (item) {
             data = JSON.parse(item);
-        } else {
-            data[teamId] = true;
         }
+        data[teamId] = true;
         localStorage.setItem(C_LOCALSTORAGE.SnapshotRecord, JSON.stringify(data));
     }
 
@@ -5839,18 +5842,18 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private initDialogCounter() {
-        for (const [peerName, index] of Object.entries(this.dialogMap)) {
-            const maxReadInbox = this.dialogs[index].readinboxmaxid || 0;
+        Object.keys(this.dialogMap).forEach((peerName) => {
             const dialog = cloneDeep(this.getDialogByPeerName(peerName));
-            if (dialog && maxReadInbox !== dialog.topmessageid) {
-                this.messageRepo.getUnreadCount(this.teamId, dialog.peerid || '', dialog.peertype || 0, maxReadInbox, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
+            if (dialog && dialog.readinboxmaxid !== dialog.topmessageid) {
+                this.messageRepo.getUnreadCount(this.teamId, dialog.peerid || '0', dialog.peertype || 0, dialog.readinboxmaxid || 0, dialog.topmessageid || 0).then((count) => {
+                    window.console.log(peerName, count);
                     this.updateDialogsCounter(peerName, {
                         mentionCounter: count.mention,
                         unreadCounter: count.message,
-                    });
+                    }, true);
                 });
             }
-        }
+        });
     }
 
     private leftMenuTeamChangeHandler = (team: ITeam) => {

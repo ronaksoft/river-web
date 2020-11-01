@@ -88,7 +88,8 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
         return (
             <span className={className}>{(group && photo) ?
                 <img className="avatar-image" src={photo} alt="avatar" draggable={false}
-                     onError={this.imgErrorHandler}/> : TextAvatar(group ? group.title : undefined)}</span>
+                     onError={this.imgErrorHandler}/> : <TextAvatar fname={(group ? group.title : undefined)}/>}
+            </span>
         );
     }
 

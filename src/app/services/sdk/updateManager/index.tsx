@@ -1422,12 +1422,13 @@ export default class UpdateManager {
         const peers: IPeer[] = [];
         Object.values(dialogs).forEach((dialog) => {
             peers.push({
-                id: dialog.peerid || '',
+                id: dialog.peerid || '0',
                 peerType: dialog.peertype || 0,
             });
             dialogList.push(dialog);
         });
         if (dialogList.length > 0 && this.dialogRepo) {
+            window.console.log(dialogList);
             return this.dialogRepo.importBulk(dialogList).then(() => {
                 return peers;
             });

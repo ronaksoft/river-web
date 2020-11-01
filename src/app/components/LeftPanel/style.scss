@@ -1,0 +1,181 @@
+/*
+    Creation Time: 2020 - Oct - 31
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.left-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  background-color: var(--grey);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 64px;
+  z-index: 120;
+  transition: all 0.1s;
+  will-change: width;
+
+  .folder-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .MuiBadge-root {
+      .MuiBadge-badge {
+        right: 16px;
+      }
+    }
+
+    .folder-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-direction: column;
+      margin: 0 0 24px;
+      width: 40px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.1s;
+      filter: grayscale(1);
+      will-change: auto;
+
+      .text-avatar {
+        margin: 2px 0;
+        height: 24px;
+        width: 24px;
+        border-radius: 4px;
+        font-size: 13px;
+        transition: all 0.1s;
+        box-shadow: 0 0 4px rgba(15, 15, 15, 0.3);
+        font-weight: normal;
+        letter-spacing: 4px;
+        opacity: 0.5;
+      }
+
+      &.selected {
+        &:before {
+          position: absolute;
+          content: '';
+          width: 2px;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          background-color: var(--light);
+        }
+
+        .text-avatar {
+          opacity: 0.9;
+        }
+      }
+
+      .folder-name {
+        margin: 4px 0 0;
+        padding: 0 6px;
+        font-size: 12px;
+        width: 100%;
+        color: var(--white);
+        overflow: hidden;
+        display: none;
+
+        .inner {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+
+  &.panel-focus {
+    width: 64px;
+    box-shadow: 3px 0 3px rgba(0, 0, 0, 0.3);
+
+    .folder-container {
+      .folder-item {
+        filter: grayscale(0);
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
+
+        .text-avatar {
+          margin: 9px 0;
+          opacity: 1;
+        }
+
+        .folder-name {
+          display: block;
+        }
+
+        &:hover {
+          .text-avatar {
+            margin: 2px 0;
+            height: 40px;
+            width: 40px;
+            font-size: 16px;
+            border-radius: 8px;
+          }
+        }
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .left-panel {
+    right: 0;
+    left: auto;
+
+    .folder-container {
+      .folder-item {
+        &.selected {
+          &:before {
+            right: 0;
+            left: auto;
+          }
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .left-panel {
+    background-color: var(--dark-low);
+
+    .folder-container {
+      .folder-item {
+        &.selected {
+          &:before {
+            background-color: var(--grey);
+          }
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .left-panel {
+    background-color: var(--dark-blue-low);
+
+    .folder-container {
+      .folder-item {
+        &.selected {
+          &:before {
+            background-color: var(--dark-blue-high-alt);
+          }
+        }
+      }
+    }
+  }
+}
