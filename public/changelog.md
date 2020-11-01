@@ -1,3 +1,7 @@
+## 0.36.0
+* 🎉 New Team UI
+* Bug fixes and performance improvements
+
 ## 0.35.4
 * UI improvements in muted dialogs and preview message
 * Desktop app now asks for microphone permission on start up
