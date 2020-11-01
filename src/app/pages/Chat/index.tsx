@@ -5846,7 +5846,6 @@ class Chat extends React.Component<IProps, IState> {
             const dialog = cloneDeep(this.getDialogByPeerName(peerName));
             if (dialog && dialog.readinboxmaxid !== dialog.topmessageid) {
                 this.messageRepo.getUnreadCount(this.teamId, dialog.peerid || '0', dialog.peertype || 0, dialog.readinboxmaxid || 0, dialog.topmessageid || 0).then((count) => {
-                    window.console.log(peerName, count);
                     this.updateDialogsCounter(peerName, {
                         mentionCounter: count.mention,
                         unreadCounter: count.message,

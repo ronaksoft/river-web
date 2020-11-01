@@ -842,7 +842,6 @@ export default class MessageRepo {
                 message: 0,
             });
         }
-        window.console.log([teamId, peerId, peerType, minId + 1], [teamId, peerId, peerType, topMessageId]);
         return new Promise((resolve, reject) => {
             let mention = 0;
             this.db.messages.where('[teamid+peerid+peertype+id]')

@@ -285,7 +285,6 @@ export default class DialogRepo {
                     return dialog;
                 }
             });
-            window.console.log([...createItems, ...updateItems], queries);
             return this.createMany([...createItems, ...updateItems]);
         });
     }
