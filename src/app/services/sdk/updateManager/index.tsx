@@ -1428,7 +1428,6 @@ export default class UpdateManager {
             dialogList.push(dialog);
         });
         if (dialogList.length > 0 && this.dialogRepo) {
-            window.console.log(dialogList);
             return this.dialogRepo.importBulk(dialogList).then(() => {
                 return peers;
             });
