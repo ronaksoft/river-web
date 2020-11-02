@@ -672,7 +672,6 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     private getTeamList = (noNotif?: boolean) => {
-        window.console.log(noNotif);
         this.setState({
             teamLoading: true,
         });

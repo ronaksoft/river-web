@@ -145,7 +145,7 @@ class SettingsModal extends React.Component<IProps, IState> {
                     window.console.log(e);
                 }
             }
-        }, 196);
+        }, 350);
     }
 }
 

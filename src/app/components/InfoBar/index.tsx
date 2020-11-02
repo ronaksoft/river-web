@@ -70,7 +70,6 @@ class InfoBar extends React.Component<IProps, IState> {
 
     public render() {
         const {isConnecting, isOnline, isUpdating, peer, teamId} = this.state;
-        window.console.log(teamId);
         return (
             <div className="info-bar">
                 {this.props.isMobileView ?
