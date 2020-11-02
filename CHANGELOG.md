@@ -1,3 +1,6 @@
+## 0.36.2
+* UI improvements
+
 ## 0.36.1
 * Personal team icon updated
 * Known bugs fixed and improvements

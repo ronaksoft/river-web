@@ -127,9 +127,9 @@ class SettingsModal extends React.Component<IProps, IState> {
     }
 
     private resizeHandler = (e: any) => {
-        if (this.autoHeight) {
-            return;
-        }
+        // if (this.autoHeight) {
+        //     return;
+        // }
         setTimeout(() => {
             try {
                 this.autoHeight = this.ref?.firstElementChild?.firstElementChild?.firstElementChild?.getBoundingClientRect().height;
@@ -145,7 +145,7 @@ class SettingsModal extends React.Component<IProps, IState> {
                     window.console.log(e);
                 }
             }
-        }, 350);
+        }, 10);
     }
 }
 

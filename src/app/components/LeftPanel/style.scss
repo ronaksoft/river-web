@@ -62,7 +62,12 @@
 
         svg {
           font-size: 18px;
-          transform: translate(-2px, 2px);
+          transform: translateX(-1px);
+        }
+
+        .inner {
+          padding: 2px 0 0 2px;
+          text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
         }
       }
 
