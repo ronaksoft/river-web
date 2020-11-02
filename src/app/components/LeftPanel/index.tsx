@@ -13,6 +13,7 @@ import Badge from "@material-ui/core/Badge";
 import {TextAvatar} from "../UserAvatar";
 import {ITeam} from "../../repository/team/interface";
 import {findIndex} from "lodash";
+import {PersonRounded} from "@material-ui/icons";
 
 import './style.scss';
 
@@ -90,7 +91,7 @@ class LeftPanel extends React.Component<IProps, IState> {
                                        variant={selectedTeamId === team.id && panelFocus ? 'standard' : 'dot'}>
                             <div className={'folder-item' + (selectedTeamId === team.id ? ' selected' : '')}
                                  onClick={this.selectTeamHandler(team)}>
-                                <TextAvatar fname={team.name}/>
+                                <TextAvatar fname={team.name} icon={team.id === '0' ? <PersonRounded/> : undefined}/>
                                 <div className="folder-name">
                                     <div className="inner">{team.name}</div>
                                 </div>

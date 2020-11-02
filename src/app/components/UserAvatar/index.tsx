@@ -105,7 +105,7 @@ const GetUniqueColor = (str: string, list: string[]) => {
     return list[sumChars(str) % list.length];
 };
 
-const TextAvatar = ({fname, lname}: { fname?: string, lname?: string }) => {
+const TextAvatar = ({fname, lname, icon}: { fname?: string, lname?: string, icon?: any }) => {
     const str = fname || '' + lname || '';
     let name = 'NA';
     if (fname && lname) {
@@ -122,7 +122,7 @@ const TextAvatar = ({fname, lname}: { fname?: string, lname?: string }) => {
         background,
         color,
     };
-    return (<span className="text-avatar" style={style}><span className="inner">{name}</span></span>);
+    return (<span className="text-avatar" style={style}><span className="inner">{icon ? icon : name}</span></span>);
 };
 
 interface IProps {

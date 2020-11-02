@@ -374,7 +374,7 @@ class SignUp extends React.Component<IProps, IState> {
                         <a href="https://river.im/faq" target="_blank"
                            rel="noopener noreferrer">{i18n.t('sign_up.faq')}</a>
                         <span className="bullet"/>
-                        <a href="https://river.im/terms" target="_blank"
+                        <a href="https://river.im/privacy" target="_blank"
                            rel="noopener noreferrer">{i18n.t('sign_up.term_of_services')}</a>
                     </div>
                     <div className="language-container"

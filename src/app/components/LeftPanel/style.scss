@@ -59,6 +59,11 @@
         font-weight: normal;
         letter-spacing: 4px;
         opacity: 0.5;
+
+        svg {
+          font-size: 18px;
+          transform: translate(-2px, 2px);
+        }
       }
 
       &.selected {

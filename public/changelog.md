@@ -1,6 +1,8 @@
 ## 0.36.1
+* Personal team icon updated
 * Known bugs fixed and improvements
 * Google analytics added
+* Privacy link updated
 
 ## 0.36.0
 * 🎉 New Team UI
