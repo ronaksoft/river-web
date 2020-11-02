@@ -308,6 +308,10 @@ export default class UserRepo {
         });
     }
 
+    public invalidateCacheByTeamId(teamId: string) {
+        delete this.lastContactTimestamp[teamId];
+    }
+
     public getAllContacts(teamId: string, cb?: (users: IUser[]) => void): Promise<IUser[]> {
         if (cb) {
             this.getManyCache(teamId, true, {}).then((res) => {
@@ -328,12 +332,14 @@ export default class UserRepo {
                     if (remoteRes.modified) {
                         this.importBulk(true, remoteRes.contactusersList);
                         this.importBulk(false, remoteRes.usersList);
-                        this.setContactList(remoteRes.usersList.map((o) => {
-                            return {
-                                id: o.id || '0',
-                                teamid: teamId,
-                            };
-                        }));
+                        this.removeContactList(teamId).then(() => {
+                            this.setContactList(remoteRes.usersList.map((o) => {
+                                return {
+                                    id: o.id || '0',
+                                    teamid: teamId,
+                                };
+                            }));
+                        });
                         this.storeContactsCrc(teamId, remoteRes.contactusersList);
                         this.lastContactTimestamp[teamId] = now;
                         resolve(remoteRes.contactusersList);

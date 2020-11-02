@@ -1723,6 +1723,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.recorder.ondataavailable = (typedArray: any) => {
             if (this.voiceCanceled) {
                 this.voiceCanceled = false;
+                this.clearPreviewMessage(true)();
                 return;
             }
             this.voice = new Blob([typedArray], {type: 'audio/ogg'});

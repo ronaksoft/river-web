@@ -273,7 +273,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private fileId: string = '';
     private cropperRef: AvatarCropper | undefined;
     private documentViewerService: DocumentViewerService;
-    private devToolsDebouncer: any = null;
+    private readonly devToolsDebouncer: any = null;
     private versionClickCounter: number = 0;
     private broadcaster: Broadcaster;
     private settingsBackgroundModalRef: SettingsBackgroundModal | undefined;
@@ -1132,7 +1132,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         </React.Fragment>}
                         {Boolean(pageContent === 'teams') &&
                         <SettingsTeam team={team} onPrev={this.prevHandler} onError={this.props.onError}
-                                      onUpdate={this.props.onTeamUpdate}/>}
+                                      onUpdate={this.settingsTeamUpdateHandler}/>}
                         {Boolean(pageContent === 'storage') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
@@ -2604,6 +2604,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
             this.props.onPanelToggle(this.state.leftPanelVisible === 'true');
             //
         });
+    }
+
+    private settingsTeamUpdateHandler = () => {
+        if (this.props.onTeamUpdate) {
+            this.props.onTeamUpdate();
+        }
+        this.getTeamList();
     }
 }
 

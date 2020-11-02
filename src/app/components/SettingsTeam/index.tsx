@@ -499,6 +499,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                     loading: false,
                                 });
                             }
+                            this.userRepo.invalidateCacheByTeamId(team.id || '0');
                         }).catch(this.catchFunction);
                         break;
                     case 'promote':
@@ -565,6 +566,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                     })), ...this.listToMembers(list)]),
                     loading: false,
                 });
+                this.userRepo.invalidateCacheByTeamId(team.id || '0');
             }).catch(this.catchFunction);
         }
     }
@@ -630,9 +632,18 @@ class SettingsTeam extends React.Component<IProps, IState> {
         if (this.hasUpdate && this.props.onUpdate) {
             this.props.onUpdate();
         }
-        if (this.state.team && this.state.team.name !== this.defaultTeamName) {
-            this.defaultTeamName = this.state.team.name || '';
-            this.apiManager.teamEdit(this.state.team.id || '0', this.state.team.name || '').catch((err) => {
+        const {team} = this.state;
+        if (team && team.name !== this.defaultTeamName) {
+            this.defaultTeamName = team.name || '';
+            this.apiManager.teamEdit(team.id || '0', team.name || '').then(() => {
+                this.teamRepo.update({
+                    id: team.id,
+                    name: team.name,
+                });
+                if (this.props.onUpdate) {
+                    this.props.onUpdate();
+                }
+            }).catch((err) => {
                 if (this.props.onError) {
                     this.props.onError(JSON.stringify(err));
                 }

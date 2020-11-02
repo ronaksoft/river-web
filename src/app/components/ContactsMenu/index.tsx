@@ -70,6 +70,12 @@ class ContactMenus extends React.Component<IProps, IState> {
         }
     }
 
+    public reload(empty?: boolean) {
+        if (this.contactListRef) {
+            this.contactListRef.reload(empty);
+        }
+    }
+
     public render() {
         const {firstName, lastName, phone, newContactDialogOpen} = this.state;
         return (

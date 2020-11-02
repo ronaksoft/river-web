@@ -15,8 +15,11 @@ import {cloneDeep} from "lodash";
 import {kMerge} from "../../services/utilities/kDash";
 import MessageRepo from "../message";
 import i18n from "../../services/i18n";
+import Broadcaster from "../../services/broadcaster";
 
 const C_TEAM_TTL = 60 * 60 * 12;
+
+export const TeamDBUpdated = 'Team_DB_Updated';
 
 export default class TeamRepo {
     public static getInstance() {
@@ -34,11 +37,13 @@ export default class TeamRepo {
     private apiManager: APIManager;
     private teamTtl: number = 0;
     private teamCache: { [key: string]: ITeam } = {};
+    private broadcaster: Broadcaster;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.apiManager = APIManager.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public get(id: string): Promise<ITeam | undefined> {
@@ -137,10 +142,17 @@ export default class TeamRepo {
         return this.db.teams.get(team.id || '0').then((res) => {
             if (res) {
                 team = kMerge(res, team);
-                return this.db.teams.put(team);
+                return this.db.teams.put(team).then((done) => {
+                    this.broadcastEvent(TeamDBUpdated, {id: team.id});
+                    return done;
+                });
             } else {
                 return res;
             }
         });
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        this.broadcaster.publish(name, data);
     }
 }

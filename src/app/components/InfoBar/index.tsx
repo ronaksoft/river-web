@@ -24,6 +24,7 @@ interface IProps {
     statusBarRefHandler: (ref: StatusBar) => void;
     isMobileView: boolean;
     onAction: (cmd: string) => (e: any) => void;
+    teamId: string;
 }
 
 interface IState {
@@ -31,10 +32,10 @@ interface IState {
     isConnecting: boolean;
     isOnline: boolean;
     isUpdating: boolean;
+    teamId: string;
 }
 
 class InfoBar extends React.Component<IProps, IState> {
-    private teamId: string = '0';
     private currentUserId: string = UserRepo.getInstance().getCurrentUserId();
 
     constructor(props: IProps) {
@@ -45,13 +46,14 @@ class InfoBar extends React.Component<IProps, IState> {
             isOnline: false,
             isUpdating: false,
             peer: null,
+            teamId: props.teamId,
         };
     }
 
     public setPeer(teamId: string, peer: InputPeer | null) {
-        this.teamId = teamId;
         this.setState({
             peer,
+            teamId,
         });
     }
 
@@ -67,7 +69,8 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId} = this.state;
+        window.console.log(teamId);
         return (
             <div className="info-bar">
                 {this.props.isMobileView ?
@@ -82,7 +85,7 @@ class InfoBar extends React.Component<IProps, IState> {
                 }
                 <StatusBar ref={this.props.statusBarRefHandler} onAction={this.props.onAction}
                            isConnecting={isConnecting} isOnline={isOnline} isUpdating={isUpdating}
-                           peer={peer} teamId={this.teamId} currentUserId={this.currentUserId}
+                           peer={peer} teamId={teamId} currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
                     <Tooltip

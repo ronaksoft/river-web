@@ -8,13 +8,28 @@
 */
 
 import * as React from 'react';
-import {useState} from "react";
+import {useState} from 'react';
 import {
-    AddRounded, CheckRounded, CloseRounded, EditRounded, ExitToAppRounded, KeyboardBackspaceRounded, MoreVert,
-    PersonAddRounded, PhotoCameraRounded, StarRateRounded, StarsRounded,
+    AddRounded,
+    CheckRounded,
+    CloseRounded,
+    EditRounded,
+    ExitToAppRounded,
+    KeyboardBackspaceRounded,
+    MoreVert,
+    PersonAddRounded,
+    PhotoCameraRounded,
+    StarRateRounded,
+    StarsRounded,
 } from '@material-ui/icons';
 import {
-    GroupFlags, InputFile, InputPeer, InputUser, ParticipantType, PeerNotifySettings, PeerType,
+    GroupFlags,
+    InputFile,
+    InputPeer,
+    InputUser,
+    ParticipantType,
+    PeerNotifySettings,
+    PeerType,
 } from '../../services/sdk/messages/core.types_pb';
 import APIManager from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
@@ -29,20 +44,20 @@ import {isMuted} from '../UserInfoMenu';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogRepo from '../../repository/dialog';
 import {
-    Switch,
     Button,
-    Radio,
-    FormControlLabel,
-    RadioGroup,
     Checkbox,
     Dialog,
-    MenuItem,
-    Menu,
     FormControl,
+    FormControlLabel,
+    IconButton,
+    Input,
     InputAdornment,
     InputLabel,
-    Input,
-    IconButton
+    Menu,
+    MenuItem,
+    Radio,
+    RadioGroup,
+    Switch
 } from '@material-ui/core';
 import UserRepo from '../../repository/user';
 import Scrollbars from 'react-custom-scrollbars';
@@ -351,8 +366,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                       onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
                                                 <span
                                                     className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
-                                                {isAdmin && <div className="more"
-                                                                 onClick={this.moreOpenHandler(participant)}>
+                                                {isAdmin && participant.type !== ParticipantType.PARTICIPANTTYPECREATOR &&
+                                                <div className="more"
+                                                     onClick={this.moreOpenHandler(participant)}>
                                                     <MoreVert/>
                                                 </div>}
                                             </div>

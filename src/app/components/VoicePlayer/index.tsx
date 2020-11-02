@@ -199,6 +199,11 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
     /* Set voice state */
     public setVoiceState(state: 'play' | 'pause' | 'seek_play' | 'seek_pause' | 'progress' | 'download') {
+        // Prevent state change on buffer mode
+        if (this.voice) {
+            return;
+        }
+
         this.setState({
             playState: state,
         });
@@ -530,7 +535,8 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
     /* Upload progress handler */
     private uploadProgressHandler = (progress: IFileProgress) => {
-        if (!this.circleProgressRef) {
+        // Prevent state change on buffer mode
+        if (!this.circleProgressRef || this.voice) {
             return;
         }
         let v = 3;

@@ -13,7 +13,7 @@
   left: 0;
   bottom: 0;
   width: 40px;
-  background-color: var(--grey);
+  background-color: var(--panel-color);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -45,7 +45,7 @@
       overflow: hidden;
       cursor: pointer;
       transition: all 0.1s;
-      filter: grayscale(1);
+      filter: grayscale(1) brightness(1.5);
       will-change: auto;
 
       .text-avatar {

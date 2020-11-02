@@ -645,7 +645,7 @@ class Chat extends React.Component<IProps, IState> {
                                 <InfoBar key="info-bar" ref={this.infoBarRefHandler} onBack={this.backToChatsHandler}
                                          onClose={this.closePeerHandler} onAction={this.messageMoreActionHandler}
                                          statusBarRefHandler={this.statusBarRefHandler}
-                                         isMobileView={this.isMobileView}/>
+                                         isMobileView={this.isMobileView} teamId={this.teamId}/>
                                 <PinnedMessage ref={this.pinnedMessageRefHandler} teamId={this.teamId}
                                                disableClick={false} onClose={this.pinnedMessageCloseHandler}
                                                onClick={this.pinnedMessageClickHandler}/>

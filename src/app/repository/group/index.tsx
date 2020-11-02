@@ -174,7 +174,7 @@ export default class GroupRepo {
         const ids: string[] = [];
         const pairs: Array<[string, string]> = groups.map((group) => {
             group.teamid = group.teamid || '0';
-            ids.push(`${group.teamid}_${group.id || ''}`);
+            ids.push(`${group.teamid}_${group.id || '0'}`);
             return [group.teamid, group.id || ''];
         });
         return this.db.groups.where('[teamid+id]').anyOf(pairs).toArray().then((result) => {

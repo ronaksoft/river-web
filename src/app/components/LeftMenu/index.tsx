@@ -36,10 +36,11 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {RiverTextLogo} from "../SVG/river";
 import {ITeam} from "../../repository/team/interface";
 import TeamName from "../TeamName";
-import TeamRepo from "../../repository/team";
+import TeamRepo, {TeamDBUpdated} from "../../repository/team";
 import {CircularProgress} from "@material-ui/core";
 import {localize} from "../../services/utilities/localize";
 import LeftPanel from "../LeftPanel";
+import Broadcaster from "../../services/broadcaster";
 
 import './style.scss';
 
@@ -114,6 +115,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private readonly mouseEnterDebounce: any;
     private readonly mouseLeaveDebounce: any;
     private leftPanelRef: LeftPanel | undefined;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -179,6 +182,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
         this.mouseEnterDebounce = debounce(this.mouseEnterDebounceHandler, 320);
         this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
+
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public setTeam(teamId: string) {
@@ -214,6 +219,15 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             });
         }
         this.getTeamList();
+        this.eventReferences.push(this.broadcaster.listen(TeamDBUpdated, this.getTeamList));
+    }
+
+    public componentWillUnmount() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public setMenu(menu: menuItems, pageContent?: string, pageSubContent?: string) {
@@ -657,7 +671,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         });
     }
 
-    private getTeamList(noNotif?: boolean) {
+    private getTeamList = (noNotif?: boolean) => {
+        window.console.log(noNotif);
         this.setState({
             teamLoading: true,
         });
@@ -752,6 +767,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             setTimeout(() => {
                 if (this.props.onTeamChange) {
                     this.props.onTeamChange(team);
+                    if (this.state.leftMenu === 'contacts' && this.contactsMenuRef) {
+                        this.contactsMenuRef.reload(true);
+                    }
                 }
             }, 10);
         }

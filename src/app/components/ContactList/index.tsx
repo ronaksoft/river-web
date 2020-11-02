@@ -180,7 +180,13 @@ class ContactList extends React.Component<IProps, IState> {
         });
     }
 
-    public reload() {
+    public reload(empty?: boolean) {
+        if (empty) {
+            this.setState({
+                contacts: [],
+                globalUsers: [],
+            });
+        }
         this.getDefault();
     }
 
@@ -320,6 +326,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 }}
                                 onScroll={this.handleScroll}
                                 universal={true}
+                                rtl={this.rtl}
                             >
                                 <VariableSizeList
                                     ref={this.refHandler}

@@ -1,3 +1,7 @@
+## 0.36.1
+* Known bugs fixed and improvements
+* Google analytics added
+
 ## 0.36.0
 * 🎉 New Team UI
 * Bug fixes and performance improvements
