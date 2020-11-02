@@ -54,5 +54,10 @@ export const isMobile = () => {
 
 export const extractPhoneNumber = (str: string) => {
     str = faToEn(str);
-    return str.replace(/(\D)(?<!^\+)/g, '');
+    let prefix = '';
+    if (str[0] === '+') {
+        str = str.substr(1);
+        prefix = '+';
+    }
+    return prefix + str.replace(/\D/g, '');
 };

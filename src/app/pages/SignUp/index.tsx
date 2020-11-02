@@ -41,10 +41,10 @@ import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
 import {EventFocus, EventWasmInit, EventWebSocketOpen} from "../../services/events";
 import {detect} from 'detect-browser';
 import {C_VERSION} from "../../../App";
+import SessionDialog from "../../components/SessionDialog";
 
 import './tel-input.css';
 import './style.scss';
-import SessionDialog from "../../components/SessionDialog";
 
 let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const electronVersion = ElectronService.electronVersion();

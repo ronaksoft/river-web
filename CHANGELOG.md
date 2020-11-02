@@ -1,5 +1,6 @@
 ## 0.36.2
 * UI improvements
+* Fixed a crash related to the Safari RegEx
 
 ## 0.36.1
 * Personal team icon updated
