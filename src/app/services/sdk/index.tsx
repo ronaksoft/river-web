@@ -554,11 +554,12 @@ export default class APIManager {
         const data = new UpdateGetState();
         this.logVerbose(data);
         return this.server.send(C_MSG.UpdateGetState, data.serializeBinary(), true, {
-            retry: 3,
+            retry: 10,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
                 items: C_ERR_ITEM.ErrItemTimeout
             }],
+            retryWait: 1000,
         });
     }
 
@@ -567,11 +568,12 @@ export default class APIManager {
         data.setFrom(from);
         data.setLimit(limit);
         return this.server.send(C_MSG.UpdateGetDifference, data.serializeBinary(), true, {
-            retry: 3,
+            retry: 10,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
                 items: C_ERR_ITEM.ErrItemTimeout
             }],
+            retryWait: 1000,
         });
     }
 

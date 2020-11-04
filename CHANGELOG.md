@@ -1,3 +1,6 @@
+## 0.36.4
+* More retries in bad network while syncing
+
 ## 0.36.3
 * Loading UI bug fixed
 
