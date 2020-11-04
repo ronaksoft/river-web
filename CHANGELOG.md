@@ -1,3 +1,6 @@
+## 0.36.3
+* Loading UI bug fixed
+
 ## 0.36.2
 * UI improvements
 * Fixed a crash related to the Safari RegEx
