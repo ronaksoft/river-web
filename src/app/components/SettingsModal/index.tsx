@@ -48,6 +48,7 @@ class SettingsModal extends React.Component<IProps, IState> {
     private readonly resizeObserver: ResizeObserver | undefined;
     private autoHeight: number = 0;
     private ref: any;
+    private resizeTries: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -130,6 +131,10 @@ class SettingsModal extends React.Component<IProps, IState> {
         // if (this.autoHeight) {
         //     return;
         // }
+        if (this.resizeTries > 10) {
+            return;
+        }
+        this.resizeTries++;
         setTimeout(() => {
             try {
                 this.autoHeight = this.ref?.firstElementChild?.firstElementChild?.firstElementChild?.getBoundingClientRect().height;
