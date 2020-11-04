@@ -72,61 +72,66 @@ export default class CallService {
         this.updateManager.listen(C_MSG.UpdatePhoneCall, this.phoneCallHandler);
     }
 
-    public call(peer: InputPeer) {
-        const video = document.createElement('video');
-        video.setAttribute('playsinline', 'true');
-        video.setAttribute('autoplay', 'true');
-        video.setAttribute('muted', '');
-        video.style.position = 'absolute';
-        video.style.top = '50%';
-        video.style.left = '50%';
-        video.style.width = '360px';
-        video.style.height = '360px';
-        video.style.zIndex = '100000';
-        video.style.transform = 'translate(-50%, -50%)';
-
-        document.body.appendChild(video);
-        navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
-
-            video.srcObject = stream;
+    public initVideo() {
+        return navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
             this.localStream = stream;
+            return stream;
+        });
+    }
 
-            const videoTracks = this.localStream.getVideoTracks();
-            const audioTracks = this.localStream.getAudioTracks();
-            if (videoTracks.length > 0) {
-                window.console.log(`Using video device: ${videoTracks[0].label}`);
-            }
-            if (audioTracks.length > 0) {
-                window.console.log(`Using audio device: ${audioTracks[0].label}`);
-            }
-
-            this.localPeerConnection = new RTCPeerConnection({
-                iceServers: [{
-                    credential: 'hamidreza',
-                    urls: 'turn:vm-02.ronaksoftware.com',
-                    username: 'hamid',
-                }],
+    public destroy() {
+        if (this.localStream) {
+            this.localStream.getTracks().forEach(track => {
+                track.stop();
             });
+        }
+    }
 
-            this.localPeerConnection.addEventListener('icecandidate', (e) => {
-                window.console.log(e);
-            });
+    public getLocalStream(): MediaStream | undefined {
+        return this.localStream;
+    }
 
-            this.localStream.getTracks().forEach((track) => {
-                if (this.localPeerConnection && this.localStream) {
-                    this.localPeerConnection.addTrack(track, this.localStream);
-                }
-            });
+    public call(peer: InputPeer) {
+        const stream = this.localStream;
+        if (!stream) {
+            return;
+        }
 
-            try {
-                this.localPeerConnection.createOffer(this.offerOptions).then((offer) => {
-                    window.console.log(offer);
-                    this.callUser(peer, offer.sdp || '');
-                });
-            } catch (e) {
-                window.console.log(e);
+        const videoTracks = stream.getVideoTracks();
+        const audioTracks = stream.getAudioTracks();
+        if (videoTracks.length > 0) {
+            window.console.log(`Using video device: ${videoTracks[0].label}`);
+        }
+        if (audioTracks.length > 0) {
+            window.console.log(`Using audio device: ${audioTracks[0].label}`);
+        }
+
+        this.localPeerConnection = new RTCPeerConnection({
+            iceServers: [{
+                credential: 'hamidreza',
+                urls: 'turn:vm-02.ronaksoftware.com',
+                username: 'hamid',
+            }],
+        });
+
+        this.localPeerConnection.addEventListener('icecandidate', (e) => {
+            window.console.log(e);
+        });
+
+        stream.getTracks().forEach((track) => {
+            if (this.localPeerConnection && this.localStream) {
+                this.localPeerConnection.addTrack(track, this.localStream);
             }
         });
+
+        try {
+            this.localPeerConnection.createOffer(this.offerOptions).then((offer) => {
+                window.console.log(offer);
+                this.callUser(peer, offer.sdp || '');
+            });
+        } catch (e) {
+            window.console.log(e);
+        }
     }
 
     public listen(name: string, fn: any): (() => void) | null {

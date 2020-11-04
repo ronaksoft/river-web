@@ -1,0 +1,131 @@
+/*
+    Creation Time: 2020 - Nov - 04
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.call-modal {
+
+  &:not(.fullscreen) {
+    top: 50% !important;
+    left: 50% !important;
+    inset: initial;
+    transform: translate(-50%, -50%);
+
+    .MuiBackdrop-root {
+      visibility: hidden;
+    }
+
+    .call-modal-paper {
+      width: auto;
+      overflow: hidden;
+      max-width: none;
+    }
+  }
+
+  .call-modal-paper {
+    line-height: 0;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  .call-modal-content {
+    position: relative;
+    height: 360px;
+    width: 640px;
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .call-modal-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: linear-gradient(0deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      transition: opacity 0.3s;
+
+      .call-action-item {
+        margin-right: 6px;
+        padding: 6px;
+        cursor: pointer;
+
+        svg {
+          font-size: 24px;
+        }
+      }
+    }
+
+    .call-modal-action {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+      background: linear-gradient(180deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
+
+      .call-end {
+        height: 48px;
+        width: 48px;
+        border-radius: 50%;
+        background-color: var(--red);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+          color: var(--white);
+          font-size: 28px;
+        }
+      }
+    }
+
+    &:hover {
+      .call-modal-header, .call-modal-action {
+        opacity: 1;
+      }
+    }
+  }
+
+  &.fullscreen {
+    .call-modal-content {
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .call-modal {
+    .call-modal-paper {
+      background-color: var(--dark-medium);
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .call-modal {
+    .call-modal-paper {
+      background-color: var(--dark-blue-medium);
+    }
+  }
+}

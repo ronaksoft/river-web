@@ -169,9 +169,9 @@ import {ITeam} from "../../repository/team/interface";
 import Socket from "../../services/sdk/server/socket";
 import PinnedMessage from "../../components/PinnedMessage";
 import {ModalityService} from "kk-modality";
+import CallModal from "../../components/CallModal";
 
 import './style.scss';
-import CallService from "../../services/call";
 
 export let notifyOptions: any[] = [];
 
@@ -284,7 +284,7 @@ class Chat extends React.Component<IProps, IState> {
     private onlineStatusInterval: any = null;
     private pinnedMessageRef: PinnedMessage | undefined;
     private modalityService: ModalityService;
-    private callService: CallService;
+    private callModal: CallModal | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -331,7 +331,7 @@ class Chat extends React.Component<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
-        this.callService = CallService.getInstance();
+
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
@@ -533,10 +533,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isInChat) {
             this.setOnlineStatus(true, true);
         }
-
-        this.callService.listen('hi', (d: any) => {
-            window.console.log(d);
-        });
     }
 
     public UNSAFE_componentWillReceiveProps(newProps: IProps) {
@@ -750,6 +746,7 @@ class Chat extends React.Component<IProps, IState> {
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
                 <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                <CallModal ref={this.callModalRefHandler}/>
                 {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
             </div>
         );
@@ -842,8 +839,8 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 break;
             case 'call':
-                if (this.peer) {
-                    this.callService.call(this.peer);
+                if (this.callModal) {
+                    this.callModal.openDialog(this.peer);
                 }
                 break;
         }
@@ -2142,7 +2139,7 @@ class Chat extends React.Component<IProps, IState> {
                     dialogs[index].preview_rtl = msg.rtl || false;
                     dialogs[index].sender_id = msg.senderid;
                     dialogs[index].last_update = msg.createdon;
-                    dialogs[index].peerid = msg.peerid || '';
+                    dialogs[index].peerid = msg.peerid || '0';
                     dialogs[index].peertype = msg.peertype || 0;
                     dialogs[index].teamid = msg.teamid || '0';
                     if (msg.mediadata) {
@@ -2218,7 +2215,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateDialogsCounter(peerName: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft}: any, throttle?: boolean) {
+    private updateDialogsCounter(peerName: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft}: any, throttleUpdate?: boolean) {
         if (this.dialogMap.hasOwnProperty(peerName)) {
             const dialogs = this.dialogs;
             let index = this.dialogMap[peerName];
@@ -2288,7 +2285,7 @@ class Chat extends React.Component<IProps, IState> {
                 shouldUpdate = true;
                 shouldSort = true;
             }
-            if (throttle !== true) {
+            if (throttleUpdate !== true) {
                 if (shouldUpdate) {
                     this.dialogsSort(dialogs, undefined, !shouldSort);
                 } else if (shouldRerender && this.dialogRef) {
@@ -5999,6 +5996,10 @@ class Chat extends React.Component<IProps, IState> {
                 resolve(false);
             }
         });
+    }
+
+    private callModalRefHandler = (ref: any) => {
+        this.callModal = ref;
     }
 }
 
