@@ -26,7 +26,7 @@ import {
     UpdateMessageID, UpdateMessagePinned,
     UpdateMessagesDeleted,
     UpdateNewMessage,
-    UpdateNotifySettings, UpdateReaction,
+    UpdateNotifySettings, UpdatePhoneCall, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateReadMessagesContents,
@@ -642,6 +642,11 @@ export default class UpdateManager {
                     break;
                 case C_MSG.UpdateAuthorizationReset:
                     this.callHandlers('all', C_MSG.UpdateAuthorizationReset, {});
+                    break;
+                case C_MSG.UpdatePhoneCall:
+                    const updatePhoneCall = UpdatePhoneCall.deserializeBinary(update.update as Uint8Array).toObject();
+                    this.logVerbose(update.constructor, updatePhoneCall);
+                    this.callHandlers('all', C_MSG.UpdatePhoneCall, updatePhoneCall);
                     break;
             }
         });

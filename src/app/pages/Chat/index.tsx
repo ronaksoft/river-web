@@ -171,6 +171,7 @@ import PinnedMessage from "../../components/PinnedMessage";
 import {ModalityService} from "kk-modality";
 
 import './style.scss';
+import CallService from "../../services/call";
 
 export let notifyOptions: any[] = [];
 
@@ -283,6 +284,7 @@ class Chat extends React.Component<IProps, IState> {
     private onlineStatusInterval: any = null;
     private pinnedMessageRef: PinnedMessage | undefined;
     private modalityService: ModalityService;
+    private callService: CallService;
 
     constructor(props: IProps) {
         super(props);
@@ -329,6 +331,7 @@ class Chat extends React.Component<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
+        this.callService = CallService.getInstance();
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
@@ -530,6 +533,10 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isInChat) {
             this.setOnlineStatus(true, true);
         }
+
+        this.callService.listen('hi', (d: any) => {
+            window.console.log(d);
+        });
     }
 
     public UNSAFE_componentWillReceiveProps(newProps: IProps) {
@@ -836,13 +843,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'call':
                 if (this.peer) {
-                    const inputUser = new InputUser();
-                    inputUser.setUserid(this.peer.getId() || '0');
-                    inputUser.setAccesshash(this.peer.getAccesshash() || '0');
-                    const randomId = UniqueId.getRandomId();
-                    this.apiManager.callRequest(inputUser, randomId, 'hi', false).then((res) => {
-                        window.console.log(res);
-                    });
+                    this.callService.call(this.peer);
                 }
                 break;
         }
