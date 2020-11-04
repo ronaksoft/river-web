@@ -10,10 +10,10 @@
 import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import i18n from "../../services/i18n";
-import {InfoOutlined, KeyboardArrowLeftRounded, CancelOutlined, SearchRounded} from "@material-ui/icons";
+import {CancelOutlined, InfoOutlined, KeyboardArrowLeftRounded, SearchRounded, CallRounded} from "@material-ui/icons";
 import StatusBar from "../StatusBar";
 import {IconButton, Tooltip} from "@material-ui/core";
-import {omitBy, isNil} from "lodash";
+import {isNil, omitBy} from "lodash";
 import UserRepo from "../../repository/user";
 
 import './style.scss';
@@ -33,6 +33,7 @@ interface IState {
     isOnline: boolean;
     isUpdating: boolean;
     teamId: string;
+    withCall: boolean;
 }
 
 class InfoBar extends React.Component<IProps, IState> {
@@ -47,6 +48,7 @@ class InfoBar extends React.Component<IProps, IState> {
             isUpdating: false,
             peer: null,
             teamId: props.teamId,
+            withCall: false,
         };
     }
 
@@ -54,6 +56,7 @@ class InfoBar extends React.Component<IProps, IState> {
         this.setState({
             peer,
             teamId,
+            withCall: peer ? peer.getType() === PeerType.PEERUSER : false,
         });
     }
 
@@ -69,9 +72,9 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer, teamId} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall} = this.state;
         return (
-            <div className="info-bar">
+            <div className={'info-bar' + (withCall ? ' with-call' : '')}>
                 {this.props.isMobileView ?
                     <div className="back-to-chats" onClick={this.props.onBack}>
                         <KeyboardArrowLeftRounded/>
@@ -87,6 +90,13 @@ class InfoBar extends React.Component<IProps, IState> {
                            peer={peer} teamId={teamId} currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
+                    {withCall && <Tooltip
+                        title={i18n.t('chat.search_messages')}
+                    >
+                        <IconButton
+                            onClick={this.props.onAction('call')}
+                        ><CallRounded/></IconButton>
+                    </Tooltip>}
                     <Tooltip
                         title={i18n.t('chat.search_messages')}
                     >

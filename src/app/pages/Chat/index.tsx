@@ -834,6 +834,17 @@ class Chat extends React.Component<IProps, IState> {
                     this.searchMessageRef.toggleVisible();
                 }
                 break;
+            case 'call':
+                if (this.peer) {
+                    const inputUser = new InputUser();
+                    inputUser.setUserid(this.peer.getId() || '0');
+                    inputUser.setAccesshash(this.peer.getAccesshash() || '0');
+                    const randomId = UniqueId.getRandomId();
+                    this.apiManager.callRequest(inputUser, randomId, 'hi', false).then((res) => {
+                        window.console.log(res);
+                    });
+                }
+                break;
         }
     }
 

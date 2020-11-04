@@ -1,8 +1,12 @@
 .info-bar {
   position: relative;
   height: 48px;
-  padding: 5px 45px 5px 50px;
+  padding: 5px 95px 5px 50px;
   text-align: left;
+
+  &.with-call {
+    padding-right: 143px;
+  }
 
   .back-to-chats {
     position: absolute;
@@ -68,6 +72,12 @@
       }
     }
   }
+
+  &.with-call {
+    .buttons {
+      width: 140px;
+    }
+  }
 }
 
 .container.mobile-view {
@@ -79,7 +89,11 @@
 html[direction="rtl"] {
   .info-bar {
     text-align: left;
-    padding: 5px 50px 5px 45px;
+    padding: 5px 50px 5px 95px;
+
+    &.with-call {
+      padding-left: 143px;
+    }
 
     .buttons {
       right: auto;
