@@ -1208,6 +1208,10 @@ export default class APIManager {
         return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true);
     }
 
+    public callRequest() {
+        //
+    }
+
     public ping(): Promise<Pong.AsObject> {
         const data = new Ping();
         data.setId(Date.now());

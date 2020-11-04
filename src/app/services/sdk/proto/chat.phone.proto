@@ -6,8 +6,9 @@ import "core.types.proto";
 // @Function
 // @Return: PhoneCall
 message PhoneAcceptCall {
-    required InputUser Peer = 1;
-    required bytes AnswerSDP = 2;
+    required int64 CallID = 1 [jstype = JS_STRING];
+    required InputUser Peer = 2;
+    required string AnswerSDP = 3;
 }
 
 // PhoneRequestCall
@@ -15,7 +16,7 @@ message PhoneAcceptCall {
 // @Return: PhoneCall
 message PhoneRequestCall {
     required InputUser Peer = 1;
-    required bytes OfferSDP = 2;
+    required string OfferSDP = 2;
     required bool Video = 3;
     required int64 RandomID = 4;
 }
@@ -26,15 +27,25 @@ enum DiscardReason {
     DiscardReasonBusy = 2;
     DiscardReasonHangup = 3;
     DiscardReasonDisconnect = 4;
+    DiscardReasonReserved1 = 5;
+    DiscardReasonReserved2 = 6;
+    DiscardReasonReserved3 = 7;
+    DiscardReasonReserved4 = 8;
+    DiscardReasonReserved5 = 9;
+    DiscardReasonReserved6 = 10;
+    DiscardReasonReserved7 = 11;
+    DiscardReasonReserved8 = 12;
+    DiscardReasonReserved9 = 13;
 }
 
 // PhoneDiscardCall
 // @Function
 message PhoneDiscardCall {
-    required InputUser Peer = 1;
-    required int32 Duration = 2;
-    required bool Video = 3;
-    required DiscardReason Reason = 4;
+    required int64 CallID = 1 [jstype = JS_STRING];
+    required InputUser Peer = 2;
+    required int32 Duration = 3;
+    required bool Video = 4;
+    required DiscardReason Reason = 5;
 }
 
 // PhoneReceivedCall
@@ -58,13 +69,50 @@ enum PhoneCallAction {
     PhoneCallRequested = 2;
     PhoneCallCallWaiting = 3;
     PhoneCallDiscarded = 4;
+    PhoneCallReserved1 = 5;
+    PhoneCallReserved2 = 6;
+    PhoneCallReserved3 = 7;
+    PhoneCallReserved4 = 8;
+    PhoneCallReserved5 = 9;
+    PhoneCallReserved6 = 10;
+    PhoneCallReserved7 = 11;
+    PhoneCallReserved8 = 12;
+    PhoneCallReserved9 = 13;
 }
 
 // PhoneCall
 message PhoneCall {
-    required int64 UserID = 1;
-    required int64 AccessHash = 2;
-    required bool Video = 3;
-    required int64 Date = 4;
-    repeated string StunServers = 5;
+    required int64 ID = 1 [jstype = JS_STRING];
+    required int64 UserID = 2 [jstype = JS_STRING];
+    required fixed64 AccessHash = 3 [jstype = JS_STRING];
+    required bool Video = 4;
+    required int64 Date = 5;
+    repeated string StunServers = 6;
+}
+
+// PhoneActionCallEmpty
+message PhoneActionCallEmpty {
+    optional bool Empty = 1;
+}
+
+// PhoneActionAccepted
+message PhoneActionAccepted {
+    required string SDP = 1;
+}
+
+// PhoneActionRequested
+message PhoneActionRequested {
+    required string SDP = 1;
+}
+
+// PhoneActionCallWaiting
+message PhoneActionCallWaiting {
+    optional bool Empty = 1;
+}
+
+// PhoneActionDiscarded
+message PhoneActionDiscarded {
+    required int32 Duration = 1;
+    required bool Video = 2;
+    required DiscardReason Reason = 3;
 }

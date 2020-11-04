@@ -6,6 +6,11 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class PhoneAcceptCall extends jspb.Message {
+  hasCallid(): boolean;
+  clearCallid(): void;
+  getCallid(): string | undefined;
+  setCallid(value: string): void;
+
   hasPeer(): boolean;
   clearPeer(): void;
   getPeer(): core_types_pb.InputUser;
@@ -13,10 +18,8 @@ export class PhoneAcceptCall extends jspb.Message {
 
   hasAnswersdp(): boolean;
   clearAnswersdp(): void;
-  getAnswersdp(): Uint8Array | string;
-  getAnswersdp_asU8(): Uint8Array;
-  getAnswersdp_asB64(): string;
-  setAnswersdp(value: Uint8Array | string): void;
+  getAnswersdp(): string | undefined;
+  setAnswersdp(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneAcceptCall.AsObject;
@@ -30,8 +33,9 @@ export class PhoneAcceptCall extends jspb.Message {
 
 export namespace PhoneAcceptCall {
   export type AsObject = {
+    callid?: string,
     peer: core_types_pb.InputUser.AsObject,
-    answersdp: Uint8Array | string,
+    answersdp?: string,
   }
 }
 
@@ -43,10 +47,8 @@ export class PhoneRequestCall extends jspb.Message {
 
   hasOffersdp(): boolean;
   clearOffersdp(): void;
-  getOffersdp(): Uint8Array | string;
-  getOffersdp_asU8(): Uint8Array;
-  getOffersdp_asB64(): string;
-  setOffersdp(value: Uint8Array | string): void;
+  getOffersdp(): string | undefined;
+  setOffersdp(value: string): void;
 
   hasVideo(): boolean;
   clearVideo(): void;
@@ -71,13 +73,18 @@ export class PhoneRequestCall extends jspb.Message {
 export namespace PhoneRequestCall {
   export type AsObject = {
     peer: core_types_pb.InputUser.AsObject,
-    offersdp: Uint8Array | string,
+    offersdp?: string,
     video?: boolean,
     randomid?: number,
   }
 }
 
 export class PhoneDiscardCall extends jspb.Message {
+  hasCallid(): boolean;
+  clearCallid(): void;
+  getCallid(): string | undefined;
+  setCallid(value: string): void;
+
   hasPeer(): boolean;
   clearPeer(): void;
   getPeer(): core_types_pb.InputUser;
@@ -110,6 +117,7 @@ export class PhoneDiscardCall extends jspb.Message {
 
 export namespace PhoneDiscardCall {
   export type AsObject = {
+    callid?: string,
     peer: core_types_pb.InputUser.AsObject,
     duration?: number,
     video?: boolean,
@@ -180,15 +188,20 @@ export namespace PhoneSetCallRating {
 }
 
 export class PhoneCall extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
   hasUserid(): boolean;
   clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   hasVideo(): boolean;
   clearVideo(): void;
@@ -217,11 +230,134 @@ export class PhoneCall extends jspb.Message {
 
 export namespace PhoneCall {
   export type AsObject = {
-    userid?: number,
-    accesshash?: number,
+    id?: string,
+    userid?: string,
+    accesshash?: string,
     video?: boolean,
     date?: number,
     stunserversList: Array<string>,
+  }
+}
+
+export class PhoneActionCallEmpty extends jspb.Message {
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionCallEmpty.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionCallEmpty): PhoneActionCallEmpty.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionCallEmpty, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionCallEmpty;
+  static deserializeBinaryFromReader(message: PhoneActionCallEmpty, reader: jspb.BinaryReader): PhoneActionCallEmpty;
+}
+
+export namespace PhoneActionCallEmpty {
+  export type AsObject = {
+    empty?: boolean,
+  }
+}
+
+export class PhoneActionAccepted extends jspb.Message {
+  hasSdp(): boolean;
+  clearSdp(): void;
+  getSdp(): string | undefined;
+  setSdp(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionAccepted.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionAccepted): PhoneActionAccepted.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionAccepted, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionAccepted;
+  static deserializeBinaryFromReader(message: PhoneActionAccepted, reader: jspb.BinaryReader): PhoneActionAccepted;
+}
+
+export namespace PhoneActionAccepted {
+  export type AsObject = {
+    sdp?: string,
+  }
+}
+
+export class PhoneActionRequested extends jspb.Message {
+  hasSdp(): boolean;
+  clearSdp(): void;
+  getSdp(): string | undefined;
+  setSdp(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionRequested.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionRequested): PhoneActionRequested.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionRequested, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionRequested;
+  static deserializeBinaryFromReader(message: PhoneActionRequested, reader: jspb.BinaryReader): PhoneActionRequested;
+}
+
+export namespace PhoneActionRequested {
+  export type AsObject = {
+    sdp?: string,
+  }
+}
+
+export class PhoneActionCallWaiting extends jspb.Message {
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionCallWaiting.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionCallWaiting): PhoneActionCallWaiting.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionCallWaiting, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionCallWaiting;
+  static deserializeBinaryFromReader(message: PhoneActionCallWaiting, reader: jspb.BinaryReader): PhoneActionCallWaiting;
+}
+
+export namespace PhoneActionCallWaiting {
+  export type AsObject = {
+    empty?: boolean,
+  }
+}
+
+export class PhoneActionDiscarded extends jspb.Message {
+  hasDuration(): boolean;
+  clearDuration(): void;
+  getDuration(): number | undefined;
+  setDuration(value: number): void;
+
+  hasVideo(): boolean;
+  clearVideo(): void;
+  getVideo(): boolean | undefined;
+  setVideo(value: boolean): void;
+
+  hasReason(): boolean;
+  clearReason(): void;
+  getReason(): DiscardReason | undefined;
+  setReason(value: DiscardReason): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionDiscarded.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionDiscarded): PhoneActionDiscarded.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionDiscarded, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionDiscarded;
+  static deserializeBinaryFromReader(message: PhoneActionDiscarded, reader: jspb.BinaryReader): PhoneActionDiscarded;
+}
+
+export namespace PhoneActionDiscarded {
+  export type AsObject = {
+    duration?: number,
+    video?: boolean,
+    reason?: DiscardReason,
   }
 }
 
@@ -231,6 +367,15 @@ export enum DiscardReason {
   DISCARDREASONBUSY = 2,
   DISCARDREASONHANGUP = 3,
   DISCARDREASONDISCONNECT = 4,
+  DISCARDREASONRESERVED1 = 5,
+  DISCARDREASONRESERVED2 = 6,
+  DISCARDREASONRESERVED3 = 7,
+  DISCARDREASONRESERVED4 = 8,
+  DISCARDREASONRESERVED5 = 9,
+  DISCARDREASONRESERVED6 = 10,
+  DISCARDREASONRESERVED7 = 11,
+  DISCARDREASONRESERVED8 = 12,
+  DISCARDREASONRESERVED9 = 13,
 }
 
 export enum PhoneCallAction {
@@ -239,5 +384,14 @@ export enum PhoneCallAction {
   PHONECALLREQUESTED = 2,
   PHONECALLCALLWAITING = 3,
   PHONECALLDISCARDED = 4,
+  PHONECALLRESERVED1 = 5,
+  PHONECALLRESERVED2 = 6,
+  PHONECALLRESERVED3 = 7,
+  PHONECALLRESERVED4 = 8,
+  PHONECALLRESERVED5 = 9,
+  PHONECALLRESERVED6 = 10,
+  PHONECALLRESERVED7 = 11,
+  PHONECALLRESERVED8 = 12,
+  PHONECALLRESERVED9 = 13,
 }
 

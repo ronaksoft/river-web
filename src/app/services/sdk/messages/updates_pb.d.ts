@@ -6,6 +6,7 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 import * as calendar_pb from "./calendar_pb";
 import * as chat_messages_medias_pb from "./chat.messages.medias_pb";
+import * as chat_phone_pb from "./chat.phone_pb";
 
 export class UpdateGetState extends jspb.Message {
   serializeBinary(): Uint8Array;
@@ -1893,7 +1894,7 @@ export class UpdateTeamPhoto extends jspb.Message {
 
   hasPhoto(): boolean;
   clearPhoto(): void;
-  getPhoto(): core_types_pb.TeamPhoto;
+  getPhoto(): core_types_pb.TeamPhoto | undefined;
   setPhoto(value?: core_types_pb.TeamPhoto): void;
 
   serializeBinary(): Uint8Array;
@@ -1911,7 +1912,7 @@ export namespace UpdateTeamPhoto {
     ucount?: number,
     updateid?: number,
     teamid?: string,
-    photo: core_types_pb.TeamPhoto.AsObject,
+    photo?: core_types_pb.TeamPhoto.AsObject,
   }
 }
 
@@ -2348,6 +2349,78 @@ export namespace ClientRedirect {
     permanent?: boolean,
     target?: RedirectTarget,
     alternativesList: Array<string>,
+  }
+}
+
+export class UpdatePhoneCall extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasTeamid(): boolean;
+  clearTeamid(): void;
+  getTeamid(): string | undefined;
+  setTeamid(value: string): void;
+
+  hasCallid(): boolean;
+  clearCallid(): void;
+  getCallid(): string | undefined;
+  setCallid(value: string): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
+
+  hasPeerid(): boolean;
+  clearPeerid(): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
+
+  hasPeertype(): boolean;
+  clearPeertype(): void;
+  getPeertype(): number | undefined;
+  setPeertype(value: number): void;
+
+  hasAction(): boolean;
+  clearAction(): void;
+  getAction(): chat_phone_pb.PhoneCallAction | undefined;
+  setAction(value: chat_phone_pb.PhoneCallAction): void;
+
+  hasActiondata(): boolean;
+  clearActiondata(): void;
+  getActiondata(): Uint8Array | string;
+  getActiondata_asU8(): Uint8Array;
+  getActiondata_asB64(): string;
+  setActiondata(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdatePhoneCall.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdatePhoneCall): UpdatePhoneCall.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdatePhoneCall, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdatePhoneCall;
+  static deserializeBinaryFromReader(message: UpdatePhoneCall, reader: jspb.BinaryReader): UpdatePhoneCall;
+}
+
+export namespace UpdatePhoneCall {
+  export type AsObject = {
+    ucount?: number,
+    teamid?: string,
+    callid?: string,
+    userid?: string,
+    accesshash?: string,
+    peerid?: string,
+    peertype?: number,
+    action?: chat_phone_pb.PhoneCallAction,
+    actiondata: Uint8Array | string,
   }
 }
 

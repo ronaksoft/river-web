@@ -3,6 +3,7 @@ package msg;
 import "core.types.proto";
 import "calendar.proto";
 import "chat.messages.medias.proto";
+import "chat.phone.proto";
 
 // UpdateGetState
 // @Function
@@ -382,7 +383,7 @@ message UpdateTeamPhoto {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
     required int64 TeamID = 1 [jstype = JS_STRING];
-    required TeamPhoto Photo = 2;
+    optional TeamPhoto Photo = 2;
 }
 
 // UpdateTeam
@@ -480,4 +481,17 @@ message ClientRedirect {
     required bool Permanent = 2;
     required RedirectTarget Target = 3;
     repeated string Alternatives = 4;
+}
+
+// UpdatePhone
+message UpdatePhoneCall {
+    required int32 UCount = 100;
+    required int64 TeamID = 1 [jstype = JS_STRING];
+    required int64 CallID = 2 [jstype = JS_STRING];
+    required int64 UserID = 3 [jstype = JS_STRING];
+    required fixed64 AccessHash = 4 [jstype = JS_STRING];
+    required int64 PeerID = 5 [jstype = JS_STRING];
+    required int32 PeerType = 6;
+    required PhoneCallAction Action = 7;
+    required bytes ActionData = 8;
 }
