@@ -165,6 +165,7 @@ import {
     TeamRemoveMember,
     TeamsMany
 } from "./messages/team_pb";
+import {DiscardReason, PhoneAcceptCall, PhoneCall, PhoneDiscardCall, PhoneRequestCall} from "./messages/chat.phone_pb";
 
 export default class APIManager {
     public static getInstance() {
@@ -1208,8 +1209,34 @@ export default class APIManager {
         return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true);
     }
 
-    public callRequest() {
-        //
+    public callRequest(inputUser: InputUser, randomId: number, sdp: string, video: boolean): Promise<PhoneCall.AsObject> {
+        const data = new PhoneRequestCall();
+        data.setPeer(inputUser);
+        data.setRandomid(randomId);
+        data.setOffersdp(sdp);
+        data.setVideo(video);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), true);
+    }
+
+    public callAccept(inputUser: InputUser, id: string, sdp: string): Promise<PhoneCall.AsObject> {
+        const data = new PhoneAcceptCall();
+        data.setPeer(inputUser);
+        data.setCallid(id);
+        data.setAnswersdp(sdp);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneAcceptCall, data.serializeBinary(), true);
+    }
+
+    public callReject(inputUser: InputUser, id: string, reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
+        const data = new PhoneDiscardCall();
+        data.setPeer(inputUser);
+        data.setCallid(id);
+        data.setDuration(duration);
+        data.setReason(reason);
+        data.setVideo(false);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
     }
 
     public ping(): Promise<Pong.AsObject> {

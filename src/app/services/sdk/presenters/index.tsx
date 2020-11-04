@@ -41,6 +41,7 @@ import {BotCallbackAnswer, BotResults} from "../messages/chat.bot_pb";
 import {FoundGifs, SavedGifs} from "../messages/gif_pb";
 import {TeamMembers, TeamsMany} from "../messages/team_pb";
 import {GroupsHistoryStats} from "../messages/chat.groups_pb";
+import {PhoneCall} from "../messages/chat.phone_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -141,6 +142,8 @@ export default class Presenter {
                 return TeamsMany.deserializeBinary(data);
             case C_MSG.TeamMembers:
                 return TeamMembers.deserializeBinary(data);
+            case C_MSG.PhoneCall:
+                return PhoneCall.deserializeBinary(data);
             case C_MSG.Pong:
                 return Pong.deserializeBinary(data);
             default:
