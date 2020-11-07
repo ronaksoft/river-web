@@ -509,5 +509,8 @@
   },
   "reaction": {
     "list": "Reaction List"
+  },
+  "call": {
+    "is_calling": "Is calling..."
   }
 }

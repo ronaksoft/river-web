@@ -9,23 +9,6 @@
 
 .call-modal {
 
-  &:not(.fullscreen) {
-    top: 50% !important;
-    left: 50% !important;
-    inset: initial;
-    transform: translate(-50%, -50%);
-
-    .MuiBackdrop-root {
-      visibility: hidden;
-    }
-
-    .call-modal-paper {
-      width: auto;
-      overflow: hidden;
-      max-width: none;
-    }
-  }
-
   .call-modal-paper {
     line-height: 0;
     overflow: hidden;
@@ -76,24 +59,32 @@
       height: 96px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-evenly;
       opacity: 0;
       transition: opacity 0.3s;
       background: linear-gradient(180deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
 
-      .call-end {
+      .call-item {
         height: 48px;
         width: 48px;
         border-radius: 50%;
-        background-color: var(--red);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.3);
 
         svg {
           color: var(--white);
           font-size: 28px;
+        }
+
+        &.call-end {
+          background-color: var(--red);
+        }
+
+        &.call-accept {
+          background-color: var(--green-accpet);
         }
       }
     }
@@ -109,6 +100,79 @@
     .call-modal-content {
       height: 100%;
       width: 100%;
+    }
+  }
+
+  &.call_init {
+    &:not(.fullscreen) {
+      top: 50% !important;
+      left: 50% !important;
+      inset: initial;
+      transform: translate(-50%, -50%);
+
+      .MuiBackdrop-root {
+        visibility: hidden;
+      }
+
+      .call-modal-paper {
+        width: auto;
+        overflow: hidden;
+        max-width: none;
+      }
+    }
+
+    .call-modal-content {
+      height: 360px;
+      width: 640px;
+    }
+  }
+
+  &.call_requested {
+    .call-modal-content {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      background-color: var(--dark-medium);
+
+      .call-user-avatar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-radius: 5px;
+
+        img {
+          border-radius: 5px;
+        }
+      }
+
+      .call-info {
+        position: relative;
+        padding: 36px 12px 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 10;
+        background: linear-gradient(0deg, transparent 0%, rgba(0, 0, 0, 0.28) 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.4) 100%);
+
+        .call-user-name {
+          font-size: 30px;
+          font-weight: bold;
+          line-height: 1.2em;
+          color: var(--white);
+        }
+
+        .call-status {
+          color: var(--white);
+          line-height: 1.2em;
+        }
+      }
+
+      .call-modal-action {
+        opacity: 1;
+      }
     }
   }
 }

@@ -1252,7 +1252,7 @@ export default class APIManager {
         data.setAction(action);
         data.setActiondata(actionData);
         this.logVerbose(data);
-        return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
+        return this.server.send(C_MSG.PhoneUpdateCall, data.serializeBinary(), false);
     }
 
     public ping(): Promise<Pong.AsObject> {

@@ -11,14 +11,25 @@ import UpdateManager from "../sdk/updateManager";
 import {C_MSG} from "../sdk/const";
 import {UpdatePhoneCall} from "../sdk/messages/updates_pb";
 import {
-    PhoneActionAccepted, PhoneActionCallEmpty,
+    PhoneActionAccepted,
+    PhoneActionCallEmpty,
     PhoneActionCallWaiting,
     PhoneActionDiscarded,
-    PhoneActionRequested, PhoneCallAction
+    PhoneActionIceExchange,
+    PhoneActionRequested,
+    PhoneCallAction
 } from "../sdk/messages/chat.phone_pb";
 import {InputPeer, InputUser} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
 import APIManager from "../sdk";
+
+export const C_CALL_EVENT = {
+    CallRequest: 0x01,
+};
+
+export interface IUpdatePhoneCall extends UpdatePhoneCall.AsObject {
+    data?: any;
+}
 
 interface IBroadcastItem {
     fnQueue: { [key: number]: any };
@@ -35,6 +46,8 @@ const parseData = (constructor: number, data: any) => {
             return PhoneActionDiscarded.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLCALLWAITING:
             return PhoneActionCallWaiting.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLICEEXCHANGE:
+            return PhoneActionIceExchange.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLEMPTY:
             return PhoneActionCallEmpty.deserializeBinary(data).toObject();
     }
@@ -55,15 +68,25 @@ export default class CallService {
     private updateManager: UpdateManager;
     private apiManager: APIManager;
 
-    private listeners: { [key: string]: IBroadcastItem } = {};
+    private listeners: { [key: number]: IBroadcastItem } = {};
 
     private localStream: MediaStream | undefined;
-    private localPeerConnection: RTCPeerConnection | undefined;
-    // private remotePeerConnections: RTCPeerConnection[];
+    private localPeerConnections: RTCPeerConnection[] = [];
+    private remotePeerConnections: RTCPeerConnection[] = [];
     private offerOptions: RTCOfferOptions = {
         offerToReceiveAudio: true,
         offerToReceiveVideo: true,
     };
+    private configs: RTCConfiguration = {
+        iceServers: [{
+            credential: 'hamidreza',
+            urls: 'turn:vm-02.ronaksoftware.com',
+            username: 'hamid',
+        }],
+    };
+    private peer: InputPeer | null = null;
+    private callId: string | undefined = '0';
+    private callRequest: { [key: string]: IUpdatePhoneCall } = {};
 
     private constructor() {
         this.updateManager = UpdateManager.getInstance();
@@ -92,6 +115,7 @@ export default class CallService {
     }
 
     public call(peer: InputPeer) {
+        this.peer = peer;
         const stream = this.localStream;
         if (!stream) {
             return;
@@ -106,35 +130,63 @@ export default class CallService {
             window.console.log(`Using audio device: ${audioTracks[0].label}`);
         }
 
-        this.localPeerConnection = new RTCPeerConnection({
-            iceServers: [{
-                credential: 'hamidreza',
-                urls: 'turn:vm-02.ronaksoftware.com',
-                username: 'hamid',
-            }],
-        });
+        const pc = new RTCPeerConnection(this.configs);
 
-        this.localPeerConnection.addEventListener('icecandidate', (e) => {
+        pc.addEventListener('icecandidate', (e) => {
             window.console.log(e);
+            this.sendLocalIce(e.candidate);
         });
 
         stream.getTracks().forEach((track) => {
-            if (this.localPeerConnection && this.localStream) {
-                this.localPeerConnection.addTrack(track, this.localStream);
+            if (this.localStream) {
+                pc.addTrack(track, this.localStream);
             }
         });
 
         try {
-            this.localPeerConnection.createOffer(this.offerOptions).then((offer) => {
+            pc.createOffer(this.offerOptions).then((offer) => {
                 window.console.log(offer);
-                this.callUser(peer, offer.sdp || '');
+                pc.setLocalDescription(offer).catch((e) => {
+                    window.console.log(e);
+                });
+                this.callUser(peer, JSON.stringify(offer.sdp || ''));
             });
         } catch (e) {
             window.console.log(e);
         }
+
+        this.localPeerConnections.push(pc);
     }
 
-    public listen(name: string, fn: any): (() => void) | null {
+    public accept(id: string) {
+        this.initVideo().then(() => {
+            const data = this.callRequest[id];
+            if (!data) {
+                return;
+            }
+
+            const sdpData = JSON.parse((data.data as PhoneActionRequested.AsObject).sdp || '') as RTCSessionDescription;
+
+            const pc = new RTCPeerConnection(this.configs);
+            pc.addEventListener('icecandidate', (e) => {
+                window.console.log(e);
+            });
+
+            pc.addEventListener('track', (e) => {
+                window.console.log(e);
+            });
+
+            pc.setRemoteDescription(sdpData);
+
+            pc.createAnswer(this.offerOptions).then((answer) => {
+                window.console.log(answer);
+            });
+
+            this.remotePeerConnections.push(pc);
+        });
+    }
+
+    public listen(name: number, fn: any): (() => void) | null {
         if (!name) {
             return null;
         }
@@ -154,6 +206,26 @@ export default class CallService {
         };
     }
 
+    private sendLocalIce(candidate: RTCIceCandidate | null) {
+        const peer = this.peer;
+        if (!peer || !this.callId) {
+            return;
+        }
+
+        const actionData = new PhoneActionIceExchange();
+        actionData.setIce(JSON.stringify(candidate));
+
+        const inputUser = new InputUser();
+        inputUser.setUserid(peer.getId() || '0');
+        inputUser.setAccesshash(peer.getAccesshash() || '0');
+
+        this.apiManager.callUpdate(inputUser, this.callId, PhoneCallAction.PHONECALLICEEXCHANGE, actionData.serializeBinary()).then(() => {
+            //
+        }).catch((e) => {
+            window.console.log(e);
+        });
+    }
+
     private callUser(peer: InputPeer, sdp: string) {
         const inputUser = new InputUser();
         inputUser.setUserid(peer.getId() || '0');
@@ -161,16 +233,53 @@ export default class CallService {
         const randomId = UniqueId.getRandomId();
         this.apiManager.callRequest(inputUser, randomId, sdp, true).then((res) => {
             window.console.log(res);
+            this.callId = res.id || '0';
         });
     }
 
-    private phoneCallHandler = (data: UpdatePhoneCall.AsObject) => {
+    private phoneCallHandler = (data: IUpdatePhoneCall) => {
         const d = parseData(data.action || 0, data.actiondata);
-        window.console.log(data, d);
-        this.callHandlers('hi', 1);
+        data.data = d;
+        window.console.log(data);
+        switch (data.action) {
+            case PhoneCallAction.PHONECALLREQUESTED:
+                this.callRequested(data);
+                break;
+            case PhoneCallAction.PHONECALLICEEXCHANGE:
+                this.iceExchange(data);
+                break;
+        }
     }
 
-    private callHandlers(name: string, data: any) {
+    private callRequested(data: IUpdatePhoneCall) {
+        this.callRequest[data.callid || '0'] = data;
+        this.callHandlers(C_CALL_EVENT.CallRequest, data);
+    }
+
+    private iceExchange(data: IUpdatePhoneCall) {
+        const actionData = data.data as PhoneActionIceExchange.AsObject;
+        if (!actionData.ice) {
+            return;
+        }
+
+        const pc = new RTCPeerConnection(this.configs);
+        pc.addEventListener('icecandidate', () => {
+            if (this.localPeerConnections.length === 0) {
+                return;
+            }
+            const iceObject = JSON.parse(actionData.ice || '') as RTCIceCandidate;
+            const iceCandidate = new RTCIceCandidate(iceObject);
+            this.localPeerConnections[0].addIceCandidate(iceCandidate).catch((e) => {
+                window.console.log(e);
+            });
+        });
+        pc.addEventListener('track', (e) => {
+            window.console.log(e);
+        });
+        this.remotePeerConnections.push(pc);
+    }
+
+    private callHandlers(name: number, data: any) {
         if (!this.listeners.hasOwnProperty(name)) {
             return Promise.reject();
         }
