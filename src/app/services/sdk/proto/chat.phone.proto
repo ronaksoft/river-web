@@ -40,12 +40,22 @@ enum DiscardReason {
 
 // PhoneDiscardCall
 // @Function
+// @Return: Bool
 message PhoneDiscardCall {
     required int64 CallID = 1 [jstype = JS_STRING];
     required InputUser Peer = 2;
     required int32 Duration = 3;
-    required bool Video = 4;
     required DiscardReason Reason = 5;
+}
+
+// PhoneUpdateCall
+// @Function
+// @Return: Bool
+message PhoneUpdateCall {
+    required int64 CallID = 1 [jstype = JS_STRING];
+    required InputUser Peer = 2;
+    required PhoneCallAction Action = 7;
+    required bytes ActionData = 8;
 }
 
 // PhoneReceivedCall
@@ -69,7 +79,7 @@ enum PhoneCallAction {
     PhoneCallRequested = 2;
     PhoneCallCallWaiting = 3;
     PhoneCallDiscarded = 4;
-    PhoneCallReserved1 = 5;
+    PhoneCallIceExchange = 5;
     PhoneCallReserved2 = 6;
     PhoneCallReserved3 = 7;
     PhoneCallReserved4 = 8;
@@ -115,4 +125,9 @@ message PhoneActionDiscarded {
     required int32 Duration = 1;
     required bool Video = 2;
     required DiscardReason Reason = 3;
+}
+
+// PhoneActionIceExchange
+message PhoneActionIceExchange {
+    required string ICE = 1;
 }

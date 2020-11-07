@@ -165,7 +165,14 @@ import {
     TeamRemoveMember,
     TeamsMany
 } from "./messages/team_pb";
-import {DiscardReason, PhoneAcceptCall, PhoneCall, PhoneDiscardCall, PhoneRequestCall} from "./messages/chat.phone_pb";
+import {
+    DiscardReason,
+    PhoneAcceptCall,
+    PhoneCall, PhoneCallAction,
+    PhoneDiscardCall,
+    PhoneRequestCall,
+    PhoneUpdateCall
+} from "./messages/chat.phone_pb";
 
 export default class APIManager {
     public static getInstance() {
@@ -1234,7 +1241,16 @@ export default class APIManager {
         data.setCallid(id);
         data.setDuration(duration);
         data.setReason(reason);
-        data.setVideo(false);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
+    }
+
+    public callUpdate(inputUser: InputUser, id: string, action: PhoneCallAction, actionData: Uint8Array): Promise<Bool.AsObject> {
+        const data = new PhoneUpdateCall();
+        data.setPeer(inputUser);
+        data.setCallid(id);
+        data.setAction(action);
+        data.setActiondata(actionData);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
     }
