@@ -149,7 +149,7 @@ export default class CallService {
                 pc.setLocalDescription(offer).catch((e) => {
                     window.console.log(e);
                 });
-                this.callUser(peer, JSON.stringify(offer.sdp || ''));
+                this.callUser(peer, JSON.stringify(offer));
             });
         } catch (e) {
             window.console.log(e);
@@ -165,6 +165,12 @@ export default class CallService {
                 return;
             }
 
+            window.console.log(data);
+
+            const inputUser = new InputUser();
+            inputUser.setUserid(data.userid || '0');
+            inputUser.setAccesshash(data.accesshash || '0');
+
             const sdpData = JSON.parse((data.data as PhoneActionRequested.AsObject).sdp || '') as RTCSessionDescription;
 
             const pc = new RTCPeerConnection(this.configs);
@@ -176,9 +182,11 @@ export default class CallService {
                 window.console.log(e);
             });
 
+            window.console.log(sdpData);
             pc.setRemoteDescription(sdpData);
 
             pc.createAnswer(this.offerOptions).then((answer) => {
+                this.apiManager.callAccept(inputUser, id, JSON.stringify(answer));
                 window.console.log(answer);
             });
 
