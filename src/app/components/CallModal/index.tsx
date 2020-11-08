@@ -185,6 +185,8 @@ class CallModal extends React.Component<IProps, IState> {
             if (this.videoRef && stream) {
                 this.videoRef.srcObject = stream;
             }
+        }).catch((err) => {
+            window.console.log(err);
         });
     }
 
