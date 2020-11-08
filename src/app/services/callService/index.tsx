@@ -71,8 +71,8 @@ export default class CallService {
     private listeners: { [key: number]: IBroadcastItem } = {};
 
     private localStream: MediaStream | undefined;
-    private localPeerConnections: RTCPeerConnection[] = [];
-    private remotePeerConnections: RTCPeerConnection[] = [];
+    private localPeerConnections: { [key: number]: RTCPeerConnection } = {};
+    private remotePeerConnections: { [key: number]: RTCPeerConnection } = {};
     private offerOptions: RTCOfferOptions = {
         offerToReceiveAudio: true,
         offerToReceiveVideo: true,
@@ -114,7 +114,11 @@ export default class CallService {
         return this.localStream;
     }
 
-    public call(peer: InputPeer) {
+    public call(peer: InputPeer, connId: number) {
+        if (this.localPeerConnections.hasOwnProperty(connId)) {
+            return;
+        }
+
         this.peer = peer;
         const stream = this.localStream;
         if (!stream) {
@@ -149,29 +153,31 @@ export default class CallService {
                 pc.setLocalDescription(offer).catch((e) => {
                     window.console.log(e);
                 });
-                this.callUser(peer, JSON.stringify(offer));
+                this.callUser(peer, offer.sdp || '', offer.type || 'offer');
             });
         } catch (e) {
             window.console.log(e);
         }
 
-        this.localPeerConnections.push(pc);
+        this.localPeerConnections[connId] = pc;
     }
 
-    public accept(id: string) {
-        this.initVideo().then(() => {
+    public accept(id: string, connId: number) {
+        if (this.localPeerConnections.hasOwnProperty(connId)) {
+            return Promise.reject('connection id already exists');
+        }
+
+        return this.initVideo().then(() => {
             const data = this.callRequest[id];
             if (!data) {
                 return;
             }
 
-            window.console.log(data);
-
             const inputUser = new InputUser();
             inputUser.setUserid(data.userid || '0');
             inputUser.setAccesshash(data.accesshash || '0');
 
-            const sdpData = JSON.parse((data.data as PhoneActionRequested.AsObject).sdp || '') as RTCSessionDescription;
+            const sdpData = (data.data as PhoneActionRequested.AsObject);
 
             const pc = new RTCPeerConnection(this.configs);
             pc.addEventListener('icecandidate', (e) => {
@@ -180,17 +186,28 @@ export default class CallService {
 
             pc.addEventListener('track', (e) => {
                 window.console.log(e);
+                const video = document.createElement('video');
+                video.autoplay    = true;
+                video.muted       = true;
+                // @ts-ignore
+                video.playsinline = true;
+                video.srcObject = e.streams[0];
+                document.body.appendChild(video);
             });
 
-            window.console.log(sdpData);
-            pc.setRemoteDescription(sdpData);
-
-            pc.createAnswer(this.offerOptions).then((answer) => {
-                this.apiManager.callAccept(inputUser, id, JSON.stringify(answer));
-                window.console.log(answer);
+            pc.setRemoteDescription({
+                sdp: sdpData.sdp,
+                type: sdpData.type as any,
             });
 
-            this.remotePeerConnections.push(pc);
+            this.localPeerConnections[connId] = pc;
+
+            return pc.createAnswer(this.offerOptions).then((answer) => {
+                this.localPeerConnections[connId].setLocalDescription(answer);
+                return this.apiManager.callAccept(inputUser, id, answer.sdp || '', answer.type || 'answer').then(() => {
+                    return this.localStream;
+                });
+            });
         });
     }
 
@@ -216,12 +233,21 @@ export default class CallService {
 
     private sendLocalIce(candidate: RTCIceCandidate | null) {
         const peer = this.peer;
-        if (!peer || !this.callId) {
+        if (!peer || !this.callId || !candidate) {
             return;
         }
 
         const actionData = new PhoneActionIceExchange();
-        actionData.setIce(JSON.stringify(candidate));
+        actionData.setCandidate(candidate.candidate);
+        if (candidate.sdpMid) {
+            actionData.setSdpmid(candidate.sdpMid);
+        }
+        if (candidate.sdpMLineIndex) {
+            actionData.setSdpmlineindex(candidate.sdpMLineIndex);
+        }
+        if (candidate.usernameFragment) {
+            actionData.setUsernamefragment(candidate.usernameFragment);
+        }
 
         const inputUser = new InputUser();
         inputUser.setUserid(peer.getId() || '0');
@@ -234,13 +260,12 @@ export default class CallService {
         });
     }
 
-    private callUser(peer: InputPeer, sdp: string) {
+    private callUser(peer: InputPeer, sdp: string, type: string) {
         const inputUser = new InputUser();
         inputUser.setUserid(peer.getId() || '0');
         inputUser.setAccesshash(peer.getAccesshash() || '0');
         const randomId = UniqueId.getRandomId();
-        this.apiManager.callRequest(inputUser, randomId, sdp, true).then((res) => {
-            window.console.log(res);
+        this.apiManager.callRequest(inputUser, randomId, sdp, type, true).then((res) => {
             this.callId = res.id || '0';
         });
     }
@@ -248,13 +273,15 @@ export default class CallService {
     private phoneCallHandler = (data: IUpdatePhoneCall) => {
         const d = parseData(data.action || 0, data.actiondata);
         data.data = d;
-        window.console.log(data);
         switch (data.action) {
             case PhoneCallAction.PHONECALLREQUESTED:
                 this.callRequested(data);
                 break;
+            case PhoneCallAction.PHONECALLACCEPTED:
+                window.console.log(data);
+                break;
             case PhoneCallAction.PHONECALLICEEXCHANGE:
-                this.iceExchange(data);
+                this.iceExchange(data, 0);
                 break;
         }
     }
@@ -264,27 +291,25 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.CallRequest, data);
     }
 
-    private iceExchange(data: IUpdatePhoneCall) {
-        const actionData = data.data as PhoneActionIceExchange.AsObject;
-        if (!actionData.ice) {
+    private iceExchange(data: IUpdatePhoneCall, connId: number) {
+        if (!this.localPeerConnections.hasOwnProperty(connId)) {
             return;
         }
 
-        const pc = new RTCPeerConnection(this.configs);
-        pc.addEventListener('icecandidate', () => {
-            if (this.localPeerConnections.length === 0) {
-                return;
-            }
-            const iceObject = JSON.parse(actionData.ice || '') as RTCIceCandidate;
-            const iceCandidate = new RTCIceCandidate(iceObject);
-            this.localPeerConnections[0].addIceCandidate(iceCandidate).catch((e) => {
-                window.console.log(e);
-            });
+        const actionData = data.data as PhoneActionIceExchange.AsObject;
+        if (!actionData) {
+            return;
+        }
+
+        const iceCandidate = new RTCIceCandidate({
+            candidate: actionData.candidate,
+            sdpMLineIndex: actionData.sdpmlineindex,
+            sdpMid: actionData.sdpmid,
+            usernameFragment: actionData.usernamefragment,
         });
-        pc.addEventListener('track', (e) => {
+        this.localPeerConnections[connId].addIceCandidate(iceCandidate).catch((e) => {
             window.console.log(e);
         });
-        this.remotePeerConnections.push(pc);
     }
 
     private callHandlers(name: number, data: any) {

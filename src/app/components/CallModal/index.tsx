@@ -173,16 +173,22 @@ class CallModal extends React.Component<IProps, IState> {
 
     private callHandler = () => {
         if (this.peer) {
-            this.callService.call(this.peer);
+            this.callService.call(this.peer, 0);
         }
     }
 
     private callAcceptHandler = () => {
-        this.callService.accept(this.state.callId);
+        this.setState({
+            mode: 'call_init',
+        });
+        this.callService.accept(this.state.callId, 0).then((stream) => {
+            if (this.videoRef && stream) {
+                this.videoRef.srcObject = stream;
+            }
+        });
     }
 
     private callRequestHandler = (data: IUpdatePhoneCall) => {
-        window.console.log(data);
         this.setState({
             callId: data.callid || '0',
             callUserId: data.userid || '0',

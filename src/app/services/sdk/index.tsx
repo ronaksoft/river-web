@@ -1216,21 +1216,23 @@ export default class APIManager {
         return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true);
     }
 
-    public callRequest(inputUser: InputUser, randomId: number, sdp: string, video: boolean): Promise<PhoneCall.AsObject> {
+    public callRequest(inputUser: InputUser, randomId: number, sdp: string, type: string, video: boolean): Promise<PhoneCall.AsObject> {
         const data = new PhoneRequestCall();
         data.setPeer(inputUser);
         data.setRandomid(randomId);
         data.setOffersdp(sdp);
+        data.setType(type);
         data.setVideo(video);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), true);
     }
 
-    public callAccept(inputUser: InputUser, id: string, sdp: string): Promise<PhoneCall.AsObject> {
+    public callAccept(inputUser: InputUser, id: string, sdp: string, type: string): Promise<PhoneCall.AsObject> {
         const data = new PhoneAcceptCall();
         data.setPeer(inputUser);
         data.setCallid(id);
         data.setAnswersdp(sdp);
+        data.setType(type);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneAcceptCall, data.serializeBinary(), true);
     }

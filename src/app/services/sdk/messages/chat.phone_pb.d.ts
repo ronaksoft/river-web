@@ -21,6 +21,11 @@ export class PhoneAcceptCall extends jspb.Message {
   getAnswersdp(): string | undefined;
   setAnswersdp(value: string): void;
 
+  hasType(): boolean;
+  clearType(): void;
+  getType(): string | undefined;
+  setType(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneAcceptCall.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneAcceptCall): PhoneAcceptCall.AsObject;
@@ -36,6 +41,7 @@ export namespace PhoneAcceptCall {
     callid?: string,
     peer: core_types_pb.InputUser.AsObject,
     answersdp?: string,
+    type?: string,
   }
 }
 
@@ -49,6 +55,11 @@ export class PhoneRequestCall extends jspb.Message {
   clearOffersdp(): void;
   getOffersdp(): string | undefined;
   setOffersdp(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): string | undefined;
+  setType(value: string): void;
 
   hasVideo(): boolean;
   clearVideo(): void;
@@ -74,6 +85,7 @@ export namespace PhoneRequestCall {
   export type AsObject = {
     peer: core_types_pb.InputUser.AsObject,
     offersdp?: string,
+    type?: string,
     video?: boolean,
     randomid?: number,
   }
@@ -303,6 +315,11 @@ export class PhoneActionAccepted extends jspb.Message {
   getSdp(): string | undefined;
   setSdp(value: string): void;
 
+  hasType(): boolean;
+  clearType(): void;
+  getType(): string | undefined;
+  setType(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionAccepted.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneActionAccepted): PhoneActionAccepted.AsObject;
@@ -316,6 +333,7 @@ export class PhoneActionAccepted extends jspb.Message {
 export namespace PhoneActionAccepted {
   export type AsObject = {
     sdp?: string,
+    type?: string,
   }
 }
 
@@ -324,6 +342,11 @@ export class PhoneActionRequested extends jspb.Message {
   clearSdp(): void;
   getSdp(): string | undefined;
   setSdp(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): string | undefined;
+  setType(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionRequested.AsObject;
@@ -338,6 +361,7 @@ export class PhoneActionRequested extends jspb.Message {
 export namespace PhoneActionRequested {
   export type AsObject = {
     sdp?: string,
+    type?: string,
   }
 }
 
@@ -398,10 +422,25 @@ export namespace PhoneActionDiscarded {
 }
 
 export class PhoneActionIceExchange extends jspb.Message {
-  hasIce(): boolean;
-  clearIce(): void;
-  getIce(): string | undefined;
-  setIce(value: string): void;
+  hasCandidate(): boolean;
+  clearCandidate(): void;
+  getCandidate(): string | undefined;
+  setCandidate(value: string): void;
+
+  hasSdpmlineindex(): boolean;
+  clearSdpmlineindex(): void;
+  getSdpmlineindex(): number | undefined;
+  setSdpmlineindex(value: number): void;
+
+  hasSdpmid(): boolean;
+  clearSdpmid(): void;
+  getSdpmid(): string | undefined;
+  setSdpmid(value: string): void;
+
+  hasUsernamefragment(): boolean;
+  clearUsernamefragment(): void;
+  getUsernamefragment(): string | undefined;
+  setUsernamefragment(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionIceExchange.AsObject;
@@ -415,7 +454,10 @@ export class PhoneActionIceExchange extends jspb.Message {
 
 export namespace PhoneActionIceExchange {
   export type AsObject = {
-    ice?: string,
+    candidate?: string,
+    sdpmlineindex?: number,
+    sdpmid?: string,
+    usernamefragment?: string,
   }
 }
 
