@@ -106,7 +106,7 @@
     "@types/react-window": "^1.8.1",
     "@types/shortid": "^0.0.29",
     "@types/xregexp": "^3.0.29",
-    "electron": "8.5.2",
+    "electron": "8.5.3",
     "electron-builder": "^22.8.1",
     "electron-devtools-installer": "^3.0.0",
     "glob": "^7.1.6",

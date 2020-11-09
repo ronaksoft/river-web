@@ -11,6 +11,7 @@ import UpdateManager from "../sdk/updateManager";
 import {C_MSG} from "../sdk/const";
 import {UpdatePhoneCall} from "../sdk/messages/updates_pb";
 import {
+    DiscardReason,
     PhoneActionAccepted,
     PhoneActionCallEmpty,
     PhoneActionCallWaiting,
@@ -26,6 +27,7 @@ import APIManager from "../sdk";
 export const C_CALL_EVENT = {
     CallAccept: 0x02,
     CallRequest: 0x01,
+    StreamUpdate: 0x03,
 };
 
 export interface IUpdatePhoneCall extends UpdatePhoneCall.AsObject {
@@ -35,7 +37,7 @@ export interface IUpdatePhoneCall extends UpdatePhoneCall.AsObject {
 interface IConnection {
     accepted: boolean;
     connection: RTCPeerConnection;
-    stream: MediaStream | undefined;
+    streams: MediaStream[];
     iceQueue: RTCIceCandidate[];
 }
 
@@ -102,11 +104,41 @@ export default class CallService {
         this.updateManager.listen(C_MSG.UpdatePhoneCall, this.phoneCallHandler);
     }
 
-    public initVideo() {
+    public initStream() {
         return navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
             this.localStream = stream;
             return stream;
         });
+    }
+
+    public toggleVideo(enable: boolean) {
+        if (!this.localStream) {
+            return;
+        }
+        this.localStream.getVideoTracks().forEach((track) => {
+            track.enabled = enable;
+        });
+    }
+
+    public toggleAudio(enable: boolean) {
+        if (!this.localStream) {
+            return;
+        }
+        this.localStream.getAudioTracks().forEach((track) => {
+            track.enabled = enable;
+        });
+    }
+
+    public getStreamState() {
+        if (!this.localStream) {
+            return;
+        }
+        const videoTracks = this.localStream.getVideoTracks();
+        const audioTracks = this.localStream.getAudioTracks();
+        return {
+            audio: audioTracks.length > 0 ? audioTracks[0].enabled : false,
+            video: videoTracks.length > 0 ? videoTracks[0].enabled : false,
+        };
     }
 
     public destroy() {
@@ -121,25 +153,19 @@ export default class CallService {
         return this.localStream;
     }
 
+    public getRemoteStreams(connId: number): MediaStream[] | undefined {
+        if (!this.peerConnections.hasOwnProperty(connId)) {
+            return undefined;
+        }
+        return this.peerConnections[connId].streams;
+    }
+
     public call(peer: InputPeer, connId: number) {
         if (this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
 
         this.peer = peer;
-        const stream = this.localStream;
-        if (!stream) {
-            return;
-        }
-
-        const videoTracks = stream.getVideoTracks();
-        const audioTracks = stream.getAudioTracks();
-        if (videoTracks.length > 0) {
-            window.console.log(`Using video device: ${videoTracks[0].label}`);
-        }
-        if (audioTracks.length > 0) {
-            window.console.log(`Using audio device: ${audioTracks[0].label}`);
-        }
 
         return this.initConnection(false, 0).then((offer) => {
             this.callUser(peer, offer.sdp || '', offer.type || 'offer');
@@ -147,7 +173,7 @@ export default class CallService {
     }
 
     public accept(id: string, connId: number) {
-        return this.initVideo().then((stream) => {
+        return this.initStream().then((stream) => {
             const data = this.callRequest[id];
             if (!data) {
                 return Promise.reject('invalid call request');
@@ -172,6 +198,19 @@ export default class CallService {
                 });
             });
         });
+    }
+
+    public reject(id: string) {
+        const data = this.callRequest[id];
+        if (!data) {
+            return Promise.reject('invalid call request');
+        }
+
+        const inputUser = new InputUser();
+        inputUser.setUserid(data.userid || '0');
+        inputUser.setAccesshash(data.accesshash || '0');
+
+        return this.apiManager.callReject(inputUser, id, DiscardReason.DISCARDREASONHANGUP, 0);
     }
 
     public listen(name: number, fn: any): (() => void) | null {
@@ -289,25 +328,27 @@ export default class CallService {
             accepted: false,
             connection: pc,
             iceQueue: [],
-            stream: undefined,
+            streams: [],
         };
 
         pc.addEventListener('track', (e) => {
             if (e.streams.length > 0) {
-                conn.stream = e.streams[0];
+                conn.streams = [];
+                conn.streams.push(...e.streams);
+                this.callHandlers(C_CALL_EVENT.StreamUpdate, {connId, streams: e.streams});
             }
-            window.console.log(e);
-            const video = document.createElement('video');
-            video.autoplay = true;
-            // @ts-ignore
-            video.playsinline = true;
-            video.srcObject = e.streams[0];
-            video.style.position = 'fixed';
-            video.style.zIndex = '1000';
-            video.style.top = '50%';
-            video.style.left = '50%';
-            video.style.transform = 'translate(-50%, -50%)';
-            document.body.appendChild(video);
+            // window.console.log(e);
+            // const video = document.createElement('video');
+            // video.autoplay = true;
+            // // @ts-ignore
+            // video.playsinline = true;
+            // video.srcObject = e.streams[0];
+            // video.style.position = 'fixed';
+            // video.style.zIndex = '1000';
+            // video.style.top = '50%';
+            // video.style.left = '50%';
+            // video.style.transform = 'translate(-50%, -50%)';
+            // document.body.appendChild(video);
         });
 
         stream.getTracks().forEach((track) => {

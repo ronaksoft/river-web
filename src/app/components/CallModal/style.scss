@@ -19,6 +19,9 @@
     position: relative;
     height: 360px;
     width: 640px;
+    transition: all 0.2s;
+    color: var(--white);
+    background-color: var(--dark);
 
     video {
       width: 100%;
@@ -27,18 +30,34 @@
       object-position: center;
     }
 
+    .call-user-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      border-radius: 5px;
+
+      img {
+        border-radius: 5px;
+        border: none;
+        object-fit: cover;
+      }
+    }
+
     .call-modal-header {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       height: 48px;
-      background: linear-gradient(0deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
+      background: linear-gradient(0deg, transparent 0%, rgba(0, 0, 0, 0.28) 45%, rgba(0, 0, 0, 0.48) 75%, rgba(0, 0, 0, 0.6) 100%);
       opacity: 0;
       display: flex;
       align-items: center;
       justify-content: flex-end;
       transition: opacity 0.3s;
+      z-index: 10;
 
       .call-action-item {
         margin-right: 6px;
@@ -64,6 +83,27 @@
       opacity: 0;
       transition: opacity 0.3s;
       background: linear-gradient(180deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
+      z-index: 12;
+
+      .call-settings {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .call-settings-switch {
+          margin: 0 12px;
+
+          .MuiIconButton-root {
+            padding: 9px;
+          }
+
+          .MuiTypography-root {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      }
 
       .call-item {
         height: 48px;
@@ -99,16 +139,17 @@
 
   &.fullscreen {
     .call-modal-content {
-      height: 100%;
-      width: 100%;
+      height: 100% !important;
+      width: 100% !important;
     }
   }
 
-  &.call_init {
+  &.call_init, &.call {
     &:not(.fullscreen) {
       top: 50% !important;
       left: 50% !important;
       inset: initial;
+      width: 480px;
       transform: translate(-50%, -50%);
 
       .MuiBackdrop-root {
@@ -119,12 +160,117 @@
         width: auto;
         overflow: hidden;
         max-width: none;
+        max-height: none;
       }
+    }
+  }
+
+  &.call_init {
+    &:not(.fullscreen) {
+      width: 480px;
     }
 
     .call-modal-content {
-      height: 360px;
+      height: 270px;
+      width: 480px;
+
+      .call-info {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: linear-gradient(0deg, transparent 0%, rgba(0, 0, 0, 0.28) 45%, rgba(0, 0, 0, 0.48) 75%, rgba(0, 0, 0, 0.6) 100%);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 12px;
+
+        .callee-info {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .callee-avatar {
+            height: 42px;
+            width: 42px;
+          }
+
+          .callee-name {
+            margin-left: 12px;
+            font-size: 16px;
+            font-weight: bold;
+          }
+        }
+      }
+
+      .call-modal-action {
+        opacity: 1;
+        justify-content: center;
+        flex-direction: column;
+        height: 128px;
+
+        .call-settings {
+          padding-bottom: 12px;
+        }
+
+        .call-buttons {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .call-item {
+            margin: 0 24px;
+            transform: scale(0.8);
+          }
+        }
+      }
+    }
+  }
+
+  &.call {
+    &:not(.fullscreen) {
       width: 640px;
+    }
+
+    .call-modal-content {
+      position: relative;
+      width: 640px;
+      height: 480px;
+
+      video {
+        transition: all 0.2s;
+      }
+
+      .remote-video {
+        position: relative;
+        z-index: 2;
+      }
+
+      .local-video {
+        position: relative;
+        z-index: 3;
+      }
+
+      &.animate-end {
+        .local-video {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          width: 128px;
+          height: auto;
+          border-radius: 5px;
+          box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
+        }
+      }
+
+      .call-modal-action {
+        .call-settings {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 12px;
+        }
+      }
     }
   }
 
@@ -134,19 +280,6 @@
       width: 240px;
       height: 240px;
       background-color: var(--dark-medium);
-
-      .call-user-avatar {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        border-radius: 5px;
-
-        img {
-          border-radius: 5px;
-        }
-      }
 
       .call-info {
         position: relative;

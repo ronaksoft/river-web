@@ -746,7 +746,7 @@ class Chat extends React.Component<IProps, IState> {
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
                 <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
-                <CallModal ref={this.callModalRefHandler}/>
+                <CallModal ref={this.callModalRefHandler} teamId={this.teamId}/>
                 {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
             </div>
         );
