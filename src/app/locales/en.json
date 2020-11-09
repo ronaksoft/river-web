@@ -511,6 +511,7 @@
     "list": "Reaction List"
   },
   "call": {
-    "is_calling": "Is calling..."
+    "is_calling": "Is calling...",
+    "is_ringing": "Is ringing..."
   }
 }

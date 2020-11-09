@@ -28,6 +28,7 @@
       height: 100%;
       object-fit: cover;
       object-position: center;
+      transform: rotateY(180deg);
     }
 
     .call-user-bg {
@@ -263,12 +264,39 @@
         }
       }
 
+      .call-status {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        text-align: center;
+        color: var(--white);
+        background-color: var(--glass-dark-ultra);
+        padding: 4px 12px 5px;
+        border-radius: 5px;
+        text-transform: lowercase;
+        transform: translate(-50%, -50%);
+        line-height: 1em;
+      }
+
       .call-modal-action {
         .call-settings {
           position: absolute;
           top: 0;
           bottom: 0;
           left: 12px;
+        }
+
+        .call-timer {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          user-select: none;
+          line-height: 1em;
+          white-space: nowrap;
         }
       }
     }
@@ -306,6 +334,28 @@
 
       .call-modal-action {
         opacity: 1;
+      }
+    }
+  }
+
+  &.call_report {
+    .call-modal-content {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      background-color: var(--dark-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      line-height: 1.2em;
+
+      .call-duration-label {
+
+      }
+
+      .call-duration-value {
+        font-weight: bold;
       }
     }
   }

@@ -26,6 +26,7 @@ import APIManager from "../sdk";
 
 export const C_CALL_EVENT = {
     CallAccept: 0x02,
+    CallRejected: 0x04,
     CallRequest: 0x01,
     StreamUpdate: 0x03,
 };
@@ -200,7 +201,7 @@ export default class CallService {
         });
     }
 
-    public reject(id: string) {
+    public reject(id: string, duration: number) {
         const data = this.callRequest[id];
         if (!data) {
             return Promise.reject('invalid call request');
@@ -210,7 +211,34 @@ export default class CallService {
         inputUser.setUserid(data.userid || '0');
         inputUser.setAccesshash(data.accesshash || '0');
 
-        return this.apiManager.callReject(inputUser, id, DiscardReason.DISCARDREASONHANGUP, 0);
+        return this.apiManager.callReject(inputUser, id, DiscardReason.DISCARDREASONHANGUP, duration).then(() => {
+            this.destroyConnections(id);
+        });
+    }
+
+    public destroyConnections(id: string, connId?: number) {
+        const close = (conn: IConnection) => {
+            conn.connection.close();
+            conn.streams.forEach((stream) => {
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
+            });
+        };
+
+        if (connId !== undefined) {
+            if (this.peerConnections.hasOwnProperty(connId)) {
+                close(this.peerConnections[connId]);
+                delete this.peerConnections[connId];
+            }
+        } else {
+            Object.values(this.peerConnections).forEach((conn) => {
+                close(conn);
+            });
+            this.peerConnections = {};
+            delete this.callRequest[id];
+            this.callId = undefined;
+        }
     }
 
     public listen(name: number, fn: any): (() => void) | null {
@@ -251,8 +279,10 @@ export default class CallService {
                 this.callRequested(data);
                 break;
             case PhoneCallAction.PHONECALLACCEPTED:
-                window.console.log(data);
                 this.callAccepted(data, 0);
+                break;
+            case PhoneCallAction.PHONECALLDISCARDED:
+                this.callRejected(data, 0);
                 break;
             case PhoneCallAction.PHONECALLICEEXCHANGE:
                 this.iceExchange(data, 0);
@@ -288,6 +318,11 @@ export default class CallService {
         });
 
         this.callHandlers(C_CALL_EVENT.CallAccept, data);
+    }
+
+    private callRejected(data: IUpdatePhoneCall, connId: number) {
+        // const actionData = (data.data as PhoneActionDiscarded.AsObject);
+        this.callHandlers(C_CALL_EVENT.CallRejected, data);
     }
 
     private iceExchange(data: IUpdatePhoneCall, connId: number) {
