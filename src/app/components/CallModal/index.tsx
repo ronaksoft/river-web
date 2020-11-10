@@ -332,9 +332,9 @@ class CallModal extends React.Component<IProps, IState> {
                 <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                     {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                 </IconButton>
-                <IconButton className="call-action-item" onClick={this.closeHandler}>
-                    <CloseRounded/>
-                </IconButton>
+                {/*<IconButton className="call-action-item" onClick={this.closeHandler}>*/}
+                {/*    <CloseRounded/>*/}
+                {/*</IconButton>*/}
             </div>
             {isCaller && !callStarted && <div className="call-status">
                 {i18n.t('call.is_ringing')}
