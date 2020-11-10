@@ -118,6 +118,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
         this.peer = peer;
         this.setState({
+            fullscreen: false,
             mode: 'call_init',
             open: true,
         }, () => {
@@ -156,7 +157,7 @@ class CallModal extends React.Component<IProps, IState> {
                 disableBackdropClick={!(mode === 'call_init' || mode === 'call_report')}
                 disableEnforceFocus={true}
                 PaperComponent={PaperComponent}
-                fullScreen={fullscreen}
+                fullScreen={mode === 'call_report' ? false : fullscreen}
                 TransitionComponent={TransitionEffect}
             >
                 {this.getContent()}
@@ -352,7 +353,6 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private videoClickHandler = (remote: boolean) => () => {
-        window.console.log(remote);
         const {callStarted, videoSwap} = this.state;
         if (!callStarted) {
             return;

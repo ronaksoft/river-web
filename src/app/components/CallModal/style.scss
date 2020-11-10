@@ -48,6 +48,7 @@
       .text-avatar {
         border-radius: 5px;
         line-height: 1em;
+        font-size: 128px;
       }
     }
 
@@ -144,6 +145,10 @@
   }
 
   &.fullscreen {
+    .call-modal-paper {
+      transform: none !important;
+    }
+
     .call-modal-content {
       height: 100% !important;
       width: 100% !important;
@@ -287,7 +292,7 @@
 
       .call-status {
         position: absolute;
-        top: 50%;
+        top: 75%;
         left: 50%;
         text-align: center;
         color: var(--white);
