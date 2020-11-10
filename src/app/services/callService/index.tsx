@@ -93,6 +93,7 @@ export default class CallService {
             urls: 'turn:vm-02.ronaksoftware.com',
             username: 'hamid',
         }],
+        // iceTransportPolicy: "relay",
     };
     private peer: InputPeer | null = null;
     private callId: string | undefined = '0';
@@ -201,17 +202,21 @@ export default class CallService {
         });
     }
 
-    public reject(id: string, duration: number) {
+    public reject(id: string, duration: number, reason: DiscardReason) {
+        const inputUser = new InputUser();
+
         const data = this.callRequest[id];
-        if (!data) {
+        if (data) {
+            inputUser.setUserid(data.userid || '0');
+            inputUser.setAccesshash(data.accesshash || '0');
+        } else if (this.peer) {
+            inputUser.setUserid(this.peer.getId() || '0');
+            inputUser.setAccesshash(this.peer.getAccesshash() || '0');
+        } else {
             return Promise.reject('invalid call request');
         }
 
-        const inputUser = new InputUser();
-        inputUser.setUserid(data.userid || '0');
-        inputUser.setAccesshash(data.accesshash || '0');
-
-        return this.apiManager.callReject(inputUser, id, DiscardReason.DISCARDREASONHANGUP, duration).then(() => {
+        return this.apiManager.callReject(inputUser, id, reason, duration).then(() => {
             this.destroyConnections(id);
         });
     }
@@ -355,8 +360,12 @@ export default class CallService {
         const pc = new RTCPeerConnection(this.configs);
         pc.addEventListener('icecandidate', (e) => {
             this.sendLocalIce(e.candidate, connId).catch((err) => {
-                window.console.log(err);
+                window.console.log('icecandidate', err);
             });
+        });
+
+        pc.addEventListener('icecandidateerror', (e) => {
+            window.console.log('icecandidateerror', e);
         });
 
         const conn: IConnection = {
@@ -372,18 +381,6 @@ export default class CallService {
                 conn.streams.push(...e.streams);
                 this.callHandlers(C_CALL_EVENT.StreamUpdate, {connId, streams: e.streams});
             }
-            // window.console.log(e);
-            // const video = document.createElement('video');
-            // video.autoplay = true;
-            // // @ts-ignore
-            // video.playsinline = true;
-            // video.srcObject = e.streams[0];
-            // video.style.position = 'fixed';
-            // video.style.zIndex = '1000';
-            // video.style.top = '50%';
-            // video.style.left = '50%';
-            // video.style.transform = 'translate(-50%, -50%)';
-            // document.body.appendChild(video);
         });
 
         stream.getTracks().forEach((track) => {

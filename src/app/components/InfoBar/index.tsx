@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import i18n from "../../services/i18n";
-import {CancelOutlined, InfoOutlined, KeyboardArrowLeftRounded, SearchRounded, CallRounded} from "@material-ui/icons";
+import {CallRounded, CancelOutlined, InfoOutlined, KeyboardArrowLeftRounded, SearchRounded} from "@material-ui/icons";
 import StatusBar from "../StatusBar";
 import {IconButton, Tooltip} from "@material-ui/core";
 import {isNil, omitBy} from "lodash";
@@ -38,6 +38,7 @@ interface IState {
 
 class InfoBar extends React.Component<IProps, IState> {
     private currentUserId: string = UserRepo.getInstance().getCurrentUserId();
+    private userRepo: UserRepo;
 
     constructor(props: IProps) {
         super(props);
@@ -50,14 +51,17 @@ class InfoBar extends React.Component<IProps, IState> {
             teamId: props.teamId,
             withCall: false,
         };
+
+        this.userRepo = UserRepo.getInstance();
     }
 
     public setPeer(teamId: string, peer: InputPeer | null) {
         this.setState({
             peer,
             teamId,
-            withCall: peer ? peer.getType() === PeerType.PEERUSER : false,
+            withCall: false,
         });
+        this.checkCall(peer);
     }
 
     public setStatus(state: {
@@ -91,7 +95,7 @@ class InfoBar extends React.Component<IProps, IState> {
                 />
                 <div className="buttons">
                     {withCall && <Tooltip
-                        title={i18n.t('chat.search_messages')}
+                        title={i18n.t('call.call')}
                     >
                         <IconButton
                             onClick={this.props.onAction('call')}
@@ -114,6 +118,21 @@ class InfoBar extends React.Component<IProps, IState> {
                 </div>
             </div>
         );
+    }
+
+    private checkCall(peer: InputPeer | null) {
+        if (!peer) {
+            return;
+        }
+        if (peer.getType() === PeerType.PEERUSER) {
+            this.userRepo.get(peer.getId() || '0').then((user) => {
+                if (user) {
+                    this.setState({
+                        withCall: !Boolean(user.isbot),
+                    });
+                }
+            });
+        }
     }
 }
 

@@ -22,7 +22,9 @@ import {
     MicOffRounded,
     MicRounded,
     VideocamOffRounded,
-    VideocamRounded
+    VideocamRounded,
+    CropLandscapeRounded,
+    CropSquareRounded,
 } from "@material-ui/icons";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -30,6 +32,8 @@ import i18n from '../../services/i18n';
 import GroupAvatar from "../GroupAvatar";
 import GroupName from "../GroupName";
 import {CallTimer, timerFormat} from "../CallTimer";
+import Rating from '@material-ui/lab/Rating';
+import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 
 import './style.scss';
 
@@ -49,11 +53,14 @@ interface IState {
     callSettings: ICallSettings;
     callStarted: boolean;
     callUserId: string | null;
+    cropCover: boolean;
     fullscreen: boolean;
     isCaller: boolean;
     mode: 'call_init' | 'call_requested' | 'call' | 'call_report';
     open: boolean;
+    rate: number | null;
     remoteVideoEnabled: boolean;
+    videoSwap: boolean;
 }
 
 const TransitionEffect = React.forwardRef(function Transition(
@@ -92,11 +99,14 @@ class CallModal extends React.Component<IProps, IState> {
             },
             callStarted: false,
             callUserId: null,
+            cropCover: true,
             fullscreen: false,
             isCaller: false,
             mode: 'call_init',
             open: false,
+            rate: null,
             remoteVideoEnabled: false,
+            videoSwap: false,
         };
 
         this.callService = CallService.getInstance();
@@ -134,12 +144,12 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, fullscreen, mode} = this.state;
+        const {open, fullscreen, mode, cropCover} = this.state;
         return (
             <Dialog
                 open={open}
                 onClose={this.closeHandler}
-                className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '')}
+                className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain')}
                 classes={{
                     paper: 'call-modal-paper',
                 }}
@@ -157,14 +167,21 @@ class CallModal extends React.Component<IProps, IState> {
     private closeHandler = () => {
         this.callService.destroy();
         this.setState({
-            mode: 'call_init',
             open: false,
         });
+        this.timer = 0;
+        this.timerEnd = 0;
     }
 
     private toggleFullscreenHandler = () => {
         this.setState({
             fullscreen: !this.state.fullscreen,
+        });
+    }
+
+    private toggleCropHandler = () => {
+        this.setState({
+            cropCover: !this.state.cropCover,
         });
     }
 
@@ -235,15 +252,18 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallInitContent() {
-        const {fullscreen} = this.state;
+        const {fullscreen, cropCover} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined} className="call-modal-content">
             <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}/>
             <div className="call-modal-header">
-                <IconButton className="call-action-item" onClick={this.closeHandler}>
-                    <CloseRounded/>
+                <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
+                    {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
                 </IconButton>
                 <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                     {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
+                </IconButton>
+                <IconButton className="call-action-item" onClick={this.closeHandler}>
+                    <CloseRounded/>
                 </IconButton>
             </div>
             <div className="call-info">
@@ -296,27 +316,32 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallContent() {
-        const {fullscreen, animateState, callUserId, remoteVideoEnabled, callStarted} = this.state;
+        const {fullscreen, animateState, callUserId, remoteVideoEnabled, callStarted, isCaller, cropCover, videoSwap} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
-                    className={'call-modal-content animate-' + animateState}>
+                    className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
             {!remoteVideoEnabled && callUserId &&
             <UserAvatar className="call-user-bg" id={callUserId} noDetail={true}/>}
-            <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}/>
-            <video className="remote-video" ref={this.videoRemoteRefHandler} playsInline={true} autoPlay={true}/>
+            <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
+                   onClick={this.videoClickHandler(false)}/>
+            <video className="remote-video" ref={this.videoRemoteRefHandler} playsInline={true} autoPlay={true}
+                   onClick={this.videoClickHandler(true)}/>
             <div className="call-modal-header">
-                <IconButton className="call-action-item" onClick={this.closeHandler}>
-                    <CloseRounded/>
+                <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
+                    {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
                 </IconButton>
                 <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                     {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                 </IconButton>
+                <IconButton className="call-action-item" onClick={this.closeHandler}>
+                    <CloseRounded/>
+                </IconButton>
             </div>
-            {!callStarted && <div className="call-status">
+            {isCaller && !callStarted && <div className="call-status">
                 {i18n.t('call.is_ringing')}
             </div>}
             <div className="call-modal-action">
                 {this.getCallSettingsContent()}
-                <div className="call-item call-end" onClick={this.rejectCallHandler}>
+                <div className="call-item call-end" onClick={this.hangupCallHandler}>
                     <CallEndRounded/>
                 </div>
                 {callStarted && <div className="call-timer">
@@ -324,6 +349,23 @@ class CallModal extends React.Component<IProps, IState> {
                 </div>}
             </div>
         </div>;
+    }
+
+    private videoClickHandler = (remote: boolean) => () => {
+        window.console.log(remote);
+        const {callStarted, videoSwap} = this.state;
+        if (!callStarted) {
+            return;
+        }
+        if (!videoSwap && !remote) {
+            this.setState({
+                videoSwap: true,
+            });
+        } else if (videoSwap && remote) {
+            this.setState({
+                videoSwap: false,
+            });
+        }
     }
 
     private callHandler = () => {
@@ -362,10 +404,19 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private rejectCallHandler = () => {
-        this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000)).catch((err) => {
+        this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
             window.console.log(err);
         });
         this.closeHandler();
+    }
+
+    private hangupCallHandler = () => {
+        this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000), DiscardReason.DISCARDREASONHANGUP).catch((err) => {
+            window.console.log(err);
+        });
+        this.setState({
+            mode: 'call_report',
+        });
     }
 
     private callRequestHandler = (data: IUpdatePhoneCall) => {
@@ -378,17 +429,16 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private callRejectedHandler = (data: IUpdatePhoneCall) => {
-        window.console.log(data);
-        const {isCaller, callId} = this.state;
+        const {callId} = this.state;
         this.callService.destroyConnections(callId);
-        this.timerEnd = Date.now();
-        if (isCaller) {
+        if (this.timer === 0) {
+            this.closeHandler();
+        } else {
+            this.timerEnd = Date.now();
             this.setState({
                 mode: 'call_report',
             });
             this.callService.destroy();
-        } else {
-            this.closeHandler();
         }
     }
 
@@ -423,10 +473,22 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallReportContent = () => {
+        const {rate} = this.state;
         return <div className="call-modal-content">
+            <div className="call-rate-label">{i18n.t('call.rate_this_call')}</div>
+            <div className="call-rate-value">
+                <Rating value={rate} onChange={this.rateChangeHandler}/>
+            </div>
             <div className="call-duration-label">{'Duration:'}</div>
             <div className="call-duration-value">{timerFormat(Math.floor((this.timerEnd - this.timer) / 1000))}</div>
         </div>;
+    }
+
+    private rateChangeHandler = (e: any, val: number | null) => {
+        this.setState({
+            rate: val,
+        });
+        this.closeHandler();
     }
 }
 

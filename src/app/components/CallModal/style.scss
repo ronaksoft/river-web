@@ -44,6 +44,11 @@
         border: none;
         object-fit: cover;
       }
+
+      .text-avatar {
+        border-radius: 5px;
+        line-height: 1em;
+      }
     }
 
     .call-modal-header {
@@ -142,6 +147,22 @@
     .call-modal-content {
       height: 100% !important;
       width: 100% !important;
+    }
+  }
+
+  &.crop-cover {
+    .call-modal-content {
+      video {
+        object-fit: cover;
+      }
+    }
+  }
+
+  &.crop-contain {
+    .call-modal-content {
+      video {
+        object-fit: contain !important;
+      }
     }
   }
 
@@ -249,7 +270,7 @@
 
       .local-video {
         position: relative;
-        z-index: 3;
+        z-index: 14;
       }
 
       &.animate-end {
@@ -297,6 +318,28 @@
           user-select: none;
           line-height: 1em;
           white-space: nowrap;
+        }
+      }
+
+      &.video-swap {
+        .remote-video {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          width: 128px;
+          height: auto;
+          border-radius: 5px;
+          box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
+          z-index: 14;
+        }
+
+        .local-video {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          z-index: 2;
+          top: auto;
+          left: auto;
         }
       }
     }
@@ -350,8 +393,16 @@
       flex-direction: column;
       line-height: 1.2em;
 
-      .call-duration-label {
+      .call-rate-label {
+        padding-bottom: 6px;
+      }
 
+      .call-rate-value {
+        padding-bottom: 24px;
+      }
+
+      .call-duration-label {
+        padding-bottom: 12px;
       }
 
       .call-duration-value {
