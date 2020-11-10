@@ -266,6 +266,16 @@ export default class CallService {
         };
     }
 
+    private busyHandler(data: IUpdatePhoneCall) {
+        const inputUser = new InputUser();
+        inputUser.setUserid(data.userid || '0');
+        inputUser.setAccesshash(data.accesshash || '0');
+
+        return this.apiManager.callReject(inputUser, data.callid || '0', DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
+            //
+        });
+    }
+
     private callUser(peer: InputPeer, sdp: string, type: string) {
         const inputUser = new InputUser();
         inputUser.setUserid(peer.getId() || '0');
@@ -296,6 +306,10 @@ export default class CallService {
     }
 
     private callRequested(data: IUpdatePhoneCall) {
+        if (this.callId) {
+            this.busyHandler(data);
+            return;
+        }
         this.callRequest[data.callid || '0'] = data;
         const inputPeer = new InputPeer();
         inputPeer.setId(data.userid || '0');
@@ -309,6 +323,8 @@ export default class CallService {
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
+
+        this.callId = data.callid || '0';
 
         const sdpData = (data.data as PhoneActionAccepted.AsObject);
 

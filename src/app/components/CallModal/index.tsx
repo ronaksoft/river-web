@@ -117,6 +117,8 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
         this.peer = peer;
+        this.timer = 0;
+        this.timerEnd = 0;
         this.setState({
             fullscreen: false,
             mode: 'call_init',
