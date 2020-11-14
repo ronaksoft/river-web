@@ -5,71 +5,48 @@
 import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
-export class PhoneAcceptCall extends jspb.Message {
-  hasCallid(): boolean;
-  clearCallid(): void;
-  getCallid(): string | undefined;
-  setCallid(value: string): void;
-
+export class PhoneInitCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputUser;
-  setPeer(value?: core_types_pb.InputUser): void;
-
-  hasAnswersdp(): boolean;
-  clearAnswersdp(): void;
-  getAnswersdp(): string | undefined;
-  setAnswersdp(value: string): void;
-
-  hasType(): boolean;
-  clearType(): void;
-  getType(): string | undefined;
-  setType(value: string): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneAcceptCall.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneAcceptCall): PhoneAcceptCall.AsObject;
+  toObject(includeInstance?: boolean): PhoneInitCall.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneInitCall): PhoneInitCall.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneAcceptCall, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneAcceptCall;
-  static deserializeBinaryFromReader(message: PhoneAcceptCall, reader: jspb.BinaryReader): PhoneAcceptCall;
+  static serializeBinaryToWriter(message: PhoneInitCall, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneInitCall;
+  static deserializeBinaryFromReader(message: PhoneInitCall, reader: jspb.BinaryReader): PhoneInitCall;
 }
 
-export namespace PhoneAcceptCall {
+export namespace PhoneInitCall {
   export type AsObject = {
-    callid?: string,
-    peer: core_types_pb.InputUser.AsObject,
-    answersdp?: string,
-    type?: string,
+    peer: core_types_pb.InputPeer.AsObject,
   }
 }
 
 export class PhoneRequestCall extends jspb.Message {
-  hasPeer(): boolean;
-  clearPeer(): void;
-  getPeer(): core_types_pb.InputUser;
-  setPeer(value?: core_types_pb.InputUser): void;
-
-  hasOffersdp(): boolean;
-  clearOffersdp(): void;
-  getOffersdp(): string | undefined;
-  setOffersdp(value: string): void;
-
-  hasType(): boolean;
-  clearType(): void;
-  getType(): string | undefined;
-  setType(value: string): void;
-
-  hasVideo(): boolean;
-  clearVideo(): void;
-  getVideo(): boolean | undefined;
-  setVideo(value: boolean): void;
-
   hasRandomid(): boolean;
   clearRandomid(): void;
   getRandomid(): number | undefined;
   setRandomid(value: number): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  clearRecipientsList(): void;
+  getRecipientsList(): Array<PhoneRecipient>;
+  setRecipientsList(value: Array<PhoneRecipient>): void;
+  addRecipients(value?: PhoneRecipient, index?: number): PhoneRecipient;
+
+  hasCallid(): boolean;
+  clearCallid(): void;
+  getCallid(): string | undefined;
+  setCallid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneRequestCall.AsObject;
@@ -83,24 +60,62 @@ export class PhoneRequestCall extends jspb.Message {
 
 export namespace PhoneRequestCall {
   export type AsObject = {
-    peer: core_types_pb.InputUser.AsObject,
-    offersdp?: string,
-    type?: string,
-    video?: boolean,
     randomid?: number,
+    peer: core_types_pb.InputPeer.AsObject,
+    recipientsList: Array<PhoneRecipient.AsObject>,
+    callid?: string,
   }
 }
 
-export class PhoneDiscardCall extends jspb.Message {
+export class PhoneAcceptCall extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
   hasCallid(): boolean;
   clearCallid(): void;
   getCallid(): string | undefined;
   setCallid(value: string): void;
 
+  clearRecipientsList(): void;
+  getRecipientsList(): Array<PhoneRecipient>;
+  setRecipientsList(value: Array<PhoneRecipient>): void;
+  addRecipients(value?: PhoneRecipient, index?: number): PhoneRecipient;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneAcceptCall.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneAcceptCall): PhoneAcceptCall.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneAcceptCall, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneAcceptCall;
+  static deserializeBinaryFromReader(message: PhoneAcceptCall, reader: jspb.BinaryReader): PhoneAcceptCall;
+}
+
+export namespace PhoneAcceptCall {
+  export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
+    callid?: string,
+    recipientsList: Array<PhoneRecipient.AsObject>,
+  }
+}
+
+export class PhoneDiscardCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputUser;
-  setPeer(value?: core_types_pb.InputUser): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  hasCallid(): boolean;
+  clearCallid(): void;
+  getCallid(): string | undefined;
+  setCallid(value: string): void;
+
+  clearRecipientsList(): void;
+  getRecipientsList(): Array<core_types_pb.InputUser>;
+  setRecipientsList(value: Array<core_types_pb.InputUser>): void;
+  addRecipients(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
 
   hasDuration(): boolean;
   clearDuration(): void;
@@ -124,23 +139,29 @@ export class PhoneDiscardCall extends jspb.Message {
 
 export namespace PhoneDiscardCall {
   export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
     callid?: string,
-    peer: core_types_pb.InputUser.AsObject,
+    recipientsList: Array<core_types_pb.InputUser.AsObject>,
     duration?: number,
     reason?: DiscardReason,
   }
 }
 
 export class PhoneUpdateCall extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
   hasCallid(): boolean;
   clearCallid(): void;
   getCallid(): string | undefined;
   setCallid(value: string): void;
 
-  hasPeer(): boolean;
-  clearPeer(): void;
-  getPeer(): core_types_pb.InputUser;
-  setPeer(value?: core_types_pb.InputUser): void;
+  clearRecipientsList(): void;
+  getRecipientsList(): Array<core_types_pb.InputUser>;
+  setRecipientsList(value: Array<core_types_pb.InputUser>): void;
+  addRecipients(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
 
   hasAction(): boolean;
   clearAction(): void;
@@ -166,45 +187,24 @@ export class PhoneUpdateCall extends jspb.Message {
 
 export namespace PhoneUpdateCall {
   export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
     callid?: string,
-    peer: core_types_pb.InputUser.AsObject,
+    recipientsList: Array<core_types_pb.InputUser.AsObject>,
     action?: PhoneCallAction,
     actiondata: Uint8Array | string,
   }
 }
 
-export class PhoneReceivedCall extends jspb.Message {
+export class PhoneRateCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputUser;
-  setPeer(value?: core_types_pb.InputUser): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
 
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneReceivedCall.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneReceivedCall): PhoneReceivedCall.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneReceivedCall, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneReceivedCall;
-  static deserializeBinaryFromReader(message: PhoneReceivedCall, reader: jspb.BinaryReader): PhoneReceivedCall;
-}
-
-export namespace PhoneReceivedCall {
-  export type AsObject = {
-    peer: core_types_pb.InputUser.AsObject,
-  }
-}
-
-export class PhoneSetCallRating extends jspb.Message {
-  hasPeer(): boolean;
-  clearPeer(): void;
-  getPeer(): core_types_pb.InputUser;
-  setPeer(value?: core_types_pb.InputUser): void;
-
-  hasInitiator(): boolean;
-  clearInitiator(): void;
-  getInitiator(): boolean | undefined;
-  setInitiator(value: boolean): void;
+  hasCallid(): boolean;
+  clearCallid(): void;
+  getCallid(): string | undefined;
+  setCallid(value: string): void;
 
   hasRate(): boolean;
   clearRate(): void;
@@ -217,19 +217,19 @@ export class PhoneSetCallRating extends jspb.Message {
   setComment(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneSetCallRating.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneSetCallRating): PhoneSetCallRating.AsObject;
+  toObject(includeInstance?: boolean): PhoneRateCall.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneRateCall): PhoneRateCall.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneSetCallRating, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneSetCallRating;
-  static deserializeBinaryFromReader(message: PhoneSetCallRating, reader: jspb.BinaryReader): PhoneSetCallRating;
+  static serializeBinaryToWriter(message: PhoneRateCall, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneRateCall;
+  static deserializeBinaryFromReader(message: PhoneRateCall, reader: jspb.BinaryReader): PhoneRateCall;
 }
 
-export namespace PhoneSetCallRating {
+export namespace PhoneRateCall {
   export type AsObject = {
-    peer: core_types_pb.InputUser.AsObject,
-    initiator?: boolean,
+    peer: core_types_pb.InputPeer.AsObject,
+    callid?: string,
     rate?: number,
     comment?: string,
   }
@@ -241,30 +241,10 @@ export class PhoneCall extends jspb.Message {
   getId(): string | undefined;
   setId(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
-  setUserid(value: string): void;
-
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
-  setAccesshash(value: string): void;
-
-  hasVideo(): boolean;
-  clearVideo(): void;
-  getVideo(): boolean | undefined;
-  setVideo(value: boolean): void;
-
   hasDate(): boolean;
   clearDate(): void;
   getDate(): number | undefined;
   setDate(value: number): void;
-
-  clearStunserversList(): void;
-  getStunserversList(): Array<string>;
-  setStunserversList(value: Array<string>): void;
-  addStunservers(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneCall.AsObject;
@@ -279,11 +259,103 @@ export class PhoneCall extends jspb.Message {
 export namespace PhoneCall {
   export type AsObject = {
     id?: string,
-    userid?: string,
-    accesshash?: string,
-    video?: boolean,
     date?: number,
-    stunserversList: Array<string>,
+  }
+}
+
+export class PhoneInit extends jspb.Message {
+  clearIceserversList(): void;
+  getIceserversList(): Array<IceServer>;
+  setIceserversList(value: Array<IceServer>): void;
+  addIceservers(value?: IceServer, index?: number): IceServer;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneInit.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneInit): PhoneInit.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneInit, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneInit;
+  static deserializeBinaryFromReader(message: PhoneInit, reader: jspb.BinaryReader): PhoneInit;
+}
+
+export namespace PhoneInit {
+  export type AsObject = {
+    iceserversList: Array<IceServer.AsObject>,
+  }
+}
+
+export class IceServer extends jspb.Message {
+  clearUrlsList(): void;
+  getUrlsList(): Array<string>;
+  setUrlsList(value: Array<string>): void;
+  addUrls(value: string, index?: number): string;
+
+  hasUsername(): boolean;
+  clearUsername(): void;
+  getUsername(): string | undefined;
+  setUsername(value: string): void;
+
+  hasCredential(): boolean;
+  clearCredential(): void;
+  getCredential(): string | undefined;
+  setCredential(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): IceServer.AsObject;
+  static toObject(includeInstance: boolean, msg: IceServer): IceServer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: IceServer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IceServer;
+  static deserializeBinaryFromReader(message: IceServer, reader: jspb.BinaryReader): IceServer;
+}
+
+export namespace IceServer {
+  export type AsObject = {
+    urlsList: Array<string>,
+    username?: string,
+    credential?: string,
+  }
+}
+
+export class PhoneRecipient extends jspb.Message {
+  hasConnectionid(): boolean;
+  clearConnectionid(): void;
+  getConnectionid(): number | undefined;
+  setConnectionid(value: number): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputUser;
+  setPeer(value?: core_types_pb.InputUser): void;
+
+  hasSdp(): boolean;
+  clearSdp(): void;
+  getSdp(): string | undefined;
+  setSdp(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): string | undefined;
+  setType(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneRecipient.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneRecipient): PhoneRecipient.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneRecipient, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneRecipient;
+  static deserializeBinaryFromReader(message: PhoneRecipient, reader: jspb.BinaryReader): PhoneRecipient;
+}
+
+export namespace PhoneRecipient {
+  export type AsObject = {
+    connectionid?: number,
+    peer: core_types_pb.InputUser.AsObject,
+    sdp?: string,
+    type?: string,
   }
 }
 

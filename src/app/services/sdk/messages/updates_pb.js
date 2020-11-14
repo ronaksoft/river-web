@@ -18803,11 +18803,11 @@ proto.msg.UpdatePhoneCall.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    callid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    userid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    accesshash: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    peerid: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    peertype: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
+    peerid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    peertype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    callid: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+    userid: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
+    accesshash: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
     action: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
     actiondata: msg.getActiondata_asB64()
   };
@@ -18856,23 +18856,23 @@ proto.msg.UpdatePhoneCall.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readInt64String());
-      msg.setCallid(value);
+      msg.setPeerid(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readInt64String());
-      msg.setUserid(value);
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setPeertype(value);
       break;
     case 4:
-      var value = /** @type {string} */ (reader.readFixed64String());
-      msg.setAccesshash(value);
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setCallid(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readInt64String());
-      msg.setPeerid(value);
+      msg.setUserid(value);
       break;
     case 6:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setPeertype(value);
+      var value = /** @type {string} */ (reader.readFixed64String());
+      msg.setAccesshash(value);
       break;
     case 7:
       var value = /** @type {!proto.msg.PhoneCallAction} */ (reader.readEnum());
@@ -18932,16 +18932,16 @@ proto.msg.UpdatePhoneCall.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeInt64String(
+    writer.writeInt32(
       3,
       f
     );
   }
   f = /** @type {string} */ (jspb.Message.getField(message, 4));
   if (f != null) {
-    writer.writeFixed64String(
+    writer.writeInt64String(
       4,
       f
     );
@@ -18953,9 +18953,9 @@ proto.msg.UpdatePhoneCall.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
   if (f != null) {
-    writer.writeInt32(
+    writer.writeFixed64String(
       6,
       f
     );
@@ -19050,10 +19050,10 @@ proto.msg.UpdatePhoneCall.prototype.hasTeamid = function() {
 
 
 /**
- * required int64 CallID = 2;
+ * required int64 PeerID = 2;
  * @return {string}
  */
-proto.msg.UpdatePhoneCall.prototype.getCallid = function() {
+proto.msg.UpdatePhoneCall.prototype.getPeerid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
@@ -19062,7 +19062,7 @@ proto.msg.UpdatePhoneCall.prototype.getCallid = function() {
  * @param {string} value
  * @return {!proto.msg.UpdatePhoneCall} returns this
  */
-proto.msg.UpdatePhoneCall.prototype.setCallid = function(value) {
+proto.msg.UpdatePhoneCall.prototype.setPeerid = function(value) {
   return jspb.Message.setField(this, 2, value);
 };
 
@@ -19071,7 +19071,7 @@ proto.msg.UpdatePhoneCall.prototype.setCallid = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.msg.UpdatePhoneCall} returns this
  */
-proto.msg.UpdatePhoneCall.prototype.clearCallid = function() {
+proto.msg.UpdatePhoneCall.prototype.clearPeerid = function() {
   return jspb.Message.setField(this, 2, undefined);
 };
 
@@ -19080,125 +19080,17 @@ proto.msg.UpdatePhoneCall.prototype.clearCallid = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.msg.UpdatePhoneCall.prototype.hasCallid = function() {
+proto.msg.UpdatePhoneCall.prototype.hasPeerid = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * required int64 UserID = 3;
- * @return {string}
- */
-proto.msg.UpdatePhoneCall.prototype.getUserid = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.msg.UpdatePhoneCall} returns this
- */
-proto.msg.UpdatePhoneCall.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.UpdatePhoneCall} returns this
- */
-proto.msg.UpdatePhoneCall.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.UpdatePhoneCall.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required fixed64 AccessHash = 4;
- * @return {string}
- */
-proto.msg.UpdatePhoneCall.prototype.getAccesshash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.msg.UpdatePhoneCall} returns this
- */
-proto.msg.UpdatePhoneCall.prototype.setAccesshash = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.UpdatePhoneCall} returns this
- */
-proto.msg.UpdatePhoneCall.prototype.clearAccesshash = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.UpdatePhoneCall.prototype.hasAccesshash = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required int64 PeerID = 5;
- * @return {string}
- */
-proto.msg.UpdatePhoneCall.prototype.getPeerid = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, "0"));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.msg.UpdatePhoneCall} returns this
- */
-proto.msg.UpdatePhoneCall.prototype.setPeerid = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.UpdatePhoneCall} returns this
- */
-proto.msg.UpdatePhoneCall.prototype.clearPeerid = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.UpdatePhoneCall.prototype.hasPeerid = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required int32 PeerType = 6;
+ * required int32 PeerType = 3;
  * @return {number}
  */
 proto.msg.UpdatePhoneCall.prototype.getPeertype = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -19207,7 +19099,7 @@ proto.msg.UpdatePhoneCall.prototype.getPeertype = function() {
  * @return {!proto.msg.UpdatePhoneCall} returns this
  */
 proto.msg.UpdatePhoneCall.prototype.setPeertype = function(value) {
-  return jspb.Message.setField(this, 6, value);
+  return jspb.Message.setField(this, 3, value);
 };
 
 
@@ -19216,7 +19108,7 @@ proto.msg.UpdatePhoneCall.prototype.setPeertype = function(value) {
  * @return {!proto.msg.UpdatePhoneCall} returns this
  */
 proto.msg.UpdatePhoneCall.prototype.clearPeertype = function() {
-  return jspb.Message.setField(this, 6, undefined);
+  return jspb.Message.setField(this, 3, undefined);
 };
 
 
@@ -19225,6 +19117,114 @@ proto.msg.UpdatePhoneCall.prototype.clearPeertype = function() {
  * @return {boolean}
  */
 proto.msg.UpdatePhoneCall.prototype.hasPeertype = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * required int64 CallID = 4;
+ * @return {string}
+ */
+proto.msg.UpdatePhoneCall.prototype.getCallid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+ */
+proto.msg.UpdatePhoneCall.prototype.setCallid = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+ */
+proto.msg.UpdatePhoneCall.prototype.clearCallid = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdatePhoneCall.prototype.hasCallid = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * required int64 UserID = 5;
+ * @return {string}
+ */
+proto.msg.UpdatePhoneCall.prototype.getUserid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+ */
+proto.msg.UpdatePhoneCall.prototype.setUserid = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+ */
+proto.msg.UpdatePhoneCall.prototype.clearUserid = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdatePhoneCall.prototype.hasUserid = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * required fixed64 AccessHash = 6;
+ * @return {string}
+ */
+proto.msg.UpdatePhoneCall.prototype.getAccesshash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+ */
+proto.msg.UpdatePhoneCall.prototype.setAccesshash = function(value) {
+  return jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+ */
+proto.msg.UpdatePhoneCall.prototype.clearAccesshash = function() {
+  return jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdatePhoneCall.prototype.hasAccesshash = function() {
   return jspb.Message.getField(this, 6) != null;
 };
 

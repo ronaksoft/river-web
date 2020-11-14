@@ -2363,6 +2363,16 @@ export class UpdatePhoneCall extends jspb.Message {
   getTeamid(): string | undefined;
   setTeamid(value: string): void;
 
+  hasPeerid(): boolean;
+  clearPeerid(): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
+
+  hasPeertype(): boolean;
+  clearPeertype(): void;
+  getPeertype(): number | undefined;
+  setPeertype(value: number): void;
+
   hasCallid(): boolean;
   clearCallid(): void;
   getCallid(): string | undefined;
@@ -2377,16 +2387,6 @@ export class UpdatePhoneCall extends jspb.Message {
   clearAccesshash(): void;
   getAccesshash(): string | undefined;
   setAccesshash(value: string): void;
-
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
-  setPeerid(value: string): void;
-
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
-  setPeertype(value: number): void;
 
   hasAction(): boolean;
   clearAction(): void;
@@ -2414,11 +2414,11 @@ export namespace UpdatePhoneCall {
   export type AsObject = {
     ucount?: number,
     teamid?: string,
+    peerid?: string,
+    peertype?: number,
     callid?: string,
     userid?: string,
     accesshash?: string,
-    peerid?: string,
-    peertype?: number,
     action?: chat_phone_pb.PhoneCallAction,
     actiondata: Uint8Array | string,
   }

@@ -169,7 +169,7 @@ import {
     DiscardReason,
     PhoneAcceptCall,
     PhoneCall, PhoneCallAction,
-    PhoneDiscardCall,
+    PhoneDiscardCall, PhoneInit, PhoneInitCall, PhoneRecipient,
     PhoneRequestCall,
     PhoneUpdateCall
 } from "./messages/chat.phone_pb";
@@ -1216,41 +1216,47 @@ export default class APIManager {
         return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true);
     }
 
-    public callRequest(inputUser: InputUser, randomId: number, sdp: string, type: string, video: boolean): Promise<PhoneCall.AsObject> {
+    public callInit(inputPeer: InputPeer): Promise<PhoneInit.AsObject> {
+        const data = new PhoneInitCall();
+        data.setPeer(inputPeer);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneInitCall, data.serializeBinary(), true);
+    }
+
+    public callRequest(inputPeer: InputPeer, randomId: number, recipients: PhoneRecipient[]): Promise<PhoneCall.AsObject> {
         const data = new PhoneRequestCall();
-        data.setPeer(inputUser);
+        data.setPeer(inputPeer);
         data.setRandomid(randomId);
-        data.setOffersdp(sdp);
-        data.setType(type);
-        data.setVideo(video);
+        data.setRecipientsList(recipients);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), true);
     }
 
-    public callAccept(inputUser: InputUser, id: string, sdp: string, type: string): Promise<PhoneCall.AsObject> {
+    public callAccept(inputPeer: InputPeer, id: string, recipients: PhoneRecipient[]): Promise<PhoneCall.AsObject> {
         const data = new PhoneAcceptCall();
-        data.setPeer(inputUser);
+        data.setPeer(inputPeer);
         data.setCallid(id);
-        data.setAnswersdp(sdp);
-        data.setType(type);
+        data.setRecipientsList(recipients);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneAcceptCall, data.serializeBinary(), true);
     }
 
-    public callReject(inputUser: InputUser, id: string, reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
+    public callReject(inputPeer: InputPeer, id: string, recipients: InputUser[], reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
         const data = new PhoneDiscardCall();
-        data.setPeer(inputUser);
+        data.setPeer(inputPeer);
         data.setCallid(id);
+        data.setRecipientsList(recipients);
         data.setDuration(duration);
         data.setReason(reason);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
     }
 
-    public callUpdate(inputUser: InputUser, id: string, action: PhoneCallAction, actionData: Uint8Array): Promise<Bool.AsObject> {
+    public callUpdate(inputPeer: InputPeer, id: string, recipients: InputUser[], action: PhoneCallAction, actionData: Uint8Array): Promise<Bool.AsObject> {
         const data = new PhoneUpdateCall();
-        data.setPeer(inputUser);
+        data.setPeer(inputPeer);
         data.setCallid(id);
+        data.setRecipientsList(recipients);
         data.setAction(action);
         data.setActiondata(actionData);
         this.logVerbose(data);

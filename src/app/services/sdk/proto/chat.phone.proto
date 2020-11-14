@@ -2,25 +2,30 @@ syntax = "proto2";
 package msg;
 import "core.types.proto";
 
-// PhoneAcceptCall
+// PhoneInitCall
 // @Function
-// @Return: PhoneCall
-message PhoneAcceptCall {
-    required int64 CallID = 1 [jstype = JS_STRING];
-    required InputUser Peer = 2;
-    required string AnswerSDP = 3;
-    required string Type = 4;
+// @Return: PhoneInit
+message PhoneInitCall {
+    required InputPeer Peer = 1;
 }
 
 // PhoneRequestCall
 // @Function
 // @Return: PhoneCall
 message PhoneRequestCall {
-    required InputUser Peer = 1;
-    required string OfferSDP = 2;
-    required string Type = 3;
-    required bool Video = 4;
-    required int64 RandomID = 5;
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    repeated PhoneRecipient Recipients = 3;
+    optional int64 CallID = 4 [jstype = JS_STRING];
+}
+
+// PhoneAcceptCall
+// @Function
+// @Return: PhoneCall
+message PhoneAcceptCall {
+    required InputPeer Peer = 1;
+    required int64 CallID = 2 [jstype = JS_STRING];
+    repeated PhoneRecipient Recipients = 3;
 }
 
 enum DiscardReason {
@@ -44,9 +49,10 @@ enum DiscardReason {
 // @Function
 // @Return: Bool
 message PhoneDiscardCall {
-    required int64 CallID = 1 [jstype = JS_STRING];
-    required InputUser Peer = 2;
-    required int32 Duration = 3;
+    required InputPeer Peer = 1;
+    required int64 CallID = 2 [jstype = JS_STRING];
+    repeated InputUser Recipients = 3;
+    required int32 Duration = 4;
     required DiscardReason Reason = 5;
 }
 
@@ -54,23 +60,18 @@ message PhoneDiscardCall {
 // @Function
 // @Return: Bool
 message PhoneUpdateCall {
-    required int64 CallID = 1 [jstype = JS_STRING];
-    required InputUser Peer = 2;
+    required InputPeer Peer = 1;
+    required int64 CallID = 2 [jstype = JS_STRING];
+    repeated InputUser Recipients = 3;
     required PhoneCallAction Action = 7;
     required bytes ActionData = 8;
 }
 
-// PhoneReceivedCall
+// PhoneRateCall
 // @Function
-message PhoneReceivedCall {
-    required InputUser Peer = 1;
-}
-
-// PhoneSetCallRating
-// @Function
-message PhoneSetCallRating {
-    required InputUser Peer = 1;
-    required bool Initiator = 2;
+message PhoneRateCall {
+    required InputPeer Peer = 1;
+    required int64 CallID = 2 [jstype = JS_STRING];
     required int32 Rate = 3;
     optional string Comment = 4;
 }
@@ -95,11 +96,27 @@ enum PhoneCallAction {
 // PhoneCall
 message PhoneCall {
     required int64 ID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
-    required fixed64 AccessHash = 3 [jstype = JS_STRING];
-    required bool Video = 4;
-    required int64 Date = 5;
-    repeated string StunServers = 6;
+    required int64 Date = 2;
+}
+
+// PhoneInit
+message PhoneInit {
+    repeated IceServer IceServers = 1;
+}
+
+// IceServer
+message IceServer {
+    repeated string Urls = 1;
+    optional string Username = 2;
+    optional string Credential = 3;
+}
+
+// PhoneRecipient
+message PhoneRecipient {
+    required int32 ConnectionId = 1;
+    required InputUser Peer = 2;
+    required string SDP = 3;
+    required string Type = 4;
 }
 
 // PhoneActionCallEmpty
