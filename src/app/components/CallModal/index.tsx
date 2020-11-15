@@ -11,20 +11,20 @@ import * as React from 'react';
 import {Dialog, FormControlLabel, Grow, IconButton, Paper, PaperProps, Switch} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
 import Draggable from 'react-draggable';
-import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
+import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
 import CallService, {C_CALL_EVENT, IUpdatePhoneCall} from "../../services/callService";
 import {
     CallEndRounded,
     CallRounded,
     CloseRounded,
+    CropLandscapeRounded,
+    CropSquareRounded,
     FullscreenExitRounded,
     FullscreenRounded,
     MicOffRounded,
     MicRounded,
     VideocamOffRounded,
     VideocamRounded,
-    CropLandscapeRounded,
-    CropSquareRounded,
 } from "@material-ui/icons";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -171,6 +171,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.callService.destroy();
         this.setState({
             open: false,
+            rate: null,
         });
         this.timer = 0;
         this.timerEnd = 0;
@@ -384,7 +385,7 @@ class CallModal extends React.Component<IProps, IState> {
             }, 512);
         });
         if (this.peer) {
-            this.callService.call(this.peer, 0);
+            this.callService.call(this.peer, this.getRecipients());
         }
     }
 
@@ -491,6 +492,20 @@ class CallModal extends React.Component<IProps, IState> {
             rate: val,
         });
         this.closeHandler();
+    }
+
+    private getRecipients(): InputUser.AsObject[] {
+        if (this.peer) {
+            if (this.peer.getType() === PeerType.PEERUSER) {
+                return [{
+                    accesshash: this.peer.getAccesshash() || '0',
+                    userid: this.peer.getId() || '0',
+                }];
+            } else {
+                return [];
+            }
+        }
+        return [];
     }
 }
 

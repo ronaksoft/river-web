@@ -94,13 +94,13 @@ export default class CallService {
             urls: 'turn:vm-02.ronaksoftware.com',
             username: 'hamid',
         }],
-        // iceTransportPolicy: "relay",
+        iceTransportPolicy: "relay",
     };
     private peer: InputPeer | null = null;
     private activeCallId: string | undefined = '0';
     private callRequest: { [key: string]: IUpdatePhoneCall } = {};
-    private callRecipients: {[key: number]: PhoneRecipient.AsObject} = {};
-    private callRecipientMap: {[key: string]: number} = {};
+    private callRecipients: { [key: number]: PhoneRecipient.AsObject } = {};
+    private callRecipientMap: { [key: string]: number } = {};
 
     private constructor() {
         this.updateManager = UpdateManager.getInstance();
@@ -175,8 +175,9 @@ export default class CallService {
                 urls: item.urlsList,
                 username: item.username,
             }));
-            return this.initConnection(false, 0).then((offer) => {
-                this.callUser(peer, offer.sdp || '', offer.type || 'offer');
+            window.console.log(recipients);
+            return this.initLocalConnections(recipients).then((phoneRecipients) => {
+                this.callUser(peer, phoneRecipients);
             });
         });
     }
@@ -294,23 +295,23 @@ export default class CallService {
         inputUser.setAccesshash(data.accesshash || '0');
         window.console.log(inputUser);
 
-        return this.apiManager.callReject(peer, data.callid || '0', [],DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
+        return this.apiManager.callReject(peer, data.callid || '0', [], DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
             //
         });
     }
 
-    private callUser(peer: InputPeer, sdp: string, type: string) {
-        const inputUser = new InputUser();
-        inputUser.setUserid(peer.getId() || '0');
-        inputUser.setAccesshash(peer.getAccesshash() || '0');
+    private callUser(peer: InputPeer, phoneRecipients: PhoneRecipient[]) {
         const randomId = UniqueId.getRandomId();
-        this.apiManager.callRequest(peer, randomId, []).then((res) => {
+        window.console.log(phoneRecipients);
+        this.apiManager.callRequest(peer, randomId, phoneRecipients).then((res) => {
+            window.console.log(res);
             this.activeCallId = res.id || '0';
         });
     }
 
     private phoneCallHandler = (data: IUpdatePhoneCall) => {
         const d = parseData(data.action || 0, data.actiondata);
+        window.console.log(d);
         data.data = d;
         switch (data.action) {
             case PhoneCallAction.PHONECALLREQUESTED:
@@ -390,8 +391,55 @@ export default class CallService {
         return conn[connId].connection.addIceCandidate(iceCandidate);
     }
 
-    private initConnections(recipients: InputUser.AsObject[]) {
+    private convertPhoneRecipient(item: PhoneRecipient.AsObject) {
+        const phoneRecipient = new PhoneRecipient();
+        phoneRecipient.setConnectionid(item.connectionid || 0);
+        phoneRecipient.setSdp(item.sdp || '');
+        phoneRecipient.setType(item.type || '');
+        const peer = new InputUser();
+        peer.setAccesshash(item.peer.accesshash || '0');
+        peer.setUserid(item.peer.userid || '0');
+        phoneRecipient.setPeer(peer);
+        return phoneRecipient;
+    }
 
+    private initLocalConnections(recipients: InputUser.AsObject[]): Promise<PhoneRecipient[]> {
+        recipients.unshift({
+            accesshash: '0',
+            userid: this.userId,
+        });
+        recipients.forEach((recipient, index) => {
+            this.callRecipients[index] = {
+                connectionid: index,
+                peer: recipient,
+                sdp: '',
+                type: '',
+            };
+            this.callRecipientMap[recipient.userid || '0'] = index;
+        });
+        const promises: any[] = [];
+        Object.values(this.callRecipients).forEach((recipient) => {
+            // Initialize connections only for greater connId,
+            // full mesh initialization will take place here
+            if ((this.callRecipientMap[this.userId] || 0) < (recipient.connectionid || 0)) {
+                promises.push(this.initConnection(false, recipient.connectionid || 0).then((res) => {
+                    if (this.callRecipients.hasOwnProperty(recipient.connectionid || 0)) {
+                        this.callRecipients[recipient.connectionid || 0].sdp = res.sdp || '';
+                        this.callRecipients[recipient.connectionid || 0].type = res.type || 'offer';
+                    }
+                    return this.callRecipients[recipient.connectionid || 0];
+                }));
+            }
+        });
+        if (promises.length > 0) {
+            return Promise.all(promises).then((res) => {
+                return res.map((item: PhoneRecipient.AsObject) => {
+                    return this.convertPhoneRecipient(item);
+                });
+            });
+        } else {
+            return Promise.resolve([]);
+        }
     }
 
     private initConnection(remote: boolean, connId: number, sdp?: RTCSessionDescriptionInit) {
