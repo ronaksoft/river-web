@@ -394,7 +394,7 @@ class CallModal extends React.Component<IProps, IState> {
             animateState: 'init',
             mode: 'call',
         });
-        this.callService.accept(this.state.callId, 0).then((stream) => {
+        this.callService.accept(this.state.callId).then((stream) => {
             if (this.videoRef && stream) {
                 this.setState({
                     animateState: 'end',
@@ -423,6 +423,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private callRequestHandler = (data: IUpdatePhoneCall) => {
+        window.console.log(data);
         this.setState({
             callId: data.callid || '0',
             callUserId: data.userid || '0',

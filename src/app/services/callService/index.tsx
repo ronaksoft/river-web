@@ -18,7 +18,8 @@ import {
     PhoneActionDiscarded,
     PhoneActionIceExchange,
     PhoneActionRequested,
-    PhoneCallAction, PhoneRecipient
+    PhoneCallAction,
+    PhoneRecipient, PhoneRecipientSDP
 } from "../sdk/messages/chat.phone_pb";
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
@@ -79,7 +80,7 @@ export default class CallService {
     private updateManager: UpdateManager;
     private apiManager: APIManager;
     private listeners: { [key: number]: IBroadcastItem } = {};
-    private userId: string = '0';
+    private readonly userId: string = '0';
 
     // Call variables
     private localStream: MediaStream | undefined;
@@ -175,44 +176,41 @@ export default class CallService {
                 urls: item.urlsList,
                 username: item.username,
             }));
-            window.console.log(recipients);
-            return this.initLocalConnections(recipients).then((phoneRecipients) => {
+            return this.initInitiatorConnections(recipients).then((phoneRecipients) => {
                 this.callUser(peer, phoneRecipients);
             });
         });
     }
 
-    public accept(id: string, connId: number) {
+    public accept(id: string) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
         }
-        return this.initStream().then((stream) => {
+        return this.apiManager.callInit(peer).then((res) => {
+            this.configs.iceServers = res.iceserversList.map((item) => ({
+                credential: item.credential,
+                urls: item.urlsList,
+                username: item.username,
+            }));
             const data = this.callRequest[id];
             if (!data) {
                 return Promise.reject('invalid call request');
             }
-
-            const inputUser = new InputUser();
-            inputUser.setUserid(data.userid || '0');
-            inputUser.setAccesshash(data.accesshash || '0');
-            window.console.log(inputUser);
-
             const sdpData = (data.data as PhoneActionRequested.AsObject);
-
-            return this.initConnection(true, 0, {
-                sdp: sdpData.sdp,
-                type: sdpData.type as any,
-            }).then((answer) => {
-                if (!this.peerConnections.hasOwnProperty(connId)) {
-                    return Promise.reject('invalid connId');
-                }
-
-                // return this.apiManager.callAccept(inputUser, id, answer.sdp || '', answer.type || 'answer').then(() => {
-                return this.apiManager.callAccept(peer, id, []).then(() => {
-                    return stream;
+            if (this.initRecipients(sdpData.recipientsList, data.userid || '0')) {
+                return this.initStream().then((stream) => {
+                    return this.initAcceptorConnections(peer, id, {
+                        sdp: sdpData.sdp,
+                        type: sdpData.type as any,
+                    }).then(() => {
+                        return stream;
+                    });
                 });
-            });
+            } else {
+                // accept all other
+                return Promise.reject('not implemented yet');
+            }
         });
     }
 
@@ -222,19 +220,19 @@ export default class CallService {
             return Promise.reject('invalid peer');
         }
 
-        const inputUser = new InputUser();
-        const data = this.callRequest[id];
-        if (data) {
-            inputUser.setUserid(data.userid || '0');
-            inputUser.setAccesshash(data.accesshash || '0');
-        } else if (this.peer) {
-            inputUser.setUserid(this.peer.getId() || '0');
-            inputUser.setAccesshash(this.peer.getAccesshash() || '0');
-        } else {
-            return Promise.reject('invalid call request');
-        }
+        // const inputUser = new InputUser();
+        // const data = this.callRequest[id];
+        // if (data) {
+        //     inputUser.setUserid(data.userid || '0');
+        //     inputUser.setAccesshash(data.accesshash || '0');
+        // } else if (this.peer) {
+        //     inputUser.setUserid(this.peer.getId() || '0');
+        //     inputUser.setAccesshash(this.peer.getAccesshash() || '0');
+        // } else {
+        //     return Promise.reject('invalid call request');
+        // }
 
-        return this.apiManager.callReject(peer, id, [], reason, duration).then(() => {
+        return this.apiManager.callReject(peer, id, this.getInputUsers(id), reason, duration).then(() => {
             this.destroyConnections(id);
         });
     }
@@ -290,60 +288,55 @@ export default class CallService {
             return Promise.reject('invalid peer');
         }
 
-        const inputUser = new InputUser();
-        inputUser.setUserid(data.userid || '0');
-        inputUser.setAccesshash(data.accesshash || '0');
-        window.console.log(inputUser);
-
-        return this.apiManager.callReject(peer, data.callid || '0', [], DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
+        return this.apiManager.callReject(peer, data.callid || '0', this.getInputUsers(data.callid || '0'), DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
             //
         });
     }
 
-    private callUser(peer: InputPeer, phoneRecipients: PhoneRecipient[]) {
+    private callUser(peer: InputPeer, phoneRecipients: PhoneRecipientSDP[]) {
         const randomId = UniqueId.getRandomId();
-        window.console.log(phoneRecipients);
         this.apiManager.callRequest(peer, randomId, phoneRecipients).then((res) => {
-            window.console.log(res);
             this.activeCallId = res.id || '0';
         });
     }
 
     private phoneCallHandler = (data: IUpdatePhoneCall) => {
         const d = parseData(data.action || 0, data.actiondata);
-        window.console.log(d);
+        window.console.log(data);
         data.data = d;
         switch (data.action) {
             case PhoneCallAction.PHONECALLREQUESTED:
                 this.callRequested(data);
                 break;
             case PhoneCallAction.PHONECALLACCEPTED:
-                this.callAccepted(data, 0);
+                this.callAccepted(data);
                 break;
             case PhoneCallAction.PHONECALLDISCARDED:
-                this.callRejected(data, 0);
+                this.callRejected(data);
                 break;
             case PhoneCallAction.PHONECALLICEEXCHANGE:
-                this.iceExchange(data, 0);
+                this.iceExchange(data);
                 break;
         }
     }
 
     private callRequested(data: IUpdatePhoneCall) {
-        if (this.activeCallId) {
+        if (false && this.activeCallId) {
             this.busyHandler(data);
             return;
         }
         this.callRequest[data.callid || '0'] = data;
         const inputPeer = new InputPeer();
-        inputPeer.setId(data.userid || '0');
-        inputPeer.setAccesshash(data.accesshash || '0');
-        inputPeer.setType(PeerType.PEERUSER);
+        inputPeer.setId(data.peerid || '0');
+        inputPeer.setAccesshash(data.peertype === PeerType.PEERGROUP ? '0' : (data.accesshash || '0'));
+        inputPeer.setType(data.peertype || PeerType.PEERUSER);
         this.peer = inputPeer;
         this.callHandlers(C_CALL_EVENT.CallRequest, data);
     }
 
-    private callAccepted(data: IUpdatePhoneCall, connId: number) {
+    private callAccepted(data: IUpdatePhoneCall) {
+        const connId = this.callRecipientMap[data.userid || 0];
+        window.console.log(connId, this.peerConnections);
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
@@ -365,12 +358,14 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.CallAccept, data);
     }
 
-    private callRejected(data: IUpdatePhoneCall, connId: number) {
+    private callRejected(data: IUpdatePhoneCall) {
         // const actionData = (data.data as PhoneActionDiscarded.AsObject);
         this.callHandlers(C_CALL_EVENT.CallRejected, data);
     }
 
-    private iceExchange(data: IUpdatePhoneCall, connId: number) {
+    private iceExchange(data: IUpdatePhoneCall) {
+        const connId = this.callRecipientMap[data.userid || 0];
+        window.console.log(connId, this.peerConnections);
         const conn = this.peerConnections;
         if (!conn.hasOwnProperty(connId)) {
             return Promise.reject('connId is not found');
@@ -391,8 +386,8 @@ export default class CallService {
         return conn[connId].connection.addIceCandidate(iceCandidate);
     }
 
-    private convertPhoneRecipient(item: PhoneRecipient.AsObject) {
-        const phoneRecipient = new PhoneRecipient();
+    private convertPhoneRecipient(item: PhoneRecipientSDP.AsObject) {
+        const phoneRecipient = new PhoneRecipientSDP();
         phoneRecipient.setConnectionid(item.connectionid || 0);
         phoneRecipient.setSdp(item.sdp || '');
         phoneRecipient.setType(item.type || '');
@@ -403,7 +398,18 @@ export default class CallService {
         return phoneRecipient;
     }
 
-    private initLocalConnections(recipients: InputUser.AsObject[]): Promise<PhoneRecipient[]> {
+    private initRecipients(recipients: PhoneRecipient.AsObject[], userId: string) {
+        recipients.forEach((recipient) => {
+            this.callRecipients[recipient.connectionid || 0] = {
+                connectionid: recipient.connectionid,
+                peer: recipient.peer,
+            };
+            this.callRecipientMap[recipient.peer.userid || '0'] = recipient.connectionid || 0;
+        });
+        return this.callRecipientMap[userId] === 0;
+    }
+
+    private initInitiatorConnections(recipients: InputUser.AsObject[]): Promise<PhoneRecipientSDP[]> {
         recipients.unshift({
             accesshash: '0',
             userid: this.userId,
@@ -412,31 +418,80 @@ export default class CallService {
             this.callRecipients[index] = {
                 connectionid: index,
                 peer: recipient,
-                sdp: '',
-                type: '',
             };
             this.callRecipientMap[recipient.userid || '0'] = index;
         });
+        const userConnId = this.callRecipientMap[this.userId] || 0;
         const promises: any[] = [];
         Object.values(this.callRecipients).forEach((recipient) => {
             // Initialize connections only for greater connId,
             // full mesh initialization will take place here
-            if ((this.callRecipientMap[this.userId] || 0) < (recipient.connectionid || 0)) {
+            if (userConnId === recipient.connectionid) {
+                promises.push(Promise.resolve({
+                    ...this.callRecipients[recipient.connectionid || 0],
+                    sdp: '',
+                    type: '',
+                }));
+            } else if (userConnId < (recipient.connectionid || 0)) {
                 promises.push(this.initConnection(false, recipient.connectionid || 0).then((res) => {
-                    if (this.callRecipients.hasOwnProperty(recipient.connectionid || 0)) {
-                        this.callRecipients[recipient.connectionid || 0].sdp = res.sdp || '';
-                        this.callRecipients[recipient.connectionid || 0].type = res.type || 'offer';
-                    }
-                    return this.callRecipients[recipient.connectionid || 0];
+                    return {
+                        ...this.callRecipients[recipient.connectionid || 0],
+                        sdp: res.sdp || '',
+                        type: res.type || 'offer'
+                    };
                 }));
             }
         });
         if (promises.length > 0) {
             return Promise.all(promises).then((res) => {
-                return res.map((item: PhoneRecipient.AsObject) => {
+                return res.map((item: PhoneRecipientSDP.AsObject) => {
                     return this.convertPhoneRecipient(item);
                 });
             });
+        } else {
+            return Promise.resolve([]);
+        }
+    }
+
+    private initAcceptorConnections(peer: InputPeer, id: string, sdp: RTCSessionDescriptionInit) {
+        const userConnId = this.callRecipientMap[this.userId] || 0;
+        const promises: any[] = [];
+        Object.values(this.callRecipients).forEach((recipient) => {
+            // Initialize connections only for greater connId,
+            // full mesh initialization will take place here
+            if (userConnId > (recipient.connectionid || 0)) {
+                promises.push(this.initConnection(true, recipient.connectionid || 0, sdp).then((res) => {
+                    const rc = this.convertPhoneRecipient({
+                        ...this.callRecipients[recipient.connectionid || 0],
+                        sdp: res.sdp || '',
+                        type: res.type || 'answer',
+                    });
+                    return this.apiManager.callAccept(peer, id, [rc]);
+                }));
+            } else if (userConnId < (recipient.connectionid || 0)) {
+                const innerPromises: any[] = [];
+                innerPromises.push(this.initConnection(false, recipient.connectionid || 0).then((res) => {
+                    return {
+                        ...this.callRecipients[recipient.connectionid || 0],
+                        sdp: res.sdp || '',
+                        type: res.type || 'offer'
+                    };
+                }));
+                if (innerPromises.length > 0) {
+                    promises.push(Promise.all(innerPromises).then((res) => {
+                        return res.map((item: PhoneRecipientSDP.AsObject) => {
+                            return this.convertPhoneRecipient(item);
+                        });
+                    }).then((phoneRecipients) => {
+                        return this.callUser(peer, phoneRecipients);
+                    }));
+                } else {
+                    promises.push(Promise.resolve([]));
+                }
+            }
+        });
+        if (promises.length > 0) {
+            return Promise.all(promises);
         } else {
             return Promise.resolve([]);
         }
@@ -460,7 +515,7 @@ export default class CallService {
         });
 
         const conn: IConnection = {
-            accepted: false,
+            accepted: remote,
             connection: pc,
             iceQueue: [],
             streams: [],
@@ -501,6 +556,17 @@ export default class CallService {
         }
     }
 
+    private getInputUsers(id: string) {
+        const inputUsers: InputUser[] = [];
+        Object.values(this.callRecipients).forEach((recipient) => {
+            const inputUser = new InputUser();
+            inputUser.setAccesshash(recipient.peer.accesshash || '0');
+            inputUser.setUserid(recipient.peer.userid || '0');
+            inputUsers.push(inputUser);
+        });
+        return inputUsers;
+    }
+
     private sendLocalIce(candidate: RTCIceCandidate | null, connId: number) {
         if (!candidate) {
             return Promise.reject('invalid candidate');
@@ -537,7 +603,7 @@ export default class CallService {
         inputUser.setUserid(peer.getId() || '0');
         inputUser.setAccesshash(peer.getAccesshash() || '0');
 
-        return this.apiManager.callUpdate(peer, this.activeCallId, [], PhoneCallAction.PHONECALLICEEXCHANGE, actionData.serializeBinary()).then(() => {
+        return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLICEEXCHANGE, actionData.serializeBinary()).then(() => {
             return Promise.resolve();
         });
     }

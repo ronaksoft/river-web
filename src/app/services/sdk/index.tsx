@@ -169,7 +169,7 @@ import {
     DiscardReason,
     PhoneAcceptCall,
     PhoneCall, PhoneCallAction,
-    PhoneDiscardCall, PhoneInit, PhoneInitCall, PhoneRecipient,
+    PhoneDiscardCall, PhoneInit, PhoneInitCall, PhoneRecipientSDP,
     PhoneRequestCall,
     PhoneUpdateCall
 } from "./messages/chat.phone_pb";
@@ -1223,7 +1223,7 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneInitCall, data.serializeBinary(), true);
     }
 
-    public callRequest(inputPeer: InputPeer, randomId: number, recipients: PhoneRecipient[], callId?: string): Promise<PhoneCall.AsObject> {
+    public callRequest(inputPeer: InputPeer, randomId: number, recipients: PhoneRecipientSDP[], callId?: string): Promise<PhoneCall.AsObject> {
         const data = new PhoneRequestCall();
         data.setPeer(inputPeer);
         data.setRandomid(randomId);
@@ -1235,7 +1235,7 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), true);
     }
 
-    public callAccept(inputPeer: InputPeer, id: string, recipients: PhoneRecipient[]): Promise<PhoneCall.AsObject> {
+    public callAccept(inputPeer: InputPeer, id: string, recipients: PhoneRecipientSDP[]): Promise<PhoneCall.AsObject> {
         const data = new PhoneAcceptCall();
         data.setPeer(inputPeer);
         data.setCallid(id);

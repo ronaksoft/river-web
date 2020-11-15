@@ -39,9 +39,9 @@ export class PhoneRequestCall extends jspb.Message {
   setPeer(value?: core_types_pb.InputPeer): void;
 
   clearRecipientsList(): void;
-  getRecipientsList(): Array<PhoneRecipient>;
-  setRecipientsList(value: Array<PhoneRecipient>): void;
-  addRecipients(value?: PhoneRecipient, index?: number): PhoneRecipient;
+  getRecipientsList(): Array<PhoneRecipientSDP>;
+  setRecipientsList(value: Array<PhoneRecipientSDP>): void;
+  addRecipients(value?: PhoneRecipientSDP, index?: number): PhoneRecipientSDP;
 
   hasCallid(): boolean;
   clearCallid(): void;
@@ -62,7 +62,7 @@ export namespace PhoneRequestCall {
   export type AsObject = {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
-    recipientsList: Array<PhoneRecipient.AsObject>,
+    recipientsList: Array<PhoneRecipientSDP.AsObject>,
     callid?: string,
   }
 }
@@ -79,9 +79,9 @@ export class PhoneAcceptCall extends jspb.Message {
   setCallid(value: string): void;
 
   clearRecipientsList(): void;
-  getRecipientsList(): Array<PhoneRecipient>;
-  setRecipientsList(value: Array<PhoneRecipient>): void;
-  addRecipients(value?: PhoneRecipient, index?: number): PhoneRecipient;
+  getRecipientsList(): Array<PhoneRecipientSDP>;
+  setRecipientsList(value: Array<PhoneRecipientSDP>): void;
+  addRecipients(value?: PhoneRecipientSDP, index?: number): PhoneRecipientSDP;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneAcceptCall.AsObject;
@@ -97,7 +97,7 @@ export namespace PhoneAcceptCall {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     callid?: string,
-    recipientsList: Array<PhoneRecipient.AsObject>,
+    recipientsList: Array<PhoneRecipientSDP.AsObject>,
   }
 }
 
@@ -330,16 +330,6 @@ export class PhoneRecipient extends jspb.Message {
   getPeer(): core_types_pb.InputUser;
   setPeer(value?: core_types_pb.InputUser): void;
 
-  hasSdp(): boolean;
-  clearSdp(): void;
-  getSdp(): string | undefined;
-  setSdp(value: string): void;
-
-  hasType(): boolean;
-  clearType(): void;
-  getType(): string | undefined;
-  setType(value: string): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneRecipient.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneRecipient): PhoneRecipient.AsObject;
@@ -351,6 +341,44 @@ export class PhoneRecipient extends jspb.Message {
 }
 
 export namespace PhoneRecipient {
+  export type AsObject = {
+    connectionid?: number,
+    peer: core_types_pb.InputUser.AsObject,
+  }
+}
+
+export class PhoneRecipientSDP extends jspb.Message {
+  hasConnectionid(): boolean;
+  clearConnectionid(): void;
+  getConnectionid(): number | undefined;
+  setConnectionid(value: number): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputUser;
+  setPeer(value?: core_types_pb.InputUser): void;
+
+  hasSdp(): boolean;
+  clearSdp(): void;
+  getSdp(): string | undefined;
+  setSdp(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): string | undefined;
+  setType(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneRecipientSDP.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneRecipientSDP): PhoneRecipientSDP.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneRecipientSDP, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneRecipientSDP;
+  static deserializeBinaryFromReader(message: PhoneRecipientSDP, reader: jspb.BinaryReader): PhoneRecipientSDP;
+}
+
+export namespace PhoneRecipientSDP {
   export type AsObject = {
     connectionid?: number,
     peer: core_types_pb.InputUser.AsObject,
@@ -420,6 +448,11 @@ export class PhoneActionRequested extends jspb.Message {
   getType(): string | undefined;
   setType(value: string): void;
 
+  clearRecipientsList(): void;
+  getRecipientsList(): Array<PhoneRecipient>;
+  setRecipientsList(value: Array<PhoneRecipient>): void;
+  addRecipients(value?: PhoneRecipient, index?: number): PhoneRecipient;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionRequested.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneActionRequested): PhoneActionRequested.AsObject;
@@ -434,6 +467,7 @@ export namespace PhoneActionRequested {
   export type AsObject = {
     sdp?: string,
     type?: string,
+    recipientsList: Array<PhoneRecipient.AsObject>,
   }
 }
 

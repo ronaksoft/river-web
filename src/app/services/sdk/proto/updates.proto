@@ -494,5 +494,4 @@ message UpdatePhoneCall {
     required fixed64 AccessHash = 6 [jstype = JS_STRING];
     required PhoneCallAction Action = 7;
     required bytes ActionData = 8;
-    repeated PhoneRecipient Recipients = 9;
 }
