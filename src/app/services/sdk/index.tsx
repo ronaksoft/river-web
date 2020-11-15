@@ -1223,11 +1223,14 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneInitCall, data.serializeBinary(), true);
     }
 
-    public callRequest(inputPeer: InputPeer, randomId: number, recipients: PhoneRecipient[]): Promise<PhoneCall.AsObject> {
+    public callRequest(inputPeer: InputPeer, randomId: number, recipients: PhoneRecipient[], callId?: string): Promise<PhoneCall.AsObject> {
         const data = new PhoneRequestCall();
         data.setPeer(inputPeer);
         data.setRandomid(randomId);
         data.setRecipientsList(recipients);
+        if (callId) {
+            data.setCallid(callId);
+        }
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), true);
     }

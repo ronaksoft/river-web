@@ -2400,6 +2400,11 @@ export class UpdatePhoneCall extends jspb.Message {
   getActiondata_asB64(): string;
   setActiondata(value: Uint8Array | string): void;
 
+  clearRecipientsList(): void;
+  getRecipientsList(): Array<chat_phone_pb.PhoneRecipient>;
+  setRecipientsList(value: Array<chat_phone_pb.PhoneRecipient>): void;
+  addRecipients(value?: chat_phone_pb.PhoneRecipient, index?: number): chat_phone_pb.PhoneRecipient;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdatePhoneCall.AsObject;
   static toObject(includeInstance: boolean, msg: UpdatePhoneCall): UpdatePhoneCall.AsObject;
@@ -2421,6 +2426,7 @@ export namespace UpdatePhoneCall {
     accesshash?: string,
     action?: chat_phone_pb.PhoneCallAction,
     actiondata: Uint8Array | string,
+    recipientsList: Array<chat_phone_pb.PhoneRecipient.AsObject>,
   }
 }
 

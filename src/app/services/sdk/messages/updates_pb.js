@@ -1200,7 +1200,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.UpdatePhoneCall = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.UpdatePhoneCall.repeatedFields_, null);
 };
 goog.inherits(proto.msg.UpdatePhoneCall, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -18770,6 +18770,13 @@ proto.msg.ClientRedirect.prototype.clearAlternativesList = function() {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.UpdatePhoneCall.repeatedFields_ = [9];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -18809,7 +18816,9 @@ proto.msg.UpdatePhoneCall.toObject = function(includeInstance, msg) {
     userid: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
     accesshash: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
     action: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
-    actiondata: msg.getActiondata_asB64()
+    actiondata: msg.getActiondata_asB64(),
+    recipientsList: jspb.Message.toObjectList(msg.getRecipientsList(),
+    chat_phone_pb.PhoneRecipient.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -18881,6 +18890,11 @@ proto.msg.UpdatePhoneCall.deserializeBinaryFromReader = function(msg, reader) {
     case 8:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setActiondata(value);
+      break;
+    case 9:
+      var value = new chat_phone_pb.PhoneRecipient;
+      reader.readMessage(value,chat_phone_pb.PhoneRecipient.deserializeBinaryFromReader);
+      msg.addRecipients(value);
       break;
     default:
       reader.skipField();
@@ -18972,6 +18986,14 @@ proto.msg.UpdatePhoneCall.serializeBinaryToWriter = function(message, writer) {
     writer.writeBytes(
       8,
       f
+    );
+  }
+  f = message.getRecipientsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      9,
+      f,
+      chat_phone_pb.PhoneRecipient.serializeBinaryToWriter
     );
   }
 };
@@ -19322,6 +19344,44 @@ proto.msg.UpdatePhoneCall.prototype.clearActiondata = function() {
  */
 proto.msg.UpdatePhoneCall.prototype.hasActiondata = function() {
   return jspb.Message.getField(this, 8) != null;
+};
+
+
+/**
+ * repeated PhoneRecipient Recipients = 9;
+ * @return {!Array<!proto.msg.PhoneRecipient>}
+ */
+proto.msg.UpdatePhoneCall.prototype.getRecipientsList = function() {
+  return /** @type{!Array<!proto.msg.PhoneRecipient>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_phone_pb.PhoneRecipient, 9));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.PhoneRecipient>} value
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+*/
+proto.msg.UpdatePhoneCall.prototype.setRecipientsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 9, value);
+};
+
+
+/**
+ * @param {!proto.msg.PhoneRecipient=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.PhoneRecipient}
+ */
+proto.msg.UpdatePhoneCall.prototype.addRecipients = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 9, opt_value, proto.msg.PhoneRecipient, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+ */
+proto.msg.UpdatePhoneCall.prototype.clearRecipientsList = function() {
+  return this.setRecipientsList([]);
 };
 
 
