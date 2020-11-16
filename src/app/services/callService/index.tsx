@@ -310,7 +310,7 @@ export default class CallService {
     private phoneCallHandler = (data: IUpdatePhoneCall) => {
         const d = parseData(data.action || 0, data.actiondata);
         delete data.actiondata;
-        window.console.log(data);
+        // window.console.log(data);
         data.data = d;
         switch (data.action) {
             case PhoneCallAction.PHONECALLREQUESTED:
@@ -356,7 +356,7 @@ export default class CallService {
         }).then(() => {
             if (this.peerConnections.hasOwnProperty(connId)) {
                 this.peerConnections[connId].accepted = true;
-                this.flushIceCandidates(connId);
+                this.flushIceCandidates(data.callid || '0', connId);
             }
         });
 
@@ -514,7 +514,7 @@ export default class CallService {
 
         const pc = new RTCPeerConnection(this.configs);
         pc.addEventListener('icecandidate', (e) => {
-            this.sendLocalIce(e.candidate, connId).catch((err) => {
+            this.sendIceCandidate(this.activeCallId || '0', e.candidate, connId).catch((err) => {
                 window.console.log('icecandidate', err);
             });
         });
@@ -581,11 +581,11 @@ export default class CallService {
         return inputUsers;
     }
 
-    private getCallInfo(id: string) {
-        if (!this.callInfo.hasOwnProperty(id)) {
+    private getCallInfo(callId: string) {
+        if (!this.callInfo.hasOwnProperty(callId)) {
             return undefined;
         }
-        return this.callInfo[id];
+        return this.callInfo[callId];
     }
 
     private getConnId(callId: string | undefined, userId: string | undefined) {
@@ -594,6 +594,21 @@ export default class CallService {
             return;
         }
         return info.participantMap[userId || '0'];
+    }
+
+    private getInputUserByConnId(callId: string, connId: number) {
+        const info = this.getCallInfo(callId);
+        if (!info) {
+            return;
+        }
+        const participant = info.participants[connId];
+        if (!participant) {
+            return;
+        }
+        const inputUser = new InputUser();
+        inputUser.setUserid(participant.peer.userid || '0');
+        inputUser.setAccesshash(participant.peer.accesshash || '0');
+        return inputUser;
     }
 
     private swapTempInfo(callId: string) {
@@ -605,14 +620,14 @@ export default class CallService {
         delete this.callInfo.temp;
     }
 
-    private sendLocalIce(candidate: RTCIceCandidate | null, connId: number) {
+    private sendIceCandidate(callId: string, candidate: RTCIceCandidate | null, connId: number) {
         if (!candidate) {
             return Promise.reject('invalid candidate');
         }
 
         const conn = this.peerConnections[connId];
         if (!conn) {
-            return Promise.reject('invalid conn');
+            return Promise.reject('invalid connection');
         }
 
         if (!conn.accepted) {
@@ -623,6 +638,11 @@ export default class CallService {
         const peer = this.peer;
         if (!peer || !this.activeCallId) {
             return Promise.reject('invalid input');
+        }
+
+        const inputUser = this.getInputUserByConnId(callId, connId);
+        if (!inputUser) {
+            return Promise.reject('invalid connId');
         }
 
         const actionData = new PhoneActionIceExchange();
@@ -637,16 +657,12 @@ export default class CallService {
             actionData.setUsernamefragment(candidate.usernameFragment);
         }
 
-        const inputUser = new InputUser();
-        inputUser.setUserid(peer.getId() || '0');
-        inputUser.setAccesshash(peer.getAccesshash() || '0');
-
         return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLICEEXCHANGE, actionData.serializeBinary()).then(() => {
             return Promise.resolve();
         });
     }
 
-    private flushIceCandidates(connId: number) {
+    private flushIceCandidates(callId: string, connId: number) {
         const conn = this.peerConnections[connId];
         if (!conn) {
             return;
@@ -654,7 +670,7 @@ export default class CallService {
         while (true) {
             const candidate = conn.iceQueue.shift();
             if (candidate) {
-                this.sendLocalIce(candidate, connId);
+                this.sendIceCandidate(callId, candidate, connId);
             } else {
                 return;
             }
