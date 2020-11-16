@@ -2778,7 +2778,9 @@ proto.msg.PhoneRecipient.prototype.toObject = function(opt_includeInstance) {
 proto.msg.PhoneRecipient.toObject = function(includeInstance, msg) {
   var f, obj = {
     connectionid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    peer: (f = msg.getPeer()) && core_types_pb.InputUser.toObject(includeInstance, f)
+    peer: (f = msg.getPeer()) && core_types_pb.InputUser.toObject(includeInstance, f),
+    initiator: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
+    admin: (f = jspb.Message.getBooleanField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -2824,6 +2826,14 @@ proto.msg.PhoneRecipient.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,core_types_pb.InputUser.deserializeBinaryFromReader);
       msg.setPeer(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setInitiator(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAdmin(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2866,6 +2876,20 @@ proto.msg.PhoneRecipient.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       core_types_pb.InputUser.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeBool(
+      3,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeBool(
+      4,
+      f
     );
   }
 };
@@ -2941,6 +2965,78 @@ proto.msg.PhoneRecipient.prototype.clearPeer = function() {
  */
 proto.msg.PhoneRecipient.prototype.hasPeer = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required bool Initiator = 3;
+ * @return {boolean}
+ */
+proto.msg.PhoneRecipient.prototype.getInitiator = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.PhoneRecipient} returns this
+ */
+proto.msg.PhoneRecipient.prototype.setInitiator = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.PhoneRecipient} returns this
+ */
+proto.msg.PhoneRecipient.prototype.clearInitiator = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.PhoneRecipient.prototype.hasInitiator = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * required bool Admin = 4;
+ * @return {boolean}
+ */
+proto.msg.PhoneRecipient.prototype.getAdmin = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.PhoneRecipient} returns this
+ */
+proto.msg.PhoneRecipient.prototype.setAdmin = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.PhoneRecipient} returns this
+ */
+proto.msg.PhoneRecipient.prototype.clearAdmin = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.PhoneRecipient.prototype.hasAdmin = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

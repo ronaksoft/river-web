@@ -148,6 +148,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     public render() {
         const {open, fullscreen, mode, cropCover} = this.state;
+        const disableClose = !(mode === 'call_init' || mode === 'call_report');
         return (
             <Dialog
                 open={open}
@@ -156,7 +157,8 @@ class CallModal extends React.Component<IProps, IState> {
                 classes={{
                     paper: 'call-modal-paper',
                 }}
-                disableBackdropClick={!(mode === 'call_init' || mode === 'call_report')}
+                disableBackdropClick={disableClose}
+                disableEscapeKeyDown={disableClose}
                 disableEnforceFocus={true}
                 PaperComponent={PaperComponent}
                 fullScreen={mode === 'call_report' ? false : fullscreen}
@@ -385,7 +387,11 @@ class CallModal extends React.Component<IProps, IState> {
             }, 512);
         });
         if (this.peer) {
-            this.callService.call(this.peer, this.getRecipients());
+            this.callService.call(this.peer, this.getRecipients()).then((callId) => {
+                this.setState({
+                    callId,
+                });
+            });
         }
     }
 
@@ -414,16 +420,15 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private hangupCallHandler = () => {
-        this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000), DiscardReason.DISCARDREASONHANGUP).catch((err) => {
-            window.console.log(err);
-        });
-        this.setState({
-            mode: 'call_report',
+        this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
+            this.timerEnd = Date.now();
+            this.setState({
+                mode: 'call_report',
+            });
         });
     }
 
     private callRequestHandler = (data: IUpdatePhoneCall) => {
-        window.console.log(data);
         this.setState({
             callId: data.callid || '0',
             callUserId: data.userid || '0',

@@ -330,6 +330,16 @@ export class PhoneRecipient extends jspb.Message {
   getPeer(): core_types_pb.InputUser;
   setPeer(value?: core_types_pb.InputUser): void;
 
+  hasInitiator(): boolean;
+  clearInitiator(): void;
+  getInitiator(): boolean | undefined;
+  setInitiator(value: boolean): void;
+
+  hasAdmin(): boolean;
+  clearAdmin(): void;
+  getAdmin(): boolean | undefined;
+  setAdmin(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneRecipient.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneRecipient): PhoneRecipient.AsObject;
@@ -344,6 +354,8 @@ export namespace PhoneRecipient {
   export type AsObject = {
     connectionid?: number,
     peer: core_types_pb.InputUser.AsObject,
+    initiator?: boolean,
+    admin?: boolean,
   }
 }
 

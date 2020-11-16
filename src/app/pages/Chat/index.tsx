@@ -3035,9 +3035,17 @@ class Chat extends React.Component<IProps, IState> {
                 this.sendReadHistory(this.peer, Math.floor(this.messages[this.messages.length - 1].id || 0));
             }
         }
-        if (this.chatInputRef && !this.isMobileBrowser) {
+        if (this.chatInputRef && !this.isMobileBrowser && !this.hasSelection()) {
             this.chatInputRef.focus();
         }
+    }
+
+    private hasSelection() {
+        if (!window.getSelection) {
+            return false;
+        }
+        const t = window.getSelection();
+        return !!(t && t.type === "Range");
     }
 
     private windowBlurHandler = () => {
