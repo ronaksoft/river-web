@@ -25,6 +25,7 @@ import {
     MicRounded,
     VideocamOffRounded,
     VideocamRounded,
+    CheckRounded,
 } from "@material-ui/icons";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -34,6 +35,8 @@ import GroupName from "../GroupName";
 import {CallTimer, timerFormat} from "../CallTimer";
 import Rating from '@material-ui/lab/Rating';
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
+import ContactPicker from "../ContactPicker";
+import {IUser} from "../../repository/user/interface";
 
 import './style.scss';
 
@@ -55,6 +58,7 @@ interface IState {
     callUserId: string | null;
     cropCover: boolean;
     fullscreen: boolean;
+    groupId: string | undefined;
     isCaller: boolean;
     mode: 'call_init' | 'call_requested' | 'call' | 'call_report';
     open: boolean;
@@ -86,6 +90,8 @@ class CallModal extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private timer: number = 0;
     private timerEnd: number = 0;
+    private contactPickerRef: ContactPicker | undefined;
+    private groupParticipant: InputUser.AsObject[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -101,6 +107,7 @@ class CallModal extends React.Component<IProps, IState> {
             callUserId: null,
             cropCover: true,
             fullscreen: false,
+            groupId: undefined,
             isCaller: false,
             mode: 'call_init',
             open: false,
@@ -117,19 +124,20 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
         this.peer = peer;
-        this.timer = 0;
-        this.timerEnd = 0;
-        this.setState({
-            fullscreen: false,
-            mode: 'call_init',
-            open: true,
-        }, () => {
-            this.callService.initStream().then((stream) => {
-                if (this.videoRef) {
-                    this.videoRef.srcObject = stream;
+        if (!this.peer) {
+            return;
+        }
+        if (this.peer.getType() === PeerType.PEERUSER) {
+            this.showPreview();
+        } else if (this.peer.getType() === PeerType.PEERGROUP) {
+            this.setState({
+                groupId: this.peer.getId() || '0',
+            }, () => {
+                if (this.contactPickerRef) {
+                    this.contactPickerRef.openDialog();
                 }
             });
-        });
+        }
     }
 
     public componentDidMount() {
@@ -147,36 +155,59 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, fullscreen, mode, cropCover} = this.state;
+        const {open, fullscreen, mode, cropCover, groupId} = this.state;
         const disableClose = !(mode === 'call_init' || mode === 'call_report');
         return (
-            <Dialog
-                open={open}
-                onClose={this.closeHandler}
-                className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain')}
-                classes={{
-                    paper: 'call-modal-paper',
-                }}
-                disableBackdropClick={disableClose}
-                disableEscapeKeyDown={disableClose}
-                disableEnforceFocus={true}
-                PaperComponent={PaperComponent}
-                fullScreen={mode === 'call_report' ? false : fullscreen}
-                TransitionComponent={TransitionEffect}
-            >
-                {this.getContent()}
-            </Dialog>
+            <>
+                <Dialog
+                    open={open}
+                    onClose={this.closeHandler}
+                    className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain')}
+                    classes={{
+                        paper: 'call-modal-paper',
+                    }}
+                    disableBackdropClick={disableClose}
+                    disableEscapeKeyDown={disableClose}
+                    disableEnforceFocus={true}
+                    PaperComponent={PaperComponent}
+                    fullScreen={mode === 'call_report' ? false : fullscreen}
+                    TransitionComponent={TransitionEffect}
+                >
+                    {this.getContent()}
+                </Dialog>
+                <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
+                               groupId={groupId} teamId={this.props.teamId} sendIcon={<CheckRounded/>}
+                               title={i18n.t('general.choose_recipient')}/>
+            </>
         );
+    }
+
+    private showPreview() {
+        this.timer = 0;
+        this.timerEnd = 0;
+        this.setState({
+            fullscreen: false,
+            mode: 'call_init',
+            open: true,
+        }, () => {
+            this.callService.initStream().then((stream) => {
+                if (this.videoRef) {
+                    this.videoRef.srcObject = stream;
+                }
+            });
+        });
     }
 
     private closeHandler = () => {
         this.callService.destroy();
         this.setState({
+            groupId: undefined,
             open: false,
             rate: null,
         });
         this.timer = 0;
         this.timerEnd = 0;
+        this.groupParticipant = [];
     }
 
     private toggleFullscreenHandler = () => {
@@ -507,11 +538,23 @@ class CallModal extends React.Component<IProps, IState> {
                     accesshash: this.peer.getAccesshash() || '0',
                     userid: this.peer.getId() || '0',
                 }];
-            } else {
-                return [];
+            } else if (this.peer.getType() === PeerType.PEERGROUP) {
+                return this.groupParticipant;
             }
         }
         return [];
+    }
+
+    private contactPickerRefHandler = (ref: any) => {
+        this.contactPickerRef = ref;
+    }
+
+    private contactPickerDoneHandler = (contacts: IUser[], caption: string) => {
+        this.groupParticipant = contacts.map((u) => ({
+            accesshash: u.accesshash,
+            userid: u.id,
+        }));
+        this.showPreview();
     }
 }
 

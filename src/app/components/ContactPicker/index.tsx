@@ -21,6 +21,8 @@ interface IProps {
     onDone: (contacts: IUser[], caption: string) => void;
     teamId: string;
     title?: string;
+    groupId?: string;
+    sendIcon?: any;
 }
 
 interface IState {
@@ -78,10 +80,13 @@ class ContactPicker extends React.Component<IProps, IState> {
                                     {this.props.title || i18n.t('general.choose_recipients')}
                                 </div>
                                 <ContactList onChange={this.addRecipientChangeHandler} mode="chip"
-                                             teamId={this.props.teamId} hiddenContacts={hiddenContacts}/>
+                                             groupId={this.props.groupId} teamId={this.props.teamId}
+                                             hiddenContacts={hiddenContacts} hideYou={Boolean(this.props.groupId)}/>
                                 {Boolean(recipients.length > 0) && <div className="actions-bar">
-                                    <div className="add-action send" onClick={this.doneHandler}>
-                                        <SendRounded/>
+                                    <div
+                                        className={'add-action send' + (Boolean(this.props.sendIcon) ? ' no-animation' : '')}
+                                        onClick={this.doneHandler}>
+                                        {this.props.sendIcon || <SendRounded/>}
                                     </div>
                                 </div>}
                             </div>

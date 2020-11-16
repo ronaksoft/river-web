@@ -36,6 +36,8 @@ import {InputAdornment} from "@material-ui/core";
 import {PeerType} from "../../services/sdk/messages/core.types_pb";
 
 import './style.scss';
+import GroupRepo from "../../repository/group";
+import {IGroup} from "../../repository/group/interface";
 
 interface IProps {
     className?: string;
@@ -49,6 +51,7 @@ interface IProps {
     globalSearch?: boolean;
     teamId: string;
     hideYou?: boolean;
+    groupId?: string;
 }
 
 interface IState {
@@ -117,11 +120,13 @@ class ContactList extends React.Component<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private readonly rtl: boolean = false;
     private extraHidden: IUser[] = [];
+    private groupRepo: GroupRepo;
 
     constructor(props: IProps) {
         super(props);
 
         this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
 
         if (props.hideYou) {
             this.extraHidden = [{
@@ -454,6 +459,42 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* Get all contacts */
     private getDefault(fill?: boolean) {
+        const {groupId} = this.props;
+        if (groupId) {
+            this.getDefaultGroupMembers(groupId);
+        } else {
+            this.getDefaultContacts(fill);
+        }
+    }
+
+    private getDefaultGroupMembers(groupId: string) {
+        const {loading} = this.state;
+        if (loading) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
+        const fn = (group: IGroup) => {
+            const us: IUser[] = (group.participantList || []).map((member) => ({
+                accesshash: member.accesshash,
+                firstname: member.firstname,
+                id: member.userid,
+                lastname: member.lastname,
+                photo: member.photo,
+                username: member.username,
+            }));
+            this.defaultContact = us;
+            this.contactsRes = clone(us);
+            this.setState({
+                contacts: categorizeContact(this.getTrimmedList([])),
+                loading: false,
+            });
+        };
+        this.groupRepo.getFull(this.props.teamId, groupId, fn, true).then(fn);
+    }
+
+    private getDefaultContacts(fill?: boolean) {
         const {loading} = this.state;
         if (loading) {
             return;
@@ -496,6 +537,25 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
+        const {groupId} = this.props;
+        if (groupId) {
+            this.searchGroupMembers(text);
+        } else {
+            this.searchContacts(text);
+        }
+    }
+
+    private searchGroupMembers(text: string) {
+        const reg = new RegExp(text || '', 'gi');
+        this.contactsRes = clone(this.defaultContact.filter((u) => {
+            return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(`${u.firstname} ${u.lastname}`));
+        }));
+        this.setState({
+            contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
+        });
+    }
+
+    private searchContacts(text: string) {
         this.userRepo.getManyCache(this.props.teamId, true, {keyword: text, limit: 12}).then((res) => {
             this.contactsRes = clone(res || []);
             if (this.list) {

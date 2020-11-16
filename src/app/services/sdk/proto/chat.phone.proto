@@ -15,7 +15,7 @@ message PhoneInitCall {
 message PhoneRequestCall {
     required int64 RandomID = 1;
     required InputPeer Peer = 2;
-    repeated PhoneRecipientSDP Recipients = 3;
+    repeated PhoneParticipantSDP Participants = 3;
     optional int64 CallID = 4 [jstype = JS_STRING];
 }
 
@@ -25,7 +25,7 @@ message PhoneRequestCall {
 message PhoneAcceptCall {
     required InputPeer Peer = 1;
     required int64 CallID = 2 [jstype = JS_STRING];
-    repeated PhoneRecipientSDP Recipients = 3;
+    repeated PhoneParticipantSDP Participants = 3;
 }
 
 enum DiscardReason {
@@ -51,7 +51,7 @@ enum DiscardReason {
 message PhoneDiscardCall {
     required InputPeer Peer = 1;
     required int64 CallID = 2 [jstype = JS_STRING];
-    repeated InputUser Recipients = 3;
+    repeated InputUser Participants = 3;
     required int32 Duration = 4;
     required DiscardReason Reason = 5;
 }
@@ -62,7 +62,7 @@ message PhoneDiscardCall {
 message PhoneUpdateCall {
     required InputPeer Peer = 1;
     required int64 CallID = 2 [jstype = JS_STRING];
-    repeated InputUser Recipients = 3;
+    repeated InputUser Participants = 3;
     required PhoneCallAction Action = 7;
     required bytes ActionData = 8;
 }
@@ -111,16 +111,16 @@ message IceServer {
     optional string Credential = 3;
 }
 
-// PhoneRecipient
-message PhoneRecipient {
+// PhoneParticipant
+message PhoneParticipant {
     required int32 ConnectionId = 1;
     required InputUser Peer = 2;
     required bool Initiator = 3;
     required bool Admin = 4;
 }
 
-// PhoneRecipientSDP
-message PhoneRecipientSDP {
+// PhoneParticipantSDP
+message PhoneParticipantSDP {
     required int32 ConnectionId = 1;
     required InputUser Peer = 2;
     required string SDP = 3;
@@ -142,7 +142,7 @@ message PhoneActionAccepted {
 message PhoneActionRequested {
     required string SDP = 1;
     required string Type = 2;
-    repeated PhoneRecipient Recipients = 3;
+    repeated PhoneParticipant Participants = 3;
 }
 
 // PhoneActionCallWaiting

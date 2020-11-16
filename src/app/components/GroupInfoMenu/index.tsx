@@ -17,7 +17,6 @@ import {
     ExitToAppRounded,
     KeyboardBackspaceRounded,
     MoreVert,
-    PersonAddRounded,
     PhotoCameraRounded,
     StarRateRounded,
     StarsRounded,
@@ -39,14 +38,12 @@ import TimeUtility from '../../services/utilities/time';
 import {IParticipant, IUser} from '../../repository/user/interface';
 import UserAvatar from '../UserAvatar';
 import {findIndex, trimStart} from 'lodash';
-import ContactList from '../ContactList';
 import {isMuted} from '../UserInfoMenu';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogRepo from '../../repository/dialog';
 import {
     Button,
     Checkbox,
-    Dialog,
     FormControl,
     FormControlLabel,
     IconButton,
@@ -73,6 +70,7 @@ import {notifyOptions} from '../../pages/Chat';
 import i18n from '../../services/i18n';
 import {C_AVATAR_SIZE} from "../SettingsMenu";
 import {ModalityService} from "kk-modality";
+import ContactPicker from "../ContactPicker";
 
 import './style.scss';
 
@@ -85,14 +83,12 @@ interface IProps {
 }
 
 interface IState {
-    addMemberDialogOpen: boolean;
     avatarMenuAnchorEl: any;
     currentUser: IParticipant | null;
     dialog: IDialog | null;
     forwardLimit: number;
     group: IGroup | null;
     moreAnchorEl: any;
-    newMembers: IUser[];
     notifyValue: string;
     page: string;
     participants: IParticipant[];
@@ -149,19 +145,18 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private modalityService: ModalityService;
+    private contactPickerRef: ContactPicker | undefined;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            addMemberDialogOpen: false,
             avatarMenuAnchorEl: null,
             currentUser: null,
             dialog: null,
             forwardLimit: 50,
             group: null,
             moreAnchorEl: null,
-            newMembers: [],
             notifyValue: '-1',
             page: '1',
             participants: [],
@@ -222,7 +217,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            addMemberDialogOpen, avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl,
+            avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl,
             dialog, uploadingPhoto, shareMediaEnabled
         } = this.state;
         const isAdmin = group ? hasAuthority(group, false) : false;
@@ -414,27 +409,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 >
                     {this.contextMenuItem()}
                 </Menu>
-                <Dialog
-                    open={addMemberDialogOpen}
-                    onClose={this.addMemberDialogCloseHandler}
-                    className="add-member-dialog"
-                    classes={{
-                        paper: 'add-member-dialog-paper'
-                    }}
-                >
-                    {addMemberDialogOpen && <div className="dialog-content">
-                        <div className="dialog-header">
-                            <PersonAddRounded/> {i18n.t('peer_info.add_member')}
-                        </div>
-                        <ContactList hiddenContacts={participants} onChange={this.addMemberChangeHandler} mode="chip"
-                                     teamId={this.props.teamId}/>
-                        {Boolean(this.state.newMembers.length > 0) && <div className="actions-bar">
-                            <div className="add-action" onClick={this.addMemberHandler}>
-                                <CheckRounded/>
-                            </div>
-                        </div>}
-                    </div>}
-                </Dialog>
+                <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
+                               teamId={this.props.teamId} title={i18n.t('peer_info.add_member')}/>
                 <Menu
                     anchorEl={avatarMenuAnchorEl}
                     open={Boolean(avatarMenuAnchorEl)}
@@ -662,60 +638,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Opens the add member dialog */
     private addMemberDialogOpenHandler = () => {
-        this.setState({
-            addMemberDialogOpen: true,
-        });
-    }
-
-    /* Closes the add member dialog */
-    private addMemberDialogCloseHandler = () => {
-        this.setState({
-            addMemberDialogOpen: false,
-        });
-    }
-
-    /* Sets the new member list */
-    private addMemberChangeHandler = (contacts: IUser[]) => {
-        this.setState({
-            newMembers: contacts,
-        });
-    }
-
-    /* Adds member(s) to group */
-    private addMemberHandler = () => {
-        this.addMemberDialogCloseHandler();
-        const {peer, newMembers, group, forwardLimit, participants} = this.state;
-        if (!peer || !group || newMembers.length === 0) {
-            return;
-        }
-        const promises: any[] = [];
-        newMembers.forEach((member) => {
-            const user = new InputUser();
-            user.setUserid(member.id || '');
-            // @ts-ignore
-            member.userid = member.id;
-            user.setAccesshash(member.accesshash || '');
-            promises.push(this.apiManager.groupAddMember(peer, user, forwardLimit));
-        });
-        /* waits for all promises to be resolved */
-        if (promises.length > 0) {
-            Promise.all(promises).then((res) => {
-                participants.push.apply(participants, newMembers);
-                group.participants = participants.length;
-                this.setState({
-                    group,
-                    newMembers: [],
-                    participants,
-                });
-            }).catch(() => {
-                this.setState({
-                    newMembers: [],
-                });
-            });
-        } else {
-            this.setState({
-                newMembers: [],
-            });
+        if (this.contactPickerRef) {
+            this.contactPickerRef.openDialog(this.state.participants);
         }
     }
 
@@ -1037,6 +961,37 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             page: '1',
             shareMediaEnabled: false,
         });
+    }
+
+    private contactPickerRefHandler = (ref: any) => {
+        this.contactPickerRef = ref;
+    }
+
+    private contactPickerDoneHandler = (contacts: IUser[], caption: string) => {
+        const {peer, group, forwardLimit, participants} = this.state;
+        if (!peer || !group || contacts.length === 0) {
+            return;
+        }
+        const promises: any[] = [];
+        contacts.forEach((member) => {
+            const user = new InputUser();
+            user.setUserid(member.id || '');
+            // @ts-ignore
+            member.userid = member.id;
+            user.setAccesshash(member.accesshash || '');
+            promises.push(this.apiManager.groupAddMember(peer, user, forwardLimit));
+        });
+        /* waits for all promises to be resolved */
+        if (promises.length > 0) {
+            Promise.all(promises).then((res) => {
+                participants.push(...contacts);
+                group.participants = participants.length;
+                this.setState({
+                    group,
+                    participants,
+                });
+            });
+        }
     }
 }
 

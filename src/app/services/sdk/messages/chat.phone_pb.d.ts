@@ -38,10 +38,10 @@ export class PhoneRequestCall extends jspb.Message {
   getPeer(): core_types_pb.InputPeer;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  clearRecipientsList(): void;
-  getRecipientsList(): Array<PhoneRecipientSDP>;
-  setRecipientsList(value: Array<PhoneRecipientSDP>): void;
-  addRecipients(value?: PhoneRecipientSDP, index?: number): PhoneRecipientSDP;
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<PhoneParticipantSDP>;
+  setParticipantsList(value: Array<PhoneParticipantSDP>): void;
+  addParticipants(value?: PhoneParticipantSDP, index?: number): PhoneParticipantSDP;
 
   hasCallid(): boolean;
   clearCallid(): void;
@@ -62,7 +62,7 @@ export namespace PhoneRequestCall {
   export type AsObject = {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
-    recipientsList: Array<PhoneRecipientSDP.AsObject>,
+    participantsList: Array<PhoneParticipantSDP.AsObject>,
     callid?: string,
   }
 }
@@ -78,10 +78,10 @@ export class PhoneAcceptCall extends jspb.Message {
   getCallid(): string | undefined;
   setCallid(value: string): void;
 
-  clearRecipientsList(): void;
-  getRecipientsList(): Array<PhoneRecipientSDP>;
-  setRecipientsList(value: Array<PhoneRecipientSDP>): void;
-  addRecipients(value?: PhoneRecipientSDP, index?: number): PhoneRecipientSDP;
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<PhoneParticipantSDP>;
+  setParticipantsList(value: Array<PhoneParticipantSDP>): void;
+  addParticipants(value?: PhoneParticipantSDP, index?: number): PhoneParticipantSDP;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneAcceptCall.AsObject;
@@ -97,7 +97,7 @@ export namespace PhoneAcceptCall {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     callid?: string,
-    recipientsList: Array<PhoneRecipientSDP.AsObject>,
+    participantsList: Array<PhoneParticipantSDP.AsObject>,
   }
 }
 
@@ -112,10 +112,10 @@ export class PhoneDiscardCall extends jspb.Message {
   getCallid(): string | undefined;
   setCallid(value: string): void;
 
-  clearRecipientsList(): void;
-  getRecipientsList(): Array<core_types_pb.InputUser>;
-  setRecipientsList(value: Array<core_types_pb.InputUser>): void;
-  addRecipients(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<core_types_pb.InputUser>;
+  setParticipantsList(value: Array<core_types_pb.InputUser>): void;
+  addParticipants(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
 
   hasDuration(): boolean;
   clearDuration(): void;
@@ -141,7 +141,7 @@ export namespace PhoneDiscardCall {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     callid?: string,
-    recipientsList: Array<core_types_pb.InputUser.AsObject>,
+    participantsList: Array<core_types_pb.InputUser.AsObject>,
     duration?: number,
     reason?: DiscardReason,
   }
@@ -158,10 +158,10 @@ export class PhoneUpdateCall extends jspb.Message {
   getCallid(): string | undefined;
   setCallid(value: string): void;
 
-  clearRecipientsList(): void;
-  getRecipientsList(): Array<core_types_pb.InputUser>;
-  setRecipientsList(value: Array<core_types_pb.InputUser>): void;
-  addRecipients(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<core_types_pb.InputUser>;
+  setParticipantsList(value: Array<core_types_pb.InputUser>): void;
+  addParticipants(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
 
   hasAction(): boolean;
   clearAction(): void;
@@ -189,7 +189,7 @@ export namespace PhoneUpdateCall {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     callid?: string,
-    recipientsList: Array<core_types_pb.InputUser.AsObject>,
+    participantsList: Array<core_types_pb.InputUser.AsObject>,
     action?: PhoneCallAction,
     actiondata: Uint8Array | string,
   }
@@ -319,7 +319,7 @@ export namespace IceServer {
   }
 }
 
-export class PhoneRecipient extends jspb.Message {
+export class PhoneParticipant extends jspb.Message {
   hasConnectionid(): boolean;
   clearConnectionid(): void;
   getConnectionid(): number | undefined;
@@ -341,16 +341,16 @@ export class PhoneRecipient extends jspb.Message {
   setAdmin(value: boolean): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneRecipient.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneRecipient): PhoneRecipient.AsObject;
+  toObject(includeInstance?: boolean): PhoneParticipant.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneParticipant): PhoneParticipant.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneRecipient, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneRecipient;
-  static deserializeBinaryFromReader(message: PhoneRecipient, reader: jspb.BinaryReader): PhoneRecipient;
+  static serializeBinaryToWriter(message: PhoneParticipant, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneParticipant;
+  static deserializeBinaryFromReader(message: PhoneParticipant, reader: jspb.BinaryReader): PhoneParticipant;
 }
 
-export namespace PhoneRecipient {
+export namespace PhoneParticipant {
   export type AsObject = {
     connectionid?: number,
     peer: core_types_pb.InputUser.AsObject,
@@ -359,7 +359,7 @@ export namespace PhoneRecipient {
   }
 }
 
-export class PhoneRecipientSDP extends jspb.Message {
+export class PhoneParticipantSDP extends jspb.Message {
   hasConnectionid(): boolean;
   clearConnectionid(): void;
   getConnectionid(): number | undefined;
@@ -381,16 +381,16 @@ export class PhoneRecipientSDP extends jspb.Message {
   setType(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneRecipientSDP.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneRecipientSDP): PhoneRecipientSDP.AsObject;
+  toObject(includeInstance?: boolean): PhoneParticipantSDP.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneParticipantSDP): PhoneParticipantSDP.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneRecipientSDP, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneRecipientSDP;
-  static deserializeBinaryFromReader(message: PhoneRecipientSDP, reader: jspb.BinaryReader): PhoneRecipientSDP;
+  static serializeBinaryToWriter(message: PhoneParticipantSDP, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneParticipantSDP;
+  static deserializeBinaryFromReader(message: PhoneParticipantSDP, reader: jspb.BinaryReader): PhoneParticipantSDP;
 }
 
-export namespace PhoneRecipientSDP {
+export namespace PhoneParticipantSDP {
   export type AsObject = {
     connectionid?: number,
     peer: core_types_pb.InputUser.AsObject,
@@ -460,10 +460,10 @@ export class PhoneActionRequested extends jspb.Message {
   getType(): string | undefined;
   setType(value: string): void;
 
-  clearRecipientsList(): void;
-  getRecipientsList(): Array<PhoneRecipient>;
-  setRecipientsList(value: Array<PhoneRecipient>): void;
-  addRecipients(value?: PhoneRecipient, index?: number): PhoneRecipient;
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<PhoneParticipant>;
+  setParticipantsList(value: Array<PhoneParticipant>): void;
+  addParticipants(value?: PhoneParticipant, index?: number): PhoneParticipant;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionRequested.AsObject;
@@ -479,7 +479,7 @@ export namespace PhoneActionRequested {
   export type AsObject = {
     sdp?: string,
     type?: string,
-    recipientsList: Array<PhoneRecipient.AsObject>,
+    participantsList: Array<PhoneParticipant.AsObject>,
   }
 }
 

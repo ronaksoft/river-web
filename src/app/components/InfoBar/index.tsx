@@ -49,7 +49,7 @@ class InfoBar extends React.Component<IProps, IState> {
             isUpdating: false,
             peer: null,
             teamId: props.teamId,
-            withCall: false,
+            withCall: true,
         };
 
         this.userRepo = UserRepo.getInstance();
@@ -128,9 +128,13 @@ class InfoBar extends React.Component<IProps, IState> {
             this.userRepo.get(peer.getId() || '0').then((user) => {
                 if (user) {
                     this.setState({
-                        withCall: !Boolean(user.isbot),
+                        withCall: !Boolean(user.isbot || user.official),
                     });
                 }
+            });
+        } else if (peer.getType() === PeerType.PEERGROUP) {
+            this.setState({
+                withCall: true,
             });
         }
     }

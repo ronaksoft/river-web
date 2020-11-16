@@ -19,7 +19,7 @@ import {
     PhoneActionIceExchange,
     PhoneActionRequested,
     PhoneCallAction,
-    PhoneRecipient, PhoneRecipientSDP
+    PhoneParticipant, PhoneParticipantSDP
 } from "../sdk/messages/chat.phone_pb";
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
@@ -50,8 +50,8 @@ interface IBroadcastItem {
 
 interface ICallInfo {
     request: IUpdatePhoneCall;
-    recipients: { [key: number]: PhoneRecipient.AsObject };
-    recipientMap: { [key: string]: number };
+    participants: { [key: number]: PhoneParticipant.AsObject };
+    participantMap: { [key: string]: number };
 }
 
 const parseData = (constructor: number, data: any) => {
@@ -171,7 +171,7 @@ export default class CallService {
         return this.peerConnections[connId].streams;
     }
 
-    public call(peer: InputPeer, recipients: InputUser.AsObject[]) {
+    public call(peer: InputPeer, participants: InputUser.AsObject[]) {
         this.peer = peer;
 
         return this.apiManager.callInit(peer).then((res) => {
@@ -180,7 +180,7 @@ export default class CallService {
                 urls: item.urlsList,
                 username: item.username,
             }));
-            this.initCallRecipients('temp', recipients);
+            this.initCallParticipants('temp', participants);
             return this.initConnections(peer, 'temp').then((done) => {
                 this.swapTempInfo(this.activeCallId || '0');
                 return this.activeCallId || '0';
@@ -228,12 +228,12 @@ export default class CallService {
             return Promise.reject('invalid peer');
         }
 
-        const recipients = this.getInputUsers(id);
-        if (!recipients){
+        const participants = this.getInputUsers(id);
+        if (!participants){
             return Promise.reject('invalid call id');
         }
 
-        return this.apiManager.callReject(peer, id, recipients, reason, duration).then(() => {
+        return this.apiManager.callReject(peer, id, participants, reason, duration).then(() => {
             this.destroyConnections(id);
         });
     }
@@ -289,19 +289,19 @@ export default class CallService {
             return Promise.reject('invalid peer');
         }
 
-        const recipients = this.getInputUsers(data.callid || '0');
-        if (!recipients){
+        const participants = this.getInputUsers(data.callid || '0');
+        if (!participants){
             return Promise.reject('invalid call id');
         }
 
-        return this.apiManager.callReject(peer, data.callid || '0', recipients, DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
+        return this.apiManager.callReject(peer, data.callid || '0', participants, DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
             //
         });
     }
 
-    private callUser(peer: InputPeer, phoneRecipients: PhoneRecipientSDP[]) {
+    private callUser(peer: InputPeer, phoneParticipants: PhoneParticipantSDP[]) {
         const randomId = UniqueId.getRandomId();
-        return this.apiManager.callRequest(peer, randomId, phoneRecipients).then((res) => {
+        return this.apiManager.callRequest(peer, randomId, phoneParticipants).then((res) => {
             this.activeCallId = res.id || '0';
             return res;
         });
@@ -390,37 +390,37 @@ export default class CallService {
         return conn[connId].connection.addIceCandidate(iceCandidate);
     }
 
-    private convertPhoneRecipient(item: PhoneRecipientSDP.AsObject) {
-        const phoneRecipient = new PhoneRecipientSDP();
-        phoneRecipient.setConnectionid(item.connectionid || 0);
-        phoneRecipient.setSdp(item.sdp || '');
-        phoneRecipient.setType(item.type || '');
+    private convertPhoneParticipant(item: PhoneParticipantSDP.AsObject) {
+        const phoneParticipant = new PhoneParticipantSDP();
+        phoneParticipant.setConnectionid(item.connectionid || 0);
+        phoneParticipant.setSdp(item.sdp || '');
+        phoneParticipant.setType(item.type || '');
         const peer = new InputUser();
         peer.setAccesshash(item.peer.accesshash || '0');
         peer.setUserid(item.peer.userid || '0');
-        phoneRecipient.setPeer(peer);
-        return phoneRecipient;
+        phoneParticipant.setPeer(peer);
+        return phoneParticipant;
     }
 
-    private initCallRecipients(callId: string, recipients: InputUser.AsObject[]) {
-        recipients.unshift({
+    private initCallParticipants(callId: string, participants: InputUser.AsObject[]) {
+        participants.unshift({
             accesshash: '0',
             userid: this.userId,
         });
-        const callRecipients: {[key: number]: PhoneRecipient.AsObject} = {};
-        const callRecipientMap: { [key: string]: number} = {};
-        recipients.forEach((recipient, index) => {
-            callRecipients[index] = {
+        const callParticipants: {[key: number]: PhoneParticipant.AsObject} = {};
+        const callParticipantMap: { [key: string]: number} = {};
+        participants.forEach((participant, index) => {
+            callParticipants[index] = {
                 admin: index === 0,
                 connectionid: index,
                 initiator: index === 0,
-                peer: recipient,
+                peer: participant,
             };
-            callRecipientMap[recipient.userid || '0'] = index;
+            callParticipantMap[participant.userid || '0'] = index;
         });
         this.callInfo[callId] = {
-            recipientMap: callRecipientMap,
-            recipients: callRecipients,
+            participantMap: callParticipantMap,
+            participants: callParticipants,
             request: {
                 actiondata: '',
             },
@@ -429,15 +429,15 @@ export default class CallService {
 
     private initCallRequest(data: IUpdatePhoneCall) {
         const sdpData = (data.data as PhoneActionRequested.AsObject);
-        const callRecipients: {[key: number]: PhoneRecipient.AsObject} = {};
-        const callRecipientMap: { [key: string]: number} = {};
-        sdpData.recipientsList.forEach((recipient) => {
-            callRecipients[recipient.connectionid || 0] = recipient;
-            callRecipientMap[recipient.peer.userid || '0'] = recipient.connectionid || 0;
+        const callParticipants: {[key: number]: PhoneParticipant.AsObject} = {};
+        const callParticipantMap: { [key: string]: number} = {};
+        sdpData.participantsList.forEach((participant) => {
+            callParticipants[participant.connectionid || 0] = participant;
+            callParticipantMap[participant.peer.userid || '0'] = participant.connectionid || 0;
         });
         this.callInfo[data.callid || '0'] = {
-            recipientMap: callRecipientMap,
-            recipients: callRecipients,
+            participantMap: callParticipantMap,
+            participants: callParticipants,
             request: data,
         };
     }
@@ -447,15 +447,15 @@ export default class CallService {
         if (!info) {
             return false;
         }
-        const connId = info.recipientMap[userId];
+        const connId = info.participantMap[userId];
         if (connId === undefined) {
             return false;
         }
-        const recipient = info.recipients[connId];
-        if (!recipient) {
+        const participant = info.participants[connId];
+        if (!participant) {
             return  false;
         }
-        return recipient.initiator || false;
+        return participant.initiator || false;
     }
 
     private initConnections(peer: InputPeer, id: string, sdp?: RTCSessionDescriptionInit) {
@@ -465,34 +465,34 @@ export default class CallService {
             return Promise.reject('invalid call id');
         }
         const promises: any[] = [];
-        Object.values(callInfo.recipients).forEach((recipient) => {
+        Object.values(callInfo.participants).forEach((participant) => {
             // Initialize connections only for greater connId,
             // full mesh initialization will take place here
-            if (userConnId > (recipient.connectionid || 0)) {
-                promises.push(this.initConnection(true, recipient.connectionid || 0, sdp).then((res) => {
-                    const rc = this.convertPhoneRecipient({
-                        ...callInfo.recipients[recipient.connectionid || 0],
+            if (userConnId > (participant.connectionid || 0)) {
+                promises.push(this.initConnection(true, participant.connectionid || 0, sdp).then((res) => {
+                    const rc = this.convertPhoneParticipant({
+                        ...callInfo.participants[participant.connectionid || 0],
                         sdp: res.sdp || '',
                         type: res.type || 'answer',
                     });
                     return this.apiManager.callAccept(peer, id || '0', [rc]);
                 }));
-            } else if (userConnId < (recipient.connectionid || 0)) {
+            } else if (userConnId < (participant.connectionid || 0)) {
                 const innerPromises: any[] = [];
-                innerPromises.push(this.initConnection(false, recipient.connectionid || 0).then((res) => {
+                innerPromises.push(this.initConnection(false, participant.connectionid || 0).then((res) => {
                     return {
-                        ...callInfo.recipients[recipient.connectionid || 0],
+                        ...callInfo.participants[participant.connectionid || 0],
                         sdp: res.sdp || '',
                         type: res.type || 'offer'
                     };
                 }));
                 if (innerPromises.length > 0) {
                     promises.push(Promise.all(innerPromises).then((res) => {
-                        return res.map((item: PhoneRecipientSDP.AsObject) => {
-                            return this.convertPhoneRecipient(item);
+                        return res.map((item: PhoneParticipantSDP.AsObject) => {
+                            return this.convertPhoneParticipant(item);
                         });
-                    }).then((phoneRecipients) => {
-                        return this.callUser(peer, phoneRecipients);
+                    }).then((phoneParticipants) => {
+                        return this.callUser(peer, phoneParticipants);
                     }));
                 } else {
                     promises.push(Promise.resolve([]));
@@ -572,10 +572,10 @@ export default class CallService {
         }
 
         const inputUsers: InputUser[] = [];
-        Object.values(info.recipients).forEach((recipient) => {
+        Object.values(info.participants).forEach((participant) => {
             const inputUser = new InputUser();
-            inputUser.setAccesshash(recipient.peer.accesshash || '0');
-            inputUser.setUserid(recipient.peer.userid || '0');
+            inputUser.setAccesshash(participant.peer.accesshash || '0');
+            inputUser.setUserid(participant.peer.userid || '0');
             inputUsers.push(inputUser);
         });
         return inputUsers;
@@ -593,7 +593,7 @@ export default class CallService {
         if (!info) {
             return;
         }
-        return info.recipientMap[userId || '0'];
+        return info.participantMap[userId || '0'];
     }
 
     private swapTempInfo(callId: string) {
