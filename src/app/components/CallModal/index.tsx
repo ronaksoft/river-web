@@ -37,6 +37,7 @@ import Rating from '@material-ui/lab/Rating';
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import ContactPicker from "../ContactPicker";
 import {IUser} from "../../repository/user/interface";
+import VideoPlaceholder from "../VideoPlaceholder";
 
 import './style.scss';
 
@@ -360,8 +361,8 @@ class CallModal extends React.Component<IProps, IState> {
             <UserAvatar className="call-user-bg" id={callUserId} noDetail={true}/>}
             <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
                    onClick={this.videoClickHandler(false)}/>
-            <video className="remote-video" ref={this.videoRemoteRefHandler} playsInline={true} autoPlay={true}
-                   onClick={this.videoClickHandler(true)}/>
+            <VideoPlaceholder className="remote-video" videoRef={this.videoRemoteRefHandler} playsInline={true} autoPlay={true}
+                              onClick={this.videoClickHandler(true)}/>
             <div className="call-modal-header">
                 <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
                     {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
