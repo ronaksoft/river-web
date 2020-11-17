@@ -1,51 +1,52 @@
+/*
+    Creation Time: 2020 - Nov - 17
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
 import * as React from 'react';
-import {InputPeer} from "../../services/sdk/messages/core.types_pb";
+import {useState} from "react";
+import UserAvatar from "../UserAvatar";
+import i18n from '../../services/i18n';
+import {MicOffRounded} from '@material-ui/icons';
 
 import './style.scss';
 
-export default function VideoPlaceholder({videoRef, peer, className, playsInline, autoPlay, muted, onClick}: { videoRef: (ref: any) => void, peer?: InputPeer, className?: string, playsInline?: boolean, autoPlay?: boolean, muted?: boolean, onClick?: (e: any) => void }) {
-    // @ts-ignore
-    let video: HTMLVideoElement | null = null;
+export interface IVideoPlaceholderRef {
+    video: HTMLVideoElement | null;
+    setSettings: ({video, audio}: { video?: boolean, audio?: boolean }) => void;
+}
 
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         window.console.log(video);
-    //         if (!video || !video.srcObject) {
-    //             return;
-    //         }
-    //         window.console.log((video.srcObject as MediaStream).getVideoTracks()[0]);
-    //         window.console.log((video.srcObject as MediaStream).getAudioTracks()[0]);
-    //     }, 1000);
-    //     return () => {
-    //         clearInterval(interval);
-    //     };
-    // }, [video]);
+export default function VideoPlaceholder({innerRef, userId, className, playsInline, autoPlay, muted, onClick}: { innerRef: (ref: IVideoPlaceholderRef) => void, userId?: string | null, className?: string, playsInline?: boolean, autoPlay?: boolean, muted?: boolean, onClick?: (e: any) => void }) {
+    const [audioMute, setAudioMute] = useState(false);
+    const [videoMute, setVideoMute] = useState(false);
 
-    const vidRef = (ref: HTMLVideoElement | null) => {
-        videoRef(ref);
-        if (!ref) {
-            return;
+    const setSettings = ({video, audio}: { video?: boolean, audio?: boolean }) => {
+        if (video !== undefined) {
+            setVideoMute(!video);
         }
-        video = ref;
-        if (ref.srcObject) {
-            (ref.srcObject as MediaStream).onaddtrack = (e) => {
-                window.console.log(e);
-            };
-            (ref.srcObject as MediaStream).onremovetrack = (e) => {
-                window.console.log(e);
-            };
-            // @ts-ignore
-            (ref.srcObject as MediaStream).getVideoTracks()[0].onmute = (e) => {
-                window.console.log(e);
-            };
-            // @ts-ignore
-            (ref.srcObject as MediaStream).getVideoTracks()[0].onunmute = (e) => {
-                window.console.log(e);
-            };
+        if (audio !== undefined) {
+            setAudioMute(!audio);
         }
     };
 
+    const vidRef = (video: HTMLVideoElement | null) => {
+        innerRef({
+            setSettings,
+            video,
+        });
+    };
+
     return <div className={'video-placeholder ' + (className || '')} onClick={onClick}>
-        <video ref={vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}/>
+        {videoMute && userId && <UserAvatar className="video-user-placeholder" id={userId}/>}
+        <video ref={vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}
+               hidden={Boolean(userId) && videoMute}/>
+        {audioMute && <div className="video-audio-muted">
+            <MicOffRounded/>
+            {i18n.t('call.muted')}
+        </div>}
     </div>;
 }

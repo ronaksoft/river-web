@@ -83,8 +83,8 @@ enum PhoneCallAction {
     PhoneCallCallWaiting = 3;
     PhoneCallDiscarded = 4;
     PhoneCallIceExchange = 5;
-    PhoneCallReserved2 = 6;
-    PhoneCallReserved3 = 7;
+    PhoneCallMediaSettingsChanged = 6;
+    PhoneCallReactionSet = 7;
     PhoneCallReserved4 = 8;
     PhoneCallReserved5 = 9;
     PhoneCallReserved6 = 10;
@@ -163,4 +163,15 @@ message PhoneActionIceExchange {
     optional int64 SdpMLineIndex = 2;
     optional string SdpMid = 3;
     optional string UsernameFragment = 4;
+}
+
+// PhoneMediaSettingsUpdated
+message PhoneMediaSettingsUpdated {
+    required bool Video = 1;
+    required bool Audio = 2;
+}
+
+// PhoneReactionSet
+message PhoneReactionSet {
+    required string Reaction = 1;
 }

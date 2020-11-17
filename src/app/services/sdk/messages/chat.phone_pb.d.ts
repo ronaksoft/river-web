@@ -579,6 +579,56 @@ export namespace PhoneActionIceExchange {
   }
 }
 
+export class PhoneMediaSettingsUpdated extends jspb.Message {
+  hasVideo(): boolean;
+  clearVideo(): void;
+  getVideo(): boolean | undefined;
+  setVideo(value: boolean): void;
+
+  hasAudio(): boolean;
+  clearAudio(): void;
+  getAudio(): boolean | undefined;
+  setAudio(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneMediaSettingsUpdated.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneMediaSettingsUpdated): PhoneMediaSettingsUpdated.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneMediaSettingsUpdated, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneMediaSettingsUpdated;
+  static deserializeBinaryFromReader(message: PhoneMediaSettingsUpdated, reader: jspb.BinaryReader): PhoneMediaSettingsUpdated;
+}
+
+export namespace PhoneMediaSettingsUpdated {
+  export type AsObject = {
+    video?: boolean,
+    audio?: boolean,
+  }
+}
+
+export class PhoneReactionSet extends jspb.Message {
+  hasReaction(): boolean;
+  clearReaction(): void;
+  getReaction(): string | undefined;
+  setReaction(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneReactionSet.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneReactionSet): PhoneReactionSet.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneReactionSet, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneReactionSet;
+  static deserializeBinaryFromReader(message: PhoneReactionSet, reader: jspb.BinaryReader): PhoneReactionSet;
+}
+
+export namespace PhoneReactionSet {
+  export type AsObject = {
+    reaction?: string,
+  }
+}
+
 export enum DiscardReason {
   DISCARDREASONUNKNOWN = 0,
   DISCARDREASONMISSED = 1,
@@ -603,8 +653,8 @@ export enum PhoneCallAction {
   PHONECALLCALLWAITING = 3,
   PHONECALLDISCARDED = 4,
   PHONECALLICEEXCHANGE = 5,
-  PHONECALLRESERVED2 = 6,
-  PHONECALLRESERVED3 = 7,
+  PHONECALLMEDIASETTINGSCHANGED = 6,
+  PHONECALLREACTIONSET = 7,
   PHONECALLRESERVED4 = 8,
   PHONECALLRESERVED5 = 9,
   PHONECALLRESERVED6 = 10,
