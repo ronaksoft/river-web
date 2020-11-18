@@ -41,9 +41,8 @@ import Rating from '@material-ui/lab/Rating';
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import ContactPicker from "../ContactPicker";
 import {IUser} from "../../repository/user/interface";
-import VideoPlaceholder, {IVideoPlaceholderRef} from "../VideoPlaceholder";
 import APIManager from "../../services/sdk";
-import {findIndex} from "lodash";
+import CallVideo from "../CallVideo";
 
 import './style.scss';
 
@@ -55,13 +54,6 @@ interface IProps {
 interface ICallSettings {
     video: boolean;
     audio: boolean;
-}
-
-interface IRemoteConnection {
-    connId: number;
-    media?: IVideoPlaceholderRef;
-    streams: MediaStream[] | undefined;
-    userId: string;
 }
 
 interface IState {
@@ -101,7 +93,7 @@ class CallModal extends React.Component<IProps, IState> {
     private callService: CallService;
     private apiManager: APIManager;
     private videoRef: HTMLVideoElement | undefined;
-    private videoRemoteRefs: IRemoteConnection[] = [];
+    private callVideoRef: CallVideo | undefined;
     private eventReferences: any[] = [];
     private timer: number = 0;
     private timerEnd: number = 0;
@@ -371,18 +363,15 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallContent() {
-        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap} = this.state;
+        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap, callId} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
             {!callStarted && callUserId &&
             <UserAvatar className="call-user-bg" id={callUserId} noDetail={true}/>}
             <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
                    onClick={this.videoClickHandler(false)}/>
-            {/*<VideoPlaceholder className="remote-video" innerRef={this.videoRemoteRefHandler} playsInline={true}*/}
-            {/*                  autoPlay={true} onClick={this.videoClickHandler(true)} userId={callUserId}/>*/}
-            <div className="remote-video-container" onClick={this.videoClickHandler(true)}>
-                {this.getRemoteVideoContent()}
-            </div>
+            <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={this.userId}
+                       onClick={this.videoClickHandler(true)}/>
             <div className="call-modal-header">
                 <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
                     {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
@@ -406,20 +395,8 @@ class CallModal extends React.Component<IProps, IState> {
         </div>;
     }
 
-    private getRemoteVideoContent() {
-        return this.videoRemoteRefs.map((item) => {
-            const videoRemoteRefHandler = (ref: any) => {
-                item.media = ref;
-                const streams = this.callService.getRemoteStreams(item.connId);
-                if (streams && item.media && item.media.video) {
-                    item.media.video.srcObject = streams[0];
-                    item.streams = streams;
-                }
-            };
-            return (<VideoPlaceholder key={item.userId} className="remote-video" innerRef={videoRemoteRefHandler}
-                                      srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
-                                      autoPlay={true} userId={item.userId}/>);
-        });
+    private callVideoRefHandler = (ref: any) => {
+        this.callVideoRef = ref;
     }
 
     private videoClickHandler = (remote: boolean) => () => {
@@ -456,7 +433,9 @@ class CallModal extends React.Component<IProps, IState> {
                 this.setState({
                     callId,
                 }, () => {
-                    this.initRemoteConnection();
+                    if (this.callVideoRef) {
+                        this.callVideoRef.initRemoteConnection();
+                    }
                 });
             });
         }
@@ -474,28 +453,11 @@ class CallModal extends React.Component<IProps, IState> {
                 });
                 this.videoRef.srcObject = stream;
             }
-            this.initRemoteConnection();
+            if (this.callVideoRef) {
+                this.callVideoRef.initRemoteConnection();
+            }
         }).catch((err) => {
             window.console.log(err);
-        });
-    }
-
-    private initRemoteConnection(noForceUpdate?: boolean) {
-        const {callId} = this.state;
-        this.videoRemoteRefs = [];
-        this.callService.getParticipantList(callId).forEach((participant) => {
-            if (this.userId === participant.peer.userid) {
-                return;
-            }
-            this.videoRemoteRefs.push({
-                connId: participant.connectionid || 0,
-                media: undefined,
-                streams: undefined,
-                userId: participant.peer.userid || '0',
-            });
-            if (noForceUpdate !== true) {
-                this.forceUpdate();
-            }
         });
     }
 
@@ -551,34 +513,28 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private eventStreamUpdateHandler = ({connId, streams}: { connId: number, streams: MediaStream[] }) => {
-        if (this.videoRemoteRefs.length === 0) {
-            this.initRemoteConnection(true);
+        if (!this.callVideoRef) {
+            return;
         }
-        const index = findIndex(this.videoRemoteRefs, {connId});
-        if (index > -1 && streams) {
-            const remote = this.videoRemoteRefs[index];
-            if (remote.media && remote.media.video) {
-                remote.media.video.srcObject = streams[0];
-            }
-            if (!this.timer) {
-                this.timer = Date.now();
-            }
-            if (!this.state.callStarted) {
-                this.setState({
-                    callStarted: true,
-                });
-            }
+
+        this.callVideoRef.initRemoteConnection(true);
+        this.callVideoRef.setStream(connId, streams);
+        if (!this.timer) {
+            this.timer = Date.now();
+        }
+        if (!this.state.callStarted) {
+            this.setState({
+                callStarted: true,
+            });
         }
     }
 
     private eventMediaSettingsUpdateHandler = (data: ICallParticipant) => {
-        const index = findIndex(this.videoRemoteRefs, {connId: data.connectionid});
-        if (index > -1) {
-            const remote = this.videoRemoteRefs[index];
-            if (remote.media) {
-                remote.media.setSettings(data.mediaSettings);
-            }
+        if (!this.callVideoRef) {
+            return;
         }
+
+        this.callVideoRef.setMediaSettings(data.connectionid || 0, data.mediaSettings);
     }
 
     private getCallReportContent = () => {

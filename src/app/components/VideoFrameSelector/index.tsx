@@ -317,7 +317,7 @@ class VideoFrameSelector extends React.Component<IProps, IState> {
                             if (blob) {
                                 resolve({
                                     blob,
-                                    url: URL.createObjectURL(blob)
+                                    url: URL.createObjectURL(blob),
                                 });
                             } else {
                                 reject('can\'t get frame');

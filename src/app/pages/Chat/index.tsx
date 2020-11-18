@@ -5661,9 +5661,9 @@ class Chat extends React.Component<IProps, IState> {
                 isOnline,
                 isUpdating
             });
-        } else {
+        } /*else {
             this.forceUpdate();
-        }
+        }*/
         if (this.leftMenuRef && this.isMobileView) {
             this.leftMenuRef.setStatus({
                 isConnecting: this.isConnecting,
@@ -5750,6 +5750,9 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateFunctionHandler = () => {
+        if (this.isMobileView) {
+            return;
+        }
         this.forceUpdate();
     }
 
