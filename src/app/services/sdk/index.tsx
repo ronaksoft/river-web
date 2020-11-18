@@ -1223,10 +1223,11 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneInitCall, data.serializeBinary(), true);
     }
 
-    public callRequest(inputPeer: InputPeer, randomId: number, participants: PhoneParticipantSDP[], callId?: string): Promise<PhoneCall.AsObject> {
+    public callRequest(inputPeer: InputPeer, randomId: number, initiator: boolean, participants: PhoneParticipantSDP[], callId?: string): Promise<PhoneCall.AsObject> {
         const data = new PhoneRequestCall();
         data.setPeer(inputPeer);
         data.setRandomid(randomId);
+        data.setInitiator(initiator);
         data.setParticipantsList(participants);
         if (callId) {
             data.setCallid(callId);

@@ -20,7 +20,7 @@ export interface IVideoPlaceholderRef {
     setSettings: ({video, audio}: { video?: boolean, audio?: boolean }) => void;
 }
 
-export default function VideoPlaceholder({innerRef, userId, className, playsInline, autoPlay, muted, onClick}: { innerRef: (ref: IVideoPlaceholderRef) => void, userId?: string | null, className?: string, playsInline?: boolean, autoPlay?: boolean, muted?: boolean, onClick?: (e: any) => void }) {
+export default function VideoPlaceholder({innerRef, userId, srcObject, className, playsInline, autoPlay, muted, onClick}: { innerRef: (ref: IVideoPlaceholderRef) => void, srcObject?: any, userId?: string | null, className?: string, playsInline?: boolean, autoPlay?: boolean, muted?: boolean, onClick?: (e: any) => void }) {
     const [audioMute, setAudioMute] = useState(false);
     const [videoMute, setVideoMute] = useState(false);
 
@@ -43,7 +43,7 @@ export default function VideoPlaceholder({innerRef, userId, className, playsInli
     return <div className={'video-placeholder ' + (className || '')} onClick={onClick}>
         {videoMute && userId && <UserAvatar className="video-user-placeholder" id={userId}/>}
         <video ref={vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}
-               hidden={Boolean(userId) && videoMute}/>
+               hidden={Boolean(userId) && videoMute} src={srcObject}/>
         {audioMute && <div className="video-audio-muted">
             <MicOffRounded/>
             {i18n.t('call.muted')}

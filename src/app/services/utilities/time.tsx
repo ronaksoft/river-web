@@ -228,6 +228,15 @@ class TimeUntiles {
         const today = moment(current).startOf('day');
         const date = moment(timestamp * 1000);
 
+        const justNow = date.subtract(15, 'seconds');
+        if (date.isSameOrAfter(justNow)) {
+            if (this.lang === 'en') {
+                return 'Just Now';
+            } else {
+                return 'همین الان';
+            }
+        }
+
         if (date.isSameOrAfter(today)) {
             if (this.lang === 'en') {
                 return `${date.from(current, true)} ago`;

@@ -38,6 +38,11 @@ export class PhoneRequestCall extends jspb.Message {
   getPeer(): core_types_pb.InputPeer;
   setPeer(value?: core_types_pb.InputPeer): void;
 
+  hasInitiator(): boolean;
+  clearInitiator(): void;
+  getInitiator(): boolean | undefined;
+  setInitiator(value: boolean): void;
+
   clearParticipantsList(): void;
   getParticipantsList(): Array<PhoneParticipantSDP>;
   setParticipantsList(value: Array<PhoneParticipantSDP>): void;
@@ -62,6 +67,7 @@ export namespace PhoneRequestCall {
   export type AsObject = {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
+    initiator?: boolean,
     participantsList: Array<PhoneParticipantSDP.AsObject>,
     callid?: string,
   }

@@ -25,10 +25,11 @@ import {
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
 import APIManager from "../sdk";
+import {orderBy} from "lodash";
 
 export const C_CALL_EVENT = {
     CallAccept: 0x02,
-    CallRejected: 0x04,
+    CallReject: 0x04,
     CallRequest: 0x01,
     MediaSettingsUpdate: 0x05,
     StreamUpdate: 0x03,
@@ -198,7 +199,7 @@ export default class CallService {
                 username: item.username,
             }));
             this.initCallParticipants('temp', participants);
-            return this.initConnections(peer, 'temp').then((done) => {
+            return this.initConnections(peer, 'temp', true).then((done) => {
                 this.swapTempInfo(this.activeCallId || '0');
                 return this.activeCallId || '0';
             });
@@ -225,7 +226,7 @@ export default class CallService {
             if (this.isInitiator(id, info.request.userid || '0')) {
                 return this.initStream().then((stream) => {
                     const sdpData = (info.request.data as PhoneActionRequested.AsObject);
-                    return this.initConnections(peer, id, {
+                    return this.initConnections(peer, id, false, {
                         sdp: sdpData.sdp,
                         type: sdpData.type as any,
                     }).then(() => {
@@ -254,6 +255,17 @@ export default class CallService {
         return this.apiManager.callReject(peer, id, participants, reason, duration).then(() => {
             this.destroyConnections(id);
         });
+    }
+
+    public getParticipantList(callId: string): ICallParticipant[] {
+        if (!this.callInfo.hasOwnProperty(callId)) {
+            return [];
+        }
+        const list: ICallParticipant[] = [];
+        Object.values(this.callInfo[callId].participants).forEach((participant) => {
+            list.push(participant);
+        });
+        return orderBy(list, ['connectionid'],['asc']);
     }
 
     public destroyConnections(id: string, connId?: number) {
@@ -317,9 +329,9 @@ export default class CallService {
         });
     }
 
-    private callUser(peer: InputPeer, phoneParticipants: PhoneParticipantSDP[]) {
+    private callUser(peer: InputPeer, initiator: boolean, phoneParticipants: PhoneParticipantSDP[]) {
         const randomId = UniqueId.getRandomId();
-        return this.apiManager.callRequest(peer, randomId, phoneParticipants).then((res) => {
+        return this.apiManager.callRequest(peer, randomId, initiator, phoneParticipants).then((res) => {
             this.activeCallId = res.id || '0';
             return res;
         });
@@ -387,7 +399,7 @@ export default class CallService {
 
     private callRejected(data: IUpdatePhoneCall) {
         // const actionData = (data.data as PhoneActionDiscarded.AsObject);
-        this.callHandlers(C_CALL_EVENT.CallRejected, data);
+        this.callHandlers(C_CALL_EVENT.CallReject, data);
     }
 
     private iceExchange(data: IUpdatePhoneCall) {
@@ -491,7 +503,7 @@ export default class CallService {
         return participant.initiator || false;
     }
 
-    private initConnections(peer: InputPeer, id: string, sdp?: RTCSessionDescriptionInit) {
+    private initConnections(peer: InputPeer, id: string, initiator: boolean, sdp?: RTCSessionDescriptionInit) {
         const userConnId = this.getConnId(id, this.userId) || 0;
         const callInfo = this.getCallInfo(id);
         if (!callInfo) {
@@ -525,7 +537,7 @@ export default class CallService {
                             return this.convertPhoneParticipant(item);
                         });
                     }).then((phoneParticipants) => {
-                        return this.callUser(peer, phoneParticipants);
+                        return this.callUser(peer, initiator, phoneParticipants);
                     }));
                 } else {
                     promises.push(Promise.resolve([]));

@@ -592,7 +592,7 @@ proto.msg.PhoneInitCall.prototype.hasPeer = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.PhoneRequestCall.repeatedFields_ = [3];
+proto.msg.PhoneRequestCall.repeatedFields_ = [4];
 
 
 
@@ -627,9 +627,10 @@ proto.msg.PhoneRequestCall.toObject = function(includeInstance, msg) {
   var f, obj = {
     randomid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
+    initiator: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     proto.msg.PhoneParticipantSDP.toObject, includeInstance),
-    callid: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    callid: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -676,11 +677,15 @@ proto.msg.PhoneRequestCall.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPeer(value);
       break;
     case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setInitiator(value);
+      break;
+    case 4:
       var value = new proto.msg.PhoneParticipantSDP;
       reader.readMessage(value,proto.msg.PhoneParticipantSDP.deserializeBinaryFromReader);
       msg.addParticipants(value);
       break;
-    case 4:
+    case 5:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setCallid(value);
       break;
@@ -728,18 +733,25 @@ proto.msg.PhoneRequestCall.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeBool(
+      3,
+      f
+    );
+  }
   f = message.getParticipantsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      3,
+      4,
       f,
       proto.msg.PhoneParticipantSDP.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  f = /** @type {string} */ (jspb.Message.getField(message, 5));
   if (f != null) {
     writer.writeInt64String(
-      4,
+      5,
       f
     );
   }
@@ -820,12 +832,48 @@ proto.msg.PhoneRequestCall.prototype.hasPeer = function() {
 
 
 /**
- * repeated PhoneParticipantSDP Participants = 3;
+ * required bool Initiator = 3;
+ * @return {boolean}
+ */
+proto.msg.PhoneRequestCall.prototype.getInitiator = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.PhoneRequestCall} returns this
+ */
+proto.msg.PhoneRequestCall.prototype.setInitiator = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.PhoneRequestCall} returns this
+ */
+proto.msg.PhoneRequestCall.prototype.clearInitiator = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.PhoneRequestCall.prototype.hasInitiator = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * repeated PhoneParticipantSDP Participants = 4;
  * @return {!Array<!proto.msg.PhoneParticipantSDP>}
  */
 proto.msg.PhoneRequestCall.prototype.getParticipantsList = function() {
   return /** @type{!Array<!proto.msg.PhoneParticipantSDP>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.msg.PhoneParticipantSDP, 3));
+    jspb.Message.getRepeatedWrapperField(this, proto.msg.PhoneParticipantSDP, 4));
 };
 
 
@@ -834,7 +882,7 @@ proto.msg.PhoneRequestCall.prototype.getParticipantsList = function() {
  * @return {!proto.msg.PhoneRequestCall} returns this
 */
 proto.msg.PhoneRequestCall.prototype.setParticipantsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 3, value);
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
 
 
@@ -844,7 +892,7 @@ proto.msg.PhoneRequestCall.prototype.setParticipantsList = function(value) {
  * @return {!proto.msg.PhoneParticipantSDP}
  */
 proto.msg.PhoneRequestCall.prototype.addParticipants = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.msg.PhoneParticipantSDP, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.msg.PhoneParticipantSDP, opt_index);
 };
 
 
@@ -858,11 +906,11 @@ proto.msg.PhoneRequestCall.prototype.clearParticipantsList = function() {
 
 
 /**
- * optional int64 CallID = 4;
+ * optional int64 CallID = 5;
  * @return {string}
  */
 proto.msg.PhoneRequestCall.prototype.getCallid = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, "0"));
 };
 
 
@@ -871,7 +919,7 @@ proto.msg.PhoneRequestCall.prototype.getCallid = function() {
  * @return {!proto.msg.PhoneRequestCall} returns this
  */
 proto.msg.PhoneRequestCall.prototype.setCallid = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setField(this, 5, value);
 };
 
 
@@ -880,7 +928,7 @@ proto.msg.PhoneRequestCall.prototype.setCallid = function(value) {
  * @return {!proto.msg.PhoneRequestCall} returns this
  */
 proto.msg.PhoneRequestCall.prototype.clearCallid = function() {
-  return jspb.Message.setField(this, 4, undefined);
+  return jspb.Message.setField(this, 5, undefined);
 };
 
 
@@ -889,7 +937,7 @@ proto.msg.PhoneRequestCall.prototype.clearCallid = function() {
  * @return {boolean}
  */
 proto.msg.PhoneRequestCall.prototype.hasCallid = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
