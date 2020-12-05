@@ -67,7 +67,7 @@ export default class Socket {
     private resolveGenInputPasswordFn: any | undefined;
 
     public constructor() {
-        this.worker = new Worker('/bin/worker.js?v23');
+        this.worker = new Worker('/bin/worker.js?v24');
 
         setTimeout(() => {
             this.workerMessage('init', {});
