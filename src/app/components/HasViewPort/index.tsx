@@ -7,9 +7,10 @@ export default function HasViewPort({children, key, height}: any) {
 
     useEffect(() => {
         if (!IntersectionObserver) {
-            return;
+            return null;
         }
-        const options = {
+
+        const options: IntersectionObserverInit = {
             root: null,
             rootMargin: "0px",
             threshold: 0,

@@ -160,8 +160,12 @@ export default class CallService {
 
     public getStreamState() {
         if (!this.localStream) {
-            return;
+            return {
+                audio: false,
+                video: false,
+            };
         }
+
         const videoTracks = this.localStream.getVideoTracks();
         const audioTracks = this.localStream.getAudioTracks();
         return {
@@ -376,7 +380,7 @@ export default class CallService {
 
     private callAccepted(data: IUpdatePhoneCall) {
         const connId = this.getConnId(data.callid, data.userid);
-        if (connId === undefined || !this.peerConnections.hasOwnProperty(connId)) {
+        if (connId === null || !this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
 
@@ -405,7 +409,7 @@ export default class CallService {
     private iceExchange(data: IUpdatePhoneCall) {
         const connId = this.getConnId(data.callid, data.userid);
         const conn = this.peerConnections;
-        if (connId === undefined || !conn.hasOwnProperty(connId)) {
+        if (connId === null || !conn.hasOwnProperty(connId)) {
             return Promise.reject('connId is not found');
         }
 
@@ -613,7 +617,7 @@ export default class CallService {
     private getInputUsers(id: string) {
         const info = this.getCallInfo(id);
         if (!info) {
-            return;
+            return null;
         }
 
         const inputUsers: InputUser[] = [];
@@ -636,20 +640,23 @@ export default class CallService {
     private getConnId(callId: string | undefined, userId: string | undefined) {
         const info = this.getCallInfo(callId || '0');
         if (!info) {
-            return;
+            return null;
         }
+
         return info.participantMap[userId || '0'];
     }
 
     private getInputUserByConnId(callId: string, connId: number) {
         const info = this.getCallInfo(callId);
         if (!info) {
-            return;
+            return null;
         }
+
         const participant = info.participants[connId];
         if (!participant) {
-            return;
+            return null;
         }
+
         const inputUser = new InputUser();
         inputUser.setUserid(participant.peer.userid || '0');
         inputUser.setAccesshash(participant.peer.accesshash || '0');
@@ -749,7 +756,7 @@ export default class CallService {
         const mediaSettings = data.data as PhoneMediaSettingsUpdated.AsObject;
         const connId = this.getConnId(data.callid, data.userid);
         const callId = data.callid || '0';
-        if (connId === undefined || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId)) {
+        if (connId === null || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId)) {
             return;
         }
         this.callInfo[callId].participants[connId].mediaSettings.audio = mediaSettings.audio || false;

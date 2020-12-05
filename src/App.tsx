@@ -241,7 +241,7 @@ class App extends React.Component<{}, IState> {
                     <SnackbarProvider maxSnack={3}>
                         {Routes}
                     </SnackbarProvider>
-                    <Modality queueSize={5} dialogClasses={{root: 'confirm-dialog', paper: 'confirm-dialog-paper'}}/>
+                    <Modality queueSize={5} dialogClasses={{paper: 'confirm-dialog-paper', root: 'confirm-dialog'}}/>
                 </MuiThemeProvider>
             </div>
         );

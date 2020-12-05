@@ -182,7 +182,7 @@ export default class GroupRepo {
                 return o1.teamid === o2.teamid && o1.id === o2.id;
             });
             const updateItems: IGroup[] = result.map((group: IGroup) => {
-                const t = find(groups, {teamid: group.teamid, id: group.id});
+                const t = find(groups, {id: group.id, teamid: group.teamid});
                 if (t) {
                     return this.mergeCheck(group, t);
                 } else {
@@ -196,7 +196,7 @@ export default class GroupRepo {
             return this.createMany(list);
         }).then((res) => {
             if (callerId) {
-                this.broadcastEvent(GroupDBUpdated, {ids, callerId});
+                this.broadcastEvent(GroupDBUpdated, {callerId, ids});
             } else {
                 this.throttleBroadcast(ids);
             }

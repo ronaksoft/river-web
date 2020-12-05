@@ -314,5 +314,6 @@ message BotGetCommands {
 // BotCommandsMany
 message BotCommandsMany {
     repeated BotCommands Commands = 1;
+    optional bool Empty = 2;
 }
 

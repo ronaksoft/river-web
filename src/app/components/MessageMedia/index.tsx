@@ -459,7 +459,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 </div>
                 {Boolean(info.caption.length > 0) &&
                 <div className={'media-caption ' + (message.rtl ? 'rtl' : 'ltr')}
-                     style={{minWidth: this.pictureContentSize.width, maxWidth: this.pictureContentSize.maxWidth}}
+                     style={{maxWidth: this.pictureContentSize.maxWidth, minWidth: this.pictureContentSize.width}}
                      onClick={this.captionClickHandler}
                 >{renderBody(info.caption, info.entityList, this.isElectron, this.props.onBodyAction, this.props.measureFn)}</div>}
             </div>

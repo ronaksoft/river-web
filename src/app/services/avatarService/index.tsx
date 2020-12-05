@@ -179,8 +179,8 @@ export default class AvatarService {
                                         this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
                                         this.avatars[id].retries = 0;
                                     }
-                                    this.broadcastEvent(AvatarSrcUpdated, {items: [{id, fileName}]});
-                                    this.throttleBroadcast([{id, fileName}]);
+                                    this.broadcastEvent(AvatarSrcUpdated, {items: [{fileName, id}]});
+                                    this.throttleBroadcast([{fileName, id}]);
                                     if (this.avatars[id]) {
                                         resolve(this.avatars[id].src);
                                     } else {
@@ -224,7 +224,7 @@ export default class AvatarService {
                 this.fileRepo.get(fileName).then((fileRes) => {
                     if (fileRes) {
                         this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
-                        this.throttleBroadcast([{id, fileName}]);
+                        this.throttleBroadcast([{fileName, id}]);
                         resolve(this.avatars[id].src);
                     } else {
                         reject();

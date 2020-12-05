@@ -1263,6 +1263,11 @@ export class BotCommandsMany extends jspb.Message {
   setCommandsList(value: Array<core_types_pb.BotCommands>): void;
   addCommands(value?: core_types_pb.BotCommands, index?: number): core_types_pb.BotCommands;
 
+  hasEmpty(): boolean;
+  clearEmpty(): void;
+  getEmpty(): boolean | undefined;
+  setEmpty(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotCommandsMany.AsObject;
   static toObject(includeInstance: boolean, msg: BotCommandsMany): BotCommandsMany.AsObject;
@@ -1276,6 +1281,7 @@ export class BotCommandsMany extends jspb.Message {
 export namespace BotCommandsMany {
   export type AsObject = {
     commandsList: Array<core_types_pb.BotCommands.AsObject>,
+    empty?: boolean,
   }
 }
 

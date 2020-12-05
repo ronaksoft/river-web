@@ -46,8 +46,8 @@ export default class SearchRepo {
     public searchIds(teamId: string, {skip, limit, keyword}: any): Promise<string[]> {
         const promises: any[] = [];
         limit = limit || 12;
-        promises.push(this.userRepo.getManyCache(teamId, false, {limit, keyword}));
-        promises.push(this.groupRepo.getManyCache(teamId, {limit, keyword}));
+        promises.push(this.userRepo.getManyCache(teamId, false, {keyword, limit}));
+        promises.push(this.groupRepo.getManyCache(teamId, {keyword, limit}));
         return new Promise<string[]>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
             Promise.all(promises).then((arrRes) => {
@@ -67,8 +67,8 @@ export default class SearchRepo {
         const promises: any[] = [];
         const safeLimit = limit || 128;
         const safeSkip = skip || 0;
-        promises.push(this.userRepo.getManyCache(teamId, false, {limit, keyword}));
-        promises.push(this.groupRepo.getManyCache(teamId, {limit, keyword}));
+        promises.push(this.userRepo.getManyCache(teamId, false, {keyword, limit}));
+        promises.push(this.groupRepo.getManyCache(teamId, {keyword, limit}));
         return new Promise<IDialogWithContact>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
             const peers: Array<[string, number]> = [];
@@ -113,7 +113,7 @@ export default class SearchRepo {
     }
 
     public searchUser = (teamId: string, {limit, keyword}: { limit?: number, keyword?: string }): Promise<IDialogWithContact> => {
-        return this.userRepo.getManyCache(teamId, false, {limit, keyword}).then((res) => {
+        return this.userRepo.getManyCache(teamId, false, {keyword, limit}).then((res) => {
             return ({
                 contacts: res.filter((user: IUser) => {
                     return user.lastname !== undefined || user.firstname !== undefined;
@@ -143,7 +143,7 @@ export default class SearchRepo {
         const limit = 128;
         const skip = 0;
         let users: IUser[] = [];
-        this.userRepo.getManyCache(teamId, false, {limit, keyword}).then((userRes) => {
+        this.userRepo.getManyCache(teamId, false, {keyword, limit}).then((userRes) => {
             const ids: { [key: string]: IUser } = {};
             const peers: Array<[string, number]> = [];
             userRes.forEach((item: IUser) => {

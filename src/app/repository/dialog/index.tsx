@@ -113,13 +113,13 @@ export default class DialogRepo {
         const getDialogs = ({resolve, reject, dialogs}: any) => {
             dialogs = dialogs || [];
             // @ts-ignore
-            this.getManyForSnapshot(teamId, {skip: safeSkip, limit: safeLimit}).then((remoteRes) => {
+            this.getManyForSnapshot(teamId, {limit: safeLimit, skip: safeSkip}).then((remoteRes) => {
                 // window.console.log('intersectionBy', intersectionBy(cloneDeep(remoteRes.dialogs), dialogs, 'peerid'));
                 dialogs.push.apply(dialogs, remoteRes.dialogs);
                 dialogs = uniqBy(dialogs, 'peerid');
                 if (remoteRes.dialogs.length === safeLimit) {
                     safeSkip += safeLimit;
-                    return getDialogs({limit: safeLimit, skip: safeSkip, resolve, reject, dialogs});
+                    return getDialogs({dialogs, limit: safeLimit, reject, resolve, skip: safeSkip});
                 } else {
                     return resolve({
                         dialogs,
@@ -136,7 +136,7 @@ export default class DialogRepo {
             });
         };
         return new Promise((resolve, reject) => {
-            getDialogs({resolve, reject});
+            getDialogs({reject, resolve});
         });
     }
 
@@ -278,7 +278,7 @@ export default class DialogRepo {
         return this.db.dialogs.where('[teamid+peerid+peertype]').anyOf(queries).toArray().then((result) => {
             const createItems: IDialog[] = differenceWith(tempDialogs, result, (i1, i2) => i1.teamid === i2.teamid && i1.peerid === i2.peerid && i1.peertype === i2.peertype);
             const updateItems: IDialog[] = result.map((dialog: IDialog) => {
-                const t = find(tempDialogs, {teamid: dialog.teamid, peerid: dialog.peerid, peertype: dialog.peertype});
+                const t = find(tempDialogs, {peerid: dialog.peerid, peertype: dialog.peertype, teamid: dialog.teamid});
                 if (t) {
                     return this.mergeCheck(dialog, t);
                 } else {

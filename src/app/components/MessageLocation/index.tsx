@@ -87,6 +87,6 @@ const MessageLocation = ({peer, message, onBodyAction, measureFn}: IProps) => {
             </div>}
         </div>
     );
-}
+};
 
 export default MessageLocation;

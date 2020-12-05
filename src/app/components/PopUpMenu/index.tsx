@@ -58,8 +58,9 @@ class PopUpMenu extends React.Component<IProps, IState> {
 
     private getPosition(el: any) {
         if (!el) {
-            return;
+            return {};
         }
+
         return {
             left: el.offsetLeft,
             top: el.offsetTop,

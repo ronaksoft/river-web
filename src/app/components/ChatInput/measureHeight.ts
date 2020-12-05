@@ -115,7 +115,7 @@ export const measureNodeHeight = (
 
     const rowCount = Math.floor(height / singleRowHeight + 0.5);
 
-    return {height, minHeight, maxHeight, rowCount, valueRowCount};
+    return {height, maxHeight, minHeight, rowCount, valueRowCount};
 };
 
 const calculateNodeStyling = (node: any, uid: any, useCache: boolean = false) => {

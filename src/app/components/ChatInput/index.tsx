@@ -2227,7 +2227,7 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Insert at selection */
     private insertAtCursor(text: string) {
         if (!this.textarea) {
-            return;
+            return undefined;
         }
         let pos: number = 0;
         let textVal: string = this.textarea.value;

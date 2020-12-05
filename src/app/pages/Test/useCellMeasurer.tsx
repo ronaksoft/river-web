@@ -94,7 +94,7 @@ export default function useCellMeasurer({items}: { items: any[] }) {
     useEffect(() => {
         const el = innerRef.current;
         if (!el) {
-            return;
+            return null;
         }
 
         function handleResize() {

@@ -82,7 +82,7 @@ const listStyle: React.CSSProperties = {
 };
 
 class SearchList extends React.Component<IProps, IState> {
-    private inputPeerRes: IDialogWithContact = {dialogs: [], contacts: []};
+    private inputPeerRes: IDialogWithContact = {contacts: [], dialogs: []};
     private list: VariableSizeList | undefined;
     private searchRepo: SearchRepo;
     private defaultInputPeer: IDialogWithContact = {contacts: [], dialogs: []};
@@ -202,7 +202,7 @@ class SearchList extends React.Component<IProps, IState> {
                                 height={height}
                                 className="search-container"
                             >{({index, style}) => {
-                                return this.rowRender({index, style, key: index});
+                                return this.rowRender({index, key: index, style});
                             }}
                             </VariableSizeList>
                         )}
@@ -229,7 +229,7 @@ class SearchList extends React.Component<IProps, IState> {
                                 className="search-container"
                                 style={listStyle}
                             >{({index, style}) => {
-                                return this.rowRender({index, style, key: index});
+                                return this.rowRender({index, key: index, style});
                             }}
                             </VariableSizeList>
                         </Scrollbars>
@@ -380,7 +380,7 @@ class SearchList extends React.Component<IProps, IState> {
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
         this.searchApi(this.props.teamId, {keyword: text, limit: 12}).then((res: IDialogWithContact) => {
-            this.inputPeerRes = clone(res || []);
+            this.inputPeerRes = clone(res || []) as IDialogWithContact;
             if (this.list) {
                 this.list.resetAfterIndex(0, false);
             }

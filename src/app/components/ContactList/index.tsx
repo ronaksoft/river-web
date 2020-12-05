@@ -201,33 +201,15 @@ class ContactList extends React.Component<IProps, IState> {
         // const el = document.querySelector(`.contacts-inner${className} > div > div:first-child`);
         if (el) {
             const options: any = {
-                // duration of the scroll per 1000px, default 500
-                speed: 500,
-
-                // minimum duration of the scroll
-                minDuration: 128,
-
-                // maximum duration of the scroll
-                maxDuration: 256,
-
+                cancelOnUserAction: true,
                 // @ts-ignore
                 element: el,
-
-                // Additional offset value that gets added to the desiredOffset.  This is
-                // useful when passing a DOM object as the desiredOffset and wanting to adjust
-                // for an fixed nav or to add some padding.
-                offset: 0,
-
-                // should animated scroll be canceled on user scroll/keypress
-                // if set to "false" user input will be disabled until animated scroll is complete
-                // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
-                cancelOnUserAction: true,
-
-                // Set passive event Listeners to be true by default. Stops Chrome from complaining.
-                passive: true,
-
-                // Scroll horizontally rather than vertically (which is the default)
                 horizontal: false,
+                maxDuration: 256,
+                minDuration: 128,
+                offset: 0,
+                passive: true,
+                speed: 500,
             };
             animateScrollTo(0, options);
         }
@@ -311,7 +293,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 className={'contact-container ' + (this.props.className || '')}
                                 direction={this.rtl ? 'ltr' : 'rtl'}
                             >{({index, style}) => {
-                                return this.rowRender({index, style, key: index});
+                                return this.rowRender({index, key: index, style});
                             }}
                             </VariableSizeList>
                         )}
@@ -343,7 +325,7 @@ class ContactList extends React.Component<IProps, IState> {
                                     className="contact-container"
                                     style={listStyle}
                                 >{({index, style}) => {
-                                    return this.rowRender({index, style, key: index});
+                                    return this.rowRender({index, key: index, style});
                                 }}
                                 </VariableSizeList>
                             </Scrollbars>
@@ -676,7 +658,7 @@ class ContactList extends React.Component<IProps, IState> {
     /* Context menu items renderer */
     private contextMenuItem() {
         if (!this.props.onContextMenuAction) {
-            return;
+            return null;
         }
         const {contacts, moreIndex} = this.state;
         if (!contacts[moreIndex]) {

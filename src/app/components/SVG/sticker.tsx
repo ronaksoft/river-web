@@ -2,7 +2,12 @@ import * as React from 'react';
 
 export const Sticker = () => {
     return (<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
-                 style={{fill: 'currentColor', height: '1em', width: '1em', transform: 'rotateY(180deg)'}}>
+                 style={{
+                     fill: 'currentColor',
+                     height: '1em',
+                     transform: 'rotateY(180deg)',
+                     width: '1em'
+                 }}>
         <g opacity="0.72">
             <path
                 d="M10.6464 2.60352C10.5518 4.98442 11.0583 6.74583 12.1561 7.84358C13.2539 8.94142 15.0151 9.44802 17.3962 9.35327L10.6464 2.60352Z"/>

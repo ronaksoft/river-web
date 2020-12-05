@@ -118,8 +118,9 @@ export default class IframeService {
 
     public setUnreadCounter(unread: number) {
         if (!this.active) {
-            return;
+            return Promise.reject();
         }
+
         return this.send(C_IFRAME_CMD.Unread, {
             unread,
         });
@@ -127,15 +128,17 @@ export default class IframeService {
 
     public close() {
         if (!this.active) {
-            return;
+            return Promise.reject();
         }
+
         return this.send(C_IFRAME_CMD.Close, {});
     }
 
     public newSession() {
         if (!this.active) {
-            return;
+            return Promise.reject();
         }
+
         return this.send(C_IFRAME_CMD.NewSession, {});
     }
 
@@ -148,6 +151,7 @@ export default class IframeService {
         if (!this.fnQueue[subject]) {
             return;
         }
+
         const keys = Object.keys(this.fnQueue[subject]);
         keys.forEach((key) => {
             const fn = this.fnQueue[subject][key];

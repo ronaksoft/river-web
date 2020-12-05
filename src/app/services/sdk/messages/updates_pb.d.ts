@@ -2420,7 +2420,7 @@ export namespace UpdatePhoneCall {
     userid?: string,
     accesshash?: string,
     action?: chat_phone_pb.PhoneCallAction,
-    actiondata: Uint8Array | string,
+    actiondata?: Uint8Array | string,
   }
 }
 

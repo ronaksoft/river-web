@@ -591,8 +591,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private connectionStatus() {
         if (!this.props.mobileView || !this.state.connectionStatus) {
-            return;
+            return null;
         }
+
         let body: any = '';
         if (!this.state.isOnline) {
             body = <span>{i18n.t('status.waiting_for_network')}</span>;
@@ -601,8 +602,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         } else if (this.state.isUpdating) {
             body = <span>{i18n.t('status.updating')}</span>;
         }
+
         if (body === '') {
-            return;
+            return null;
         } else {
             return (<div className={'status-alert' + (this.state.connectionStatusHide ? ' hide' : '')}>{body}</div>);
         }

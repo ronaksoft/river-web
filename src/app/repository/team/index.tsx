@@ -138,7 +138,8 @@ export default class TeamRepo {
         return this.db.teams.bulkPut(teams);
     }
 
-    public update(team: ITeam) {
+    public update(team: ITeam): Promise<any> {
+        // @ts-ignore
         return this.db.teams.get(team.id || '0').then((res) => {
             if (res) {
                 team = kMerge(res, team);

@@ -194,7 +194,7 @@ export default class CachedFileService {
                         return;
                     }
                     blurFn(ctx);
-                    canvas.convertToBlob({type: 'image/jpeg', quality: 0.9}).then((data) => {
+                    canvas.convertToBlob({quality: 0.9, type: 'image/jpeg'}).then((data) => {
                         if (data) {
                             resolve(data);
                         } else {
@@ -368,7 +368,7 @@ export default class CachedFileService {
                     const imageData = ctx.getImageData(0, 0, img.width * scale, img.height * scale);
                     glur(imageData.data, img.width * scale, img.height * scale, 10);
                     ctx.putImageData(imageData, 0, 0);
-                    canvas.convertToBlob({type: 'image/jpeg', quality: 0.9}).then((data) => {
+                    canvas.convertToBlob({quality: 0.9, type: 'image/jpeg'}).then((data) => {
                         if (data) {
                             const blurSrc = URL.createObjectURL(data);
                             if (this.files.hasOwnProperty(fileName)) {

@@ -117,7 +117,7 @@ export default class LabelRepo {
             promises.push(this.db.labels.delete(id));
         });
         return Promise.all(promises).then((res) => {
-            this.broadcastEvent('Label_DB_Updated', {ids, callerId});
+            this.broadcastEvent('Label_DB_Updated', {callerId, ids});
             return res;
         });
     }
@@ -125,7 +125,7 @@ export default class LabelRepo {
     public getMessageByItem(teamId: string, id: number, {max, limit}: { min?: number, max?: number, limit?: number }, cacheCallback?: (cacheList: IMessage[]) => void): Promise<ILabelItemList> {
         let lim = limit || 1000;
         return new Promise((resolve, reject) => {
-            this.getCachedMessageByItem(teamId, id, {max, limit: lim}).then((cacheRes) => {
+            this.getCachedMessageByItem(teamId, id, {limit: lim, max}).then((cacheRes) => {
                 if (cacheRes.labelCount < lim) {
                     if (cacheCallback) {
                         cacheCallback(cacheRes.messageList);
@@ -135,7 +135,7 @@ export default class LabelRepo {
                         max = (cacheRes.messageList[cacheRes.messageList.length - 1].id || 0) - 1;
                     }
                     if (lim !== 0) {
-                        this.getRemoteMessageByItem(teamId, id, {max: max || 0, limit: lim}).then((remoteRes) => {
+                        this.getRemoteMessageByItem(teamId, id, {limit: lim, max: max || 0}).then((remoteRes) => {
                             resolve({
                                 labelCount: cacheRes.labelCount + remoteRes.length,
                                 messageList: [...cacheRes.messageList, ...MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId())],
@@ -233,7 +233,7 @@ export default class LabelRepo {
             });
             return this.createMany(list);
         }).then((res) => {
-            this.broadcastEvent('Label_DB_Updated', {ids, callerId});
+            this.broadcastEvent('Label_DB_Updated', {callerId, ids});
             return res;
         });
     }

@@ -316,7 +316,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                 className="member-container"
                                 direction={this.rtl ? 'ltr' : 'rtl'}
                             >{({index, style}) => {
-                                return this.rowRender({index, style, key: index});
+                                return this.rowRender({index, key: index, style});
                             }}
                             </VariableSizeList>
                         )}
@@ -348,7 +348,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                     style={listStyle}
                                     direction={this.rtl ? 'ltr' : 'rtl'}
                                 >{({index, style}) => {
-                                    return this.rowRender({index, style, key: index});
+                                    return this.rowRender({index, key: index, style});
                                 }}
                                 </VariableSizeList>
                             </Scrollbars>
@@ -460,7 +460,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
             admin: true,
             id: u.id || '0',
             t: u,
-        })), ...users.map(u => ({admin: false, id: u.id || '0', category: u.category, t: u}))];
+        })), ...users.map(u => ({admin: false, category: u.category, id: u.id || '0', t: u}))];
         return list;
     }
 

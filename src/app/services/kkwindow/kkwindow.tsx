@@ -302,19 +302,20 @@ class KKWindow extends React.Component<IProps, IState> {
 
     private getContent() {
         const {items} = this.state;
-        if (items.length > 0) {
-            return items.map((item, index) => {
-                const key = this.props.keyMapper(index);
-                const id = `${this.cellPrefix}_${key}`;
-                return (<div key={key} id={id}
-                             ref={this.cellMeasurer.cellRefHandler(index, id)}>
-                    <Fragment visFn={this.cellMeasurer.visibleHandler(index)}
-                              defaultVisible={this.cellMeasurer.isVisible(index)}
-                              body={this.props.renderer(index)}/>
-                </div>);
-            });
+        if (items.length === 0) {
+            return null;
         }
-        return;
+
+        return items.map((item, index) => {
+            const key = this.props.keyMapper(index);
+            const id = `${this.cellPrefix}_${key}`;
+            return (<div key={key} id={id}
+                         ref={this.cellMeasurer.cellRefHandler(index, id)}>
+                <Fragment visFn={this.cellMeasurer.visibleHandler(index)}
+                          defaultVisible={this.cellMeasurer.isVisible(index)}
+                          body={this.props.renderer(index)}/>
+            </div>);
+        });
     }
 
     private getNoContent() {
@@ -532,7 +533,7 @@ class KKWindow extends React.Component<IProps, IState> {
 
     private scrollPosHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
         if (this.props.onScrollPos) {
-            this.props.onScrollPos({start, end, overscanStart, overscanEnd});
+            this.props.onScrollPos({end, overscanEnd, overscanStart, start});
         }
         if (this.loadMoreReady) {
             if (start <= this.loadBeforeLimit && this.loadBeforeTriggered < 15) {

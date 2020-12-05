@@ -493,7 +493,7 @@ export default class MessageRepo {
             //
         });
         return this.db.messages.bulkDelete(ids).then((res) => {
-            this.broadcastEvent('Message_DB_Removed', {ids, callerId});
+            this.broadcastEvent('Message_DB_Removed', {callerId, ids});
             return res;
         });
     }
@@ -823,7 +823,7 @@ export default class MessageRepo {
 
     public remove(id: number, callerId?: number): Promise<any> {
         return this.db.messages.delete(id).then((res) => {
-            this.broadcastEvent('Message_DB_Removed', {ids: [id], callerId});
+            this.broadcastEvent('Message_DB_Removed', {callerId, ids: [id]});
             return res;
         });
     }
@@ -904,7 +904,7 @@ export default class MessageRepo {
         });
 
         this.actionList.push({
-            clear: {teamId, peerId, peerType, id},
+            clear: {id, peerId, peerType, teamId},
             msgs: [],
             reject: internalReject,
             resolve: internalResolve,
@@ -1031,7 +1031,7 @@ export default class MessageRepo {
                 }
             });
             return this.createMany([...trimmedCreateItems, ...updateItems]).then((res) => {
-                this.broadcastEvent('Message_DB_Added', {newMsg: peerIdMap, callerId});
+                this.broadcastEvent('Message_DB_Added', {callerId, newMsg: peerIdMap});
                 return res;
             });
         });

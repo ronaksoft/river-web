@@ -75,7 +75,7 @@ interface IState {
 class PeerMedia extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private downloadEventReferences: any[] = [];
-    private peer: IPeer = {peerType: 0, id: ''};
+    private peer: IPeer = {id: '', peerType: 0};
     private mediaRepo: MediaRepo;
     private documentViewerService: DocumentViewerService;
     private itemMap: { [key: number]: number } = {};
@@ -301,6 +301,7 @@ class PeerMedia extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
+
         let mediaType = C_MEDIA_TYPE.MEDIA;
         switch (this.state.tab) {
             case 0:
@@ -316,6 +317,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 mediaType = C_MEDIA_TYPE.GIF;
                 break;
         }
+
         this.mediaRepo.getMany(this.props.teamId, this.peer, {
             limit: this.props.full ? 128 : 8,
             type: this.props.full ? mediaType : undefined,

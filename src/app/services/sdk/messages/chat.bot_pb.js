@@ -10151,7 +10151,8 @@ proto.msg.BotCommandsMany.prototype.toObject = function(opt_includeInstance) {
 proto.msg.BotCommandsMany.toObject = function(includeInstance, msg) {
   var f, obj = {
     commandsList: jspb.Message.toObjectList(msg.getCommandsList(),
-    core_types_pb.BotCommands.toObject, includeInstance)
+    core_types_pb.BotCommands.toObject, includeInstance),
+    empty: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -10193,6 +10194,10 @@ proto.msg.BotCommandsMany.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,core_types_pb.BotCommands.deserializeBinaryFromReader);
       msg.addCommands(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEmpty(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -10228,6 +10233,13 @@ proto.msg.BotCommandsMany.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       core_types_pb.BotCommands.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeBool(
+      2,
+      f
     );
   }
 };
@@ -10268,6 +10280,42 @@ proto.msg.BotCommandsMany.prototype.addCommands = function(opt_value, opt_index)
  */
 proto.msg.BotCommandsMany.prototype.clearCommandsList = function() {
   return this.setCommandsList([]);
+};
+
+
+/**
+ * optional bool Empty = 2;
+ * @return {boolean}
+ */
+proto.msg.BotCommandsMany.prototype.getEmpty = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.BotCommandsMany} returns this
+ */
+proto.msg.BotCommandsMany.prototype.setEmpty = function(value) {
+  return jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.BotCommandsMany} returns this
+ */
+proto.msg.BotCommandsMany.prototype.clearEmpty = function() {
+  return jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.BotCommandsMany.prototype.hasEmpty = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

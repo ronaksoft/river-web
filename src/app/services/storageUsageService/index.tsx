@@ -68,7 +68,7 @@ export default class StorageUsageService {
     private dialogInfo: { [key: string]: IDialogInfo } = {};
     private totalComputations: number = 0;
     // Progress and promise
-    private promise: { resolve: any, reject: any } = {resolve: null, reject: null};
+    private promise: { resolve: any, reject: any } = {reject: null, resolve: null};
     private progressFn?: (e: IStorageProgress) => void;
 
     public constructor() {
@@ -152,7 +152,7 @@ export default class StorageUsageService {
 
     private getMediaFiles(teamId: string, peer: IPeer, before?: number) {
         const limit = 50;
-        return this.mediaRepo.getMany(teamId, peer, {limit, before}).then((res) => {
+        return this.mediaRepo.getMany(teamId, peer, {before, limit}).then((res) => {
             const fileMap: {[key: string]: {id: number, mediaType: number}} = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;

@@ -538,8 +538,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private contextMenuItem() {
         const {group, currentUser} = this.state;
         if (!group || !currentUser) {
-            return;
+            return null;
         }
+
         const menuItems = [];
         if (hasAuthority(group, false)) {
             if (currentUser.userid !== this.userId) {
@@ -565,6 +566,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         } else {
             return (<span>{i18n.t('contacts.you_have_no_authority')}</span>);
         }
+
         return menuItems.map((item, index) => {
             return (<MenuItem key={index} onClick={this.moreCmdHandler(item.cmd)}
                               className="context-item">{item.title}</MenuItem>);

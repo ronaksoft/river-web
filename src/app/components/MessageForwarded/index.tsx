@@ -41,6 +41,6 @@ const MessageForwarded = ({message, peer, onDoubleClick}: IProps) => {
             </div>
         </div>
     );
-}
+};
 
 export default MessageForwarded;

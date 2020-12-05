@@ -1493,7 +1493,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messageRef) {
             this.messageRef.clearAll();
         }
-        this.messageRepo.list(this.teamId, {peer, limit: 40, before, withPending: true}, (data) => {
+        this.messageRepo.list(this.teamId, {before, limit: 40,peer, withPending: true}, (data) => {
             // Checks peerid on transition
             if (this.selectedPeerName !== dialogPeerName || !this.messageRef) {
                 this.setLoading(false);
@@ -1974,8 +1974,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private checkMessageOrder(msg: IMessage) {
         if (!this.messageRef || (msg.id || 0) < 0) {
-            return;
+            return false;
         }
+
         const swap = (i1: number, i2: number) => {
             if (!this.messageRef) {
                 return;
@@ -1994,6 +1995,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.clear(i2);
             }
         };
+
         const index = findLastIndex(this.messages, {id: msg.id});
         if (index <= -1) {
             return false;
@@ -2220,14 +2222,14 @@ class Chat extends React.Component<IProps, IState> {
             const dialogs = this.dialogs;
             let index = this.dialogMap[peerName];
             if (!dialogs[index]) {
-                return;
+                return null;
             }
             // Double check
             if (GetPeerName(dialogs[index].peerid, dialogs[index].peertype) !== peerName) {
                 const t = peerName.split('_');
                 index = findIndex(dialogs, {peerid: t[0], peertype: parseInt(t[1], 10)});
                 if (index === -1) {
-                    return;
+                    return null;
                 }
             }
             let shouldUpdate = false;
@@ -3275,7 +3277,7 @@ class Chat extends React.Component<IProps, IState> {
     private messageRenderedHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
         const messages = this.messages;
         const diff = (messages.length - end) - 1;
-        this.scrollInfo = {start, end, overscanStart, overscanEnd};
+        this.scrollInfo = {end, overscanEnd, overscanStart, start};
         this.setEndOfMessage(diff <= 1);
         // if (this.isLoading) {
         //     return;
@@ -3869,12 +3871,14 @@ class Chat extends React.Component<IProps, IState> {
     /* Check if can notify user */
     private canNotify(peerName: string, d?: IDialog) {
         if (!peerName) {
-            return;
+            return false;
         }
+
         const dialog = d || this.getDialogByPeerName(peerName);
         if (dialog) {
             return !isMuted(dialog.notifysettings);
         }
+
         return true;
     }
 
@@ -3897,6 +3901,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading || !this.messageRef) {
             return;
         }
+
         const peer = this.peer;
         if (!peer || !this.messages) {
             return;
@@ -3924,7 +3929,7 @@ class Chat extends React.Component<IProps, IState> {
 
             const peerName = GetPeerName(peer.getId(), peer.getType());
 
-            this.messageRepo.list(this.teamId, {peer, after: id - 1, limit: 25}).then((res) => {
+            this.messageRepo.list(this.teamId, {after: id - 1, limit: 25, peer}).then((res) => {
                 if (this.selectedPeerName !== peerName || res.length === 0 || !this.messageRef) {
                     this.setLoading(false);
                     return;

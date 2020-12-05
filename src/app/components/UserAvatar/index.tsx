@@ -86,7 +86,7 @@ const hexToRgb = (hex: string): any => {
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
 
-    return {r, g, b};
+    return {b, g, r};
 };
 
 const removeHash = (hex: string) => {
@@ -362,8 +362,9 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
     /* Online indicator content */
     private getOnlineIndicator() {
         if (!this.props.onlineIndicator) {
-            return;
+            return null;
         }
+
         const {user} = this.state;
         if (this.riverTime.now() - (user.status_last_modified || 0) < 60 && user.status === UserStatus.USERSTATUSONLINE) {
             clearTimeout(this.timeout);
@@ -372,7 +373,8 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
             }, 15000);
             return <div className="online-indicator"/>;
         }
-        return;
+
+        return null;
     }
 }
 

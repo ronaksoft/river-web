@@ -2347,7 +2347,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 onItemsRendered={this.blockUserItemRendered}
                             >
                                 {({index, style}) => {
-                                    return this.rowRender({index, style, key: index});
+                                    return this.rowRender({index, key: index, style});
                                 }}
                             </FixedSizeList>);
                         }}
@@ -2384,7 +2384,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         onItemsRendered={this.blockUserItemRendered}
                                     >
                                         {({index, style}) => {
-                                            return this.rowRender({index, style, key: index});
+                                            return this.rowRender({index, key: index, style});
                                         }}
                                     </FixedSizeList>
                                 </Scrollbars>

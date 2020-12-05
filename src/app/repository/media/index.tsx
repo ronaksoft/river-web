@@ -186,7 +186,7 @@ export default class MediaRepo {
             });
             return this.createMany(list);
         }).then((res) => {
-            this.broadcastEvent(EventMediaDBUpdated, {ids: newIds, peerids: Object.keys(peerIdMap), callerId});
+            this.broadcastEvent(EventMediaDBUpdated, {callerId, ids: newIds, peerids: Object.keys(peerIdMap)});
             return res;
         });
     }
