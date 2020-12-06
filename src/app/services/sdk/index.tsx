@@ -254,6 +254,7 @@ export default class APIManager {
         localStorage.removeItem(C_LOCALSTORAGE.SnapshotRecord);
         localStorage.removeItem(C_LOCALSTORAGE.ThemeBg);
         localStorage.removeItem(C_LOCALSTORAGE.ThemeBgPic);
+        localStorage.removeItem(C_LOCALSTORAGE.SettingsLeftPanelVisible);
     }
 
     public loadConnInfo(): IConnInfo {
