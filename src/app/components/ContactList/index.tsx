@@ -38,6 +38,7 @@ import {PeerType} from "../../services/sdk/messages/core.types_pb";
 import './style.scss';
 import GroupRepo from "../../repository/group";
 import {IGroup} from "../../repository/group/interface";
+import {OfficialIcon} from "../SVG/official";
 
 interface IProps {
     className?: string;
@@ -52,6 +53,7 @@ interface IProps {
     teamId: string;
     hideYou?: boolean;
     groupId?: string;
+    showOfficialBadge?: boolean;
 }
 
 interface IState {
@@ -381,6 +383,7 @@ class ContactList extends React.Component<IProps, IState> {
                         </div>
                     );
                 } else {
+                    const {showOfficialBadge} = this.props;
                     return (
                         <div style={style} key={contact.id || ''} className="contact-item">
                             <Link to={`/chat/${this.props.teamId}/${contact.id}_${PeerType.PEERUSER}`}>
@@ -388,7 +391,8 @@ class ContactList extends React.Component<IProps, IState> {
                                     <UserAvatar id={contact.id || ''}/>
                                 </span>
                                 <span className="name">
-                                    <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
+                                    <span className="inner">{`${contact.firstname} ${contact.lastname}`}
+                                        {showOfficialBadge && contact.official && <OfficialIcon/>}</span>
                                     <LastSeen className="last-seen" id={contact.id || ''} teamId={this.props.teamId}/>
                                 </span>
                                 <span

@@ -239,9 +239,11 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             label={i18n.t('general.phone')}
                                             fullWidth={true}
                                             inputProps={{
+                                                inputMode: "tel",
                                                 maxLength: 32,
                                             }}
                                             value={phone}
+                                            type="tel"
                                             className="input-edit"
                                             onChange={this.phoneChangeHandler}
                                         />}
@@ -402,7 +404,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 });
             });
         } else {
-            if (phone === '') {
+            if ((user.phone || '') === '' && phone === '') {
                 this.setState({
                     edit: false,
                     firstname: user.firstname || '',
@@ -420,6 +422,11 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             this.apiManager.contactImport(true, contacts).then((data) => {
                 const items: any[] = [];
                 data.usersList.forEach((item) => {
+                    const contact = data.contactusersList.find(o => o.id === item.id);
+                    if (contact) {
+                        item.firstname = contact.firstname;
+                        item.lastname = contact.lastname;
+                    }
                     items.push(item);
                 });
                 this.userRepo.importBulk(true, items, false, this.callerId);

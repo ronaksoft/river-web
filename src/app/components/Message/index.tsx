@@ -740,7 +740,7 @@ class Message extends React.Component<IProps, IState> {
             1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11, 14, 15, 16],
             2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11, 15, 16],
             3: [6, 5, 9, 10, 11],
-            4: [4, 9, 14],
+            4: [4, 9],
         };
         const selection = window.getSelection();
         const hasCopy = Boolean(selection && selection.type === 'Range');
@@ -771,13 +771,7 @@ class Message extends React.Component<IProps, IState> {
             });
         } else if (isSystemMessage) {
             menuTypes[4].forEach((key) => {
-                if (key === 14) {
-                    if (me) {
-                        menuItems.push(this.menuItem[key]);
-                    }
-                } else {
-                    menuItems.push(this.menuItem[key]);
-                }
+                menuItems.push(this.menuItem[key]);
             });
         } else if (me && id > 0) {
             menuTypes[1].forEach((key) => {

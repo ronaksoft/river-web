@@ -27,7 +27,7 @@ import Menu from '@material-ui/core/Menu/Menu';
 import {ClickAwayListener} from "@material-ui/core";
 import i18n from '../../services/i18n';
 import {Loading} from "../Loading";
-import APIManager from "../../services/sdk";
+import APIManager, {currentUserId} from "../../services/sdk";
 import {InputPeer, PeerType, UserPhoto} from "../../services/sdk/messages/core.types_pb";
 import UserRepo from "../../repository/user";
 import GroupRepo from "../../repository/group";
@@ -138,7 +138,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private apiManager: APIManager;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
-    private userId: string = '';
     private hasAccess: boolean = false;
     private isTransitioning: boolean = false;
     private removeTooltipTimeout: any = null;
@@ -173,7 +172,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.userId = this.userRepo.getCurrentUserId();
         this.documentViewerService.setDocumentReady(this.documentReadyHandler);
         window.addEventListener(EventKeyDown, this.windowKeyDownHandler, true);
         window.addEventListener(EventMouseMove, this.mediaDocumentMouseMoveHandler);
@@ -1370,7 +1368,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             return;
         }
         if (doc.inputPeer.getType() === PeerType.PEERUSER || doc.inputPeer.getType() === PeerType.PEEREXTERNALUSER) {
-            this.hasAccess = (doc.inputPeer.getId() === this.userId);
+            this.hasAccess = (doc.inputPeer.getId() === currentUserId);
         } else if (doc.inputPeer.getType() === PeerType.PEERGROUP) {
             this.groupRepo.get(doc.teamId, doc.inputPeer.getId() || '').then((group) => {
                 if (group) {

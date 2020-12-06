@@ -10,7 +10,7 @@
 import DB from '../../services/db/dialog';
 import {IDialog, IDialogWithUpdateId, IDraft, IPeer} from './interface';
 import {throttle, differenceWith, find, uniqBy, cloneDeep} from 'lodash';
-import APIManager from '../../services/sdk';
+import APIManager, {currentUserId} from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
@@ -43,7 +43,6 @@ export default class DialogRepo {
     private db: DexieDialogDB;
     private apiManager: APIManager;
     private messageRepo: MessageRepo;
-    private userId: string;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private lazyMap: { [key: string]: IDialog } = {};
@@ -58,12 +57,10 @@ export default class DialogRepo {
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDbDebounced, 256);
-        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
     }
 
     public loadConnInfo() {
         APIManager.getInstance().loadConnInfo();
-        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
     }
 
     /* Drafts Start*/
@@ -142,7 +139,7 @@ export default class DialogRepo {
 
     public getMany(teamId: string, {skip, limit}: any): Promise<IDialog[]> {
         return this.apiManager.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId);
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {
@@ -160,7 +157,7 @@ export default class DialogRepo {
     }
 
     public getManyForSnapshot(teamId: string, {skip, limit}: { skip?: number, limit?: number }): Promise<IDialogWithUpdateId> {
-        if (this.userId === '0' || this.userId === '') {
+        if (currentUserId === '0' || currentUserId === '') {
             this.loadConnInfo();
         }
         return this.apiManager.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
@@ -172,7 +169,7 @@ export default class DialogRepo {
             //         window.console.log('user', remoteRes.usersList.find(o=> o.id === d.peerid));
             //     }
             // });
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId);
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {
@@ -207,14 +204,14 @@ export default class DialogRepo {
             return [teamId, ...p];
         });
         return this.db.dialogs.where(`[teamid+peerid+peertype]`).anyOf(query).offset(skip || 0).limit(limit).toArray().then((res) => {
-            if (peerIds.indexOf(this.userId) > -1 && !find(res, {peerid: this.userId})) {
+            if (peerIds.indexOf(currentUserId) > -1 && !find(res, {peerid: currentUserId})) {
                 res.unshift({
                     accesshash: '0',
                     last_update: Date.now(),
-                    peerid: this.userId,
+                    peerid: currentUserId,
                     peertype: PeerType.PEERUSER,
                     preview: '',
-                    sender_id: this.userId,
+                    sender_id: currentUserId,
                     teamid: teamId,
                 });
             }
@@ -436,11 +433,11 @@ export default class DialogRepo {
         dialog.action_data = msg.actiondata;
         dialog.preview = messageTitle.text;
         dialog.preview_icon = messageTitle.icon;
-        dialog.preview_me = (msg.senderid === this.userId);
+        dialog.preview_me = (msg.senderid === currentUserId);
         dialog.preview_rtl = msg.rtl;
         dialog.last_update = msg.createdon;
         dialog.sender_id = msg.senderid;
-        dialog.saved_messages = (msg.peerid === this.userId);
+        dialog.saved_messages = (msg.peerid === currentUserId);
         return dialog;
     }
 }

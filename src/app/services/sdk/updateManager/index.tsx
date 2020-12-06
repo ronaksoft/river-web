@@ -44,7 +44,7 @@ import {IUser} from "../../../repository/user/interface";
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../../repository/message/consts";
 import {getMessageTitle} from "../../../components/Dialog/utils";
 import {kMerge} from "../../utilities/kDash";
-import APIManager from "../index";
+import APIManager, {currentUserId} from "../index";
 import {ILabel} from "../../../repository/label/interface";
 import {IGroup} from "../../../repository/group/interface";
 import DialogRepo, {GetPeerName} from "../../../repository/dialog";
@@ -139,6 +139,7 @@ interface ITransactionPayload {
     live: boolean;
     messages: { [key: number]: IMessage };
     randomMessageIds: number[];
+    reloadLabels: boolean;
     removedLabels: number[];
     removedMessages: { [key: string]: number[] };
     toCheckDialogIds: IToCheckDialog[];
@@ -166,7 +167,6 @@ export default class UpdateManager {
     private forceDisable: boolean = false;
     private lastUpdateId: number = 0;
     private internalUpdateId: number = 0;
-    private userId: string = '';
     private isDiffUpdating: boolean = false;
 
     // Listeners
@@ -273,14 +273,6 @@ export default class UpdateManager {
         localStorage.setItem(C_LOCALSTORAGE.LastUpdateId, JSON.stringify({
             lastId: this.lastUpdateId,
         }));
-    }
-
-    public setUserId(userId: string) {
-        this.userId = userId;
-    }
-
-    public getUserId() {
-        return this.userId;
     }
 
     public parseUpdate(bytes: string) {
@@ -603,6 +595,7 @@ export default class UpdateManager {
             live,
             messages: {},
             randomMessageIds: [],
+            reloadLabels: false,
             removedLabels: [],
             removedMessages: {},
             toCheckDialogIds: [],
@@ -673,7 +666,7 @@ export default class UpdateManager {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateNewMessage);
-                const message = MessageRepo.parseMessage(updateNewMessage.message, this.userId);
+                const message = MessageRepo.parseMessage(updateNewMessage.message, currentUserId);
                 updateNewMessage.message = message;
                 if (!this.callUpdateHandler(message.teamid || '0', update.constructor, updateNewMessage)) {
                     this.callHandlers('all', C_MSG.UpdateNewMessageOther, updateNewMessage);
@@ -681,11 +674,12 @@ export default class UpdateManager {
                 // Add message
                 this.mergeMessage(transaction.messages, transaction.incomingIds, message);
                 // Add random message
-                if (message.senderid === this.userId) {
+                if (message.senderid === currentUserId) {
                     transaction.randomMessageIds.push(updateNewMessage.senderrefid || 0);
                 }
                 // Check [deleted dialog]/[clear history]
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
+                    transaction.reloadLabels = true;
                     transaction.clearDialogs.push({
                         maxId: message.actiondata.maxid || 0,
                         peerId: message.peerid || '0',
@@ -714,9 +708,9 @@ export default class UpdateManager {
                     peertype: message.peertype || 0,
                     preview: messageTitle.text,
                     preview_icon: messageTitle.icon,
-                    preview_me: this.userId === message.senderid,
+                    preview_me: currentUserId === message.senderid,
                     preview_rtl: message.rtl,
-                    saved_messages: this.userId === message.peerid,
+                    saved_messages: currentUserId === message.peerid,
                     sender_id: message.senderid,
                     teamid: message.teamid || '0',
                     topmessageid: message.id,
@@ -760,7 +754,7 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateMessageEdited);
-                updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, this.userId);
+                updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, currentUserId);
                 this.callUpdateHandler(updateMessageEdited.message.teamid || '0', update.constructor, updateMessageEdited);
                 // Update message
                 this.mergeMessage(transaction.messages, undefined, updateMessageEdited.message);
@@ -1310,7 +1304,7 @@ export default class UpdateManager {
     private processTransactionStep2(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         const promises: any[] = [];
         if (transaction.clearDialogs.length > 0) {
-            promises.push(this.applyClearDialogs(transaction.clearDialogs));
+            promises.push(this.applyClearDialogs(transaction.clearDialogs, transaction.reloadLabels));
         }
         if (transaction.labelRanges.length > 0) {
             promises.push(this.applyLabelRange(transaction.labelRanges));
@@ -1348,9 +1342,9 @@ export default class UpdateManager {
                             pinnedmessageid: undefined,
                             preview: messageTitle.text,
                             preview_icon: messageTitle.icon,
-                            preview_me: (this.userId === msg.senderid),
+                            preview_me: (currentUserId === msg.senderid),
                             preview_rtl: msg.rtl,
-                            saved_messages: (this.userId === msg.peerid),
+                            saved_messages: (currentUserId === msg.peerid),
                             sender_id: msg.senderid,
                             teamid: msg.teamid || '0',
                             topmessageid: msg.id,
@@ -1409,14 +1403,21 @@ export default class UpdateManager {
         transactionResolve();
     }
 
-    private applyClearDialogs(list: IClearDialog[]) {
+    private applyClearDialogs(list: IClearDialog[], reloadLabels: boolean) {
         const promises: any[] = [];
+        const teamIds: string[] = [];
         list.forEach((item) => {
             if (item.remove && this.dialogRepo) {
                 promises.push(this.dialogRepo.remove(item.teamId, item.peerId, item.peerType));
             }
             if (item.maxId > 0 && this.messageRepo) {
                 promises.push(this.messageRepo.clearHistory(item.teamId, item.peerId, item.peerType, item.maxId));
+            }
+            teamIds.push(item.teamId);
+        });
+        uniq(teamIds).forEach((teamId) => {
+            if (this.labelRepo) {
+                this.labelRepo.getLabels(teamId);
             }
         });
         return Promise.all(promises);
@@ -1470,7 +1471,7 @@ export default class UpdateManager {
                         minIdPerPeer[peerName] = message.id;
                     }
                 }
-                if (message.senderid === this.userId) {
+                if (message.senderid === currentUserId) {
                     myMessageList.push(message);
                 }
             }

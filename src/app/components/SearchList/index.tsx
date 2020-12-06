@@ -42,6 +42,7 @@ import TopPeer from "../TopPeer";
 import {TopPeerType} from "../../repository/topPeer";
 import {IGroup} from "../../repository/group/interface";
 import {InputAdornment} from "@material-ui/core";
+import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
 
@@ -87,7 +88,6 @@ class SearchList extends React.Component<IProps, IState> {
     private searchRepo: SearchRepo;
     private defaultInputPeer: IDialogWithContact = {contacts: [], dialogs: []};
     private readonly searchDebounce: any;
-    private readonly userId: string = '';
     private readonly searchApi: any;
     private selectedIds: string[] = [];
     private readonly isMobile: boolean = false;
@@ -114,7 +114,6 @@ class SearchList extends React.Component<IProps, IState> {
             this.searchApi = this.searchRepo.search;
         }
         this.searchDebounce = debounce(this.search, 512);
-        this.userId = this.searchRepo.getCurrentUserId();
     }
 
     public componentDidMount() {
@@ -254,18 +253,18 @@ class SearchList extends React.Component<IProps, IState> {
         }
         if (value.mode === 'contact' && value.contact) {
             return (<Chip key={key} avatar={<UserAvatar id={value.contact.id} noDetail={true}
-                                                        savedMessages={this.userId === value.contact.id}/>}
+                                                        savedMessages={currentUserId === value.contact.id}/>}
                           tabIndex={-1} label={<UserName id={value.contact.id} noDetail={true} unsafe={true}
-                                                         you={this.userId === value.contact.id} noIcon={true}
+                                                         you={currentUserId === value.contact.id} noIcon={true}
                                                          youPlaceholder={i18n.t('general.saved_messages')}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
         } else if (value.mode === 'dialog' && value.dialog) {
             if (value.dialog.peertype === PeerType.PEERUSER || value.dialog.peertype === PeerType.PEERSELF || value.dialog.peertype === PeerType.PEEREXTERNALUSER) {
                 return (
                     <Chip key={key} avatar={<UserAvatar id={value.dialog.peerid} noDetail={true}
-                                                        savedMessages={this.userId === value.dialog.peerid}/>}
+                                                        savedMessages={currentUserId === value.dialog.peerid}/>}
                           tabIndex={-1} label={<UserName id={value.dialog.peerid} noDetail={true} unsafe={true}
-                                                         you={this.userId === value.dialog.peerid}
+                                                         you={currentUserId === value.dialog.peerid}
                                                          youPlaceholder={i18n.t('general.saved_messages')}
                                                          noIcon={true}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
@@ -300,7 +299,7 @@ class SearchList extends React.Component<IProps, IState> {
                     <div style={style} key={index} className="search-item"
                          onClick={this.addItemHandler(inputPeer)}>
                         <UserAvatar className="avatar" id={inputPeer.contact.id || ''}
-                                    savedMessages={this.userId === inputPeer.contact.id}/>
+                                    savedMessages={currentUserId === inputPeer.contact.id}/>
                         <span className="name">{`${inputPeer.contact.firstname} ${inputPeer.contact.lastname}`}</span>
                         <span className="phone">{inputPeer.contact.phone ? inputPeer.contact.phone : 'no phone'}</span>
                     </div>
@@ -312,10 +311,10 @@ class SearchList extends React.Component<IProps, IState> {
                      onClick={this.addItemHandler(inputPeer)}>
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF || inputPeer.dialog.peertype === PeerType.PEEREXTERNALUSER) &&
                     <UserAvatar className="avatar" id={inputPeer.dialog.peerid || ''} noDetail={true}
-                                savedMessages={this.userId === inputPeer.dialog.peerid}/>}
+                                savedMessages={currentUserId === inputPeer.dialog.peerid}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF || inputPeer.dialog.peertype === PeerType.PEEREXTERNALUSER) &&
                     <UserName className="name" id={inputPeer.dialog.peerid || ''} noDetail={true}
-                              you={this.userId === inputPeer.dialog.peerid}
+                              you={currentUserId === inputPeer.dialog.peerid}
                               youPlaceholder={i18n.t('general.saved_messages')}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupAvatar className="avatar" id={inputPeer.dialog.peerid || ''}

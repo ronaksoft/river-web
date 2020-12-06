@@ -24,7 +24,7 @@ import {
 } from "../sdk/messages/chat.phone_pb";
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
-import APIManager from "../sdk";
+import APIManager, {currentUserId} from "../sdk";
 import {orderBy} from "lodash";
 
 export const C_CALL_EVENT = {
@@ -101,7 +101,6 @@ export default class CallService {
     private updateManager: UpdateManager;
     private apiManager: APIManager;
     private listeners: { [key: number]: IBroadcastItem } = {};
-    private readonly userId: string = '0';
 
     // Call variables
     private localStream: MediaStream | undefined;
@@ -126,7 +125,6 @@ export default class CallService {
     private constructor() {
         this.updateManager = UpdateManager.getInstance();
         this.apiManager = APIManager.getInstance();
-        this.userId = this.apiManager.getConnInfo().UserID || '0';
 
         this.updateManager.listen(C_MSG.UpdatePhoneCall, this.phoneCallHandler);
     }
@@ -443,7 +441,7 @@ export default class CallService {
     private initCallParticipants(callId: string, participants: InputUser.AsObject[]) {
         participants.unshift({
             accesshash: '0',
-            userid: this.userId,
+            userid: currentUserId,
         });
         const callParticipants: { [key: number]: ICallParticipant } = {};
         const callParticipantMap: { [key: string]: number } = {};
@@ -508,7 +506,7 @@ export default class CallService {
     }
 
     private initConnections(peer: InputPeer, id: string, initiator: boolean, sdp?: RTCSessionDescriptionInit) {
-        const userConnId = this.getConnId(id, this.userId) || 0;
+        const userConnId = this.getConnId(id, currentUserId) || 0;
         const callInfo = this.getCallInfo(id);
         if (!callInfo) {
             return Promise.reject('invalid call id');

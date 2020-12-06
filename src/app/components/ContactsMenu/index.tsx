@@ -98,7 +98,8 @@ class ContactMenus extends React.Component<IProps, IState> {
                     <ContactList ref={this.contactListRefHandler} className="contacts-menu"
                                  teamId={this.props.teamId} mode="link"
                                  noRowsRenderer={this.noRowsRenderer} disableCheckSelected={true}
-                                 onContextMenuAction={this.contextMenuActionHandler} globalSearch={true}/>
+                                 onContextMenuAction={this.contextMenuActionHandler} globalSearch={true}
+                                 showOfficialBadge={true}/>
                 </div>
                 <SettingsModal open={newContactDialogOpen} title={i18n.t('contact.new_contact')}
                                icon={<PersonAddRounded/>}
@@ -128,9 +129,14 @@ class ContactMenus extends React.Component<IProps, IState> {
                         <TextField
                             fullWidth={true}
                             label={i18n.t('general.phone')}
+                            inputProps={{
+                                inputMode: "tel",
+                                maxLength: 32,
+                            }}
                             margin="dense"
                             onChange={this.phoneHandleChange}
                             value={phone}
+                            type="tel"
                             onKeyDown={this.confirmKeyDown}
                         />
                         <div className="actions-bar">

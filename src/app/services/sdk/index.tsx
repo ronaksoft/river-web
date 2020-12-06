@@ -174,6 +174,8 @@ import {
     PhoneUpdateCall
 } from "./messages/chat.phone_pb";
 
+export let currentUserId: string = '0';
+
 export default class APIManager {
     public static getInstance() {
         if (!this.instance) {
@@ -231,6 +233,7 @@ export default class APIManager {
         this.connInfo = info;
         const s = JSON.stringify(info);
         localStorage.setItem(C_LOCALSTORAGE.ConnInfo, s);
+        currentUserId = info.UserID || '0';
     }
 
     public resetConnInfo() {
@@ -241,6 +244,7 @@ export default class APIManager {
         info.LastName = '';
         info.Phone = '';
         info.Username = '';
+        currentUserId = info.UserID;
         this.setConnInfo(info);
         localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
         localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
@@ -257,6 +261,7 @@ export default class APIManager {
         if (s) {
             this.connInfo = this.connInfo = JSON.parse(s);
         }
+        currentUserId = this.connInfo.UserID || '0';
         return this.connInfo;
     }
 

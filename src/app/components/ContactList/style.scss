@@ -109,6 +109,12 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+
+            svg {
+              margin-left: 1px;
+              transform: translateY(1px) !important;
+              font-size: 14px;
+            }
           }
 
           .last-seen {

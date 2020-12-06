@@ -39,7 +39,7 @@ import {isMuted} from '../UserInfoMenu';
 import {C_MESSAGE_ICON} from '../Dialog/utils';
 import i18n from '../../services/i18n';
 import {localize} from '../../services/utilities/localize';
-import sdk from '../../services/sdk';
+import {currentUserId} from '../../services/sdk';
 import {Link} from "react-router-dom";
 import {IUser} from "../../repository/user/interface";
 import {GetPeerName} from "../../repository/dialog";
@@ -236,8 +236,6 @@ const GetStatus = ({id, readId, peerId, isBot, userId}: { id: number, readId: nu
 export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOpen, onClick, selectedPeerName, messageId, onDrop}: IProps) => {
     const [isBot, setIsBot] = useState<boolean>(false);
 
-    const userId: string = sdk.getInstance().getConnInfo().UserID || '';
-
     const userNameLoadHandler = (user?: IUser) => {
         if (user) {
             setIsBot(user.isbot || false);
@@ -298,7 +296,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                         <GroupName className="name" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
                         {dialog.preview_me && <span
                             className="status"><GetStatus id={dialog.topmessageid || 0} isBot={isBot}
-                                                          readId={dialog.readoutboxmaxid || 0} userId={userId}
+                                                          readId={dialog.readoutboxmaxid || 0} userId={currentUserId}
                                                           peerId={dialog.peerid || ''}/></span>}
                         {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
                     </div>

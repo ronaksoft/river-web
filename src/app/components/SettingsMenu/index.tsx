@@ -43,7 +43,7 @@ import {
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
-import APIManager from '../../services/sdk';
+import APIManager, {currentUserId} from '../../services/sdk';
 import {cloneDeep, debounce, find, findIndex, isEqual} from 'lodash';
 import Scrollbars from 'react-custom-scrollbars';
 import {
@@ -261,7 +261,6 @@ interface IState {
 class SettingsMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private apiManager: APIManager;
-    private readonly userId: string;
     private readonly usernameCheckDebounce: any;
     private fileManager: FileManager;
     private fileRepo: FileRepo;
@@ -299,7 +298,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         super(props);
 
         this.apiManager = APIManager.getInstance();
-        this.userId = this.apiManager.getConnInfo().UserID || '';
 
         this.state = {
             avatarMenuAnchorEl: null,
@@ -493,12 +491,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <div className="account-summary">
                                         <div className="account-profile"
                                              onClick={this.selectPageHandler('account')}>
-                                            <UserAvatar className="avatar" id={this.userId} noDetail={true}
+                                            <UserAvatar className="avatar" id={currentUserId} noDetail={true}
                                                         forceReload={true}/>
                                         </div>
                                         <div className="account-info"
                                              onClick={this.selectPageHandler('account')}>
-                                            <UserName className="username" id={this.userId} noDetail={true}/>
+                                            <UserName className="username" id={currentUserId} noDetail={true}/>
                                             <div className="account-phone">{phone}</div>
                                         </div>
                                         {Boolean(teamList.length > 1) && <div className="team-select">
@@ -539,7 +537,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>}
                                     </div>
                                     <div className="page-anchor">
-                                        <Link to={`/chat/${this.props.teamId}/${this.userId}_${PeerType.PEERUSER}`}
+                                        <Link to={`/chat/${this.props.teamId}/${currentUserId}_${PeerType.PEERUSER}`}
                                               onClick={this.savedMessageClickHandler}>
                                             <div className="icon color-saved-messages">
                                                 <BookmarkBorderRounded/>
@@ -1495,15 +1493,15 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private getUser() {
-        this.userRepo.get(this.userId).then((res) => {
+        this.userRepo.get(currentUserId).then((res) => {
             if (res) {
                 return res;
             } else {
                 const inputUser = new InputUser();
                 inputUser.setAccesshash('0');
-                inputUser.setUserid(this.userId);
+                inputUser.setUserid(currentUserId);
                 return this.apiManager.getUserFull([inputUser]).then((data) => {
-                    const index = findIndex(data.usersList, {id: this.userId});
+                    const index = findIndex(data.usersList, {id: currentUserId});
                     if (index > -1) {
                         return data.usersList[index];
                     } else {
@@ -1683,6 +1681,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private confirmProfileChangesHandler = () => {
         const {firstname, lastname, bio, user} = this.state;
         if (!user) {
+            return;
+        }
+        if (firstname.length === 0) {
+            this.props.onError(i18n.t('settings.first_name_is_required'));
             return;
         }
         this.apiManager.updateProfile(firstname, lastname, bio).then(() => {

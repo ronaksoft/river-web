@@ -772,6 +772,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                         this.contactsMenuRef.reload(true);
                     }
                 }
+                if (this.dialogRef) {
+                    this.dialogRef.reloadTopPeer();
+                }
             }, 10);
         }
     }

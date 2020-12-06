@@ -28,7 +28,6 @@ import {FixedSizeList} from "react-window";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
 import {getMessageTitle} from "./utils";
-import UserRepo from "../../repository/user";
 import ChipInput from "material-ui-chip-input";
 import Chip from "@material-ui/core/Chip";
 import LabelRepo from "../../repository/label";
@@ -41,6 +40,7 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import TopPeer from '../TopPeer';
 import {TopPeerType} from "../../repository/topPeer";
 import {GetPeerName} from "../../repository/dialog";
+import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
 
@@ -85,7 +85,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private containerRef: any;
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
-    private readonly userId: string = '';
     private labelRepo: LabelRepo;
     private labelMap: { [key: number]: number } = {};
     private broadcaster: Broadcaster;
@@ -93,6 +92,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private labelPopoverRef: LabelPopover | undefined;
     private scrollbarsRef: Scrollbars | undefined;
     private firstTimeInit: boolean = false;
+    private topPeerRef: TopPeer | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -117,7 +117,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.searchDebounce = debounce(this.search, 512);
         this.isMobile = IsMobile.isAny();
         this.hasScrollbar = getScrollbarWidth() > 0;
-        this.userId = UserRepo.getInstance().getCurrentUserId();
         this.labelRepo = LabelRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
 
@@ -174,6 +173,12 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.getLabelList();
         this.eventReferences.push(this.broadcaster.listen('Label_DB_Updated', this.getLabelList));
         this.firstTimeInit = true;
+    }
+
+    public reloadTopPeer() {
+        if (this.topPeerRef) {
+            this.topPeerRef.reload();
+        }
     }
 
     public componentWillUnmount() {
@@ -308,7 +313,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                                    onApply={this.labelPopoverApplyHandler} closeAfterSelect={true}
                                                    onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
-                {searchEnable && <TopPeer teamId={this.props.teamId} type={TopPeerType.Search} visible={focus}/>}
+                {searchEnable && <TopPeer ref={this.topPeerRefHandler} teamId={this.props.teamId} type={TopPeerType.Search} visible={focus}/>}
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
                     <AutoSizer>
@@ -703,7 +708,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     preview_icon: messageTitle.icon,
                     preview_me: msg.me,
                     preview_rtl: msg.rtl,
-                    saved_messages: msg.peerid === this.userId,
+                    saved_messages: msg.peerid === currentUserId,
                     sender_id: msg.senderid,
                     teamid: msg.teamid || '0',
                     topmessageid: msg.id,
@@ -870,6 +875,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
         //         focus: false,
         //     });
         // }, 256);
+    }
+
+    private topPeerRefHandler = (ref: any) => {
+        this.topPeerRef = ref;
     }
 }
 

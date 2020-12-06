@@ -123,7 +123,8 @@
     "seen_by": "Seen by",
     "seen_by_placeholder": "no one",
     "pin": "Pin",
-    "unpin": "Unpin"
+    "unpin": "Unpin",
+    "last_admin_error": "You cannot leave, no admin left!"
   },
   "peer_info": {
     "notify_settings": "Notify Settings",
@@ -147,7 +148,8 @@
     "add_member": "Add member",
     "leave_the": "Leave the",
     "participants": "{0} participants",
-    "no_shared_media": "No Shared Media Here!"
+    "no_shared_media": "No Shared Media Here!",
+    "user_cannot_be_added": "You cannot add {0}"
   },
   "dialog": {
     "search": "Search...",
@@ -265,6 +267,7 @@
     "contacts": "Contacts",
     "remove_synced_contacts": "Remove Synced Contacts",
     "synced_contacts_removed_successfully": "Synced contacts removed successfully",
+    "first_name_is_required": "Firstname is required",
     "change_phone_number": {
       "title": "Change phone number",
       "text": "You can change your River number here. Your Account and all your cloud data - messages, media, contacts etc. will be moved to the new number.",

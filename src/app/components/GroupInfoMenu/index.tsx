@@ -30,7 +30,7 @@ import {
     PeerNotifySettings,
     PeerType,
 } from '../../services/sdk/messages/core.types_pb';
-import APIManager from '../../services/sdk';
+import APIManager, {currentUserId} from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
@@ -71,6 +71,7 @@ import i18n from '../../services/i18n';
 import {C_AVATAR_SIZE} from "../SettingsMenu";
 import {ModalityService} from "kk-modality";
 import ContactPicker from "../ContactPicker";
+import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
 import './style.scss';
 
@@ -80,6 +81,7 @@ interface IProps {
     onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onClose?: (e: any) => void;
     onDeleteAndExitGroup?: () => void;
+    onError?: (message: string) => void;
 }
 
 interface IState {
@@ -132,7 +134,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private apiManager: APIManager;
     private loading: boolean = false;
-    private readonly userId: string;
     private riverTime: RiverTime;
     private fileManager: FileManager;
     private progressBroadcaster: ProgressBroadcaster;
@@ -176,8 +177,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.userRepo = UserRepo.getInstance();
         // SDK singleton
         this.apiManager = APIManager.getInstance();
-
-        this.userId = APIManager.getInstance().getConnInfo().UserID || '';
 
         this.fileManager = FileManager.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
@@ -358,7 +357,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                 {participant.type === ParticipantType.PARTICIPANTTYPEADMIN &&
                                                 <div className="admin-wrapper"><StarRateRounded/></div>}
                                                 <span className="name"
-                                                      onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
+                                                      onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{currentUserId === participant.userid ? ' (you)' : ''}</span>
                                                 <span
                                                     className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
                                                 {isAdmin && participant.type !== ParticipantType.PARTICIPANTTYPECREATOR &&
@@ -543,7 +542,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
         const menuItems = [];
         if (hasAuthority(group, false)) {
-            if (currentUser.userid !== this.userId) {
+            if (currentUser.userid !== currentUserId) {
                 menuItems.push({
                     cmd: 'remove',
                     title: i18n.t('contact.remove'),
@@ -981,7 +980,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             // @ts-ignore
             member.userid = member.id;
             user.setAccesshash(member.accesshash || '');
-            promises.push(this.apiManager.groupAddMember(peer, user, forwardLimit));
+            promises.push(this.apiManager.groupAddMember(peer, user, forwardLimit).catch((err) => {
+                if (err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemUserID) {
+                    if (this.props.onError) {
+                        this.props.onError(i18n.tf('peer_info.user_cannot_be_added', member.firstname || ''));
+                    }
+                }
+                return Promise.resolve();
+            }));
         });
         /* waits for all promises to be resolved */
         if (promises.length > 0) {

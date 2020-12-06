@@ -66,7 +66,7 @@ class PopUpDate extends React.PureComponent<IProps, IState> {
             el.innerHTML = reaction;
             setTimeout(() => {
                 el.remove();
-            }, 950);
+            }, 1950);
             this.ref.appendChild(el);
         }
     }

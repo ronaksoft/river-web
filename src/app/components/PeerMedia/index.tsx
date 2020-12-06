@@ -494,6 +494,9 @@ class PeerMedia extends React.Component<IProps, IState> {
                 case 2:
                     mediaType = C_MEDIA_TYPE.FILE;
                     break;
+                case 3:
+                    mediaType = C_MEDIA_TYPE.GIF;
+                    break;
             }
         }
         this.mediaRepo.getMany(this.props.teamId, this.peer, {

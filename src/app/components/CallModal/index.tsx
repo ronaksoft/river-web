@@ -41,7 +41,7 @@ import Rating from '@material-ui/lab/Rating';
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import ContactPicker from "../ContactPicker";
 import {IUser} from "../../repository/user/interface";
-import APIManager from "../../services/sdk";
+import APIManager, {currentUserId} from "../../services/sdk";
 import CallVideo from "../CallVideo";
 
 import './style.scss';
@@ -89,8 +89,8 @@ function PaperComponent(props: PaperProps) {
 
 class CallModal extends React.Component<IProps, IState> {
     private peer: InputPeer | null = null;
-    private readonly userId: string = '0';
     private callService: CallService;
+    // @ts-ignore
     private apiManager: APIManager;
     private videoRef: HTMLVideoElement | undefined;
     private callVideoRef: CallVideo | undefined;
@@ -124,7 +124,6 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callService = CallService.getInstance();
         this.apiManager = APIManager.getInstance();
-        this.userId = this.apiManager.getConnInfo().UserID || '0';
     }
 
     public openDialog(peer: InputPeer | null) {
@@ -370,7 +369,7 @@ class CallModal extends React.Component<IProps, IState> {
             <UserAvatar className="call-user-bg" id={callUserId} noDetail={true}/>}
             <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
                    onClick={this.videoClickHandler(false)}/>
-            <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={this.userId}
+            <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
                        onClick={this.videoClickHandler(true)}/>
             <div className="call-modal-header">
                 <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
