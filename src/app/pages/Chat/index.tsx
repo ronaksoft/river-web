@@ -723,6 +723,7 @@ class Chat extends React.Component<IProps, IState> {
                                    onMessageAttachmentAction={this.messageAttachmentActionHandler}
                                    onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}
                                    onToggleMenu={this.rightMenuToggleMenuHandler}
+                                   onError={this.textErrorHandler}
                         />
                     </div>
                     <NewMessage key="new-message" open={this.state.openNewMessage} onClose={this.onNewMessageClose}

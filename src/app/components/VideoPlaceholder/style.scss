@@ -65,6 +65,10 @@
   .video-placeholder {
     background-color: var(--dark);
 
+    &.no-image {
+      height: 96px;
+    }
+
     .video-img {
       &.upper {
         z-index: 17;

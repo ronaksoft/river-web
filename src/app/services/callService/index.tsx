@@ -119,7 +119,7 @@ export default class CallService {
         iceTransportPolicy: 'all',
     };
     private peer: InputPeer | null = null;
-    private activeCallId: string | undefined = '0';
+    private activeCallId: string | undefined;
     private callInfo: { [key: string]: ICallInfo } = {};
 
     private constructor() {
@@ -129,8 +129,8 @@ export default class CallService {
         this.updateManager.listen(C_MSG.UpdatePhoneCall, this.phoneCallHandler);
     }
 
-    public initStream() {
-        return navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
+    public initStream(constraints: MediaStreamConstraints) {
+        return navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
             this.localStream = stream;
             return stream;
         });
@@ -140,10 +140,27 @@ export default class CallService {
         if (!this.localStream) {
             return;
         }
-        this.localStream.getVideoTracks().forEach((track) => {
-            track.enabled = enable;
-            this.propagateMediaSettings({video: enable});
-        });
+        const localVideos = this.localStream.getVideoTracks();
+        if (localVideos.length > 0) {
+            localVideos.forEach((track) => {
+                track.enabled = enable;
+                this.propagateMediaSettings({video: enable});
+            });
+        } else {
+            this.initStream({video: true}).then((stream) => {
+                if (this.activeCallId) {
+                    stream.getTracks().forEach((track) => {
+                        if (this.localStream) {
+                            this.localStream.addTrack(track);
+                        }
+                        Object.values(this.peerConnections).forEach((pc) => {
+                            pc.connection.addTrack(track, stream);
+                        });
+                    });
+                }
+                this.propagateMediaSettings({video: enable});
+            });
+        }
     }
 
     public toggleAudio(enable: boolean) {
@@ -191,7 +208,7 @@ export default class CallService {
         return this.peerConnections[connId].streams;
     }
 
-    public call(peer: InputPeer, participants: InputUser.AsObject[]) {
+    public call(peer: InputPeer, participants: InputUser.AsObject[], video: boolean) {
         this.peer = peer;
 
         return this.apiManager.callInit(peer).then((res) => {
@@ -208,7 +225,7 @@ export default class CallService {
         });
     }
 
-    public accept(id: string) {
+    public accept(id: string, video: boolean) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
@@ -225,14 +242,17 @@ export default class CallService {
             if (!info) {
                 return Promise.reject('invalid call request');
             }
+
             if (this.isInitiator(id, info.request.userid || '0')) {
-                return this.initStream().then((stream) => {
+                return this.initStream({audio: true, video}).then((stream) => {
                     const sdpData = (info.request.data as PhoneActionRequested.AsObject);
                     return this.initConnections(peer, id, false, {
                         sdp: sdpData.sdp,
                         type: sdpData.type as any,
                     }).then(() => {
-                        this.propagateMediaSettings({});
+                        const streamState = this.getStreamState();
+                        this.mediaSettingsInit(streamState);
+                        this.propagateMediaSettings(streamState);
                         return stream;
                     });
                 });
@@ -267,7 +287,7 @@ export default class CallService {
         Object.values(this.callInfo[callId].participants).forEach((participant) => {
             list.push(participant);
         });
-        return orderBy(list, ['connectionid'],['asc']);
+        return orderBy(list, ['connectionid'], ['asc']);
     }
 
     public destroyConnections(id: string, connId?: number) {
@@ -292,6 +312,7 @@ export default class CallService {
             this.peerConnections = {};
             delete this.callInfo[id];
             this.activeCallId = undefined;
+            this.peer = null;
         }
     }
 
@@ -394,7 +415,7 @@ export default class CallService {
             }
         });
 
-        this.propagateMediaSettings({});
+        this.propagateMediaSettings(this.getStreamState());
 
         this.callHandlers(C_CALL_EVENT.CallAccept, data);
     }
@@ -475,7 +496,7 @@ export default class CallService {
                 admin: participant.admin,
                 connectionid: participant.connectionid,
                 initiator: participant.initiator,
-                mediaSettings: {audio: false, video: false},
+                mediaSettings: {audio: true, video: true},
                 peer: participant.peer,
             };
             callParticipantMap[participant.peer.userid || '0'] = participant.connectionid || 0;
@@ -586,8 +607,8 @@ export default class CallService {
         });
 
         stream.getTracks().forEach((track) => {
-            if (this.localStream) {
-                pc.addTrack(track, this.localStream);
+            if (stream) {
+                pc.addTrack(track, stream);
             }
         });
 
@@ -759,6 +780,20 @@ export default class CallService {
         }
         this.callInfo[callId].participants[connId].mediaSettings.audio = mediaSettings.audio || false;
         this.callInfo[callId].participants[connId].mediaSettings.video = mediaSettings.video || false;
+        this.callHandlers(C_CALL_EVENT.MediaSettingsUpdate, this.callInfo[callId].participants[connId]);
+    }
+
+    private mediaSettingsInit({video, audio}: { video?: boolean, audio?: boolean }) {
+        const callId = this.activeCallId;
+        if (!callId) {
+            return;
+        }
+        const connId = this.getConnId(callId, currentUserId);
+        if (connId === null || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId)) {
+            return;
+        }
+        this.callInfo[callId].participants[connId].mediaSettings.audio = audio || false;
+        this.callInfo[callId].participants[connId].mediaSettings.video = video || false;
         this.callHandlers(C_CALL_EVENT.MediaSettingsUpdate, this.callInfo[callId].participants[connId]);
     }
 

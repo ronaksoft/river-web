@@ -741,6 +741,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 if (this.props.onTeamChange) {
                     this.props.onTeamChange(item);
                 }
+                if (this.dialogRef) {
+                    this.dialogRef.reloadTopPeer();
+                }
             }, 10);
         }
     }

@@ -103,7 +103,7 @@ export default function VideoPlaceholder({innerRef, userId, srcObject, className
         }
     };
 
-    return <div className={'video-placeholder ' + (className || '')} onClick={onClick}>
+    return <div className={'video-placeholder ' + (className || '') + (!img ? ' no-image' : '')} onClick={onClick}>
         {img && <img className={'video-img' + (videoMute ? ' upper' : '')} alt="" src={img}/>}
         <video key="video" ref={vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}
                style={{visibility: userId && videoMute ? 'hidden' : 'visible'}}/>

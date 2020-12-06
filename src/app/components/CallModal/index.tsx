@@ -135,7 +135,7 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
         if (this.peer.getType() === PeerType.PEERUSER) {
-            this.showPreview();
+            this.showPreview(true);
         } else if (this.peer.getType() === PeerType.PEERGROUP) {
             this.setState({
                 groupId: this.peer.getId() || '0',
@@ -191,7 +191,7 @@ class CallModal extends React.Component<IProps, IState> {
         );
     }
 
-    private showPreview() {
+    private showPreview(video: boolean) {
         this.timer = 0;
         this.timerEnd = 0;
         this.setState({
@@ -199,7 +199,7 @@ class CallModal extends React.Component<IProps, IState> {
             mode: 'call_init',
             open: true,
         }, () => {
-            this.callService.initStream().then((stream) => {
+            this.callService.initStream({audio: true, video}).then((stream) => {
                 if (this.videoRef) {
                     this.videoRef.srcObject = stream;
                 }
@@ -208,6 +208,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private closeHandler = () => {
+        this.callService.destroyConnections(this.state.callId);
         this.callService.destroy();
         this.setState({
             groupId: undefined,
@@ -260,8 +261,11 @@ class CallModal extends React.Component<IProps, IState> {
                 <div className="call-item call-end" onClick={this.rejectCallHandler}>
                     <CallEndRounded/>
                 </div>
-                <div className="call-item call-accept" onClick={this.callAcceptHandler}>
+                <div className="call-item call-accept" onClick={this.callAcceptHandler(false)}>
                     <CallRounded/>
+                </div>
+                <div className="call-item call-accept" onClick={this.callAcceptHandler(true)}>
+                    <VideocamRounded/>
                 </div>
             </div>
         </div>;
@@ -321,7 +325,7 @@ class CallModal extends React.Component<IProps, IState> {
                     <div className="call-item call-end" onClick={this.closeHandler}>
                         <CallEndRounded/>
                     </div>
-                    <div className="call-item call-accept" onClick={this.callHandler}>
+                    <div className="call-item call-accept" onClick={this.callHandler(false)}>
                         <CallRounded/>
                     </div>
                 </div>
@@ -366,7 +370,7 @@ class CallModal extends React.Component<IProps, IState> {
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
             {!callStarted && callUserId &&
-            <UserAvatar className="call-user-bg" id={callUserId} noDetail={true}/>}
+            <UserAvatar className="call-user-bg rounded-avatar" id={callUserId} noDetail={true}/>}
             <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
                    onClick={this.videoClickHandler(false)}/>
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
@@ -414,7 +418,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private callHandler = () => {
+    private callHandler = (video: boolean) => () => {
         this.setState({
             animateState: 'init',
             callUserId: this.peer ? this.peer.getId() || '0' : null,
@@ -428,7 +432,7 @@ class CallModal extends React.Component<IProps, IState> {
             }, 512);
         });
         if (this.peer) {
-            this.callService.call(this.peer, this.getRecipients()).then((callId) => {
+            this.callService.call(this.peer, this.getRecipients(), video).then((callId) => {
                 this.setState({
                     callId,
                 }, () => {
@@ -436,19 +440,22 @@ class CallModal extends React.Component<IProps, IState> {
                         this.callVideoRef.initRemoteConnection();
                     }
                 });
+            }).catch(() => {
+                this.closeHandler();
             });
         }
     }
 
-    private callAcceptHandler = () => {
+    private callAcceptHandler = (video: boolean) => () => {
         this.setState({
             animateState: 'init',
             mode: 'call',
         });
-        this.callService.accept(this.state.callId).then((stream) => {
+        this.callService.accept(this.state.callId, video).then((stream) => {
             if (this.videoRef && stream) {
                 this.setState({
                     animateState: 'end',
+                    callSettings: this.callService.getStreamState(),
                 });
                 this.videoRef.srcObject = stream;
             }
@@ -578,7 +585,7 @@ class CallModal extends React.Component<IProps, IState> {
             accesshash: u.accesshash,
             userid: u.id,
         }));
-        this.showPreview();
+        this.showPreview(true);
     }
 }
 

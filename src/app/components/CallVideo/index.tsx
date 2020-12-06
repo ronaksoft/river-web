@@ -31,7 +31,6 @@ interface IState {
     callId: string;
 }
 
-
 class CallVideo extends React.Component<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
         if (props.callId === state.callId) {
