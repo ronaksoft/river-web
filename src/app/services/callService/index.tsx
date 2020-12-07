@@ -20,7 +20,7 @@ import {
     PhoneActionRequested,
     PhoneCallAction, PhoneMediaSettingsUpdated,
     PhoneParticipant,
-    PhoneParticipantSDP
+    PhoneParticipantSDP, PhoneSDPAnswer, PhoneSDPOffer
 } from "../sdk/messages/chat.phone_pb";
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
@@ -31,6 +31,7 @@ export const C_CALL_EVENT = {
     CallAccept: 0x02,
     CallReject: 0x04,
     CallRequest: 0x01,
+    LocalStreamUpdate: 0x06,
     MediaSettingsUpdate: 0x05,
     StreamUpdate: 0x03,
 };
@@ -83,6 +84,10 @@ const parseData = (constructor: number, data: any) => {
             return PhoneActionCallEmpty.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED:
             return PhoneMediaSettingsUpdated.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLSDPOFFER:
+            return PhoneSDPOffer.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLSDPANSWER:
+            return PhoneSDPAnswer.deserializeBinary(data).toObject();
     }
     return undefined;
 };
@@ -147,19 +152,7 @@ export default class CallService {
                 this.propagateMediaSettings({video: enable});
             });
         } else {
-            this.initStream({video: true}).then((stream) => {
-                if (this.activeCallId) {
-                    stream.getTracks().forEach((track) => {
-                        if (this.localStream) {
-                            this.localStream.addTrack(track);
-                        }
-                        Object.values(this.peerConnections).forEach((pc) => {
-                            pc.connection.addTrack(track, stream);
-                        });
-                    });
-                }
-                this.propagateMediaSettings({video: enable});
-            });
+            this.upgradeMediaStream();
         }
     }
 
@@ -379,6 +372,12 @@ export default class CallService {
                 break;
             case PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED:
                 this.mediaSettingsUpdated(data);
+                break;
+            case PhoneCallAction.PHONECALLSDPOFFER:
+                this.sdpOfferUpdated(data);
+                break;
+            case PhoneCallAction.PHONECALLSDPANSWER:
+                this.sdpAnswerUpdated(data);
                 break;
         }
     }
@@ -795,6 +794,131 @@ export default class CallService {
         this.callInfo[callId].participants[connId].mediaSettings.audio = audio || false;
         this.callInfo[callId].participants[connId].mediaSettings.video = video || false;
         this.callHandlers(C_CALL_EVENT.MediaSettingsUpdate, this.callInfo[callId].participants[connId]);
+    }
+
+    private upgradeMediaStream() {
+        this.initStream({video: true}).then((stream) => {
+            if (this.activeCallId) {
+                stream.getTracks().forEach((track) => {
+                    if (this.localStream) {
+                        this.localStream.addTrack(track);
+                    }
+                    for (const [connId, pc] of Object.entries(this.peerConnections)) {
+                        pc.connection.addTrack(track, stream);
+                        pc.connection.createOffer(this.offerOptions).then((res) => {
+                            return pc.connection.setLocalDescription(res).then(() => {
+                                return this.sendSDPOffer(this.parseNumberValue(connId), res);
+                            });
+                        });
+                    }
+                });
+            }
+            this.callHandlers(C_CALL_EVENT.LocalStreamUpdate, stream);
+            this.propagateMediaSettings({video: true});
+        });
+    }
+
+    private sdpOfferUpdated(data: IUpdatePhoneCall) {
+        const sdpOfferData = data.data as PhoneSDPOffer.AsObject;
+        const connId = this.getConnId(data.callid, data.userid);
+        const callId = data.callid || '0';
+        if (connId === null || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId) || !this.peerConnections.hasOwnProperty(connId)) {
+            return;
+        }
+
+        const pc = this.peerConnections[connId].connection;
+        pc.setRemoteDescription({
+            sdp: sdpOfferData.sdp,
+            type: sdpOfferData.type as any,
+        }).then(() => {
+            return pc.createAnswer(this.offerOptions).then((res) => {
+                return pc.setLocalDescription(res).then(() => {
+                    return this.sendSDPAnswer(connId, res);
+                });
+            });
+        });
+    }
+
+    private sdpAnswerUpdated(data: IUpdatePhoneCall) {
+        const sdpAnswerData = data.data as PhoneSDPAnswer.AsObject;
+        const connId = this.getConnId(data.callid, data.userid);
+        const callId = data.callid || '0';
+        if (connId === null || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId) || !this.peerConnections.hasOwnProperty(connId)) {
+            return;
+        }
+
+        const pc = this.peerConnections[connId].connection;
+        pc.setRemoteDescription({
+            sdp: sdpAnswerData.sdp,
+            type: sdpAnswerData.type as any,
+        });
+    }
+
+    private sendSDPOffer(connId: number, sdp: RTCSessionDescriptionInit) {
+        const callId = this.activeCallId;
+        if (!callId) {
+            return Promise.reject('no active call');
+        }
+
+        const conn = this.peerConnections[connId];
+        if (!conn) {
+            return Promise.reject('invalid connection');
+        }
+
+        const peer = this.peer;
+        if (!peer || !this.activeCallId) {
+            return Promise.reject('invalid input');
+        }
+
+        const inputUser = this.getInputUserByConnId(callId, connId);
+        if (!inputUser) {
+            return Promise.reject('invalid connId');
+        }
+
+        const actionData = new PhoneSDPOffer();
+        actionData.setSdp(sdp.sdp);
+        actionData.setType(sdp.type);
+
+        return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLSDPOFFER, actionData.serializeBinary()).then(() => {
+            return Promise.resolve();
+        });
+    }
+
+    private sendSDPAnswer(connId: number, sdp: RTCSessionDescriptionInit) {
+        const callId = this.activeCallId;
+        if (!callId) {
+            return Promise.reject('no active call');
+        }
+
+        const conn = this.peerConnections[connId];
+        if (!conn) {
+            return Promise.reject('invalid connection');
+        }
+
+        const peer = this.peer;
+        if (!peer || !this.activeCallId) {
+            return Promise.reject('invalid input');
+        }
+
+        const inputUser = this.getInputUserByConnId(callId, connId);
+        if (!inputUser) {
+            return Promise.reject('invalid connId');
+        }
+
+        const actionData = new PhoneSDPAnswer();
+        actionData.setSdp(sdp.sdp);
+        actionData.setType(sdp.type);
+
+        return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLSDPANSWER, actionData.serializeBinary()).then(() => {
+            return Promise.resolve();
+        });
+    }
+
+    private parseNumberValue(val: number | string) {
+        if (typeof val === 'string') {
+            return parseInt(val);
+        }
+        return val;
     }
 
     private callHandlers(name: number, data: any) {

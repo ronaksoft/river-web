@@ -635,6 +635,62 @@ export namespace PhoneReactionSet {
   }
 }
 
+export class PhoneSDPOffer extends jspb.Message {
+  hasSdp(): boolean;
+  clearSdp(): void;
+  getSdp(): string | undefined;
+  setSdp(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): string | undefined;
+  setType(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneSDPOffer.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneSDPOffer): PhoneSDPOffer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneSDPOffer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneSDPOffer;
+  static deserializeBinaryFromReader(message: PhoneSDPOffer, reader: jspb.BinaryReader): PhoneSDPOffer;
+}
+
+export namespace PhoneSDPOffer {
+  export type AsObject = {
+    sdp?: string,
+    type?: string,
+  }
+}
+
+export class PhoneSDPAnswer extends jspb.Message {
+  hasSdp(): boolean;
+  clearSdp(): void;
+  getSdp(): string | undefined;
+  setSdp(value: string): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): string | undefined;
+  setType(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneSDPAnswer.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneSDPAnswer): PhoneSDPAnswer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneSDPAnswer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneSDPAnswer;
+  static deserializeBinaryFromReader(message: PhoneSDPAnswer, reader: jspb.BinaryReader): PhoneSDPAnswer;
+}
+
+export namespace PhoneSDPAnswer {
+  export type AsObject = {
+    sdp?: string,
+    type?: string,
+  }
+}
+
 export enum DiscardReason {
   DISCARDREASONUNKNOWN = 0,
   DISCARDREASONMISSED = 1,
@@ -661,11 +717,21 @@ export enum PhoneCallAction {
   PHONECALLICEEXCHANGE = 5,
   PHONECALLMEDIASETTINGSCHANGED = 6,
   PHONECALLREACTIONSET = 7,
-  PHONECALLRESERVED4 = 8,
-  PHONECALLRESERVED5 = 9,
+  PHONECALLSDPOFFER = 8,
+  PHONECALLSDPANSWER = 9,
   PHONECALLRESERVED6 = 10,
   PHONECALLRESERVED7 = 11,
   PHONECALLRESERVED8 = 12,
   PHONECALLRESERVED9 = 13,
+  PHONECALLRESERVED10 = 14,
+  PHONECALLRESERVED11 = 15,
+  PHONECALLRESERVED12 = 16,
+  PHONECALLRESERVED13 = 17,
+  PHONECALLRESERVED14 = 18,
+  PHONECALLRESERVED15 = 19,
+  PHONECALLRESERVED16 = 20,
+  PHONECALLRESERVED17 = 21,
+  PHONECALLRESERVED18 = 22,
+  PHONECALLRESERVED19 = 23,
 }
 

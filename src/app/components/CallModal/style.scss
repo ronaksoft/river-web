@@ -298,6 +298,34 @@
         z-index: 14;
       }
 
+      .local-video-placeholder {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        width: 128px;
+        height: 96px;
+        border-radius: 5px;
+        box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 14;
+        background-color: var(--dark);
+
+        .local-video-user {
+          height: 48px;
+          width: 48px;
+          border-radius: 50%;
+          transition: all 0.2s;
+
+          img {
+            height: 100%;
+            width: 100%;
+            border-radius: 50%;
+          }
+        }
+      }
+
       &.animate-end {
         .local-video {
           position: absolute;
@@ -360,7 +388,7 @@
           z-index: 14;
         }
 
-        .local-video {
+        .local-video, .local-video-placeholder {
           position: absolute;
           top: 0;
           right: 0;
@@ -369,6 +397,11 @@
           z-index: 2;
           width: auto;
           height: auto;
+
+          .local-video-user {
+            height: 96px;
+            width: 96px;
+          }
         }
       }
     }

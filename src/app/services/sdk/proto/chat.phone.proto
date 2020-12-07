@@ -86,12 +86,22 @@ enum PhoneCallAction {
     PhoneCallIceExchange = 5;
     PhoneCallMediaSettingsChanged = 6;
     PhoneCallReactionSet = 7;
-    PhoneCallReserved4 = 8;
-    PhoneCallReserved5 = 9;
+    PhoneCallSDPOffer = 8;
+    PhoneCallSDPAnswer = 9;
     PhoneCallReserved6 = 10;
     PhoneCallReserved7 = 11;
     PhoneCallReserved8 = 12;
     PhoneCallReserved9 = 13;
+    PhoneCallReserved10 = 14;
+    PhoneCallReserved11 = 15;
+    PhoneCallReserved12 = 16;
+    PhoneCallReserved13 = 17;
+    PhoneCallReserved14 = 18;
+    PhoneCallReserved15 = 19;
+    PhoneCallReserved16 = 20;
+    PhoneCallReserved17 = 21;
+    PhoneCallReserved18 = 22;
+    PhoneCallReserved19 = 23;
 }
 
 // PhoneCall
@@ -175,4 +185,16 @@ message PhoneMediaSettingsUpdated {
 // PhoneReactionSet
 message PhoneReactionSet {
     required string Reaction = 1;
+}
+
+// PhoneSDPOffer
+message PhoneSDPOffer {
+    required string SDP = 1;
+    required string Type = 2;
+}
+
+// PhoneSDPAnswer
+message PhoneSDPAnswer {
+    required string SDP = 1;
+    required string Type = 2;
 }

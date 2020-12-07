@@ -14,7 +14,7 @@ import {findIndex} from "lodash";
 
 import './style.scss';
 
-interface IRemoteConnection {
+export interface IRemoteConnection {
     connId: number;
     media?: IVideoPlaceholderRef;
     streams: MediaStream[] | undefined;
@@ -87,6 +87,7 @@ class CallVideo extends React.Component<IProps, IState> {
         const index = findIndex(this.videoRemoteRefs, {connId});
         if (index > -1 && streams) {
             const remote = this.videoRemoteRefs[index];
+            remote.streams = streams;
             if (remote.media && remote.media.video) {
                 remote.media.video.srcObject = streams[0];
             }
@@ -117,6 +118,8 @@ class CallVideo extends React.Component<IProps, IState> {
                 if (streams && item.media && item.media.video) {
                     item.media.video.srcObject = streams[0];
                     item.streams = streams;
+                } else if (item.streams && item.media.video && item.media) {
+                    item.media.video.srcObject = streams[0];
                 }
             };
             return (<VideoPlaceholder key={item.userId} className="remote-video" innerRef={videoRemoteRefHandler}

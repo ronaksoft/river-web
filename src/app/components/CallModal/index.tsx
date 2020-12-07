@@ -152,6 +152,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAccept, this.eventCallAcceptHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallReject, this.eventCallRejectHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.StreamUpdate, this.eventStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdate, this.eventLocalStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdate, this.eventMediaSettingsUpdateHandler));
     }
 
@@ -366,13 +367,16 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallContent() {
-        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap, callId} = this.state;
+        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap, callId, callSettings} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
             {!callStarted && callUserId &&
             <UserAvatar className="call-user-bg rounded-avatar" id={callUserId} noDetail={true}/>}
             <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
-                   onClick={this.videoClickHandler(false)}/>
+                   onClick={this.videoClickHandler(false)} hidden={!callSettings.video}/>
+            {!callSettings.video && <div className="local-video-placeholder" onClick={this.videoClickHandler(false)}>
+                <UserAvatar className="local-video-user" id={currentUserId} noDetail={true}/>
+            </div>}
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
                        onClick={this.videoClickHandler(true)}/>
             <div className="call-modal-header">
@@ -533,6 +537,14 @@ class CallModal extends React.Component<IProps, IState> {
                 callStarted: true,
             });
         }
+    }
+
+    private eventLocalStreamUpdateHandler = (stream: MediaStream) => {
+        if (!this.videoRef) {
+            return;
+        }
+
+        this.videoRef.srcObject = stream;
     }
 
     private eventMediaSettingsUpdateHandler = (data: ICallParticipant) => {

@@ -66,11 +66,10 @@ export default function VideoPlaceholder({innerRef, userId, srcObject, className
         if (video && !img && !loading.current) {
             loading.current = true;
             video.addEventListener('playing', () => {
-                loading.current = true;
                 takeScreenShot(video);
             }, {once: true});
         }
-        if (video) {
+        if (video && srcObject) {
             video.srcObject = srcObject;
         }
         innerRef({
