@@ -119,7 +119,7 @@ class CallVideo extends React.Component<IProps, IState> {
                     item.media.video.srcObject = streams[0];
                     item.streams = streams;
                 } else if (item.streams && item.media.video && item.media) {
-                    item.media.video.srcObject = streams[0];
+                    item.media.video.srcObject = item.streams[0];
                 }
             };
             return (<VideoPlaceholder key={item.userId} className="remote-video" innerRef={videoRemoteRefHandler}

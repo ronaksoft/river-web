@@ -15,13 +15,14 @@ import AvatarService, {AvatarSrcUpdated} from '../../services/avatarService';
 import {find} from 'lodash';
 import Broadcaster from '../../services/broadcaster';
 import icon from '../../../asset/image/icon.png';
-import {PeerType, UserStatus} from "../../services/sdk/messages/core.types_pb";
+import {InputFileLocation, PeerType, UserStatus} from "../../services/sdk/messages/core.types_pb";
 import RiverTime from "../../services/utilities/river_time";
 import {DeletedUserLight} from "./svg";
 import {GetDbFileName} from "../../repository/file";
 import {FaceRounded} from '@material-ui/icons';
 
 import './style.scss';
+import CachedPhoto from "../CachedPhoto";
 
 const DefaultColors = [
     '#30496B',
@@ -133,11 +134,14 @@ interface IProps {
     onlineIndicator?: boolean;
     forceReload?: boolean;
     peerType?: PeerType;
+    big?: boolean;
 }
 
 interface IState {
     className: string;
     id: string;
+    bigFileLocation?: InputFileLocation.AsObject;
+    bigLoaded: boolean;
     photo?: string;
     user: IUser;
 }
@@ -157,6 +161,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
         super(props);
 
         this.state = {
+            bigLoaded: true,
             className: props.className || '',
             id: props.id,
             user: {}
@@ -202,7 +207,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
 
     public render() {
         const {peerType} = this.props;
-        const {user, className, photo} = this.state;
+        const {user, className, photo, bigFileLocation, bigLoaded} = this.state;
         if (this.props.savedMessages) {
             return (
                 <div className={'uac saved-messages-avatar ' + className}>
@@ -229,6 +234,10 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
                         <img className="avatar-image" src={photo} alt="avatar" draggable={false}
                              onError={this.imgErrorHandler}/> :
                         <TextAvatar fname={user.firstname} lname={user.lastname}/>}
+                        {Boolean(bigFileLocation) &&
+                        <CachedPhoto className={'big-avatar' + (bigLoaded ? ' loaded' : '')}
+                                     fileLocation={bigFileLocation} mimeType="image/jpeg"
+                                     onLoad={this.bigLoadHandler}/>}
                         {Boolean(peerType === PeerType.PEEREXTERNALUSER) && <div className="external-user-overlay">
                             <FaceRounded/>
                         </div>}
@@ -236,6 +245,16 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
                     {this.getOnlineIndicator()}
                 </>
             );
+        }
+    }
+
+    private bigLoadHandler = () => {
+        if (!this.state.bigLoaded) {
+            setTimeout(() => {
+                this.setState({
+                    bigLoaded: true,
+                });
+            }, 300);
         }
     }
 
@@ -259,9 +278,16 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
                 return;
             }
             if (user) {
-                this.setState({
-                    user,
-                });
+                if (this.props.big) {
+                    this.setState({
+                        bigFileLocation: user.photo && user.photo.photobig ? user.photo.photobig : undefined,
+                        user,
+                    });
+                } else {
+                    this.setState({
+                        user,
+                    });
+                }
                 this.getAvatarPhoto(user);
             } else {
                 throw Error('not found');
@@ -277,6 +303,8 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
                 }, 1000);
             } else {
                 this.setState({
+                    bigFileLocation: undefined,
+                    bigLoaded: false,
                     photo: undefined,
                 });
             }
@@ -295,6 +323,8 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
             this.getAvatar(user.id || '', GetDbFileName(user.photo.photosmall.fileid, user.photo.photosmall.clusterid));
         } else {
             this.setState({
+                bigFileLocation: undefined,
+                bigLoaded: false,
                 photo: undefined,
             });
         }

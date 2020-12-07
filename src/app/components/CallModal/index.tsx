@@ -251,7 +251,7 @@ class CallModal extends React.Component<IProps, IState> {
     private getRequestedContent() {
         const {callUserId} = this.state;
         return <div className="call-modal-content">
-            {callUserId && <UserAvatar className="call-user-bg" id={callUserId} noDetail={true}/>}
+            {callUserId && <UserAvatar className="call-user-bg" id={callUserId} noDetail={true} big={true}/>}
             <div className="call-info">
                 {callUserId && <UserName className="call-user-name" id={callUserId} noDetail={true}/>}
                 <div className="call-status">
