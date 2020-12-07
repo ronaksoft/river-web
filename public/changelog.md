@@ -1,3 +1,10 @@
+## 0.36.5-call
+* Call updated
+
+## 0.36.4-call
+* Call implemented
+* Known bugs fixed
+
 ## 0.36.3
 * Loading UI bug fixed
 

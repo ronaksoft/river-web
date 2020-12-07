@@ -27,6 +27,9 @@ import UniqueId from "../uniqueId";
 import APIManager, {currentUserId} from "../sdk";
 import {orderBy} from "lodash";
 
+const C_RETRY_INTERVAL = 10000;
+const C_RETRY_LIMIT = 6;
+
 export const C_CALL_EVENT = {
     CallAccept: 0x02,
     CallReject: 0x04,
@@ -54,6 +57,8 @@ interface IConnection {
     connection: RTCPeerConnection;
     streams: MediaStream[];
     iceQueue: RTCIceCandidate[];
+    interval: any;
+    try: number;
 }
 
 interface IBroadcastItem {
@@ -62,10 +67,11 @@ interface IBroadcastItem {
 }
 
 interface ICallInfo {
-    request: IUpdatePhoneCall;
-    participants: { [key: number]: ICallParticipant };
-    participantMap: { [key: string]: number };
+    acceptedParticipants: number[];
     mediaSettings: IMediaSettings;
+    participantMap: { [key: string]: number };
+    participants: { [key: number]: ICallParticipant };
+    request: IUpdatePhoneCall;
 }
 
 const parseData = (constructor: number, data: any) => {
@@ -291,6 +297,7 @@ export default class CallService {
                     track.stop();
                 });
             });
+            clearInterval(conn.interval);
         };
 
         if (connId !== undefined) {
@@ -345,9 +352,9 @@ export default class CallService {
         });
     }
 
-    private callUser(peer: InputPeer, initiator: boolean, phoneParticipants: PhoneParticipantSDP[]) {
+    private callUser(peer: InputPeer, initiator: boolean, phoneParticipants: PhoneParticipantSDP[], callId?: string) {
         const randomId = UniqueId.getRandomId();
-        return this.apiManager.callRequest(peer, randomId, initiator, phoneParticipants).then((res) => {
+        return this.apiManager.callRequest(peer, randomId, initiator, phoneParticipants, callId).then((res) => {
             this.activeCallId = res.id || '0';
             return res;
         });
@@ -387,13 +394,15 @@ export default class CallService {
             this.busyHandler(data);
             return;
         }
-        this.initCallRequest(data);
-        const inputPeer = new InputPeer();
-        inputPeer.setId(data.peerid || '0');
-        inputPeer.setAccesshash(data.peertype === PeerType.PEERGROUP ? '0' : (data.accesshash || '0'));
-        inputPeer.setType(data.peertype || PeerType.PEERUSER);
-        this.peer = inputPeer;
-        this.callHandlers(C_CALL_EVENT.CallRequest, data);
+        if (!this.callInfo.hasOwnProperty(data.callid || 0)) {
+            this.initCallRequest(data);
+            const inputPeer = new InputPeer();
+            inputPeer.setId(data.peerid || '0');
+            inputPeer.setAccesshash(data.peertype === PeerType.PEERGROUP ? '0' : (data.accesshash || '0'));
+            inputPeer.setType(data.peertype || PeerType.PEERUSER);
+            this.peer = inputPeer;
+            this.callHandlers(C_CALL_EVENT.CallRequest, data);
+        }
     }
 
     private callAccepted(data: IUpdatePhoneCall) {
@@ -416,10 +425,16 @@ export default class CallService {
 
         this.propagateMediaSettings(this.getStreamState());
 
+        this.clearRetryInterval(connId);
+
         this.callHandlers(C_CALL_EVENT.CallAccept, data);
     }
 
     private callRejected(data: IUpdatePhoneCall) {
+        const connId = this.getConnId(data.callid, data.userid);
+        if (connId !== null) {
+            this.clearRetryInterval(connId);
+        }
         // const actionData = (data.data as PhoneActionDiscarded.AsObject);
         this.callHandlers(C_CALL_EVENT.CallReject, data);
     }
@@ -477,6 +492,7 @@ export default class CallService {
         });
         const mediaState = this.getStreamState();
         this.callInfo[callId] = {
+            acceptedParticipants: [],
             mediaSettings: mediaState ? mediaState : {audio: true, video: true},
             participantMap: callParticipantMap,
             participants: callParticipants,
@@ -487,6 +503,9 @@ export default class CallService {
     }
 
     private initCallRequest(data: IUpdatePhoneCall) {
+        if (this.callInfo.hasOwnProperty(data.callid || 0)) {
+            return;
+        }
         const sdpData = (data.data as PhoneActionRequested.AsObject);
         const callParticipants: { [key: number]: ICallParticipant } = {};
         const callParticipantMap: { [key: string]: number } = {};
@@ -502,6 +521,7 @@ export default class CallService {
         });
         const mediaState = this.getStreamState();
         this.callInfo[data.callid || '0'] = {
+            acceptedParticipants: [],
             mediaSettings: mediaState ? mediaState : {audio: true, video: true},
             participantMap: callParticipantMap,
             participants: callParticipants,
@@ -559,6 +579,21 @@ export default class CallService {
                             return this.convertPhoneParticipant(item);
                         });
                     }).then((phoneParticipants) => {
+                        phoneParticipants.forEach((participant) => {
+                            const connId = participant.getConnectionid() || 0;
+                            if (this.peerConnections.hasOwnProperty(connId)) {
+                                // Retry mechanism
+                                this.peerConnections[connId].interval = setInterval(() => {
+                                    if (this.activeCallId && this.peerConnections.hasOwnProperty(connId)) {
+                                        this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
+                                        this.peerConnections[connId].try++;
+                                        if (this.peerConnections[connId].try >= C_RETRY_LIMIT) {
+                                            clearInterval(this.peerConnections[connId].interval);
+                                        }
+                                    }
+                                }, C_RETRY_INTERVAL);
+                            }
+                        });
                         return this.callUser(peer, initiator, phoneParticipants);
                     }));
                 } else {
@@ -594,7 +629,9 @@ export default class CallService {
             accepted: remote,
             connection: pc,
             iceQueue: [],
+            interval: null,
             streams: [],
+            try: 0,
         };
 
         pc.addEventListener('track', (e) => {
@@ -912,6 +949,16 @@ export default class CallService {
         return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLSDPANSWER, actionData.serializeBinary()).then(() => {
             return Promise.resolve();
         });
+    }
+
+    private clearRetryInterval(connId: number) {
+        if (!this.peerConnections.hasOwnProperty(connId)){
+            return;
+        }
+        clearInterval(this.peerConnections[connId].interval);
+        if (this.activeCallId && this.callInfo.hasOwnProperty(connId)) {
+            this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
+        }
     }
 
     private parseNumberValue(val: number | string) {
