@@ -521,7 +521,7 @@
     "rate_this_call": "Rate this call",
     "muted": "Muted",
     "call_back": "Call Back",
-    "call_timeout": "Call Timeout",
+    "call_timeout": "no answer",
     "is_not_available": "is not available"
   }
 }
