@@ -143,6 +143,7 @@ export default class CallService {
     public initStream(constraints: MediaStreamConstraints) {
         return navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
             this.localStream = stream;
+            this.callHandlers(C_CALL_EVENT.LocalStreamUpdate, stream);
             return stream;
         });
     }
@@ -157,7 +158,7 @@ export default class CallService {
                 track.enabled = enable;
                 this.propagateMediaSettings({video: enable});
             });
-        } else {
+        } else if (enable) {
             this.upgradeMediaStream();
         }
     }
@@ -785,22 +786,23 @@ export default class CallService {
     }
 
     private propagateMediaSettings({video, audio}: { video?: boolean, audio?: boolean }) {
-        if (!this.activeCallId || !this.peer) {
+        if (!this.activeCallId || !this.peer || !this.callInfo.hasOwnProperty(this.activeCallId)) {
             return;
         }
-        if (!this.callInfo.hasOwnProperty(this.activeCallId)) {
-            return;
-        }
+
         const inputUsers = this.getInputUsers(this.activeCallId);
         if (!inputUsers) {
             return;
         }
+
         if (audio !== undefined) {
             this.callInfo[this.activeCallId].mediaSettings.audio = audio;
         }
+
         if (video !== undefined) {
             this.callInfo[this.activeCallId].mediaSettings.video = video;
         }
+
         const actionData = new PhoneMediaSettingsUpdated();
         actionData.setAudio(this.callInfo[this.activeCallId].mediaSettings.audio);
         actionData.setVideo(this.callInfo[this.activeCallId].mediaSettings.video);
@@ -834,9 +836,9 @@ export default class CallService {
     }
 
     private upgradeMediaStream() {
-        this.initStream({video: true}).then((stream) => {
+        this.initStream({audio: true, video: true}).then((stream) => {
             if (this.activeCallId) {
-                stream.getTracks().forEach((track) => {
+                stream.getVideoTracks().forEach((track) => {
                     if (this.localStream) {
                         this.localStream.addTrack(track);
                     }
@@ -850,7 +852,6 @@ export default class CallService {
                     }
                 });
             }
-            this.callHandlers(C_CALL_EVENT.LocalStreamUpdate, stream);
             this.propagateMediaSettings({video: true});
         });
     }
@@ -952,7 +953,7 @@ export default class CallService {
     }
 
     private clearRetryInterval(connId: number) {
-        if (!this.peerConnections.hasOwnProperty(connId)){
+        if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
         clearInterval(this.peerConnections[connId].interval);

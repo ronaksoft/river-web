@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {Dialog, FormControlLabel, Grow, IconButton, Paper, PaperProps, Switch} from '@material-ui/core';
+import {Dialog, Grow, IconButton, Paper, PaperProps} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
 import Draggable from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
@@ -25,9 +25,6 @@ import {
     CropSquareRounded,
     FullscreenExitRounded,
     FullscreenRounded,
-    MicOffRounded,
-    MicRounded,
-    VideocamOffRounded,
     VideocamRounded,
     CheckRounded,
 } from "@material-ui/icons";
@@ -43,6 +40,8 @@ import ContactPicker from "../ContactPicker";
 import {IUser} from "../../repository/user/interface";
 import APIManager, {currentUserId} from "../../services/sdk";
 import CallVideo from "../CallVideo";
+import CallSettings, {IMediaSettings} from "../CallSettings";
+import {clone} from "lodash";
 
 import './style.scss';
 
@@ -51,15 +50,9 @@ interface IProps {
     teamId: string;
 }
 
-interface ICallSettings {
-    video: boolean;
-    audio: boolean;
-}
-
 interface IState {
     animateState: string;
     callId: string;
-    callSettings: ICallSettings;
     callStarted: boolean;
     callUserId: string | null;
     cropCover: boolean;
@@ -99,6 +92,9 @@ class CallModal extends React.Component<IProps, IState> {
     private timerEnd: number = 0;
     private contactPickerRef: ContactPicker | undefined;
     private groupParticipant: InputUser.AsObject[] = [];
+    // @ts-ignore
+    private callSettingsRef: CallSettings | undefined;
+    private mediaSettings: IMediaSettings = {audio: true, video: true};
 
     constructor(props: IProps) {
         super(props);
@@ -106,10 +102,6 @@ class CallModal extends React.Component<IProps, IState> {
         this.state = {
             animateState: 'init',
             callId: '0',
-            callSettings: {
-                audio: true,
-                video: true,
-            },
             callStarted: false,
             callUserId: null,
             cropCover: true,
@@ -269,36 +261,9 @@ class CallModal extends React.Component<IProps, IState> {
                     <VideocamRounded/>
                 </div>
             </div>
-        </div>;
-    }
-
-    private getCallSettingsContent() {
-        const {callSettings} = this.state;
-        return <div className="call-settings">
-            <FormControlLabel
-                className="call-settings-switch"
-                control={
-                    <Switch
-                        checked={callSettings.video}
-                        onChange={this.callSettingsChangeHandler('video')}
-                        color="primary"
-                    />
-                }
-                label={callSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
-                labelPlacement="start"
-            />
-            <FormControlLabel
-                className="call-settings-switch"
-                control={
-                    <Switch
-                        checked={callSettings.audio}
-                        onChange={this.callSettingsChangeHandler('audio')}
-                        color="primary"
-                    />
-                }
-                label={callSettings.audio ? <MicRounded/> : <MicOffRounded/>}
-                labelPlacement="start"
-            />
+            <audio autoPlay={true} loop={true} style={{display: 'none'}}>
+                <source src="/ringingtone/tone-2.mp3" type="audio/mp3"/>
+            </audio>
         </div>;
     }
 
@@ -321,7 +286,8 @@ class CallModal extends React.Component<IProps, IState> {
                 {this.getCalleeContent()}
             </div>
             <div className="call-modal-action">
-                {this.getCallSettingsContent()}
+                <CallSettings ref={this.callSettingsRefHandler}
+                              onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
                 <div className="call-buttons">
                     <div className="call-item call-end" onClick={this.closeHandler}>
                         <CallEndRounded/>
@@ -353,28 +319,16 @@ class CallModal extends React.Component<IProps, IState> {
         return null;
     }
 
-    private callSettingsChangeHandler = (key: string) => (e: any, checked: boolean) => {
-        const {callSettings} = this.state;
-        callSettings[key] = checked;
-        this.setState({
-            callSettings,
-        });
-        if (key === 'audio') {
-            this.callService.toggleAudio(checked);
-        } else if (key === 'video') {
-            this.callService.toggleVideo(checked);
-        }
-    }
-
     private getCallContent() {
-        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap, callId, callSettings} = this.state;
+        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap, callId} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
             {!callStarted && callUserId &&
             <UserAvatar className="call-user-bg rounded-avatar" id={callUserId} noDetail={true}/>}
             <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
-                   onClick={this.videoClickHandler(false)} hidden={!callSettings.video}/>
-            {!callSettings.video && <div className="local-video-placeholder" onClick={this.videoClickHandler(false)}>
+                   onClick={this.videoClickHandler(false)} hidden={!this.mediaSettings.video}/>
+            {!this.mediaSettings.video &&
+            <div className="local-video-placeholder" onClick={this.videoClickHandler(false)}>
                 <UserAvatar className="local-video-user" id={currentUserId} noDetail={true}/>
             </div>}
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
@@ -391,7 +345,8 @@ class CallModal extends React.Component<IProps, IState> {
                 {i18n.t('call.is_ringing')}
             </div>}
             <div className="call-modal-action">
-                {this.getCallSettingsContent()}
+                <CallSettings ref={this.callSettingsRefHandler}
+                              onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
                 <div className="call-item call-end" onClick={this.hangupCallHandler}>
                     <CallEndRounded/>
                 </div>
@@ -456,10 +411,10 @@ class CallModal extends React.Component<IProps, IState> {
             mode: 'call',
         });
         this.callService.accept(this.state.callId, video).then((stream) => {
+            this.mediaSettings = this.callService.getStreamState();
             if (this.videoRef && stream) {
                 this.setState({
                     animateState: 'end',
-                    callSettings: this.callService.getStreamState(),
                 });
                 this.videoRef.srcObject = stream;
             }
@@ -598,6 +553,18 @@ class CallModal extends React.Component<IProps, IState> {
             userid: u.id,
         }));
         this.showPreview(true);
+    }
+
+    private callSettingsRefHandler = (ref: any) => {
+        this.callSettingsRef = ref;
+    }
+
+    private mediaSettingsChangeHandler = (settings: IMediaSettings) => {
+        const {mode} = this.state;
+        if (mode === 'call' && this.mediaSettings.video !== settings.video) {
+            this.forceUpdate();
+        }
+        this.mediaSettings = clone(settings);
     }
 }
 

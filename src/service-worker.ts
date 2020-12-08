@@ -44,6 +44,9 @@ precache([{
 }, {
     revision: '2',
     url: '/recorder/encoderWorker.min.js',
+}, {
+    revision: '1',
+    url: '/ringingtone/tone-2.mp3',
 }]);
 
 // Set up App Shell-style routing, so that all navigation requests
