@@ -515,6 +515,9 @@
     "is_calling": "در تماس...",
     "is_ringing": "در حال زنگ خوردن",
     "rate_this_call": "به این تماس امتیاز دهید",
-    "muted": "بی صدا"
+    "muted": "بی صدا",
+    "call_back": "تماس مجدد",
+    "call_timeout": "پاسخی دریافت نشد",
+    "is_not_available": "در دسترس نیست"
   }
 }

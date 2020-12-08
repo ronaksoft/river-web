@@ -18,9 +18,12 @@ import {
     PhoneActionDiscarded,
     PhoneActionIceExchange,
     PhoneActionRequested,
-    PhoneCallAction, PhoneMediaSettingsUpdated,
+    PhoneCallAction,
+    PhoneMediaSettingsUpdated,
     PhoneParticipant,
-    PhoneParticipantSDP, PhoneSDPAnswer, PhoneSDPOffer
+    PhoneParticipantSDP,
+    PhoneSDPAnswer,
+    PhoneSDPOffer
 } from "../sdk/messages/chat.phone_pb";
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
@@ -34,6 +37,7 @@ export const C_CALL_EVENT = {
     CallAccept: 0x02,
     CallReject: 0x04,
     CallRequest: 0x01,
+    CallTimeout: 0x07,
     LocalStreamUpdate: 0x06,
     MediaSettingsUpdate: 0x05,
     StreamUpdate: 0x03,
@@ -590,6 +594,7 @@ export default class CallService {
                                         this.peerConnections[connId].try++;
                                         if (this.peerConnections[connId].try >= C_RETRY_LIMIT) {
                                             clearInterval(this.peerConnections[connId].interval);
+                                            this.checkCallTimout();
                                         }
                                     }
                                 }, C_RETRY_INTERVAL);
@@ -967,6 +972,17 @@ export default class CallService {
             return parseInt(val);
         }
         return val;
+    }
+
+    private checkCallTimout() {
+        if (!this.activeCallId || !this.callInfo.hasOwnProperty(this.activeCallId)) {
+            return;
+        }
+
+        if (this.callInfo[this.activeCallId].acceptedParticipants.length === 0) {
+            this.reject(this.activeCallId, 0, DiscardReason.DISCARDREASONHANGUP);
+            this.callHandlers(C_CALL_EVENT.CallTimeout, {});
+        }
     }
 
     private callHandlers(name: number, data: any) {

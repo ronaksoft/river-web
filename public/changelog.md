@@ -1,3 +1,8 @@
+## 0.36.6-call
+* Call updated
+* Call timeout and busy implemented
+* Call ringing tone implemented
+
 ## 0.36.5-call
 * Call updated
 

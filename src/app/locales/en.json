@@ -519,6 +519,9 @@
     "is_calling": "Is calling...",
     "is_ringing": "Is ringing...",
     "rate_this_call": "Rate this call",
-    "muted": "Muted"
+    "muted": "Muted",
+    "call_back": "Call Back",
+    "call_timeout": "Call Timeout",
+    "is_not_available": "is not available"
   }
 }

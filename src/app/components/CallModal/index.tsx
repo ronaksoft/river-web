@@ -59,9 +59,10 @@ interface IState {
     fullscreen: boolean;
     groupId: string | undefined;
     isCaller: boolean;
-    mode: 'call_init' | 'call_requested' | 'call' | 'call_report';
+    mode: 'call_init' | 'call_request' | 'call' | 'call_report' | 'call_unavailable';
     open: boolean;
     rate: number | null;
+    unavailableMode: 'none' | 'timeout' | 'busy';
     videoSwap: boolean;
 }
 
@@ -95,6 +96,7 @@ class CallModal extends React.Component<IProps, IState> {
     // @ts-ignore
     private callSettingsRef: CallSettings | undefined;
     private mediaSettings: IMediaSettings = {audio: true, video: true};
+    private callRingingTone: string = '/ringingtone/tone-2.mp3';
 
     constructor(props: IProps) {
         super(props);
@@ -111,6 +113,7 @@ class CallModal extends React.Component<IProps, IState> {
             mode: 'call_init',
             open: false,
             rate: null,
+            unavailableMode: 'none',
             videoSwap: false,
         };
 
@@ -122,6 +125,8 @@ class CallModal extends React.Component<IProps, IState> {
         if (this.state.open) {
             return;
         }
+        this.timer = 0;
+        this.timerEnd = 0;
         this.peer = peer;
         if (!this.peer) {
             return;
@@ -143,6 +148,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRequest, this.eventCallRequestHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAccept, this.eventCallAcceptHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallReject, this.eventCallRejectHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallTimeout, this.eventCallTimeoutHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.StreamUpdate, this.eventStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdate, this.eventLocalStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdate, this.eventMediaSettingsUpdateHandler));
@@ -184,32 +190,20 @@ class CallModal extends React.Component<IProps, IState> {
         );
     }
 
-    private showPreview(video: boolean) {
-        this.timer = 0;
-        this.timerEnd = 0;
-        this.setState({
-            fullscreen: false,
-            mode: 'call_init',
-            open: true,
-        }, () => {
-            this.callService.initStream({audio: true, video}).then((stream) => {
-                if (this.videoRef) {
-                    this.videoRef.srcObject = stream;
-                }
-            });
-        });
-    }
-
     private closeHandler = () => {
         this.callService.destroyConnections(this.state.callId);
         this.callService.destroy();
         this.setState({
+            callStarted: false,
             groupId: undefined,
+            isCaller: false,
             open: false,
             rate: null,
         });
-        this.timer = 0;
-        this.timerEnd = 0;
+        setTimeout(() => {
+            this.timer = 0;
+            this.timerEnd = 0;
+        }, 300);
         this.groupParticipant = [];
     }
 
@@ -225,11 +219,30 @@ class CallModal extends React.Component<IProps, IState> {
         });
     }
 
+    private showPreview(video: boolean) {
+        this.timer = 0;
+        this.timerEnd = 0;
+        this.setState({
+            fullscreen: false,
+            mode: 'call_init',
+            open: true,
+            unavailableMode: 'none',
+        }, () => {
+            this.callService.initStream({audio: true, video}).then((stream) => {
+                if (this.videoRef) {
+                    this.videoRef.srcObject = stream;
+                }
+            });
+        });
+    }
+
     private getContent() {
         const {mode} = this.state;
         switch (mode) {
-            case 'call_requested':
+            case 'call_request':
                 return this.getRequestedContent();
+            case 'call_unavailable':
+                return this.getCallUnavailableContent();
             case 'call_init':
                 return this.getCallInitContent();
             case 'call':
@@ -261,10 +274,54 @@ class CallModal extends React.Component<IProps, IState> {
                     <VideocamRounded/>
                 </div>
             </div>
-            <audio autoPlay={true} loop={true} style={{display: 'none'}}>
-                <source src="/ringingtone/tone-2.mp3" type="audio/mp3"/>
+            <audio autoPlay={true} src={this.callRingingTone} loop={true} style={{display: 'none'}}>
+                <source src={this.callRingingTone} type="audio/mp3"/>
             </audio>
         </div>;
+    }
+
+    private getCallUnavailableContent() {
+        const {callUserId} = this.state;
+        return <div className="call-modal-content">
+            {callUserId &&
+            <UserAvatar key="call-user-bg" className="call-user-bg" id={callUserId} noDetail={true} big={true}/>}
+            <div className="call-info">
+                {callUserId && <UserName className="call-user-name" id={callUserId} noDetail={true}/>}
+                <div className="call-status">
+                    {this.getCallUnavailableTitle()}
+                </div>
+            </div>
+            {this.getCallUnavailableActionContent()}
+        </div>;
+    }
+
+    private getCallUnavailableTitle() {
+        const {unavailableMode} = this.state;
+        switch (unavailableMode) {
+            case 'timeout':
+                return i18n.t('call.call_timeout');
+            case 'busy':
+                return i18n.t('call.is_not_available');
+        }
+        return null;
+    }
+
+    private getCallUnavailableActionContent() {
+        const {unavailableMode} = this.state;
+        switch (unavailableMode) {
+            case 'timeout':
+            case 'busy':
+                return (<div className="call-modal-action">
+                    <div className="call-item call-normal" onClick={this.closeHandler}>
+                        <CloseRounded/>
+                    </div>
+                    <div className="call-item call-accept" onClick={this.callHandler(false)}>
+                        <div className="call-item-label">{i18n.t('call.call_back')}</div>
+                        <CallRounded/>
+                    </div>
+                </div>);
+        }
+        return null;
     }
 
     private getCallInitContent() {
@@ -437,6 +494,8 @@ class CallModal extends React.Component<IProps, IState> {
         this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
             this.timerEnd = Date.now();
             this.setState({
+                callStarted: false,
+                isCaller: false,
                 mode: 'call_report',
             });
         });
@@ -446,7 +505,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.setState({
             callId: data.callid || '0',
             callUserId: data.userid || '0',
-            mode: 'call_requested',
+            mode: 'call_request',
             open: true,
         });
     }
@@ -459,14 +518,26 @@ class CallModal extends React.Component<IProps, IState> {
         const {callId} = this.state;
         this.callService.destroyConnections(callId);
         if (this.timer === 0) {
-            this.closeHandler();
+            this.setState({
+                mode: 'call_unavailable',
+                unavailableMode: 'busy',
+            });
         } else {
             this.timerEnd = Date.now();
             this.setState({
+                callStarted: false,
+                isCaller: false,
                 mode: 'call_report',
             });
             this.callService.destroy();
         }
+    }
+
+    private eventCallTimeoutHandler = () => {
+        this.setState({
+            mode: 'call_unavailable',
+            unavailableMode: 'timeout',
+        });
     }
 
     private videoRefHandler = (ref: any) => {
