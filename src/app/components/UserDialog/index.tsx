@@ -40,6 +40,7 @@ interface IProps {
     onClose?: () => void;
     onAction: (cmd: string, user?: IUser) => void;
     teamId: string;
+    onError: (text: string) => void;
 }
 
 interface IState {
@@ -355,6 +356,12 @@ class UserDialog extends React.Component<IProps, IState> {
         if (!user) {
             return;
         }
+
+        if (firstname.length === 0) {
+            this.props.onError(i18n.t('settings.first_name_is_required'));
+            return;
+        }
+
         if ((user.username || '') !== '' && phone === '') {
             const inputUser = new InputUser();
             inputUser.setAccesshash(user.accesshash || '');
@@ -377,13 +384,10 @@ class UserDialog extends React.Component<IProps, IState> {
             });
         } else {
             if ((user.phone || '') === '' && phone === '') {
-                this.setState({
-                    edit: false,
-                    firstname: user.firstname || '',
-                    lastname: user.lastname || '',
-                });
+                this.props.onError(i18n.t('settings.phone_is_required'));
                 return;
             }
+
             const contacts: PhoneContact.AsObject[] = [];
             contacts.push({
                 clientid: isInContact ? user.clientid : String(UniqueId.getRandomId()),

@@ -735,7 +735,7 @@ class Chat extends React.Component<IProps, IState> {
                                   teamId={this.teamId}
                 />
                 <UserDialog key="user-dialog" ref={this.userDialogRefHandler} onAction={this.userDialogActionHandler}
-                            teamId={this.teamId}/>
+                            teamId={this.teamId} onError={this.textErrorHandler}/>
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
                                 onJumpOnMessage={this.documentViewerJumpOnMessageHandler}
                                 onError={this.textErrorHandler}/>

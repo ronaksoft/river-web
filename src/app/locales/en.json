@@ -269,6 +269,7 @@
     "remove_synced_contacts": "Remove Synced Contacts",
     "synced_contacts_removed_successfully": "Synced contacts removed successfully",
     "first_name_is_required": "Firstname is required",
+    "phone_is_required": "Phone is required",
     "change_phone_number": {
       "title": "Change phone number",
       "text": "You can change your River number here. Your Account and all your cloud data - messages, media, contacts etc. will be moved to the new number.",
