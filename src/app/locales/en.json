@@ -68,7 +68,8 @@
     "clear": "Clear",
     "open": "Open",
     "via_gif": " via @",
-    "all": "All"
+    "all": "All",
+    "select_all": "Select All"
   },
   "chat": {
     "search": "Search",

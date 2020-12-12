@@ -27,7 +27,7 @@ precache([{
     revision: '31',
     url: '/bin/river.wasm',
 }, {
-    revision: '1',
+    revision: '2',
     url: '/bin/highlight.min.js',
 }, {
     revision: '6',

@@ -5484,10 +5484,10 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
-dexie@3.0.3-rc.4:
-  version "3.0.3-rc.4"
-  resolved "https://registry.yarnpkg.com/dexie/-/dexie-3.0.3-rc.4.tgz#fe81891369fb9803143d4064448e33b1ec96bae2"
-  integrity sha512-HSRr0T940RZuqApowjP5DlcsmRTC43pZKrXCm8ctJPpV5zhya1aitB9SLrUsMwXWDX24FK90GJN4i+Fhexba/w==
+dexie@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/dexie/-/dexie-3.0.3.tgz#ede63849dfe5f07e13e99bb72a040e8ac1d29dab"
+  integrity sha512-BSFhGpngnCl1DOr+8YNwBDobRMH0ziJs2vts69VilwetHYOtEDcLqo7d/XiIphM0tJZ2rPPyAGd31lgH2Ln3nw==
 
 diff-sequences@^26.6.2:
   version "26.6.2"

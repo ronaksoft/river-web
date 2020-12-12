@@ -185,7 +185,7 @@ class CallModal extends React.Component<IProps, IState> {
                 </Dialog>
                 <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
                                groupId={groupId} teamId={this.props.teamId} sendIcon={<CheckRounded/>}
-                               title={i18n.t('general.choose_recipient')}/>
+                               title={i18n.t('general.choose_recipient')} limit={11} selectAll={true}/>
             </>
         );
     }

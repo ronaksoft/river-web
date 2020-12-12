@@ -129,6 +129,45 @@
         background-color: transparent;
       }
     }
+
+    .dialog-footer {
+      position: relative;
+      background-color: var(--message-chat);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      height: 38px;
+      user-select: none;
+
+      .counter {
+        position: absolute;
+        top: 50%;
+        left: 16px;
+        white-space: nowrap;
+        color: var(--grey);
+        transform: translateY(-50%);
+        font-size: 13px;
+
+        &.exceeded {
+          color: var(--red);
+          font-weight: bold;
+        }
+      }
+
+      .select-all {
+        font-size: 14px;
+        color: var(--river);
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 3px;
+        transition: background-color 0.1s;
+
+        &:hover {
+          background-color: var(--river-op25);
+        }
+      }
+    }
   }
 }
 
@@ -161,6 +200,14 @@ html[theme="dark-blue"] {
           background-color: transparent;
         }
       }
+
+      .dialog-footer {
+        background-color: var(--dark-medium);
+
+        .counter {
+          color: var(--grey);
+        }
+      }
     }
   }
 }
@@ -182,6 +229,22 @@ html[theme="dark-blue"] {
 
       .actions-bar {
         background-color: var(--dark-blue-medium);
+      }
+
+      .dialog-footer {
+        background-color: var(--dark-blue-medium);
+
+        .counter {
+          color: var(--grey);
+        }
+
+        .select-all {
+          color: var(--blue);
+
+          &:hover {
+            background-color: var(--light-blue);
+          }
+        }
       }
     }
   }

@@ -1628,9 +1628,8 @@ class ChatInput extends React.Component<IProps, IState> {
                 message,
                 mode: previewMessageMode,
             });
-        } else {
-            this.stopTimer();
         }
+        this.stopTimer();
         this.clearPreviewMessage(true)();
     }
 
@@ -1712,21 +1711,22 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Initialize opus recorder and bind listeners */
     private initRecorder() {
         this.recorder = new Recorder({
+            encoderApplication: 2048,
             encoderPath: '/recorder/encoderWorker.min.js?v8',
-            maxFramesPerPage: 16,
+            maxFramesPerPage: 40,
             monitorGain: 0,
             numberOfChannels: 1,
             recordingGain: 1,
             wavBitDepth: 16,
         });
 
-        this.recorder.ondataavailable = (typedArray: any) => {
+        this.recorder.ondataavailable = (buff: ArrayBuffer) => {
             if (this.voiceCanceled) {
                 this.voiceCanceled = false;
                 this.clearPreviewMessage(true)();
                 return;
             }
-            this.voice = new Blob([typedArray], {type: 'audio/ogg'});
+            this.voice = new Blob([buff], {type: 'audio/ogg'});
             if (this.state.voiceMode === 'play' && this.voicePlayerRef) {
                 this.computeFinalBars();
                 this.voicePlayerRef.setData({

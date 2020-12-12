@@ -39,6 +39,7 @@ import './style.scss';
 import GroupRepo from "../../repository/group";
 import {IGroup} from "../../repository/group/interface";
 import {OfficialIcon} from "../SVG/official";
+import {currentUserId} from "../../services/sdk";
 
 interface IProps {
     className?: string;
@@ -54,6 +55,7 @@ interface IProps {
     hideYou?: boolean;
     groupId?: string;
     showOfficialBadge?: boolean;
+    onDefaultLoad?: (count: number) => void;
 }
 
 interface IState {
@@ -195,6 +197,25 @@ class ContactList extends React.Component<IProps, IState> {
             });
         }
         this.getDefault();
+    }
+
+    public selectAll() {
+        const {selectedContacts} = this.state;
+        this.defaultContact.forEach((contact) => {
+            if (findIndex(selectedContacts, {id: contact.id || ''}) > -1 || contact.id === currentUserId) {
+                return;
+            }
+            selectedContacts.push(contact);
+        });
+        if (this.list) {
+            this.list.resetAfterIndex(0, false);
+        }
+        this.setState({
+            contacts: categorizeContact(this.getTrimmedList(selectedContacts)),
+            selectedContacts,
+        }, () => {
+            this.dispatchContactChange();
+        });
     }
 
     public scrollTop() {
@@ -444,12 +465,12 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Get all contacts */
-    private getDefault(fill?: boolean) {
+    private getDefault() {
         const {groupId} = this.props;
         if (groupId) {
             this.getDefaultGroupMembers(groupId);
         } else {
-            this.getDefaultContacts(fill);
+            this.getDefaultContacts();
         }
     }
 
@@ -461,7 +482,7 @@ class ContactList extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        const fn = (group: IGroup) => {
+        const fn = (cache: boolean) => (group: IGroup) => {
             const us: IUser[] = (group.participantList || []).map((member) => ({
                 accesshash: member.accesshash,
                 firstname: member.firstname,
@@ -472,15 +493,18 @@ class ContactList extends React.Component<IProps, IState> {
             }));
             this.defaultContact = us;
             this.contactsRes = clone(us);
+            if (this.props.onDefaultLoad) {
+                this.props.onDefaultLoad(us.length);
+            }
             this.setState({
                 contacts: categorizeContact(this.getTrimmedList([])),
                 loading: false,
             });
         };
-        this.groupRepo.getFull(this.props.teamId, groupId, fn, true).then(fn);
+        this.groupRepo.getFull(this.props.teamId, groupId, fn(true), true).then(fn(false));
     }
 
-    private getDefaultContacts(fill?: boolean) {
+    private getDefaultContacts() {
         const {loading} = this.state;
         if (loading) {
             return;
@@ -488,20 +512,21 @@ class ContactList extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        const fn = (us: IUser[]) => {
+        const fn = (cache: boolean) => (us: IUser[]) => {
             this.defaultContact = us;
             this.contactsRes = clone(us);
-            if (fill !== false) {
-                if (this.list) {
-                    this.list.resetAfterIndex(0, false);
-                }
-                this.setState({
-                    contacts: categorizeContact(this.getTrimmedList([])),
-                    loading: false,
-                });
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
             }
+            if (this.props.onDefaultLoad) {
+                this.props.onDefaultLoad(us.length);
+            }
+            this.setState({
+                contacts: categorizeContact(this.getTrimmedList([])),
+                loading: false,
+            });
         };
-        this.userRepo.getAllContacts(this.props.teamId, fn).then(fn);
+        this.userRepo.getAllContacts(this.props.teamId, fn(true)).then(fn(false));
     }
 
     /* Searches the given string */
