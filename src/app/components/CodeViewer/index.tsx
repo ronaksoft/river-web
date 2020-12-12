@@ -9,8 +9,7 @@
 
 /* eslint import/no-webpack-loader-syntax: off */
 import * as React from 'react';
-// @ts-ignore
-import * as workerPath from 'file-loader?name=[name].js!./worker';
+import HighlightWorker from 'worker-loader!./worker';
 
 import './style.scss';
 
@@ -36,7 +35,7 @@ class CodeViewer extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.worker = new Worker(workerPath);
+        this.worker = new HighlightWorker();
         this.worker.postMessage({cmd: 'compile', payload: this.props.snippet});
         this.worker.onmessage = (e: any) => {
             const data: { cmd: string, payload: any } = e.data;

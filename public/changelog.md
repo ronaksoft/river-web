@@ -1,3 +1,9 @@
+## 0.36.7-call
+* WebWorkers bug updated
+* Group call recipient selector updated
+* CodeViewer is now support more languages
+* Known bugs fixed
+
 ## 0.36.6-call
 * Call updated
 * Call timeout and busy implemented

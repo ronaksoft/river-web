@@ -98,7 +98,7 @@ export const getMediaDocument = (msg: IMessage) => {
 
 export const modifyReactions = (reactions: ReactionCounter.AsObject[]): ReactionCounter.AsObject[] => {
     return reactions.filter(o => o.reaction && o.reaction.length > 0 && o.total).sort((a, b) => {
-        return (a.total || 0) - (b.total || 0);
+        return (b.total || 0) - (a.total || 0);
     });
 };
 

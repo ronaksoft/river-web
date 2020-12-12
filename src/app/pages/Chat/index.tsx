@@ -1475,7 +1475,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setEndOfMessage(false);
                 setTimeout(() => {
                     this.setLoading(false);
-                    this.messageLoadMoreAfterHandler(0, 0);
+                    this.messageLoadMoreAfterHandler(0, 0, true);
                 }, 100);
 
                 setTimeout(() => {
@@ -1555,25 +1555,29 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private messageLoadMoreAfterHandler = (start: number, end: number) => {
+    private messageLoadMoreAfterHandler = (start: number, end: number, force?: boolean) => {
         if (this.isLoading) {
             return;
         }
+
         const peer = this.peer;
         if (!peer) {
             return;
         }
+
         const peerName = GetPeerName(peer.getId(), peer.getType());
         if (this.selectedPeerName !== peerName) {
             this.setLoading(false);
             return;
         }
+
         const dialog = this.getDialogByPeerName(peerName);
         if (!dialog) {
             return;
         }
+
         const after = this.getMaxId();
-        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || after <= 0) {
+        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || (after <= 0 && force !== true)) {
             return;
         }
 
