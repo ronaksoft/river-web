@@ -96,8 +96,8 @@ export namespace FileGetBySha256 {
 }
 
 export class File extends jspb.Message {
-  getType(): FileTypeMap[keyof FileTypeMap];
-  setType(value: FileTypeMap[keyof FileTypeMap]): void;
+  getType(): FileType;
+  setType(value: FileType): void;
 
   getModifiedtime(): number;
   setModifiedtime(value: number): void;
@@ -122,24 +122,22 @@ export class File extends jspb.Message {
 
 export namespace File {
   export type AsObject = {
-    type: FileTypeMap[keyof FileTypeMap],
+    type: FileType,
     modifiedtime: number,
     bytes: Uint8Array | string,
     md5hash: string,
   }
 }
 
-export interface FileTypeMap {
-  FILETYPEUNKNOWN: 0;
-  FILETYPEPARTIAL: 1;
-  FILETYPEJPEG: 2;
-  FILETYPEGIF: 3;
-  FILETYPEPNG: 4;
-  FILETYPEWEBP: 5;
-  FILETYPEMP3: 6;
-  FILETYPEMP4: 7;
-  FILETYPEMOV: 8;
+export enum FileType {
+  FILETYPEUNKNOWN = 0,
+  FILETYPEPARTIAL = 1,
+  FILETYPEJPEG = 2,
+  FILETYPEGIF = 3,
+  FILETYPEPNG = 4,
+  FILETYPEWEBP = 5,
+  FILETYPEMP3 = 6,
+  FILETYPEMP4 = 7,
+  FILETYPEMOV = 8,
 }
-
-export const FileType: FileTypeMap;
 

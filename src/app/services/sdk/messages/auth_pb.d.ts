@@ -528,8 +528,8 @@ export class InitAuthCompleted extends jspb.Message {
   getServernonce(): number;
   setServernonce(value: number): void;
 
-  getStatus(): InitAuthCompleted.StatusesMap[keyof InitAuthCompleted.StatusesMap];
-  setStatus(value: InitAuthCompleted.StatusesMap[keyof InitAuthCompleted.StatusesMap]): void;
+  getStatus(): InitAuthCompleted.Statuses;
+  setStatus(value: InitAuthCompleted.Statuses): void;
 
   getSecrethash(): number;
   setSecrethash(value: number): void;
@@ -553,18 +553,16 @@ export namespace InitAuthCompleted {
   export type AsObject = {
     clientnonce: number,
     servernonce: number,
-    status: InitAuthCompleted.StatusesMap[keyof InitAuthCompleted.StatusesMap],
+    status: InitAuthCompleted.Statuses,
     secrethash: number,
     serverdhpubkey: Uint8Array | string,
   }
 
-  export interface StatusesMap {
-    OK: 0;
-    FAIL: 1;
-    RETRY: 2;
+  export enum Statuses {
+    OK = 0,
+    FAIL = 1,
+    RETRY = 2,
   }
-
-  export const Statuses: StatusesMap;
 }
 
 export class InitUserBound extends jspb.Message {

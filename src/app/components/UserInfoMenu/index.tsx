@@ -65,7 +65,7 @@ interface IState {
     user: IUser | null;
 }
 
-export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
+export const isMuted = (notifySettings?: Partial<PeerNotifySettings.AsObject>) => {
     if (!notifySettings) {
         return false;
     } else if (notifySettings.muteuntil === -1) {

@@ -56,7 +56,11 @@ const showLocationHandler = (lat: number, long: number, message: IMessage) => (e
         anchor: 'message',
         items: [{
             caption: '',
-            fileLocation: {},
+            fileLocation: {
+                accesshash: '0',
+                clusterid: 0,
+                fileid: '0',
+            },
             geo: {
                 lat,
                 lng: long,

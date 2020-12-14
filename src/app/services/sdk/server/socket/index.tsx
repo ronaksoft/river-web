@@ -14,14 +14,15 @@ import ElectronService from '../../../electron';
 import {
     EventCheckNetwork,
     EventNetworkStatus,
-    EventWasmInit, EventWasmStarted,
+    EventWasmInit,
     EventWebSocketClose,
     EventSocketReady, EventSocketConnected
 } from "../../../events";
 import {C_LOCALSTORAGE, C_MSG} from "../../const";
 import {getWsServerUrl} from "../../../../components/DevTools";
 
-import RiverWorker from 'worker-loader!../../riverWorker';
+//@ts-ignore
+import RiverWorker from 'worker-loader?filename=river.js!../../worker';
 
 export const defaultGateway = 'cyrus.river.im';
 
@@ -39,7 +40,7 @@ export const checkPong = (data: any) => {
 
 export let serverTime: number = 0;
 
-interface ISendPayload {
+export interface ISendPayload {
     constructor: number;
     payload: string;
     reqId: number;
@@ -130,9 +131,9 @@ export default class Socket {
                     break;
                 case 'createAuthKey':
                     if (this.fnCreateAuthKey) {
-                        this.fnCreateAuthKey().then(() => {
+                        this.fnCreateAuthKey().then((duration: number) => {
                             if (!this.started && this.connected) {
-                                this.dispatchEvent(EventSocketReady, null);
+                                this.dispatchEvent(EventSocketReady, {duration});
                             }
                         });
                     }
@@ -141,7 +142,7 @@ export default class Socket {
                     if (this.fnGetServerTime) {
                         this.fnGetServerTime().then(() => {
                             if (!this.started && this.connected) {
-                                this.dispatchEvent(EventSocketReady, null);
+                                this.dispatchEvent(EventSocketReady, {duration: 0});
                             }
                         });
                     }
@@ -149,7 +150,7 @@ export default class Socket {
                 case 'decode':
                     this.decode(d.data);
                     break;
-                case 'fnUpdate':
+                case 'update':
                     if (this.fnUpdate) {
                         this.fnUpdate(d.data);
                     }
@@ -157,34 +158,15 @@ export default class Socket {
                 case 'encode':
                     this.encode(d.data);
                     break;
-                case 'wsError':
-                    if (this.fnError) {
-                        this.fnError({
-                            constructor: d.data.constructor,
-                            data: d.data.data,
-                            reqId: d.data.reqId,
-                        });
-                    }
-                    break;
                 case 'authProgress':
                     this.dispatchEvent('authProgress', d.data);
                     break;
-                case 'ready':
-                    if (!this.started && this.connected) {
-                        this.dispatchEvent(EventSocketReady, null);
-                    }
-                    this.started = true;
-                    this.dispatchEvent(EventWasmStarted, d.data);
-                    break;
-                case 'fnDecryptError':
-                    // this.dispatchEvent('fnDecryptError', null);
-                    break;
-                case 'fnGenSrpHashCallback':
+                case 'genSrpHashCallback':
                     if (this.resolveGenSrpHashFn) {
                         this.resolveGenSrpHashFn(d.data.reqId, d.data.data);
                     }
                     break;
-                case 'fnGenInputPasswordCallback':
+                case 'genInputPasswordCallback':
                     if (this.resolveGenInputPasswordFn) {
                         this.resolveGenInputPasswordFn(d.data.reqId, d.data.data);
                     }
@@ -201,6 +183,7 @@ export default class Socket {
     }
 
     public setServerTime(time: number) {
+        serverTime = time;
         this.workerMessage('setServerTime', time);
     }
 
@@ -233,11 +216,11 @@ export default class Socket {
     }
 
     public fnGenSrpHash(data: { reqId: number, pass: string, algorithm: number, algorithmData: string }) {
-        this.workerMessage('fnGenSrpHash', data);
+        this.workerMessage('genSrpHash', data);
     }
 
     public fnGenInputPassword(data: { reqId: number, pass: string, accountPass: string }) {
-        this.workerMessage('fnGenInputPassword', data);
+        this.workerMessage('genInputPassword', data);
     }
 
     public authStep(data: { step: number, reqId: number, data?: Uint8Array }) {
@@ -337,7 +320,7 @@ export default class Socket {
             this.lastReceiveTime = Date.now() + 1;
             this.dispatchEvent(EventSocketConnected, null);
             if (this.started) {
-                this.dispatchEvent(EventSocketReady, null);
+                this.dispatchEvent(EventSocketReady, {duration: 0});
             }
         };
 

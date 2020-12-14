@@ -1503,7 +1503,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 return this.apiManager.getUserFull([inputUser]).then((data) => {
                     const index = findIndex(data.usersList, {id: currentUserId});
                     if (index > -1) {
-                        return data.usersList[index];
+                        return data.usersList[index] as IUser;
                     } else {
                         throw new Error('user not found');
                     }

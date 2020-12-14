@@ -218,8 +218,8 @@ export class ContactsGetTopPeers extends jspb.Message {
   getLimit(): number;
   setLimit(value: number): void;
 
-  getCategory(): TopPeerCategoryMap[keyof TopPeerCategoryMap];
-  setCategory(value: TopPeerCategoryMap[keyof TopPeerCategoryMap]): void;
+  getCategory(): TopPeerCategory;
+  setCategory(value: TopPeerCategory): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsGetTopPeers.AsObject;
@@ -235,13 +235,13 @@ export namespace ContactsGetTopPeers {
   export type AsObject = {
     offset: number,
     limit: number,
-    category: TopPeerCategoryMap[keyof TopPeerCategoryMap],
+    category: TopPeerCategory,
   }
 }
 
 export class ContactsResetTopPeer extends jspb.Message {
-  getCategory(): TopPeerCategoryMap[keyof TopPeerCategoryMap];
-  setCategory(value: TopPeerCategoryMap[keyof TopPeerCategoryMap]): void;
+  getCategory(): TopPeerCategory;
+  setCategory(value: TopPeerCategory): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
@@ -260,14 +260,14 @@ export class ContactsResetTopPeer extends jspb.Message {
 
 export namespace ContactsResetTopPeer {
   export type AsObject = {
-    category: TopPeerCategoryMap[keyof TopPeerCategoryMap],
+    category: TopPeerCategory,
     peer?: core_types_pb.InputPeer.AsObject,
   }
 }
 
 export class ContactsTopPeers extends jspb.Message {
-  getCategory(): TopPeerCategoryMap[keyof TopPeerCategoryMap];
-  setCategory(value: TopPeerCategoryMap[keyof TopPeerCategoryMap]): void;
+  getCategory(): TopPeerCategory;
+  setCategory(value: TopPeerCategory): void;
 
   getCount(): number;
   setCount(value: number): void;
@@ -299,7 +299,7 @@ export class ContactsTopPeers extends jspb.Message {
 
 export namespace ContactsTopPeers {
   export type AsObject = {
-    category: TopPeerCategoryMap[keyof TopPeerCategoryMap],
+    category: TopPeerCategory,
     count: number,
     peersList: Array<TopPeer.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
@@ -475,13 +475,11 @@ export namespace ContactsMany {
   }
 }
 
-export interface TopPeerCategoryMap {
-  USERS: 0;
-  GROUPS: 1;
-  FORWARDS: 2;
-  BOTSMESSAGE: 3;
-  BOTSINLINE: 4;
+export enum TopPeerCategory {
+  USERS = 0,
+  GROUPS = 1,
+  FORWARDS = 2,
+  BOTSMESSAGE = 3,
+  BOTSINLINE = 4,
 }
-
-export const TopPeerCategory: TopPeerCategoryMap;
 

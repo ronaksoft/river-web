@@ -58,8 +58,8 @@ export class MessagesSendMedia extends jspb.Message {
   getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  getMediatype(): core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap];
-  setMediatype(value: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap]): void;
+  getMediatype(): core_types_pb.InputMediaType;
+  setMediatype(value: core_types_pb.InputMediaType): void;
 
   getMediadata(): Uint8Array | string;
   getMediadata_asU8(): Uint8Array;
@@ -86,7 +86,7 @@ export namespace MessagesSendMedia {
   export type AsObject = {
     randomid: number,
     peer?: core_types_pb.InputPeer.AsObject,
-    mediatype: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap],
+    mediatype: core_types_pb.InputMediaType,
     mediadata: Uint8Array | string,
     replyto: number,
     cleardraft: boolean,
@@ -293,8 +293,8 @@ export class MessagesSetTyping extends jspb.Message {
   getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  getAction(): core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap];
-  setAction(value: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap]): void;
+  getAction(): core_types_pb.TypingAction;
+  setAction(value: core_types_pb.TypingAction): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSetTyping.AsObject;
@@ -309,7 +309,7 @@ export class MessagesSetTyping extends jspb.Message {
 export namespace MessagesSetTyping {
   export type AsObject = {
     peer?: core_types_pb.InputPeer.AsObject,
-    action: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap],
+    action: core_types_pb.TypingAction,
   }
 }
 

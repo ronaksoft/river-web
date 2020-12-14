@@ -11,11 +11,12 @@ import * as React from 'react';
 import CachedFileService from '../../services/cachedFileService';
 import {InputFileLocation} from '../../services/sdk/messages/core.types_pb';
 import {GetDbFileName} from "../../repository/file";
+import {SetOptional} from "type-fest";
 
 interface IProps {
     autoPlay?: boolean;
     className?: string;
-    fileLocation: InputFileLocation.AsObject;
+    fileLocation: SetOptional<InputFileLocation.AsObject, 'version'>;
     md5?: string;
     mimeType?: string;
     onLoad?: () => void;

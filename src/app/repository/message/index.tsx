@@ -191,7 +191,7 @@ export default class MessageRepo {
         return attrOut;
     }
 
-    public static parseMessage(msg: UserMessage.AsObject, userId: string): IMessage {
+    public static parseMessage(msg: Partial<UserMessage.AsObject>, userId: string): IMessage {
         const out: IMessage = msg;
         if (msg.entitiesList && msg.entitiesList.length > 0) {
             out.mention_me = msg.entitiesList.some((entity) => {
@@ -345,7 +345,7 @@ export default class MessageRepo {
         return out;
     }
 
-    public static parseMessageMany(msg: UserMessage.AsObject[], userId: string): IMessage[] {
+    public static parseMessageMany(msg: Partial<UserMessage.AsObject>[], userId: string): IMessage[] {
         return msg.map((m) => {
             return this.parseMessage(m, userId);
         });
@@ -1048,7 +1048,7 @@ export default class MessageRepo {
         return this.checkHoles(teamId, peer, id, asc, limit).then((remoteMessages) => {
             this.userRepo.importBulk(false, remoteMessages.usersList);
             this.groupRepo.importBulk(remoteMessages.groupsList);
-            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId);
+            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId) as Array<UserMessage.AsObject>;
             return this.importBulk(remoteMessages.messagesList).then(() => {
                 if (asc) {
                     return [...messages, ...remoteMessages.messagesList];

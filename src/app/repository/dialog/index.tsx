@@ -18,7 +18,7 @@ import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
 import {C_MESSAGE_ICON, getMessageTitle} from '../../components/Dialog/utils';
 import {kMerge} from "../../services/utilities/kDash";
-import {PeerType} from "../../services/sdk/messages/core.types_pb";
+import {PeerType, UserMessage} from "../../services/sdk/messages/core.types_pb";
 import Dexie from "dexie";
 import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
 
@@ -139,7 +139,7 @@ export default class DialogRepo {
 
     public getMany(teamId: string, {skip, limit}: any): Promise<IDialog[]> {
         return this.apiManager.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId);
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId) as Array<UserMessage.AsObject>;
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {
@@ -169,7 +169,7 @@ export default class DialogRepo {
             //         window.console.log('user', remoteRes.usersList.find(o=> o.id === d.peerid));
             //     }
             // });
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId);
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId) as Array<UserMessage.AsObject>;
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {

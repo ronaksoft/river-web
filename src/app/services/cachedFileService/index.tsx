@@ -12,6 +12,7 @@ import {InputFileLocation} from '../sdk/messages/core.types_pb';
 import FileRepo, {GetDbFileName} from '../../repository/file/index';
 // @ts-ignore
 import glur from 'glur';
+import {SetOptional} from "type-fest";
 
 interface IFile {
     blurSrc: object;
@@ -46,7 +47,7 @@ export default class CachedFileService {
     }
 
     /* Get file */
-    public getFile(fileLocation: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, searchTemp?: boolean, blurRadius?: number, tempBlob?: Blob, tinyThumb?: string, earlyImageCB?: (src: string) => void): Promise<string> {
+    public getFile(fileLocation: SetOptional<InputFileLocation.AsObject, 'version'>, md5: string, size: number, mimeType: string, searchTemp?: boolean, blurRadius?: number, tempBlob?: Blob, tinyThumb?: string, earlyImageCB?: (src: string) => void): Promise<string> {
         if (!fileLocation) {
             return Promise.reject();
         }
@@ -142,7 +143,7 @@ export default class CachedFileService {
         }
     }
 
-    public swap(name: string, targetLocation: InputFileLocation.AsObject) {
+    public swap(name: string, targetLocation: Partial<InputFileLocation.AsObject>) {
         if (this.files.hasOwnProperty(name)) {
             const file = this.files[name];
             file.location = targetLocation;
@@ -227,7 +228,7 @@ export default class CachedFileService {
     }
 
     /* Get remote file */
-    private getRemoteFile(fileLoc: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, blurRadius?: number): Promise<string> {
+    private getRemoteFile(fileLoc: SetOptional<InputFileLocation.AsObject, 'version'>, md5: string, size: number, mimeType: string, blurRadius?: number): Promise<string> {
         const fileName = GetDbFileName(fileLoc.fileid, fileLoc.clusterid);
         return new Promise((resolve, reject) => {
             if (fileLoc.accesshash === '') {

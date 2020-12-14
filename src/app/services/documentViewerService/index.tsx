@@ -11,6 +11,7 @@ import {InputFileLocation, InputPeer, MessageEntity} from '../sdk/messages/core.
 import MediaRepo from '../../repository/media';
 import {C_MEDIA_TYPE} from '../../repository/media/interface';
 import {IPeer} from "../../repository/dialog/interface";
+import {SetOptional} from "type-fest";
 
 interface IDocumentItem {
     caption: string;
@@ -18,7 +19,7 @@ interface IDocumentItem {
     downloaded?: boolean;
     duration?: number;
     entityList?: MessageEntity.AsObject[];
-    fileLocation: InputFileLocation.AsObject;
+    fileLocation: SetOptional<InputFileLocation.AsObject, 'version'>;
     fileSize?: number;
     geo?: google.maps.LatLngLiteral;
     height?: number;
@@ -28,7 +29,7 @@ interface IDocumentItem {
     orientation?: number;
     rtl?: boolean;
     snippet?: string;
-    thumbFileLocation?: InputFileLocation.AsObject;
+    thumbFileLocation?: SetOptional<InputFileLocation.AsObject, 'version'>;
     userId?: string;
     width?: number;
 }

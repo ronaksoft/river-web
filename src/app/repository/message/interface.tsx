@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import {InputMediaTypeMap, UserMessage} from "../../services/sdk/messages/core.types_pb";
+import {InputMediaType, UserMessage} from "../../services/sdk/messages/core.types_pb";
 import {ReactionList} from "../../services/sdk/messages/chat.messages_pb";
 
 export interface IMessage extends Partial<UserMessage.AsObject> {
@@ -42,7 +42,7 @@ export interface IPendingMessage {
     message_id: number;
     file_ids?: string[];
     data?: any;
-    type?: InputMediaTypeMap;
+    type?: InputMediaType;
 }
 
 export interface IMessageWithCount {

@@ -1073,6 +1073,5 @@ export const C_LOCALSTORAGE = {
     ThemeReaction: 'river.theme.reaction',
     TopPeerInit: 'river.init_top_peer',
     Version: 'river.version',
-    WorkspaceFileUrl: 'river.workspace_url_file',
     WorkspaceUrl: 'river.workspace_url',
 };

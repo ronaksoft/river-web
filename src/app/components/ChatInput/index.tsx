@@ -225,7 +225,7 @@ interface IProps {
     getDialog: (peerName: string) => IDialog | null;
     onAction: (cmd: string, message?: IMessage) => (e?: any) => void;
     onBulkAction: (cmd: string) => (e?: any) => void;
-    onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
+    onClearDraft?: (data: Partial<UpdateDraftMessageCleared.AsObject>) => void;
     onFileSelect: (files: File[], options: IUploaderOptions) => void;
     onContactSelect: (users: IUser[], caption: string, params: IMessageParam) => void;
     onMapSelect: (item: IGeoItem, params: IMessageParam) => void;
@@ -1386,7 +1386,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private initOldDraft(oldPeer: InputPeer, mode: number, message: IMessage | null) {
         const oldPeerObj = oldPeer.toObject();
-        const draftMessage: DraftMessage.AsObject = {
+        const draftMessage: Partial<DraftMessage.AsObject> = {
             body: this.textarea ? this.textarea.value : '',
             date: this.riverTime.now(),
             entitiesList: message ? message.entitiesList : undefined,

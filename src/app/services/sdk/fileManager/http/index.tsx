@@ -7,6 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
+/* eslint import/no-webpack-loader-syntax: off */
 import Presenter from '../../presenters';
 import axios from 'axios';
 import {base64ToU8a, uint8ToBase64} from './utils';
@@ -14,10 +15,12 @@ import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
 import {C_LOCALSTORAGE, C_MSG} from '../../const';
 import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
-import Socket, {serverTime} from '../../server/socket';
+import Socket, {ISendPayload, serverTime} from '../../server/socket';
 import {EventSocketReady} from "../../../events";
 import {InputTeam} from "../../messages/core.types_pb";
 import {getFileServerUrl} from "../../../../components/DevTools";
+//@ts-ignore
+import RiverWorker from 'worker-loader?filename=river.js!../../worker';
 
 export interface IHttpRequest {
     constructor: number;
@@ -54,12 +57,11 @@ export default class Http {
     private inputTeam: InputTeam.AsObject | undefined;
 
     public constructor(shareWorker: boolean, id: number) {
-        return;
         const fileUrl = getFileServerUrl();
         this.shareWorker = shareWorker;
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v24');
+        this.worker = new RiverWorker();
         this.workerId = id;
 
         if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0 || fileUrl.indexOf('localhost') > -1)) {
@@ -175,28 +177,29 @@ export default class Http {
     private initWorkerEvent() {
         this.worker.onmessage = (e) => {
             const d = e.data;
+            window.console.log(d, e);
             switch (d.cmd) {
-                case 'loadConnInfo':
-                    this.workerMessage('loadConnInfo', {
+                case 'wasmLoaded':
+                    this.workerMessage('load', {
                         connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo),
-                        serverKeys,
+                        serverKeys
                     });
-                    this.workerMessage('initSDK', !serverTime ? 1 : serverTime);
+                    if (serverTime) {
+                        this.workerMessage('setServerTime', serverTime);
+                    }
                     break;
-                case 'fnStarted':
+                case 'ready':
+                    window.console.log(d);
                     if (this.readyHandler) {
                         this.readyHandler();
                     }
                     this.isWorkerReady = true;
                     break;
-                case 'fnEncryptCallback':
-                    this.resolveEncrypt(d.data.reqId, d.data.data);
+                case 'encode':
+                    this.resolveEncrypt(d.data.reqId, d.data.msg);
                     break;
-                case 'fnDecryptCallback':
-                    this.resolveDecrypt(d.data.reqId, d.data.constructor, d.data.data);
-                    break;
-                case 'wsError':
-                    window.console.log('file error', d.data);
+                case 'decode':
+                    this.resolveDecrypt(d.data.reqId, d.data.constructor, d.data.msg);
                     break;
                 default:
                     break;
@@ -216,16 +219,17 @@ export default class Http {
 
     /* Send http request */
     private sendRequest(request: IHttpRequest) {
-        const payload: any = {
+        const payload: ISendPayload = {
             constructor: request.constructor,
             payload: uint8ToBase64(request.data),
             reqId: request.reqId,
+            withSend: false,
         };
         if (this.inputTeam) {
             payload.teamId = this.inputTeam.id;
             payload.teamAccessHash = this.inputTeam.accesshash;
         }
-        this.workerMessage('fnEncrypt', payload);
+        this.workerMessage('encode', payload);
     }
 
     private resolveEncrypt = (reqId: number, base64: string) => {
@@ -253,7 +257,7 @@ export default class Http {
         }).then((bytes) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 const data = new Uint8Array(bytes);
-                this.workerMessage('fnDecrypt', uint8ToBase64(data));
+                this.workerMessage('decode', {data: uint8ToBase64(new Uint8Array(data)), reqId, withParse: false});
             }
         }).catch((err) => {
             this.setTimeout(Date.now() - time);
@@ -270,7 +274,6 @@ export default class Http {
             return;
         }
         const res = Presenter.getMessage(constructor, base64ToU8a(base64));
-
         if (constructor === C_MSG.Error) {
             this.messageListeners[reqId].reject(res.toObject());
         } else {

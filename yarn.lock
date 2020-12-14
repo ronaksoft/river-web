@@ -7266,7 +7266,7 @@ google-p12-pem@^3.0.3:
   dependencies:
     node-forge "^0.10.0"
 
-google-protobuf@^3.14.0, google-protobuf@^3.6.1:
+google-protobuf@^3.14.0:
   version "3.14.0"
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.14.0.tgz#20373d22046e63831a5110e11a84f713cc43651e"
   integrity sha512-bwa8dBuMpOxg7COyqkW6muQuvNnWgVN8TX/epDRGW5m0jcrmq2QJyCyiV8ZE2/6LaIIqJtiv9bYokFhfpy/o6w==
@@ -14363,12 +14363,10 @@ ts-pnp@1.2.0, ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-ts-protoc-gen@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/ts-protoc-gen/-/ts-protoc-gen-0.13.0.tgz#2763ae4e4a1a7d7001d53d2f3043357c691701ea"
-  integrity sha512-j18X4rkDBbG/ZHUJy88WFeZP6mStGow5uREaohowlHXTu3/N7WcpyPhb7Vh6wN38ERmc/AkT9gqT98+vtlRhJA==
-  dependencies:
-    google-protobuf "^3.6.1"
+ts-protoc-gen@0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/ts-protoc-gen/-/ts-protoc-gen-0.9.0.tgz#3910a67dc4445acf4bc3c6f7f67709619e987a6e"
+  integrity sha512-cFEUTY9U9o6C4DPPfMHk2ZUdIAKL91hZN1fyx5Stz3g56BDVOC7hk+r5fEMCAGaaIgi2akkT1a2hrxu1wo2Phg==
 
 tsconfig-paths@^3.9.0:
   version "3.9.0"

@@ -19,6 +19,7 @@ import MessageRepo from "../message";
 import {IMessage} from "../message/interface";
 import UserRepo from "../user";
 import GroupRepo from "../group";
+import {UserMessage} from "../../services/sdk/messages/core.types_pb";
 
 export default class LabelRepo {
     public static labelColors: { [key: number]: string } = {};
@@ -189,7 +190,7 @@ export default class LabelRepo {
 
     public getRemoteMessageByItem(teamId: string, id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
         return this.apiManager.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId()) as Array<UserMessage.AsObject>;
             const labelGroup = groupBy(remoteRes.messagesList, (o => o.teamid));
             for (const [team, messages] of Object.entries(labelGroup)) {
                 this.insertManyLabelItem(team || '0', id, messages);

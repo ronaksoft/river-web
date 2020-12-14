@@ -43,7 +43,7 @@ export const C_CALL_EVENT = {
     StreamUpdate: 0x03,
 };
 
-export interface IUpdatePhoneCall extends UpdatePhoneCall.AsObject {
+export interface IUpdatePhoneCall extends Partial<UpdatePhoneCall.AsObject> {
     data?: any;
 }
 

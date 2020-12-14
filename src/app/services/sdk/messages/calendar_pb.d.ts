@@ -48,8 +48,8 @@ export class CalendarSetEvent extends jspb.Message {
   getRecurring(): boolean;
   setRecurring(value: boolean): void;
 
-  getPeriod(): RecurringPeriodMap[keyof RecurringPeriodMap];
-  setPeriod(value: RecurringPeriodMap[keyof RecurringPeriodMap]): void;
+  getPeriod(): RecurringPeriod;
+  setPeriod(value: RecurringPeriod): void;
 
   getAllday(): boolean;
   setAllday(value: boolean): void;
@@ -77,7 +77,7 @@ export namespace CalendarSetEvent {
     startrange: number,
     duration: number,
     recurring: boolean,
-    period: RecurringPeriodMap[keyof RecurringPeriodMap],
+    period: RecurringPeriod,
     allday: boolean,
     team: boolean,
     global: boolean,
@@ -103,14 +103,14 @@ export class CalendarEditEvent extends jspb.Message {
   getRecurring(): boolean;
   setRecurring(value: boolean): void;
 
-  getPeriod(): RecurringPeriodMap[keyof RecurringPeriodMap];
-  setPeriod(value: RecurringPeriodMap[keyof RecurringPeriodMap]): void;
+  getPeriod(): RecurringPeriod;
+  setPeriod(value: RecurringPeriod): void;
 
   getAllday(): boolean;
   setAllday(value: boolean): void;
 
-  getPolicy(): CalendarEditPolicyMap[keyof CalendarEditPolicyMap];
-  setPolicy(value: CalendarEditPolicyMap[keyof CalendarEditPolicyMap]): void;
+  getPolicy(): CalendarEditPolicy;
+  setPolicy(value: CalendarEditPolicy): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CalendarEditEvent.AsObject;
@@ -130,9 +130,9 @@ export namespace CalendarEditEvent {
     startrange: number,
     duration: number,
     recurring: boolean,
-    period: RecurringPeriodMap[keyof RecurringPeriodMap],
+    period: RecurringPeriod,
     allday: boolean,
-    policy: CalendarEditPolicyMap[keyof CalendarEditPolicyMap],
+    policy: CalendarEditPolicy,
   }
 }
 
@@ -166,8 +166,8 @@ export class CalendarEvent extends jspb.Message {
   getRecurring(): boolean;
   setRecurring(value: boolean): void;
 
-  getPeriod(): RecurringPeriodMap[keyof RecurringPeriodMap];
-  setPeriod(value: RecurringPeriodMap[keyof RecurringPeriodMap]): void;
+  getPeriod(): RecurringPeriod;
+  setPeriod(value: RecurringPeriod): void;
 
   getAllday(): boolean;
   setAllday(value: boolean): void;
@@ -187,7 +187,7 @@ export namespace CalendarEvent {
     id: number,
     name: string,
     recurring: boolean,
-    period: RecurringPeriodMap[keyof RecurringPeriodMap],
+    period: RecurringPeriod,
     allday: boolean,
   }
 }
@@ -228,21 +228,17 @@ export namespace CalendarEventInstance {
   }
 }
 
-export interface RecurringPeriodMap {
-  RECURRINGNONE: 0;
-  RECURRINGDAILY: 1;
-  RECURRINGWEEKLY: 2;
-  RECURRINGMONTHLY: 3;
-  RECURRINGYEARLY: 4;
+export enum RecurringPeriod {
+  RECURRINGNONE = 0,
+  RECURRINGDAILY = 1,
+  RECURRINGWEEKLY = 2,
+  RECURRINGMONTHLY = 3,
+  RECURRINGYEARLY = 4,
 }
 
-export const RecurringPeriod: RecurringPeriodMap;
-
-export interface CalendarEditPolicyMap {
-  CALENDAREDITONE: 0;
-  CALENDAREDITFOLLOWING: 1;
-  CALENDAREDITALL: 2;
+export enum CalendarEditPolicy {
+  CALENDAREDITONE = 0,
+  CALENDAREDITFOLLOWING = 1,
+  CALENDAREDITALL = 2,
 }
-
-export const CalendarEditPolicy: CalendarEditPolicyMap;
 

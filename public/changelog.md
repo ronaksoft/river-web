@@ -1,3 +1,8 @@
+## 0.36.8-call
+* Rony compatible version
+* Worker new mechanism
+* WASM rewrite
+
 ## 0.36.7-call
 * WebWorkers bug updated
 * Group call recipient selector updated

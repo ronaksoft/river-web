@@ -116,8 +116,8 @@ export class PhoneDiscardCall extends jspb.Message {
   getDuration(): number;
   setDuration(value: number): void;
 
-  getReason(): DiscardReasonMap[keyof DiscardReasonMap];
-  setReason(value: DiscardReasonMap[keyof DiscardReasonMap]): void;
+  getReason(): DiscardReason;
+  setReason(value: DiscardReason): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneDiscardCall.AsObject;
@@ -135,7 +135,7 @@ export namespace PhoneDiscardCall {
     callid: string,
     participantsList: Array<core_types_pb.InputUser.AsObject>,
     duration: number,
-    reason: DiscardReasonMap[keyof DiscardReasonMap],
+    reason: DiscardReason,
   }
 }
 
@@ -153,8 +153,8 @@ export class PhoneUpdateCall extends jspb.Message {
   setParticipantsList(value: Array<core_types_pb.InputUser>): void;
   addParticipants(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
 
-  getAction(): PhoneCallActionMap[keyof PhoneCallActionMap];
-  setAction(value: PhoneCallActionMap[keyof PhoneCallActionMap]): void;
+  getAction(): PhoneCallAction;
+  setAction(value: PhoneCallAction): void;
 
   getActiondata(): Uint8Array | string;
   getActiondata_asU8(): Uint8Array;
@@ -176,7 +176,7 @@ export namespace PhoneUpdateCall {
     peer?: core_types_pb.InputPeer.AsObject,
     callid: string,
     participantsList: Array<core_types_pb.InputUser.AsObject>,
-    action: PhoneCallActionMap[keyof PhoneCallActionMap],
+    action: PhoneCallAction,
     actiondata: Uint8Array | string,
   }
 }
@@ -460,8 +460,8 @@ export class PhoneActionDiscarded extends jspb.Message {
   getVideo(): boolean;
   setVideo(value: boolean): void;
 
-  getReason(): DiscardReasonMap[keyof DiscardReasonMap];
-  setReason(value: DiscardReasonMap[keyof DiscardReasonMap]): void;
+  getReason(): DiscardReason;
+  setReason(value: DiscardReason): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionDiscarded.AsObject;
@@ -477,7 +477,7 @@ export namespace PhoneActionDiscarded {
   export type AsObject = {
     duration: number,
     video: boolean,
-    reason: DiscardReasonMap[keyof DiscardReasonMap],
+    reason: DiscardReason,
   }
 }
 
@@ -605,51 +605,47 @@ export namespace PhoneSDPAnswer {
   }
 }
 
-export interface DiscardReasonMap {
-  DISCARDREASONUNKNOWN: 0;
-  DISCARDREASONMISSED: 1;
-  DISCARDREASONBUSY: 2;
-  DISCARDREASONHANGUP: 3;
-  DISCARDREASONDISCONNECT: 4;
-  DISCARDREASONRESERVED1: 5;
-  DISCARDREASONRESERVED2: 6;
-  DISCARDREASONRESERVED3: 7;
-  DISCARDREASONRESERVED4: 8;
-  DISCARDREASONRESERVED5: 9;
-  DISCARDREASONRESERVED6: 10;
-  DISCARDREASONRESERVED7: 11;
-  DISCARDREASONRESERVED8: 12;
-  DISCARDREASONRESERVED9: 13;
+export enum DiscardReason {
+  DISCARDREASONUNKNOWN = 0,
+  DISCARDREASONMISSED = 1,
+  DISCARDREASONBUSY = 2,
+  DISCARDREASONHANGUP = 3,
+  DISCARDREASONDISCONNECT = 4,
+  DISCARDREASONRESERVED1 = 5,
+  DISCARDREASONRESERVED2 = 6,
+  DISCARDREASONRESERVED3 = 7,
+  DISCARDREASONRESERVED4 = 8,
+  DISCARDREASONRESERVED5 = 9,
+  DISCARDREASONRESERVED6 = 10,
+  DISCARDREASONRESERVED7 = 11,
+  DISCARDREASONRESERVED8 = 12,
+  DISCARDREASONRESERVED9 = 13,
 }
 
-export const DiscardReason: DiscardReasonMap;
-
-export interface PhoneCallActionMap {
-  PHONECALLEMPTY: 0;
-  PHONECALLACCEPTED: 1;
-  PHONECALLREQUESTED: 2;
-  PHONECALLCALLWAITING: 3;
-  PHONECALLDISCARDED: 4;
-  PHONECALLICEEXCHANGE: 5;
-  PHONECALLMEDIASETTINGSCHANGED: 6;
-  PHONECALLREACTIONSET: 7;
-  PHONECALLSDPOFFER: 8;
-  PHONECALLSDPANSWER: 9;
-  PHONECALLRESERVED6: 10;
-  PHONECALLRESERVED7: 11;
-  PHONECALLRESERVED8: 12;
-  PHONECALLRESERVED9: 13;
-  PHONECALLRESERVED10: 14;
-  PHONECALLRESERVED11: 15;
-  PHONECALLRESERVED12: 16;
-  PHONECALLRESERVED13: 17;
-  PHONECALLRESERVED14: 18;
-  PHONECALLRESERVED15: 19;
-  PHONECALLRESERVED16: 20;
-  PHONECALLRESERVED17: 21;
-  PHONECALLRESERVED18: 22;
-  PHONECALLRESERVED19: 23;
+export enum PhoneCallAction {
+  PHONECALLEMPTY = 0,
+  PHONECALLACCEPTED = 1,
+  PHONECALLREQUESTED = 2,
+  PHONECALLCALLWAITING = 3,
+  PHONECALLDISCARDED = 4,
+  PHONECALLICEEXCHANGE = 5,
+  PHONECALLMEDIASETTINGSCHANGED = 6,
+  PHONECALLREACTIONSET = 7,
+  PHONECALLSDPOFFER = 8,
+  PHONECALLSDPANSWER = 9,
+  PHONECALLRESERVED6 = 10,
+  PHONECALLRESERVED7 = 11,
+  PHONECALLRESERVED8 = 12,
+  PHONECALLRESERVED9 = 13,
+  PHONECALLRESERVED10 = 14,
+  PHONECALLRESERVED11 = 15,
+  PHONECALLRESERVED12 = 16,
+  PHONECALLRESERVED13 = 17,
+  PHONECALLRESERVED14 = 18,
+  PHONECALLRESERVED15 = 19,
+  PHONECALLRESERVED16 = 20,
+  PHONECALLRESERVED17 = 21,
+  PHONECALLRESERVED18 = 22,
+  PHONECALLRESERVED19 = 23,
 }
-
-export const PhoneCallAction: PhoneCallActionMap;
 

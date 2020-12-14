@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import {ParticipantTypeMap, User} from "../../services/sdk/messages/core.types_pb";
+import {ParticipantType, User} from "../../services/sdk/messages/core.types_pb";
 
 export interface IUser extends Partial<User.AsObject> {
     accesshash?: string;
@@ -22,7 +22,7 @@ export interface IUser extends Partial<User.AsObject> {
 
 export interface IParticipant extends IUser {
     userid?: string;
-    type?: ParticipantTypeMap;
+    type?: ParticipantType;
     accesshash?: string;
 }
 

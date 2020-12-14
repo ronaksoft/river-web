@@ -144,8 +144,8 @@ export namespace DocumentAttributeAnimated {
 }
 
 export class DocumentAttribute extends jspb.Message {
-  getType(): DocumentAttributeTypeMap[keyof DocumentAttributeTypeMap];
-  setType(value: DocumentAttributeTypeMap[keyof DocumentAttributeTypeMap]): void;
+  getType(): DocumentAttributeType;
+  setType(value: DocumentAttributeType): void;
 
   getData(): Uint8Array | string;
   getData_asU8(): Uint8Array;
@@ -164,7 +164,7 @@ export class DocumentAttribute extends jspb.Message {
 
 export namespace DocumentAttribute {
   export type AsObject = {
-    type: DocumentAttributeTypeMap[keyof DocumentAttributeTypeMap],
+    type: DocumentAttributeType,
     data: Uint8Array | string,
   }
 }
@@ -791,32 +791,28 @@ export namespace PollAnswerVoters {
   }
 }
 
-export interface DocumentAttributeTypeMap {
-  ATTRIBUTETYPENONE: 0;
-  ATTRIBUTETYPEAUDIO: 1;
-  ATTRIBUTETYPEVIDEO: 2;
-  ATTRIBUTETYPEPHOTO: 3;
-  ATTRIBUTETYPEFILE: 4;
-  ATTRIBUTETYPEANIMATED: 5;
-  ATTRIBUTERESERVED1: 6;
-  ATTRIBUTERESERVED2: 7;
-  ATTRIBUTERESERVED3: 8;
-  ATTRIBUTERESERVED4: 9;
+export enum DocumentAttributeType {
+  ATTRIBUTETYPENONE = 0,
+  ATTRIBUTETYPEAUDIO = 1,
+  ATTRIBUTETYPEVIDEO = 2,
+  ATTRIBUTETYPEPHOTO = 3,
+  ATTRIBUTETYPEFILE = 4,
+  ATTRIBUTETYPEANIMATED = 5,
+  ATTRIBUTERESERVED1 = 6,
+  ATTRIBUTERESERVED2 = 7,
+  ATTRIBUTERESERVED3 = 8,
+  ATTRIBUTERESERVED4 = 9,
 }
 
-export const DocumentAttributeType: DocumentAttributeTypeMap;
-
-export interface DocumentTypeMap {
-  DOCUMENTTYPEUNKNOWN: 0;
-  DOCUMENTTYPEPHOTO: 1;
-  DOCUMENTTYPEVOICE: 2;
-  DOCUMENTTYPEVIDEO: 3;
-  DOCUMENTTYPEWEBPAGE: 4;
-  DOCUMENTTYPERESERVED1: 5;
-  DOCUMENTTYPERESERVED2: 6;
-  DOCUMENTTYPERESERVED3: 7;
-  DOCUMENTTYPERESERVED4: 8;
+export enum DocumentType {
+  DOCUMENTTYPEUNKNOWN = 0,
+  DOCUMENTTYPEPHOTO = 1,
+  DOCUMENTTYPEVOICE = 2,
+  DOCUMENTTYPEVIDEO = 3,
+  DOCUMENTTYPEWEBPAGE = 4,
+  DOCUMENTTYPERESERVED1 = 5,
+  DOCUMENTTYPERESERVED2 = 6,
+  DOCUMENTTYPERESERVED3 = 7,
+  DOCUMENTTYPERESERVED4 = 8,
 }
-
-export const DocumentType: DocumentTypeMap;
 

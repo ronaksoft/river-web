@@ -24,6 +24,7 @@ import SettingsConfigManager from "../../services/settingsConfigManager";
 import {Loading} from "../Loading";
 
 import './style.scss';
+import {SetOptional} from "type-fest";
 
 const C_LIMIT = 18;
 
@@ -142,7 +143,7 @@ class GifPicker extends React.Component<IProps, IState> {
     }
 
     private getGifContent(item: IGif, index: number) {
-        const fileInput: InputFileLocation.AsObject = {
+        const fileInput: SetOptional<InputFileLocation.AsObject, 'version'> = {
             accesshash: item.doc.accesshash,
             clusterid: item.doc.clusterid,
             fileid: item.doc.id,

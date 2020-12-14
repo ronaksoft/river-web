@@ -412,8 +412,8 @@ export class UpdateUserTyping extends jspb.Message {
   getUserid(): string;
   setUserid(value: string): void;
 
-  getAction(): core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap];
-  setAction(value: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap]): void;
+  getAction(): core_types_pb.TypingAction;
+  setAction(value: core_types_pb.TypingAction): void;
 
   getPeerid(): string;
   setPeerid(value: string): void;
@@ -436,7 +436,7 @@ export namespace UpdateUserTyping {
     ucount: number,
     teamid: string,
     userid: string,
-    action: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap],
+    action: core_types_pb.TypingAction,
     peerid: string,
     peertype: number,
   }
@@ -1730,8 +1730,8 @@ export class UpdateCommunityTyping extends jspb.Message {
   getReceiverid(): number;
   setReceiverid(value: number): void;
 
-  getAction(): core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap];
-  setAction(value: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap]): void;
+  getAction(): core_types_pb.TypingAction;
+  setAction(value: core_types_pb.TypingAction): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateCommunityTyping.AsObject;
@@ -1748,7 +1748,7 @@ export namespace UpdateCommunityTyping {
     teamid: string,
     senderid: number,
     receiverid: number,
-    action: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap],
+    action: core_types_pb.TypingAction,
   }
 }
 
@@ -1941,8 +1941,8 @@ export class ClientRedirect extends jspb.Message {
   getPermanent(): boolean;
   setPermanent(value: boolean): void;
 
-  getTarget(): RedirectTargetMap[keyof RedirectTargetMap];
-  setTarget(value: RedirectTargetMap[keyof RedirectTargetMap]): void;
+  getTarget(): RedirectTarget;
+  setTarget(value: RedirectTarget): void;
 
   clearAlternativesList(): void;
   getAlternativesList(): Array<string>;
@@ -1963,7 +1963,7 @@ export namespace ClientRedirect {
   export type AsObject = {
     hostport: string,
     permanent: boolean,
-    target: RedirectTargetMap[keyof RedirectTargetMap],
+    target: RedirectTarget,
     alternativesList: Array<string>,
   }
 }
@@ -1990,8 +1990,8 @@ export class UpdatePhoneCall extends jspb.Message {
   getAccesshash(): string;
   setAccesshash(value: string): void;
 
-  getAction(): chat_phone_pb.PhoneCallActionMap[keyof chat_phone_pb.PhoneCallActionMap];
-  setAction(value: chat_phone_pb.PhoneCallActionMap[keyof chat_phone_pb.PhoneCallActionMap]): void;
+  getAction(): chat_phone_pb.PhoneCallAction;
+  setAction(value: chat_phone_pb.PhoneCallAction): void;
 
   getActiondata(): Uint8Array | string;
   getActiondata_asU8(): Uint8Array;
@@ -2017,20 +2017,18 @@ export namespace UpdatePhoneCall {
     callid: string,
     userid: string,
     accesshash: string,
-    action: chat_phone_pb.PhoneCallActionMap[keyof chat_phone_pb.PhoneCallActionMap],
+    action: chat_phone_pb.PhoneCallAction,
     actiondata: Uint8Array | string,
   }
 }
 
-export interface RedirectTargetMap {
-  REDIRECTTARGETRPC: 0;
-  REDIRECTTARGETFILE: 1;
-  REDIRECTTARGETPROXY: 2;
-  REDIRECTTARGETRESERVED1: 3;
-  REDIRECTTARGETRESERVED2: 4;
-  REDIRECTTARGETRESERVED3: 5;
-  REDIRECTTARGETRESERVED4: 6;
+export enum RedirectTarget {
+  REDIRECTTARGETRPC = 0,
+  REDIRECTTARGETFILE = 1,
+  REDIRECTTARGETPROXY = 2,
+  REDIRECTTARGETRESERVED1 = 3,
+  REDIRECTTARGETRESERVED2 = 4,
+  REDIRECTTARGETRESERVED3 = 5,
+  REDIRECTTARGETRESERVED4 = 6,
 }
-
-export const RedirectTarget: RedirectTargetMap;
 

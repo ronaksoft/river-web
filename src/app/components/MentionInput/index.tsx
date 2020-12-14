@@ -152,7 +152,7 @@ class MentionInput extends React.Component<IProps, IState> {
             return;
         }
         // Search engine
-        const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
+        const searchParticipant = (word: string, participants: Partial<GroupParticipant.AsObject>[]) => {
             participants.unshift({
                 accesshash: '',
                 firstname: 'all',

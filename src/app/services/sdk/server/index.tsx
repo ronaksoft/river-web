@@ -17,9 +17,9 @@ import MainRepo from "../../../repository";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../App";
 import {EventCheckNetwork, EventWebSocketClose, EventSocketReady, EventSocketConnected} from "../../events";
-import {SystemConfig, SystemServerTime} from "../messages/system_pb";
-import {InputPassword, InputTeam, MessageContainer, MessageEnvelope} from "../messages/core.types_pb";
-import {Error as RiverError} from "../messages/core.types_pb";
+import {SystemConfig, SystemGetServerTime, SystemServerTime} from "../messages/system_pb";
+import {InputPassword, InputTeam} from "../messages/core.types_pb";
+import {Error as RiverError, KeyValue, MessageContainer, MessageEnvelope} from "../messages/rony_pb";
 import {getServerKeys} from "../../../components/DevTools";
 
 const C_IDLE_TIME = 300;
@@ -84,7 +84,7 @@ export default class Server {
     private lastActivityTime: number = 0;
     private cancelList: number[] = [];
     private updateInterval: any = null;
-    private systemConfig: SystemConfig.AsObject = {dcsList: []};
+    private systemConfig: Partial<SystemConfig.AsObject> = {dcsList: []};
     private inputTeam: InputTeam.AsObject | undefined;
     private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
 
@@ -133,7 +133,6 @@ export default class Server {
             this.socket.setResolveGenInputPasswordFn(this.genInputPasswordResolve);
 
             window.addEventListener(EventSocketReady, () => {
-                window.console.log('isReady');
                 this.isReady = true;
                 this.flushSentQueue();
                 if (this.executeSendThrottledRequestThrottle) {
@@ -291,7 +290,7 @@ export default class Server {
         return promise;
     }
 
-    public getSystemConfig(): SystemConfig.AsObject {
+    public getSystemConfig(): Partial<SystemConfig.AsObject> {
         return this.systemConfig;
     }
 
@@ -358,10 +357,7 @@ export default class Server {
         data.setMessage(request.data);
         data.setRequestid(request.reqId);
         if (request.inputTeam && request.inputTeam.id !== '0') {
-            const inputTeam = new InputTeam();
-            inputTeam.setAccesshash(request.inputTeam.accesshash || '0');
-            inputTeam.setId(request.inputTeam.id || '0');
-            data.setTeam(inputTeam);
+            data.setHeaderList(this.getTeamHeader(request.inputTeam.id || '0', request.inputTeam.accesshash || '0'));
         }
         this.requestQueue.push(data);
         this.executeSendThrottledRequestThrottle();
@@ -760,7 +756,7 @@ export default class Server {
         this.lastActivityTime = this.getTime();
     }
 
-    private checkRetry(id: number, error: RiverError.AsObject) {
+    private checkRetry(id: number, error: Partial<RiverError.AsObject>) {
         if (!this.messageListeners[id]) {
             return true;
         }
@@ -879,7 +875,8 @@ export default class Server {
     }
 
     private getServerTime() {
-        return this.send(C_MSG.SystemGetServerTime, new Uint8Array(), true).then((res: SystemServerTime.AsObject) => {
+        const data = new SystemGetServerTime();
+        return this.send(C_MSG.SystemGetServerTime, data.serializeBinary(), true).then((res: SystemServerTime.AsObject) => {
             this.socket.setServerTime(res.timestamp);
             return res;
         });
@@ -887,17 +884,32 @@ export default class Server {
 
     private createAuthKey() {
         window.console.log('createAuthKey');
+        const t = Math.floor(Date.now() / 1000);
         return this.authStep(1).then((step1Req) => {
             return this.send(C_MSG.InitConnect, step1Req, true).then((step1Res: Uint8Array) => {
                 return this.authStep(2, step1Res).then((step2Req) => {
                     return this.send(C_MSG.InitCompleteAuth, step2Req, true).then((step2Res: Uint8Array) => {
                         return this.authStep(3, step2Res).then(() => {
-                            return this.getServerTime();
+                            return this.getServerTime().then(() => {
+                                return Math.floor(Date.now() / 1000) - t;
+                            });
                         });
                     });
                 });
             });
         });
+    }
+
+    private getTeamHeader(teamId: string, teamAccessHash: string): Array<KeyValue> {
+        const ti = new KeyValue();
+        ti.setKey('TeamID');
+        ti.setValue(teamId);
+
+        const ta = new KeyValue();
+        ta.setKey('TeamAccess');
+        ta.setValue(teamAccessHash);
+
+        return [ti, ta];
     }
 
     private dispatchEvent(cmd: string, data: any) {

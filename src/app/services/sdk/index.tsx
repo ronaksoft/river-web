@@ -1082,7 +1082,7 @@ export default class APIManager {
         });
     }
 
-    public getInstantSystemConfig(): SystemConfig.AsObject {
+    public getInstantSystemConfig(): Partial<SystemConfig.AsObject> {
         return this.server.getSystemConfig();
     }
 

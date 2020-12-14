@@ -17,11 +17,9 @@ import {
 import {BlockedContactsMany, ContactsImported, ContactsMany, ContactsTopPeers} from '../messages/contacts_pb';
 import {
     Bool,
-    Error,
     FileLocation, GroupPhoto,
     Label,
-    LabelsMany,
-    MessageContainer, Pong, Team,
+    LabelsMany, Pong, Team,
     UserPhoto
 } from '../messages/core.types_pb';
 import {
@@ -47,6 +45,7 @@ import {FoundGifs, SavedGifs} from "../messages/gif_pb";
 import {TeamMembers, TeamsMany} from "../messages/team_pb";
 import {GroupsHistoryStats} from "../messages/chat.groups_pb";
 import {PhoneCall, PhoneInit} from "../messages/chat.phone_pb";
+import {Error, MessageContainer} from "../messages/rony_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {

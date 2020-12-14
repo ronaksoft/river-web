@@ -23,6 +23,7 @@ import {FaceRounded} from '@material-ui/icons';
 
 import './style.scss';
 import CachedPhoto from "../CachedPhoto";
+import {SetOptional} from "type-fest";
 
 const DefaultColors = [
     '#30496B',
@@ -140,7 +141,7 @@ interface IProps {
 interface IState {
     className: string;
     id: string;
-    bigFileLocation?: InputFileLocation.AsObject;
+    bigFileLocation?: SetOptional<InputFileLocation.AsObject, 'version'>;
     bigLoaded: boolean;
     photo?: string;
     user: IUser;

@@ -240,8 +240,8 @@ export class BotSendMedia extends jspb.Message {
   getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  getMediatype(): core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap];
-  setMediatype(value: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap]): void;
+  getMediatype(): core_types_pb.InputMediaType;
+  setMediatype(value: core_types_pb.InputMediaType): void;
 
   getMediadata(): Uint8Array | string;
   getMediadata_asU8(): Uint8Array;
@@ -265,7 +265,7 @@ export namespace BotSendMedia {
   export type AsObject = {
     randomid: number,
     peer?: core_types_pb.InputPeer.AsObject,
-    mediatype: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap],
+    mediatype: core_types_pb.InputMediaType,
     mediadata: Uint8Array | string,
     replyto: number,
   }
@@ -763,8 +763,8 @@ export class BotInlineResult extends jspb.Message {
   getId(): string;
   setId(value: string): void;
 
-  getType(): core_types_pb.MediaTypeMap[keyof core_types_pb.MediaTypeMap];
-  setType(value: core_types_pb.MediaTypeMap[keyof core_types_pb.MediaTypeMap]): void;
+  getType(): core_types_pb.MediaType;
+  setType(value: core_types_pb.MediaType): void;
 
   getTitle(): string;
   setTitle(value: string): void;
@@ -798,7 +798,7 @@ export class BotInlineResult extends jspb.Message {
 export namespace BotInlineResult {
   export type AsObject = {
     id: string,
-    type: core_types_pb.MediaTypeMap[keyof core_types_pb.MediaTypeMap],
+    type: core_types_pb.MediaType,
     title: string,
     description: string,
     url: string,
@@ -811,8 +811,8 @@ export class InputBotInlineResult extends jspb.Message {
   getId(): string;
   setId(value: string): void;
 
-  getType(): core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap];
-  setType(value: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap]): void;
+  getType(): core_types_pb.InputMediaType;
+  setType(value: core_types_pb.InputMediaType): void;
 
   getTitle(): string;
   setTitle(value: string): void;
@@ -846,7 +846,7 @@ export class InputBotInlineResult extends jspb.Message {
 export namespace InputBotInlineResult {
   export type AsObject = {
     id: string,
-    type: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap],
+    type: core_types_pb.InputMediaType,
     title: string,
     description: string,
     url: string,

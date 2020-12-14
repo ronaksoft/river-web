@@ -151,7 +151,7 @@ export default class GifRepo {
             const hash = this.getHash();
             return this.apiManager.getGif(hash).then((res) => {
                 if (!res.notmodified) {
-                    res.docsList = GifRepo.parseGifMany(res.docsList || []);
+                    res.docsList = GifRepo.parseGifMany(res.docsList || []) as Array<MediaDocument.AsObject>;
                     this.setHash(res.hash || 0);
                     this.upsert(res.docsList, true);
                     const list = res.docsList.slice(skip, skip + limit) as IGif[];
@@ -210,7 +210,7 @@ export default class GifRepo {
         });
     }
 
-    public useGif(inputDocument: InputDocument.AsObject) {
+    public useGif(inputDocument: Partial<InputDocument.AsObject>) {
         const fileName = GetDbFileName(inputDocument.id, inputDocument.clusterid);
         return this.db.gifs.where('id').equals(fileName).first().then((result) => {
             if (result) {

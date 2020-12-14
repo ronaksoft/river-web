@@ -9,7 +9,8 @@
 
 /* eslint import/no-webpack-loader-syntax: off */
 import * as React from 'react';
-import HighlightWorker from 'worker-loader!./worker/hljs';
+// @ts-ignore
+import HighlightWorker from "worker-loader?filename=hls.js!./worker";
 
 import './style.scss';
 

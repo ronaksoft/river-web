@@ -313,8 +313,8 @@ export class InputPeer extends jspb.Message {
   getId(): string;
   setId(value: string): void;
 
-  getType(): PeerTypeMap[keyof PeerTypeMap];
-  setType(value: PeerTypeMap[keyof PeerTypeMap]): void;
+  getType(): PeerType;
+  setType(value: PeerType): void;
 
   getAccesshash(): string;
   setAccesshash(value: string): void;
@@ -332,7 +332,7 @@ export class InputPeer extends jspb.Message {
 export namespace InputPeer {
   export type AsObject = {
     id: string,
-    type: PeerTypeMap[keyof PeerTypeMap],
+    type: PeerType,
     accesshash: string,
   }
 }
@@ -526,8 +526,8 @@ export class User extends jspb.Message {
   getUsername(): string;
   setUsername(value: string): void;
 
-  getStatus(): UserStatusMap[keyof UserStatusMap];
-  setStatus(value: UserStatusMap[keyof UserStatusMap]): void;
+  getStatus(): UserStatus;
+  setStatus(value: UserStatus): void;
 
   getRestricted(): boolean;
   setRestricted(value: boolean): void;
@@ -587,7 +587,7 @@ export namespace User {
     firstname: string,
     lastname: string,
     username: string,
-    status: UserStatusMap[keyof UserStatusMap],
+    status: UserStatus,
     restricted: boolean,
     accesshash: string,
     photo?: UserPhoto.AsObject,
@@ -809,9 +809,9 @@ export class Group extends jspb.Message {
   setEditedon(value: number): void;
 
   clearFlagsList(): void;
-  getFlagsList(): Array<GroupFlagsMap[keyof GroupFlagsMap]>;
-  setFlagsList(value: Array<GroupFlagsMap[keyof GroupFlagsMap]>): void;
-  addFlags(value: GroupFlagsMap[keyof GroupFlagsMap], index?: number): GroupFlagsMap[keyof GroupFlagsMap];
+  getFlagsList(): Array<GroupFlags>;
+  setFlagsList(value: Array<GroupFlags>): void;
+  addFlags(value: GroupFlags, index?: number): GroupFlags;
 
   hasPhoto(): boolean;
   clearPhoto(): void;
@@ -836,7 +836,7 @@ export namespace Group {
     createdon: number,
     participants: number,
     editedon: number,
-    flagsList: Array<GroupFlagsMap[keyof GroupFlagsMap]>,
+    flagsList: Array<GroupFlags>,
     photo?: GroupPhoto.AsObject,
   }
 }
@@ -897,8 +897,8 @@ export class GroupParticipant extends jspb.Message {
   getLastname(): string;
   setLastname(value: string): void;
 
-  getType(): ParticipantTypeMap[keyof ParticipantTypeMap];
-  setType(value: ParticipantTypeMap[keyof ParticipantTypeMap]): void;
+  getType(): ParticipantType;
+  setType(value: ParticipantType): void;
 
   getAccesshash(): string;
   setAccesshash(value: string): void;
@@ -926,7 +926,7 @@ export namespace GroupParticipant {
     userid: string,
     firstname: string,
     lastname: string,
-    type: ParticipantTypeMap[keyof ParticipantTypeMap],
+    type: ParticipantType,
     accesshash: string,
     username: string,
     photo?: UserPhoto.AsObject,
@@ -998,8 +998,8 @@ export class UserMessage extends jspb.Message {
   setEntitiesList(value: Array<MessageEntity>): void;
   addEntities(value?: MessageEntity, index?: number): MessageEntity;
 
-  getMediatype(): MediaTypeMap[keyof MediaTypeMap];
-  setMediatype(value: MediaTypeMap[keyof MediaTypeMap]): void;
+  getMediatype(): MediaType;
+  setMediatype(value: MediaType): void;
 
   getMedia(): Uint8Array | string;
   getMedia_asU8(): Uint8Array;
@@ -1064,7 +1064,7 @@ export namespace UserMessage {
     messageaction: number,
     messageactiondata: Uint8Array | string,
     entitiesList: Array<MessageEntity.AsObject>,
-    mediatype: MediaTypeMap[keyof MediaTypeMap],
+    mediatype: MediaType,
     media: Uint8Array | string,
     replymarkup: number,
     replymarkupdata: Uint8Array | string,
@@ -1150,8 +1150,8 @@ export namespace DraftMessage {
 }
 
 export class MessageEntity extends jspb.Message {
-  getType(): MessageEntityTypeMap[keyof MessageEntityTypeMap];
-  setType(value: MessageEntityTypeMap[keyof MessageEntityTypeMap]): void;
+  getType(): MessageEntityType;
+  setType(value: MessageEntityType): void;
 
   getOffset(): number;
   setOffset(value: number): void;
@@ -1174,7 +1174,7 @@ export class MessageEntity extends jspb.Message {
 
 export namespace MessageEntity {
   export type AsObject = {
-    type: MessageEntityTypeMap[keyof MessageEntityTypeMap],
+    type: MessageEntityType,
     offset: number,
     length: number,
     userid: string,
@@ -1358,8 +1358,8 @@ export namespace InputDocument {
 }
 
 export class PrivacyRule extends jspb.Message {
-  getPrivacytype(): PrivacyTypeMap[keyof PrivacyTypeMap];
-  setPrivacytype(value: PrivacyTypeMap[keyof PrivacyTypeMap]): void;
+  getPrivacytype(): PrivacyType;
+  setPrivacytype(value: PrivacyType): void;
 
   clearUseridsList(): void;
   getUseridsList(): Array<string>;
@@ -1378,7 +1378,7 @@ export class PrivacyRule extends jspb.Message {
 
 export namespace PrivacyRule {
   export type AsObject = {
-    privacytype: PrivacyTypeMap[keyof PrivacyTypeMap],
+    privacytype: PrivacyType,
     useridsList: Array<string>,
   }
 }
@@ -1555,9 +1555,9 @@ export class Team extends jspb.Message {
   setAccesshash(value: string): void;
 
   clearFlagsList(): void;
-  getFlagsList(): Array<TeamFlagsMap[keyof TeamFlagsMap]>;
-  setFlagsList(value: Array<TeamFlagsMap[keyof TeamFlagsMap]>): void;
-  addFlags(value: TeamFlagsMap[keyof TeamFlagsMap], index?: number): TeamFlagsMap[keyof TeamFlagsMap];
+  getFlagsList(): Array<TeamFlags>;
+  setFlagsList(value: Array<TeamFlags>): void;
+  addFlags(value: TeamFlags, index?: number): TeamFlags;
 
   getCapacity(): number;
   setCapacity(value: number): void;
@@ -1586,166 +1586,142 @@ export namespace Team {
     name: string,
     creatorid: string,
     accesshash: string,
-    flagsList: Array<TeamFlagsMap[keyof TeamFlagsMap]>,
+    flagsList: Array<TeamFlags>,
     capacity: number,
     community: boolean,
     photo?: TeamPhoto.AsObject,
   }
 }
 
-export interface TypingActionMap {
-  TYPINGACTIONTYPING: 0;
-  TYPINGACTIONRECORDINGVOICE: 1;
-  TYPINGACTIONRECORDINGVIDEO: 2;
-  TYPINGACTIONUPLOADING: 3;
-  TYPINGACTIONCANCEL: 4;
+export enum TypingAction {
+  TYPINGACTIONTYPING = 0,
+  TYPINGACTIONRECORDINGVOICE = 1,
+  TYPINGACTIONRECORDINGVIDEO = 2,
+  TYPINGACTIONUPLOADING = 3,
+  TYPINGACTIONCANCEL = 4,
 }
 
-export const TypingAction: TypingActionMap;
-
-export interface PeerTypeMap {
-  PEERSELF: 0;
-  PEERUSER: 1;
-  PEERGROUP: 2;
-  PEEREXTERNALUSER: 3;
-  PEERCHANNEL: 4;
+export enum PeerType {
+  PEERSELF = 0,
+  PEERUSER = 1,
+  PEERGROUP = 2,
+  PEEREXTERNALUSER = 3,
+  PEERCHANNEL = 4,
 }
 
-export const PeerType: PeerTypeMap;
-
-export interface UserStatusMap {
-  USERSTATUSOFFLINE: 0;
-  USERSTATUSONLINE: 1;
-  USERSTATUSRECENTLY: 2;
-  USERSTATUSLASTWEEK: 3;
-  USERSTATUSLASTMONTH: 4;
+export enum UserStatus {
+  USERSTATUSOFFLINE = 0,
+  USERSTATUSONLINE = 1,
+  USERSTATUSRECENTLY = 2,
+  USERSTATUSLASTWEEK = 3,
+  USERSTATUSLASTMONTH = 4,
 }
 
-export const UserStatus: UserStatusMap;
-
-export interface GroupFlagsMap {
-  GROUPFLAGSEMPTY: 0;
-  GROUPFLAGSCREATOR: 1;
-  GROUPFLAGSNONPARTICIPANT: 2;
-  GROUPFLAGSADMIN: 3;
-  GROUPFLAGSADMINSENABLED: 4;
-  GROUPFLAGSDEACTIVATED: 5;
+export enum GroupFlags {
+  GROUPFLAGSEMPTY = 0,
+  GROUPFLAGSCREATOR = 1,
+  GROUPFLAGSNONPARTICIPANT = 2,
+  GROUPFLAGSADMIN = 3,
+  GROUPFLAGSADMINSENABLED = 4,
+  GROUPFLAGSDEACTIVATED = 5,
 }
 
-export const GroupFlags: GroupFlagsMap;
-
-export interface ParticipantTypeMap {
-  PARTICIPANTTYPEMEMBER: 0;
-  PARTICIPANTTYPEADMIN: 1;
-  PARTICIPANTTYPECREATOR: 2;
+export enum ParticipantType {
+  PARTICIPANTTYPEMEMBER = 0,
+  PARTICIPANTTYPEADMIN = 1,
+  PARTICIPANTTYPECREATOR = 2,
 }
 
-export const ParticipantType: ParticipantTypeMap;
-
-export interface InputMediaTypeMap {
-  INPUTMEDIATYPEEMPTY: 0;
-  INPUTMEDIATYPEINVOICE: 1;
-  INPUTMEDIATYPEPOLL: 2;
-  INPUTMEDIATYPECONTACT: 3;
-  INPUTMEDIATYPEUPLOADEDDOCUMENT: 4;
-  INPUTMEDIATYPEDOCUMENT: 5;
-  INPUTMEDIATYPEGEOLOCATION: 6;
-  INPUTMEDIATYPEWEBDOCUMENT: 7;
-  INPUTMEDIATYPESEALED: 8;
-  INPUTMEDIATYPEMESSAGEDOCUMENT: 9;
-  INPUTMEDIATYPERESERVED4: 10;
-  INPUTMEDIATYPERESERVED5: 11;
-  INPUTMEDIATYPERESERVED6: 12;
-  INPUTMEDIATYPERESERVED7: 13;
-  INPUTMEDIATYPERESERVED8: 14;
+export enum InputMediaType {
+  INPUTMEDIATYPEEMPTY = 0,
+  INPUTMEDIATYPEINVOICE = 1,
+  INPUTMEDIATYPEPOLL = 2,
+  INPUTMEDIATYPECONTACT = 3,
+  INPUTMEDIATYPEUPLOADEDDOCUMENT = 4,
+  INPUTMEDIATYPEDOCUMENT = 5,
+  INPUTMEDIATYPEGEOLOCATION = 6,
+  INPUTMEDIATYPEWEBDOCUMENT = 7,
+  INPUTMEDIATYPESEALED = 8,
+  INPUTMEDIATYPEMESSAGEDOCUMENT = 9,
+  INPUTMEDIATYPERESERVED4 = 10,
+  INPUTMEDIATYPERESERVED5 = 11,
+  INPUTMEDIATYPERESERVED6 = 12,
+  INPUTMEDIATYPERESERVED7 = 13,
+  INPUTMEDIATYPERESERVED8 = 14,
 }
 
-export const InputMediaType: InputMediaTypeMap;
-
-export interface MediaTypeMap {
-  MEDIATYPEEMPTY: 0;
-  MEDIATYPEPOLL: 1;
-  MEDIATYPEDOCUMENT: 2;
-  MEDIATYPECONTACT: 3;
-  MEDIATYPEGEOLOCATION: 4;
-  MEDIATYPEINVOICE: 5;
-  MEDIATYPEWEBDOCUMENT: 6;
-  MEDIATYPESEALED: 7;
-  MEDIATYPERESERVED1: 8;
-  MEDIATYPERESERVED2: 9;
-  MEDIATYPERESERVED3: 10;
-  MEDIATYPERESERVED4: 11;
-  MEDIATYPERESERVED5: 12;
-  MEDIATYPERESERVED6: 13;
+export enum MediaType {
+  MEDIATYPEEMPTY = 0,
+  MEDIATYPEPOLL = 1,
+  MEDIATYPEDOCUMENT = 2,
+  MEDIATYPECONTACT = 3,
+  MEDIATYPEGEOLOCATION = 4,
+  MEDIATYPEINVOICE = 5,
+  MEDIATYPEWEBDOCUMENT = 6,
+  MEDIATYPESEALED = 7,
+  MEDIATYPERESERVED1 = 8,
+  MEDIATYPERESERVED2 = 9,
+  MEDIATYPERESERVED3 = 10,
+  MEDIATYPERESERVED4 = 11,
+  MEDIATYPERESERVED5 = 12,
+  MEDIATYPERESERVED6 = 13,
 }
 
-export const MediaType: MediaTypeMap;
-
-export interface MessageEntityTypeMap {
-  MESSAGEENTITYTYPEBOLD: 0;
-  MESSAGEENTITYTYPEITALIC: 1;
-  MESSAGEENTITYTYPEMENTION: 2;
-  MESSAGEENTITYTYPEURL: 3;
-  MESSAGEENTITYTYPEEMAIL: 4;
-  MESSAGEENTITYTYPEHASHTAG: 5;
-  MESSAGEENTITYTYPECODE: 6;
-  MESSAGEENTITYTYPEBOTCOMMAND: 7;
-  MESSAGEENTITYTYPEMENTIONALL: 8;
-  MESSAGEENTITYTYPERESERVED4: 9;
-  MESSAGEENTITYTYPERESERVED5: 10;
-  MESSAGEENTITYTYPERESERVED6: 11;
-  MESSAGEENTITYTYPERESERVED7: 12;
-  MESSAGEENTITYTYPERESERVED8: 13;
+export enum MessageEntityType {
+  MESSAGEENTITYTYPEBOLD = 0,
+  MESSAGEENTITYTYPEITALIC = 1,
+  MESSAGEENTITYTYPEMENTION = 2,
+  MESSAGEENTITYTYPEURL = 3,
+  MESSAGEENTITYTYPEEMAIL = 4,
+  MESSAGEENTITYTYPEHASHTAG = 5,
+  MESSAGEENTITYTYPECODE = 6,
+  MESSAGEENTITYTYPEBOTCOMMAND = 7,
+  MESSAGEENTITYTYPEMENTIONALL = 8,
+  MESSAGEENTITYTYPERESERVED4 = 9,
+  MESSAGEENTITYTYPERESERVED5 = 10,
+  MESSAGEENTITYTYPERESERVED6 = 11,
+  MESSAGEENTITYTYPERESERVED7 = 12,
+  MESSAGEENTITYTYPERESERVED8 = 13,
 }
 
-export const MessageEntityType: MessageEntityTypeMap;
-
-export interface PushTokenProviderMap {
-  PUSHTOKENFIREBASE: 0;
-  PUSHTOKENAPN: 1;
-  PUSHTOKENPUSHKIT: 2;
+export enum PushTokenProvider {
+  PUSHTOKENFIREBASE = 0,
+  PUSHTOKENAPN = 1,
+  PUSHTOKENPUSHKIT = 2,
 }
 
-export const PushTokenProvider: PushTokenProviderMap;
-
-export interface PrivacyKeyMap {
-  PRIVACYKEYNONE: 0;
-  PRIVACYKEYCHATINVITE: 1;
-  PRIVACYKEYLASTSEEN: 2;
-  PRIVACYKEYPHONENUMBER: 3;
-  PRIVACYKEYPROFILEPHOTO: 4;
-  PRIVACYKEYFORWARDEDMESSAGE: 5;
-  PRIVACYKEYCALL: 6;
-  PRIVACYKEYRESERVED1: 7;
-  PRIVACYKEYRESERVED2: 8;
-  PRIVACYKEYRESERVED3: 9;
-  PRIVACYKEYRESERVED4: 10;
-  PRIVACYKEYRESERVED5: 11;
-  PRIVACYKEYRESERVED6: 12;
+export enum PrivacyKey {
+  PRIVACYKEYNONE = 0,
+  PRIVACYKEYCHATINVITE = 1,
+  PRIVACYKEYLASTSEEN = 2,
+  PRIVACYKEYPHONENUMBER = 3,
+  PRIVACYKEYPROFILEPHOTO = 4,
+  PRIVACYKEYFORWARDEDMESSAGE = 5,
+  PRIVACYKEYCALL = 6,
+  PRIVACYKEYRESERVED1 = 7,
+  PRIVACYKEYRESERVED2 = 8,
+  PRIVACYKEYRESERVED3 = 9,
+  PRIVACYKEYRESERVED4 = 10,
+  PRIVACYKEYRESERVED5 = 11,
+  PRIVACYKEYRESERVED6 = 12,
 }
 
-export const PrivacyKey: PrivacyKeyMap;
-
-export interface PrivacyTypeMap {
-  PRIVACYTYPEALLOWALL: 0;
-  PRIVACYTYPEALLOWCONTACTS: 1;
-  PRIVACYTYPEDISALLOWALL: 2;
-  PRIVACYTYPEALLOWUSERS: 101;
-  PRIVACYTYPEDISALLOWUSERS: 102;
+export enum PrivacyType {
+  PRIVACYTYPEALLOWALL = 0,
+  PRIVACYTYPEALLOWCONTACTS = 1,
+  PRIVACYTYPEDISALLOWALL = 2,
+  PRIVACYTYPEALLOWUSERS = 101,
+  PRIVACYTYPEDISALLOWUSERS = 102,
 }
 
-export const PrivacyType: PrivacyTypeMap;
-
-export interface TeamFlagsMap {
-  TEAMFLAGSEMPTY: 0;
-  TEAMFLAGSCREATOR: 1;
-  TEAMFLAGSADMIN: 2;
-  TEAMFLAGSRESERVED1: 3;
-  TEAMFLAGSRESERVED2: 4;
-  TEAMFLAGSRESERVED3: 5;
-  TEAMFLAGSRESERVED4: 6;
-  TEAMFLAGSRESERVED5: 7;
+export enum TeamFlags {
+  TEAMFLAGSEMPTY = 0,
+  TEAMFLAGSCREATOR = 1,
+  TEAMFLAGSADMIN = 2,
+  TEAMFLAGSRESERVED1 = 3,
+  TEAMFLAGSRESERVED2 = 4,
+  TEAMFLAGSRESERVED3 = 5,
+  TEAMFLAGSRESERVED4 = 6,
+  TEAMFLAGSRESERVED5 = 7,
 }
-
-export const TeamFlags: TeamFlagsMap;
 

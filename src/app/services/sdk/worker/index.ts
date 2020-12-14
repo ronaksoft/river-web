@@ -1,12 +1,12 @@
 // @ts-ignore
-importScripts('/bin/wasm_exec.js?v6');
+importScripts('/bin/wasm_exec.js?v7');
 
 // @ts-ignore
 interface IWorker extends Worker {
     wasmLoad: (connInfo: string, serverKeys: string) => string | undefined;
     wasmSetServerTime: (time: number) => void;
     wasmAuth: (reqId: number, step: number, data?: string) => void;
-    wasmDecode: (withParse: boolean, arg: string) => void;
+    wasmDecode: (withParse: boolean, arg: string, reqId: number) => void;
     wasmEncode: (withSend: boolean, reqId: number, constructor: number, msg: string, teamId?: string, teamAccessHash?: string) => void;
     wasmGenSrpHash: (reqId: number, pass: string, algorithm: number, algorithmData: string) => void;
     wasmGenInputPassword: (reqId: number, pass: string, accountPass: string) => void;
@@ -34,9 +34,8 @@ const ctx: IWorker = self as any;
 
 // @ts-ignore
 const go = new Go();
-/* eslint-enable */
 
-let run: any;
+/* eslint-enable */
 
 const workerMessage = (cmd: string, data: any) => {
     ctx.postMessage({
@@ -57,13 +56,13 @@ const messageHandler = (cmd: string, data: any) => {
             fetch('/bin/river.wasm?v32').then((response) => {
                 WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
                     console.timeEnd('init');
-                    run = go.run(res.instance);
+                    go.run(res.instance);
                 }).catch((err) => {
                     console.log(err);
                     response.arrayBuffer().then((data) => {
                         WebAssembly.instantiate(data, go.importObject).then((res) => {
                             console.timeEnd('init');
-                            run = go.run(res.instance);
+                            go.run(res.instance);
                         });
                     });
                 });
@@ -76,6 +75,7 @@ const messageHandler = (cmd: string, data: any) => {
                 } else {
                     workerMessage('getServerTime', {});
                 }
+                workerMessage('ready', {});
             }
             break;
         case 'setServerTime':
@@ -90,7 +90,7 @@ const messageHandler = (cmd: string, data: any) => {
             break;
         case 'decode':
             if (ctx.wasmDecode) {
-                ctx.wasmDecode(data.withParse, data.data);
+                ctx.wasmDecode(data.withParse, data.data, data.reqId || 0);
             }
             break;
         case 'encode':
@@ -124,15 +124,21 @@ ctx.jsEncode = (withSend, reqId, msg) => {
 };
 
 ctx.jsUpdate = (msg) => {
-    console.log(msg);
+    workerMessage('update', msg);
 };
 
 ctx.jsGenSrpHash = (reqId, msg) => {
-    console.log(reqId, msg);
+    workerMessage('genSrpHash', {
+        msg,
+        reqId,
+    });
 };
 
 ctx.jsGenInputPassword = (reqId, msg) => {
-    console.log(reqId, msg);
+    workerMessage('genInputPassword', {
+        msg,
+        reqId,
+    });
 };
 
 ctx.jsSave = (data) => {
@@ -140,7 +146,7 @@ ctx.jsSave = (data) => {
 };
 
 ctx.jsAuthProgress = (progress) => {
-    console.log('progress', progress);
+    workerMessage('authProgress', progress);
 };
 
 ctx.jsLoaded = () => {

@@ -111,7 +111,7 @@ import {
     InputDocument,
     InputFile,
     InputFileLocation,
-    InputMediaType, InputMediaTypeMap,
+    InputMediaType,
     InputPeer,
     InputUser,
     MediaType,
@@ -119,7 +119,7 @@ import {
     MessageEntityType,
     PeerNotifySettings,
     PeerType,
-    TypingAction, TypingActionMap,
+    TypingAction,
 } from "../../services/sdk/messages/core.types_pb";
 import {
     UpdateDialogPinned,
@@ -2046,7 +2046,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private chatInputTypingHandler = (typing: TypingActionMap, forcePeer?: InputPeer) => {
+    private chatInputTypingHandler = (typing: TypingAction, forcePeer?: InputPeer) => {
         const peer = forcePeer || this.peer;
         if (peer === null) {
             return;
@@ -4133,7 +4133,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Resend media message */
-    private resendMediaMessage(randomId: number, message: IMessage, fileNames: string[], data: any, inputMediaType?: InputMediaTypeMap) {
+    private resendMediaMessage(randomId: number, message: IMessage, fileNames: string[], data: any, inputMediaType?: InputMediaType) {
         const peerInfo = this.getPeerByName(GetPeerName(message.peerid, message.peertype));
         if (!peerInfo || !peerInfo.peer) {
             return;
@@ -5313,7 +5313,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Update dialog draft message cleared handler */
-    private updateDraftMessageClearedHandler = (data: UpdateDraftMessageCleared.AsObject) => {
+    private updateDraftMessageClearedHandler = (data: Partial<UpdateDraftMessageCleared.AsObject>) => {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         this.updateDialogsCounter(peerName, {draft: {}});
         if (this.chatInputRef && this.selectedPeerName === peerName) {

@@ -12,11 +12,12 @@ import CachedFileService from '../../services/cachedFileService';
 import {InputFileLocation} from '../../services/sdk/messages/core.types_pb';
 import {CSSProperties} from 'react';
 import {GetDbFileName} from "../../repository/file";
+import {SetOptional} from "type-fest";
 
 interface IProps {
     blur?: number;
     className?: string;
-    fileLocation: InputFileLocation.AsObject;
+    fileLocation: SetOptional<InputFileLocation.AsObject, 'version'>;
     mimeType: string;
     onClick?: (e: any) => void;
     onLoad?: () => void;

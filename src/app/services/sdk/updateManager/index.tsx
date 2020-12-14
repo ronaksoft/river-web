@@ -9,7 +9,7 @@
 
 // eslint-disable-next-line
 import {C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../const';
-import {UpdateContainer, UpdateEnvelope, UserStatus} from '../messages/core.types_pb';
+import {UpdateContainer, UpdateEnvelope, UserMessage, UserStatus} from '../messages/core.types_pb';
 import {
     UpdateDialogPinned,
     UpdateDifference,
@@ -93,7 +93,7 @@ export interface IGifUse {
     time: number;
 }
 
-interface IUpdateContainer extends UpdateContainer.AsObject {
+interface IUpdateContainer extends Partial<UpdateContainer.AsObject> {
     lastOne?: boolean;
 }
 
@@ -667,7 +667,7 @@ export default class UpdateManager {
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateNewMessage);
                 const message = MessageRepo.parseMessage(updateNewMessage.message, currentUserId);
-                updateNewMessage.message = message;
+                updateNewMessage.message = message as UserMessage.AsObject;
                 if (!this.callUpdateHandler(message.teamid || '0', update.constructor, updateNewMessage)) {
                     this.callHandlers('all', C_MSG.UpdateNewMessageOther, updateNewMessage);
                 }
@@ -754,7 +754,7 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateMessageEdited);
-                updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, currentUserId);
+                updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, currentUserId) as UserMessage.AsObject;
                 this.callUpdateHandler(updateMessageEdited.message.teamid || '0', update.constructor, updateMessageEdited);
                 // Update message
                 this.mergeMessage(transaction.messages, undefined, updateMessageEdited.message);

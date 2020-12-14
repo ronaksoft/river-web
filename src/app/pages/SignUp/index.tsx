@@ -85,7 +85,7 @@ interface IState {
     tries: number;
     workspace: string;
     workspaceError: string;
-    workspaceInfo: SystemInfo.AsObject;
+    workspaceInfo: Partial<SystemInfo.AsObject>;
 }
 
 class SignUp extends React.Component<IProps, IState> {
@@ -476,7 +476,6 @@ class SignUp extends React.Component<IProps, IState> {
                     this.initPhoneInput();
                 });
                 if (res.storageurl && res.storageurl.length > 0) {
-                    localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, res.storageurl || '');
                     localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
@@ -869,11 +868,7 @@ class SignUp extends React.Component<IProps, IState> {
                 }, () => {
                     this.focus('f-phone');
                 });
-                if (res.storageurl && res.storageurl.length > 0) {
-                    localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, res.storageurl || '');
-                    // localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
-                    FileManager.getInstance().setUrl(res.storageurl);
-                }
+                FileManager.getInstance().setUrl(this.state.workspace);
             });
         }
     }

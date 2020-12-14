@@ -71,8 +71,8 @@ export class AccountRegisterDevice extends jspb.Message {
   getLangcode(): string;
   setLangcode(value: string): void;
 
-  getTokentype(): core_types_pb.PushTokenProviderMap[keyof core_types_pb.PushTokenProviderMap];
-  setTokentype(value: core_types_pb.PushTokenProviderMap[keyof core_types_pb.PushTokenProviderMap]): void;
+  getTokentype(): core_types_pb.PushTokenProvider;
+  setTokentype(value: core_types_pb.PushTokenProvider): void;
 
   getClientid(): string;
   setClientid(value: string): void;
@@ -94,7 +94,7 @@ export namespace AccountRegisterDevice {
     systemversion: string,
     appversion: string,
     langcode: string,
-    tokentype: core_types_pb.PushTokenProviderMap[keyof core_types_pb.PushTokenProviderMap],
+    tokentype: core_types_pb.PushTokenProvider,
     clientid: string,
   }
 }
@@ -392,8 +392,8 @@ export namespace AccountSetPrivacy {
 }
 
 export class AccountGetPrivacy extends jspb.Message {
-  getKey(): core_types_pb.PrivacyKeyMap[keyof core_types_pb.PrivacyKeyMap];
-  setKey(value: core_types_pb.PrivacyKeyMap[keyof core_types_pb.PrivacyKeyMap]): void;
+  getKey(): core_types_pb.PrivacyKey;
+  setKey(value: core_types_pb.PrivacyKey): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountGetPrivacy.AsObject;
@@ -407,7 +407,7 @@ export class AccountGetPrivacy extends jspb.Message {
 
 export namespace AccountGetPrivacy {
   export type AsObject = {
-    key: core_types_pb.PrivacyKeyMap[keyof core_types_pb.PrivacyKeyMap],
+    key: core_types_pb.PrivacyKey,
   }
 }
 

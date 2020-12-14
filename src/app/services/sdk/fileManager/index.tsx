@@ -10,7 +10,7 @@
 import Http from './http';
 import {C_LOCALSTORAGE, C_MSG} from '../const';
 import {File, FileGet, FileSavePart} from '../messages/files_pb';
-import {Bool, FileLocation, InputTeam, MessageContainer, MessageEnvelope} from '../messages/core.types_pb';
+import {Bool, FileLocation, InputTeam} from '../messages/core.types_pb';
 import FileRepo, {GetDbFileName, md5FromBlob} from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
@@ -22,6 +22,7 @@ import IframeService from "../../iframe";
 import {isMobile} from "../../utilities/localize";
 import Presenter from "../presenters";
 import APIManager from "../index";
+import {MessageContainer, MessageEnvelope} from "../messages/rony_pb";
 
 export interface IFileProgress {
     active?: boolean;

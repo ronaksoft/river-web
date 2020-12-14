@@ -13,10 +13,11 @@ import FileRepo from "../../repository/file";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
 import {InputFileLocation} from "../../services/sdk/messages/core.types_pb";
 import {transformMimeType} from "./helper";
+import {SetOptional} from "type-fest";
 
 interface IProps {
     msgId: number;
-    fileLocation: InputFileLocation.AsObject;
+    fileLocation: SetOptional<InputFileLocation.AsObject, 'version'>;
     onStartDownload: (msgId: number) => void;
     autoPlay?: boolean;
     className?: string;
