@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"git.ronaksoftware.com/river/msg/msg"
+	"git.ronaksoft.com/river/msg/go/msg"
 	"math/rand"
 	"strconv"
 	"syscall/js"

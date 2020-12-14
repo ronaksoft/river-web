@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"git.ronaksoftware.com/river/msg/msg"
+	"git.ronaksoft.com/river/msg/go/msg"
 )
 
 var (
