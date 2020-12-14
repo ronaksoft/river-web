@@ -1,31 +1,34 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+
+option go_package = '.;msg';
+
 
 // PhoneInitCall
 // @Function
 // @Return: PhoneInit
 message PhoneInitCall {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
 }
 
 // PhoneRequestCall
 // @Function
 // @Return: PhoneCall
 message PhoneRequestCall {
-    required int64 RandomID = 1;
-    required InputPeer Peer = 2;
-    required bool Initiator = 3;
+    int64 RandomID = 1;
+    InputPeer Peer = 2;
+    bool Initiator = 3;
     repeated PhoneParticipantSDP Participants = 4;
-    optional int64 CallID = 5 [jstype = JS_STRING];
+    int64 CallID = 5 [jstype = JS_STRING];
 }
 
 // PhoneAcceptCall
 // @Function
 // @Return: PhoneCall
 message PhoneAcceptCall {
-    required InputPeer Peer = 1;
-    required int64 CallID = 2 [jstype = JS_STRING];
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
     repeated PhoneParticipantSDP Participants = 3;
 }
 
@@ -50,31 +53,31 @@ enum DiscardReason {
 // @Function
 // @Return: Bool
 message PhoneDiscardCall {
-    required InputPeer Peer = 1;
-    required int64 CallID = 2 [jstype = JS_STRING];
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
     repeated InputUser Participants = 3;
-    required int32 Duration = 4;
-    required DiscardReason Reason = 5;
+    int32 Duration = 4;
+    DiscardReason Reason = 5;
 }
 
 // PhoneUpdateCall
 // @Function
 // @Return: Bool
 message PhoneUpdateCall {
-    required InputPeer Peer = 1;
-    required int64 CallID = 2 [jstype = JS_STRING];
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
     repeated InputUser Participants = 3;
-    required PhoneCallAction Action = 7;
-    required bytes ActionData = 8;
+    PhoneCallAction Action = 7;
+    bytes ActionData = 8;
 }
 
 // PhoneRateCall
 // @Function
 message PhoneRateCall {
-    required InputPeer Peer = 1;
-    required int64 CallID = 2 [jstype = JS_STRING];
-    required int32 Rate = 3;
-    optional string Comment = 4;
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
+    int32 Rate = 3;
+    string Comment = 4;
 }
 
 enum PhoneCallAction {
@@ -106,8 +109,8 @@ enum PhoneCallAction {
 
 // PhoneCall
 message PhoneCall {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required int64 Date = 2;
+    int64 ID = 1 [jstype = JS_STRING];
+    int64 Date = 2;
 }
 
 // PhoneInit
@@ -118,83 +121,83 @@ message PhoneInit {
 // IceServer
 message IceServer {
     repeated string Urls = 1;
-    optional string Username = 2;
-    optional string Credential = 3;
+    string Username = 2;
+    string Credential = 3;
 }
 
 // PhoneParticipant
 message PhoneParticipant {
-    required int32 ConnectionId = 1;
-    required InputUser Peer = 2;
-    required bool Initiator = 3;
-    required bool Admin = 4;
+    int32 ConnectionId = 1;
+    InputUser Peer = 2;
+    bool Initiator = 3;
+    bool Admin = 4;
 }
 
 // PhoneParticipantSDP
 message PhoneParticipantSDP {
-    required int32 ConnectionId = 1;
-    required InputUser Peer = 2;
-    required string SDP = 3;
-    required string Type = 4;
+    int32 ConnectionId = 1;
+    InputUser Peer = 2;
+    string SDP = 3;
+    string Type = 4;
 }
 
 // PhoneActionCallEmpty
 message PhoneActionCallEmpty {
-    optional bool Empty = 1;
+    bool Empty = 1;
 }
 
 // PhoneActionAccepted
 message PhoneActionAccepted {
-    required string SDP = 1;
-    required string Type = 2;
+    string SDP = 1;
+    string Type = 2;
 }
 
 // PhoneActionRequested
 message PhoneActionRequested {
-    required string SDP = 1;
-    required string Type = 2;
+    string SDP = 1;
+    string Type = 2;
     repeated PhoneParticipant Participants = 3;
 }
 
 // PhoneActionCallWaiting
 message PhoneActionCallWaiting {
-    optional bool Empty = 1;
+    bool Empty = 1;
 }
 
 // PhoneActionDiscarded
 message PhoneActionDiscarded {
-    required int32 Duration = 1;
-    required bool Video = 2;
-    required DiscardReason Reason = 3;
+    int32 Duration = 1;
+    bool Video = 2;
+    DiscardReason Reason = 3;
 }
 
 // PhoneActionIceExchange
 message PhoneActionIceExchange {
-    required string Candidate = 1;
-    optional int64 SdpMLineIndex = 2;
-    optional string SdpMid = 3;
-    optional string UsernameFragment = 4;
+    string Candidate = 1;
+    int64 SdpMLineIndex = 2;
+    string SdpMid = 3;
+    string UsernameFragment = 4;
 }
 
 // PhoneMediaSettingsUpdated
 message PhoneMediaSettingsUpdated {
-    required bool Video = 1;
-    required bool Audio = 2;
+    bool Video = 1;
+    bool Audio = 2;
 }
 
 // PhoneReactionSet
 message PhoneReactionSet {
-    required string Reaction = 1;
+    string Reaction = 1;
 }
 
 // PhoneSDPOffer
 message PhoneSDPOffer {
-    required string SDP = 1;
-    required string Type = 2;
+    string SDP = 1;
+    string Type = 2;
 }
 
 // PhoneSDPAnswer
 message PhoneSDPAnswer {
-    required string SDP = 1;
-    required string Type = 2;
+    string SDP = 1;
+    string Type = 2;
 }

@@ -1,6 +1,7 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+option go_package = '.;msg';
 
 // UsersGet
 // @Function
@@ -19,5 +20,5 @@ message UsersGetFull {
 // UsersMany
 message UsersMany {
     repeated User Users = 1;
-    optional bool Empty = 5;
+    bool Empty = 5;
 }

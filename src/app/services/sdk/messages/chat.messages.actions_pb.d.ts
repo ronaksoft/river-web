@@ -50,9 +50,7 @@ export namespace MessageActionGroupDeleteUser {
 }
 
 export class MessageActionGroupCreated extends jspb.Message {
-  hasGrouptitle(): boolean;
-  clearGrouptitle(): void;
-  getGrouptitle(): string | undefined;
+  getGrouptitle(): string;
   setGrouptitle(value: string): void;
 
   clearUseridsList(): void;
@@ -72,15 +70,13 @@ export class MessageActionGroupCreated extends jspb.Message {
 
 export namespace MessageActionGroupCreated {
   export type AsObject = {
-    grouptitle?: string,
+    grouptitle: string,
     useridsList: Array<string>,
   }
 }
 
 export class MessageActionGroupTitleChanged extends jspb.Message {
-  hasGrouptitle(): boolean;
-  clearGrouptitle(): void;
-  getGrouptitle(): string | undefined;
+  getGrouptitle(): string;
   setGrouptitle(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -95,7 +91,7 @@ export class MessageActionGroupTitleChanged extends jspb.Message {
 
 export namespace MessageActionGroupTitleChanged {
   export type AsObject = {
-    grouptitle?: string,
+    grouptitle: string,
   }
 }
 
@@ -122,14 +118,10 @@ export namespace MessageActionGroupPhotoChanged {
 }
 
 export class MessageActionClearHistory extends jspb.Message {
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
-  hasDelete(): boolean;
-  clearDelete(): void;
-  getDelete(): boolean | undefined;
+  getDelete(): boolean;
   setDelete(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -144,8 +136,8 @@ export class MessageActionClearHistory extends jspb.Message {
 
 export namespace MessageActionClearHistory {
   export type AsObject = {
-    maxid?: number,
-    pb_delete?: boolean,
+    maxid: number,
+    pb_delete: boolean,
   }
 }
 
@@ -166,14 +158,10 @@ export namespace MessageActionContactRegistered {
 }
 
 export class MessageActionScreenShotTaken extends jspb.Message {
-  hasMinid(): boolean;
-  clearMinid(): void;
-  getMinid(): number | undefined;
+  getMinid(): number;
   setMinid(value: number): void;
 
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -188,15 +176,13 @@ export class MessageActionScreenShotTaken extends jspb.Message {
 
 export namespace MessageActionScreenShotTaken {
   export type AsObject = {
-    minid?: number,
-    maxid?: number,
+    minid: number,
+    maxid: number,
   }
 }
 
 export class MessageActionThreadClosed extends jspb.Message {
-  hasThreadid(): boolean;
-  clearThreadid(): void;
-  getThreadid(): number | undefined;
+  getThreadid(): number;
   setThreadid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -211,7 +197,7 @@ export class MessageActionThreadClosed extends jspb.Message {
 
 export namespace MessageActionThreadClosed {
   export type AsObject = {
-    threadid?: number,
+    threadid: number,
   }
 }
 

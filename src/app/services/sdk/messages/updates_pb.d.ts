@@ -25,14 +25,10 @@ export namespace UpdateGetState {
 }
 
 export class UpdateGetDifference extends jspb.Message {
-  hasFrom(): boolean;
-  clearFrom(): void;
-  getFrom(): number | undefined;
+  getFrom(): number;
   setFrom(value: number): void;
 
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -47,25 +43,19 @@ export class UpdateGetDifference extends jspb.Message {
 
 export namespace UpdateGetDifference {
   export type AsObject = {
-    from?: number,
-    limit?: number,
+    from: number,
+    limit: number,
   }
 }
 
 export class UpdateDifference extends jspb.Message {
-  hasMore(): boolean;
-  clearMore(): void;
-  getMore(): boolean | undefined;
+  getMore(): boolean;
   setMore(value: boolean): void;
 
-  hasMaxupdateid(): boolean;
-  clearMaxupdateid(): void;
-  getMaxupdateid(): number | undefined;
+  getMaxupdateid(): number;
   setMaxupdateid(value: number): void;
 
-  hasMinupdateid(): boolean;
-  clearMinupdateid(): void;
-  getMinupdateid(): number | undefined;
+  getMinupdateid(): number;
   setMinupdateid(value: number): void;
 
   clearUpdatesList(): void;
@@ -83,9 +73,7 @@ export class UpdateDifference extends jspb.Message {
   setGroupsList(value: Array<core_types_pb.Group>): void;
   addGroups(value?: core_types_pb.Group, index?: number): core_types_pb.Group;
 
-  hasCurrentupdateid(): boolean;
-  clearCurrentupdateid(): void;
-  getCurrentupdateid(): number | undefined;
+  getCurrentupdateid(): number;
   setCurrentupdateid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -100,13 +88,13 @@ export class UpdateDifference extends jspb.Message {
 
 export namespace UpdateDifference {
   export type AsObject = {
-    more?: boolean,
-    maxupdateid?: number,
-    minupdateid?: number,
+    more: boolean,
+    maxupdateid: number,
+    minupdateid: number,
     updatesList: Array<core_types_pb.UpdateEnvelope.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
     groupsList: Array<core_types_pb.Group.AsObject>,
-    currentupdateid?: number,
+    currentupdateid: number,
   }
 }
 
@@ -127,9 +115,7 @@ export namespace UpdateTooLong {
 }
 
 export class UpdateState extends jspb.Message {
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -144,24 +130,18 @@ export class UpdateState extends jspb.Message {
 
 export namespace UpdateState {
   export type AsObject = {
-    updateid?: number,
+    updateid: number,
   }
 }
 
 export class UpdateMessageID extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -176,41 +156,33 @@ export class UpdateMessageID extends jspb.Message {
 
 export namespace UpdateMessageID {
   export type AsObject = {
-    ucount?: number,
-    messageid?: number,
-    randomid?: number,
+    ucount: number,
+    messageid: number,
+    randomid: number,
   }
 }
 
 export class UpdateNewMessage extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   hasMessage(): boolean;
   clearMessage(): void;
-  getMessage(): core_types_pb.UserMessage;
+  getMessage(): core_types_pb.UserMessage | undefined;
   setMessage(value?: core_types_pb.UserMessage): void;
 
   hasSender(): boolean;
   clearSender(): void;
-  getSender(): core_types_pb.User;
+  getSender(): core_types_pb.User | undefined;
   setSender(value?: core_types_pb.User): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
-  hasSenderrefid(): boolean;
-  clearSenderrefid(): void;
-  getSenderrefid(): number | undefined;
+  getSenderrefid(): number;
   setSenderrefid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -225,29 +197,25 @@ export class UpdateNewMessage extends jspb.Message {
 
 export namespace UpdateNewMessage {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    message: core_types_pb.UserMessage.AsObject,
-    sender: core_types_pb.User.AsObject,
-    accesshash?: string,
-    senderrefid?: number,
+    ucount: number,
+    updateid: number,
+    message?: core_types_pb.UserMessage.AsObject,
+    sender?: core_types_pb.User.AsObject,
+    accesshash: string,
+    senderrefid: number,
   }
 }
 
 export class UpdateMessageEdited extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   hasMessage(): boolean;
   clearMessage(): void;
-  getMessage(): core_types_pb.UserMessage;
+  getMessage(): core_types_pb.UserMessage | undefined;
   setMessage(value?: core_types_pb.UserMessage): void;
 
   serializeBinary(): Uint8Array;
@@ -262,26 +230,20 @@ export class UpdateMessageEdited extends jspb.Message {
 
 export namespace UpdateMessageEdited {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    message: core_types_pb.UserMessage.AsObject,
+    ucount: number,
+    updateid: number,
+    message?: core_types_pb.UserMessage.AsObject,
   }
 }
 
 export class UpdateMessagesDeleted extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   clearMessageidsList(): void;
@@ -306,38 +268,30 @@ export class UpdateMessagesDeleted extends jspb.Message {
 
 export namespace UpdateMessagesDeleted {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
+    ucount: number,
+    updateid: number,
+    teamid: string,
     messageidsList: Array<number>,
     peer?: core_types_pb.Peer.AsObject,
   }
 }
 
 export class UpdateReadHistoryInbox extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -352,43 +306,33 @@ export class UpdateReadHistoryInbox extends jspb.Message {
 
 export namespace UpdateReadHistoryInbox {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    peer: core_types_pb.Peer.AsObject,
-    maxid?: number,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
+    maxid: number,
   }
 }
 
 export class UpdateReadHistoryOutbox extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -403,49 +347,37 @@ export class UpdateReadHistoryOutbox extends jspb.Message {
 
 export namespace UpdateReadHistoryOutbox {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    peer: core_types_pb.Peer.AsObject,
-    maxid?: number,
-    userid?: number,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
+    maxid: number,
+    userid: number,
   }
 }
 
 export class UpdateMessagePinned extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
-  hasMsgid(): boolean;
-  clearMsgid(): void;
-  getMsgid(): number | undefined;
+  getMsgid(): number;
   setMsgid(value: number): void;
 
-  hasVersion(): boolean;
-  clearVersion(): void;
-  getVersion(): number | undefined;
+  getVersion(): number;
   setVersion(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -460,45 +392,33 @@ export class UpdateMessagePinned extends jspb.Message {
 
 export namespace UpdateMessagePinned {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    peer: core_types_pb.Peer.AsObject,
-    userid?: number,
-    msgid?: number,
-    version?: number,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
+    userid: number,
+    msgid: number,
+    version: number,
   }
 }
 
 export class UpdateUserTyping extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasAction(): boolean;
-  clearAction(): void;
-  getAction(): core_types_pb.TypingAction | undefined;
-  setAction(value: core_types_pb.TypingAction): void;
+  getAction(): core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap];
+  setAction(value: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap]): void;
 
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
+  getPeerid(): string;
   setPeerid(value: string): void;
 
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
+  getPeertype(): number;
   setPeertype(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -513,29 +433,23 @@ export class UpdateUserTyping extends jspb.Message {
 
 export namespace UpdateUserTyping {
   export type AsObject = {
-    ucount?: number,
-    teamid?: string,
-    userid?: string,
-    action?: core_types_pb.TypingAction,
-    peerid?: string,
-    peertype?: number,
+    ucount: number,
+    teamid: string,
+    userid: string,
+    action: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap],
+    peerid: string,
+    peertype: number,
   }
 }
 
 export class UpdateUserStatus extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasStatus(): boolean;
-  clearStatus(): void;
-  getStatus(): number | undefined;
+  getStatus(): number;
   setStatus(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -550,51 +464,35 @@ export class UpdateUserStatus extends jspb.Message {
 
 export namespace UpdateUserStatus {
   export type AsObject = {
-    ucount?: number,
-    userid?: string,
-    status?: number,
+    ucount: number,
+    userid: string,
+    status: number,
   }
 }
 
 export class UpdateUsername extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasBio(): boolean;
-  clearBio(): void;
-  getBio(): string | undefined;
+  getBio(): string;
   setBio(value: string): void;
 
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -609,31 +507,25 @@ export class UpdateUsername extends jspb.Message {
 
 export namespace UpdateUsername {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    userid?: string,
-    username?: string,
-    firstname?: string,
-    lastname?: string,
-    bio?: string,
-    phone?: string,
+    ucount: number,
+    updateid: number,
+    userid: string,
+    username: string,
+    firstname: string,
+    lastname: string,
+    bio: string,
+    phone: string,
   }
 }
 
 export class UpdateUserPhoto extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
   hasPhoto(): boolean;
@@ -641,9 +533,7 @@ export class UpdateUserPhoto extends jspb.Message {
   getPhoto(): core_types_pb.UserPhoto | undefined;
   setPhoto(value?: core_types_pb.UserPhoto): void;
 
-  hasPhotoid(): boolean;
-  clearPhotoid(): void;
-  getPhotoid(): string | undefined;
+  getPhotoid(): string;
   setPhotoid(value: string): void;
 
   clearDeletedphotoidsList(): void;
@@ -663,44 +553,36 @@ export class UpdateUserPhoto extends jspb.Message {
 
 export namespace UpdateUserPhoto {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    userid?: string,
+    ucount: number,
+    updateid: number,
+    userid: string,
     photo?: core_types_pb.UserPhoto.AsObject,
-    photoid?: string,
+    photoid: string,
     deletedphotoidsList: Array<string>,
   }
 }
 
 export class UpdateNotifySettings extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
   hasNotifypeer(): boolean;
   clearNotifypeer(): void;
-  getNotifypeer(): core_types_pb.Peer;
+  getNotifypeer(): core_types_pb.Peer | undefined;
   setNotifypeer(value?: core_types_pb.Peer): void;
 
   hasSettings(): boolean;
   clearSettings(): void;
-  getSettings(): core_types_pb.PeerNotifySettings;
+  getSettings(): core_types_pb.PeerNotifySettings | undefined;
   setSettings(value?: core_types_pb.PeerNotifySettings): void;
 
   serializeBinary(): Uint8Array;
@@ -715,44 +597,32 @@ export class UpdateNotifySettings extends jspb.Message {
 
 export namespace UpdateNotifySettings {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    userid?: string,
-    notifypeer: core_types_pb.Peer.AsObject,
-    settings: core_types_pb.PeerNotifySettings.AsObject,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    userid: string,
+    notifypeer?: core_types_pb.Peer.AsObject,
+    settings?: core_types_pb.PeerNotifySettings.AsObject,
   }
 }
 
 export class UpdateGroupParticipantAdd extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasInviterid(): boolean;
-  clearInviterid(): void;
-  getInviterid(): string | undefined;
+  getInviterid(): string;
   setInviterid(value: string): void;
 
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
+  getDate(): number;
   setDate(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -767,34 +637,26 @@ export class UpdateGroupParticipantAdd extends jspb.Message {
 
 export namespace UpdateGroupParticipantAdd {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    groupid?: string,
-    userid?: string,
-    inviterid?: string,
-    date?: number,
+    ucount: number,
+    updateid: number,
+    groupid: string,
+    userid: string,
+    inviterid: string,
+    date: number,
   }
 }
 
 export class UpdateGroupParticipantDeleted extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -809,37 +671,27 @@ export class UpdateGroupParticipantDeleted extends jspb.Message {
 
 export namespace UpdateGroupParticipantDeleted {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    groupid?: string,
-    userid?: string,
+    ucount: number,
+    updateid: number,
+    groupid: string,
+    userid: string,
   }
 }
 
 export class UpdateGroupParticipantAdmin extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasIsadmin(): boolean;
-  clearIsadmin(): void;
-  getIsadmin(): boolean | undefined;
+  getIsadmin(): boolean;
   setIsadmin(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -854,33 +706,25 @@ export class UpdateGroupParticipantAdmin extends jspb.Message {
 
 export namespace UpdateGroupParticipantAdmin {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    groupid?: string,
-    userid?: string,
-    isadmin?: boolean,
+    ucount: number,
+    updateid: number,
+    groupid: string,
+    userid: string,
+    isadmin: boolean,
   }
 }
 
 export class UpdateGroupAdmins extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
-  hasAdminenabled(): boolean;
-  clearAdminenabled(): void;
-  getAdminenabled(): boolean | undefined;
+  getAdminenabled(): boolean;
   setAdminenabled(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -895,27 +739,21 @@ export class UpdateGroupAdmins extends jspb.Message {
 
 export namespace UpdateGroupAdmins {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    groupid?: string,
-    adminenabled?: boolean,
+    ucount: number,
+    updateid: number,
+    groupid: string,
+    adminenabled: boolean,
   }
 }
 
 export class UpdateGroupPhoto extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
   hasPhoto(): boolean;
@@ -923,9 +761,7 @@ export class UpdateGroupPhoto extends jspb.Message {
   getPhoto(): core_types_pb.GroupPhoto | undefined;
   setPhoto(value?: core_types_pb.GroupPhoto): void;
 
-  hasPhotoid(): boolean;
-  clearPhotoid(): void;
-  getPhotoid(): string | undefined;
+  getPhotoid(): string;
   setPhotoid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -940,28 +776,22 @@ export class UpdateGroupPhoto extends jspb.Message {
 
 export namespace UpdateGroupPhoto {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    groupid?: string,
+    ucount: number,
+    updateid: number,
+    groupid: string,
     photo?: core_types_pb.GroupPhoto.AsObject,
-    photoid?: string,
+    photoid: string,
   }
 }
 
 export class UpdateReadMessagesContents extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   clearMessageidsList(): void;
@@ -971,7 +801,7 @@ export class UpdateReadMessagesContents extends jspb.Message {
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
   serializeBinary(): Uint8Array;
@@ -986,23 +816,19 @@ export class UpdateReadMessagesContents extends jspb.Message {
 
 export namespace UpdateReadMessagesContents {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
+    ucount: number,
+    updateid: number,
+    teamid: string,
     messageidsList: Array<number>,
-    peer: core_types_pb.Peer.AsObject,
+    peer?: core_types_pb.Peer.AsObject,
   }
 }
 
 export class UpdateAuthorizationReset extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1017,25 +843,21 @@ export class UpdateAuthorizationReset extends jspb.Message {
 
 export namespace UpdateAuthorizationReset {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
+    ucount: number,
+    updateid: number,
   }
 }
 
 export class UpdateDraftMessage extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   hasMessage(): boolean;
   clearMessage(): void;
-  getMessage(): core_types_pb.DraftMessage;
+  getMessage(): core_types_pb.DraftMessage | undefined;
   setMessage(value?: core_types_pb.DraftMessage): void;
 
   serializeBinary(): Uint8Array;
@@ -1050,31 +872,25 @@ export class UpdateDraftMessage extends jspb.Message {
 
 export namespace UpdateDraftMessage {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    message: core_types_pb.DraftMessage.AsObject,
+    ucount: number,
+    updateid: number,
+    message?: core_types_pb.DraftMessage.AsObject,
   }
 }
 
 export class UpdateDraftMessageCleared extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
   serializeBinary(): Uint8Array;
@@ -1089,37 +905,29 @@ export class UpdateDraftMessageCleared extends jspb.Message {
 
 export namespace UpdateDraftMessageCleared {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    peer: core_types_pb.Peer.AsObject,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
   }
 }
 
 export class UpdateDialogPinned extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  hasPinned(): boolean;
-  clearPinned(): void;
-  getPinned(): boolean | undefined;
+  getPinned(): boolean;
   setPinned(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -1134,23 +942,19 @@ export class UpdateDialogPinned extends jspb.Message {
 
 export namespace UpdateDialogPinned {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    peer: core_types_pb.Peer.AsObject,
-    pinned?: boolean,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
+    pinned: boolean,
   }
 }
 
 export class UpdateDialogPinnedReorder extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   clearPeerList(): void;
@@ -1170,21 +974,17 @@ export class UpdateDialogPinnedReorder extends jspb.Message {
 
 export namespace UpdateDialogPinnedReorder {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
+    ucount: number,
+    updateid: number,
     peerList: Array<core_types_pb.Peer.AsObject>,
   }
 }
 
 export class UpdateAccountPrivacy extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   clearChatinviteList(): void;
@@ -1229,8 +1029,8 @@ export class UpdateAccountPrivacy extends jspb.Message {
 
 export namespace UpdateAccountPrivacy {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
+    ucount: number,
+    updateid: number,
     chatinviteList: Array<core_types_pb.PrivacyRule.AsObject>,
     lastseenList: Array<core_types_pb.PrivacyRule.AsObject>,
     phonenumberList: Array<core_types_pb.PrivacyRule.AsObject>,
@@ -1241,24 +1041,18 @@ export namespace UpdateAccountPrivacy {
 }
 
 export class UpdateLabelItemsAdded extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
   clearMessageidsList(): void;
@@ -1288,10 +1082,10 @@ export class UpdateLabelItemsAdded extends jspb.Message {
 
 export namespace UpdateLabelItemsAdded {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    peer: core_types_pb.Peer.AsObject,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
     messageidsList: Array<number>,
     labelidsList: Array<number>,
     labelsList: Array<core_types_pb.Label.AsObject>,
@@ -1299,24 +1093,18 @@ export namespace UpdateLabelItemsAdded {
 }
 
 export class UpdateLabelItemsRemoved extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
   clearMessageidsList(): void;
@@ -1346,10 +1134,10 @@ export class UpdateLabelItemsRemoved extends jspb.Message {
 
 export namespace UpdateLabelItemsRemoved {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    peer: core_types_pb.Peer.AsObject,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
     messageidsList: Array<number>,
     labelidsList: Array<number>,
     labelsList: Array<core_types_pb.Label.AsObject>,
@@ -1357,14 +1145,10 @@ export namespace UpdateLabelItemsRemoved {
 }
 
 export class UpdateLabelSet extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   clearLabelsList(): void;
@@ -1384,21 +1168,17 @@ export class UpdateLabelSet extends jspb.Message {
 
 export namespace UpdateLabelSet {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
+    ucount: number,
+    updateid: number,
     labelsList: Array<core_types_pb.Label.AsObject>,
   }
 }
 
 export class UpdateLabelDeleted extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   clearLabelidsList(): void;
@@ -1418,31 +1198,23 @@ export class UpdateLabelDeleted extends jspb.Message {
 
 export namespace UpdateLabelDeleted {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
+    ucount: number,
+    updateid: number,
     labelidsList: Array<number>,
   }
 }
 
 export class UpdateUserBlocked extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasBlocked(): boolean;
-  clearBlocked(): void;
-  getBlocked(): boolean | undefined;
+  getBlocked(): boolean;
   setBlocked(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -1457,27 +1229,21 @@ export class UpdateUserBlocked extends jspb.Message {
 
 export namespace UpdateUserBlocked {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    userid?: string,
-    blocked?: boolean,
+    ucount: number,
+    updateid: number,
+    userid: string,
+    blocked: boolean,
   }
 }
 
 export class UpdateMessagePoll extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasPollid(): boolean;
-  clearPollid(): void;
-  getPollid(): number | undefined;
+  getPollid(): number;
   setPollid(value: number): void;
 
   hasPoll(): boolean;
@@ -1487,7 +1253,7 @@ export class UpdateMessagePoll extends jspb.Message {
 
   hasResults(): boolean;
   clearResults(): void;
-  getResults(): chat_messages_medias_pb.PollResults;
+  getResults(): chat_messages_medias_pb.PollResults | undefined;
   setResults(value?: chat_messages_medias_pb.PollResults): void;
 
   serializeBinary(): Uint8Array;
@@ -1502,47 +1268,35 @@ export class UpdateMessagePoll extends jspb.Message {
 
 export namespace UpdateMessagePoll {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    pollid?: number,
+    ucount: number,
+    updateid: number,
+    pollid: number,
     poll?: chat_messages_medias_pb.MediaPoll.AsObject,
-    results: chat_messages_medias_pb.PollResults.AsObject,
+    results?: chat_messages_medias_pb.PollResults.AsObject,
   }
 }
 
 export class UpdateBotCallbackQuery extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasQueryid(): boolean;
-  clearQueryid(): void;
-  getQueryid(): number | undefined;
+  getQueryid(): number;
   setQueryid(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasData(): boolean;
-  clearData(): void;
   getData(): Uint8Array | string;
   getData_asU8(): Uint8Array;
   getData_asB64(): string;
@@ -1560,50 +1314,38 @@ export class UpdateBotCallbackQuery extends jspb.Message {
 
 export namespace UpdateBotCallbackQuery {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    queryid?: number,
-    userid?: number,
-    peer: core_types_pb.Peer.AsObject,
-    messageid?: number,
+    ucount: number,
+    updateid: number,
+    queryid: number,
+    userid: number,
+    peer?: core_types_pb.Peer.AsObject,
+    messageid: number,
     data: Uint8Array | string,
   }
 }
 
 export class UpdateBotInlineQuery extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasQueryid(): boolean;
-  clearQueryid(): void;
-  getQueryid(): number | undefined;
+  getQueryid(): number;
   setQueryid(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  hasQuery(): boolean;
-  clearQuery(): void;
-  getQuery(): string | undefined;
+  getQuery(): string;
   setQuery(value: string): void;
 
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): string | undefined;
+  getOffset(): string;
   setOffset(value: string): void;
 
   hasGeo(): boolean;
@@ -1623,41 +1365,31 @@ export class UpdateBotInlineQuery extends jspb.Message {
 
 export namespace UpdateBotInlineQuery {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    queryid?: number,
-    userid?: number,
-    peer: core_types_pb.Peer.AsObject,
-    query?: string,
-    offset?: string,
+    ucount: number,
+    updateid: number,
+    queryid: number,
+    userid: number,
+    peer?: core_types_pb.Peer.AsObject,
+    query: string,
+    offset: string,
     geo?: core_types_pb.GeoLocation.AsObject,
   }
 }
 
 export class UpdateBotInlineSend extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
-  hasQuery(): boolean;
-  clearQuery(): void;
-  getQuery(): string | undefined;
+  getQuery(): string;
   setQuery(value: string): void;
 
-  hasResultid(): boolean;
-  clearResultid(): void;
-  getResultid(): string | undefined;
+  getResultid(): string;
   setResultid(value: string): void;
 
   hasGeo(): boolean;
@@ -1677,29 +1409,25 @@ export class UpdateBotInlineSend extends jspb.Message {
 
 export namespace UpdateBotInlineSend {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    userid?: number,
-    query?: string,
-    resultid?: string,
+    ucount: number,
+    updateid: number,
+    userid: number,
+    query: string,
+    resultid: string,
     geo?: core_types_pb.GeoLocation.AsObject,
   }
 }
 
 export class UpdateTeamCreated extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   hasTeam(): boolean;
   clearTeam(): void;
-  getTeam(): core_types_pb.Team;
+  getTeam(): core_types_pb.Team | undefined;
   setTeam(value?: core_types_pb.Team): void;
 
   serializeBinary(): Uint8Array;
@@ -1714,46 +1442,36 @@ export class UpdateTeamCreated extends jspb.Message {
 
 export namespace UpdateTeamCreated {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    team: core_types_pb.Team.AsObject,
+    ucount: number,
+    updateid: number,
+    team?: core_types_pb.Team.AsObject,
   }
 }
 
 export class UpdateTeamMemberAdded extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.User;
+  getUser(): core_types_pb.User | undefined;
   setUser(value?: core_types_pb.User): void;
 
   hasContact(): boolean;
   clearContact(): void;
-  getContact(): core_types_pb.ContactUser;
+  getContact(): core_types_pb.ContactUser | undefined;
   setContact(value?: core_types_pb.ContactUser): void;
 
-  hasAdderid(): boolean;
-  clearAdderid(): void;
-  getAdderid(): string | undefined;
+  getAdderid(): string;
   setAdderid(value: string): void;
 
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): number | undefined;
+  getHash(): number;
   setHash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1768,45 +1486,33 @@ export class UpdateTeamMemberAdded extends jspb.Message {
 
 export namespace UpdateTeamMemberAdded {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    user: core_types_pb.User.AsObject,
-    contact: core_types_pb.ContactUser.AsObject,
-    adderid?: string,
-    hash?: number,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    user?: core_types_pb.User.AsObject,
+    contact?: core_types_pb.ContactUser.AsObject,
+    adderid: string,
+    hash: number,
   }
 }
 
 export class UpdateTeamMemberRemoved extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasRemoverid(): boolean;
-  clearRemoverid(): void;
-  getRemoverid(): string | undefined;
+  getRemoverid(): string;
   setRemoverid(value: string): void;
 
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): number | undefined;
+  getHash(): number;
   setHash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1821,39 +1527,29 @@ export class UpdateTeamMemberRemoved extends jspb.Message {
 
 export namespace UpdateTeamMemberRemoved {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    userid?: string,
-    removerid?: string,
-    hash?: number,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    userid: string,
+    removerid: string,
+    hash: number,
   }
 }
 
 export class UpdateTeamMemberStatus extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasChangerid(): boolean;
-  clearChangerid(): void;
-  getChangerid(): string | undefined;
+  getChangerid(): string;
   setChangerid(value: string): void;
 
-  hasAdmin(): boolean;
-  clearAdmin(): void;
-  getAdmin(): boolean | undefined;
+  getAdmin(): boolean;
   setAdmin(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -1868,28 +1564,22 @@ export class UpdateTeamMemberStatus extends jspb.Message {
 
 export namespace UpdateTeamMemberStatus {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    changerid?: string,
-    admin?: boolean,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    changerid: string,
+    admin: boolean,
   }
 }
 
 export class UpdateTeamPhoto extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPhoto(): boolean;
@@ -1909,32 +1599,24 @@ export class UpdateTeamPhoto extends jspb.Message {
 
 export namespace UpdateTeamPhoto {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
+    ucount: number,
+    updateid: number,
+    teamid: string,
     photo?: core_types_pb.TeamPhoto.AsObject,
   }
 }
 
 export class UpdateTeam extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -1949,42 +1631,30 @@ export class UpdateTeam extends jspb.Message {
 
 export namespace UpdateTeam {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    teamid?: string,
-    name?: string,
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    name: string,
   }
 }
 
 export class UpdateCommunityMessage extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasSenderid(): boolean;
-  clearSenderid(): void;
-  getSenderid(): number | undefined;
+  getSenderid(): number;
   setSenderid(value: number): void;
 
-  hasReceiverid(): boolean;
-  clearReceiverid(): void;
-  getReceiverid(): number | undefined;
+  getReceiverid(): number;
   setReceiverid(value: number): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
-  hasCreatedon(): boolean;
-  clearCreatedon(): void;
-  getCreatedon(): number | undefined;
+  getCreatedon(): number;
   setCreatedon(value: number): void;
 
-  hasGlobalmsgid(): boolean;
-  clearGlobalmsgid(): void;
-  getGlobalmsgid(): number | undefined;
+  getGlobalmsgid(): number;
   setGlobalmsgid(value: number): void;
 
   clearEntitiesList(): void;
@@ -1992,9 +1662,7 @@ export class UpdateCommunityMessage extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasSendermsgid(): boolean;
-  clearSendermsgid(): void;
-  getSendermsgid(): number | undefined;
+  getSendermsgid(): number;
   setSendermsgid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -2009,36 +1677,28 @@ export class UpdateCommunityMessage extends jspb.Message {
 
 export namespace UpdateCommunityMessage {
   export type AsObject = {
-    teamid?: string,
-    senderid?: number,
-    receiverid?: number,
-    body?: string,
-    createdon?: number,
-    globalmsgid?: number,
+    teamid: string,
+    senderid: number,
+    receiverid: number,
+    body: string,
+    createdon: number,
+    globalmsgid: number,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    sendermsgid?: number,
+    sendermsgid: number,
   }
 }
 
 export class UpdateCommunityReadOutbox extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasSenderid(): boolean;
-  clearSenderid(): void;
-  getSenderid(): number | undefined;
+  getSenderid(): number;
   setSenderid(value: number): void;
 
-  hasReceiverid(): boolean;
-  clearReceiverid(): void;
-  getReceiverid(): number | undefined;
+  getReceiverid(): number;
   setReceiverid(value: number): void;
 
-  hasSendermsgid(): boolean;
-  clearSendermsgid(): void;
-  getSendermsgid(): number | undefined;
+  getSendermsgid(): number;
   setSendermsgid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -2053,33 +1713,25 @@ export class UpdateCommunityReadOutbox extends jspb.Message {
 
 export namespace UpdateCommunityReadOutbox {
   export type AsObject = {
-    teamid?: string,
-    senderid?: number,
-    receiverid?: number,
-    sendermsgid?: number,
+    teamid: string,
+    senderid: number,
+    receiverid: number,
+    sendermsgid: number,
   }
 }
 
 export class UpdateCommunityTyping extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasSenderid(): boolean;
-  clearSenderid(): void;
-  getSenderid(): number | undefined;
+  getSenderid(): number;
   setSenderid(value: number): void;
 
-  hasReceiverid(): boolean;
-  clearReceiverid(): void;
-  getReceiverid(): number | undefined;
+  getReceiverid(): number;
   setReceiverid(value: number): void;
 
-  hasAction(): boolean;
-  clearAction(): void;
-  getAction(): core_types_pb.TypingAction | undefined;
-  setAction(value: core_types_pb.TypingAction): void;
+  getAction(): core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap];
+  setAction(value: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap]): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateCommunityTyping.AsObject;
@@ -2093,27 +1745,21 @@ export class UpdateCommunityTyping extends jspb.Message {
 
 export namespace UpdateCommunityTyping {
   export type AsObject = {
-    teamid?: string,
-    senderid?: number,
-    receiverid?: number,
-    action?: core_types_pb.TypingAction,
+    teamid: string,
+    senderid: number,
+    receiverid: number,
+    action: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap],
   }
 }
 
 export class UpdateReaction extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
   clearCounterList(): void;
@@ -2121,9 +1767,7 @@ export class UpdateReaction extends jspb.Message {
   setCounterList(value: Array<core_types_pb.ReactionCounter>): void;
   addCounter(value?: core_types_pb.ReactionCounter, index?: number): core_types_pb.ReactionCounter;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
@@ -2141,9 +1785,7 @@ export class UpdateReaction extends jspb.Message {
   setYourreactionsList(value: Array<string>): void;
   addYourreactions(value: string, index?: number): string;
 
-  hasReaction(): boolean;
-  clearReaction(): void;
-  getReaction(): string | undefined;
+  getReaction(): string;
   setReaction(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -2158,32 +1800,28 @@ export class UpdateReaction extends jspb.Message {
 
 export namespace UpdateReaction {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    messageid?: number,
+    ucount: number,
+    updateid: number,
+    messageid: number,
     counterList: Array<core_types_pb.ReactionCounter.AsObject>,
-    teamid?: string,
+    teamid: string,
     peer?: core_types_pb.Peer.AsObject,
     sender?: core_types_pb.User.AsObject,
     yourreactionsList: Array<string>,
-    reaction?: string,
+    reaction: string,
   }
 }
 
 export class UpdateCalendarEventAdded extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   hasEvent(): boolean;
   clearEvent(): void;
-  getEvent(): calendar_pb.CalendarEvent;
+  getEvent(): calendar_pb.CalendarEvent | undefined;
   setEvent(value?: calendar_pb.CalendarEvent): void;
 
   serializeBinary(): Uint8Array;
@@ -2198,26 +1836,20 @@ export class UpdateCalendarEventAdded extends jspb.Message {
 
 export namespace UpdateCalendarEventAdded {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    event: calendar_pb.CalendarEvent.AsObject,
+    ucount: number,
+    updateid: number,
+    event?: calendar_pb.CalendarEvent.AsObject,
   }
 }
 
 export class UpdateCalendarEventRemoved extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasEventid(): boolean;
-  clearEventid(): void;
-  getEventid(): string | undefined;
+  getEventid(): string;
   setEventid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -2232,26 +1864,22 @@ export class UpdateCalendarEventRemoved extends jspb.Message {
 
 export namespace UpdateCalendarEventRemoved {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    eventid?: string,
+    ucount: number,
+    updateid: number,
+    eventid: string,
   }
 }
 
 export class UpdateCalendarEventEdited extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   hasEvent(): boolean;
   clearEvent(): void;
-  getEvent(): calendar_pb.CalendarEvent;
+  getEvent(): calendar_pb.CalendarEvent | undefined;
   setEvent(value?: calendar_pb.CalendarEvent): void;
 
   serializeBinary(): Uint8Array;
@@ -2266,21 +1894,17 @@ export class UpdateCalendarEventEdited extends jspb.Message {
 
 export namespace UpdateCalendarEventEdited {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
-    event: calendar_pb.CalendarEvent.AsObject,
+    ucount: number,
+    updateid: number,
+    event?: calendar_pb.CalendarEvent.AsObject,
   }
 }
 
 export class UpdateRedirect extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   clearRedirectsList(): void;
@@ -2288,9 +1912,7 @@ export class UpdateRedirect extends jspb.Message {
   setRedirectsList(value: Array<ClientRedirect>): void;
   addRedirects(value?: ClientRedirect, index?: number): ClientRedirect;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -2305,28 +1927,22 @@ export class UpdateRedirect extends jspb.Message {
 
 export namespace UpdateRedirect {
   export type AsObject = {
-    ucount?: number,
-    updateid?: number,
+    ucount: number,
+    updateid: number,
     redirectsList: Array<ClientRedirect.AsObject>,
-    empty?: boolean,
+    empty: boolean,
   }
 }
 
 export class ClientRedirect extends jspb.Message {
-  hasHostport(): boolean;
-  clearHostport(): void;
-  getHostport(): string | undefined;
+  getHostport(): string;
   setHostport(value: string): void;
 
-  hasPermanent(): boolean;
-  clearPermanent(): void;
-  getPermanent(): boolean | undefined;
+  getPermanent(): boolean;
   setPermanent(value: boolean): void;
 
-  hasTarget(): boolean;
-  clearTarget(): void;
-  getTarget(): RedirectTarget | undefined;
-  setTarget(value: RedirectTarget): void;
+  getTarget(): RedirectTargetMap[keyof RedirectTargetMap];
+  setTarget(value: RedirectTargetMap[keyof RedirectTargetMap]): void;
 
   clearAlternativesList(): void;
   getAlternativesList(): Array<string>;
@@ -2345,56 +1961,38 @@ export class ClientRedirect extends jspb.Message {
 
 export namespace ClientRedirect {
   export type AsObject = {
-    hostport?: string,
-    permanent?: boolean,
-    target?: RedirectTarget,
+    hostport: string,
+    permanent: boolean,
+    target: RedirectTargetMap[keyof RedirectTargetMap],
     alternativesList: Array<string>,
   }
 }
 
 export class UpdatePhoneCall extends jspb.Message {
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
+  getPeerid(): string;
   setPeerid(value: string): void;
 
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
+  getPeertype(): number;
   setPeertype(value: number): void;
 
-  hasCallid(): boolean;
-  clearCallid(): void;
-  getCallid(): string | undefined;
+  getCallid(): string;
   setCallid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
-  hasAction(): boolean;
-  clearAction(): void;
-  getAction(): chat_phone_pb.PhoneCallAction | undefined;
-  setAction(value: chat_phone_pb.PhoneCallAction): void;
+  getAction(): chat_phone_pb.PhoneCallActionMap[keyof chat_phone_pb.PhoneCallActionMap];
+  setAction(value: chat_phone_pb.PhoneCallActionMap[keyof chat_phone_pb.PhoneCallActionMap]): void;
 
-  hasActiondata(): boolean;
-  clearActiondata(): void;
   getActiondata(): Uint8Array | string;
   getActiondata_asU8(): Uint8Array;
   getActiondata_asB64(): string;
@@ -2412,25 +2010,27 @@ export class UpdatePhoneCall extends jspb.Message {
 
 export namespace UpdatePhoneCall {
   export type AsObject = {
-    ucount?: number,
-    teamid?: string,
-    peerid?: string,
-    peertype?: number,
-    callid?: string,
-    userid?: string,
-    accesshash?: string,
-    action?: chat_phone_pb.PhoneCallAction,
+    ucount: number,
+    teamid: string,
+    peerid: string,
+    peertype: number,
+    callid: string,
+    userid: string,
+    accesshash: string,
+    action: chat_phone_pb.PhoneCallActionMap[keyof chat_phone_pb.PhoneCallActionMap],
     actiondata: Uint8Array | string,
   }
 }
 
-export enum RedirectTarget {
-  REDIRECTTARGETRPC = 0,
-  REDIRECTTARGETFILE = 1,
-  REDIRECTTARGETPROXY = 2,
-  REDIRECTTARGETRESERVED1 = 3,
-  REDIRECTTARGETRESERVED2 = 4,
-  REDIRECTTARGETRESERVED3 = 5,
-  REDIRECTTARGETRESERVED4 = 6,
+export interface RedirectTargetMap {
+  REDIRECTTARGETRPC: 0;
+  REDIRECTTARGETFILE: 1;
+  REDIRECTTARGETPROXY: 2;
+  REDIRECTTARGETRESERVED1: 3;
+  REDIRECTTARGETRESERVED2: 4;
+  REDIRECTTARGETRESERVED3: 5;
+  REDIRECTTARGETRESERVED4: 6;
 }
+
+export const RedirectTarget: RedirectTargetMap;
 

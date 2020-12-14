@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -136,9 +138,9 @@ proto.msg.FileSavePart.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.FileSavePart.toObject = function(includeInstance, msg) {
   var f, obj = {
-    fileid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    partid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    totalparts: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    fileid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    partid: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    totalparts: jspb.Message.getFieldWithDefault(msg, 3, 0),
     bytes: msg.getBytes_asB64()
   };
 
@@ -221,29 +223,29 @@ proto.msg.FileSavePart.prototype.serializeBinary = function() {
  */
 proto.msg.FileSavePart.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getFileid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getPartid();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getTotalparts();
+  if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getBytes_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       4,
       f
@@ -253,7 +255,7 @@ proto.msg.FileSavePart.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 FileID = 1;
+ * optional int64 FileID = 1;
  * @return {string}
  */
 proto.msg.FileSavePart.prototype.getFileid = function() {
@@ -266,30 +268,12 @@ proto.msg.FileSavePart.prototype.getFileid = function() {
  * @return {!proto.msg.FileSavePart} returns this
  */
 proto.msg.FileSavePart.prototype.setFileid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.FileSavePart} returns this
- */
-proto.msg.FileSavePart.prototype.clearFileid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FileSavePart.prototype.hasFileid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 PartID = 2;
+ * optional int32 PartID = 2;
  * @return {number}
  */
 proto.msg.FileSavePart.prototype.getPartid = function() {
@@ -302,30 +286,12 @@ proto.msg.FileSavePart.prototype.getPartid = function() {
  * @return {!proto.msg.FileSavePart} returns this
  */
 proto.msg.FileSavePart.prototype.setPartid = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.FileSavePart} returns this
- */
-proto.msg.FileSavePart.prototype.clearPartid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FileSavePart.prototype.hasPartid = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int32 TotalParts = 3;
+ * optional int32 TotalParts = 3;
  * @return {number}
  */
 proto.msg.FileSavePart.prototype.getTotalparts = function() {
@@ -338,30 +304,12 @@ proto.msg.FileSavePart.prototype.getTotalparts = function() {
  * @return {!proto.msg.FileSavePart} returns this
  */
 proto.msg.FileSavePart.prototype.setTotalparts = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.FileSavePart} returns this
- */
-proto.msg.FileSavePart.prototype.clearTotalparts = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FileSavePart.prototype.hasTotalparts = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required bytes Bytes = 4;
+ * optional bytes Bytes = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.FileSavePart.prototype.getBytes = function() {
@@ -370,7 +318,7 @@ proto.msg.FileSavePart.prototype.getBytes = function() {
 
 
 /**
- * required bytes Bytes = 4;
+ * optional bytes Bytes = 4;
  * This is a type-conversion wrapper around `getBytes()`
  * @return {string}
  */
@@ -381,7 +329,7 @@ proto.msg.FileSavePart.prototype.getBytes_asB64 = function() {
 
 
 /**
- * required bytes Bytes = 4;
+ * optional bytes Bytes = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getBytes()`
@@ -398,25 +346,7 @@ proto.msg.FileSavePart.prototype.getBytes_asU8 = function() {
  * @return {!proto.msg.FileSavePart} returns this
  */
 proto.msg.FileSavePart.prototype.setBytes = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.FileSavePart} returns this
- */
-proto.msg.FileSavePart.prototype.clearBytes = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FileSavePart.prototype.hasBytes = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -453,8 +383,8 @@ proto.msg.FileGet.prototype.toObject = function(opt_includeInstance) {
 proto.msg.FileGet.toObject = function(includeInstance, msg) {
   var f, obj = {
     location: (f = msg.getLocation()) && core_types_pb.InputFileLocation.toObject(includeInstance, f),
-    offset: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    limit: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    offset: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    limit: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -541,15 +471,15 @@ proto.msg.FileGet.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputFileLocation.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getOffset();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getLimit();
+  if (f !== 0) {
     writer.writeInt32(
       3,
       f
@@ -559,17 +489,17 @@ proto.msg.FileGet.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputFileLocation Location = 1;
- * @return {!proto.msg.InputFileLocation}
+ * optional InputFileLocation Location = 1;
+ * @return {?proto.msg.InputFileLocation}
  */
 proto.msg.FileGet.prototype.getLocation = function() {
-  return /** @type{!proto.msg.InputFileLocation} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputFileLocation, 1, 1));
+  return /** @type{?proto.msg.InputFileLocation} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputFileLocation, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputFileLocation} value
+ * @param {?proto.msg.InputFileLocation|undefined} value
  * @return {!proto.msg.FileGet} returns this
 */
 proto.msg.FileGet.prototype.setLocation = function(value) {
@@ -578,11 +508,11 @@ proto.msg.FileGet.prototype.setLocation = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.FileGet} returns this
  */
 proto.msg.FileGet.prototype.clearLocation = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setLocation(undefined);
 };
 
 
@@ -596,7 +526,7 @@ proto.msg.FileGet.prototype.hasLocation = function() {
 
 
 /**
- * required int32 Offset = 2;
+ * optional int32 Offset = 2;
  * @return {number}
  */
 proto.msg.FileGet.prototype.getOffset = function() {
@@ -609,30 +539,12 @@ proto.msg.FileGet.prototype.getOffset = function() {
  * @return {!proto.msg.FileGet} returns this
  */
 proto.msg.FileGet.prototype.setOffset = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.FileGet} returns this
- */
-proto.msg.FileGet.prototype.clearOffset = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FileGet.prototype.hasOffset = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int32 Limit = 3;
+ * optional int32 Limit = 3;
  * @return {number}
  */
 proto.msg.FileGet.prototype.getLimit = function() {
@@ -645,25 +557,7 @@ proto.msg.FileGet.prototype.getLimit = function() {
  * @return {!proto.msg.FileGet} returns this
  */
 proto.msg.FileGet.prototype.setLimit = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.FileGet} returns this
- */
-proto.msg.FileGet.prototype.clearLimit = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FileGet.prototype.hasLimit = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -700,7 +594,7 @@ proto.msg.FileGetBySha256.prototype.toObject = function(opt_includeInstance) {
 proto.msg.FileGetBySha256.toObject = function(includeInstance, msg) {
   var f, obj = {
     sha256: msg.getSha256_asB64(),
-    filesize: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    filesize: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -774,15 +668,15 @@ proto.msg.FileGetBySha256.prototype.serializeBinary = function() {
  */
 proto.msg.FileGetBySha256.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSha256_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getFilesize();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
@@ -792,7 +686,7 @@ proto.msg.FileGetBySha256.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required bytes Sha256 = 1;
+ * optional bytes Sha256 = 1;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.FileGetBySha256.prototype.getSha256 = function() {
@@ -801,7 +695,7 @@ proto.msg.FileGetBySha256.prototype.getSha256 = function() {
 
 
 /**
- * required bytes Sha256 = 1;
+ * optional bytes Sha256 = 1;
  * This is a type-conversion wrapper around `getSha256()`
  * @return {string}
  */
@@ -812,7 +706,7 @@ proto.msg.FileGetBySha256.prototype.getSha256_asB64 = function() {
 
 
 /**
- * required bytes Sha256 = 1;
+ * optional bytes Sha256 = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSha256()`
@@ -829,30 +723,12 @@ proto.msg.FileGetBySha256.prototype.getSha256_asU8 = function() {
  * @return {!proto.msg.FileGetBySha256} returns this
  */
 proto.msg.FileGetBySha256.prototype.setSha256 = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.FileGetBySha256} returns this
- */
-proto.msg.FileGetBySha256.prototype.clearSha256 = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FileGetBySha256.prototype.hasSha256 = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 FileSize = 2;
+ * optional int32 FileSize = 2;
  * @return {number}
  */
 proto.msg.FileGetBySha256.prototype.getFilesize = function() {
@@ -865,25 +741,7 @@ proto.msg.FileGetBySha256.prototype.getFilesize = function() {
  * @return {!proto.msg.FileGetBySha256} returns this
  */
 proto.msg.FileGetBySha256.prototype.setFilesize = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.FileGetBySha256} returns this
- */
-proto.msg.FileGetBySha256.prototype.clearFilesize = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FileGetBySha256.prototype.hasFilesize = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -919,10 +777,10 @@ proto.msg.File.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.File.toObject = function(includeInstance, msg) {
   var f, obj = {
-    type: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    modifiedtime: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    modifiedtime: jspb.Message.getFieldWithDefault(msg, 2, 0),
     bytes: msg.getBytes_asB64(),
-    md5hash: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+    md5hash: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -1004,29 +862,29 @@ proto.msg.File.prototype.serializeBinary = function() {
  */
 proto.msg.File.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!proto.msg.FileType} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getType();
+  if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getModifiedtime();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getBytes_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       4,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getMd5hash();
+  if (f.length > 0) {
     writer.writeString(
       5,
       f
@@ -1036,7 +894,7 @@ proto.msg.File.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required FileType Type = 1;
+ * optional FileType Type = 1;
  * @return {!proto.msg.FileType}
  */
 proto.msg.File.prototype.getType = function() {
@@ -1049,30 +907,12 @@ proto.msg.File.prototype.getType = function() {
  * @return {!proto.msg.File} returns this
  */
 proto.msg.File.prototype.setType = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.File} returns this
- */
-proto.msg.File.prototype.clearType = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.File.prototype.hasType = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 ModifiedTime = 2;
+ * optional int64 ModifiedTime = 2;
  * @return {number}
  */
 proto.msg.File.prototype.getModifiedtime = function() {
@@ -1085,30 +925,12 @@ proto.msg.File.prototype.getModifiedtime = function() {
  * @return {!proto.msg.File} returns this
  */
 proto.msg.File.prototype.setModifiedtime = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.File} returns this
- */
-proto.msg.File.prototype.clearModifiedtime = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.File.prototype.hasModifiedtime = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required bytes Bytes = 4;
+ * optional bytes Bytes = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.File.prototype.getBytes = function() {
@@ -1117,7 +939,7 @@ proto.msg.File.prototype.getBytes = function() {
 
 
 /**
- * required bytes Bytes = 4;
+ * optional bytes Bytes = 4;
  * This is a type-conversion wrapper around `getBytes()`
  * @return {string}
  */
@@ -1128,7 +950,7 @@ proto.msg.File.prototype.getBytes_asB64 = function() {
 
 
 /**
- * required bytes Bytes = 4;
+ * optional bytes Bytes = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getBytes()`
@@ -1145,25 +967,7 @@ proto.msg.File.prototype.getBytes_asU8 = function() {
  * @return {!proto.msg.File} returns this
  */
 proto.msg.File.prototype.setBytes = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.File} returns this
- */
-proto.msg.File.prototype.clearBytes = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.File.prototype.hasBytes = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -1181,25 +985,7 @@ proto.msg.File.prototype.getMd5hash = function() {
  * @return {!proto.msg.File} returns this
  */
 proto.msg.File.prototype.setMd5hash = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.File} returns this
- */
-proto.msg.File.prototype.clearMd5hash = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.File.prototype.hasMd5hash = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 

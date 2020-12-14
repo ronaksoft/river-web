@@ -38,7 +38,7 @@ export const getWsServerUrl = () => {
         if (serverMode === 'prod') {
             return 'cyrus.river.im';
         } else if (serverMode === 'dev') {
-            return 'river.ronaksoftware.com';
+            return 'river-rony.ronaksoftware.com';
         } else if (serverMode === 'other') {
             return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'cyrus.river.im';
         }
@@ -55,7 +55,7 @@ export const getFileServerUrl = () => {
         if (serverMode === 'prod') {
             return 'file.river.im';
         } else if (serverMode === 'dev') {
-            return 'river.ronaksoftware.com:8080';
+            return 'river-rony.ronaksoftware.com';
         } else if (serverMode === 'other') {
             return localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || 'file.river.im';
         }

@@ -9,7 +9,7 @@
 
 import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
 
-export interface IGif extends MediaDocument.AsObject{
+export interface IGif extends Partial<MediaDocument.AsObject> {
     id?: string;
     last_used?: number;
     attributes?: any[];

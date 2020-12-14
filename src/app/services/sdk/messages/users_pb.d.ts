@@ -55,9 +55,7 @@ export class UsersMany extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -73,7 +71,7 @@ export class UsersMany extends jspb.Message {
 export namespace UsersMany {
   export type AsObject = {
     usersList: Array<core_types_pb.User.AsObject>,
-    empty?: boolean,
+    empty: boolean,
   }
 }
 

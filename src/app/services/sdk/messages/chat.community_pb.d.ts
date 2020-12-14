@@ -6,19 +6,15 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class CommunitySendMessage extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
   clearEntitiesList(): void;
@@ -26,26 +22,18 @@ export class CommunitySendMessage extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasReplymarkup(): boolean;
-  clearReplymarkup(): void;
-  getReplymarkup(): number | undefined;
+  getReplymarkup(): number;
   setReplymarkup(value: number): void;
 
-  hasReplymarkupdata(): boolean;
-  clearReplymarkupdata(): void;
   getReplymarkupdata(): Uint8Array | string;
   getReplymarkupdata_asU8(): Uint8Array;
   getReplymarkupdata_asB64(): string;
   setReplymarkupdata(value: Uint8Array | string): void;
 
-  hasSenderid(): boolean;
-  clearSenderid(): void;
-  getSenderid(): number | undefined;
+  getSenderid(): number;
   setSenderid(value: number): void;
 
-  hasSendermsgid(): boolean;
-  clearSendermsgid(): void;
-  getSendermsgid(): number | undefined;
+  getSendermsgid(): number;
   setSendermsgid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -60,58 +48,44 @@ export class CommunitySendMessage extends jspb.Message {
 
 export namespace CommunitySendMessage {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    body?: string,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    body: string,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    replymarkup?: number,
+    replymarkup: number,
     replymarkupdata: Uint8Array | string,
-    senderid?: number,
-    sendermsgid?: number,
+    senderid: number,
+    sendermsgid: number,
   }
 }
 
 export class CommunitySendMedia extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMediatype(): boolean;
-  clearMediatype(): void;
-  getMediatype(): core_types_pb.InputMediaType | undefined;
-  setMediatype(value: core_types_pb.InputMediaType): void;
+  getMediatype(): core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap];
+  setMediatype(value: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap]): void;
 
-  hasMediadata(): boolean;
-  clearMediadata(): void;
   getMediadata(): Uint8Array | string;
   getMediadata_asU8(): Uint8Array;
   getMediadata_asB64(): string;
   setMediadata(value: Uint8Array | string): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasCleardraft(): boolean;
-  clearCleardraft(): void;
-  getCleardraft(): boolean | undefined;
+  getCleardraft(): boolean;
   setCleardraft(value: boolean): void;
 
-  hasSenderid(): boolean;
-  clearSenderid(): void;
-  getSenderid(): number | undefined;
+  getSenderid(): number;
   setSenderid(value: number): void;
 
-  hasSendermsgid(): boolean;
-  clearSendermsgid(): void;
-  getSendermsgid(): number | undefined;
+  getSendermsgid(): number;
   setSendermsgid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -126,31 +100,27 @@ export class CommunitySendMedia extends jspb.Message {
 
 export namespace CommunitySendMedia {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    mediatype?: core_types_pb.InputMediaType,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    mediatype: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap],
     mediadata: Uint8Array | string,
-    replyto?: number,
-    cleardraft?: boolean,
-    senderid?: number,
-    sendermsgid?: number,
+    replyto: number,
+    cleardraft: boolean,
+    senderid: number,
+    sendermsgid: number,
   }
 }
 
 export class CommunitySetTyping extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasAction(): boolean;
-  clearAction(): void;
-  getAction(): core_types_pb.TypingAction | undefined;
-  setAction(value: core_types_pb.TypingAction): void;
+  getAction(): core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap];
+  setAction(value: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap]): void;
 
-  hasSenderid(): boolean;
-  clearSenderid(): void;
-  getSenderid(): number | undefined;
+  getSenderid(): number;
   setSenderid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -165,31 +135,23 @@ export class CommunitySetTyping extends jspb.Message {
 
 export namespace CommunitySetTyping {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    action?: core_types_pb.TypingAction,
-    senderid?: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    action: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap],
+    senderid: number,
   }
 }
 
 export class CommunityGetUpdates extends jspb.Message {
-  hasWaitafterinms(): boolean;
-  clearWaitafterinms(): void;
-  getWaitafterinms(): number | undefined;
+  getWaitafterinms(): number;
   setWaitafterinms(value: number): void;
 
-  hasWaitmaxinms(): boolean;
-  clearWaitmaxinms(): void;
-  getWaitmaxinms(): number | undefined;
+  getWaitmaxinms(): number;
   setWaitmaxinms(value: number): void;
 
-  hasSizelimit(): boolean;
-  clearSizelimit(): void;
-  getSizelimit(): number | undefined;
+  getSizelimit(): number;
   setSizelimit(value: number): void;
 
-  hasOffsetid(): boolean;
-  clearOffsetid(): void;
-  getOffsetid(): number | undefined;
+  getOffsetid(): number;
   setOffsetid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -204,22 +166,18 @@ export class CommunityGetUpdates extends jspb.Message {
 
 export namespace CommunityGetUpdates {
   export type AsObject = {
-    waitafterinms?: number,
-    waitmaxinms?: number,
-    sizelimit?: number,
-    offsetid?: number,
+    waitafterinms: number,
+    waitmaxinms: number,
+    sizelimit: number,
+    offsetid: number,
   }
 }
 
 export class CommunityGetMembers extends jspb.Message {
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): number | undefined;
+  getOffset(): number;
   setOffset(value: number): void;
 
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -234,19 +192,15 @@ export class CommunityGetMembers extends jspb.Message {
 
 export namespace CommunityGetMembers {
   export type AsObject = {
-    offset?: number,
-    limit?: number,
+    offset: number,
+    limit: number,
   }
 }
 
 export class CommunityRecall extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): number | undefined;
+  getTeamid(): number;
   setTeamid(value: number): void;
 
-  hasAccesskey(): boolean;
-  clearAccesskey(): void;
   getAccesskey(): Uint8Array | string;
   getAccesskey_asU8(): Uint8Array;
   getAccesskey_asB64(): string;
@@ -264,30 +218,22 @@ export class CommunityRecall extends jspb.Message {
 
 export namespace CommunityRecall {
   export type AsObject = {
-    teamid?: number,
+    teamid: number,
     accesskey: Uint8Array | string,
   }
 }
 
 export class CommunityAuthorizeUser extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasProvider(): boolean;
-  clearProvider(): void;
-  getProvider(): string | undefined;
+  getProvider(): string;
   setProvider(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -302,32 +248,24 @@ export class CommunityAuthorizeUser extends jspb.Message {
 
 export namespace CommunityAuthorizeUser {
   export type AsObject = {
-    phone?: string,
-    firstname?: string,
-    lastname?: string,
-    provider?: string,
+    phone: string,
+    firstname: string,
+    lastname: string,
+    provider: string,
   }
 }
 
 export class CommunityUser extends jspb.Message {
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -342,31 +280,23 @@ export class CommunityUser extends jspb.Message {
 
 export namespace CommunityUser {
   export type AsObject = {
-    userid?: number,
-    firstname?: string,
-    lastname?: string,
-    phone?: string,
+    userid: number,
+    firstname: string,
+    lastname: string,
+    phone: string,
   }
 }
 
 export class CommunityUpdateEnvelope extends jspb.Message {
-  hasOffsetid(): boolean;
-  clearOffsetid(): void;
-  getOffsetid(): number | undefined;
+  getOffsetid(): number;
   setOffsetid(value: number): void;
 
-  hasPartitionid(): boolean;
-  clearPartitionid(): void;
-  getPartitionid(): number | undefined;
+  getPartitionid(): number;
   setPartitionid(value: number): void;
 
-  hasConstructor(): boolean;
-  clearConstructor(): void;
-  getConstructor(): number | undefined;
+  getConstructor(): number;
   setConstructor(value: number): void;
 
-  hasUpdate(): boolean;
-  clearUpdate(): void;
   getUpdate(): Uint8Array | string;
   getUpdate_asU8(): Uint8Array;
   getUpdate_asB64(): string;
@@ -384,9 +314,9 @@ export class CommunityUpdateEnvelope extends jspb.Message {
 
 export namespace CommunityUpdateEnvelope {
   export type AsObject = {
-    offsetid?: number,
-    partitionid?: number,
-    constructor?: number,
+    offsetid: number,
+    partitionid: number,
+    constructor: number,
     update: Uint8Array | string,
   }
 }
@@ -397,9 +327,7 @@ export class CommunityUpdateContainer extends jspb.Message {
   setUpdatesList(value: Array<CommunityUpdateEnvelope>): void;
   addUpdates(value?: CommunityUpdateEnvelope, index?: number): CommunityUpdateEnvelope;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -415,7 +343,7 @@ export class CommunityUpdateContainer extends jspb.Message {
 export namespace CommunityUpdateContainer {
   export type AsObject = {
     updatesList: Array<CommunityUpdateEnvelope.AsObject>,
-    empty?: boolean,
+    empty: boolean,
   }
 }
 

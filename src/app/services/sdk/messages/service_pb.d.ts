@@ -6,34 +6,24 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class ServiceSendMessage extends jspb.Message {
-  hasOnbehalf(): boolean;
-  clearOnbehalf(): void;
-  getOnbehalf(): number | undefined;
+  getOnbehalf(): number;
   setOnbehalf(value: number): void;
 
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasCleardraft(): boolean;
-  clearCleardraft(): void;
-  getCleardraft(): boolean | undefined;
+  getCleardraft(): boolean;
   setCleardraft(value: boolean): void;
 
   clearEntitiesList(): void;
@@ -53,12 +43,12 @@ export class ServiceSendMessage extends jspb.Message {
 
 export namespace ServiceSendMessage {
   export type AsObject = {
-    onbehalf?: number,
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    body?: string,
-    replyto?: number,
-    cleardraft?: boolean,
+    onbehalf: number,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    body: string,
+    replyto: number,
+    cleardraft: boolean,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }

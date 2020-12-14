@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -355,7 +357,7 @@ proto.msg.TeamGet.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamGet.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    id: jspb.Message.getFieldWithDefault(msg, 1, "0")
   };
 
   if (includeInstance) {
@@ -425,8 +427,8 @@ proto.msg.TeamGet.prototype.serializeBinary = function() {
  */
 proto.msg.TeamGet.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getId();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
@@ -436,7 +438,7 @@ proto.msg.TeamGet.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 ID = 1;
+ * optional int64 ID = 1;
  * @return {string}
  */
 proto.msg.TeamGet.prototype.getId = function() {
@@ -449,25 +451,7 @@ proto.msg.TeamGet.prototype.getId = function() {
  * @return {!proto.msg.TeamGet} returns this
  */
 proto.msg.TeamGet.prototype.setId = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamGet} returns this
- */
-proto.msg.TeamGet.prototype.clearId = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamGet.prototype.hasId = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
@@ -503,9 +487,9 @@ proto.msg.TeamAddMember.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamAddMember.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    userid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    manager: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    userid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
+    manager: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -583,22 +567,22 @@ proto.msg.TeamAddMember.prototype.serializeBinary = function() {
  */
 proto.msg.TeamAddMember.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getUserid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getManager();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -608,7 +592,7 @@ proto.msg.TeamAddMember.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamAddMember.prototype.getTeamid = function() {
@@ -621,30 +605,12 @@ proto.msg.TeamAddMember.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamAddMember} returns this
  */
 proto.msg.TeamAddMember.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamAddMember} returns this
- */
-proto.msg.TeamAddMember.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamAddMember.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 UserID = 2;
+ * optional int64 UserID = 2;
  * @return {string}
  */
 proto.msg.TeamAddMember.prototype.getUserid = function() {
@@ -657,30 +623,12 @@ proto.msg.TeamAddMember.prototype.getUserid = function() {
  * @return {!proto.msg.TeamAddMember} returns this
  */
 proto.msg.TeamAddMember.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamAddMember} returns this
- */
-proto.msg.TeamAddMember.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamAddMember.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required bool Manager = 3;
+ * optional bool Manager = 3;
  * @return {boolean}
  */
 proto.msg.TeamAddMember.prototype.getManager = function() {
@@ -693,25 +641,7 @@ proto.msg.TeamAddMember.prototype.getManager = function() {
  * @return {!proto.msg.TeamAddMember} returns this
  */
 proto.msg.TeamAddMember.prototype.setManager = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamAddMember} returns this
- */
-proto.msg.TeamAddMember.prototype.clearManager = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamAddMember.prototype.hasManager = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -747,8 +677,8 @@ proto.msg.TeamRemoveMember.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamRemoveMember.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    userid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    userid: jspb.Message.getFieldWithDefault(msg, 2, "0")
   };
 
   if (includeInstance) {
@@ -822,15 +752,15 @@ proto.msg.TeamRemoveMember.prototype.serializeBinary = function() {
  */
 proto.msg.TeamRemoveMember.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getUserid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
@@ -840,7 +770,7 @@ proto.msg.TeamRemoveMember.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamRemoveMember.prototype.getTeamid = function() {
@@ -853,30 +783,12 @@ proto.msg.TeamRemoveMember.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamRemoveMember} returns this
  */
 proto.msg.TeamRemoveMember.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamRemoveMember} returns this
- */
-proto.msg.TeamRemoveMember.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamRemoveMember.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 UserID = 2;
+ * optional int64 UserID = 2;
  * @return {string}
  */
 proto.msg.TeamRemoveMember.prototype.getUserid = function() {
@@ -889,25 +801,7 @@ proto.msg.TeamRemoveMember.prototype.getUserid = function() {
  * @return {!proto.msg.TeamRemoveMember} returns this
  */
 proto.msg.TeamRemoveMember.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamRemoveMember} returns this
- */
-proto.msg.TeamRemoveMember.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamRemoveMember.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
@@ -943,8 +837,8 @@ proto.msg.TeamPromote.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamPromote.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    userid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    userid: jspb.Message.getFieldWithDefault(msg, 2, "0")
   };
 
   if (includeInstance) {
@@ -1018,15 +912,15 @@ proto.msg.TeamPromote.prototype.serializeBinary = function() {
  */
 proto.msg.TeamPromote.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getUserid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
@@ -1036,7 +930,7 @@ proto.msg.TeamPromote.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamPromote.prototype.getTeamid = function() {
@@ -1049,30 +943,12 @@ proto.msg.TeamPromote.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamPromote} returns this
  */
 proto.msg.TeamPromote.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamPromote} returns this
- */
-proto.msg.TeamPromote.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamPromote.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 UserID = 2;
+ * optional int64 UserID = 2;
  * @return {string}
  */
 proto.msg.TeamPromote.prototype.getUserid = function() {
@@ -1085,25 +961,7 @@ proto.msg.TeamPromote.prototype.getUserid = function() {
  * @return {!proto.msg.TeamPromote} returns this
  */
 proto.msg.TeamPromote.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamPromote} returns this
- */
-proto.msg.TeamPromote.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamPromote.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
@@ -1139,8 +997,8 @@ proto.msg.TeamDemote.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamDemote.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    userid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    userid: jspb.Message.getFieldWithDefault(msg, 2, "0")
   };
 
   if (includeInstance) {
@@ -1214,15 +1072,15 @@ proto.msg.TeamDemote.prototype.serializeBinary = function() {
  */
 proto.msg.TeamDemote.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getUserid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
@@ -1232,7 +1090,7 @@ proto.msg.TeamDemote.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamDemote.prototype.getTeamid = function() {
@@ -1245,30 +1103,12 @@ proto.msg.TeamDemote.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamDemote} returns this
  */
 proto.msg.TeamDemote.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamDemote} returns this
- */
-proto.msg.TeamDemote.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamDemote.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 UserID = 2;
+ * optional int64 UserID = 2;
  * @return {string}
  */
 proto.msg.TeamDemote.prototype.getUserid = function() {
@@ -1281,25 +1121,7 @@ proto.msg.TeamDemote.prototype.getUserid = function() {
  * @return {!proto.msg.TeamDemote} returns this
  */
 proto.msg.TeamDemote.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamDemote} returns this
- */
-proto.msg.TeamDemote.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamDemote.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
@@ -1335,7 +1157,7 @@ proto.msg.TeamLeave.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamLeave.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    teamid: jspb.Message.getFieldWithDefault(msg, 2, "0")
   };
 
   if (includeInstance) {
@@ -1405,8 +1227,8 @@ proto.msg.TeamLeave.prototype.serializeBinary = function() {
  */
 proto.msg.TeamLeave.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
@@ -1416,7 +1238,7 @@ proto.msg.TeamLeave.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 2;
+ * optional int64 TeamID = 2;
  * @return {string}
  */
 proto.msg.TeamLeave.prototype.getTeamid = function() {
@@ -1429,25 +1251,7 @@ proto.msg.TeamLeave.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamLeave} returns this
  */
 proto.msg.TeamLeave.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamLeave} returns this
- */
-proto.msg.TeamLeave.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamLeave.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
@@ -1483,7 +1287,7 @@ proto.msg.TeamJoin.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamJoin.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
     token: msg.getToken_asB64()
   };
 
@@ -1558,15 +1362,15 @@ proto.msg.TeamJoin.prototype.serializeBinary = function() {
  */
 proto.msg.TeamJoin.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getToken_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -1576,7 +1380,7 @@ proto.msg.TeamJoin.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamJoin.prototype.getTeamid = function() {
@@ -1589,30 +1393,12 @@ proto.msg.TeamJoin.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamJoin} returns this
  */
 proto.msg.TeamJoin.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamJoin} returns this
- */
-proto.msg.TeamJoin.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamJoin.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bytes Token = 2;
+ * optional bytes Token = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.TeamJoin.prototype.getToken = function() {
@@ -1621,7 +1407,7 @@ proto.msg.TeamJoin.prototype.getToken = function() {
 
 
 /**
- * required bytes Token = 2;
+ * optional bytes Token = 2;
  * This is a type-conversion wrapper around `getToken()`
  * @return {string}
  */
@@ -1632,7 +1418,7 @@ proto.msg.TeamJoin.prototype.getToken_asB64 = function() {
 
 
 /**
- * required bytes Token = 2;
+ * optional bytes Token = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getToken()`
@@ -1649,25 +1435,7 @@ proto.msg.TeamJoin.prototype.getToken_asU8 = function() {
  * @return {!proto.msg.TeamJoin} returns this
  */
 proto.msg.TeamJoin.prototype.setToken = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamJoin} returns this
- */
-proto.msg.TeamJoin.prototype.clearToken = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamJoin.prototype.hasToken = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -1703,7 +1471,7 @@ proto.msg.TeamListMembers.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamListMembers.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0")
   };
 
   if (includeInstance) {
@@ -1773,8 +1541,8 @@ proto.msg.TeamListMembers.prototype.serializeBinary = function() {
  */
 proto.msg.TeamListMembers.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
@@ -1784,7 +1552,7 @@ proto.msg.TeamListMembers.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamListMembers.prototype.getTeamid = function() {
@@ -1797,25 +1565,7 @@ proto.msg.TeamListMembers.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamListMembers} returns this
  */
 proto.msg.TeamListMembers.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamListMembers} returns this
- */
-proto.msg.TeamListMembers.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamListMembers.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
@@ -1851,8 +1601,8 @@ proto.msg.TeamEdit.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamEdit.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    name: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -1926,15 +1676,15 @@ proto.msg.TeamEdit.prototype.serializeBinary = function() {
  */
 proto.msg.TeamEdit.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getName();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -1944,7 +1694,7 @@ proto.msg.TeamEdit.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamEdit.prototype.getTeamid = function() {
@@ -1957,30 +1707,12 @@ proto.msg.TeamEdit.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamEdit} returns this
  */
 proto.msg.TeamEdit.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamEdit} returns this
- */
-proto.msg.TeamEdit.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamEdit.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Name = 2;
+ * optional string Name = 2;
  * @return {string}
  */
 proto.msg.TeamEdit.prototype.getName = function() {
@@ -1993,25 +1725,7 @@ proto.msg.TeamEdit.prototype.getName = function() {
  * @return {!proto.msg.TeamEdit} returns this
  */
 proto.msg.TeamEdit.prototype.setName = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamEdit} returns this
- */
-proto.msg.TeamEdit.prototype.clearName = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamEdit.prototype.hasName = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -2047,7 +1761,7 @@ proto.msg.TeamUploadPhoto.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamUploadPhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
     file: (f = msg.getFile()) && core_types_pb.InputFile.toObject(includeInstance, f)
   };
 
@@ -2123,8 +1837,8 @@ proto.msg.TeamUploadPhoto.prototype.serializeBinary = function() {
  */
 proto.msg.TeamUploadPhoto.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
@@ -2142,7 +1856,7 @@ proto.msg.TeamUploadPhoto.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamUploadPhoto.prototype.getTeamid = function() {
@@ -2155,40 +1869,22 @@ proto.msg.TeamUploadPhoto.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamUploadPhoto} returns this
  */
 proto.msg.TeamUploadPhoto.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamUploadPhoto} returns this
- */
-proto.msg.TeamUploadPhoto.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamUploadPhoto.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputFile File = 2;
- * @return {!proto.msg.InputFile}
+ * optional InputFile File = 2;
+ * @return {?proto.msg.InputFile}
  */
 proto.msg.TeamUploadPhoto.prototype.getFile = function() {
-  return /** @type{!proto.msg.InputFile} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputFile, 2, 1));
+  return /** @type{?proto.msg.InputFile} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputFile, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputFile} value
+ * @param {?proto.msg.InputFile|undefined} value
  * @return {!proto.msg.TeamUploadPhoto} returns this
 */
 proto.msg.TeamUploadPhoto.prototype.setFile = function(value) {
@@ -2197,11 +1893,11 @@ proto.msg.TeamUploadPhoto.prototype.setFile = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.TeamUploadPhoto} returns this
  */
 proto.msg.TeamUploadPhoto.prototype.clearFile = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setFile(undefined);
 };
 
 
@@ -2246,7 +1942,7 @@ proto.msg.TeamRemovePhoto.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamRemovePhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, "0")
   };
 
   if (includeInstance) {
@@ -2316,8 +2012,8 @@ proto.msg.TeamRemovePhoto.prototype.serializeBinary = function() {
  */
 proto.msg.TeamRemovePhoto.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
@@ -2327,7 +2023,7 @@ proto.msg.TeamRemovePhoto.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {string}
  */
 proto.msg.TeamRemovePhoto.prototype.getTeamid = function() {
@@ -2340,25 +2036,7 @@ proto.msg.TeamRemovePhoto.prototype.getTeamid = function() {
  * @return {!proto.msg.TeamRemovePhoto} returns this
  */
 proto.msg.TeamRemovePhoto.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamRemovePhoto} returns this
- */
-proto.msg.TeamRemovePhoto.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamRemovePhoto.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
@@ -2607,8 +2285,8 @@ proto.msg.TeamMember.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TeamMember.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    admin: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
+    userid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    admin: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
     user: (f = msg.getUser()) && core_types_pb.User.toObject(includeInstance, f)
   };
 
@@ -2688,15 +2366,15 @@ proto.msg.TeamMember.prototype.serializeBinary = function() {
  */
 proto.msg.TeamMember.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getUserid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getAdmin();
+  if (f) {
     writer.writeBool(
       2,
       f
@@ -2714,7 +2392,7 @@ proto.msg.TeamMember.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 UserID = 1;
+ * optional int64 UserID = 1;
  * @return {string}
  */
 proto.msg.TeamMember.prototype.getUserid = function() {
@@ -2727,30 +2405,12 @@ proto.msg.TeamMember.prototype.getUserid = function() {
  * @return {!proto.msg.TeamMember} returns this
  */
 proto.msg.TeamMember.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamMember} returns this
- */
-proto.msg.TeamMember.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamMember.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bool Admin = 2;
+ * optional bool Admin = 2;
  * @return {boolean}
  */
 proto.msg.TeamMember.prototype.getAdmin = function() {
@@ -2763,40 +2423,22 @@ proto.msg.TeamMember.prototype.getAdmin = function() {
  * @return {!proto.msg.TeamMember} returns this
  */
 proto.msg.TeamMember.prototype.setAdmin = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamMember} returns this
- */
-proto.msg.TeamMember.prototype.clearAdmin = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamMember.prototype.hasAdmin = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required User User = 3;
- * @return {!proto.msg.User}
+ * optional User User = 3;
+ * @return {?proto.msg.User}
  */
 proto.msg.TeamMember.prototype.getUser = function() {
-  return /** @type{!proto.msg.User} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.User, 3, 1));
+  return /** @type{?proto.msg.User} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.User, 3));
 };
 
 
 /**
- * @param {!proto.msg.User} value
+ * @param {?proto.msg.User|undefined} value
  * @return {!proto.msg.TeamMember} returns this
 */
 proto.msg.TeamMember.prototype.setUser = function(value) {
@@ -2805,11 +2447,11 @@ proto.msg.TeamMember.prototype.setUser = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.TeamMember} returns this
  */
 proto.msg.TeamMember.prototype.clearUser = function() {
-  return jspb.Message.setField(this, 3, undefined);
+  return this.setUser(undefined);
 };
 
 
@@ -2865,7 +2507,7 @@ proto.msg.TeamsMany.toObject = function(includeInstance, msg) {
     core_types_pb.Team.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     core_types_pb.User.toObject, includeInstance),
-    empty: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
+    empty: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -2961,8 +2603,8 @@ proto.msg.TeamsMany.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.User.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getEmpty();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -3048,7 +2690,7 @@ proto.msg.TeamsMany.prototype.clearUsersList = function() {
 
 
 /**
- * required bool Empty = 3;
+ * optional bool Empty = 3;
  * @return {boolean}
  */
 proto.msg.TeamsMany.prototype.getEmpty = function() {
@@ -3061,25 +2703,7 @@ proto.msg.TeamsMany.prototype.getEmpty = function() {
  * @return {!proto.msg.TeamsMany} returns this
  */
 proto.msg.TeamsMany.prototype.setEmpty = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TeamsMany} returns this
- */
-proto.msg.TeamsMany.prototype.clearEmpty = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TeamsMany.prototype.hasEmpty = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 

@@ -1,26 +1,27 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
+option go_package = '.;msg';
 
 // EchoWithDelay
 message EchoWithDelay {
-    required int32 DelayInSeconds = 1;
+    int32 DelayInSeconds = 1;
 }
 
 
 message TestRequest {
-    required bytes Payload = 1;
-    required bytes Hash = 2;
+    bytes Payload = 1;
+    bytes Hash = 2;
 }
 
 message TestResponse {
-    required bytes Hash = 2;
+    bytes Hash = 2;
 }
 
 message TestRequestWithString {
-    required string Payload = 1;
-    required string Hash = 2;
+    string Payload = 1;
+    string Hash = 2;
 }
 
 message TestResponseWithString {
-    required bytes Hash = 1;
+    bytes Hash = 1;
 }

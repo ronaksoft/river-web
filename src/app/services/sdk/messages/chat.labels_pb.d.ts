@@ -6,19 +6,13 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class LabelsCreate extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasColour(): boolean;
-  clearColour(): void;
-  getColour(): string | undefined;
+  getColour(): string;
   setColour(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -33,26 +27,20 @@ export class LabelsCreate extends jspb.Message {
 
 export namespace LabelsCreate {
   export type AsObject = {
-    randomid?: number,
-    name?: string,
-    colour?: string,
+    randomid: number,
+    name: string,
+    colour: string,
   }
 }
 
 export class LabelsEdit extends jspb.Message {
-  hasLabelid(): boolean;
-  clearLabelid(): void;
-  getLabelid(): number | undefined;
+  getLabelid(): number;
   setLabelid(value: number): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasColour(): boolean;
-  clearColour(): void;
-  getColour(): string | undefined;
+  getColour(): string;
   setColour(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -67,9 +55,9 @@ export class LabelsEdit extends jspb.Message {
 
 export namespace LabelsEdit {
   export type AsObject = {
-    labelid?: number,
-    name?: string,
-    colour?: string,
+    labelid: number,
+    name: string,
+    colour: string,
   }
 }
 
@@ -114,7 +102,7 @@ export namespace LabelsGet {
 export class LabelsAddToMessage extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   clearLabelidsList(): void;
@@ -139,7 +127,7 @@ export class LabelsAddToMessage extends jspb.Message {
 
 export namespace LabelsAddToMessage {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
     labelidsList: Array<number>,
     messageidsList: Array<number>,
   }
@@ -148,7 +136,7 @@ export namespace LabelsAddToMessage {
 export class LabelsRemoveFromMessage extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   clearLabelidsList(): void;
@@ -173,31 +161,23 @@ export class LabelsRemoveFromMessage extends jspb.Message {
 
 export namespace LabelsRemoveFromMessage {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
     labelidsList: Array<number>,
     messageidsList: Array<number>,
   }
 }
 
 export class LabelsListItems extends jspb.Message {
-  hasLabelid(): boolean;
-  clearLabelid(): void;
-  getLabelid(): number | undefined;
+  getLabelid(): number;
   setLabelid(value: number): void;
 
-  hasMinid(): boolean;
-  clearMinid(): void;
-  getMinid(): number | undefined;
+  getMinid(): number;
   setMinid(value: number): void;
 
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -212,17 +192,15 @@ export class LabelsListItems extends jspb.Message {
 
 export namespace LabelsListItems {
   export type AsObject = {
-    labelid?: number,
-    minid?: number,
-    maxid?: number,
-    limit?: number,
+    labelid: number,
+    minid: number,
+    maxid: number,
+    limit: number,
   }
 }
 
 export class LabelItems extends jspb.Message {
-  hasLabelid(): boolean;
-  clearLabelid(): void;
-  getLabelid(): number | undefined;
+  getLabelid(): number;
   setLabelid(value: number): void;
 
   clearMessagesList(): void;
@@ -257,7 +235,7 @@ export class LabelItems extends jspb.Message {
 
 export namespace LabelItems {
   export type AsObject = {
-    labelid?: number,
+    labelid: number,
     messagesList: Array<core_types_pb.UserMessage.AsObject>,
     dialogsList: Array<core_types_pb.Dialog.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,

@@ -5,19 +5,13 @@
 import * as jspb from "google-protobuf";
 
 export class ReplyKeyboardMarkup extends jspb.Message {
-  hasSingleuse(): boolean;
-  clearSingleuse(): void;
-  getSingleuse(): boolean | undefined;
+  getSingleuse(): boolean;
   setSingleuse(value: boolean): void;
 
-  hasSelective(): boolean;
-  clearSelective(): void;
-  getSelective(): boolean | undefined;
+  getSelective(): boolean;
   setSelective(value: boolean): void;
 
-  hasResize(): boolean;
-  clearResize(): void;
-  getResize(): boolean | undefined;
+  getResize(): boolean;
   setResize(value: boolean): void;
 
   clearRowsList(): void;
@@ -37,9 +31,9 @@ export class ReplyKeyboardMarkup extends jspb.Message {
 
 export namespace ReplyKeyboardMarkup {
   export type AsObject = {
-    singleuse?: boolean,
-    selective?: boolean,
-    resize?: boolean,
+    singleuse: boolean,
+    selective: boolean,
+    resize: boolean,
     rowsList: Array<KeyboardButtonRow.AsObject>,
   }
 }
@@ -67,9 +61,7 @@ export namespace ReplyInlineMarkup {
 }
 
 export class ReplyKeyboardHide extends jspb.Message {
-  hasSelective(): boolean;
-  clearSelective(): void;
-  getSelective(): boolean | undefined;
+  getSelective(): boolean;
   setSelective(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -84,19 +76,15 @@ export class ReplyKeyboardHide extends jspb.Message {
 
 export namespace ReplyKeyboardHide {
   export type AsObject = {
-    selective?: boolean,
+    selective: boolean,
   }
 }
 
 export class ReplyKeyboardForceReply extends jspb.Message {
-  hasSingleuse(): boolean;
-  clearSingleuse(): void;
-  getSingleuse(): boolean | undefined;
+  getSingleuse(): boolean;
   setSingleuse(value: boolean): void;
 
-  hasSelective(): boolean;
-  clearSelective(): void;
-  getSelective(): boolean | undefined;
+  getSelective(): boolean;
   setSelective(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -111,8 +99,8 @@ export class ReplyKeyboardForceReply extends jspb.Message {
 
 export namespace ReplyKeyboardForceReply {
   export type AsObject = {
-    singleuse?: boolean,
-    selective?: boolean,
+    singleuse: boolean,
+    selective: boolean,
   }
 }
 
@@ -139,13 +127,9 @@ export namespace KeyboardButtonRow {
 }
 
 export class KeyboardButtonEnvelope extends jspb.Message {
-  hasConstructor(): boolean;
-  clearConstructor(): void;
-  getConstructor(): number | undefined;
+  getConstructor(): number;
   setConstructor(value: number): void;
 
-  hasData(): boolean;
-  clearData(): void;
   getData(): Uint8Array | string;
   getData_asU8(): Uint8Array;
   getData_asB64(): string;
@@ -163,15 +147,13 @@ export class KeyboardButtonEnvelope extends jspb.Message {
 
 export namespace KeyboardButtonEnvelope {
   export type AsObject = {
-    constructor?: number,
+    constructor: number,
     data: Uint8Array | string,
   }
 }
 
 export class Button extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -186,19 +168,15 @@ export class Button extends jspb.Message {
 
 export namespace Button {
   export type AsObject = {
-    text?: string,
+    text: string,
   }
 }
 
 export class ButtonUrl extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
+  getUrl(): string;
   setUrl(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -213,19 +191,15 @@ export class ButtonUrl extends jspb.Message {
 
 export namespace ButtonUrl {
   export type AsObject = {
-    text?: string,
-    url?: string,
+    text: string,
+    url: string,
   }
 }
 
 export class ButtonCallback extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
-  hasData(): boolean;
-  clearData(): void;
   getData(): Uint8Array | string;
   getData_asU8(): Uint8Array;
   getData_asB64(): string;
@@ -243,15 +217,13 @@ export class ButtonCallback extends jspb.Message {
 
 export namespace ButtonCallback {
   export type AsObject = {
-    text?: string,
+    text: string,
     data: Uint8Array | string,
   }
 }
 
 export class ButtonRequestPhone extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -266,14 +238,12 @@ export class ButtonRequestPhone extends jspb.Message {
 
 export namespace ButtonRequestPhone {
   export type AsObject = {
-    text?: string,
+    text: string,
   }
 }
 
 export class ButtonRequestGeoLocation extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -288,24 +258,18 @@ export class ButtonRequestGeoLocation extends jspb.Message {
 
 export namespace ButtonRequestGeoLocation {
   export type AsObject = {
-    text?: string,
+    text: string,
   }
 }
 
 export class ButtonSwitchInline extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
-  hasQuery(): boolean;
-  clearQuery(): void;
-  getQuery(): string | undefined;
+  getQuery(): string;
   setQuery(value: string): void;
 
-  hasSamepeer(): boolean;
-  clearSamepeer(): void;
-  getSamepeer(): boolean | undefined;
+  getSamepeer(): boolean;
   setSamepeer(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -320,16 +284,14 @@ export class ButtonSwitchInline extends jspb.Message {
 
 export namespace ButtonSwitchInline {
   export type AsObject = {
-    text?: string,
-    query?: string,
-    samepeer?: boolean,
+    text: string,
+    query: string,
+    samepeer: boolean,
   }
 }
 
 export class ButtonBuy extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -344,7 +306,7 @@ export class ButtonBuy extends jspb.Message {
 
 export namespace ButtonBuy {
   export type AsObject = {
-    text?: string,
+    text: string,
   }
 }
 

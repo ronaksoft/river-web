@@ -6,29 +6,21 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class MessagesSend extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasCleardraft(): boolean;
-  clearCleardraft(): void;
-  getCleardraft(): boolean | undefined;
+  getCleardraft(): boolean;
   setCleardraft(value: boolean): void;
 
   clearEntitiesList(): void;
@@ -48,46 +40,36 @@ export class MessagesSend extends jspb.Message {
 
 export namespace MessagesSend {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    body?: string,
-    replyto?: number,
-    cleardraft?: boolean,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    body: string,
+    replyto: number,
+    cleardraft: boolean,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
 
 export class MessagesSendMedia extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMediatype(): boolean;
-  clearMediatype(): void;
-  getMediatype(): core_types_pb.InputMediaType | undefined;
-  setMediatype(value: core_types_pb.InputMediaType): void;
+  getMediatype(): core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap];
+  setMediatype(value: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap]): void;
 
-  hasMediadata(): boolean;
-  clearMediadata(): void;
   getMediadata(): Uint8Array | string;
   getMediadata_asU8(): Uint8Array;
   getMediadata_asB64(): string;
   setMediadata(value: Uint8Array | string): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasCleardraft(): boolean;
-  clearCleardraft(): void;
-  getCleardraft(): boolean | undefined;
+  getCleardraft(): boolean;
   setCleardraft(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -102,34 +84,28 @@ export class MessagesSendMedia extends jspb.Message {
 
 export namespace MessagesSendMedia {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    mediatype?: core_types_pb.InputMediaType,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    mediatype: core_types_pb.InputMediaTypeMap[keyof core_types_pb.InputMediaTypeMap],
     mediadata: Uint8Array | string,
-    replyto?: number,
-    cleardraft?: boolean,
+    replyto: number,
+    cleardraft: boolean,
   }
 }
 
 export class MessagesEdit extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
   clearEntitiesList(): void;
@@ -149,10 +125,10 @@ export class MessagesEdit extends jspb.Message {
 
 export namespace MessagesEdit {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    body?: string,
-    messageid?: number,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    body: string,
+    messageid: number,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
@@ -160,12 +136,10 @@ export namespace MessagesEdit {
 export class MessagesReadHistory extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -180,15 +154,15 @@ export class MessagesReadHistory extends jspb.Message {
 
 export namespace MessagesReadHistory {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    maxid?: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    maxid: number,
   }
 }
 
 export class MessagesGet extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   clearMessagesidsList(): void;
@@ -208,7 +182,7 @@ export class MessagesGet extends jspb.Message {
 
 export namespace MessagesGet {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
     messagesidsList: Array<number>,
   }
 }
@@ -216,22 +190,16 @@ export namespace MessagesGet {
 export class MessagesGetHistory extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
-  hasMinid(): boolean;
-  clearMinid(): void;
-  getMinid(): number | undefined;
+  getMinid(): number;
   setMinid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -246,27 +214,21 @@ export class MessagesGetHistory extends jspb.Message {
 
 export namespace MessagesGetHistory {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    limit?: number,
-    maxid?: number,
-    minid?: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    limit: number,
+    maxid: number,
+    minid: number,
   }
 }
 
 export class MessagesGetDialogs extends jspb.Message {
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): number | undefined;
+  getOffset(): number;
   setOffset(value: number): void;
 
-  hasExcludepinned(): boolean;
-  clearExcludepinned(): void;
-  getExcludepinned(): boolean | undefined;
+  getExcludepinned(): boolean;
   setExcludepinned(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -281,9 +243,9 @@ export class MessagesGetDialogs extends jspb.Message {
 
 export namespace MessagesGetDialogs {
   export type AsObject = {
-    limit?: number,
-    offset?: number,
-    excludepinned?: boolean,
+    limit: number,
+    offset: number,
+    excludepinned: boolean,
   }
 }
 
@@ -306,7 +268,7 @@ export namespace MessagesGetPinnedDialogs {
 export class MessagesGetDialog extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   serializeBinary(): Uint8Array;
@@ -321,20 +283,18 @@ export class MessagesGetDialog extends jspb.Message {
 
 export namespace MessagesGetDialog {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
   }
 }
 
 export class MessagesSetTyping extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasAction(): boolean;
-  clearAction(): void;
-  getAction(): core_types_pb.TypingAction | undefined;
-  setAction(value: core_types_pb.TypingAction): void;
+  getAction(): core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap];
+  setAction(value: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap]): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSetTyping.AsObject;
@@ -348,25 +308,21 @@ export class MessagesSetTyping extends jspb.Message {
 
 export namespace MessagesSetTyping {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    action?: core_types_pb.TypingAction,
+    peer?: core_types_pb.InputPeer.AsObject,
+    action: core_types_pb.TypingActionMap[keyof core_types_pb.TypingActionMap],
   }
 }
 
 export class MessagesClearHistory extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
-  hasDelete(): boolean;
-  clearDelete(): void;
-  getDelete(): boolean | undefined;
+  getDelete(): boolean;
   setDelete(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -381,16 +337,16 @@ export class MessagesClearHistory extends jspb.Message {
 
 export namespace MessagesClearHistory {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    maxid?: number,
-    pb_delete?: boolean,
+    peer?: core_types_pb.InputPeer.AsObject,
+    maxid: number,
+    pb_delete: boolean,
   }
 }
 
 export class MessagesDelete extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   clearMessageidsList(): void;
@@ -398,9 +354,7 @@ export class MessagesDelete extends jspb.Message {
   setMessageidsList(value: Array<number>): void;
   addMessageids(value: number, index?: number): number;
 
-  hasRevoke(): boolean;
-  clearRevoke(): void;
-  getRevoke(): boolean | undefined;
+  getRevoke(): boolean;
   setRevoke(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -415,26 +369,24 @@ export class MessagesDelete extends jspb.Message {
 
 export namespace MessagesDelete {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
     messageidsList: Array<number>,
-    revoke?: boolean,
+    revoke: boolean,
   }
 }
 
 export class MessagesForward extends jspb.Message {
   hasFrompeer(): boolean;
   clearFrompeer(): void;
-  getFrompeer(): core_types_pb.InputPeer;
+  getFrompeer(): core_types_pb.InputPeer | undefined;
   setFrompeer(value?: core_types_pb.InputPeer): void;
 
   hasTopeer(): boolean;
   clearTopeer(): void;
-  getTopeer(): core_types_pb.InputPeer;
+  getTopeer(): core_types_pb.InputPeer | undefined;
   setTopeer(value?: core_types_pb.InputPeer): void;
 
-  hasSilence(): boolean;
-  clearSilence(): void;
-  getSilence(): boolean | undefined;
+  getSilence(): boolean;
   setSilence(value: boolean): void;
 
   clearMessageidsList(): void;
@@ -442,9 +394,7 @@ export class MessagesForward extends jspb.Message {
   setMessageidsList(value: Array<number>): void;
   addMessageids(value: number, index?: number): number;
 
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -459,18 +409,18 @@ export class MessagesForward extends jspb.Message {
 
 export namespace MessagesForward {
   export type AsObject = {
-    frompeer: core_types_pb.InputPeer.AsObject,
-    topeer: core_types_pb.InputPeer.AsObject,
-    silence?: boolean,
+    frompeer?: core_types_pb.InputPeer.AsObject,
+    topeer?: core_types_pb.InputPeer.AsObject,
+    silence: boolean,
     messageidsList: Array<number>,
-    randomid?: number,
+    randomid: number,
   }
 }
 
 export class MessagesReadContents extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   clearMessageidsList(): void;
@@ -490,7 +440,7 @@ export class MessagesReadContents extends jspb.Message {
 
 export namespace MessagesReadContents {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
     messageidsList: Array<number>,
   }
 }
@@ -498,17 +448,13 @@ export namespace MessagesReadContents {
 export class MessagesSaveDraft extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
   clearEntitiesList(): void;
@@ -516,9 +462,7 @@ export class MessagesSaveDraft extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasEditedid(): boolean;
-  clearEditedid(): void;
-  getEditedid(): number | undefined;
+  getEditedid(): number;
   setEditedid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -533,18 +477,18 @@ export class MessagesSaveDraft extends jspb.Message {
 
 export namespace MessagesSaveDraft {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    replyto?: number,
-    body?: string,
+    peer?: core_types_pb.InputPeer.AsObject,
+    replyto: number,
+    body: string,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    editedid?: number,
+    editedid: number,
   }
 }
 
 export class MessagesClearDraft extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   serializeBinary(): Uint8Array;
@@ -559,19 +503,17 @@ export class MessagesClearDraft extends jspb.Message {
 
 export namespace MessagesClearDraft {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
   }
 }
 
 export class MessagesToggleDialogPin extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasPin(): boolean;
-  clearPin(): void;
-  getPin(): boolean | undefined;
+  getPin(): boolean;
   setPin(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -586,8 +528,8 @@ export class MessagesToggleDialogPin extends jspb.Message {
 
 export namespace MessagesToggleDialogPin {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    pin?: boolean,
+    peer?: core_types_pb.InputPeer.AsObject,
+    pin: boolean,
   }
 }
 
@@ -616,27 +558,19 @@ export namespace MessagesReorderPinnedDialogs {
 export class MessagesSendScreenShotNotification extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasMinid(): boolean;
-  clearMinid(): void;
-  getMinid(): number | undefined;
+  getMinid(): number;
   setMinid(value: number): void;
 
-  hasMaxid(): boolean;
-  clearMaxid(): void;
-  getMaxid(): number | undefined;
+  getMaxid(): number;
   setMaxid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -651,28 +585,24 @@ export class MessagesSendScreenShotNotification extends jspb.Message {
 
 export namespace MessagesSendScreenShotNotification {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    randomid?: number,
-    replyto?: number,
-    minid?: number,
-    maxid?: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    randomid: number,
+    replyto: number,
+    minid: number,
+    maxid: number,
   }
 }
 
 export class MessagesSendReaction extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasReaction(): boolean;
-  clearReaction(): void;
-  getReaction(): string | undefined;
+  getReaction(): string;
   setReaction(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -687,21 +617,19 @@ export class MessagesSendReaction extends jspb.Message {
 
 export namespace MessagesSendReaction {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    messageid?: number,
-    reaction?: string,
+    peer?: core_types_pb.InputPeer.AsObject,
+    messageid: number,
+    reaction: string,
   }
 }
 
 export class MessagesDeleteReaction extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
   clearReactionsList(): void;
@@ -721,8 +649,8 @@ export class MessagesDeleteReaction extends jspb.Message {
 
 export namespace MessagesDeleteReaction {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    messageid?: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    messageid: number,
     reactionsList: Array<string>,
   }
 }
@@ -730,17 +658,13 @@ export namespace MessagesDeleteReaction {
 export class MessagesGetReactionList extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): number | undefined;
+  getHash(): number;
   setHash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -755,26 +679,22 @@ export class MessagesGetReactionList extends jspb.Message {
 
 export namespace MessagesGetReactionList {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    messageid?: number,
-    hash?: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    messageid: number,
+    hash: number,
   }
 }
 
 export class MessagesTogglePin extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasSilent(): boolean;
-  clearSilent(): void;
-  getSilent(): boolean | undefined;
+  getSilent(): boolean;
   setSilent(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -789,9 +709,9 @@ export class MessagesTogglePin extends jspb.Message {
 
 export namespace MessagesTogglePin {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    messageid?: number,
-    silent?: boolean,
+    peer?: core_types_pb.InputPeer.AsObject,
+    messageid: number,
+    silent: boolean,
   }
 }
 
@@ -811,14 +731,10 @@ export class MessagesDialogs extends jspb.Message {
   setMessagesList(value: Array<core_types_pb.UserMessage>): void;
   addMessages(value?: core_types_pb.UserMessage, index?: number): core_types_pb.UserMessage;
 
-  hasCount(): boolean;
-  clearCount(): void;
-  getCount(): number | undefined;
+  getCount(): number;
   setCount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
   clearGroupsList(): void;
@@ -841,26 +757,20 @@ export namespace MessagesDialogs {
     dialogsList: Array<core_types_pb.Dialog.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
     messagesList: Array<core_types_pb.UserMessage.AsObject>,
-    count?: number,
-    updateid?: number,
+    count: number,
+    updateid: number,
     groupsList: Array<core_types_pb.Group.AsObject>,
   }
 }
 
 export class MessagesSent extends jspb.Message {
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
-  hasCreatedon(): boolean;
-  clearCreatedon(): void;
-  getCreatedon(): number | undefined;
+  getCreatedon(): number;
   setCreatedon(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -875,9 +785,9 @@ export class MessagesSent extends jspb.Message {
 
 export namespace MessagesSent {
   export type AsObject = {
-    messageid?: number,
-    randomid?: number,
-    createdon?: number,
+    messageid: number,
+    randomid: number,
+    createdon: number,
   }
 }
 
@@ -897,14 +807,10 @@ export class MessagesMany extends jspb.Message {
   setGroupsList(value: Array<core_types_pb.Group>): void;
   addGroups(value?: core_types_pb.Group, index?: number): core_types_pb.Group;
 
-  hasContinuous(): boolean;
-  clearContinuous(): void;
-  getContinuous(): boolean | undefined;
+  getContinuous(): boolean;
   setContinuous(value: boolean): void;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -922,8 +828,8 @@ export namespace MessagesMany {
     messagesList: Array<core_types_pb.UserMessage.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
     groupsList: Array<core_types_pb.Group.AsObject>,
-    continuous?: boolean,
-    empty?: boolean,
+    continuous: boolean,
+    empty: boolean,
   }
 }
 
@@ -938,14 +844,10 @@ export class MessagesReactionList extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): number | undefined;
+  getHash(): number;
   setHash(value: number): void;
 
-  hasModified(): boolean;
-  clearModified(): void;
-  getModified(): boolean | undefined;
+  getModified(): boolean;
   setModified(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -962,15 +864,13 @@ export namespace MessagesReactionList {
   export type AsObject = {
     listList: Array<ReactionList.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
-    hash?: number,
-    modified?: boolean,
+    hash: number,
+    modified: boolean,
   }
 }
 
 export class ReactionList extends jspb.Message {
-  hasReaction(): boolean;
-  clearReaction(): void;
-  getReaction(): string | undefined;
+  getReaction(): string;
   setReaction(value: string): void;
 
   clearUseridsList(): void;
@@ -990,7 +890,7 @@ export class ReactionList extends jspb.Message {
 
 export namespace ReactionList {
   export type AsObject = {
-    reaction?: string,
+    reaction: string,
     useridsList: Array<string>,
   }
 }

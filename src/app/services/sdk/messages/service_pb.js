@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -76,12 +78,12 @@ proto.msg.ServiceSendMessage.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.ServiceSendMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    onbehalf: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
-    randomid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    onbehalf: jspb.Message.getFieldWithDefault(msg, 100, 0),
+    randomid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    body: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    replyto: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
-    cleardraft: (f = jspb.Message.getBooleanField(msg, 7)) == null ? undefined : f,
+    body: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    replyto: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    cleardraft: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     core_types_pb.MessageEntity.toObject, includeInstance)
   };
@@ -179,15 +181,15 @@ proto.msg.ServiceSendMessage.prototype.serializeBinary = function() {
  */
 proto.msg.ServiceSendMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 100));
-  if (f != null) {
+  f = message.getOnbehalf();
+  if (f !== 0) {
     writer.writeInt64(
       100,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getRandomid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
@@ -201,22 +203,22 @@ proto.msg.ServiceSendMessage.serializeBinaryToWriter = function(message, writer)
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getBody();
+  if (f.length > 0) {
     writer.writeString(
       5,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getReplyto();
+  if (f !== 0) {
     writer.writeInt64(
       6,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getCleardraft();
+  if (f) {
     writer.writeBool(
       7,
       f
@@ -234,7 +236,7 @@ proto.msg.ServiceSendMessage.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * required int64 OnBehalf = 100;
+ * optional int64 OnBehalf = 100;
  * @return {number}
  */
 proto.msg.ServiceSendMessage.prototype.getOnbehalf = function() {
@@ -247,30 +249,12 @@ proto.msg.ServiceSendMessage.prototype.getOnbehalf = function() {
  * @return {!proto.msg.ServiceSendMessage} returns this
  */
 proto.msg.ServiceSendMessage.prototype.setOnbehalf = function(value) {
-  return jspb.Message.setField(this, 100, value);
+  return jspb.Message.setProto3IntField(this, 100, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ServiceSendMessage} returns this
- */
-proto.msg.ServiceSendMessage.prototype.clearOnbehalf = function() {
-  return jspb.Message.setField(this, 100, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ServiceSendMessage.prototype.hasOnbehalf = function() {
-  return jspb.Message.getField(this, 100) != null;
-};
-
-
-/**
- * required int64 RandomID = 1;
+ * optional int64 RandomID = 1;
  * @return {number}
  */
 proto.msg.ServiceSendMessage.prototype.getRandomid = function() {
@@ -283,40 +267,22 @@ proto.msg.ServiceSendMessage.prototype.getRandomid = function() {
  * @return {!proto.msg.ServiceSendMessage} returns this
  */
 proto.msg.ServiceSendMessage.prototype.setRandomid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ServiceSendMessage} returns this
- */
-proto.msg.ServiceSendMessage.prototype.clearRandomid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ServiceSendMessage.prototype.hasRandomid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputPeer Peer = 2;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 2;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.ServiceSendMessage.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.ServiceSendMessage} returns this
 */
 proto.msg.ServiceSendMessage.prototype.setPeer = function(value) {
@@ -325,11 +291,11 @@ proto.msg.ServiceSendMessage.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.ServiceSendMessage} returns this
  */
 proto.msg.ServiceSendMessage.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -343,7 +309,7 @@ proto.msg.ServiceSendMessage.prototype.hasPeer = function() {
 
 
 /**
- * required string Body = 5;
+ * optional string Body = 5;
  * @return {string}
  */
 proto.msg.ServiceSendMessage.prototype.getBody = function() {
@@ -356,25 +322,7 @@ proto.msg.ServiceSendMessage.prototype.getBody = function() {
  * @return {!proto.msg.ServiceSendMessage} returns this
  */
 proto.msg.ServiceSendMessage.prototype.setBody = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ServiceSendMessage} returns this
- */
-proto.msg.ServiceSendMessage.prototype.clearBody = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ServiceSendMessage.prototype.hasBody = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
@@ -392,25 +340,7 @@ proto.msg.ServiceSendMessage.prototype.getReplyto = function() {
  * @return {!proto.msg.ServiceSendMessage} returns this
  */
 proto.msg.ServiceSendMessage.prototype.setReplyto = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ServiceSendMessage} returns this
- */
-proto.msg.ServiceSendMessage.prototype.clearReplyto = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ServiceSendMessage.prototype.hasReplyto = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -428,25 +358,7 @@ proto.msg.ServiceSendMessage.prototype.getCleardraft = function() {
  * @return {!proto.msg.ServiceSendMessage} returns this
  */
 proto.msg.ServiceSendMessage.prototype.setCleardraft = function(value) {
-  return jspb.Message.setField(this, 7, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ServiceSendMessage} returns this
- */
-proto.msg.ServiceSendMessage.prototype.clearCleardraft = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ServiceSendMessage.prototype.hasCleardraft = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 

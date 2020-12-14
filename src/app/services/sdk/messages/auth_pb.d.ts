@@ -6,9 +6,7 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class InitConnect extends jspb.Message {
-  hasClientnonce(): boolean;
-  clearClientnonce(): void;
-  getClientnonce(): number | undefined;
+  getClientnonce(): number;
   setClientnonce(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -23,40 +21,28 @@ export class InitConnect extends jspb.Message {
 
 export namespace InitConnect {
   export type AsObject = {
-    clientnonce?: number,
+    clientnonce: number,
   }
 }
 
 export class InitCompleteAuth extends jspb.Message {
-  hasClientnonce(): boolean;
-  clearClientnonce(): void;
-  getClientnonce(): number | undefined;
+  getClientnonce(): number;
   setClientnonce(value: number): void;
 
-  hasServernonce(): boolean;
-  clearServernonce(): void;
-  getServernonce(): number | undefined;
+  getServernonce(): number;
   setServernonce(value: number): void;
 
-  hasClientdhpubkey(): boolean;
-  clearClientdhpubkey(): void;
   getClientdhpubkey(): Uint8Array | string;
   getClientdhpubkey_asU8(): Uint8Array;
   getClientdhpubkey_asB64(): string;
   setClientdhpubkey(value: Uint8Array | string): void;
 
-  hasP(): boolean;
-  clearP(): void;
-  getP(): number | undefined;
+  getP(): number;
   setP(value: number): void;
 
-  hasQ(): boolean;
-  clearQ(): void;
-  getQ(): number | undefined;
+  getQ(): number;
   setQ(value: number): void;
 
-  hasEncryptedpayload(): boolean;
-  clearEncryptedpayload(): void;
   getEncryptedpayload(): Uint8Array | string;
   getEncryptedpayload_asU8(): Uint8Array;
   getEncryptedpayload_asB64(): string;
@@ -74,11 +60,11 @@ export class InitCompleteAuth extends jspb.Message {
 
 export namespace InitCompleteAuth {
   export type AsObject = {
-    clientnonce?: number,
-    servernonce?: number,
+    clientnonce: number,
+    servernonce: number,
     clientdhpubkey: Uint8Array | string,
-    p?: number,
-    q?: number,
+    p: number,
+    q: number,
     encryptedpayload: Uint8Array | string,
   }
 }
@@ -100,29 +86,19 @@ export namespace InitConnectTest {
 }
 
 export class InitBindUser extends jspb.Message {
-  hasAuthkey(): boolean;
-  clearAuthkey(): void;
-  getAuthkey(): string | undefined;
+  getAuthkey(): string;
   setAuthkey(value: string): void;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -137,43 +113,31 @@ export class InitBindUser extends jspb.Message {
 
 export namespace InitBindUser {
   export type AsObject = {
-    authkey?: string,
-    username?: string,
-    phone?: string,
-    firstname?: string,
-    lastname?: string,
+    authkey: string,
+    username: string,
+    phone: string,
+    firstname: string,
+    lastname: string,
   }
 }
 
 export class AuthRegister extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasPhonecode(): boolean;
-  clearPhonecode(): void;
-  getPhonecode(): string | undefined;
+  getPhonecode(): string;
   setPhonecode(value: string): void;
 
-  hasPhonecodehash(): boolean;
-  clearPhonecodehash(): void;
-  getPhonecodehash(): string | undefined;
+  getPhonecodehash(): string;
   setPhonecodehash(value: string): void;
 
-  hasLangcode(): boolean;
-  clearLangcode(): void;
-  getLangcode(): string | undefined;
+  getLangcode(): string;
   setLangcode(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -188,29 +152,23 @@ export class AuthRegister extends jspb.Message {
 
 export namespace AuthRegister {
   export type AsObject = {
-    phone?: string,
-    firstname?: string,
-    lastname?: string,
-    phonecode?: string,
-    phonecodehash?: string,
-    langcode?: string,
+    phone: string,
+    firstname: string,
+    lastname: string,
+    phonecode: string,
+    phonecodehash: string,
+    langcode: string,
   }
 }
 
 export class AuthBotRegister extends jspb.Message {
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
-  hasOwnerid(): boolean;
-  clearOwnerid(): void;
-  getOwnerid(): number | undefined;
+  getOwnerid(): number;
   setOwnerid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -225,26 +183,20 @@ export class AuthBotRegister extends jspb.Message {
 
 export namespace AuthBotRegister {
   export type AsObject = {
-    name?: string,
-    username?: string,
-    ownerid?: number,
+    name: string,
+    username: string,
+    ownerid: number,
   }
 }
 
 export class AuthLogin extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasPhonecodehash(): boolean;
-  clearPhonecodehash(): void;
-  getPhonecodehash(): string | undefined;
+  getPhonecodehash(): string;
   setPhonecodehash(value: string): void;
 
-  hasPhonecode(): boolean;
-  clearPhonecode(): void;
-  getPhonecode(): string | undefined;
+  getPhonecode(): string;
   setPhonecode(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -259,16 +211,16 @@ export class AuthLogin extends jspb.Message {
 
 export namespace AuthLogin {
   export type AsObject = {
-    phone?: string,
-    phonecodehash?: string,
-    phonecode?: string,
+    phone: string,
+    phonecodehash: string,
+    phonecode: string,
   }
 }
 
 export class AuthCheckPassword extends jspb.Message {
   hasPassword(): boolean;
   clearPassword(): void;
-  getPassword(): core_types_pb.InputPassword;
+  getPassword(): core_types_pb.InputPassword | undefined;
   setPassword(value?: core_types_pb.InputPassword): void;
 
   serializeBinary(): Uint8Array;
@@ -283,14 +235,12 @@ export class AuthCheckPassword extends jspb.Message {
 
 export namespace AuthCheckPassword {
   export type AsObject = {
-    password: core_types_pb.InputPassword.AsObject,
+    password?: core_types_pb.InputPassword.AsObject,
   }
 }
 
 export class AuthRecoverPassword extends jspb.Message {
-  hasCode(): boolean;
-  clearCode(): void;
-  getCode(): string | undefined;
+  getCode(): string;
   setCode(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -305,7 +255,7 @@ export class AuthRecoverPassword extends jspb.Message {
 
 export namespace AuthRecoverPassword {
   export type AsObject = {
-    code?: string,
+    code: string,
   }
 }
 
@@ -332,14 +282,10 @@ export namespace AuthLogout {
 }
 
 export class AuthLoginByToken extends jspb.Message {
-  hasToken(): boolean;
-  clearToken(): void;
-  getToken(): string | undefined;
+  getToken(): string;
   setToken(value: string): void;
 
-  hasProvider(): boolean;
-  clearProvider(): void;
-  getProvider(): string | undefined;
+  getProvider(): string;
   setProvider(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -354,15 +300,13 @@ export class AuthLoginByToken extends jspb.Message {
 
 export namespace AuthLoginByToken {
   export type AsObject = {
-    token?: string,
-    provider?: string,
+    token: string,
+    provider: string,
   }
 }
 
 export class AuthCheckPhone extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -377,19 +321,15 @@ export class AuthCheckPhone extends jspb.Message {
 
 export namespace AuthCheckPhone {
   export type AsObject = {
-    phone?: string,
+    phone: string,
   }
 }
 
 export class AuthSendCode extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasApphash(): boolean;
-  clearApphash(): void;
-  getApphash(): string | undefined;
+  getApphash(): string;
   setApphash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -404,25 +344,19 @@ export class AuthSendCode extends jspb.Message {
 
 export namespace AuthSendCode {
   export type AsObject = {
-    phone?: string,
-    apphash?: string,
+    phone: string,
+    apphash: string,
   }
 }
 
 export class AuthResendCode extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasPhonecodehash(): boolean;
-  clearPhonecodehash(): void;
-  getPhonecodehash(): string | undefined;
+  getPhonecodehash(): string;
   setPhonecodehash(value: string): void;
 
-  hasApphash(): boolean;
-  clearApphash(): void;
-  getApphash(): string | undefined;
+  getApphash(): string;
   setApphash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -437,41 +371,29 @@ export class AuthResendCode extends jspb.Message {
 
 export namespace AuthResendCode {
   export type AsObject = {
-    phone?: string,
-    phonecodehash?: string,
-    apphash?: string,
+    phone: string,
+    phonecodehash: string,
+    apphash: string,
   }
 }
 
 export class AuthRecall extends jspb.Message {
-  hasClientid(): boolean;
-  clearClientid(): void;
-  getClientid(): string | undefined;
+  getClientid(): string;
   setClientid(value: string): void;
 
-  hasVersion(): boolean;
-  clearVersion(): void;
-  getVersion(): number | undefined;
+  getVersion(): number;
   setVersion(value: number): void;
 
-  hasAppversion(): boolean;
-  clearAppversion(): void;
-  getAppversion(): string | undefined;
+  getAppversion(): string;
   setAppversion(value: string): void;
 
-  hasPlatform(): boolean;
-  clearPlatform(): void;
-  getPlatform(): string | undefined;
+  getPlatform(): string;
   setPlatform(value: string): void;
 
-  hasVendor(): boolean;
-  clearVendor(): void;
-  getVendor(): string | undefined;
+  getVendor(): string;
   setVendor(value: string): void;
 
-  hasOsversion(): boolean;
-  clearOsversion(): void;
-  getOsversion(): string | undefined;
+  getOsversion(): string;
   setOsversion(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -486,12 +408,12 @@ export class AuthRecall extends jspb.Message {
 
 export namespace AuthRecall {
   export type AsObject = {
-    clientid?: string,
-    version?: number,
-    appversion?: string,
-    platform?: string,
-    vendor?: string,
-    osversion?: string,
+    clientid: string,
+    version: number,
+    appversion: string,
+    platform: string,
+    vendor: string,
+    osversion: string,
   }
 }
 
@@ -512,13 +434,9 @@ export namespace AuthDestroyKey {
 }
 
 export class InitTestAuth extends jspb.Message {
-  hasAuthid(): boolean;
-  clearAuthid(): void;
-  getAuthid(): number | undefined;
+  getAuthid(): number;
   setAuthid(value: number): void;
 
-  hasAuthkey(): boolean;
-  clearAuthkey(): void;
   getAuthkey(): Uint8Array | string;
   getAuthkey_asU8(): Uint8Array;
   getAuthkey_asB64(): string;
@@ -536,40 +454,28 @@ export class InitTestAuth extends jspb.Message {
 
 export namespace InitTestAuth {
   export type AsObject = {
-    authid?: number,
+    authid: number,
     authkey: Uint8Array | string,
   }
 }
 
 export class InitResponse extends jspb.Message {
-  hasClientnonce(): boolean;
-  clearClientnonce(): void;
-  getClientnonce(): number | undefined;
+  getClientnonce(): number;
   setClientnonce(value: number): void;
 
-  hasServernonce(): boolean;
-  clearServernonce(): void;
-  getServernonce(): number | undefined;
+  getServernonce(): number;
   setServernonce(value: number): void;
 
-  hasRsapubkeyfingerprint(): boolean;
-  clearRsapubkeyfingerprint(): void;
-  getRsapubkeyfingerprint(): number | undefined;
+  getRsapubkeyfingerprint(): number;
   setRsapubkeyfingerprint(value: number): void;
 
-  hasDhgroupfingerprint(): boolean;
-  clearDhgroupfingerprint(): void;
-  getDhgroupfingerprint(): number | undefined;
+  getDhgroupfingerprint(): number;
   setDhgroupfingerprint(value: number): void;
 
-  hasPq(): boolean;
-  clearPq(): void;
-  getPq(): number | undefined;
+  getPq(): number;
   setPq(value: number): void;
 
-  hasServertimestamp(): boolean;
-  clearServertimestamp(): void;
-  getServertimestamp(): number | undefined;
+  getServertimestamp(): number;
   setServertimestamp(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -584,18 +490,16 @@ export class InitResponse extends jspb.Message {
 
 export namespace InitResponse {
   export type AsObject = {
-    clientnonce?: number,
-    servernonce?: number,
-    rsapubkeyfingerprint?: number,
-    dhgroupfingerprint?: number,
-    pq?: number,
-    servertimestamp?: number,
+    clientnonce: number,
+    servernonce: number,
+    rsapubkeyfingerprint: number,
+    dhgroupfingerprint: number,
+    pq: number,
+    servertimestamp: number,
   }
 }
 
 export class InitCompleteAuthInternal extends jspb.Message {
-  hasSecretnonce(): boolean;
-  clearSecretnonce(): void;
   getSecretnonce(): Uint8Array | string;
   getSecretnonce_asU8(): Uint8Array;
   getSecretnonce_asB64(): string;
@@ -618,28 +522,18 @@ export namespace InitCompleteAuthInternal {
 }
 
 export class InitAuthCompleted extends jspb.Message {
-  hasClientnonce(): boolean;
-  clearClientnonce(): void;
-  getClientnonce(): number | undefined;
+  getClientnonce(): number;
   setClientnonce(value: number): void;
 
-  hasServernonce(): boolean;
-  clearServernonce(): void;
-  getServernonce(): number | undefined;
+  getServernonce(): number;
   setServernonce(value: number): void;
 
-  hasStatus(): boolean;
-  clearStatus(): void;
-  getStatus(): InitAuthCompleted.Statuses | undefined;
-  setStatus(value: InitAuthCompleted.Statuses): void;
+  getStatus(): InitAuthCompleted.StatusesMap[keyof InitAuthCompleted.StatusesMap];
+  setStatus(value: InitAuthCompleted.StatusesMap[keyof InitAuthCompleted.StatusesMap]): void;
 
-  hasSecrethash(): boolean;
-  clearSecrethash(): void;
-  getSecrethash(): number | undefined;
+  getSecrethash(): number;
   setSecrethash(value: number): void;
 
-  hasServerdhpubkey(): boolean;
-  clearServerdhpubkey(): void;
   getServerdhpubkey(): Uint8Array | string;
   getServerdhpubkey_asU8(): Uint8Array;
   getServerdhpubkey_asB64(): string;
@@ -657,24 +551,24 @@ export class InitAuthCompleted extends jspb.Message {
 
 export namespace InitAuthCompleted {
   export type AsObject = {
-    clientnonce?: number,
-    servernonce?: number,
-    status?: InitAuthCompleted.Statuses,
-    secrethash?: number,
+    clientnonce: number,
+    servernonce: number,
+    status: InitAuthCompleted.StatusesMap[keyof InitAuthCompleted.StatusesMap],
+    secrethash: number,
     serverdhpubkey: Uint8Array | string,
   }
 
-  export enum Statuses {
-    OK = 0,
-    FAIL = 1,
-    RETRY = 2,
+  export interface StatusesMap {
+    OK: 0;
+    FAIL: 1;
+    RETRY: 2;
   }
+
+  export const Statuses: StatusesMap;
 }
 
 export class InitUserBound extends jspb.Message {
-  hasAuthid(): boolean;
-  clearAuthid(): void;
-  getAuthid(): number | undefined;
+  getAuthid(): number;
   setAuthid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -689,14 +583,12 @@ export class InitUserBound extends jspb.Message {
 
 export namespace InitUserBound {
   export type AsObject = {
-    authid?: number,
+    authid: number,
   }
 }
 
 export class AuthPasswordRecovery extends jspb.Message {
-  hasEmailpattern(): boolean;
-  clearEmailpattern(): void;
-  getEmailpattern(): string | undefined;
+  getEmailpattern(): string;
   setEmailpattern(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -711,39 +603,27 @@ export class AuthPasswordRecovery extends jspb.Message {
 
 export namespace AuthPasswordRecovery {
   export type AsObject = {
-    emailpattern?: string,
+    emailpattern: string,
   }
 }
 
 export class AuthRecalled extends jspb.Message {
-  hasClientid(): boolean;
-  clearClientid(): void;
-  getClientid(): string | undefined;
+  getClientid(): string;
   setClientid(value: string): void;
 
-  hasTimestamp(): boolean;
-  clearTimestamp(): void;
-  getTimestamp(): number | undefined;
+  getTimestamp(): number;
   setTimestamp(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasAvailable(): boolean;
-  clearAvailable(): void;
-  getAvailable(): boolean | undefined;
+  getAvailable(): boolean;
   setAvailable(value: boolean): void;
 
-  hasForce(): boolean;
-  clearForce(): void;
-  getForce(): boolean | undefined;
+  getForce(): boolean;
   setForce(value: boolean): void;
 
-  hasCurrentversion(): boolean;
-  clearCurrentversion(): void;
-  getCurrentversion(): string | undefined;
+  getCurrentversion(): string;
   setCurrentversion(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -758,29 +638,25 @@ export class AuthRecalled extends jspb.Message {
 
 export namespace AuthRecalled {
   export type AsObject = {
-    clientid?: string,
-    timestamp?: number,
-    updateid?: number,
-    available?: boolean,
-    force?: boolean,
-    currentversion?: string,
+    clientid: string,
+    timestamp: number,
+    updateid: number,
+    available: boolean,
+    force: boolean,
+    currentversion: string,
   }
 }
 
 export class AuthAuthorization extends jspb.Message {
-  hasExpired(): boolean;
-  clearExpired(): void;
-  getExpired(): number | undefined;
+  getExpired(): number;
   setExpired(value: number): void;
 
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.User;
+  getUser(): core_types_pb.User | undefined;
   setUser(value?: core_types_pb.User): void;
 
-  hasActivesessions(): boolean;
-  clearActivesessions(): void;
-  getActivesessions(): number | undefined;
+  getActivesessions(): number;
   setActivesessions(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -795,20 +671,16 @@ export class AuthAuthorization extends jspb.Message {
 
 export namespace AuthAuthorization {
   export type AsObject = {
-    expired?: number,
-    user: core_types_pb.User.AsObject,
-    activesessions?: number,
+    expired: number,
+    user?: core_types_pb.User.AsObject,
+    activesessions: number,
   }
 }
 
 export class AuthBotAuthorization extends jspb.Message {
-  hasAuthid(): boolean;
-  clearAuthid(): void;
-  getAuthid(): number | undefined;
+  getAuthid(): number;
   setAuthid(value: number): void;
 
-  hasAuthkey(): boolean;
-  clearAuthkey(): void;
   getAuthkey(): Uint8Array | string;
   getAuthkey_asU8(): Uint8Array;
   getAuthkey_asB64(): string;
@@ -816,7 +688,7 @@ export class AuthBotAuthorization extends jspb.Message {
 
   hasBot(): boolean;
   clearBot(): void;
-  getBot(): core_types_pb.Bot;
+  getBot(): core_types_pb.Bot | undefined;
   setBot(value?: core_types_pb.Bot): void;
 
   serializeBinary(): Uint8Array;
@@ -831,21 +703,17 @@ export class AuthBotAuthorization extends jspb.Message {
 
 export namespace AuthBotAuthorization {
   export type AsObject = {
-    authid?: number,
+    authid: number,
     authkey: Uint8Array | string,
-    bot: core_types_pb.Bot.AsObject,
+    bot?: core_types_pb.Bot.AsObject,
   }
 }
 
 export class AuthCheckedPhone extends jspb.Message {
-  hasInvited(): boolean;
-  clearInvited(): void;
-  getInvited(): boolean | undefined;
+  getInvited(): boolean;
   setInvited(value: boolean): void;
 
-  hasRegistered(): boolean;
-  clearRegistered(): void;
-  getRegistered(): boolean | undefined;
+  getRegistered(): boolean;
   setRegistered(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -860,25 +728,19 @@ export class AuthCheckedPhone extends jspb.Message {
 
 export namespace AuthCheckedPhone {
   export type AsObject = {
-    invited?: boolean,
-    registered?: boolean,
+    invited: boolean,
+    registered: boolean,
   }
 }
 
 export class AuthSentCode extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasPhonecodehash(): boolean;
-  clearPhonecodehash(): void;
-  getPhonecodehash(): string | undefined;
+  getPhonecodehash(): string;
   setPhonecodehash(value: string): void;
 
-  hasSendtophone(): boolean;
-  clearSendtophone(): void;
-  getSendtophone(): boolean | undefined;
+  getSendtophone(): boolean;
   setSendtophone(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -893,9 +755,9 @@ export class AuthSentCode extends jspb.Message {
 
 export namespace AuthSentCode {
   export type AsObject = {
-    phone?: string,
-    phonecodehash?: string,
-    sendtophone?: boolean,
+    phone: string,
+    phonecodehash: string,
+    sendtophone: boolean,
   }
 }
 

@@ -10,7 +10,7 @@
 import {IMessage} from '../message/interface';
 import {Dialog} from "../../services/sdk/messages/core.types_pb";
 
-export interface IDialog extends Dialog.AsObject {
+export interface IDialog extends Partial<Dialog.AsObject> {
     action_code?: number;
     action_data?: any;
     force?: boolean;

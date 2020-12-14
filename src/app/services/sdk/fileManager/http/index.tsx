@@ -15,7 +15,7 @@ import {C_LOCALSTORAGE, C_MSG} from '../../const';
 import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
 import Socket, {serverTime} from '../../server/socket';
-import {EventWebSocketOpen} from "../../../events";
+import {EventSocketReady} from "../../../events";
 import {InputTeam} from "../../messages/core.types_pb";
 import {getFileServerUrl} from "../../../../components/DevTools";
 
@@ -54,6 +54,7 @@ export default class Http {
     private inputTeam: InputTeam.AsObject | undefined;
 
     public constructor(shareWorker: boolean, id: number) {
+        return;
         const fileUrl = getFileServerUrl();
         this.shareWorker = shareWorker;
 
@@ -73,14 +74,14 @@ export default class Http {
             if (shareWorker) {
                 this.initShareWorker();
             } else {
-                window.removeEventListener(EventWebSocketOpen, fn);
+                window.removeEventListener(EventSocketReady, fn);
                 this.workerMessage('init', {});
                 this.initWorkerEvent();
             }
         };
 
         if (serverTime === 0) {
-            window.addEventListener(EventWebSocketOpen, fn);
+            window.addEventListener(EventSocketReady, fn);
         } else {
             fn();
         }

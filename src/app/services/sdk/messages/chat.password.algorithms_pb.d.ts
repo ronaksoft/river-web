@@ -5,27 +5,19 @@
 import * as jspb from "google-protobuf";
 
 export class PasswordAlgorithmVer6A extends jspb.Message {
-  hasSalt1(): boolean;
-  clearSalt1(): void;
   getSalt1(): Uint8Array | string;
   getSalt1_asU8(): Uint8Array;
   getSalt1_asB64(): string;
   setSalt1(value: Uint8Array | string): void;
 
-  hasSalt2(): boolean;
-  clearSalt2(): void;
   getSalt2(): Uint8Array | string;
   getSalt2_asU8(): Uint8Array;
   getSalt2_asB64(): string;
   setSalt2(value: Uint8Array | string): void;
 
-  hasG(): boolean;
-  clearG(): void;
-  getG(): number | undefined;
+  getG(): number;
   setG(value: number): void;
 
-  hasP(): boolean;
-  clearP(): void;
   getP(): Uint8Array | string;
   getP_asU8(): Uint8Array;
   getP_asB64(): string;
@@ -45,7 +37,7 @@ export namespace PasswordAlgorithmVer6A {
   export type AsObject = {
     salt1: Uint8Array | string,
     salt2: Uint8Array | string,
-    g?: number,
+    g: number,
     p: Uint8Array | string,
   }
 }

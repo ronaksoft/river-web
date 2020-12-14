@@ -1,23 +1,24 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+option go_package = '.;msg';
 
 // LabelsCreate
 // @Function
 // @Returns Bool
 message LabelsCreate {
-    optional int64 RandomID = 1;
-    required string Name = 2;
-    required string Colour = 3;
+    int64 RandomID = 1;
+    string Name = 2;
+    string Colour = 3;
 }
 
 // LabelsEdit
 // @Function
 // @Returns: Bool
 message LabelsEdit {
-    required int32 LabelID = 1;
-    required string Name = 2;
-    required string Colour = 3;
+    int32 LabelID = 1;
+    string Name = 2;
+    string Colour = 3;
 }
 
 // LabelsDelete
@@ -37,7 +38,7 @@ message LabelsGet {
 // @Function
 // @Returns: Bool
 message LabelsAddToMessage {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
     repeated int32 LabelIDs = 3;
     repeated int64 MessageIDs = 4;
 }
@@ -46,7 +47,7 @@ message LabelsAddToMessage {
 // @Function
 // @Returns: Bool
 message LabelsRemoveFromMessage {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
     repeated int32 LabelIDs = 3;
     repeated int64 MessageIDs = 4;
 }
@@ -55,15 +56,15 @@ message LabelsRemoveFromMessage {
 // @Function
 // @Returns: LabelItems
 message LabelsListItems {
-    required int32 LabelID = 1;
-    optional int64 MinID = 2;
-    optional int64 MaxID = 3;
-    optional int32 Limit = 4;
+    int32 LabelID = 1;
+    int64 MinID = 2;
+    int64 MaxID = 3;
+    int32 Limit = 4;
 }
 
 // LabelItems
 message LabelItems {
-    required int32 LabelID = 1;
+    int32 LabelID = 1;
     repeated UserMessage Messages = 2;
     repeated Dialog Dialogs = 3;
     repeated User Users = 4;

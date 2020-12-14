@@ -8,7 +8,12 @@
 */
 
 import {C_MSG} from '../const';
-import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/auth_pb';
+import {
+    AuthSentCode,
+    AuthCheckedPhone,
+    AuthAuthorization,
+    AuthRecalled,
+} from '../messages/auth_pb';
 import {BlockedContactsMany, ContactsImported, ContactsMany, ContactsTopPeers} from '../messages/contacts_pb';
 import {
     Bool,
@@ -46,6 +51,9 @@ import {PhoneCall, PhoneInit} from "../messages/chat.phone_pb";
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
         switch (constructor) {
+            case C_MSG.InitResponse:
+            case C_MSG.InitAuthCompleted:
+                return data;
             case C_MSG.AuthSentCode:
                 return AuthSentCode.deserializeBinary(data);
             case C_MSG.AuthCheckedPhone:

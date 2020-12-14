@@ -1,112 +1,113 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+option go_package = '.;msg';
 
 // AccountSetNotifySettings
 // @Function
 // @Return: Bool
 message AccountSetNotifySettings {
-    required InputPeer Peer = 1;
-    required PeerNotifySettings Settings = 2;
+    InputPeer Peer = 1;
+    PeerNotifySettings Settings = 2;
 }
 
 // AccountGetNotifySettings
 // @Function
 // @Return: NotifySettings
 message AccountGetNotifySettings {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
 }
 
 // AccountRegisterDevice
 // @Function
 // @Return: Bool
 message AccountRegisterDevice {
-    required string Token = 2;
-    required string DeviceModel = 3;
-    required string SystemVersion = 4;
-    required string AppVersion = 5;
-    required string LangCode = 6;
-    required PushTokenProvider TokenType = 7;
-    required string ClientID = 8;
+    string Token = 2;
+    string DeviceModel = 3;
+    string SystemVersion = 4;
+    string AppVersion = 5;
+    string LangCode = 6;
+    PushTokenProvider TokenType = 7;
+    string ClientID = 8;
 }
 
 // AccountUnregisterDevice
 // @Function
 // @Return: Bool
 message AccountUnregisterDevice {
-    required int32 TokenType = 1;
-    required string Token = 2;
+    int32 TokenType = 1;
+    string Token = 2;
 }
 
 // AccountUpdateProfile
 // @Function
 // @Return: UserFull
 message AccountUpdateProfile {
-    required string FirstName = 1;
-    required string LastName = 2;
-    optional string Bio = 3;
+    string FirstName = 1;
+    string LastName = 2;
+    string Bio = 3;
 }
 
 // AccountCheckUsername
 // @Function
 // @Return: Bool
 message AccountCheckUsername {
-    required string Username = 1;
+    string Username = 1;
 }
 
 // AccountUpdateUsername
 // @Function
 // @Return: UserFull
 message AccountUpdateUsername {
-    required string Username = 1;
+    string Username = 1;
 }
 
 // AccountUploadPhoto
 // @Function
 // @Return: Bool / UserPhoto
 message AccountUploadPhoto {
-    required InputFile File = 1;
-    optional bool ReturnObject = 2;
+    InputFile File = 1;
+    bool ReturnObject = 2;
 }
 
 // AccountUpdatePhoto
 // @Function
 // @Return: Bool
 message AccountUpdatePhoto {
-    required int64 PhotoID = 1 [jstype = JS_STRING];
+    int64 PhotoID = 1 [jstype = JS_STRING];
 }
 
 // AccountRemotePhoto
 // @Function
 // @Return: Bool
 message AccountRemovePhoto {
-    optional int64 PhotoID = 1 [jstype = JS_STRING];
+    int64 PhotoID = 1 [jstype = JS_STRING];
 }
 
 // AccountSendChangePhoneCode
 // @Function
 // @Return: AuthSentCode
 message AccountSendChangePhoneCode {
-    required string Phone = 1;
-    optional string AppHash = 2;
+    string Phone = 1;
+    string AppHash = 2;
 }
 
 // AccountResendChangePhoneCode
 // @Function
 // @Return: Bool
 message AccountResendChangePhoneCode {
-    required string Phone = 1;
-    required string PhoneCodeHash = 2;
+    string Phone = 1;
+    string PhoneCodeHash = 2;
 }
 
 // AccountChangePhone
 // @Function
 // @Return: User
 message AccountChangePhone {
-    required string Phone = 1;
-    required string PhoneCodeHash = 2;
-    required string PhoneCode = 3;
-    optional InputPassword Password = 4;
+    string Phone = 1;
+    string PhoneCodeHash = 2;
+    string PhoneCode = 3;
+    InputPassword Password = 4;
 }
 
 // AccountSetPrivacy
@@ -125,7 +126,7 @@ message AccountSetPrivacy {
 // @Function
 // @Return: AccountPrivacyRules
 message AccountGetPrivacy {
-    required PrivacyKey Key = 1;
+    PrivacyKey Key = 1;
 }
 
 // AccountGetAuthorizations
@@ -138,21 +139,21 @@ message AccountGetAuthorizations {
 // @Function
 // @Returns: Bool
 message AccountResetAuthorization {
-    required int64 AuthID = 1 [jstype = JS_STRING];
+    int64 AuthID = 1 [jstype = JS_STRING];
 }
 
 // AccountUpdateStatus
 // @Function
 // @Returns: Bool
 message AccountUpdateStatus {
-    required bool Online = 1;
+    bool Online = 1;
 }
 
 // AccountSetLang
 // @Function
 // @Returns: Bool
 message AccountSetLang {
-    required string LangCode = 1;
+    string LangCode = 1;
 }
 
 // AccountGetPassword
@@ -167,18 +168,18 @@ message AccountGetPassword {
 // @Returns: AccountPasswordSettings
 // Get private info associated to the password info (recovery email & so on)
 message AccountGetPasswordSettings {
-    optional InputPassword Password = 1;
+    InputPassword Password = 1;
 }
 
 // AccountUpdatePassword
 // @Function
 // @Returns: Bool
 message AccountUpdatePasswordSettings {
-    optional InputPassword Password = 1;
-    optional bytes PasswordHash = 2;
-    required int64 Algorithm = 3;
-    required bytes AlgorithmData = 4;
-    optional string Hint = 6;
+    InputPassword Password = 1;
+    bytes PasswordHash = 2;
+    int64 Algorithm = 3;
+    bytes AlgorithmData = 4;
+    string Hint = 6;
     repeated SecurityQuestion Questions = 7;
 }
 
@@ -187,9 +188,9 @@ message AccountUpdatePasswordSettings {
 // @Returns: AccountPassword, AuthAuthorization
 message AccountRecoverPassword {
     repeated SecurityAnswer Answers = 1;
-    required int64 Algorithm = 2;
-    required bytes AlgorithmData = 3;
-    required int64 SrpID = 4 [jstype = JS_STRING];
+    int64 Algorithm = 2;
+    bytes AlgorithmData = 3;
+    int64 SrpID = 4 [jstype = JS_STRING];
 }
 
 // AccountGetTeams
@@ -200,7 +201,7 @@ message AccountGetTeams {}
 // AccountPasswordSettings
 // Private info associated to the password info (recovery email and so on)
 message AccountPasswordSettings {
-    required string Hint = 2;
+    string Hint = 2;
     repeated RecoveryQuestion Questions = 3;
 }
 
@@ -211,33 +212,33 @@ message SecurityQuestions {
 
 // RecoverQuestion
 message RecoveryQuestion {
-    required int32 ID = 1;
-    required string Text = 2;
+    int32 ID = 1;
+    string Text = 2;
 }
 
 // SecurityQuestion
 message SecurityQuestion {
-    required int32 ID = 1;
-    required string Text = 2;
-    required string Answer = 3;
+    int32 ID = 1;
+    string Text = 2;
+    string Answer = 3;
 }
 
 // SecurityAnswer
 message SecurityAnswer {
-    required int32 QuestionID = 1;
-    required string Answer = 2;
+    int32 QuestionID = 1;
+    string Answer = 2;
 }
 
 // AccountPassword
 // Configuration for two-factor authorization
 message AccountPassword {
-    required bool HasPassword = 1;
-    optional string Hint = 2;
-    required int64 Algorithm = 3;
-    required bytes AlgorithmData = 4;
-    optional bytes SrpB = 5;
-    optional bytes RandomData = 6;
-    optional int64 SrpID = 7 [jstype = JS_STRING];
+    bool HasPassword = 1;
+    string Hint = 2;
+    int64 Algorithm = 3;
+    bytes AlgorithmData = 4;
+    bytes SrpB = 5;
+    bytes RandomData = 6;
+    int64 SrpID = 7 [jstype = JS_STRING];
     repeated RecoveryQuestion Questions = 8;
 }
 
@@ -248,15 +249,15 @@ message AccountAuthorizations {
 
 // AccountAuthorization
 message AccountAuthorization {
-    required int64 AuthID = 100 [jstype = JS_STRING];
-    required string Model = 1;
-    required string AppVersion = 2;
-    required string SystemVersion = 3;
-    required string LangCode = 4;
-    required int64 CreatedAt = 5;
-    optional int64 ActiveAt = 6;    // @Deprecated
-    required string ClientIP = 7;
-    required int64 LastAccess = 8;
+    int64 AuthID = 100 [jstype = JS_STRING];
+    string Model = 1;
+    string AppVersion = 2;
+    string SystemVersion = 3;
+    string LangCode = 4;
+    int64 CreatedAt = 5;
+    int64 ActiveAt = 6;    // @Deprecated
+    string ClientIP = 7;
+    int64 LastAccess = 8;
 }
 
 // AccountPrivacyRules

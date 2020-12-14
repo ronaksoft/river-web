@@ -1,91 +1,94 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
-
 import "core.types.proto";
+
+option go_package = '.;msg';
+
+
 
 // TeamGet
 // @Function
 // @Return: Team
 message TeamGet {
-    required int64 ID = 1 [jstype = JS_STRING];
+    int64 ID = 1 [jstype = JS_STRING];
 }
 
 // TeamAddMember
 // @Function
 // @Return: Bool
 message TeamAddMember {
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
-    required bool Manager = 3;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    int64 UserID = 2 [jstype = JS_STRING];
+    bool Manager = 3;
 }
 
 // TeamRemoveMember
 // @Function
 // @Return: Bool
 message TeamRemoveMember {
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
+    int64 TeamID = 1 [jstype = JS_STRING];
+    int64 UserID = 2 [jstype = JS_STRING];
 }
 
 // TeamPromote
 // @Function
 // @Return: Bool
 message TeamPromote {
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
+    int64 TeamID = 1 [jstype = JS_STRING];
+    int64 UserID = 2 [jstype = JS_STRING];
 }
 
 // TeamDemote
 // @Function
 // @Return: Bool
 message TeamDemote {
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
+    int64 TeamID = 1 [jstype = JS_STRING];
+    int64 UserID = 2 [jstype = JS_STRING];
 }
 
 // TeamLeave
 // @Function
 // @Return: Bool
 message TeamLeave {
-    required int64 TeamID = 2 [jstype = JS_STRING];
+    int64 TeamID = 2 [jstype = JS_STRING];
 }
 
 // TeamJoin
 // @Function
 // @Return: Bool
 message TeamJoin {
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required bytes Token = 2;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    bytes Token = 2;
 }
 
 // TeamListMembers
 // @Function
 // @Return: TeamMembers
 message TeamListMembers {
-    required int64 TeamID = 1 [jstype = JS_STRING];
+    int64 TeamID = 1 [jstype = JS_STRING];
 }
 
 // TeamEdit
 // @Function
 // @Returns: Team
 message TeamEdit {
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required string Name = 2;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    string Name = 2;
 }
 
 // TeamUploadPhoto
 // @Function
 // @Returns: TeamPhoto
 message TeamUploadPhoto {
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required InputFile File = 2;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    InputFile File = 2;
 }
 
 // TeamRemovePhoto
 // @Function
 // @Returns: Bool
 message TeamRemovePhoto {
-    required int64 TeamID = 1 [jstype = JS_STRING];
+    int64 TeamID = 1 [jstype = JS_STRING];
 }
 
 // TeamMembers
@@ -96,14 +99,14 @@ message TeamMembers {
 
 // TeamMember
 message TeamMember {
-    required int64 UserID = 1 [jstype = JS_STRING];
-    required bool Admin = 2;
-    required User User = 3;
+    int64 UserID = 1 [jstype = JS_STRING];
+    bool Admin = 2;
+    User User = 3;
 }
 
 // TeamsMany
 message TeamsMany {
     repeated Team Teams = 1;
     repeated User Users = 2;
-    required bool Empty = 3;
+    bool Empty = 3;
 }

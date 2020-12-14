@@ -9,7 +9,7 @@
 
 import {IUser} from "../user/interface";
 import {IGroup} from "../group/interface";
-import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
+import {InputPeer, PeerTypeMap} from "../../services/sdk/messages/core.types_pb";
 
 export interface ITopPeer {
     teamid: string;
@@ -21,6 +21,6 @@ export interface ITopPeer {
 }
 
 export interface ITopPeerItem {
-    type: PeerType;
+    type: PeerTypeMap;
     item: IUser | IGroup;
 }

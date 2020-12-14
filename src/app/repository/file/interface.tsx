@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import {FileType} from "../../services/sdk/messages/files_pb";
+import {FileTypeMap} from "../../services/sdk/messages/files_pb";
 
 export interface IFile {
     id: string;
@@ -21,7 +21,7 @@ export interface ITempFile {
     id: string;
     part: number;
     data: Blob;
-    type?: FileType;
+    type?: FileTypeMap;
     modifiedtime?: number;
 }
 

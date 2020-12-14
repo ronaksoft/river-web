@@ -1,24 +1,25 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+option go_package = '.;msg';
 
 // InitConnect
 // @Function
 // @Return: InitResponse
 message InitConnect {
-    required fixed64 ClientNonce = 1;
+    fixed64 ClientNonce = 1;
 }
 
 // InitCompleteAuth
 // @Function
 // @Return: InitAuthCompleted
 message InitCompleteAuth {
-    required fixed64 ClientNonce = 1;
-    required fixed64 ServerNonce = 2;
-    required bytes ClientDHPubKey = 5;
-    required fixed64 P = 6;
-    required fixed64 Q = 7;
-    required bytes EncryptedPayload = 8;
+    fixed64 ClientNonce = 1;
+    fixed64 ServerNonce = 2;
+    bytes ClientDHPubKey = 5;
+    fixed64 P = 6;
+    fixed64 Q = 7;
+    bytes EncryptedPayload = 8;
 }
 
 // InitConnectTest
@@ -35,55 +36,55 @@ message InitConnectTest {
 // @Function
 // @Return: InitUserBound
 message InitBindUser {
-    required string AuthKey = 1;
-    required string Username = 2;
-    required string Phone = 3;
-    required string FirstName = 4;
-    required string LastName = 5;
+    string AuthKey = 1;
+    string Username = 2;
+    string Phone = 3;
+    string FirstName = 4;
+    string LastName = 5;
 }
 
 // AuthRegister
 // @Function
 // @Return: AuthAuthorization
 message AuthRegister {
-    required string Phone = 1;
-    required string FirstName = 2;
-    required string LastName = 3;
-    required string PhoneCode = 4;
-    required string PhoneCodeHash = 5;
-    optional string LangCode = 6;
+    string Phone = 1;
+    string FirstName = 2;
+    string LastName = 3;
+    string PhoneCode = 4;
+    string PhoneCodeHash = 5;
+    string LangCode = 6;
 }
 
 // AuthBotRegister
 // @Function
 // @Return: AuthBotAuthorization
 message AuthBotRegister {
-    required string Name = 1;
-    required string Username = 2;
-    required int64 OwnerID = 3;
+    string Name = 1;
+    string Username = 2;
+    int64 OwnerID = 3;
 }
 
 // AuthLogin
 // @Function
 // @Return: AuthAuthorization
 message AuthLogin {
-    required string Phone = 1;
-    required string PhoneCodeHash = 2;
-    required string PhoneCode = 3;
+    string Phone = 1;
+    string PhoneCodeHash = 2;
+    string PhoneCode = 3;
 }
 
 // AuthCheckPassword
 // @Function
 // @Return: AuthAuthorization
 message AuthCheckPassword {
-    required InputPassword Password = 1;
+    InputPassword Password = 1;
 }
 
 // AuthRecoverPassword
 // @Function
 // @Returns AuthAuthorization
 message AuthRecoverPassword {
-    required string Code = 1;
+    string Code = 1;
 }
 
 // AuthLogout
@@ -97,44 +98,44 @@ message AuthLogout {
 // @Function
 // @Return: AuthAuthorization
 message AuthLoginByToken {
-    required string Token = 1;
-    required string Provider = 2;
+    string Token = 1;
+    string Provider = 2;
 }
 
 // AuthCheckPhone
 // @Function
 // @Return: AuthCheckedPhone
 message AuthCheckPhone {
-    required string Phone = 1;
+    string Phone = 1;
 }
 
 // AuthSendCode
 // @Function
 // @Return: AuthSentCode
 message AuthSendCode {
-    required string Phone = 1;
-    optional string AppHash = 2;
+    string Phone = 1;
+    string AppHash = 2;
 }
 
 // AuthResendCode
 // @Function
 // @Return: Bool
 message AuthResendCode {
-    required string Phone = 1;
-    required string PhoneCodeHash = 2;
-    optional string AppHash = 3;
+    string Phone = 1;
+    string PhoneCodeHash = 2;
+    string AppHash = 3;
 }
 
 // AuthRecall
 // @Function
 // @Return: AuthRecalled
 message AuthRecall {
-    required int64 ClientID = 1 [jstype = JS_STRING];
-    optional uint32 Version = 2;
-    optional string AppVersion = 3;
-    optional string Platform = 4;
-    optional string Vendor = 5;
-    optional string OSVersion = 6;
+    int64 ClientID = 1 [jstype = JS_STRING];
+    uint32 Version = 2;
+    string AppVersion = 3;
+    string Platform = 4;
+    string Vendor = 5;
+    string OSVersion = 6;
 }
 
 // AuthDestroyKey
@@ -145,82 +146,82 @@ message AuthDestroyKey {
 
 // InitTestAuth
 message InitTestAuth {
-    required int64 AuthID = 1;
-    required bytes AuthKey = 2;
+    int64 AuthID = 1;
+    bytes AuthKey = 2;
 }
 
 // InitResponse
 message InitResponse {
-    required fixed64 ClientNonce = 1;
-    required fixed64 ServerNonce = 2;
-    required fixed64 RSAPubKeyFingerPrint = 3;
-    required fixed64 DHGroupFingerPrint = 4;
-    required fixed64 PQ = 5;
-    required int64 ServerTimestamp = 6;
+    fixed64 ClientNonce = 1;
+    fixed64 ServerNonce = 2;
+    fixed64 RSAPubKeyFingerPrint = 3;
+    fixed64 DHGroupFingerPrint = 4;
+    fixed64 PQ = 5;
+    int64 ServerTimestamp = 6;
 }
 
 // InitCompleteAuthInternal
 message InitCompleteAuthInternal {
-    required bytes SecretNonce = 1;
+    bytes SecretNonce = 1;
 }
 
 // InitAuthCompleted
 message InitAuthCompleted {
-    required fixed64 ClientNonce = 1;
-    required fixed64 ServerNonce = 2;
+    fixed64 ClientNonce = 1;
+    fixed64 ServerNonce = 2;
     enum Statuses {
         OK = 0;
         FAIL = 1;
         RETRY = 2;
     }
-    required Statuses Status = 3;
-    required fixed64 SecretHash = 4;
-    required bytes ServerDHPubKey = 5;
+    Statuses Status = 3;
+    fixed64 SecretHash = 4;
+    bytes ServerDHPubKey = 5;
 }
 
 // InitUserBound
 message InitUserBound {
-    required int64 AuthID = 1;
+    int64 AuthID = 1;
 }
 
 // AuthPasswordRecovery
 message AuthPasswordRecovery {
-    required string EmailPattern = 1;
+    string EmailPattern = 1;
 }
 
 // AuthRecalled
 message AuthRecalled {
-    required int64  ClientID = 1 [jstype = JS_STRING];
-    required int64  Timestamp = 2;
-    optional int64  UpdateID = 3;
-    optional bool   Available = 4;
-    optional bool   Force = 5;
-    optional string CurrentVersion = 6;
+    int64  ClientID = 1 [jstype = JS_STRING];
+    int64  Timestamp = 2;
+    int64  UpdateID = 3;
+    bool   Available = 4;
+    bool   Force = 5;
+    string CurrentVersion = 6;
 }
 
 // AuthAuthorization
 message AuthAuthorization {
-    required fixed64 Expired = 1;
-    required User User = 2;
-    optional uint32 ActiveSessions = 3;
+    fixed64 Expired = 1;
+    User User = 2;
+    uint32 ActiveSessions = 3;
 }
 
 // AuthBotAuthorization
 message AuthBotAuthorization {
-    required int64 AuthID = 1;
-    required bytes AuthKey = 2;
-    required Bot Bot = 3;  
+    int64 AuthID = 1;
+    bytes AuthKey = 2;
+    Bot Bot = 3;
 }
 
 // AuthCheckedPhone
 message AuthCheckedPhone {
-    required bool Invited = 1;
-    required bool Registered = 2;
+    bool Invited = 1;
+    bool Registered = 2;
 }
 
 // AuthSentCode
 message AuthSentCode {
-    required string Phone = 1;
-    required string PhoneCodeHash = 2;
-    optional bool SendToPhone = 3;
+    string Phone = 1;
+    string PhoneCodeHash = 2;
+    bool SendToPhone = 3;
 }

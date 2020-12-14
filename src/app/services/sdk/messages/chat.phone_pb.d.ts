@@ -8,7 +8,7 @@ import * as core_types_pb from "./core.types_pb";
 export class PhoneInitCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   serializeBinary(): Uint8Array;
@@ -23,24 +23,20 @@ export class PhoneInitCall extends jspb.Message {
 
 export namespace PhoneInitCall {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
   }
 }
 
 export class PhoneRequestCall extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasInitiator(): boolean;
-  clearInitiator(): void;
-  getInitiator(): boolean | undefined;
+  getInitiator(): boolean;
   setInitiator(value: boolean): void;
 
   clearParticipantsList(): void;
@@ -48,9 +44,7 @@ export class PhoneRequestCall extends jspb.Message {
   setParticipantsList(value: Array<PhoneParticipantSDP>): void;
   addParticipants(value?: PhoneParticipantSDP, index?: number): PhoneParticipantSDP;
 
-  hasCallid(): boolean;
-  clearCallid(): void;
-  getCallid(): string | undefined;
+  getCallid(): string;
   setCallid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -65,23 +59,21 @@ export class PhoneRequestCall extends jspb.Message {
 
 export namespace PhoneRequestCall {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    initiator?: boolean,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    initiator: boolean,
     participantsList: Array<PhoneParticipantSDP.AsObject>,
-    callid?: string,
+    callid: string,
   }
 }
 
 export class PhoneAcceptCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasCallid(): boolean;
-  clearCallid(): void;
-  getCallid(): string | undefined;
+  getCallid(): string;
   setCallid(value: string): void;
 
   clearParticipantsList(): void;
@@ -101,8 +93,8 @@ export class PhoneAcceptCall extends jspb.Message {
 
 export namespace PhoneAcceptCall {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    callid?: string,
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
     participantsList: Array<PhoneParticipantSDP.AsObject>,
   }
 }
@@ -110,12 +102,10 @@ export namespace PhoneAcceptCall {
 export class PhoneDiscardCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasCallid(): boolean;
-  clearCallid(): void;
-  getCallid(): string | undefined;
+  getCallid(): string;
   setCallid(value: string): void;
 
   clearParticipantsList(): void;
@@ -123,15 +113,11 @@ export class PhoneDiscardCall extends jspb.Message {
   setParticipantsList(value: Array<core_types_pb.InputUser>): void;
   addParticipants(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
 
-  hasDuration(): boolean;
-  clearDuration(): void;
-  getDuration(): number | undefined;
+  getDuration(): number;
   setDuration(value: number): void;
 
-  hasReason(): boolean;
-  clearReason(): void;
-  getReason(): DiscardReason | undefined;
-  setReason(value: DiscardReason): void;
+  getReason(): DiscardReasonMap[keyof DiscardReasonMap];
+  setReason(value: DiscardReasonMap[keyof DiscardReasonMap]): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneDiscardCall.AsObject;
@@ -145,23 +131,21 @@ export class PhoneDiscardCall extends jspb.Message {
 
 export namespace PhoneDiscardCall {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    callid?: string,
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
     participantsList: Array<core_types_pb.InputUser.AsObject>,
-    duration?: number,
-    reason?: DiscardReason,
+    duration: number,
+    reason: DiscardReasonMap[keyof DiscardReasonMap],
   }
 }
 
 export class PhoneUpdateCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasCallid(): boolean;
-  clearCallid(): void;
-  getCallid(): string | undefined;
+  getCallid(): string;
   setCallid(value: string): void;
 
   clearParticipantsList(): void;
@@ -169,13 +153,9 @@ export class PhoneUpdateCall extends jspb.Message {
   setParticipantsList(value: Array<core_types_pb.InputUser>): void;
   addParticipants(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
 
-  hasAction(): boolean;
-  clearAction(): void;
-  getAction(): PhoneCallAction | undefined;
-  setAction(value: PhoneCallAction): void;
+  getAction(): PhoneCallActionMap[keyof PhoneCallActionMap];
+  setAction(value: PhoneCallActionMap[keyof PhoneCallActionMap]): void;
 
-  hasActiondata(): boolean;
-  clearActiondata(): void;
   getActiondata(): Uint8Array | string;
   getActiondata_asU8(): Uint8Array;
   getActiondata_asB64(): string;
@@ -193,10 +173,10 @@ export class PhoneUpdateCall extends jspb.Message {
 
 export namespace PhoneUpdateCall {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    callid?: string,
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
     participantsList: Array<core_types_pb.InputUser.AsObject>,
-    action?: PhoneCallAction,
+    action: PhoneCallActionMap[keyof PhoneCallActionMap],
     actiondata: Uint8Array | string,
   }
 }
@@ -204,22 +184,16 @@ export namespace PhoneUpdateCall {
 export class PhoneRateCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasCallid(): boolean;
-  clearCallid(): void;
-  getCallid(): string | undefined;
+  getCallid(): string;
   setCallid(value: string): void;
 
-  hasRate(): boolean;
-  clearRate(): void;
-  getRate(): number | undefined;
+  getRate(): number;
   setRate(value: number): void;
 
-  hasComment(): boolean;
-  clearComment(): void;
-  getComment(): string | undefined;
+  getComment(): string;
   setComment(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -234,22 +208,18 @@ export class PhoneRateCall extends jspb.Message {
 
 export namespace PhoneRateCall {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    callid?: string,
-    rate?: number,
-    comment?: string,
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
+    rate: number,
+    comment: string,
   }
 }
 
 export class PhoneCall extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
+  getDate(): number;
   setDate(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -264,8 +234,8 @@ export class PhoneCall extends jspb.Message {
 
 export namespace PhoneCall {
   export type AsObject = {
-    id?: string,
-    date?: number,
+    id: string,
+    date: number,
   }
 }
 
@@ -297,14 +267,10 @@ export class IceServer extends jspb.Message {
   setUrlsList(value: Array<string>): void;
   addUrls(value: string, index?: number): string;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
-  hasCredential(): boolean;
-  clearCredential(): void;
-  getCredential(): string | undefined;
+  getCredential(): string;
   setCredential(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -320,30 +286,24 @@ export class IceServer extends jspb.Message {
 export namespace IceServer {
   export type AsObject = {
     urlsList: Array<string>,
-    username?: string,
-    credential?: string,
+    username: string,
+    credential: string,
   }
 }
 
 export class PhoneParticipant extends jspb.Message {
-  hasConnectionid(): boolean;
-  clearConnectionid(): void;
-  getConnectionid(): number | undefined;
+  getConnectionid(): number;
   setConnectionid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputUser;
+  getPeer(): core_types_pb.InputUser | undefined;
   setPeer(value?: core_types_pb.InputUser): void;
 
-  hasInitiator(): boolean;
-  clearInitiator(): void;
-  getInitiator(): boolean | undefined;
+  getInitiator(): boolean;
   setInitiator(value: boolean): void;
 
-  hasAdmin(): boolean;
-  clearAdmin(): void;
-  getAdmin(): boolean | undefined;
+  getAdmin(): boolean;
   setAdmin(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -358,32 +318,26 @@ export class PhoneParticipant extends jspb.Message {
 
 export namespace PhoneParticipant {
   export type AsObject = {
-    connectionid?: number,
-    peer: core_types_pb.InputUser.AsObject,
-    initiator?: boolean,
-    admin?: boolean,
+    connectionid: number,
+    peer?: core_types_pb.InputUser.AsObject,
+    initiator: boolean,
+    admin: boolean,
   }
 }
 
 export class PhoneParticipantSDP extends jspb.Message {
-  hasConnectionid(): boolean;
-  clearConnectionid(): void;
-  getConnectionid(): number | undefined;
+  getConnectionid(): number;
   setConnectionid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputUser;
+  getPeer(): core_types_pb.InputUser | undefined;
   setPeer(value?: core_types_pb.InputUser): void;
 
-  hasSdp(): boolean;
-  clearSdp(): void;
-  getSdp(): string | undefined;
+  getSdp(): string;
   setSdp(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): string | undefined;
+  getType(): string;
   setType(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -398,17 +352,15 @@ export class PhoneParticipantSDP extends jspb.Message {
 
 export namespace PhoneParticipantSDP {
   export type AsObject = {
-    connectionid?: number,
-    peer: core_types_pb.InputUser.AsObject,
-    sdp?: string,
-    type?: string,
+    connectionid: number,
+    peer?: core_types_pb.InputUser.AsObject,
+    sdp: string,
+    type: string,
   }
 }
 
 export class PhoneActionCallEmpty extends jspb.Message {
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -423,19 +375,15 @@ export class PhoneActionCallEmpty extends jspb.Message {
 
 export namespace PhoneActionCallEmpty {
   export type AsObject = {
-    empty?: boolean,
+    empty: boolean,
   }
 }
 
 export class PhoneActionAccepted extends jspb.Message {
-  hasSdp(): boolean;
-  clearSdp(): void;
-  getSdp(): string | undefined;
+  getSdp(): string;
   setSdp(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): string | undefined;
+  getType(): string;
   setType(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -450,20 +398,16 @@ export class PhoneActionAccepted extends jspb.Message {
 
 export namespace PhoneActionAccepted {
   export type AsObject = {
-    sdp?: string,
-    type?: string,
+    sdp: string,
+    type: string,
   }
 }
 
 export class PhoneActionRequested extends jspb.Message {
-  hasSdp(): boolean;
-  clearSdp(): void;
-  getSdp(): string | undefined;
+  getSdp(): string;
   setSdp(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): string | undefined;
+  getType(): string;
   setType(value: string): void;
 
   clearParticipantsList(): void;
@@ -483,16 +427,14 @@ export class PhoneActionRequested extends jspb.Message {
 
 export namespace PhoneActionRequested {
   export type AsObject = {
-    sdp?: string,
-    type?: string,
+    sdp: string,
+    type: string,
     participantsList: Array<PhoneParticipant.AsObject>,
   }
 }
 
 export class PhoneActionCallWaiting extends jspb.Message {
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -507,25 +449,19 @@ export class PhoneActionCallWaiting extends jspb.Message {
 
 export namespace PhoneActionCallWaiting {
   export type AsObject = {
-    empty?: boolean,
+    empty: boolean,
   }
 }
 
 export class PhoneActionDiscarded extends jspb.Message {
-  hasDuration(): boolean;
-  clearDuration(): void;
-  getDuration(): number | undefined;
+  getDuration(): number;
   setDuration(value: number): void;
 
-  hasVideo(): boolean;
-  clearVideo(): void;
-  getVideo(): boolean | undefined;
+  getVideo(): boolean;
   setVideo(value: boolean): void;
 
-  hasReason(): boolean;
-  clearReason(): void;
-  getReason(): DiscardReason | undefined;
-  setReason(value: DiscardReason): void;
+  getReason(): DiscardReasonMap[keyof DiscardReasonMap];
+  setReason(value: DiscardReasonMap[keyof DiscardReasonMap]): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionDiscarded.AsObject;
@@ -539,31 +475,23 @@ export class PhoneActionDiscarded extends jspb.Message {
 
 export namespace PhoneActionDiscarded {
   export type AsObject = {
-    duration?: number,
-    video?: boolean,
-    reason?: DiscardReason,
+    duration: number,
+    video: boolean,
+    reason: DiscardReasonMap[keyof DiscardReasonMap],
   }
 }
 
 export class PhoneActionIceExchange extends jspb.Message {
-  hasCandidate(): boolean;
-  clearCandidate(): void;
-  getCandidate(): string | undefined;
+  getCandidate(): string;
   setCandidate(value: string): void;
 
-  hasSdpmlineindex(): boolean;
-  clearSdpmlineindex(): void;
-  getSdpmlineindex(): number | undefined;
+  getSdpmlineindex(): number;
   setSdpmlineindex(value: number): void;
 
-  hasSdpmid(): boolean;
-  clearSdpmid(): void;
-  getSdpmid(): string | undefined;
+  getSdpmid(): string;
   setSdpmid(value: string): void;
 
-  hasUsernamefragment(): boolean;
-  clearUsernamefragment(): void;
-  getUsernamefragment(): string | undefined;
+  getUsernamefragment(): string;
   setUsernamefragment(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -578,22 +506,18 @@ export class PhoneActionIceExchange extends jspb.Message {
 
 export namespace PhoneActionIceExchange {
   export type AsObject = {
-    candidate?: string,
-    sdpmlineindex?: number,
-    sdpmid?: string,
-    usernamefragment?: string,
+    candidate: string,
+    sdpmlineindex: number,
+    sdpmid: string,
+    usernamefragment: string,
   }
 }
 
 export class PhoneMediaSettingsUpdated extends jspb.Message {
-  hasVideo(): boolean;
-  clearVideo(): void;
-  getVideo(): boolean | undefined;
+  getVideo(): boolean;
   setVideo(value: boolean): void;
 
-  hasAudio(): boolean;
-  clearAudio(): void;
-  getAudio(): boolean | undefined;
+  getAudio(): boolean;
   setAudio(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -608,15 +532,13 @@ export class PhoneMediaSettingsUpdated extends jspb.Message {
 
 export namespace PhoneMediaSettingsUpdated {
   export type AsObject = {
-    video?: boolean,
-    audio?: boolean,
+    video: boolean,
+    audio: boolean,
   }
 }
 
 export class PhoneReactionSet extends jspb.Message {
-  hasReaction(): boolean;
-  clearReaction(): void;
-  getReaction(): string | undefined;
+  getReaction(): string;
   setReaction(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -631,19 +553,15 @@ export class PhoneReactionSet extends jspb.Message {
 
 export namespace PhoneReactionSet {
   export type AsObject = {
-    reaction?: string,
+    reaction: string,
   }
 }
 
 export class PhoneSDPOffer extends jspb.Message {
-  hasSdp(): boolean;
-  clearSdp(): void;
-  getSdp(): string | undefined;
+  getSdp(): string;
   setSdp(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): string | undefined;
+  getType(): string;
   setType(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -658,20 +576,16 @@ export class PhoneSDPOffer extends jspb.Message {
 
 export namespace PhoneSDPOffer {
   export type AsObject = {
-    sdp?: string,
-    type?: string,
+    sdp: string,
+    type: string,
   }
 }
 
 export class PhoneSDPAnswer extends jspb.Message {
-  hasSdp(): boolean;
-  clearSdp(): void;
-  getSdp(): string | undefined;
+  getSdp(): string;
   setSdp(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): string | undefined;
+  getType(): string;
   setType(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -686,52 +600,56 @@ export class PhoneSDPAnswer extends jspb.Message {
 
 export namespace PhoneSDPAnswer {
   export type AsObject = {
-    sdp?: string,
-    type?: string,
+    sdp: string,
+    type: string,
   }
 }
 
-export enum DiscardReason {
-  DISCARDREASONUNKNOWN = 0,
-  DISCARDREASONMISSED = 1,
-  DISCARDREASONBUSY = 2,
-  DISCARDREASONHANGUP = 3,
-  DISCARDREASONDISCONNECT = 4,
-  DISCARDREASONRESERVED1 = 5,
-  DISCARDREASONRESERVED2 = 6,
-  DISCARDREASONRESERVED3 = 7,
-  DISCARDREASONRESERVED4 = 8,
-  DISCARDREASONRESERVED5 = 9,
-  DISCARDREASONRESERVED6 = 10,
-  DISCARDREASONRESERVED7 = 11,
-  DISCARDREASONRESERVED8 = 12,
-  DISCARDREASONRESERVED9 = 13,
+export interface DiscardReasonMap {
+  DISCARDREASONUNKNOWN: 0;
+  DISCARDREASONMISSED: 1;
+  DISCARDREASONBUSY: 2;
+  DISCARDREASONHANGUP: 3;
+  DISCARDREASONDISCONNECT: 4;
+  DISCARDREASONRESERVED1: 5;
+  DISCARDREASONRESERVED2: 6;
+  DISCARDREASONRESERVED3: 7;
+  DISCARDREASONRESERVED4: 8;
+  DISCARDREASONRESERVED5: 9;
+  DISCARDREASONRESERVED6: 10;
+  DISCARDREASONRESERVED7: 11;
+  DISCARDREASONRESERVED8: 12;
+  DISCARDREASONRESERVED9: 13;
 }
 
-export enum PhoneCallAction {
-  PHONECALLEMPTY = 0,
-  PHONECALLACCEPTED = 1,
-  PHONECALLREQUESTED = 2,
-  PHONECALLCALLWAITING = 3,
-  PHONECALLDISCARDED = 4,
-  PHONECALLICEEXCHANGE = 5,
-  PHONECALLMEDIASETTINGSCHANGED = 6,
-  PHONECALLREACTIONSET = 7,
-  PHONECALLSDPOFFER = 8,
-  PHONECALLSDPANSWER = 9,
-  PHONECALLRESERVED6 = 10,
-  PHONECALLRESERVED7 = 11,
-  PHONECALLRESERVED8 = 12,
-  PHONECALLRESERVED9 = 13,
-  PHONECALLRESERVED10 = 14,
-  PHONECALLRESERVED11 = 15,
-  PHONECALLRESERVED12 = 16,
-  PHONECALLRESERVED13 = 17,
-  PHONECALLRESERVED14 = 18,
-  PHONECALLRESERVED15 = 19,
-  PHONECALLRESERVED16 = 20,
-  PHONECALLRESERVED17 = 21,
-  PHONECALLRESERVED18 = 22,
-  PHONECALLRESERVED19 = 23,
+export const DiscardReason: DiscardReasonMap;
+
+export interface PhoneCallActionMap {
+  PHONECALLEMPTY: 0;
+  PHONECALLACCEPTED: 1;
+  PHONECALLREQUESTED: 2;
+  PHONECALLCALLWAITING: 3;
+  PHONECALLDISCARDED: 4;
+  PHONECALLICEEXCHANGE: 5;
+  PHONECALLMEDIASETTINGSCHANGED: 6;
+  PHONECALLREACTIONSET: 7;
+  PHONECALLSDPOFFER: 8;
+  PHONECALLSDPANSWER: 9;
+  PHONECALLRESERVED6: 10;
+  PHONECALLRESERVED7: 11;
+  PHONECALLRESERVED8: 12;
+  PHONECALLRESERVED9: 13;
+  PHONECALLRESERVED10: 14;
+  PHONECALLRESERVED11: 15;
+  PHONECALLRESERVED12: 16;
+  PHONECALLRESERVED13: 17;
+  PHONECALLRESERVED14: 18;
+  PHONECALLRESERVED15: 19;
+  PHONECALLRESERVED16: 20;
+  PHONECALLRESERVED17: 21;
+  PHONECALLRESERVED18: 22;
+  PHONECALLRESERVED19: 23;
 }
+
+export const PhoneCallAction: PhoneCallActionMap;
 

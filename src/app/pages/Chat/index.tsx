@@ -102,17 +102,16 @@ import {
     EventWasmInit,
     EventWasmStarted,
     EventWebSocketClose,
-    EventWebSocketOpen
+    EventSocketReady
 } from "../../services/events";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
 import {
-    Error as RiverError,
     FileLocation,
     InputDocument,
     InputFile,
     InputFileLocation,
-    InputMediaType,
+    InputMediaType, InputMediaTypeMap,
     InputPeer,
     InputUser,
     MediaType,
@@ -120,7 +119,7 @@ import {
     MessageEntityType,
     PeerNotifySettings,
     PeerType,
-    TypingAction,
+    TypingAction, TypingActionMap,
 } from "../../services/sdk/messages/core.types_pb";
 import {
     UpdateDialogPinned,
@@ -162,6 +161,7 @@ import {
     MediaDocument,
     MediaGeoLocation
 } from "../../services/sdk/messages/chat.messages.medias_pb";
+import {Error as RiverError} from "../../services/sdk/messages/rony_pb";
 import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 import {ITeam} from "../../repository/team/interface";
@@ -170,6 +170,7 @@ import PinnedMessage from "../../components/PinnedMessage";
 import {ModalityService} from "kk-modality";
 import CallModal from "../../components/CallModal";
 import ConnectionStatus from "../../components/ConnectionStatus";
+import {PartialDeep} from "type-fest";
 
 import './style.scss';
 
@@ -393,7 +394,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener(EventMouseWheel, this.windowMouseWheelHandler);
         window.addEventListener(EventWasmInit, this.wasmInitHandler);
         window.addEventListener(EventWasmStarted, this.fnStartedHandler);
-        window.addEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.addEventListener(EventSocketReady, this.wsOpenHandler);
         window.addEventListener(EventWebSocketClose, this.wsCloseHandler);
         window.addEventListener(EventNetworkStatus, this.networkStatusHandler);
         window.addEventListener(EventCheckNetwork, this.checkNetworkHandler);
@@ -607,7 +608,7 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener(EventMouseWheel, this.windowMouseWheelHandler);
         window.removeEventListener(EventWasmInit, this.wasmInitHandler);
         window.removeEventListener(EventWasmStarted, this.fnStartedHandler);
-        window.removeEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.removeEventListener(EventSocketReady, this.wsOpenHandler);
         window.removeEventListener(EventWebSocketClose, this.wsCloseHandler);
         window.removeEventListener(EventNetworkStatus, this.networkStatusHandler);
     }
@@ -2045,7 +2046,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private chatInputTypingHandler = (typing: TypingAction, forcePeer?: InputPeer) => {
+    private chatInputTypingHandler = (typing: TypingActionMap, forcePeer?: InputPeer) => {
         const peer = forcePeer || this.peer;
         if (peer === null) {
             return;
@@ -2089,7 +2090,7 @@ class Chat extends React.Component<IProps, IState> {
                     user = contact;
                 }
             }
-            contactPeer.setType(dialog.peertype || 0);
+            contactPeer.setType(dialog.peertype || 0 as any);
             contactPeer.setAccesshash(dialog.accesshash || '0');
             contactPeer.setId(dialog.peerid || '');
         }
@@ -2825,8 +2826,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Notify on new message received */
-    private notifyMessage(data: UpdateNewMessage.AsObject) {
-        const message: IMessage = data.message;
+    private notifyMessage(data: PartialDeep<UpdateNewMessage.AsObject>) {
+        const message = data.message as IMessage;
         const peerName = GetPeerName(message.peerid, message.peertype);
         if (this.isInChat && this.selectedPeerName === peerName) {
             return;
@@ -4132,7 +4133,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Resend media message */
-    private resendMediaMessage(randomId: number, message: IMessage, fileNames: string[], data: any, inputMediaType?: InputMediaType) {
+    private resendMediaMessage(randomId: number, message: IMessage, fileNames: string[], data: any, inputMediaType?: InputMediaTypeMap) {
         const peerInfo = this.getPeerByName(GetPeerName(message.peerid, message.peertype));
         if (!peerInfo || !peerInfo.peer) {
             return;

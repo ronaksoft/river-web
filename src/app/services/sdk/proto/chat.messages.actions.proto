@@ -1,6 +1,7 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+option go_package = '.;msg';
 
 /*
     Creation Time: 2018 - Nov - 28
@@ -23,24 +24,24 @@ message MessageActionGroupDeleteUser {
 
 // MessageActionGroupCreated
 message MessageActionGroupCreated {
-    required string GroupTitle = 1;
+    string GroupTitle = 1;
     repeated int64 UserIDs = 2 [jstype = JS_STRING];
 }
 
 // MessageActionGroupTitleChanged
 message MessageActionGroupTitleChanged {
-    required string GroupTitle = 1;
+    string GroupTitle = 1;
 }
 
 // MessageActionGroupPhotoChanged
 message MessageActionGroupPhotoChanged {
-    optional GroupPhoto Photo = 1;
+    GroupPhoto Photo = 1;
 }
 
 // MessageActionClearHistory
 message MessageActionClearHistory {
-    required int64 MaxID = 1;
-    required bool Delete = 2;
+    int64 MaxID = 1;
+    bool Delete = 2;
 }
 
 // MessageActionContactRegistered
@@ -50,11 +51,11 @@ message MessageActionContactRegistered {
 
 // MessageActionScreenShotTaken
 message MessageActionScreenShotTaken {
-    optional int64 MinID = 1;
-    optional int64 MaxID = 2;
+    int64 MinID = 1;
+    int64 MaxID = 2;
 }
 
 // MessageActionThreadClosed
 message MessageActionThreadClosed {
-    optional int64 ThreadID = 1;
+    int64 ThreadID = 1;
 }

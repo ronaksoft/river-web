@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -179,9 +181,9 @@ proto.msg.CalendarGetEvents.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.CalendarGetEvents.toObject = function(includeInstance, msg) {
   var f, obj = {
-    from: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    to: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    filter: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    from: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    to: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    filter: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -259,22 +261,22 @@ proto.msg.CalendarGetEvents.prototype.serializeBinary = function() {
  */
 proto.msg.CalendarGetEvents.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getFrom();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getTo();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getFilter();
+  if (f !== 0) {
     writer.writeInt32(
       3,
       f
@@ -284,7 +286,7 @@ proto.msg.CalendarGetEvents.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * required int64 From = 1;
+ * optional int64 From = 1;
  * @return {number}
  */
 proto.msg.CalendarGetEvents.prototype.getFrom = function() {
@@ -297,30 +299,12 @@ proto.msg.CalendarGetEvents.prototype.getFrom = function() {
  * @return {!proto.msg.CalendarGetEvents} returns this
  */
 proto.msg.CalendarGetEvents.prototype.setFrom = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarGetEvents} returns this
- */
-proto.msg.CalendarGetEvents.prototype.clearFrom = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarGetEvents.prototype.hasFrom = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 To = 2;
+ * optional int64 To = 2;
  * @return {number}
  */
 proto.msg.CalendarGetEvents.prototype.getTo = function() {
@@ -333,25 +317,7 @@ proto.msg.CalendarGetEvents.prototype.getTo = function() {
  * @return {!proto.msg.CalendarGetEvents} returns this
  */
 proto.msg.CalendarGetEvents.prototype.setTo = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarGetEvents} returns this
- */
-proto.msg.CalendarGetEvents.prototype.clearTo = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarGetEvents.prototype.hasTo = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -369,25 +335,7 @@ proto.msg.CalendarGetEvents.prototype.getFilter = function() {
  * @return {!proto.msg.CalendarGetEvents} returns this
  */
 proto.msg.CalendarGetEvents.prototype.setFilter = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarGetEvents} returns this
- */
-proto.msg.CalendarGetEvents.prototype.clearFilter = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarGetEvents.prototype.hasFilter = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -423,15 +371,15 @@ proto.msg.CalendarSetEvent.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.CalendarSetEvent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    date: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    startrange: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    duration: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    recurring: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f,
-    period: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
-    allday: (f = jspb.Message.getBooleanField(msg, 7)) == null ? undefined : f,
-    team: (f = jspb.Message.getBooleanField(msg, 8)) == null ? undefined : f,
-    global: (f = jspb.Message.getBooleanField(msg, 9)) == null ? undefined : f
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    date: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    startrange: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    duration: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    recurring: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    period: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    allday: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+    team: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
+    global: jspb.Message.getBooleanFieldWithDefault(msg, 9, false)
   };
 
   if (includeInstance) {
@@ -533,64 +481,64 @@ proto.msg.CalendarSetEvent.prototype.serializeBinary = function() {
  */
 proto.msg.CalendarSetEvent.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getName();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getDate();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getStartrange();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getDuration();
+  if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getRecurring();
+  if (f) {
     writer.writeBool(
       5,
       f
     );
   }
-  f = /** @type {!proto.msg.RecurringPeriod} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getPeriod();
+  if (f !== 0.0) {
     writer.writeEnum(
       6,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getAllday();
+  if (f) {
     writer.writeBool(
       7,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 8));
-  if (f != null) {
+  f = message.getTeam();
+  if (f) {
     writer.writeBool(
       8,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 9));
-  if (f != null) {
+  f = message.getGlobal();
+  if (f) {
     writer.writeBool(
       9,
       f
@@ -600,7 +548,7 @@ proto.msg.CalendarSetEvent.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Name = 1;
+ * optional string Name = 1;
  * @return {string}
  */
 proto.msg.CalendarSetEvent.prototype.getName = function() {
@@ -613,30 +561,12 @@ proto.msg.CalendarSetEvent.prototype.getName = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setName = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearName = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasName = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 Date = 2;
+ * optional int64 Date = 2;
  * @return {number}
  */
 proto.msg.CalendarSetEvent.prototype.getDate = function() {
@@ -649,30 +579,12 @@ proto.msg.CalendarSetEvent.prototype.getDate = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setDate = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearDate = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasDate = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 StartRange = 3;
+ * optional int64 StartRange = 3;
  * @return {number}
  */
 proto.msg.CalendarSetEvent.prototype.getStartrange = function() {
@@ -685,30 +597,12 @@ proto.msg.CalendarSetEvent.prototype.getStartrange = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setStartrange = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearStartrange = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasStartrange = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required int64 Duration = 4;
+ * optional int64 Duration = 4;
  * @return {number}
  */
 proto.msg.CalendarSetEvent.prototype.getDuration = function() {
@@ -721,30 +615,12 @@ proto.msg.CalendarSetEvent.prototype.getDuration = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setDuration = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearDuration = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasDuration = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required bool Recurring = 5;
+ * optional bool Recurring = 5;
  * @return {boolean}
  */
 proto.msg.CalendarSetEvent.prototype.getRecurring = function() {
@@ -757,25 +633,7 @@ proto.msg.CalendarSetEvent.prototype.getRecurring = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setRecurring = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearRecurring = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasRecurring = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -793,25 +651,7 @@ proto.msg.CalendarSetEvent.prototype.getPeriod = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setPeriod = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearPeriod = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasPeriod = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3EnumField(this, 6, value);
 };
 
 
@@ -829,25 +669,7 @@ proto.msg.CalendarSetEvent.prototype.getAllday = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setAllday = function(value) {
-  return jspb.Message.setField(this, 7, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearAllday = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasAllday = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 
@@ -865,25 +687,7 @@ proto.msg.CalendarSetEvent.prototype.getTeam = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setTeam = function(value) {
-  return jspb.Message.setField(this, 8, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearTeam = function() {
-  return jspb.Message.setField(this, 8, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
 
@@ -901,25 +705,7 @@ proto.msg.CalendarSetEvent.prototype.getGlobal = function() {
  * @return {!proto.msg.CalendarSetEvent} returns this
  */
 proto.msg.CalendarSetEvent.prototype.setGlobal = function(value) {
-  return jspb.Message.setField(this, 9, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarSetEvent} returns this
- */
-proto.msg.CalendarSetEvent.prototype.clearGlobal = function() {
-  return jspb.Message.setField(this, 9, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarSetEvent.prototype.hasGlobal = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.setProto3BooleanField(this, 9, value);
 };
 
 
@@ -955,15 +741,15 @@ proto.msg.CalendarEditEvent.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.CalendarEditEvent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    eventid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    date: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    startrange: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    duration: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    recurring: (f = jspb.Message.getBooleanField(msg, 6)) == null ? undefined : f,
-    period: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
-    allday: (f = jspb.Message.getBooleanField(msg, 8)) == null ? undefined : f,
-    policy: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f
+    eventid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    date: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    startrange: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    duration: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    recurring: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
+    period: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    allday: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
+    policy: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -1065,64 +851,64 @@ proto.msg.CalendarEditEvent.prototype.serializeBinary = function() {
  */
 proto.msg.CalendarEditEvent.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getEventid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getName();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getDate();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getStartrange();
+  if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getDuration();
+  if (f !== 0) {
     writer.writeInt64(
       5,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getRecurring();
+  if (f) {
     writer.writeBool(
       6,
       f
     );
   }
-  f = /** @type {!proto.msg.RecurringPeriod} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getPeriod();
+  if (f !== 0.0) {
     writer.writeEnum(
       7,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 8));
-  if (f != null) {
+  f = message.getAllday();
+  if (f) {
     writer.writeBool(
       8,
       f
     );
   }
-  f = /** @type {!proto.msg.CalendarEditPolicy} */ (jspb.Message.getField(message, 9));
-  if (f != null) {
+  f = message.getPolicy();
+  if (f !== 0.0) {
     writer.writeEnum(
       9,
       f
@@ -1132,7 +918,7 @@ proto.msg.CalendarEditEvent.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * required int64 EventID = 1;
+ * optional int64 EventID = 1;
  * @return {number}
  */
 proto.msg.CalendarEditEvent.prototype.getEventid = function() {
@@ -1145,30 +931,12 @@ proto.msg.CalendarEditEvent.prototype.getEventid = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setEventid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearEventid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasEventid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Name = 2;
+ * optional string Name = 2;
  * @return {string}
  */
 proto.msg.CalendarEditEvent.prototype.getName = function() {
@@ -1181,30 +949,12 @@ proto.msg.CalendarEditEvent.prototype.getName = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setName = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearName = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasName = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 Date = 3;
+ * optional int64 Date = 3;
  * @return {number}
  */
 proto.msg.CalendarEditEvent.prototype.getDate = function() {
@@ -1217,30 +967,12 @@ proto.msg.CalendarEditEvent.prototype.getDate = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setDate = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearDate = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasDate = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required int64 StartRange = 4;
+ * optional int64 StartRange = 4;
  * @return {number}
  */
 proto.msg.CalendarEditEvent.prototype.getStartrange = function() {
@@ -1253,30 +985,12 @@ proto.msg.CalendarEditEvent.prototype.getStartrange = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setStartrange = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearStartrange = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasStartrange = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required int64 Duration = 5;
+ * optional int64 Duration = 5;
  * @return {number}
  */
 proto.msg.CalendarEditEvent.prototype.getDuration = function() {
@@ -1289,30 +1003,12 @@ proto.msg.CalendarEditEvent.prototype.getDuration = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setDuration = function(value) {
-  return jspb.Message.setField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearDuration = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasDuration = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required bool Recurring = 6;
+ * optional bool Recurring = 6;
  * @return {boolean}
  */
 proto.msg.CalendarEditEvent.prototype.getRecurring = function() {
@@ -1325,25 +1021,7 @@ proto.msg.CalendarEditEvent.prototype.getRecurring = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setRecurring = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearRecurring = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasRecurring = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
 
@@ -1361,25 +1039,7 @@ proto.msg.CalendarEditEvent.prototype.getPeriod = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setPeriod = function(value) {
-  return jspb.Message.setField(this, 7, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearPeriod = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasPeriod = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.setProto3EnumField(this, 7, value);
 };
 
 
@@ -1397,30 +1057,12 @@ proto.msg.CalendarEditEvent.prototype.getAllday = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setAllday = function(value) {
-  return jspb.Message.setField(this, 8, value);
+  return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearAllday = function() {
-  return jspb.Message.setField(this, 8, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasAllday = function() {
-  return jspb.Message.getField(this, 8) != null;
-};
-
-
-/**
- * required CalendarEditPolicy Policy = 9;
+ * optional CalendarEditPolicy Policy = 9;
  * @return {!proto.msg.CalendarEditPolicy}
  */
 proto.msg.CalendarEditEvent.prototype.getPolicy = function() {
@@ -1433,25 +1075,7 @@ proto.msg.CalendarEditEvent.prototype.getPolicy = function() {
  * @return {!proto.msg.CalendarEditEvent} returns this
  */
 proto.msg.CalendarEditEvent.prototype.setPolicy = function(value) {
-  return jspb.Message.setField(this, 9, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEditEvent} returns this
- */
-proto.msg.CalendarEditEvent.prototype.clearPolicy = function() {
-  return jspb.Message.setField(this, 9, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEditEvent.prototype.hasPolicy = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.setProto3EnumField(this, 9, value);
 };
 
 
@@ -1487,7 +1111,7 @@ proto.msg.CalendarRemoveEvent.prototype.toObject = function(opt_includeInstance)
  */
 proto.msg.CalendarRemoveEvent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    eventid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    eventid: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -1557,8 +1181,8 @@ proto.msg.CalendarRemoveEvent.prototype.serializeBinary = function() {
  */
 proto.msg.CalendarRemoveEvent.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getEventid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
@@ -1568,7 +1192,7 @@ proto.msg.CalendarRemoveEvent.serializeBinaryToWriter = function(message, writer
 
 
 /**
- * required int64 EventID = 1;
+ * optional int64 EventID = 1;
  * @return {number}
  */
 proto.msg.CalendarRemoveEvent.prototype.getEventid = function() {
@@ -1581,25 +1205,7 @@ proto.msg.CalendarRemoveEvent.prototype.getEventid = function() {
  * @return {!proto.msg.CalendarRemoveEvent} returns this
  */
 proto.msg.CalendarRemoveEvent.prototype.setEventid = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarRemoveEvent} returns this
- */
-proto.msg.CalendarRemoveEvent.prototype.clearEventid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarRemoveEvent.prototype.hasEventid = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -1635,11 +1241,11 @@ proto.msg.CalendarEvent.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.CalendarEvent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    recurring: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
-    period: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    allday: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
+    id: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    recurring: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+    period: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    allday: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -1725,36 +1331,36 @@ proto.msg.CalendarEvent.prototype.serializeBinary = function() {
  */
 proto.msg.CalendarEvent.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getId();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getName();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getRecurring();
+  if (f) {
     writer.writeBool(
       3,
       f
     );
   }
-  f = /** @type {!proto.msg.RecurringPeriod} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getPeriod();
+  if (f !== 0.0) {
     writer.writeEnum(
       4,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getAllday();
+  if (f) {
     writer.writeBool(
       5,
       f
@@ -1764,7 +1370,7 @@ proto.msg.CalendarEvent.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 ID = 1;
+ * optional int64 ID = 1;
  * @return {number}
  */
 proto.msg.CalendarEvent.prototype.getId = function() {
@@ -1777,30 +1383,12 @@ proto.msg.CalendarEvent.prototype.getId = function() {
  * @return {!proto.msg.CalendarEvent} returns this
  */
 proto.msg.CalendarEvent.prototype.setId = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEvent} returns this
- */
-proto.msg.CalendarEvent.prototype.clearId = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEvent.prototype.hasId = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Name = 2;
+ * optional string Name = 2;
  * @return {string}
  */
 proto.msg.CalendarEvent.prototype.getName = function() {
@@ -1813,30 +1401,12 @@ proto.msg.CalendarEvent.prototype.getName = function() {
  * @return {!proto.msg.CalendarEvent} returns this
  */
 proto.msg.CalendarEvent.prototype.setName = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEvent} returns this
- */
-proto.msg.CalendarEvent.prototype.clearName = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEvent.prototype.hasName = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required bool Recurring = 3;
+ * optional bool Recurring = 3;
  * @return {boolean}
  */
 proto.msg.CalendarEvent.prototype.getRecurring = function() {
@@ -1849,25 +1419,7 @@ proto.msg.CalendarEvent.prototype.getRecurring = function() {
  * @return {!proto.msg.CalendarEvent} returns this
  */
 proto.msg.CalendarEvent.prototype.setRecurring = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEvent} returns this
- */
-proto.msg.CalendarEvent.prototype.clearRecurring = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEvent.prototype.hasRecurring = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -1885,25 +1437,7 @@ proto.msg.CalendarEvent.prototype.getPeriod = function() {
  * @return {!proto.msg.CalendarEvent} returns this
  */
 proto.msg.CalendarEvent.prototype.setPeriod = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEvent} returns this
- */
-proto.msg.CalendarEvent.prototype.clearPeriod = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEvent.prototype.hasPeriod = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3EnumField(this, 4, value);
 };
 
 
@@ -1921,25 +1455,7 @@ proto.msg.CalendarEvent.prototype.getAllday = function() {
  * @return {!proto.msg.CalendarEvent} returns this
  */
 proto.msg.CalendarEvent.prototype.setAllday = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEvent} returns this
- */
-proto.msg.CalendarEvent.prototype.clearAllday = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEvent.prototype.hasAllday = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -1975,11 +1491,11 @@ proto.msg.CalendarEventInstance.prototype.toObject = function(opt_includeInstanc
  */
 proto.msg.CalendarEventInstance.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    eventid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    start: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    end: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    colour: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+    id: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    eventid: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    start: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    end: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    colour: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -2065,36 +1581,36 @@ proto.msg.CalendarEventInstance.prototype.serializeBinary = function() {
  */
 proto.msg.CalendarEventInstance.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getId();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getEventid();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getStart();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getEnd();
+  if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getColour();
+  if (f.length > 0) {
     writer.writeString(
       5,
       f
@@ -2104,7 +1620,7 @@ proto.msg.CalendarEventInstance.serializeBinaryToWriter = function(message, writ
 
 
 /**
- * required int64 ID = 1;
+ * optional int64 ID = 1;
  * @return {number}
  */
 proto.msg.CalendarEventInstance.prototype.getId = function() {
@@ -2117,30 +1633,12 @@ proto.msg.CalendarEventInstance.prototype.getId = function() {
  * @return {!proto.msg.CalendarEventInstance} returns this
  */
 proto.msg.CalendarEventInstance.prototype.setId = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEventInstance} returns this
- */
-proto.msg.CalendarEventInstance.prototype.clearId = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEventInstance.prototype.hasId = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 EventID = 2;
+ * optional int64 EventID = 2;
  * @return {number}
  */
 proto.msg.CalendarEventInstance.prototype.getEventid = function() {
@@ -2153,30 +1651,12 @@ proto.msg.CalendarEventInstance.prototype.getEventid = function() {
  * @return {!proto.msg.CalendarEventInstance} returns this
  */
 proto.msg.CalendarEventInstance.prototype.setEventid = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEventInstance} returns this
- */
-proto.msg.CalendarEventInstance.prototype.clearEventid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEventInstance.prototype.hasEventid = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 Start = 3;
+ * optional int64 Start = 3;
  * @return {number}
  */
 proto.msg.CalendarEventInstance.prototype.getStart = function() {
@@ -2189,30 +1669,12 @@ proto.msg.CalendarEventInstance.prototype.getStart = function() {
  * @return {!proto.msg.CalendarEventInstance} returns this
  */
 proto.msg.CalendarEventInstance.prototype.setStart = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEventInstance} returns this
- */
-proto.msg.CalendarEventInstance.prototype.clearStart = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEventInstance.prototype.hasStart = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required int64 End = 4;
+ * optional int64 End = 4;
  * @return {number}
  */
 proto.msg.CalendarEventInstance.prototype.getEnd = function() {
@@ -2225,25 +1687,7 @@ proto.msg.CalendarEventInstance.prototype.getEnd = function() {
  * @return {!proto.msg.CalendarEventInstance} returns this
  */
 proto.msg.CalendarEventInstance.prototype.setEnd = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEventInstance} returns this
- */
-proto.msg.CalendarEventInstance.prototype.clearEnd = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEventInstance.prototype.hasEnd = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -2261,25 +1705,7 @@ proto.msg.CalendarEventInstance.prototype.getColour = function() {
  * @return {!proto.msg.CalendarEventInstance} returns this
  */
 proto.msg.CalendarEventInstance.prototype.setColour = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CalendarEventInstance} returns this
- */
-proto.msg.CalendarEventInstance.prototype.clearColour = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CalendarEventInstance.prototype.hasColour = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 

@@ -5,9 +5,7 @@
 import * as jspb from "google-protobuf";
 
 export class EchoWithDelay extends jspb.Message {
-  hasDelayinseconds(): boolean;
-  clearDelayinseconds(): void;
-  getDelayinseconds(): number | undefined;
+  getDelayinseconds(): number;
   setDelayinseconds(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -22,20 +20,16 @@ export class EchoWithDelay extends jspb.Message {
 
 export namespace EchoWithDelay {
   export type AsObject = {
-    delayinseconds?: number,
+    delayinseconds: number,
   }
 }
 
 export class TestRequest extends jspb.Message {
-  hasPayload(): boolean;
-  clearPayload(): void;
   getPayload(): Uint8Array | string;
   getPayload_asU8(): Uint8Array;
   getPayload_asB64(): string;
   setPayload(value: Uint8Array | string): void;
 
-  hasHash(): boolean;
-  clearHash(): void;
   getHash(): Uint8Array | string;
   getHash_asU8(): Uint8Array;
   getHash_asB64(): string;
@@ -59,8 +53,6 @@ export namespace TestRequest {
 }
 
 export class TestResponse extends jspb.Message {
-  hasHash(): boolean;
-  clearHash(): void;
   getHash(): Uint8Array | string;
   getHash_asU8(): Uint8Array;
   getHash_asB64(): string;
@@ -83,14 +75,10 @@ export namespace TestResponse {
 }
 
 export class TestRequestWithString extends jspb.Message {
-  hasPayload(): boolean;
-  clearPayload(): void;
-  getPayload(): string | undefined;
+  getPayload(): string;
   setPayload(value: string): void;
 
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): string | undefined;
+  getHash(): string;
   setHash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -105,14 +93,12 @@ export class TestRequestWithString extends jspb.Message {
 
 export namespace TestRequestWithString {
   export type AsObject = {
-    payload?: string,
-    hash?: string,
+    payload: string,
+    hash: string,
   }
 }
 
 export class TestResponseWithString extends jspb.Message {
-  hasHash(): boolean;
-  clearHash(): void;
   getHash(): Uint8Array | string;
   getHash_asU8(): Uint8Array;
   getHash_asB64(): string;

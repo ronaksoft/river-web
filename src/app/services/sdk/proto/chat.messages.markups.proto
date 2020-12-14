@@ -1,5 +1,8 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
+
+
+option go_package = '.;msg';
 
 /*
     Creation Time: 2018 - Nov - 28
@@ -16,17 +19,17 @@ message ReplyKeyboardMarkup {
     // The keyboard will still be available, but clients will automatically display the usual letter-keyboard
     // in the chat – the user can press a special button in the input field
     // to see the custom keyboard again.
-    optional bool SingleUse = 1;
+    bool SingleUse = 1;
     // Use this parameter if you want to show the keyboard to specific users only. Targets: 1) users
     // that are @mentioned in the text of the Message object; 2) if the bot's message is a reply
     // (has reply_to_message_id), sender of the original message.
     // Example: A user requests to change the bot‘s language, bot replies to the request with a keyboard
     // to select the new language. Other users in the group don’t see the keyboard.
-    optional bool Selective = 2;
+    bool Selective = 2;
     // Requests clients to resize the keyboard vertically for optimal fit
     // (e.g., make the keyboard smaller if there are just two rows of buttons). If not set, the custom
     // keyboard is always of the same height as the app's standard keyboard.
-    optional bool Resize = 3;
+    bool Resize = 3;
     repeated KeyboardButtonRow Rows = 4;
 }
 
@@ -40,7 +43,7 @@ message ReplyKeyboardHide {
     // Use this flag if you want to remove the keyboard for specific users only. Targets:
     // 1) users that are @mentioned in the text of the Message object;
     // 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
-    required bool Selective = 1;
+    bool Selective = 1;
 }
 
 // ReplyKeyboardHide
@@ -50,11 +53,11 @@ message ReplyKeyboardForceReply {
     // The keyboard will still be available, but clients will automatically display the usual letter-keyboard
     // in the chat – the user can press a special button in the input field
     // to see the custom keyboard again.
-    optional bool SingleUse = 1;
+    bool SingleUse = 1;
     // Use this flag if you want to remove the keyboard for specific users only. Targets:
     // 1) users that are @mentioned in the text of the Message object;
     // 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
-    optional bool Selective = 2;
+    bool Selective = 2;
 }
 
 // Keyboard Buttons
@@ -68,40 +71,40 @@ message KeyboardButtonRow {
 // KeyboardButtonEnvelope
 // This is an envelope for buttons
 message KeyboardButtonEnvelope {
-    required int64 Constructor = 1;
-    optional bytes Data = 2;
+    int64 Constructor = 1;
+    bytes Data = 2;
 }
 
 // Button
 // This button do nothing and is just showing a text
 message Button {
-    required string Text = 1;
+    string Text = 1;
 }
 
 // ButtonUrl
 // Client must open the url
 message ButtonUrl {
-    required string Text = 1;
-    required string Url = 2;
+    string Text = 1;
+    string Url = 2;
 }
 
 // ButtonCallback
 // Client must use BotGetCallbackQuery to get a CallbackAnswer from the bot
 message ButtonCallback {
-    required string Text = 1;
-    optional bytes Data = 2;
+    string Text = 1;
+    bytes Data = 2;
 }
 
 // ButtonRequestPhone
 // Button to request a user's phone number
 message ButtonRequestPhone {
-    required string Text = 1;
+    string Text = 1;
 }
 
 // ButtonRequestGeoLocation
 // Button to request a user's geolocation
 message ButtonRequestGeoLocation {
-    required string Text = 1;
+    string Text = 1;
 }
 
 // ButtonSwitchInline
@@ -109,13 +112,13 @@ message ButtonRequestGeoLocation {
 // to select one of their chats, open that chat and insert the bot‘s username and the
 // specified inline query in the input field.
 message ButtonSwitchInline {
-    required string Text = 1;
-    required string Query = 2;
-    optional bool SamePeer = 3;
+    string Text = 1;
+    string Query = 2;
+    bool SamePeer = 3;
 }
 
 // ButtonBuy
 // Button to buy a product
 message ButtonBuy {
-    required string Text = 1;
+    string Text = 1;
 }

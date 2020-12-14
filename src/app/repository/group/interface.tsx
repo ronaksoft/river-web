@@ -9,7 +9,7 @@
 
 import {Group, GroupParticipant, GroupPhoto} from "../../services/sdk/messages/core.types_pb";
 
-export interface IGroup extends Group.AsObject {
+export interface IGroup extends Partial<Group.AsObject> {
     avatar?: string;
     participantList?: GroupParticipant.AsObject[];
     photogalleryList?: GroupPhoto.AsObject[];

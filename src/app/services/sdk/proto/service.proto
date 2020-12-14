@@ -1,14 +1,15 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg ;
-
 import "core.types.proto";
+option go_package = '.;msg';
+
 
 message ServiceSendMessage {
-    required int64 OnBehalf = 100;
-    required int64 RandomID = 1;
-    required InputPeer Peer = 2;
-    required string Body = 5;
-    optional int64 ReplyTo = 6;
-    optional bool ClearDraft = 7;
+    int64 OnBehalf = 100;
+    int64 RandomID = 1;
+    InputPeer Peer = 2;
+    string Body = 5;
+    int64 ReplyTo = 6;
+    bool ClearDraft = 7;
     repeated MessageEntity Entities = 8;
 }

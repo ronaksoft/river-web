@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -155,7 +157,7 @@ proto.msg.EchoWithDelay.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.EchoWithDelay.toObject = function(includeInstance, msg) {
   var f, obj = {
-    delayinseconds: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    delayinseconds: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -225,8 +227,8 @@ proto.msg.EchoWithDelay.prototype.serializeBinary = function() {
  */
 proto.msg.EchoWithDelay.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getDelayinseconds();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
@@ -236,7 +238,7 @@ proto.msg.EchoWithDelay.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int32 DelayInSeconds = 1;
+ * optional int32 DelayInSeconds = 1;
  * @return {number}
  */
 proto.msg.EchoWithDelay.prototype.getDelayinseconds = function() {
@@ -249,25 +251,7 @@ proto.msg.EchoWithDelay.prototype.getDelayinseconds = function() {
  * @return {!proto.msg.EchoWithDelay} returns this
  */
 proto.msg.EchoWithDelay.prototype.setDelayinseconds = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.EchoWithDelay} returns this
- */
-proto.msg.EchoWithDelay.prototype.clearDelayinseconds = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.EchoWithDelay.prototype.hasDelayinseconds = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -378,15 +362,15 @@ proto.msg.TestRequest.prototype.serializeBinary = function() {
  */
 proto.msg.TestRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPayload_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getHash_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -396,7 +380,7 @@ proto.msg.TestRequest.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required bytes Payload = 1;
+ * optional bytes Payload = 1;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.TestRequest.prototype.getPayload = function() {
@@ -405,7 +389,7 @@ proto.msg.TestRequest.prototype.getPayload = function() {
 
 
 /**
- * required bytes Payload = 1;
+ * optional bytes Payload = 1;
  * This is a type-conversion wrapper around `getPayload()`
  * @return {string}
  */
@@ -416,7 +400,7 @@ proto.msg.TestRequest.prototype.getPayload_asB64 = function() {
 
 
 /**
- * required bytes Payload = 1;
+ * optional bytes Payload = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getPayload()`
@@ -433,30 +417,12 @@ proto.msg.TestRequest.prototype.getPayload_asU8 = function() {
  * @return {!proto.msg.TestRequest} returns this
  */
 proto.msg.TestRequest.prototype.setPayload = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TestRequest} returns this
- */
-proto.msg.TestRequest.prototype.clearPayload = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TestRequest.prototype.hasPayload = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bytes Hash = 2;
+ * optional bytes Hash = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.TestRequest.prototype.getHash = function() {
@@ -465,7 +431,7 @@ proto.msg.TestRequest.prototype.getHash = function() {
 
 
 /**
- * required bytes Hash = 2;
+ * optional bytes Hash = 2;
  * This is a type-conversion wrapper around `getHash()`
  * @return {string}
  */
@@ -476,7 +442,7 @@ proto.msg.TestRequest.prototype.getHash_asB64 = function() {
 
 
 /**
- * required bytes Hash = 2;
+ * optional bytes Hash = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getHash()`
@@ -493,25 +459,7 @@ proto.msg.TestRequest.prototype.getHash_asU8 = function() {
  * @return {!proto.msg.TestRequest} returns this
  */
 proto.msg.TestRequest.prototype.setHash = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TestRequest} returns this
- */
-proto.msg.TestRequest.prototype.clearHash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TestRequest.prototype.hasHash = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -617,8 +565,8 @@ proto.msg.TestResponse.prototype.serializeBinary = function() {
  */
 proto.msg.TestResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getHash_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -628,7 +576,7 @@ proto.msg.TestResponse.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required bytes Hash = 2;
+ * optional bytes Hash = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.TestResponse.prototype.getHash = function() {
@@ -637,7 +585,7 @@ proto.msg.TestResponse.prototype.getHash = function() {
 
 
 /**
- * required bytes Hash = 2;
+ * optional bytes Hash = 2;
  * This is a type-conversion wrapper around `getHash()`
  * @return {string}
  */
@@ -648,7 +596,7 @@ proto.msg.TestResponse.prototype.getHash_asB64 = function() {
 
 
 /**
- * required bytes Hash = 2;
+ * optional bytes Hash = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getHash()`
@@ -665,25 +613,7 @@ proto.msg.TestResponse.prototype.getHash_asU8 = function() {
  * @return {!proto.msg.TestResponse} returns this
  */
 proto.msg.TestResponse.prototype.setHash = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TestResponse} returns this
- */
-proto.msg.TestResponse.prototype.clearHash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TestResponse.prototype.hasHash = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -719,8 +649,8 @@ proto.msg.TestRequestWithString.prototype.toObject = function(opt_includeInstanc
  */
 proto.msg.TestRequestWithString.toObject = function(includeInstance, msg) {
   var f, obj = {
-    payload: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    hash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    payload: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    hash: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -794,15 +724,15 @@ proto.msg.TestRequestWithString.prototype.serializeBinary = function() {
  */
 proto.msg.TestRequestWithString.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPayload();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getHash();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -812,7 +742,7 @@ proto.msg.TestRequestWithString.serializeBinaryToWriter = function(message, writ
 
 
 /**
- * required string Payload = 1;
+ * optional string Payload = 1;
  * @return {string}
  */
 proto.msg.TestRequestWithString.prototype.getPayload = function() {
@@ -825,30 +755,12 @@ proto.msg.TestRequestWithString.prototype.getPayload = function() {
  * @return {!proto.msg.TestRequestWithString} returns this
  */
 proto.msg.TestRequestWithString.prototype.setPayload = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TestRequestWithString} returns this
- */
-proto.msg.TestRequestWithString.prototype.clearPayload = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TestRequestWithString.prototype.hasPayload = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Hash = 2;
+ * optional string Hash = 2;
  * @return {string}
  */
 proto.msg.TestRequestWithString.prototype.getHash = function() {
@@ -861,25 +773,7 @@ proto.msg.TestRequestWithString.prototype.getHash = function() {
  * @return {!proto.msg.TestRequestWithString} returns this
  */
 proto.msg.TestRequestWithString.prototype.setHash = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TestRequestWithString} returns this
- */
-proto.msg.TestRequestWithString.prototype.clearHash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TestRequestWithString.prototype.hasHash = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -985,8 +879,8 @@ proto.msg.TestResponseWithString.prototype.serializeBinary = function() {
  */
 proto.msg.TestResponseWithString.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getHash_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       1,
       f
@@ -996,7 +890,7 @@ proto.msg.TestResponseWithString.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required bytes Hash = 1;
+ * optional bytes Hash = 1;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.TestResponseWithString.prototype.getHash = function() {
@@ -1005,7 +899,7 @@ proto.msg.TestResponseWithString.prototype.getHash = function() {
 
 
 /**
- * required bytes Hash = 1;
+ * optional bytes Hash = 1;
  * This is a type-conversion wrapper around `getHash()`
  * @return {string}
  */
@@ -1016,7 +910,7 @@ proto.msg.TestResponseWithString.prototype.getHash_asB64 = function() {
 
 
 /**
- * required bytes Hash = 1;
+ * optional bytes Hash = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getHash()`
@@ -1033,25 +927,7 @@ proto.msg.TestResponseWithString.prototype.getHash_asU8 = function() {
  * @return {!proto.msg.TestResponseWithString} returns this
  */
 proto.msg.TestResponseWithString.prototype.setHash = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TestResponseWithString} returns this
- */
-proto.msg.TestResponseWithString.prototype.clearHash = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TestResponseWithString.prototype.hasHash = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 

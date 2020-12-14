@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -642,7 +644,7 @@ proto.msg.InitConnect.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InitConnect.toObject = function(includeInstance, msg) {
   var f, obj = {
-    clientnonce: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    clientnonce: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -712,8 +714,8 @@ proto.msg.InitConnect.prototype.serializeBinary = function() {
  */
 proto.msg.InitConnect.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getClientnonce();
+  if (f !== 0) {
     writer.writeFixed64(
       1,
       f
@@ -723,7 +725,7 @@ proto.msg.InitConnect.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required fixed64 ClientNonce = 1;
+ * optional fixed64 ClientNonce = 1;
  * @return {number}
  */
 proto.msg.InitConnect.prototype.getClientnonce = function() {
@@ -736,25 +738,7 @@ proto.msg.InitConnect.prototype.getClientnonce = function() {
  * @return {!proto.msg.InitConnect} returns this
  */
 proto.msg.InitConnect.prototype.setClientnonce = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitConnect} returns this
- */
-proto.msg.InitConnect.prototype.clearClientnonce = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitConnect.prototype.hasClientnonce = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -790,11 +774,11 @@ proto.msg.InitCompleteAuth.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InitCompleteAuth.toObject = function(includeInstance, msg) {
   var f, obj = {
-    clientnonce: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    servernonce: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    clientnonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    servernonce: jspb.Message.getFieldWithDefault(msg, 2, 0),
     clientdhpubkey: msg.getClientdhpubkey_asB64(),
-    p: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
-    q: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
+    p: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    q: jspb.Message.getFieldWithDefault(msg, 7, 0),
     encryptedpayload: msg.getEncryptedpayload_asB64()
   };
 
@@ -885,43 +869,43 @@ proto.msg.InitCompleteAuth.prototype.serializeBinary = function() {
  */
 proto.msg.InitCompleteAuth.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getClientnonce();
+  if (f !== 0) {
     writer.writeFixed64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getServernonce();
+  if (f !== 0) {
     writer.writeFixed64(
       2,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getClientdhpubkey_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       5,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getP();
+  if (f !== 0) {
     writer.writeFixed64(
       6,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getQ();
+  if (f !== 0) {
     writer.writeFixed64(
       7,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 8));
-  if (f != null) {
+  f = message.getEncryptedpayload_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       8,
       f
@@ -931,7 +915,7 @@ proto.msg.InitCompleteAuth.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required fixed64 ClientNonce = 1;
+ * optional fixed64 ClientNonce = 1;
  * @return {number}
  */
 proto.msg.InitCompleteAuth.prototype.getClientnonce = function() {
@@ -944,30 +928,12 @@ proto.msg.InitCompleteAuth.prototype.getClientnonce = function() {
  * @return {!proto.msg.InitCompleteAuth} returns this
  */
 proto.msg.InitCompleteAuth.prototype.setClientnonce = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitCompleteAuth} returns this
- */
-proto.msg.InitCompleteAuth.prototype.clearClientnonce = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitCompleteAuth.prototype.hasClientnonce = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required fixed64 ServerNonce = 2;
+ * optional fixed64 ServerNonce = 2;
  * @return {number}
  */
 proto.msg.InitCompleteAuth.prototype.getServernonce = function() {
@@ -980,30 +946,12 @@ proto.msg.InitCompleteAuth.prototype.getServernonce = function() {
  * @return {!proto.msg.InitCompleteAuth} returns this
  */
 proto.msg.InitCompleteAuth.prototype.setServernonce = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitCompleteAuth} returns this
- */
-proto.msg.InitCompleteAuth.prototype.clearServernonce = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitCompleteAuth.prototype.hasServernonce = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required bytes ClientDHPubKey = 5;
+ * optional bytes ClientDHPubKey = 5;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.InitCompleteAuth.prototype.getClientdhpubkey = function() {
@@ -1012,7 +960,7 @@ proto.msg.InitCompleteAuth.prototype.getClientdhpubkey = function() {
 
 
 /**
- * required bytes ClientDHPubKey = 5;
+ * optional bytes ClientDHPubKey = 5;
  * This is a type-conversion wrapper around `getClientdhpubkey()`
  * @return {string}
  */
@@ -1023,7 +971,7 @@ proto.msg.InitCompleteAuth.prototype.getClientdhpubkey_asB64 = function() {
 
 
 /**
- * required bytes ClientDHPubKey = 5;
+ * optional bytes ClientDHPubKey = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getClientdhpubkey()`
@@ -1040,30 +988,12 @@ proto.msg.InitCompleteAuth.prototype.getClientdhpubkey_asU8 = function() {
  * @return {!proto.msg.InitCompleteAuth} returns this
  */
 proto.msg.InitCompleteAuth.prototype.setClientdhpubkey = function(value) {
-  return jspb.Message.setField(this, 5, value);
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitCompleteAuth} returns this
- */
-proto.msg.InitCompleteAuth.prototype.clearClientdhpubkey = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitCompleteAuth.prototype.hasClientdhpubkey = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required fixed64 P = 6;
+ * optional fixed64 P = 6;
  * @return {number}
  */
 proto.msg.InitCompleteAuth.prototype.getP = function() {
@@ -1076,30 +1006,12 @@ proto.msg.InitCompleteAuth.prototype.getP = function() {
  * @return {!proto.msg.InitCompleteAuth} returns this
  */
 proto.msg.InitCompleteAuth.prototype.setP = function(value) {
-  return jspb.Message.setField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitCompleteAuth} returns this
- */
-proto.msg.InitCompleteAuth.prototype.clearP = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitCompleteAuth.prototype.hasP = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * required fixed64 Q = 7;
+ * optional fixed64 Q = 7;
  * @return {number}
  */
 proto.msg.InitCompleteAuth.prototype.getQ = function() {
@@ -1112,30 +1024,12 @@ proto.msg.InitCompleteAuth.prototype.getQ = function() {
  * @return {!proto.msg.InitCompleteAuth} returns this
  */
 proto.msg.InitCompleteAuth.prototype.setQ = function(value) {
-  return jspb.Message.setField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitCompleteAuth} returns this
- */
-proto.msg.InitCompleteAuth.prototype.clearQ = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitCompleteAuth.prototype.hasQ = function() {
-  return jspb.Message.getField(this, 7) != null;
-};
-
-
-/**
- * required bytes EncryptedPayload = 8;
+ * optional bytes EncryptedPayload = 8;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.InitCompleteAuth.prototype.getEncryptedpayload = function() {
@@ -1144,7 +1038,7 @@ proto.msg.InitCompleteAuth.prototype.getEncryptedpayload = function() {
 
 
 /**
- * required bytes EncryptedPayload = 8;
+ * optional bytes EncryptedPayload = 8;
  * This is a type-conversion wrapper around `getEncryptedpayload()`
  * @return {string}
  */
@@ -1155,7 +1049,7 @@ proto.msg.InitCompleteAuth.prototype.getEncryptedpayload_asB64 = function() {
 
 
 /**
- * required bytes EncryptedPayload = 8;
+ * optional bytes EncryptedPayload = 8;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getEncryptedpayload()`
@@ -1172,25 +1066,7 @@ proto.msg.InitCompleteAuth.prototype.getEncryptedpayload_asU8 = function() {
  * @return {!proto.msg.InitCompleteAuth} returns this
  */
 proto.msg.InitCompleteAuth.prototype.setEncryptedpayload = function(value) {
-  return jspb.Message.setField(this, 8, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitCompleteAuth} returns this
- */
-proto.msg.InitCompleteAuth.prototype.clearEncryptedpayload = function() {
-  return jspb.Message.setField(this, 8, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitCompleteAuth.prototype.hasEncryptedpayload = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.setProto3BytesField(this, 8, value);
 };
 
 
@@ -1327,11 +1203,11 @@ proto.msg.InitBindUser.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InitBindUser.toObject = function(includeInstance, msg) {
   var f, obj = {
-    authkey: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    username: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    phone: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    firstname: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    lastname: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+    authkey: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    username: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    phone: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    firstname: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    lastname: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -1417,36 +1293,36 @@ proto.msg.InitBindUser.prototype.serializeBinary = function() {
  */
 proto.msg.InitBindUser.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getAuthkey();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getUsername();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getFirstname();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getLastname();
+  if (f.length > 0) {
     writer.writeString(
       5,
       f
@@ -1456,7 +1332,7 @@ proto.msg.InitBindUser.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string AuthKey = 1;
+ * optional string AuthKey = 1;
  * @return {string}
  */
 proto.msg.InitBindUser.prototype.getAuthkey = function() {
@@ -1469,30 +1345,12 @@ proto.msg.InitBindUser.prototype.getAuthkey = function() {
  * @return {!proto.msg.InitBindUser} returns this
  */
 proto.msg.InitBindUser.prototype.setAuthkey = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitBindUser} returns this
- */
-proto.msg.InitBindUser.prototype.clearAuthkey = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitBindUser.prototype.hasAuthkey = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Username = 2;
+ * optional string Username = 2;
  * @return {string}
  */
 proto.msg.InitBindUser.prototype.getUsername = function() {
@@ -1505,30 +1363,12 @@ proto.msg.InitBindUser.prototype.getUsername = function() {
  * @return {!proto.msg.InitBindUser} returns this
  */
 proto.msg.InitBindUser.prototype.setUsername = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitBindUser} returns this
- */
-proto.msg.InitBindUser.prototype.clearUsername = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitBindUser.prototype.hasUsername = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string Phone = 3;
+ * optional string Phone = 3;
  * @return {string}
  */
 proto.msg.InitBindUser.prototype.getPhone = function() {
@@ -1541,30 +1381,12 @@ proto.msg.InitBindUser.prototype.getPhone = function() {
  * @return {!proto.msg.InitBindUser} returns this
  */
 proto.msg.InitBindUser.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitBindUser} returns this
- */
-proto.msg.InitBindUser.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitBindUser.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required string FirstName = 4;
+ * optional string FirstName = 4;
  * @return {string}
  */
 proto.msg.InitBindUser.prototype.getFirstname = function() {
@@ -1577,30 +1399,12 @@ proto.msg.InitBindUser.prototype.getFirstname = function() {
  * @return {!proto.msg.InitBindUser} returns this
  */
 proto.msg.InitBindUser.prototype.setFirstname = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitBindUser} returns this
- */
-proto.msg.InitBindUser.prototype.clearFirstname = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitBindUser.prototype.hasFirstname = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required string LastName = 5;
+ * optional string LastName = 5;
  * @return {string}
  */
 proto.msg.InitBindUser.prototype.getLastname = function() {
@@ -1613,25 +1417,7 @@ proto.msg.InitBindUser.prototype.getLastname = function() {
  * @return {!proto.msg.InitBindUser} returns this
  */
 proto.msg.InitBindUser.prototype.setLastname = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitBindUser} returns this
- */
-proto.msg.InitBindUser.prototype.clearLastname = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitBindUser.prototype.hasLastname = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
@@ -1667,12 +1453,12 @@ proto.msg.AuthRegister.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthRegister.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    firstname: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    lastname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    phonecode: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    phonecodehash: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    langcode: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    firstname: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    lastname: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    phonecode: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    phonecodehash: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    langcode: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -1762,43 +1548,43 @@ proto.msg.AuthRegister.prototype.serializeBinary = function() {
  */
 proto.msg.AuthRegister.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getFirstname();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getLastname();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getPhonecode();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getPhonecodehash();
+  if (f.length > 0) {
     writer.writeString(
       5,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getLangcode();
+  if (f.length > 0) {
     writer.writeString(
       6,
       f
@@ -1808,7 +1594,7 @@ proto.msg.AuthRegister.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.AuthRegister.prototype.getPhone = function() {
@@ -1821,30 +1607,12 @@ proto.msg.AuthRegister.prototype.getPhone = function() {
  * @return {!proto.msg.AuthRegister} returns this
  */
 proto.msg.AuthRegister.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRegister} returns this
- */
-proto.msg.AuthRegister.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRegister.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string FirstName = 2;
+ * optional string FirstName = 2;
  * @return {string}
  */
 proto.msg.AuthRegister.prototype.getFirstname = function() {
@@ -1857,30 +1625,12 @@ proto.msg.AuthRegister.prototype.getFirstname = function() {
  * @return {!proto.msg.AuthRegister} returns this
  */
 proto.msg.AuthRegister.prototype.setFirstname = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRegister} returns this
- */
-proto.msg.AuthRegister.prototype.clearFirstname = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRegister.prototype.hasFirstname = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string LastName = 3;
+ * optional string LastName = 3;
  * @return {string}
  */
 proto.msg.AuthRegister.prototype.getLastname = function() {
@@ -1893,30 +1643,12 @@ proto.msg.AuthRegister.prototype.getLastname = function() {
  * @return {!proto.msg.AuthRegister} returns this
  */
 proto.msg.AuthRegister.prototype.setLastname = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRegister} returns this
- */
-proto.msg.AuthRegister.prototype.clearLastname = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRegister.prototype.hasLastname = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required string PhoneCode = 4;
+ * optional string PhoneCode = 4;
  * @return {string}
  */
 proto.msg.AuthRegister.prototype.getPhonecode = function() {
@@ -1929,30 +1661,12 @@ proto.msg.AuthRegister.prototype.getPhonecode = function() {
  * @return {!proto.msg.AuthRegister} returns this
  */
 proto.msg.AuthRegister.prototype.setPhonecode = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRegister} returns this
- */
-proto.msg.AuthRegister.prototype.clearPhonecode = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRegister.prototype.hasPhonecode = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required string PhoneCodeHash = 5;
+ * optional string PhoneCodeHash = 5;
  * @return {string}
  */
 proto.msg.AuthRegister.prototype.getPhonecodehash = function() {
@@ -1965,25 +1679,7 @@ proto.msg.AuthRegister.prototype.getPhonecodehash = function() {
  * @return {!proto.msg.AuthRegister} returns this
  */
 proto.msg.AuthRegister.prototype.setPhonecodehash = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRegister} returns this
- */
-proto.msg.AuthRegister.prototype.clearPhonecodehash = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRegister.prototype.hasPhonecodehash = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
@@ -2001,25 +1697,7 @@ proto.msg.AuthRegister.prototype.getLangcode = function() {
  * @return {!proto.msg.AuthRegister} returns this
  */
 proto.msg.AuthRegister.prototype.setLangcode = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRegister} returns this
- */
-proto.msg.AuthRegister.prototype.clearLangcode = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRegister.prototype.hasLangcode = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
@@ -2055,9 +1733,9 @@ proto.msg.AuthBotRegister.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthBotRegister.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    username: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    ownerid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    username: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    ownerid: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -2135,22 +1813,22 @@ proto.msg.AuthBotRegister.prototype.serializeBinary = function() {
  */
 proto.msg.AuthBotRegister.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getName();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getUsername();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getOwnerid();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
@@ -2160,7 +1838,7 @@ proto.msg.AuthBotRegister.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Name = 1;
+ * optional string Name = 1;
  * @return {string}
  */
 proto.msg.AuthBotRegister.prototype.getName = function() {
@@ -2173,30 +1851,12 @@ proto.msg.AuthBotRegister.prototype.getName = function() {
  * @return {!proto.msg.AuthBotRegister} returns this
  */
 proto.msg.AuthBotRegister.prototype.setName = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthBotRegister} returns this
- */
-proto.msg.AuthBotRegister.prototype.clearName = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthBotRegister.prototype.hasName = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Username = 2;
+ * optional string Username = 2;
  * @return {string}
  */
 proto.msg.AuthBotRegister.prototype.getUsername = function() {
@@ -2209,30 +1869,12 @@ proto.msg.AuthBotRegister.prototype.getUsername = function() {
  * @return {!proto.msg.AuthBotRegister} returns this
  */
 proto.msg.AuthBotRegister.prototype.setUsername = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthBotRegister} returns this
- */
-proto.msg.AuthBotRegister.prototype.clearUsername = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthBotRegister.prototype.hasUsername = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 OwnerID = 3;
+ * optional int64 OwnerID = 3;
  * @return {number}
  */
 proto.msg.AuthBotRegister.prototype.getOwnerid = function() {
@@ -2245,25 +1887,7 @@ proto.msg.AuthBotRegister.prototype.getOwnerid = function() {
  * @return {!proto.msg.AuthBotRegister} returns this
  */
 proto.msg.AuthBotRegister.prototype.setOwnerid = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthBotRegister} returns this
- */
-proto.msg.AuthBotRegister.prototype.clearOwnerid = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthBotRegister.prototype.hasOwnerid = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -2299,9 +1923,9 @@ proto.msg.AuthLogin.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthLogin.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    phonecodehash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    phonecode: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    phonecodehash: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    phonecode: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -2379,22 +2003,22 @@ proto.msg.AuthLogin.prototype.serializeBinary = function() {
  */
 proto.msg.AuthLogin.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getPhonecodehash();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getPhonecode();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -2404,7 +2028,7 @@ proto.msg.AuthLogin.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.AuthLogin.prototype.getPhone = function() {
@@ -2417,30 +2041,12 @@ proto.msg.AuthLogin.prototype.getPhone = function() {
  * @return {!proto.msg.AuthLogin} returns this
  */
 proto.msg.AuthLogin.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthLogin} returns this
- */
-proto.msg.AuthLogin.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthLogin.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string PhoneCodeHash = 2;
+ * optional string PhoneCodeHash = 2;
  * @return {string}
  */
 proto.msg.AuthLogin.prototype.getPhonecodehash = function() {
@@ -2453,30 +2059,12 @@ proto.msg.AuthLogin.prototype.getPhonecodehash = function() {
  * @return {!proto.msg.AuthLogin} returns this
  */
 proto.msg.AuthLogin.prototype.setPhonecodehash = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthLogin} returns this
- */
-proto.msg.AuthLogin.prototype.clearPhonecodehash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthLogin.prototype.hasPhonecodehash = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string PhoneCode = 3;
+ * optional string PhoneCode = 3;
  * @return {string}
  */
 proto.msg.AuthLogin.prototype.getPhonecode = function() {
@@ -2489,25 +2077,7 @@ proto.msg.AuthLogin.prototype.getPhonecode = function() {
  * @return {!proto.msg.AuthLogin} returns this
  */
 proto.msg.AuthLogin.prototype.setPhonecode = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthLogin} returns this
- */
-proto.msg.AuthLogin.prototype.clearPhonecode = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthLogin.prototype.hasPhonecode = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -2626,17 +2196,17 @@ proto.msg.AuthCheckPassword.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * required InputPassword Password = 1;
- * @return {!proto.msg.InputPassword}
+ * optional InputPassword Password = 1;
+ * @return {?proto.msg.InputPassword}
  */
 proto.msg.AuthCheckPassword.prototype.getPassword = function() {
-  return /** @type{!proto.msg.InputPassword} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPassword, 1, 1));
+  return /** @type{?proto.msg.InputPassword} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPassword, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPassword} value
+ * @param {?proto.msg.InputPassword|undefined} value
  * @return {!proto.msg.AuthCheckPassword} returns this
 */
 proto.msg.AuthCheckPassword.prototype.setPassword = function(value) {
@@ -2645,11 +2215,11 @@ proto.msg.AuthCheckPassword.prototype.setPassword = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.AuthCheckPassword} returns this
  */
 proto.msg.AuthCheckPassword.prototype.clearPassword = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPassword(undefined);
 };
 
 
@@ -2694,7 +2264,7 @@ proto.msg.AuthRecoverPassword.prototype.toObject = function(opt_includeInstance)
  */
 proto.msg.AuthRecoverPassword.toObject = function(includeInstance, msg) {
   var f, obj = {
-    code: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    code: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -2764,8 +2334,8 @@ proto.msg.AuthRecoverPassword.prototype.serializeBinary = function() {
  */
 proto.msg.AuthRecoverPassword.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getCode();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -2775,7 +2345,7 @@ proto.msg.AuthRecoverPassword.serializeBinaryToWriter = function(message, writer
 
 
 /**
- * required string Code = 1;
+ * optional string Code = 1;
  * @return {string}
  */
 proto.msg.AuthRecoverPassword.prototype.getCode = function() {
@@ -2788,25 +2358,7 @@ proto.msg.AuthRecoverPassword.prototype.getCode = function() {
  * @return {!proto.msg.AuthRecoverPassword} returns this
  */
 proto.msg.AuthRecoverPassword.prototype.setCode = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecoverPassword} returns this
- */
-proto.msg.AuthRecoverPassword.prototype.clearCode = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecoverPassword.prototype.hasCode = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -2887,8 +2439,10 @@ proto.msg.AuthLogout.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readInt64String());
-      msg.addAuthids(value);
+      var values = /** @type {!Array<string>} */ (reader.isDelimited() ? reader.readPackedInt64String() : [reader.readInt64String()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addAuthids(values[i]);
+      }
       break;
     default:
       reader.skipField();
@@ -2921,7 +2475,7 @@ proto.msg.AuthLogout.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getAuthidsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt64String(
+    writer.writePackedInt64String(
       1,
       f
     );
@@ -2998,8 +2552,8 @@ proto.msg.AuthLoginByToken.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthLoginByToken.toObject = function(includeInstance, msg) {
   var f, obj = {
-    token: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    provider: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    token: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    provider: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3073,15 +2627,15 @@ proto.msg.AuthLoginByToken.prototype.serializeBinary = function() {
  */
 proto.msg.AuthLoginByToken.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getToken();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getProvider();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -3091,7 +2645,7 @@ proto.msg.AuthLoginByToken.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Token = 1;
+ * optional string Token = 1;
  * @return {string}
  */
 proto.msg.AuthLoginByToken.prototype.getToken = function() {
@@ -3104,30 +2658,12 @@ proto.msg.AuthLoginByToken.prototype.getToken = function() {
  * @return {!proto.msg.AuthLoginByToken} returns this
  */
 proto.msg.AuthLoginByToken.prototype.setToken = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthLoginByToken} returns this
- */
-proto.msg.AuthLoginByToken.prototype.clearToken = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthLoginByToken.prototype.hasToken = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Provider = 2;
+ * optional string Provider = 2;
  * @return {string}
  */
 proto.msg.AuthLoginByToken.prototype.getProvider = function() {
@@ -3140,25 +2676,7 @@ proto.msg.AuthLoginByToken.prototype.getProvider = function() {
  * @return {!proto.msg.AuthLoginByToken} returns this
  */
 proto.msg.AuthLoginByToken.prototype.setProvider = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthLoginByToken} returns this
- */
-proto.msg.AuthLoginByToken.prototype.clearProvider = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthLoginByToken.prototype.hasProvider = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -3194,7 +2712,7 @@ proto.msg.AuthCheckPhone.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthCheckPhone.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -3264,8 +2782,8 @@ proto.msg.AuthCheckPhone.prototype.serializeBinary = function() {
  */
 proto.msg.AuthCheckPhone.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -3275,7 +2793,7 @@ proto.msg.AuthCheckPhone.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.AuthCheckPhone.prototype.getPhone = function() {
@@ -3288,25 +2806,7 @@ proto.msg.AuthCheckPhone.prototype.getPhone = function() {
  * @return {!proto.msg.AuthCheckPhone} returns this
  */
 proto.msg.AuthCheckPhone.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthCheckPhone} returns this
- */
-proto.msg.AuthCheckPhone.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthCheckPhone.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -3342,8 +2842,8 @@ proto.msg.AuthSendCode.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthSendCode.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    apphash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    apphash: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3417,15 +2917,15 @@ proto.msg.AuthSendCode.prototype.serializeBinary = function() {
  */
 proto.msg.AuthSendCode.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getApphash();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -3435,7 +2935,7 @@ proto.msg.AuthSendCode.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.AuthSendCode.prototype.getPhone = function() {
@@ -3448,25 +2948,7 @@ proto.msg.AuthSendCode.prototype.getPhone = function() {
  * @return {!proto.msg.AuthSendCode} returns this
  */
 proto.msg.AuthSendCode.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthSendCode} returns this
- */
-proto.msg.AuthSendCode.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthSendCode.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -3484,25 +2966,7 @@ proto.msg.AuthSendCode.prototype.getApphash = function() {
  * @return {!proto.msg.AuthSendCode} returns this
  */
 proto.msg.AuthSendCode.prototype.setApphash = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthSendCode} returns this
- */
-proto.msg.AuthSendCode.prototype.clearApphash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthSendCode.prototype.hasApphash = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -3538,9 +3002,9 @@ proto.msg.AuthResendCode.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthResendCode.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    phonecodehash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    apphash: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    phonecodehash: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    apphash: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -3618,22 +3082,22 @@ proto.msg.AuthResendCode.prototype.serializeBinary = function() {
  */
 proto.msg.AuthResendCode.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getPhonecodehash();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getApphash();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -3643,7 +3107,7 @@ proto.msg.AuthResendCode.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.AuthResendCode.prototype.getPhone = function() {
@@ -3656,30 +3120,12 @@ proto.msg.AuthResendCode.prototype.getPhone = function() {
  * @return {!proto.msg.AuthResendCode} returns this
  */
 proto.msg.AuthResendCode.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthResendCode} returns this
- */
-proto.msg.AuthResendCode.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthResendCode.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string PhoneCodeHash = 2;
+ * optional string PhoneCodeHash = 2;
  * @return {string}
  */
 proto.msg.AuthResendCode.prototype.getPhonecodehash = function() {
@@ -3692,25 +3138,7 @@ proto.msg.AuthResendCode.prototype.getPhonecodehash = function() {
  * @return {!proto.msg.AuthResendCode} returns this
  */
 proto.msg.AuthResendCode.prototype.setPhonecodehash = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthResendCode} returns this
- */
-proto.msg.AuthResendCode.prototype.clearPhonecodehash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthResendCode.prototype.hasPhonecodehash = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -3728,25 +3156,7 @@ proto.msg.AuthResendCode.prototype.getApphash = function() {
  * @return {!proto.msg.AuthResendCode} returns this
  */
 proto.msg.AuthResendCode.prototype.setApphash = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthResendCode} returns this
- */
-proto.msg.AuthResendCode.prototype.clearApphash = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthResendCode.prototype.hasApphash = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -3782,12 +3192,12 @@ proto.msg.AuthRecall.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthRecall.toObject = function(includeInstance, msg) {
   var f, obj = {
-    clientid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    version: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    appversion: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    platform: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    vendor: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    osversion: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
+    clientid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    version: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    appversion: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    platform: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    vendor: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    osversion: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -3877,43 +3287,43 @@ proto.msg.AuthRecall.prototype.serializeBinary = function() {
  */
 proto.msg.AuthRecall.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getClientid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getVersion();
+  if (f !== 0) {
     writer.writeUint32(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getAppversion();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getPlatform();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getVendor();
+  if (f.length > 0) {
     writer.writeString(
       5,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getOsversion();
+  if (f.length > 0) {
     writer.writeString(
       6,
       f
@@ -3923,7 +3333,7 @@ proto.msg.AuthRecall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 ClientID = 1;
+ * optional int64 ClientID = 1;
  * @return {string}
  */
 proto.msg.AuthRecall.prototype.getClientid = function() {
@@ -3936,25 +3346,7 @@ proto.msg.AuthRecall.prototype.getClientid = function() {
  * @return {!proto.msg.AuthRecall} returns this
  */
 proto.msg.AuthRecall.prototype.setClientid = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecall} returns this
- */
-proto.msg.AuthRecall.prototype.clearClientid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecall.prototype.hasClientid = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
@@ -3972,25 +3364,7 @@ proto.msg.AuthRecall.prototype.getVersion = function() {
  * @return {!proto.msg.AuthRecall} returns this
  */
 proto.msg.AuthRecall.prototype.setVersion = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecall} returns this
- */
-proto.msg.AuthRecall.prototype.clearVersion = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecall.prototype.hasVersion = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -4008,25 +3382,7 @@ proto.msg.AuthRecall.prototype.getAppversion = function() {
  * @return {!proto.msg.AuthRecall} returns this
  */
 proto.msg.AuthRecall.prototype.setAppversion = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecall} returns this
- */
-proto.msg.AuthRecall.prototype.clearAppversion = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecall.prototype.hasAppversion = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -4044,25 +3400,7 @@ proto.msg.AuthRecall.prototype.getPlatform = function() {
  * @return {!proto.msg.AuthRecall} returns this
  */
 proto.msg.AuthRecall.prototype.setPlatform = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecall} returns this
- */
-proto.msg.AuthRecall.prototype.clearPlatform = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecall.prototype.hasPlatform = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -4080,25 +3418,7 @@ proto.msg.AuthRecall.prototype.getVendor = function() {
  * @return {!proto.msg.AuthRecall} returns this
  */
 proto.msg.AuthRecall.prototype.setVendor = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecall} returns this
- */
-proto.msg.AuthRecall.prototype.clearVendor = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecall.prototype.hasVendor = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
@@ -4116,25 +3436,7 @@ proto.msg.AuthRecall.prototype.getOsversion = function() {
  * @return {!proto.msg.AuthRecall} returns this
  */
 proto.msg.AuthRecall.prototype.setOsversion = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecall} returns this
- */
-proto.msg.AuthRecall.prototype.clearOsversion = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecall.prototype.hasOsversion = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
@@ -4271,7 +3573,7 @@ proto.msg.InitTestAuth.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InitTestAuth.toObject = function(includeInstance, msg) {
   var f, obj = {
-    authid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    authid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     authkey: msg.getAuthkey_asB64()
   };
 
@@ -4346,15 +3648,15 @@ proto.msg.InitTestAuth.prototype.serializeBinary = function() {
  */
 proto.msg.InitTestAuth.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getAuthid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getAuthkey_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -4364,7 +3666,7 @@ proto.msg.InitTestAuth.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 AuthID = 1;
+ * optional int64 AuthID = 1;
  * @return {number}
  */
 proto.msg.InitTestAuth.prototype.getAuthid = function() {
@@ -4377,30 +3679,12 @@ proto.msg.InitTestAuth.prototype.getAuthid = function() {
  * @return {!proto.msg.InitTestAuth} returns this
  */
 proto.msg.InitTestAuth.prototype.setAuthid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitTestAuth} returns this
- */
-proto.msg.InitTestAuth.prototype.clearAuthid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitTestAuth.prototype.hasAuthid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bytes AuthKey = 2;
+ * optional bytes AuthKey = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.InitTestAuth.prototype.getAuthkey = function() {
@@ -4409,7 +3693,7 @@ proto.msg.InitTestAuth.prototype.getAuthkey = function() {
 
 
 /**
- * required bytes AuthKey = 2;
+ * optional bytes AuthKey = 2;
  * This is a type-conversion wrapper around `getAuthkey()`
  * @return {string}
  */
@@ -4420,7 +3704,7 @@ proto.msg.InitTestAuth.prototype.getAuthkey_asB64 = function() {
 
 
 /**
- * required bytes AuthKey = 2;
+ * optional bytes AuthKey = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAuthkey()`
@@ -4437,25 +3721,7 @@ proto.msg.InitTestAuth.prototype.getAuthkey_asU8 = function() {
  * @return {!proto.msg.InitTestAuth} returns this
  */
 proto.msg.InitTestAuth.prototype.setAuthkey = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitTestAuth} returns this
- */
-proto.msg.InitTestAuth.prototype.clearAuthkey = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitTestAuth.prototype.hasAuthkey = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -4491,12 +3757,12 @@ proto.msg.InitResponse.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InitResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    clientnonce: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    servernonce: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    rsapubkeyfingerprint: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    dhgroupfingerprint: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    pq: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    servertimestamp: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
+    clientnonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    servernonce: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    rsapubkeyfingerprint: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    dhgroupfingerprint: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    pq: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    servertimestamp: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -4586,43 +3852,43 @@ proto.msg.InitResponse.prototype.serializeBinary = function() {
  */
 proto.msg.InitResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getClientnonce();
+  if (f !== 0) {
     writer.writeFixed64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getServernonce();
+  if (f !== 0) {
     writer.writeFixed64(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getRsapubkeyfingerprint();
+  if (f !== 0) {
     writer.writeFixed64(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getDhgroupfingerprint();
+  if (f !== 0) {
     writer.writeFixed64(
       4,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getPq();
+  if (f !== 0) {
     writer.writeFixed64(
       5,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getServertimestamp();
+  if (f !== 0) {
     writer.writeInt64(
       6,
       f
@@ -4632,7 +3898,7 @@ proto.msg.InitResponse.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required fixed64 ClientNonce = 1;
+ * optional fixed64 ClientNonce = 1;
  * @return {number}
  */
 proto.msg.InitResponse.prototype.getClientnonce = function() {
@@ -4645,30 +3911,12 @@ proto.msg.InitResponse.prototype.getClientnonce = function() {
  * @return {!proto.msg.InitResponse} returns this
  */
 proto.msg.InitResponse.prototype.setClientnonce = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitResponse} returns this
- */
-proto.msg.InitResponse.prototype.clearClientnonce = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitResponse.prototype.hasClientnonce = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required fixed64 ServerNonce = 2;
+ * optional fixed64 ServerNonce = 2;
  * @return {number}
  */
 proto.msg.InitResponse.prototype.getServernonce = function() {
@@ -4681,30 +3929,12 @@ proto.msg.InitResponse.prototype.getServernonce = function() {
  * @return {!proto.msg.InitResponse} returns this
  */
 proto.msg.InitResponse.prototype.setServernonce = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitResponse} returns this
- */
-proto.msg.InitResponse.prototype.clearServernonce = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitResponse.prototype.hasServernonce = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required fixed64 RSAPubKeyFingerPrint = 3;
+ * optional fixed64 RSAPubKeyFingerPrint = 3;
  * @return {number}
  */
 proto.msg.InitResponse.prototype.getRsapubkeyfingerprint = function() {
@@ -4717,30 +3947,12 @@ proto.msg.InitResponse.prototype.getRsapubkeyfingerprint = function() {
  * @return {!proto.msg.InitResponse} returns this
  */
 proto.msg.InitResponse.prototype.setRsapubkeyfingerprint = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitResponse} returns this
- */
-proto.msg.InitResponse.prototype.clearRsapubkeyfingerprint = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitResponse.prototype.hasRsapubkeyfingerprint = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required fixed64 DHGroupFingerPrint = 4;
+ * optional fixed64 DHGroupFingerPrint = 4;
  * @return {number}
  */
 proto.msg.InitResponse.prototype.getDhgroupfingerprint = function() {
@@ -4753,30 +3965,12 @@ proto.msg.InitResponse.prototype.getDhgroupfingerprint = function() {
  * @return {!proto.msg.InitResponse} returns this
  */
 proto.msg.InitResponse.prototype.setDhgroupfingerprint = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitResponse} returns this
- */
-proto.msg.InitResponse.prototype.clearDhgroupfingerprint = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitResponse.prototype.hasDhgroupfingerprint = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required fixed64 PQ = 5;
+ * optional fixed64 PQ = 5;
  * @return {number}
  */
 proto.msg.InitResponse.prototype.getPq = function() {
@@ -4789,30 +3983,12 @@ proto.msg.InitResponse.prototype.getPq = function() {
  * @return {!proto.msg.InitResponse} returns this
  */
 proto.msg.InitResponse.prototype.setPq = function(value) {
-  return jspb.Message.setField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitResponse} returns this
- */
-proto.msg.InitResponse.prototype.clearPq = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitResponse.prototype.hasPq = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required int64 ServerTimestamp = 6;
+ * optional int64 ServerTimestamp = 6;
  * @return {number}
  */
 proto.msg.InitResponse.prototype.getServertimestamp = function() {
@@ -4825,25 +4001,7 @@ proto.msg.InitResponse.prototype.getServertimestamp = function() {
  * @return {!proto.msg.InitResponse} returns this
  */
 proto.msg.InitResponse.prototype.setServertimestamp = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitResponse} returns this
- */
-proto.msg.InitResponse.prototype.clearServertimestamp = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitResponse.prototype.hasServertimestamp = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -4949,8 +4107,8 @@ proto.msg.InitCompleteAuthInternal.prototype.serializeBinary = function() {
  */
 proto.msg.InitCompleteAuthInternal.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSecretnonce_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       1,
       f
@@ -4960,7 +4118,7 @@ proto.msg.InitCompleteAuthInternal.serializeBinaryToWriter = function(message, w
 
 
 /**
- * required bytes SecretNonce = 1;
+ * optional bytes SecretNonce = 1;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.InitCompleteAuthInternal.prototype.getSecretnonce = function() {
@@ -4969,7 +4127,7 @@ proto.msg.InitCompleteAuthInternal.prototype.getSecretnonce = function() {
 
 
 /**
- * required bytes SecretNonce = 1;
+ * optional bytes SecretNonce = 1;
  * This is a type-conversion wrapper around `getSecretnonce()`
  * @return {string}
  */
@@ -4980,7 +4138,7 @@ proto.msg.InitCompleteAuthInternal.prototype.getSecretnonce_asB64 = function() {
 
 
 /**
- * required bytes SecretNonce = 1;
+ * optional bytes SecretNonce = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSecretnonce()`
@@ -4997,25 +4155,7 @@ proto.msg.InitCompleteAuthInternal.prototype.getSecretnonce_asU8 = function() {
  * @return {!proto.msg.InitCompleteAuthInternal} returns this
  */
 proto.msg.InitCompleteAuthInternal.prototype.setSecretnonce = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitCompleteAuthInternal} returns this
- */
-proto.msg.InitCompleteAuthInternal.prototype.clearSecretnonce = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitCompleteAuthInternal.prototype.hasSecretnonce = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
@@ -5051,10 +4191,10 @@ proto.msg.InitAuthCompleted.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InitAuthCompleted.toObject = function(includeInstance, msg) {
   var f, obj = {
-    clientnonce: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    servernonce: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    status: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    secrethash: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+    clientnonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    servernonce: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    status: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    secrethash: jspb.Message.getFieldWithDefault(msg, 4, 0),
     serverdhpubkey: msg.getServerdhpubkey_asB64()
   };
 
@@ -5141,36 +4281,36 @@ proto.msg.InitAuthCompleted.prototype.serializeBinary = function() {
  */
 proto.msg.InitAuthCompleted.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getClientnonce();
+  if (f !== 0) {
     writer.writeFixed64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getServernonce();
+  if (f !== 0) {
     writer.writeFixed64(
       2,
       f
     );
   }
-  f = /** @type {!proto.msg.InitAuthCompleted.Statuses} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getStatus();
+  if (f !== 0.0) {
     writer.writeEnum(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getSecrethash();
+  if (f !== 0) {
     writer.writeFixed64(
       4,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getServerdhpubkey_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       5,
       f
@@ -5189,7 +4329,7 @@ proto.msg.InitAuthCompleted.Statuses = {
 };
 
 /**
- * required fixed64 ClientNonce = 1;
+ * optional fixed64 ClientNonce = 1;
  * @return {number}
  */
 proto.msg.InitAuthCompleted.prototype.getClientnonce = function() {
@@ -5202,30 +4342,12 @@ proto.msg.InitAuthCompleted.prototype.getClientnonce = function() {
  * @return {!proto.msg.InitAuthCompleted} returns this
  */
 proto.msg.InitAuthCompleted.prototype.setClientnonce = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitAuthCompleted} returns this
- */
-proto.msg.InitAuthCompleted.prototype.clearClientnonce = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitAuthCompleted.prototype.hasClientnonce = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required fixed64 ServerNonce = 2;
+ * optional fixed64 ServerNonce = 2;
  * @return {number}
  */
 proto.msg.InitAuthCompleted.prototype.getServernonce = function() {
@@ -5238,30 +4360,12 @@ proto.msg.InitAuthCompleted.prototype.getServernonce = function() {
  * @return {!proto.msg.InitAuthCompleted} returns this
  */
 proto.msg.InitAuthCompleted.prototype.setServernonce = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitAuthCompleted} returns this
- */
-proto.msg.InitAuthCompleted.prototype.clearServernonce = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitAuthCompleted.prototype.hasServernonce = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required Statuses Status = 3;
+ * optional Statuses Status = 3;
  * @return {!proto.msg.InitAuthCompleted.Statuses}
  */
 proto.msg.InitAuthCompleted.prototype.getStatus = function() {
@@ -5274,30 +4378,12 @@ proto.msg.InitAuthCompleted.prototype.getStatus = function() {
  * @return {!proto.msg.InitAuthCompleted} returns this
  */
 proto.msg.InitAuthCompleted.prototype.setStatus = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitAuthCompleted} returns this
- */
-proto.msg.InitAuthCompleted.prototype.clearStatus = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitAuthCompleted.prototype.hasStatus = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required fixed64 SecretHash = 4;
+ * optional fixed64 SecretHash = 4;
  * @return {number}
  */
 proto.msg.InitAuthCompleted.prototype.getSecrethash = function() {
@@ -5310,30 +4396,12 @@ proto.msg.InitAuthCompleted.prototype.getSecrethash = function() {
  * @return {!proto.msg.InitAuthCompleted} returns this
  */
 proto.msg.InitAuthCompleted.prototype.setSecrethash = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitAuthCompleted} returns this
- */
-proto.msg.InitAuthCompleted.prototype.clearSecrethash = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitAuthCompleted.prototype.hasSecrethash = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required bytes ServerDHPubKey = 5;
+ * optional bytes ServerDHPubKey = 5;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.InitAuthCompleted.prototype.getServerdhpubkey = function() {
@@ -5342,7 +4410,7 @@ proto.msg.InitAuthCompleted.prototype.getServerdhpubkey = function() {
 
 
 /**
- * required bytes ServerDHPubKey = 5;
+ * optional bytes ServerDHPubKey = 5;
  * This is a type-conversion wrapper around `getServerdhpubkey()`
  * @return {string}
  */
@@ -5353,7 +4421,7 @@ proto.msg.InitAuthCompleted.prototype.getServerdhpubkey_asB64 = function() {
 
 
 /**
- * required bytes ServerDHPubKey = 5;
+ * optional bytes ServerDHPubKey = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getServerdhpubkey()`
@@ -5370,25 +4438,7 @@ proto.msg.InitAuthCompleted.prototype.getServerdhpubkey_asU8 = function() {
  * @return {!proto.msg.InitAuthCompleted} returns this
  */
 proto.msg.InitAuthCompleted.prototype.setServerdhpubkey = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitAuthCompleted} returns this
- */
-proto.msg.InitAuthCompleted.prototype.clearServerdhpubkey = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitAuthCompleted.prototype.hasServerdhpubkey = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -5424,7 +4474,7 @@ proto.msg.InitUserBound.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InitUserBound.toObject = function(includeInstance, msg) {
   var f, obj = {
-    authid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    authid: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -5494,8 +4544,8 @@ proto.msg.InitUserBound.prototype.serializeBinary = function() {
  */
 proto.msg.InitUserBound.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getAuthid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
@@ -5505,7 +4555,7 @@ proto.msg.InitUserBound.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 AuthID = 1;
+ * optional int64 AuthID = 1;
  * @return {number}
  */
 proto.msg.InitUserBound.prototype.getAuthid = function() {
@@ -5518,25 +4568,7 @@ proto.msg.InitUserBound.prototype.getAuthid = function() {
  * @return {!proto.msg.InitUserBound} returns this
  */
 proto.msg.InitUserBound.prototype.setAuthid = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InitUserBound} returns this
- */
-proto.msg.InitUserBound.prototype.clearAuthid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InitUserBound.prototype.hasAuthid = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -5572,7 +4604,7 @@ proto.msg.AuthPasswordRecovery.prototype.toObject = function(opt_includeInstance
  */
 proto.msg.AuthPasswordRecovery.toObject = function(includeInstance, msg) {
   var f, obj = {
-    emailpattern: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    emailpattern: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -5642,8 +4674,8 @@ proto.msg.AuthPasswordRecovery.prototype.serializeBinary = function() {
  */
 proto.msg.AuthPasswordRecovery.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getEmailpattern();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -5653,7 +4685,7 @@ proto.msg.AuthPasswordRecovery.serializeBinaryToWriter = function(message, write
 
 
 /**
- * required string EmailPattern = 1;
+ * optional string EmailPattern = 1;
  * @return {string}
  */
 proto.msg.AuthPasswordRecovery.prototype.getEmailpattern = function() {
@@ -5666,25 +4698,7 @@ proto.msg.AuthPasswordRecovery.prototype.getEmailpattern = function() {
  * @return {!proto.msg.AuthPasswordRecovery} returns this
  */
 proto.msg.AuthPasswordRecovery.prototype.setEmailpattern = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthPasswordRecovery} returns this
- */
-proto.msg.AuthPasswordRecovery.prototype.clearEmailpattern = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthPasswordRecovery.prototype.hasEmailpattern = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -5720,12 +4734,12 @@ proto.msg.AuthRecalled.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthRecalled.toObject = function(includeInstance, msg) {
   var f, obj = {
-    clientid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    timestamp: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    updateid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    available: (f = jspb.Message.getBooleanField(msg, 4)) == null ? undefined : f,
-    force: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f,
-    currentversion: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
+    clientid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    timestamp: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    updateid: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    available: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+    force: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    currentversion: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -5815,43 +4829,43 @@ proto.msg.AuthRecalled.prototype.serializeBinary = function() {
  */
 proto.msg.AuthRecalled.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getClientid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getTimestamp();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getUpdateid();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getAvailable();
+  if (f) {
     writer.writeBool(
       4,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getForce();
+  if (f) {
     writer.writeBool(
       5,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getCurrentversion();
+  if (f.length > 0) {
     writer.writeString(
       6,
       f
@@ -5861,7 +4875,7 @@ proto.msg.AuthRecalled.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 ClientID = 1;
+ * optional int64 ClientID = 1;
  * @return {string}
  */
 proto.msg.AuthRecalled.prototype.getClientid = function() {
@@ -5874,30 +4888,12 @@ proto.msg.AuthRecalled.prototype.getClientid = function() {
  * @return {!proto.msg.AuthRecalled} returns this
  */
 proto.msg.AuthRecalled.prototype.setClientid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecalled} returns this
- */
-proto.msg.AuthRecalled.prototype.clearClientid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecalled.prototype.hasClientid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 Timestamp = 2;
+ * optional int64 Timestamp = 2;
  * @return {number}
  */
 proto.msg.AuthRecalled.prototype.getTimestamp = function() {
@@ -5910,25 +4906,7 @@ proto.msg.AuthRecalled.prototype.getTimestamp = function() {
  * @return {!proto.msg.AuthRecalled} returns this
  */
 proto.msg.AuthRecalled.prototype.setTimestamp = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecalled} returns this
- */
-proto.msg.AuthRecalled.prototype.clearTimestamp = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecalled.prototype.hasTimestamp = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -5946,25 +4924,7 @@ proto.msg.AuthRecalled.prototype.getUpdateid = function() {
  * @return {!proto.msg.AuthRecalled} returns this
  */
 proto.msg.AuthRecalled.prototype.setUpdateid = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecalled} returns this
- */
-proto.msg.AuthRecalled.prototype.clearUpdateid = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecalled.prototype.hasUpdateid = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -5982,25 +4942,7 @@ proto.msg.AuthRecalled.prototype.getAvailable = function() {
  * @return {!proto.msg.AuthRecalled} returns this
  */
 proto.msg.AuthRecalled.prototype.setAvailable = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecalled} returns this
- */
-proto.msg.AuthRecalled.prototype.clearAvailable = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecalled.prototype.hasAvailable = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
@@ -6018,25 +4960,7 @@ proto.msg.AuthRecalled.prototype.getForce = function() {
  * @return {!proto.msg.AuthRecalled} returns this
  */
 proto.msg.AuthRecalled.prototype.setForce = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecalled} returns this
- */
-proto.msg.AuthRecalled.prototype.clearForce = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecalled.prototype.hasForce = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -6054,25 +4978,7 @@ proto.msg.AuthRecalled.prototype.getCurrentversion = function() {
  * @return {!proto.msg.AuthRecalled} returns this
  */
 proto.msg.AuthRecalled.prototype.setCurrentversion = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthRecalled} returns this
- */
-proto.msg.AuthRecalled.prototype.clearCurrentversion = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthRecalled.prototype.hasCurrentversion = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
@@ -6108,9 +5014,9 @@ proto.msg.AuthAuthorization.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthAuthorization.toObject = function(includeInstance, msg) {
   var f, obj = {
-    expired: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    expired: jspb.Message.getFieldWithDefault(msg, 1, 0),
     user: (f = msg.getUser()) && core_types_pb.User.toObject(includeInstance, f),
-    activesessions: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    activesessions: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -6189,8 +5095,8 @@ proto.msg.AuthAuthorization.prototype.serializeBinary = function() {
  */
 proto.msg.AuthAuthorization.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getExpired();
+  if (f !== 0) {
     writer.writeFixed64(
       1,
       f
@@ -6204,8 +5110,8 @@ proto.msg.AuthAuthorization.serializeBinaryToWriter = function(message, writer) 
       core_types_pb.User.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getActivesessions();
+  if (f !== 0) {
     writer.writeUint32(
       3,
       f
@@ -6215,7 +5121,7 @@ proto.msg.AuthAuthorization.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * required fixed64 Expired = 1;
+ * optional fixed64 Expired = 1;
  * @return {number}
  */
 proto.msg.AuthAuthorization.prototype.getExpired = function() {
@@ -6228,40 +5134,22 @@ proto.msg.AuthAuthorization.prototype.getExpired = function() {
  * @return {!proto.msg.AuthAuthorization} returns this
  */
 proto.msg.AuthAuthorization.prototype.setExpired = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthAuthorization} returns this
- */
-proto.msg.AuthAuthorization.prototype.clearExpired = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthAuthorization.prototype.hasExpired = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required User User = 2;
- * @return {!proto.msg.User}
+ * optional User User = 2;
+ * @return {?proto.msg.User}
  */
 proto.msg.AuthAuthorization.prototype.getUser = function() {
-  return /** @type{!proto.msg.User} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.User, 2, 1));
+  return /** @type{?proto.msg.User} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.User, 2));
 };
 
 
 /**
- * @param {!proto.msg.User} value
+ * @param {?proto.msg.User|undefined} value
  * @return {!proto.msg.AuthAuthorization} returns this
 */
 proto.msg.AuthAuthorization.prototype.setUser = function(value) {
@@ -6270,11 +5158,11 @@ proto.msg.AuthAuthorization.prototype.setUser = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.AuthAuthorization} returns this
  */
 proto.msg.AuthAuthorization.prototype.clearUser = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setUser(undefined);
 };
 
 
@@ -6301,25 +5189,7 @@ proto.msg.AuthAuthorization.prototype.getActivesessions = function() {
  * @return {!proto.msg.AuthAuthorization} returns this
  */
 proto.msg.AuthAuthorization.prototype.setActivesessions = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthAuthorization} returns this
- */
-proto.msg.AuthAuthorization.prototype.clearActivesessions = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthAuthorization.prototype.hasActivesessions = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -6355,7 +5225,7 @@ proto.msg.AuthBotAuthorization.prototype.toObject = function(opt_includeInstance
  */
 proto.msg.AuthBotAuthorization.toObject = function(includeInstance, msg) {
   var f, obj = {
-    authid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    authid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     authkey: msg.getAuthkey_asB64(),
     bot: (f = msg.getBot()) && core_types_pb.Bot.toObject(includeInstance, f)
   };
@@ -6436,15 +5306,15 @@ proto.msg.AuthBotAuthorization.prototype.serializeBinary = function() {
  */
 proto.msg.AuthBotAuthorization.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getAuthid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getAuthkey_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -6462,7 +5332,7 @@ proto.msg.AuthBotAuthorization.serializeBinaryToWriter = function(message, write
 
 
 /**
- * required int64 AuthID = 1;
+ * optional int64 AuthID = 1;
  * @return {number}
  */
 proto.msg.AuthBotAuthorization.prototype.getAuthid = function() {
@@ -6475,30 +5345,12 @@ proto.msg.AuthBotAuthorization.prototype.getAuthid = function() {
  * @return {!proto.msg.AuthBotAuthorization} returns this
  */
 proto.msg.AuthBotAuthorization.prototype.setAuthid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthBotAuthorization} returns this
- */
-proto.msg.AuthBotAuthorization.prototype.clearAuthid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthBotAuthorization.prototype.hasAuthid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bytes AuthKey = 2;
+ * optional bytes AuthKey = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.AuthBotAuthorization.prototype.getAuthkey = function() {
@@ -6507,7 +5359,7 @@ proto.msg.AuthBotAuthorization.prototype.getAuthkey = function() {
 
 
 /**
- * required bytes AuthKey = 2;
+ * optional bytes AuthKey = 2;
  * This is a type-conversion wrapper around `getAuthkey()`
  * @return {string}
  */
@@ -6518,7 +5370,7 @@ proto.msg.AuthBotAuthorization.prototype.getAuthkey_asB64 = function() {
 
 
 /**
- * required bytes AuthKey = 2;
+ * optional bytes AuthKey = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAuthkey()`
@@ -6535,40 +5387,22 @@ proto.msg.AuthBotAuthorization.prototype.getAuthkey_asU8 = function() {
  * @return {!proto.msg.AuthBotAuthorization} returns this
  */
 proto.msg.AuthBotAuthorization.prototype.setAuthkey = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthBotAuthorization} returns this
- */
-proto.msg.AuthBotAuthorization.prototype.clearAuthkey = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthBotAuthorization.prototype.hasAuthkey = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required Bot Bot = 3;
- * @return {!proto.msg.Bot}
+ * optional Bot Bot = 3;
+ * @return {?proto.msg.Bot}
  */
 proto.msg.AuthBotAuthorization.prototype.getBot = function() {
-  return /** @type{!proto.msg.Bot} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.Bot, 3, 1));
+  return /** @type{?proto.msg.Bot} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.Bot, 3));
 };
 
 
 /**
- * @param {!proto.msg.Bot} value
+ * @param {?proto.msg.Bot|undefined} value
  * @return {!proto.msg.AuthBotAuthorization} returns this
 */
 proto.msg.AuthBotAuthorization.prototype.setBot = function(value) {
@@ -6577,11 +5411,11 @@ proto.msg.AuthBotAuthorization.prototype.setBot = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.AuthBotAuthorization} returns this
  */
 proto.msg.AuthBotAuthorization.prototype.clearBot = function() {
-  return jspb.Message.setField(this, 3, undefined);
+  return this.setBot(undefined);
 };
 
 
@@ -6626,8 +5460,8 @@ proto.msg.AuthCheckedPhone.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthCheckedPhone.toObject = function(includeInstance, msg) {
   var f, obj = {
-    invited: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    registered: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
+    invited: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    registered: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -6701,15 +5535,15 @@ proto.msg.AuthCheckedPhone.prototype.serializeBinary = function() {
  */
 proto.msg.AuthCheckedPhone.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getInvited();
+  if (f) {
     writer.writeBool(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getRegistered();
+  if (f) {
     writer.writeBool(
       2,
       f
@@ -6719,7 +5553,7 @@ proto.msg.AuthCheckedPhone.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required bool Invited = 1;
+ * optional bool Invited = 1;
  * @return {boolean}
  */
 proto.msg.AuthCheckedPhone.prototype.getInvited = function() {
@@ -6732,30 +5566,12 @@ proto.msg.AuthCheckedPhone.prototype.getInvited = function() {
  * @return {!proto.msg.AuthCheckedPhone} returns this
  */
 proto.msg.AuthCheckedPhone.prototype.setInvited = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthCheckedPhone} returns this
- */
-proto.msg.AuthCheckedPhone.prototype.clearInvited = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthCheckedPhone.prototype.hasInvited = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bool Registered = 2;
+ * optional bool Registered = 2;
  * @return {boolean}
  */
 proto.msg.AuthCheckedPhone.prototype.getRegistered = function() {
@@ -6768,25 +5584,7 @@ proto.msg.AuthCheckedPhone.prototype.getRegistered = function() {
  * @return {!proto.msg.AuthCheckedPhone} returns this
  */
 proto.msg.AuthCheckedPhone.prototype.setRegistered = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthCheckedPhone} returns this
- */
-proto.msg.AuthCheckedPhone.prototype.clearRegistered = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthCheckedPhone.prototype.hasRegistered = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -6822,9 +5620,9 @@ proto.msg.AuthSentCode.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthSentCode.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    phonecodehash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    sendtophone: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    phonecodehash: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    sendtophone: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -6902,22 +5700,22 @@ proto.msg.AuthSentCode.prototype.serializeBinary = function() {
  */
 proto.msg.AuthSentCode.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getPhonecodehash();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getSendtophone();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -6927,7 +5725,7 @@ proto.msg.AuthSentCode.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.AuthSentCode.prototype.getPhone = function() {
@@ -6940,30 +5738,12 @@ proto.msg.AuthSentCode.prototype.getPhone = function() {
  * @return {!proto.msg.AuthSentCode} returns this
  */
 proto.msg.AuthSentCode.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthSentCode} returns this
- */
-proto.msg.AuthSentCode.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthSentCode.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string PhoneCodeHash = 2;
+ * optional string PhoneCodeHash = 2;
  * @return {string}
  */
 proto.msg.AuthSentCode.prototype.getPhonecodehash = function() {
@@ -6976,25 +5756,7 @@ proto.msg.AuthSentCode.prototype.getPhonecodehash = function() {
  * @return {!proto.msg.AuthSentCode} returns this
  */
 proto.msg.AuthSentCode.prototype.setPhonecodehash = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthSentCode} returns this
- */
-proto.msg.AuthSentCode.prototype.clearPhonecodehash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthSentCode.prototype.hasPhonecodehash = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -7012,25 +5774,7 @@ proto.msg.AuthSentCode.prototype.getSendtophone = function() {
  * @return {!proto.msg.AuthSentCode} returns this
  */
 proto.msg.AuthSentCode.prototype.setSendtophone = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AuthSentCode} returns this
- */
-proto.msg.AuthSentCode.prototype.clearSendtophone = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AuthSentCode.prototype.hasSendtophone = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 

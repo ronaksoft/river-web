@@ -16,8 +16,8 @@ import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../App";
-import {EventCheckNetwork, EventWebSocketClose, EventWebSocketOpen} from "../../events";
-import {SystemConfig} from "../messages/system_pb";
+import {EventCheckNetwork, EventWebSocketClose, EventSocketReady, EventSocketConnected} from "../../events";
+import {SystemConfig, SystemServerTime} from "../messages/system_pb";
 import {InputPassword, InputTeam, MessageContainer, MessageEnvelope} from "../messages/core.types_pb";
 import {Error as RiverError} from "../messages/core.types_pb";
 import {getServerKeys} from "../../../components/DevTools";
@@ -76,6 +76,7 @@ export default class Server {
     private sentQueue: number[] = [];
     private updateQueue: any[] = [];
     private readonly updateManager: UpdateManager | undefined;
+    private isReady: boolean = false;
     private isConnected: boolean = false;
     private requestQueue: MessageEnvelope[] = [];
     private readonly executeSendThrottledRequestThrottle: any;
@@ -105,6 +106,14 @@ export default class Server {
                     window.console.warn(e);
                 }
             }
+            this.socket.setCreateAuthKey(() => {
+                return this.createAuthKey();
+            });
+
+            this.socket.setGetServerTime(() => {
+                return this.getServerTime();
+            });
+
             this.socket.setCallback((data: any) => {
                 this.response(data);
             });
@@ -117,19 +126,28 @@ export default class Server {
                 this.error(data);
             });
 
+            this.socket.setResolveAuthStepFn(this.authStepResolve);
+
             this.socket.setResolveGenSrpHashFn(this.genSrpHashResolve);
 
             this.socket.setResolveGenInputPasswordFn(this.genInputPasswordResolve);
 
-            window.addEventListener(EventWebSocketOpen, () => {
-                this.isConnected = true;
+            window.addEventListener(EventSocketReady, () => {
+                window.console.log('isReady');
+                this.isReady = true;
                 this.flushSentQueue();
                 if (this.executeSendThrottledRequestThrottle) {
                     this.executeSendThrottledRequestThrottle();
                 }
             });
 
+            window.addEventListener(EventSocketConnected, () => {
+                this.isConnected = true;
+                this.flushSentQueue();
+            });
+
             window.addEventListener(EventWebSocketClose, () => {
+                this.isReady = false;
                 this.isConnected = false;
             });
 
@@ -150,7 +168,7 @@ export default class Server {
     }
 
     /* Send a request to WASM worker over CustomEvent in window object */
-    public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions, reqIdFn?: (rId: number) => void): Promise<any> {
+    public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions, reqIdFn?: (rId: number) => void, force?: boolean): Promise<any> {
         let internalResolve = null;
         let internalReject = null;
 
@@ -194,7 +212,7 @@ export default class Server {
         const promise = new Promise((res, rej) => {
             internalResolve = res;
             internalReject = rej;
-            if (this.isConnected) {
+            if (this.isReady || (this.isConnected && this.isUnAuth(constructor)) || force) {
                 if (instant) {
                     this.sendRequest(request);
                 } else {
@@ -350,7 +368,7 @@ export default class Server {
     }
 
     private executeSendThrottledRequest = () => {
-        if (!this.isConnected) {
+        if (!this.isReady) {
             return;
         }
         const execute = (envs: MessageEnvelope[]) => {
@@ -434,7 +452,7 @@ export default class Server {
                     }
                 } else {
                     if (this.messageListeners[reqId].resolve) {
-                        if (constructor === C_MSG.AccountPassword) {
+                        if (constructor === C_MSG.AccountPassword || constructor === C_MSG.InitResponse || constructor === C_MSG.InitAuthCompleted) {
                             this.messageListeners[reqId].resolve(res);
                         } else {
                             this.messageListeners[reqId].resolve(res.toObject());
@@ -470,16 +488,25 @@ export default class Server {
                 if (resp.code === C_ERR.ErrCodeInvalid && resp.items === C_ERR_ITEM.ErrItemAuth) {
                     const authErrorEvent = new CustomEvent('authErrorEvent', {});
                     window.dispatchEvent(authErrorEvent);
+                } else {
+                    window.console.warn(resp);
                 }
             }
         }
     }
 
     private flushSentQueue() {
+        if (!this.isConnected) {
+            return;
+        }
+
         const skipIds = this.getSkippableRequestIds();
         this.sentQueue.forEach((reqId) => {
             if (this.messageListeners[reqId]) {
                 const msg = this.messageListeners[reqId];
+                if (!this.isReady && !this.isUnAuth(msg.request.constructor)) {
+                    return;
+                }
                 if (skipIds.length > 0 && skipIds.indexOf(msg.request.reqId) > -1) {
                     if (msg.reject) {
                         msg.reject({
@@ -493,6 +520,10 @@ export default class Server {
                 }
             }
         });
+    }
+
+    private isUnAuth(constructor: number) {
+        return (constructor === C_MSG.InitConnect || constructor === C_MSG.InitCompleteAuth || constructor === C_MSG.SystemGetServerTime);
     }
 
     private dispatchTimeout(reqId: number) {
@@ -757,7 +788,7 @@ export default class Server {
         request.retry++;
         request.timeout = null;
 
-        if (this.isConnected) {
+        if (this.isReady || (this.isConnected && this.isUnAuth(request.constructor))) {
             setTimeout(() => {
                 this.sendRequest(request);
             }, req.options.retryWait || 0);
@@ -796,6 +827,16 @@ export default class Server {
         }
     }
 
+    private authStepResolve = (reqId: number, step: number, data: string) => {
+        if (!this.serviceMessagesListeners[reqId]) {
+            return;
+        }
+        const req = this.serviceMessagesListeners[reqId];
+        if (req && req.resolve) {
+            req.resolve(base64ToU8a(data));
+        }
+    }
+
     private getSkippableRequestIds() {
         const containList: number[] = [];
         const reqIds: number[] = [];
@@ -810,6 +851,53 @@ export default class Server {
             }
         });
         return reqIds;
+    }
+
+    public authStep(step: number, data?: Uint8Array) {
+        let internalResolve = null;
+        let internalReject = null;
+
+        const reqId = ++this.reqId;
+
+        const promise = new Promise<Uint8Array>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+
+        this.serviceMessagesListeners[reqId] = {
+            reject: internalReject,
+            resolve: internalResolve,
+        };
+
+        this.socket.authStep({
+            data,
+            reqId,
+            step,
+        });
+
+        return promise;
+    }
+
+    private getServerTime() {
+        return this.send(C_MSG.SystemGetServerTime, new Uint8Array(), true).then((res: SystemServerTime.AsObject) => {
+            this.socket.setServerTime(res.timestamp);
+            return res;
+        });
+    }
+
+    private createAuthKey() {
+        window.console.log('createAuthKey');
+        return this.authStep(1).then((step1Req) => {
+            return this.send(C_MSG.InitConnect, step1Req, true).then((step1Res: Uint8Array) => {
+                return this.authStep(2, step1Res).then((step2Req) => {
+                    return this.send(C_MSG.InitCompleteAuth, step2Req, true).then((step2Res: Uint8Array) => {
+                        return this.authStep(3, step2Res).then(() => {
+                            return this.getServerTime();
+                        });
+                    });
+                });
+            });
+        });
     }
 
     private dispatchEvent(cmd: string, data: any) {

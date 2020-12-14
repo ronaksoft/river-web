@@ -5,19 +5,13 @@
 import * as jspb from "google-protobuf";
 
 export class CalendarGetEvents extends jspb.Message {
-  hasFrom(): boolean;
-  clearFrom(): void;
-  getFrom(): number | undefined;
+  getFrom(): number;
   setFrom(value: number): void;
 
-  hasTo(): boolean;
-  clearTo(): void;
-  getTo(): number | undefined;
+  getTo(): number;
   setTo(value: number): void;
 
-  hasFilter(): boolean;
-  clearFilter(): void;
-  getFilter(): number | undefined;
+  getFilter(): number;
   setFilter(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -32,56 +26,38 @@ export class CalendarGetEvents extends jspb.Message {
 
 export namespace CalendarGetEvents {
   export type AsObject = {
-    from?: number,
-    to?: number,
-    filter?: number,
+    from: number,
+    to: number,
+    filter: number,
   }
 }
 
 export class CalendarSetEvent extends jspb.Message {
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
+  getDate(): number;
   setDate(value: number): void;
 
-  hasStartrange(): boolean;
-  clearStartrange(): void;
-  getStartrange(): number | undefined;
+  getStartrange(): number;
   setStartrange(value: number): void;
 
-  hasDuration(): boolean;
-  clearDuration(): void;
-  getDuration(): number | undefined;
+  getDuration(): number;
   setDuration(value: number): void;
 
-  hasRecurring(): boolean;
-  clearRecurring(): void;
-  getRecurring(): boolean | undefined;
+  getRecurring(): boolean;
   setRecurring(value: boolean): void;
 
-  hasPeriod(): boolean;
-  clearPeriod(): void;
-  getPeriod(): RecurringPeriod | undefined;
-  setPeriod(value: RecurringPeriod): void;
+  getPeriod(): RecurringPeriodMap[keyof RecurringPeriodMap];
+  setPeriod(value: RecurringPeriodMap[keyof RecurringPeriodMap]): void;
 
-  hasAllday(): boolean;
-  clearAllday(): void;
-  getAllday(): boolean | undefined;
+  getAllday(): boolean;
   setAllday(value: boolean): void;
 
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): boolean | undefined;
+  getTeam(): boolean;
   setTeam(value: boolean): void;
 
-  hasGlobal(): boolean;
-  clearGlobal(): void;
-  getGlobal(): boolean | undefined;
+  getGlobal(): boolean;
   setGlobal(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -96,63 +72,45 @@ export class CalendarSetEvent extends jspb.Message {
 
 export namespace CalendarSetEvent {
   export type AsObject = {
-    name?: string,
-    date?: number,
-    startrange?: number,
-    duration?: number,
-    recurring?: boolean,
-    period?: RecurringPeriod,
-    allday?: boolean,
-    team?: boolean,
-    global?: boolean,
+    name: string,
+    date: number,
+    startrange: number,
+    duration: number,
+    recurring: boolean,
+    period: RecurringPeriodMap[keyof RecurringPeriodMap],
+    allday: boolean,
+    team: boolean,
+    global: boolean,
   }
 }
 
 export class CalendarEditEvent extends jspb.Message {
-  hasEventid(): boolean;
-  clearEventid(): void;
-  getEventid(): number | undefined;
+  getEventid(): number;
   setEventid(value: number): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
+  getDate(): number;
   setDate(value: number): void;
 
-  hasStartrange(): boolean;
-  clearStartrange(): void;
-  getStartrange(): number | undefined;
+  getStartrange(): number;
   setStartrange(value: number): void;
 
-  hasDuration(): boolean;
-  clearDuration(): void;
-  getDuration(): number | undefined;
+  getDuration(): number;
   setDuration(value: number): void;
 
-  hasRecurring(): boolean;
-  clearRecurring(): void;
-  getRecurring(): boolean | undefined;
+  getRecurring(): boolean;
   setRecurring(value: boolean): void;
 
-  hasPeriod(): boolean;
-  clearPeriod(): void;
-  getPeriod(): RecurringPeriod | undefined;
-  setPeriod(value: RecurringPeriod): void;
+  getPeriod(): RecurringPeriodMap[keyof RecurringPeriodMap];
+  setPeriod(value: RecurringPeriodMap[keyof RecurringPeriodMap]): void;
 
-  hasAllday(): boolean;
-  clearAllday(): void;
-  getAllday(): boolean | undefined;
+  getAllday(): boolean;
   setAllday(value: boolean): void;
 
-  hasPolicy(): boolean;
-  clearPolicy(): void;
-  getPolicy(): CalendarEditPolicy | undefined;
-  setPolicy(value: CalendarEditPolicy): void;
+  getPolicy(): CalendarEditPolicyMap[keyof CalendarEditPolicyMap];
+  setPolicy(value: CalendarEditPolicyMap[keyof CalendarEditPolicyMap]): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CalendarEditEvent.AsObject;
@@ -166,22 +124,20 @@ export class CalendarEditEvent extends jspb.Message {
 
 export namespace CalendarEditEvent {
   export type AsObject = {
-    eventid?: number,
-    name?: string,
-    date?: number,
-    startrange?: number,
-    duration?: number,
-    recurring?: boolean,
-    period?: RecurringPeriod,
-    allday?: boolean,
-    policy?: CalendarEditPolicy,
+    eventid: number,
+    name: string,
+    date: number,
+    startrange: number,
+    duration: number,
+    recurring: boolean,
+    period: RecurringPeriodMap[keyof RecurringPeriodMap],
+    allday: boolean,
+    policy: CalendarEditPolicyMap[keyof CalendarEditPolicyMap],
   }
 }
 
 export class CalendarRemoveEvent extends jspb.Message {
-  hasEventid(): boolean;
-  clearEventid(): void;
-  getEventid(): number | undefined;
+  getEventid(): number;
   setEventid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -196,34 +152,24 @@ export class CalendarRemoveEvent extends jspb.Message {
 
 export namespace CalendarRemoveEvent {
   export type AsObject = {
-    eventid?: number,
+    eventid: number,
   }
 }
 
 export class CalendarEvent extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasRecurring(): boolean;
-  clearRecurring(): void;
-  getRecurring(): boolean | undefined;
+  getRecurring(): boolean;
   setRecurring(value: boolean): void;
 
-  hasPeriod(): boolean;
-  clearPeriod(): void;
-  getPeriod(): RecurringPeriod | undefined;
-  setPeriod(value: RecurringPeriod): void;
+  getPeriod(): RecurringPeriodMap[keyof RecurringPeriodMap];
+  setPeriod(value: RecurringPeriodMap[keyof RecurringPeriodMap]): void;
 
-  hasAllday(): boolean;
-  clearAllday(): void;
-  getAllday(): boolean | undefined;
+  getAllday(): boolean;
   setAllday(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -238,38 +184,28 @@ export class CalendarEvent extends jspb.Message {
 
 export namespace CalendarEvent {
   export type AsObject = {
-    id?: number,
-    name?: string,
-    recurring?: boolean,
-    period?: RecurringPeriod,
-    allday?: boolean,
+    id: number,
+    name: string,
+    recurring: boolean,
+    period: RecurringPeriodMap[keyof RecurringPeriodMap],
+    allday: boolean,
   }
 }
 
 export class CalendarEventInstance extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasEventid(): boolean;
-  clearEventid(): void;
-  getEventid(): number | undefined;
+  getEventid(): number;
   setEventid(value: number): void;
 
-  hasStart(): boolean;
-  clearStart(): void;
-  getStart(): number | undefined;
+  getStart(): number;
   setStart(value: number): void;
 
-  hasEnd(): boolean;
-  clearEnd(): void;
-  getEnd(): number | undefined;
+  getEnd(): number;
   setEnd(value: number): void;
 
-  hasColour(): boolean;
-  clearColour(): void;
-  getColour(): string | undefined;
+  getColour(): string;
   setColour(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -284,25 +220,29 @@ export class CalendarEventInstance extends jspb.Message {
 
 export namespace CalendarEventInstance {
   export type AsObject = {
-    id?: number,
-    eventid?: number,
-    start?: number,
-    end?: number,
-    colour?: string,
+    id: number,
+    eventid: number,
+    start: number,
+    end: number,
+    colour: string,
   }
 }
 
-export enum RecurringPeriod {
-  RECURRINGNONE = 0,
-  RECURRINGDAILY = 1,
-  RECURRINGWEEKLY = 2,
-  RECURRINGMONTHLY = 3,
-  RECURRINGYEARLY = 4,
+export interface RecurringPeriodMap {
+  RECURRINGNONE: 0;
+  RECURRINGDAILY: 1;
+  RECURRINGWEEKLY: 2;
+  RECURRINGMONTHLY: 3;
+  RECURRINGYEARLY: 4;
 }
 
-export enum CalendarEditPolicy {
-  CALENDAREDITONE = 0,
-  CALENDAREDITFOLLOWING = 1,
-  CALENDAREDITALL = 2,
+export const RecurringPeriod: RecurringPeriodMap;
+
+export interface CalendarEditPolicyMap {
+  CALENDAREDITONE: 0;
+  CALENDAREDITFOLLOWING: 1;
+  CALENDAREDITALL: 2;
 }
+
+export const CalendarEditPolicy: CalendarEditPolicyMap;
 

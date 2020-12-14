@@ -1,38 +1,39 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
 import "chat.messages.medias.proto";
+option go_package = '.;msg';
 
 // WallPaperGetAll
 // @Function
 // @Return: WallPapersMany
 message WallPaperGet {
-    required uint32 Crc32Hash = 2;
+    uint32 Crc32Hash = 2;
 }
 
 // WallPaperSave
 // @Function
 // @Return: Bool
 message WallPaperSave {
-    required InputWallPaper WallPaper = 1;
-    required WallPaperSettings Settings = 2;
+    InputWallPaper WallPaper = 1;
+    WallPaperSettings Settings = 2;
 }
 
 // WallPaperDelete
 // @Function
 // @Return: Bool
 message WallPaperDelete {
-    required InputWallPaper WallPaper = 1;
+    InputWallPaper WallPaper = 1;
 }
 
 // WallPaperUpload
 // @Function
 // @Return: WallPaper
 message WallPaperUpload {
-    optional InputFile UploadedFile = 1;
-    optional InputDocument File = 2;
-    required string MimeType = 3;
-    required WallPaperSettings Settings = 4;
+    InputFile UploadedFile = 1;
+    InputDocument File = 2;
+    string MimeType = 3;
+    WallPaperSettings Settings = 4;
 }
 
 // WallPaperReset
@@ -43,36 +44,36 @@ message WallPaperReset {
 
 // InputWallPaper
 message InputWallPaper {
-    required int64 ID = 1;
-    required fixed64 AccessHash = 2;
+    int64 ID = 1;
+    fixed64 AccessHash = 2;
 }
 
 // WallPaperSettings
 message WallPaperSettings {
-    optional bool Blur = 1;
-    optional bool Motion = 2;
-    optional int64 BackgroundColour = 3;
-    optional int64 BackgroundSecondColour = 4;
-    optional int64 Opacity = 5;
-    optional int64 Rotation = 6;
+    bool Blur = 1;
+    bool Motion = 2;
+    int64 BackgroundColour = 3;
+    int64 BackgroundSecondColour = 4;
+    int64 Opacity = 5;
+    int64 Rotation = 6;
 }
 
 // WallPaper
 message WallPaper {
-    required int64 ID = 1;
-    required fixed64 AccessHash = 2;
-    optional bool Creator = 3;
-    optional bool Default = 4;
-    optional bool Pattern = 5;
-    optional bool Dark = 6;
-    optional Document Document = 7;
-    optional WallPaperSettings Settings = 8;
+    int64 ID = 1;
+    fixed64 AccessHash = 2;
+    bool Creator = 3;
+    bool Default = 4;
+    bool Pattern = 5;
+    bool Dark = 6;
+    Document Document = 7;
+    WallPaperSettings Settings = 8;
 }
 
 // WallPapersMany
 message WallPapersMany {
     repeated WallPaper WallPapers = 1;
-    required int32 Count = 2;
-    required uint32 Crc32Hash = 3;
-    optional bool Empty = 5;
+    int32 Count = 2;
+    uint32 Crc32Hash = 3;
+    bool Empty = 5;
 }

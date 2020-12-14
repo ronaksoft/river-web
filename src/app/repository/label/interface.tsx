@@ -10,7 +10,7 @@
 import {IMessage} from "../message/interface";
 import {Label} from "../../services/sdk/messages/core.types_pb";
 
-export interface ILabel extends Label.AsObject {
+export interface ILabel extends Partial<Label.AsObject> {
     increase_counter?: number;
     min?: number;
     max?: number;

@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -594,17 +596,17 @@ proto.msg.PhoneInitCall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.PhoneInitCall.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.PhoneInitCall} returns this
 */
 proto.msg.PhoneInitCall.prototype.setPeer = function(value) {
@@ -613,11 +615,11 @@ proto.msg.PhoneInitCall.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.PhoneInitCall} returns this
  */
 proto.msg.PhoneInitCall.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -669,12 +671,12 @@ proto.msg.PhoneRequestCall.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PhoneRequestCall.toObject = function(includeInstance, msg) {
   var f, obj = {
-    randomid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    randomid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    initiator: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
+    initiator: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     proto.msg.PhoneParticipantSDP.toObject, includeInstance),
-    callid: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+    callid: jspb.Message.getFieldWithDefault(msg, 5, "0")
   };
 
   if (includeInstance) {
@@ -762,8 +764,8 @@ proto.msg.PhoneRequestCall.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneRequestCall.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getRandomid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
@@ -777,8 +779,8 @@ proto.msg.PhoneRequestCall.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getInitiator();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -792,8 +794,8 @@ proto.msg.PhoneRequestCall.serializeBinaryToWriter = function(message, writer) {
       proto.msg.PhoneParticipantSDP.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getCallid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       5,
       f
@@ -803,7 +805,7 @@ proto.msg.PhoneRequestCall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 RandomID = 1;
+ * optional int64 RandomID = 1;
  * @return {number}
  */
 proto.msg.PhoneRequestCall.prototype.getRandomid = function() {
@@ -816,40 +818,22 @@ proto.msg.PhoneRequestCall.prototype.getRandomid = function() {
  * @return {!proto.msg.PhoneRequestCall} returns this
  */
 proto.msg.PhoneRequestCall.prototype.setRandomid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneRequestCall} returns this
- */
-proto.msg.PhoneRequestCall.prototype.clearRandomid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneRequestCall.prototype.hasRandomid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputPeer Peer = 2;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 2;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.PhoneRequestCall.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.PhoneRequestCall} returns this
 */
 proto.msg.PhoneRequestCall.prototype.setPeer = function(value) {
@@ -858,11 +842,11 @@ proto.msg.PhoneRequestCall.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.PhoneRequestCall} returns this
  */
 proto.msg.PhoneRequestCall.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -876,7 +860,7 @@ proto.msg.PhoneRequestCall.prototype.hasPeer = function() {
 
 
 /**
- * required bool Initiator = 3;
+ * optional bool Initiator = 3;
  * @return {boolean}
  */
 proto.msg.PhoneRequestCall.prototype.getInitiator = function() {
@@ -889,25 +873,7 @@ proto.msg.PhoneRequestCall.prototype.getInitiator = function() {
  * @return {!proto.msg.PhoneRequestCall} returns this
  */
 proto.msg.PhoneRequestCall.prototype.setInitiator = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneRequestCall} returns this
- */
-proto.msg.PhoneRequestCall.prototype.clearInitiator = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneRequestCall.prototype.hasInitiator = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -963,25 +929,7 @@ proto.msg.PhoneRequestCall.prototype.getCallid = function() {
  * @return {!proto.msg.PhoneRequestCall} returns this
  */
 proto.msg.PhoneRequestCall.prototype.setCallid = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneRequestCall} returns this
- */
-proto.msg.PhoneRequestCall.prototype.clearCallid = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneRequestCall.prototype.hasCallid = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringIntField(this, 5, value);
 };
 
 
@@ -1025,7 +973,7 @@ proto.msg.PhoneAcceptCall.prototype.toObject = function(opt_includeInstance) {
 proto.msg.PhoneAcceptCall.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    callid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    callid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     proto.msg.PhoneParticipantSDP.toObject, includeInstance)
   };
@@ -1115,8 +1063,8 @@ proto.msg.PhoneAcceptCall.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getCallid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
@@ -1134,17 +1082,17 @@ proto.msg.PhoneAcceptCall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.PhoneAcceptCall.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.PhoneAcceptCall} returns this
 */
 proto.msg.PhoneAcceptCall.prototype.setPeer = function(value) {
@@ -1153,11 +1101,11 @@ proto.msg.PhoneAcceptCall.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.PhoneAcceptCall} returns this
  */
 proto.msg.PhoneAcceptCall.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -1171,7 +1119,7 @@ proto.msg.PhoneAcceptCall.prototype.hasPeer = function() {
 
 
 /**
- * required int64 CallID = 2;
+ * optional int64 CallID = 2;
  * @return {string}
  */
 proto.msg.PhoneAcceptCall.prototype.getCallid = function() {
@@ -1184,25 +1132,7 @@ proto.msg.PhoneAcceptCall.prototype.getCallid = function() {
  * @return {!proto.msg.PhoneAcceptCall} returns this
  */
 proto.msg.PhoneAcceptCall.prototype.setCallid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneAcceptCall} returns this
- */
-proto.msg.PhoneAcceptCall.prototype.clearCallid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneAcceptCall.prototype.hasCallid = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
@@ -1284,11 +1214,11 @@ proto.msg.PhoneDiscardCall.prototype.toObject = function(opt_includeInstance) {
 proto.msg.PhoneDiscardCall.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    callid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    callid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     core_types_pb.InputUser.toObject, includeInstance),
-    duration: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    reason: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+    duration: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    reason: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -1384,8 +1314,8 @@ proto.msg.PhoneDiscardCall.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getCallid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
@@ -1399,15 +1329,15 @@ proto.msg.PhoneDiscardCall.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputUser.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getDuration();
+  if (f !== 0) {
     writer.writeInt32(
       4,
       f
     );
   }
-  f = /** @type {!proto.msg.DiscardReason} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getReason();
+  if (f !== 0.0) {
     writer.writeEnum(
       5,
       f
@@ -1417,17 +1347,17 @@ proto.msg.PhoneDiscardCall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.PhoneDiscardCall.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.PhoneDiscardCall} returns this
 */
 proto.msg.PhoneDiscardCall.prototype.setPeer = function(value) {
@@ -1436,11 +1366,11 @@ proto.msg.PhoneDiscardCall.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.PhoneDiscardCall} returns this
  */
 proto.msg.PhoneDiscardCall.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -1454,7 +1384,7 @@ proto.msg.PhoneDiscardCall.prototype.hasPeer = function() {
 
 
 /**
- * required int64 CallID = 2;
+ * optional int64 CallID = 2;
  * @return {string}
  */
 proto.msg.PhoneDiscardCall.prototype.getCallid = function() {
@@ -1467,25 +1397,7 @@ proto.msg.PhoneDiscardCall.prototype.getCallid = function() {
  * @return {!proto.msg.PhoneDiscardCall} returns this
  */
 proto.msg.PhoneDiscardCall.prototype.setCallid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneDiscardCall} returns this
- */
-proto.msg.PhoneDiscardCall.prototype.clearCallid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneDiscardCall.prototype.hasCallid = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
@@ -1528,7 +1440,7 @@ proto.msg.PhoneDiscardCall.prototype.clearParticipantsList = function() {
 
 
 /**
- * required int32 Duration = 4;
+ * optional int32 Duration = 4;
  * @return {number}
  */
 proto.msg.PhoneDiscardCall.prototype.getDuration = function() {
@@ -1541,30 +1453,12 @@ proto.msg.PhoneDiscardCall.prototype.getDuration = function() {
  * @return {!proto.msg.PhoneDiscardCall} returns this
  */
 proto.msg.PhoneDiscardCall.prototype.setDuration = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneDiscardCall} returns this
- */
-proto.msg.PhoneDiscardCall.prototype.clearDuration = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneDiscardCall.prototype.hasDuration = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required DiscardReason Reason = 5;
+ * optional DiscardReason Reason = 5;
  * @return {!proto.msg.DiscardReason}
  */
 proto.msg.PhoneDiscardCall.prototype.getReason = function() {
@@ -1577,25 +1471,7 @@ proto.msg.PhoneDiscardCall.prototype.getReason = function() {
  * @return {!proto.msg.PhoneDiscardCall} returns this
  */
 proto.msg.PhoneDiscardCall.prototype.setReason = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneDiscardCall} returns this
- */
-proto.msg.PhoneDiscardCall.prototype.clearReason = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneDiscardCall.prototype.hasReason = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3EnumField(this, 5, value);
 };
 
 
@@ -1639,10 +1515,10 @@ proto.msg.PhoneUpdateCall.prototype.toObject = function(opt_includeInstance) {
 proto.msg.PhoneUpdateCall.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    callid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    callid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     core_types_pb.InputUser.toObject, includeInstance),
-    action: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
+    action: jspb.Message.getFieldWithDefault(msg, 7, 0),
     actiondata: msg.getActiondata_asB64()
   };
 
@@ -1739,8 +1615,8 @@ proto.msg.PhoneUpdateCall.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getCallid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
@@ -1754,15 +1630,15 @@ proto.msg.PhoneUpdateCall.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputUser.serializeBinaryToWriter
     );
   }
-  f = /** @type {!proto.msg.PhoneCallAction} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getAction();
+  if (f !== 0.0) {
     writer.writeEnum(
       7,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 8));
-  if (f != null) {
+  f = message.getActiondata_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       8,
       f
@@ -1772,17 +1648,17 @@ proto.msg.PhoneUpdateCall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.PhoneUpdateCall.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.PhoneUpdateCall} returns this
 */
 proto.msg.PhoneUpdateCall.prototype.setPeer = function(value) {
@@ -1791,11 +1667,11 @@ proto.msg.PhoneUpdateCall.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.PhoneUpdateCall} returns this
  */
 proto.msg.PhoneUpdateCall.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -1809,7 +1685,7 @@ proto.msg.PhoneUpdateCall.prototype.hasPeer = function() {
 
 
 /**
- * required int64 CallID = 2;
+ * optional int64 CallID = 2;
  * @return {string}
  */
 proto.msg.PhoneUpdateCall.prototype.getCallid = function() {
@@ -1822,25 +1698,7 @@ proto.msg.PhoneUpdateCall.prototype.getCallid = function() {
  * @return {!proto.msg.PhoneUpdateCall} returns this
  */
 proto.msg.PhoneUpdateCall.prototype.setCallid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneUpdateCall} returns this
- */
-proto.msg.PhoneUpdateCall.prototype.clearCallid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneUpdateCall.prototype.hasCallid = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
@@ -1883,7 +1741,7 @@ proto.msg.PhoneUpdateCall.prototype.clearParticipantsList = function() {
 
 
 /**
- * required PhoneCallAction Action = 7;
+ * optional PhoneCallAction Action = 7;
  * @return {!proto.msg.PhoneCallAction}
  */
 proto.msg.PhoneUpdateCall.prototype.getAction = function() {
@@ -1896,30 +1754,12 @@ proto.msg.PhoneUpdateCall.prototype.getAction = function() {
  * @return {!proto.msg.PhoneUpdateCall} returns this
  */
 proto.msg.PhoneUpdateCall.prototype.setAction = function(value) {
-  return jspb.Message.setField(this, 7, value);
+  return jspb.Message.setProto3EnumField(this, 7, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneUpdateCall} returns this
- */
-proto.msg.PhoneUpdateCall.prototype.clearAction = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneUpdateCall.prototype.hasAction = function() {
-  return jspb.Message.getField(this, 7) != null;
-};
-
-
-/**
- * required bytes ActionData = 8;
+ * optional bytes ActionData = 8;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.PhoneUpdateCall.prototype.getActiondata = function() {
@@ -1928,7 +1768,7 @@ proto.msg.PhoneUpdateCall.prototype.getActiondata = function() {
 
 
 /**
- * required bytes ActionData = 8;
+ * optional bytes ActionData = 8;
  * This is a type-conversion wrapper around `getActiondata()`
  * @return {string}
  */
@@ -1939,7 +1779,7 @@ proto.msg.PhoneUpdateCall.prototype.getActiondata_asB64 = function() {
 
 
 /**
- * required bytes ActionData = 8;
+ * optional bytes ActionData = 8;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getActiondata()`
@@ -1956,25 +1796,7 @@ proto.msg.PhoneUpdateCall.prototype.getActiondata_asU8 = function() {
  * @return {!proto.msg.PhoneUpdateCall} returns this
  */
 proto.msg.PhoneUpdateCall.prototype.setActiondata = function(value) {
-  return jspb.Message.setField(this, 8, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneUpdateCall} returns this
- */
-proto.msg.PhoneUpdateCall.prototype.clearActiondata = function() {
-  return jspb.Message.setField(this, 8, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneUpdateCall.prototype.hasActiondata = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.setProto3BytesField(this, 8, value);
 };
 
 
@@ -2011,9 +1833,9 @@ proto.msg.PhoneRateCall.prototype.toObject = function(opt_includeInstance) {
 proto.msg.PhoneRateCall.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    callid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    rate: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    comment: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    callid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
+    rate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    comment: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -2104,22 +1926,22 @@ proto.msg.PhoneRateCall.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getCallid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getRate();
+  if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getComment();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -2129,17 +1951,17 @@ proto.msg.PhoneRateCall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.PhoneRateCall.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.PhoneRateCall} returns this
 */
 proto.msg.PhoneRateCall.prototype.setPeer = function(value) {
@@ -2148,11 +1970,11 @@ proto.msg.PhoneRateCall.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.PhoneRateCall} returns this
  */
 proto.msg.PhoneRateCall.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -2166,7 +1988,7 @@ proto.msg.PhoneRateCall.prototype.hasPeer = function() {
 
 
 /**
- * required int64 CallID = 2;
+ * optional int64 CallID = 2;
  * @return {string}
  */
 proto.msg.PhoneRateCall.prototype.getCallid = function() {
@@ -2179,30 +2001,12 @@ proto.msg.PhoneRateCall.prototype.getCallid = function() {
  * @return {!proto.msg.PhoneRateCall} returns this
  */
 proto.msg.PhoneRateCall.prototype.setCallid = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneRateCall} returns this
- */
-proto.msg.PhoneRateCall.prototype.clearCallid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneRateCall.prototype.hasCallid = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int32 Rate = 3;
+ * optional int32 Rate = 3;
  * @return {number}
  */
 proto.msg.PhoneRateCall.prototype.getRate = function() {
@@ -2215,25 +2019,7 @@ proto.msg.PhoneRateCall.prototype.getRate = function() {
  * @return {!proto.msg.PhoneRateCall} returns this
  */
 proto.msg.PhoneRateCall.prototype.setRate = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneRateCall} returns this
- */
-proto.msg.PhoneRateCall.prototype.clearRate = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneRateCall.prototype.hasRate = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -2251,25 +2037,7 @@ proto.msg.PhoneRateCall.prototype.getComment = function() {
  * @return {!proto.msg.PhoneRateCall} returns this
  */
 proto.msg.PhoneRateCall.prototype.setComment = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneRateCall} returns this
- */
-proto.msg.PhoneRateCall.prototype.clearComment = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneRateCall.prototype.hasComment = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -2305,8 +2073,8 @@ proto.msg.PhoneCall.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PhoneCall.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    date: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    id: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    date: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -2380,15 +2148,15 @@ proto.msg.PhoneCall.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneCall.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getId();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getDate();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
@@ -2398,7 +2166,7 @@ proto.msg.PhoneCall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 ID = 1;
+ * optional int64 ID = 1;
  * @return {string}
  */
 proto.msg.PhoneCall.prototype.getId = function() {
@@ -2411,30 +2179,12 @@ proto.msg.PhoneCall.prototype.getId = function() {
  * @return {!proto.msg.PhoneCall} returns this
  */
 proto.msg.PhoneCall.prototype.setId = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneCall} returns this
- */
-proto.msg.PhoneCall.prototype.clearId = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneCall.prototype.hasId = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 Date = 2;
+ * optional int64 Date = 2;
  * @return {number}
  */
 proto.msg.PhoneCall.prototype.getDate = function() {
@@ -2447,25 +2197,7 @@ proto.msg.PhoneCall.prototype.getDate = function() {
  * @return {!proto.msg.PhoneCall} returns this
  */
 proto.msg.PhoneCall.prototype.setDate = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneCall} returns this
- */
-proto.msg.PhoneCall.prototype.clearDate = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneCall.prototype.hasDate = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -2669,8 +2401,8 @@ proto.msg.IceServer.prototype.toObject = function(opt_includeInstance) {
 proto.msg.IceServer.toObject = function(includeInstance, msg) {
   var f, obj = {
     urlsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
-    username: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    credential: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    username: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    credential: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -2755,15 +2487,15 @@ proto.msg.IceServer.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getUsername();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getCredential();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -2823,25 +2555,7 @@ proto.msg.IceServer.prototype.getUsername = function() {
  * @return {!proto.msg.IceServer} returns this
  */
 proto.msg.IceServer.prototype.setUsername = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.IceServer} returns this
- */
-proto.msg.IceServer.prototype.clearUsername = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.IceServer.prototype.hasUsername = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -2859,25 +2573,7 @@ proto.msg.IceServer.prototype.getCredential = function() {
  * @return {!proto.msg.IceServer} returns this
  */
 proto.msg.IceServer.prototype.setCredential = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.IceServer} returns this
- */
-proto.msg.IceServer.prototype.clearCredential = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.IceServer.prototype.hasCredential = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -2913,10 +2609,10 @@ proto.msg.PhoneParticipant.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PhoneParticipant.toObject = function(includeInstance, msg) {
   var f, obj = {
-    connectionid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    connectionid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     peer: (f = msg.getPeer()) && core_types_pb.InputUser.toObject(includeInstance, f),
-    initiator: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
-    admin: (f = jspb.Message.getBooleanField(msg, 4)) == null ? undefined : f
+    initiator: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+    admin: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -2999,8 +2695,8 @@ proto.msg.PhoneParticipant.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneParticipant.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getConnectionid();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
@@ -3014,15 +2710,15 @@ proto.msg.PhoneParticipant.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputUser.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getInitiator();
+  if (f) {
     writer.writeBool(
       3,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getAdmin();
+  if (f) {
     writer.writeBool(
       4,
       f
@@ -3032,7 +2728,7 @@ proto.msg.PhoneParticipant.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int32 ConnectionId = 1;
+ * optional int32 ConnectionId = 1;
  * @return {number}
  */
 proto.msg.PhoneParticipant.prototype.getConnectionid = function() {
@@ -3045,40 +2741,22 @@ proto.msg.PhoneParticipant.prototype.getConnectionid = function() {
  * @return {!proto.msg.PhoneParticipant} returns this
  */
 proto.msg.PhoneParticipant.prototype.setConnectionid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneParticipant} returns this
- */
-proto.msg.PhoneParticipant.prototype.clearConnectionid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneParticipant.prototype.hasConnectionid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputUser Peer = 2;
- * @return {!proto.msg.InputUser}
+ * optional InputUser Peer = 2;
+ * @return {?proto.msg.InputUser}
  */
 proto.msg.PhoneParticipant.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputUser} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 2, 1));
+  return /** @type{?proto.msg.InputUser} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputUser} value
+ * @param {?proto.msg.InputUser|undefined} value
  * @return {!proto.msg.PhoneParticipant} returns this
 */
 proto.msg.PhoneParticipant.prototype.setPeer = function(value) {
@@ -3087,11 +2765,11 @@ proto.msg.PhoneParticipant.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.PhoneParticipant} returns this
  */
 proto.msg.PhoneParticipant.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -3105,7 +2783,7 @@ proto.msg.PhoneParticipant.prototype.hasPeer = function() {
 
 
 /**
- * required bool Initiator = 3;
+ * optional bool Initiator = 3;
  * @return {boolean}
  */
 proto.msg.PhoneParticipant.prototype.getInitiator = function() {
@@ -3118,30 +2796,12 @@ proto.msg.PhoneParticipant.prototype.getInitiator = function() {
  * @return {!proto.msg.PhoneParticipant} returns this
  */
 proto.msg.PhoneParticipant.prototype.setInitiator = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneParticipant} returns this
- */
-proto.msg.PhoneParticipant.prototype.clearInitiator = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneParticipant.prototype.hasInitiator = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required bool Admin = 4;
+ * optional bool Admin = 4;
  * @return {boolean}
  */
 proto.msg.PhoneParticipant.prototype.getAdmin = function() {
@@ -3154,25 +2814,7 @@ proto.msg.PhoneParticipant.prototype.getAdmin = function() {
  * @return {!proto.msg.PhoneParticipant} returns this
  */
 proto.msg.PhoneParticipant.prototype.setAdmin = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneParticipant} returns this
- */
-proto.msg.PhoneParticipant.prototype.clearAdmin = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneParticipant.prototype.hasAdmin = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
@@ -3208,10 +2850,10 @@ proto.msg.PhoneParticipantSDP.prototype.toObject = function(opt_includeInstance)
  */
 proto.msg.PhoneParticipantSDP.toObject = function(includeInstance, msg) {
   var f, obj = {
-    connectionid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    connectionid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     peer: (f = msg.getPeer()) && core_types_pb.InputUser.toObject(includeInstance, f),
-    sdp: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    type: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    sdp: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    type: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -3294,8 +2936,8 @@ proto.msg.PhoneParticipantSDP.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneParticipantSDP.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getConnectionid();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
@@ -3309,15 +2951,15 @@ proto.msg.PhoneParticipantSDP.serializeBinaryToWriter = function(message, writer
       core_types_pb.InputUser.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getSdp();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getType();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -3327,7 +2969,7 @@ proto.msg.PhoneParticipantSDP.serializeBinaryToWriter = function(message, writer
 
 
 /**
- * required int32 ConnectionId = 1;
+ * optional int32 ConnectionId = 1;
  * @return {number}
  */
 proto.msg.PhoneParticipantSDP.prototype.getConnectionid = function() {
@@ -3340,40 +2982,22 @@ proto.msg.PhoneParticipantSDP.prototype.getConnectionid = function() {
  * @return {!proto.msg.PhoneParticipantSDP} returns this
  */
 proto.msg.PhoneParticipantSDP.prototype.setConnectionid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneParticipantSDP} returns this
- */
-proto.msg.PhoneParticipantSDP.prototype.clearConnectionid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneParticipantSDP.prototype.hasConnectionid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputUser Peer = 2;
- * @return {!proto.msg.InputUser}
+ * optional InputUser Peer = 2;
+ * @return {?proto.msg.InputUser}
  */
 proto.msg.PhoneParticipantSDP.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputUser} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 2, 1));
+  return /** @type{?proto.msg.InputUser} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputUser} value
+ * @param {?proto.msg.InputUser|undefined} value
  * @return {!proto.msg.PhoneParticipantSDP} returns this
 */
 proto.msg.PhoneParticipantSDP.prototype.setPeer = function(value) {
@@ -3382,11 +3006,11 @@ proto.msg.PhoneParticipantSDP.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.PhoneParticipantSDP} returns this
  */
 proto.msg.PhoneParticipantSDP.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -3400,7 +3024,7 @@ proto.msg.PhoneParticipantSDP.prototype.hasPeer = function() {
 
 
 /**
- * required string SDP = 3;
+ * optional string SDP = 3;
  * @return {string}
  */
 proto.msg.PhoneParticipantSDP.prototype.getSdp = function() {
@@ -3413,30 +3037,12 @@ proto.msg.PhoneParticipantSDP.prototype.getSdp = function() {
  * @return {!proto.msg.PhoneParticipantSDP} returns this
  */
 proto.msg.PhoneParticipantSDP.prototype.setSdp = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneParticipantSDP} returns this
- */
-proto.msg.PhoneParticipantSDP.prototype.clearSdp = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneParticipantSDP.prototype.hasSdp = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required string Type = 4;
+ * optional string Type = 4;
  * @return {string}
  */
 proto.msg.PhoneParticipantSDP.prototype.getType = function() {
@@ -3449,25 +3055,7 @@ proto.msg.PhoneParticipantSDP.prototype.getType = function() {
  * @return {!proto.msg.PhoneParticipantSDP} returns this
  */
 proto.msg.PhoneParticipantSDP.prototype.setType = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneParticipantSDP} returns this
- */
-proto.msg.PhoneParticipantSDP.prototype.clearType = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneParticipantSDP.prototype.hasType = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -3503,7 +3091,7 @@ proto.msg.PhoneActionCallEmpty.prototype.toObject = function(opt_includeInstance
  */
 proto.msg.PhoneActionCallEmpty.toObject = function(includeInstance, msg) {
   var f, obj = {
-    empty: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f
+    empty: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
   };
 
   if (includeInstance) {
@@ -3573,8 +3161,8 @@ proto.msg.PhoneActionCallEmpty.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneActionCallEmpty.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getEmpty();
+  if (f) {
     writer.writeBool(
       1,
       f
@@ -3597,25 +3185,7 @@ proto.msg.PhoneActionCallEmpty.prototype.getEmpty = function() {
  * @return {!proto.msg.PhoneActionCallEmpty} returns this
  */
 proto.msg.PhoneActionCallEmpty.prototype.setEmpty = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionCallEmpty} returns this
- */
-proto.msg.PhoneActionCallEmpty.prototype.clearEmpty = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionCallEmpty.prototype.hasEmpty = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -3651,8 +3221,8 @@ proto.msg.PhoneActionAccepted.prototype.toObject = function(opt_includeInstance)
  */
 proto.msg.PhoneActionAccepted.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sdp: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    type: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    sdp: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    type: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3726,15 +3296,15 @@ proto.msg.PhoneActionAccepted.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneActionAccepted.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSdp();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getType();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -3744,7 +3314,7 @@ proto.msg.PhoneActionAccepted.serializeBinaryToWriter = function(message, writer
 
 
 /**
- * required string SDP = 1;
+ * optional string SDP = 1;
  * @return {string}
  */
 proto.msg.PhoneActionAccepted.prototype.getSdp = function() {
@@ -3757,30 +3327,12 @@ proto.msg.PhoneActionAccepted.prototype.getSdp = function() {
  * @return {!proto.msg.PhoneActionAccepted} returns this
  */
 proto.msg.PhoneActionAccepted.prototype.setSdp = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionAccepted} returns this
- */
-proto.msg.PhoneActionAccepted.prototype.clearSdp = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionAccepted.prototype.hasSdp = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Type = 2;
+ * optional string Type = 2;
  * @return {string}
  */
 proto.msg.PhoneActionAccepted.prototype.getType = function() {
@@ -3793,25 +3345,7 @@ proto.msg.PhoneActionAccepted.prototype.getType = function() {
  * @return {!proto.msg.PhoneActionAccepted} returns this
  */
 proto.msg.PhoneActionAccepted.prototype.setType = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionAccepted} returns this
- */
-proto.msg.PhoneActionAccepted.prototype.clearType = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionAccepted.prototype.hasType = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -3854,8 +3388,8 @@ proto.msg.PhoneActionRequested.prototype.toObject = function(opt_includeInstance
  */
 proto.msg.PhoneActionRequested.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sdp: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    type: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    sdp: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    type: jspb.Message.getFieldWithDefault(msg, 2, ""),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     proto.msg.PhoneParticipant.toObject, includeInstance)
   };
@@ -3936,15 +3470,15 @@ proto.msg.PhoneActionRequested.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneActionRequested.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSdp();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getType();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -3962,7 +3496,7 @@ proto.msg.PhoneActionRequested.serializeBinaryToWriter = function(message, write
 
 
 /**
- * required string SDP = 1;
+ * optional string SDP = 1;
  * @return {string}
  */
 proto.msg.PhoneActionRequested.prototype.getSdp = function() {
@@ -3975,30 +3509,12 @@ proto.msg.PhoneActionRequested.prototype.getSdp = function() {
  * @return {!proto.msg.PhoneActionRequested} returns this
  */
 proto.msg.PhoneActionRequested.prototype.setSdp = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionRequested} returns this
- */
-proto.msg.PhoneActionRequested.prototype.clearSdp = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionRequested.prototype.hasSdp = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Type = 2;
+ * optional string Type = 2;
  * @return {string}
  */
 proto.msg.PhoneActionRequested.prototype.getType = function() {
@@ -4011,25 +3527,7 @@ proto.msg.PhoneActionRequested.prototype.getType = function() {
  * @return {!proto.msg.PhoneActionRequested} returns this
  */
 proto.msg.PhoneActionRequested.prototype.setType = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionRequested} returns this
- */
-proto.msg.PhoneActionRequested.prototype.clearType = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionRequested.prototype.hasType = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -4103,7 +3601,7 @@ proto.msg.PhoneActionCallWaiting.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.PhoneActionCallWaiting.toObject = function(includeInstance, msg) {
   var f, obj = {
-    empty: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f
+    empty: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
   };
 
   if (includeInstance) {
@@ -4173,8 +3671,8 @@ proto.msg.PhoneActionCallWaiting.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneActionCallWaiting.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getEmpty();
+  if (f) {
     writer.writeBool(
       1,
       f
@@ -4197,25 +3695,7 @@ proto.msg.PhoneActionCallWaiting.prototype.getEmpty = function() {
  * @return {!proto.msg.PhoneActionCallWaiting} returns this
  */
 proto.msg.PhoneActionCallWaiting.prototype.setEmpty = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionCallWaiting} returns this
- */
-proto.msg.PhoneActionCallWaiting.prototype.clearEmpty = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionCallWaiting.prototype.hasEmpty = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -4251,9 +3731,9 @@ proto.msg.PhoneActionDiscarded.prototype.toObject = function(opt_includeInstance
  */
 proto.msg.PhoneActionDiscarded.toObject = function(includeInstance, msg) {
   var f, obj = {
-    duration: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    video: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
-    reason: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    duration: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    video: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    reason: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -4331,22 +3811,22 @@ proto.msg.PhoneActionDiscarded.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneActionDiscarded.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getDuration();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getVideo();
+  if (f) {
     writer.writeBool(
       2,
       f
     );
   }
-  f = /** @type {!proto.msg.DiscardReason} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getReason();
+  if (f !== 0.0) {
     writer.writeEnum(
       3,
       f
@@ -4356,7 +3836,7 @@ proto.msg.PhoneActionDiscarded.serializeBinaryToWriter = function(message, write
 
 
 /**
- * required int32 Duration = 1;
+ * optional int32 Duration = 1;
  * @return {number}
  */
 proto.msg.PhoneActionDiscarded.prototype.getDuration = function() {
@@ -4369,30 +3849,12 @@ proto.msg.PhoneActionDiscarded.prototype.getDuration = function() {
  * @return {!proto.msg.PhoneActionDiscarded} returns this
  */
 proto.msg.PhoneActionDiscarded.prototype.setDuration = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionDiscarded} returns this
- */
-proto.msg.PhoneActionDiscarded.prototype.clearDuration = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionDiscarded.prototype.hasDuration = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bool Video = 2;
+ * optional bool Video = 2;
  * @return {boolean}
  */
 proto.msg.PhoneActionDiscarded.prototype.getVideo = function() {
@@ -4405,30 +3867,12 @@ proto.msg.PhoneActionDiscarded.prototype.getVideo = function() {
  * @return {!proto.msg.PhoneActionDiscarded} returns this
  */
 proto.msg.PhoneActionDiscarded.prototype.setVideo = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionDiscarded} returns this
- */
-proto.msg.PhoneActionDiscarded.prototype.clearVideo = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionDiscarded.prototype.hasVideo = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required DiscardReason Reason = 3;
+ * optional DiscardReason Reason = 3;
  * @return {!proto.msg.DiscardReason}
  */
 proto.msg.PhoneActionDiscarded.prototype.getReason = function() {
@@ -4441,25 +3885,7 @@ proto.msg.PhoneActionDiscarded.prototype.getReason = function() {
  * @return {!proto.msg.PhoneActionDiscarded} returns this
  */
 proto.msg.PhoneActionDiscarded.prototype.setReason = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionDiscarded} returns this
- */
-proto.msg.PhoneActionDiscarded.prototype.clearReason = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionDiscarded.prototype.hasReason = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
 
@@ -4495,10 +3921,10 @@ proto.msg.PhoneActionIceExchange.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.PhoneActionIceExchange.toObject = function(includeInstance, msg) {
   var f, obj = {
-    candidate: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    sdpmlineindex: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    sdpmid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    usernamefragment: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    candidate: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    sdpmlineindex: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    sdpmid: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    usernamefragment: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -4580,29 +4006,29 @@ proto.msg.PhoneActionIceExchange.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneActionIceExchange.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getCandidate();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getSdpmlineindex();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getSdpmid();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getUsernamefragment();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -4612,7 +4038,7 @@ proto.msg.PhoneActionIceExchange.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required string Candidate = 1;
+ * optional string Candidate = 1;
  * @return {string}
  */
 proto.msg.PhoneActionIceExchange.prototype.getCandidate = function() {
@@ -4625,25 +4051,7 @@ proto.msg.PhoneActionIceExchange.prototype.getCandidate = function() {
  * @return {!proto.msg.PhoneActionIceExchange} returns this
  */
 proto.msg.PhoneActionIceExchange.prototype.setCandidate = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionIceExchange} returns this
- */
-proto.msg.PhoneActionIceExchange.prototype.clearCandidate = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionIceExchange.prototype.hasCandidate = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -4661,25 +4069,7 @@ proto.msg.PhoneActionIceExchange.prototype.getSdpmlineindex = function() {
  * @return {!proto.msg.PhoneActionIceExchange} returns this
  */
 proto.msg.PhoneActionIceExchange.prototype.setSdpmlineindex = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionIceExchange} returns this
- */
-proto.msg.PhoneActionIceExchange.prototype.clearSdpmlineindex = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionIceExchange.prototype.hasSdpmlineindex = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -4697,25 +4087,7 @@ proto.msg.PhoneActionIceExchange.prototype.getSdpmid = function() {
  * @return {!proto.msg.PhoneActionIceExchange} returns this
  */
 proto.msg.PhoneActionIceExchange.prototype.setSdpmid = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionIceExchange} returns this
- */
-proto.msg.PhoneActionIceExchange.prototype.clearSdpmid = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionIceExchange.prototype.hasSdpmid = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -4733,25 +4105,7 @@ proto.msg.PhoneActionIceExchange.prototype.getUsernamefragment = function() {
  * @return {!proto.msg.PhoneActionIceExchange} returns this
  */
 proto.msg.PhoneActionIceExchange.prototype.setUsernamefragment = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneActionIceExchange} returns this
- */
-proto.msg.PhoneActionIceExchange.prototype.clearUsernamefragment = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneActionIceExchange.prototype.hasUsernamefragment = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -4787,8 +4141,8 @@ proto.msg.PhoneMediaSettingsUpdated.prototype.toObject = function(opt_includeIns
  */
 proto.msg.PhoneMediaSettingsUpdated.toObject = function(includeInstance, msg) {
   var f, obj = {
-    video: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    audio: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
+    video: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    audio: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -4862,15 +4216,15 @@ proto.msg.PhoneMediaSettingsUpdated.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneMediaSettingsUpdated.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getVideo();
+  if (f) {
     writer.writeBool(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getAudio();
+  if (f) {
     writer.writeBool(
       2,
       f
@@ -4880,7 +4234,7 @@ proto.msg.PhoneMediaSettingsUpdated.serializeBinaryToWriter = function(message, 
 
 
 /**
- * required bool Video = 1;
+ * optional bool Video = 1;
  * @return {boolean}
  */
 proto.msg.PhoneMediaSettingsUpdated.prototype.getVideo = function() {
@@ -4893,30 +4247,12 @@ proto.msg.PhoneMediaSettingsUpdated.prototype.getVideo = function() {
  * @return {!proto.msg.PhoneMediaSettingsUpdated} returns this
  */
 proto.msg.PhoneMediaSettingsUpdated.prototype.setVideo = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneMediaSettingsUpdated} returns this
- */
-proto.msg.PhoneMediaSettingsUpdated.prototype.clearVideo = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneMediaSettingsUpdated.prototype.hasVideo = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bool Audio = 2;
+ * optional bool Audio = 2;
  * @return {boolean}
  */
 proto.msg.PhoneMediaSettingsUpdated.prototype.getAudio = function() {
@@ -4929,25 +4265,7 @@ proto.msg.PhoneMediaSettingsUpdated.prototype.getAudio = function() {
  * @return {!proto.msg.PhoneMediaSettingsUpdated} returns this
  */
 proto.msg.PhoneMediaSettingsUpdated.prototype.setAudio = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneMediaSettingsUpdated} returns this
- */
-proto.msg.PhoneMediaSettingsUpdated.prototype.clearAudio = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneMediaSettingsUpdated.prototype.hasAudio = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -4983,7 +4301,7 @@ proto.msg.PhoneReactionSet.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PhoneReactionSet.toObject = function(includeInstance, msg) {
   var f, obj = {
-    reaction: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    reaction: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -5053,8 +4371,8 @@ proto.msg.PhoneReactionSet.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneReactionSet.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getReaction();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -5064,7 +4382,7 @@ proto.msg.PhoneReactionSet.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Reaction = 1;
+ * optional string Reaction = 1;
  * @return {string}
  */
 proto.msg.PhoneReactionSet.prototype.getReaction = function() {
@@ -5077,25 +4395,7 @@ proto.msg.PhoneReactionSet.prototype.getReaction = function() {
  * @return {!proto.msg.PhoneReactionSet} returns this
  */
 proto.msg.PhoneReactionSet.prototype.setReaction = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneReactionSet} returns this
- */
-proto.msg.PhoneReactionSet.prototype.clearReaction = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneReactionSet.prototype.hasReaction = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -5131,8 +4431,8 @@ proto.msg.PhoneSDPOffer.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PhoneSDPOffer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sdp: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    type: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    sdp: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    type: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -5206,15 +4506,15 @@ proto.msg.PhoneSDPOffer.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneSDPOffer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSdp();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getType();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -5224,7 +4524,7 @@ proto.msg.PhoneSDPOffer.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string SDP = 1;
+ * optional string SDP = 1;
  * @return {string}
  */
 proto.msg.PhoneSDPOffer.prototype.getSdp = function() {
@@ -5237,30 +4537,12 @@ proto.msg.PhoneSDPOffer.prototype.getSdp = function() {
  * @return {!proto.msg.PhoneSDPOffer} returns this
  */
 proto.msg.PhoneSDPOffer.prototype.setSdp = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneSDPOffer} returns this
- */
-proto.msg.PhoneSDPOffer.prototype.clearSdp = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneSDPOffer.prototype.hasSdp = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Type = 2;
+ * optional string Type = 2;
  * @return {string}
  */
 proto.msg.PhoneSDPOffer.prototype.getType = function() {
@@ -5273,25 +4555,7 @@ proto.msg.PhoneSDPOffer.prototype.getType = function() {
  * @return {!proto.msg.PhoneSDPOffer} returns this
  */
 proto.msg.PhoneSDPOffer.prototype.setType = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneSDPOffer} returns this
- */
-proto.msg.PhoneSDPOffer.prototype.clearType = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneSDPOffer.prototype.hasType = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -5327,8 +4591,8 @@ proto.msg.PhoneSDPAnswer.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PhoneSDPAnswer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sdp: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    type: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    sdp: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    type: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -5402,15 +4666,15 @@ proto.msg.PhoneSDPAnswer.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneSDPAnswer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSdp();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getType();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -5420,7 +4684,7 @@ proto.msg.PhoneSDPAnswer.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string SDP = 1;
+ * optional string SDP = 1;
  * @return {string}
  */
 proto.msg.PhoneSDPAnswer.prototype.getSdp = function() {
@@ -5433,30 +4697,12 @@ proto.msg.PhoneSDPAnswer.prototype.getSdp = function() {
  * @return {!proto.msg.PhoneSDPAnswer} returns this
  */
 proto.msg.PhoneSDPAnswer.prototype.setSdp = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneSDPAnswer} returns this
- */
-proto.msg.PhoneSDPAnswer.prototype.clearSdp = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneSDPAnswer.prototype.hasSdp = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Type = 2;
+ * optional string Type = 2;
  * @return {string}
  */
 proto.msg.PhoneSDPAnswer.prototype.getType = function() {
@@ -5469,25 +4715,7 @@ proto.msg.PhoneSDPAnswer.prototype.getType = function() {
  * @return {!proto.msg.PhoneSDPAnswer} returns this
  */
 proto.msg.PhoneSDPAnswer.prototype.setType = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PhoneSDPAnswer} returns this
- */
-proto.msg.PhoneSDPAnswer.prototype.clearType = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PhoneSDPAnswer.prototype.hasType = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

@@ -1,48 +1,37 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
+
+import "rony.proto";
+option go_package = '.;msg';
+
 
 // Ping
 message Ping {
-    required int64 ID = 1;
+    int64 ID = 1;
 }
 
 // Pong
 message Pong {
-    required int64 ID = 2;
+    int64 ID = 2;
 }
 
-// MessageEnvelope
-// This type of message will be used to contain another ProtoBuffer Message inside
-message MessageEnvelope {
-    required int64 Constructor = 1;
-    required fixed64 RequestID = 2;
-    required bytes Message = 4;
-    optional InputTeam Team = 5;
-}
-
-// MessageContainer
-// This type of message will be used to send multi messages inside a single container message
-message MessageContainer {
-    required int32 Length = 1;
-    repeated MessageEnvelope Envelopes = 2;
-}
 
 // UpdateEnvelope
 message UpdateEnvelope {
-    required int64 Constructor = 1;
-    required bytes Update = 2;
-    required int32 UCount = 3;
-    required int64 UpdateID = 4;
-    required int64 Timestamp = 5;
+    int64 Constructor = 1;
+    bytes Update = 2;
+    int32 UCount = 3;
+    int64 UpdateID = 4;
+    int64 Timestamp = 5;
 }
 
 // UpdateContainer
 // It is very similar to MessageContainer but holding a list of Updates
 message UpdateContainer {
-    required int32 Length = 1;
+    int32 Length = 1;
     repeated UpdateEnvelope Updates = 2;
-    required int64 MinUpdateID = 3;
-    required int64 MaxUpdateID = 4;
+    int64 MinUpdateID = 3;
+    int64 MaxUpdateID = 4;
     repeated User Users = 5;
     repeated Group Groups = 6;
 }
@@ -50,23 +39,17 @@ message UpdateContainer {
 // ProtoMessage
 // If AuthID == 0 then Payload is a MessageEnvelop otherwise Payload is a ProtoEncryptedPayload
 message ProtoMessage {
-    optional int64 AuthID = 1;
-    optional bytes MessageKey = 2; // 32 bytes
-    required bytes Payload = 3;
+    int64 AuthID = 1;
+    bytes MessageKey = 2; // 32 bytes
+    bytes Payload = 3;
 }
 
 // ProtoMessageEncryptedPayload
 message ProtoEncryptedPayload {
-    required int64 ServerSalt = 1;
-    required uint64 MessageID = 2;
-    required int64 SessionID = 3;
-    required MessageEnvelope Envelope = 4;
-}
-
-// Error
-message Error {
-    required string Code = 1;
-    required string Items = 2;
+    int64 ServerSalt = 1;
+    uint64 MessageID = 2;
+    int64 SessionID = 3;
+    rony.MessageEnvelope Envelope = 4;
 }
 
 // Ack
@@ -76,7 +59,7 @@ message Ack {
 
 // Bool
 message Bool {
-    required bool Result = 1;
+    bool Result = 1;
 }
 
 // TypingAction
@@ -90,19 +73,19 @@ enum TypingAction {
 
 // Dialog
 message Dialog {
-    optional int64 TeamID = 100 [jstype = JS_STRING];
-    required int64 PeerID = 1 [jstype = JS_STRING];
-    required int32 PeerType = 2;
-    required int64 TopMessageID = 3;
-    required int64 ReadInboxMaxID = 4;
-    required int64 ReadOutboxMaxID = 5;
-    required int32 UnreadCount = 6;
-    required fixed64 AccessHash = 7 [jstype = JS_STRING];
-    optional PeerNotifySettings NotifySettings = 8;
-    optional int32 MentionedCount = 9;
-    required bool Pinned = 10;
-    optional DraftMessage Draft = 11;
-    optional int64 PinnedMessageID = 12;
+    int64 TeamID = 100 [jstype = JS_STRING];
+    int64 PeerID = 1 [jstype = JS_STRING];
+    int32 PeerType = 2;
+    int64 TopMessageID = 3;
+    int64 ReadInboxMaxID = 4;
+    int64 ReadOutboxMaxID = 5;
+    int32 UnreadCount = 6;
+    fixed64 AccessHash = 7 [jstype = JS_STRING];
+    PeerNotifySettings NotifySettings = 8;
+    int32 MentionedCount = 9;
+    bool Pinned = 10;
+    DraftMessage Draft = 11;
+    int64 PinnedMessageID = 12;
 }
 
 // PeerType
@@ -116,38 +99,38 @@ enum PeerType {
 
 // InputPeer
 message InputPeer {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required PeerType Type = 2;
-    required fixed64 AccessHash = 3 [jstype = JS_STRING];
+    int64 ID = 1 [jstype = JS_STRING];
+    PeerType Type = 2;
+    fixed64 AccessHash = 3 [jstype = JS_STRING];
 }
 
 // Peer
 message Peer {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required int32 Type = 2;
-    required fixed64 AccessHash = 3 [jstype = JS_STRING];
+    int64 ID = 1 [jstype = JS_STRING];
+    int32 Type = 2;
+    fixed64 AccessHash = 3 [jstype = JS_STRING];
 }
 
 // InputPassword
 message InputPassword {
-    required int64 SrpID = 1 [jstype = JS_STRING];
-    required bytes A = 2;
-    required bytes M1 = 3;
+    int64 SrpID = 1 [jstype = JS_STRING];
+    bytes A = 2;
+    bytes M1 = 3;
 }
 
 // InputFileLocation
 message InputFileLocation {
-    required int32 ClusterID = 1;
-    required int64 FileID = 2 [jstype = JS_STRING];
-    required fixed64 AccessHash = 3 [jstype = JS_STRING];
-    optional int32 Version = 4;
+    int32 ClusterID = 1;
+    int64 FileID = 2 [jstype = JS_STRING];
+    fixed64 AccessHash = 3 [jstype = JS_STRING];
+    int32 Version = 4;
 }
 
 // FileLocation
 message FileLocation {
-    required int32 ClusterID = 1;
-    required int64 FileID = 2 [jstype = JS_STRING];
-    required fixed64 AccessHash = 3 [jstype = JS_STRING];
+    int32 ClusterID = 1;
+    int64 FileID = 2 [jstype = JS_STRING];
+    fixed64 AccessHash = 3 [jstype = JS_STRING];
 }
 
 // UserStatus
@@ -161,73 +144,73 @@ enum UserStatus {
 
 // UserPhoto
 message UserPhoto {
-    required FileLocation PhotoBig = 1;
-    required FileLocation PhotoSmall = 2;
-    required int64 PhotoID = 3 [jstype = JS_STRING];
+    FileLocation PhotoBig = 1;
+    FileLocation PhotoSmall = 2;
+    int64 PhotoID = 3 [jstype = JS_STRING];
 }
 
 // InputUser
 message InputUser {
-    required int64 UserID = 1 [jstype = JS_STRING];
-    required fixed64 AccessHash = 2 [jstype = JS_STRING];
+    int64 UserID = 1 [jstype = JS_STRING];
+    fixed64 AccessHash = 2 [jstype = JS_STRING];
 }
 
 // User
 message User {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required string FirstName = 2;
-    required string LastName = 3;
-    optional string Username = 4;
-    required UserStatus Status = 5;
-    required bool Restricted = 6;
-    required fixed64 AccessHash = 7 [jstype = JS_STRING];
-    optional UserPhoto Photo = 8;
-    optional string Bio = 9;
-    optional string Phone = 10;
-    optional int64 LastSeen = 11;
+    int64 ID = 1 [jstype = JS_STRING];
+    string FirstName = 2;
+    string LastName = 3;
+    string Username = 4;
+    UserStatus Status = 5;
+    bool Restricted = 6;
+    fixed64 AccessHash = 7 [jstype = JS_STRING];
+    UserPhoto Photo = 8;
+    string Bio = 9;
+    string Phone = 10;
+    int64 LastSeen = 11;
     repeated UserPhoto PhotoGallery = 12;
-    optional bool IsBot = 13;
-    optional bool Deleted = 14;
-    optional bool Blocked = 15;
-    optional BotInfo BotInfo = 16;
-    optional bool Official = 17;
+    bool IsBot = 13;
+    bool Deleted = 14;
+    bool Blocked = 15;
+    BotInfo BotInfo = 16;
+    bool Official = 17;
 }
 
 // ContactUser
 message ContactUser {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required string FirstName = 2;
-    required string LastName = 3;
-    required fixed64 AccessHash = 4 [jstype = JS_STRING];
-    required string Phone = 5;
-    required string Username = 6;
-    required int64 ClientID = 7 [jstype = JS_STRING];
-    optional UserPhoto Photo = 8;
+    int64 ID = 1 [jstype = JS_STRING];
+    string FirstName = 2;
+    string LastName = 3;
+    fixed64 AccessHash = 4 [jstype = JS_STRING];
+    string Phone = 5;
+    string Username = 6;
+    int64 ClientID = 7 [jstype = JS_STRING];
+    UserPhoto Photo = 8;
 }
 
 // Bot
 message Bot {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required string Name = 2;
-    required string Username = 3;
-    optional string Bio = 4;
+    int64 ID = 1 [jstype = JS_STRING];
+    string Name = 2;
+    string Username = 3;
+    string Bio = 4;
 }
 
 // BotCommands
 message BotCommands {
-    required string Command = 1;
-    optional string Description = 2;
+    string Command = 1;
+    string Description = 2;
 }
 
 // BotInfo
 message BotInfo {
-    required Bot Bot = 1;
-    required int64 UserID = 2;
-    optional string Description = 3;
+    Bot Bot = 1;
+    int64 UserID = 2;
+    string Description = 3;
     repeated BotCommands BotCommands = 4;
-    optional bool InlineGeo = 5;
-    optional string InlinePlaceHolder = 6;
-    optional bool InlineQuery = 7;
+    bool InlineGeo = 5;
+    string InlinePlaceHolder = 6;
+    bool InlineQuery = 7;
 }
 
 // GroupFlags
@@ -242,29 +225,29 @@ enum GroupFlags {
 
 // GroupPhoto
 message GroupPhoto {
-    required FileLocation PhotoBig = 1;
-    required FileLocation PhotoSmall = 2;
-    optional int64 PhotoID = 3 [jstype = JS_STRING];
+    FileLocation PhotoBig = 1;
+    FileLocation PhotoSmall = 2;
+    int64 PhotoID = 3 [jstype = JS_STRING];
 }
 
 // Group
 message Group {
-    optional int64 TeamID = 100 [jstype = JS_STRING];
-    required int64 ID = 1 [jstype = JS_STRING];
-    required string Title = 2;
-    required int64 CreatedOn = 3;
-    required int32 Participants = 4;
-    optional int64 EditedOn = 5;
+    int64 TeamID = 100 [jstype = JS_STRING];
+    int64 ID = 1 [jstype = JS_STRING];
+    string Title = 2;
+    int64 CreatedOn = 3;
+    int32 Participants = 4;
+    int64 EditedOn = 5;
     repeated GroupFlags Flags = 6;
-    optional GroupPhoto Photo = 7;
+    GroupPhoto Photo = 7;
 }
 
 // GroupFull
 message GroupFull {
-    required Group Group = 1;
+    Group Group = 1;
     repeated User Users = 2;
     repeated GroupParticipant Participants = 3;
-    required PeerNotifySettings NotifySettings = 4;
+    PeerNotifySettings NotifySettings = 4;
     repeated GroupPhoto PhotoGallery = 5;
 }
 
@@ -277,13 +260,13 @@ enum ParticipantType {
 
 // GroupParticipant
 message GroupParticipant {
-    required int64 UserID = 1 [jstype = JS_STRING];
-    required string FirstName = 2;
-    required string LastName = 3;
-    required ParticipantType Type = 4;
-    required uint64 AccessHash = 5 [jstype = JS_STRING];
-    required string Username = 6;
-    optional UserPhoto Photo = 8;
+    int64 UserID = 1 [jstype = JS_STRING];
+    string FirstName = 2;
+    string LastName = 3;
+    ParticipantType Type = 4;
+    uint64 AccessHash = 5 [jstype = JS_STRING];
+    string Username = 6;
+    UserPhoto Photo = 8;
 }
 
 // InputMediaType
@@ -325,52 +308,52 @@ enum MediaType {
 
 // UserMessage
 message UserMessage {
-    optional int64 TeamID = 100 [jstype = JS_STRING];
-    required int64 ID = 1;
-    required int64 PeerID = 2 [jstype = JS_STRING];
-    required int32 PeerType = 3;
-    required int64 CreatedOn = 4;
-    required int64 EditedOn = 5;
-    optional bool Fwd = 601;
-    required int64 FwdSenderID = 6 [jstype = JS_STRING];
-    required int64 FwdChannelID = 7 [jstype = JS_STRING];
-    required int64 FwdChannelMessageID = 8 [jstype = JS_STRING];
-    required int32 Flags = 9;
-    required int64 MessageType = 10;
-    required string Body = 11;
-    required int64 SenderID = 12 [jstype = JS_STRING];
-    required bool ContentRead = 13;
-    required bool Inbox = 14;
-    required int64 ReplyTo = 15;
-    optional int32 MessageAction = 16;
-    optional bytes MessageActionData = 17;
+    int64 TeamID = 100 [jstype = JS_STRING];
+    int64 ID = 1;
+    int64 PeerID = 2 [jstype = JS_STRING];
+    int32 PeerType = 3;
+    int64 CreatedOn = 4;
+    int64 EditedOn = 5;
+    bool Fwd = 601;
+    int64 FwdSenderID = 6 [jstype = JS_STRING];
+    int64 FwdChannelID = 7 [jstype = JS_STRING];
+    int64 FwdChannelMessageID = 8 [jstype = JS_STRING];
+    int32 Flags = 9;
+    int64 MessageType = 10;
+    string Body = 11;
+    int64 SenderID = 12 [jstype = JS_STRING];
+    bool ContentRead = 13;
+    bool Inbox = 14;
+    int64 ReplyTo = 15;
+    int32 MessageAction = 16;
+    bytes MessageActionData = 17;
     repeated MessageEntity Entities = 18;
-    optional MediaType MediaType = 19;
-    optional bytes Media = 20;
-    optional int64 ReplyMarkup = 21;
-    optional bytes ReplyMarkupData = 22;
+    MediaType MediaType = 19;
+    bytes Media = 20;
+    int64 ReplyMarkup = 21;
+    bytes ReplyMarkupData = 22;
     repeated int32 LabelIDs = 23;
-    optional int64 ViaBotID = 24 [jstype = JS_STRING];
+    int64 ViaBotID = 24 [jstype = JS_STRING];
     repeated ReactionCounter Reactions = 25;
     repeated string YourReactions = 26;
 }
 
 // ReactionCounter
 message ReactionCounter {
-    required string Reaction = 1;
-    required int32 Total = 2;
+    string Reaction = 1;
+    int32 Total = 2;
 }
 
 // DraftMessage
 message DraftMessage {
-    optional int64 TeamID = 100 [jstype = JS_STRING];
-    required int64 PeerID = 2 [jstype = JS_STRING];
-    required int32 PeerType = 3;
-    required int64 Date = 4;
-    required string Body = 5;
+    int64 TeamID = 100 [jstype = JS_STRING];
+    int64 PeerID = 2 [jstype = JS_STRING];
+    int32 PeerType = 3;
+    int64 Date = 4;
+    string Body = 5;
     repeated MessageEntity Entities = 6;
-    required int64 ReplyTo = 7;
-    optional int64 EditedID = 8;
+    int64 ReplyTo = 7;
+    int64 EditedID = 8;
 }
 
 // MessageEntityType
@@ -393,54 +376,54 @@ enum MessageEntityType {
 
 // MessageEntity
 message MessageEntity {
-    required MessageEntityType Type = 1;
-    required int32 Offset = 2;
-    required int32 Length = 3;
-    optional int64 UserID = 4 [jstype = JS_STRING];
+    MessageEntityType Type = 1;
+    int32 Offset = 2;
+    int32 Length = 3;
+    int64 UserID = 4 [jstype = JS_STRING];
 }
 
 // RSAPublicKey
 message RSAPublicKey {
-    required int64 FingerPrint = 1;
-    required string N = 2;
-    required uint32 E = 3;
+    int64 FingerPrint = 1;
+    string N = 2;
+    uint32 E = 3;
 }
 
 // DHGroup
 message DHGroup {
-    required int64 FingerPrint = 1;
-    required string Prime = 2;
-    required int32 Gen = 3;
+    int64 FingerPrint = 1;
+    string Prime = 2;
+    int32 Gen = 3;
 }
 
 // PhoneContact
 message PhoneContact {
-    required int64 ClientID = 1 [jstype = JS_STRING];
-    required string FirstName = 2;
-    required string LastName = 3;
-    required string Phone = 4;
+    int64 ClientID = 1 [jstype = JS_STRING];
+    string FirstName = 2;
+    string LastName = 3;
+    string Phone = 4;
 }
 
 // PeerNotifySettings
 message PeerNotifySettings {
-    required int32 Flags = 1;
-    optional int64 MuteUntil = 2;
-    optional string Sound = 3;
+    int32 Flags = 1;
+    int64 MuteUntil = 2;
+    string Sound = 3;
 }
 
 // InputFile
 message InputFile {
-    required int64 FileID = 1 [jstype = JS_STRING];
-    required int32 TotalParts = 2;
-    required string FileName = 3;
-    required string MD5Checksum = 4;
+    int64 FileID = 1 [jstype = JS_STRING];
+    int32 TotalParts = 2;
+    string FileName = 3;
+    string MD5Checksum = 4;
 }
 
 // InputDocument
 message InputDocument {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required fixed64 AccessHash = 2 [jstype = JS_STRING];
-    required int32 ClusterID = 3;
+    int64 ID = 1 [jstype = JS_STRING];
+    fixed64 AccessHash = 2 [jstype = JS_STRING];
+    int32 ClusterID = 3;
 }
 
 // NotificationType
@@ -479,34 +462,34 @@ enum PrivacyType {
 
 // PrivacyRule
 message PrivacyRule {
-    required PrivacyType PrivacyType = 1;
+    PrivacyType PrivacyType = 1;
     repeated int64 UserIDs = 2 [jstype = JS_STRING];
 }
 
 // Label
 message Label {
-    required int32 ID = 1;
-    required string Name = 2;
-    required string Colour = 3;
-    optional int32 Count = 4;
+    int32 ID = 1;
+    string Name = 2;
+    string Colour = 3;
+    int32 Count = 4;
 }
 
 // LabelsMany
 message LabelsMany {
     repeated Label Labels = 1;
-    optional bool Empty = 5;
+    bool Empty = 5;
 }
 
 // InputGeoLocation
 message InputGeoLocation {
-    required float Lat = 1;
-    required float Long = 2;
+    float Lat = 1;
+    float Long = 2;
 }
 
 // GeoLocation
 message GeoLocation {
-    required float Lat = 1;
-    required float Long = 2;
+    float Lat = 1;
+    float Long = 2;
 }
 
 // TeamFlags
@@ -523,25 +506,25 @@ enum TeamFlags {
 
 // InputTeam
 message InputTeam {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required fixed64 AccessHash = 2 [jstype = JS_STRING];
+    int64 ID = 1 [jstype = JS_STRING];
+    fixed64 AccessHash = 2 [jstype = JS_STRING];
 }
 
 // TeamPhoto
 message TeamPhoto {
-    required FileLocation PhotoBig = 1;
-    required FileLocation PhotoSmall = 2;
+    FileLocation PhotoBig = 1;
+    FileLocation PhotoSmall = 2;
 }
 
 // Team
 message Team {
-    required int64 ID = 1 [jstype = JS_STRING];
-    required string Name = 2;
-    required int64 CreatorID = 3 [jstype = JS_STRING];
-    required fixed64 AccessHash = 6 [jstype = JS_STRING];
+    int64 ID = 1 [jstype = JS_STRING];
+    string Name = 2;
+    int64 CreatorID = 3 [jstype = JS_STRING];
+    fixed64 AccessHash = 6 [jstype = JS_STRING];
     repeated TeamFlags Flags = 7;
-    optional int32 Capacity = 8;
-    optional bool Community = 9;
-    optional TeamPhoto Photo = 10;
+    int32 Capacity = 8;
+    bool Community = 9;
+    TeamPhoto Photo = 10;
 }
 

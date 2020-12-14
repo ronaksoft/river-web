@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -431,7 +433,7 @@ proto.msg.ContactsImport.toObject = function(includeInstance, msg) {
   var f, obj = {
     contactsList: jspb.Message.toObjectList(msg.getContactsList(),
     core_types_pb.PhoneContact.toObject, includeInstance),
-    replace: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
+    replace: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -514,8 +516,8 @@ proto.msg.ContactsImport.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.PhoneContact.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getReplace();
+  if (f) {
     writer.writeBool(
       2,
       f
@@ -563,7 +565,7 @@ proto.msg.ContactsImport.prototype.clearContactsList = function() {
 
 
 /**
- * required bool Replace = 2;
+ * optional bool Replace = 2;
  * @return {boolean}
  */
 proto.msg.ContactsImport.prototype.getReplace = function() {
@@ -576,25 +578,7 @@ proto.msg.ContactsImport.prototype.getReplace = function() {
  * @return {!proto.msg.ContactsImport} returns this
  */
 proto.msg.ContactsImport.prototype.setReplace = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsImport} returns this
- */
-proto.msg.ContactsImport.prototype.clearReplace = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsImport.prototype.hasReplace = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -631,9 +615,9 @@ proto.msg.ContactsAdd.prototype.toObject = function(opt_includeInstance) {
 proto.msg.ContactsAdd.toObject = function(includeInstance, msg) {
   var f, obj = {
     user: (f = msg.getUser()) && core_types_pb.InputUser.toObject(includeInstance, f),
-    firstname: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    lastname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    phone: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    firstname: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    lastname: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    phone: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -724,22 +708,22 @@ proto.msg.ContactsAdd.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.InputUser.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getFirstname();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getLastname();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -749,17 +733,17 @@ proto.msg.ContactsAdd.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputUser User = 1;
- * @return {!proto.msg.InputUser}
+ * optional InputUser User = 1;
+ * @return {?proto.msg.InputUser}
  */
 proto.msg.ContactsAdd.prototype.getUser = function() {
-  return /** @type{!proto.msg.InputUser} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 1, 1));
+  return /** @type{?proto.msg.InputUser} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputUser} value
+ * @param {?proto.msg.InputUser|undefined} value
  * @return {!proto.msg.ContactsAdd} returns this
 */
 proto.msg.ContactsAdd.prototype.setUser = function(value) {
@@ -768,11 +752,11 @@ proto.msg.ContactsAdd.prototype.setUser = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.ContactsAdd} returns this
  */
 proto.msg.ContactsAdd.prototype.clearUser = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setUser(undefined);
 };
 
 
@@ -786,7 +770,7 @@ proto.msg.ContactsAdd.prototype.hasUser = function() {
 
 
 /**
- * required string FirstName = 2;
+ * optional string FirstName = 2;
  * @return {string}
  */
 proto.msg.ContactsAdd.prototype.getFirstname = function() {
@@ -799,25 +783,7 @@ proto.msg.ContactsAdd.prototype.getFirstname = function() {
  * @return {!proto.msg.ContactsAdd} returns this
  */
 proto.msg.ContactsAdd.prototype.setFirstname = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsAdd} returns this
- */
-proto.msg.ContactsAdd.prototype.clearFirstname = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsAdd.prototype.hasFirstname = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -835,25 +801,7 @@ proto.msg.ContactsAdd.prototype.getLastname = function() {
  * @return {!proto.msg.ContactsAdd} returns this
  */
 proto.msg.ContactsAdd.prototype.setLastname = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsAdd} returns this
- */
-proto.msg.ContactsAdd.prototype.clearLastname = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsAdd.prototype.hasLastname = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -871,25 +819,7 @@ proto.msg.ContactsAdd.prototype.getPhone = function() {
  * @return {!proto.msg.ContactsAdd} returns this
  */
 proto.msg.ContactsAdd.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsAdd} returns this
- */
-proto.msg.ContactsAdd.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsAdd.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -925,7 +855,7 @@ proto.msg.ContactsGet.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsGet.toObject = function(includeInstance, msg) {
   var f, obj = {
-    crc32hash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    crc32hash: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -995,8 +925,8 @@ proto.msg.ContactsGet.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsGet.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getCrc32hash();
+  if (f !== 0) {
     writer.writeUint32(
       2,
       f
@@ -1006,7 +936,7 @@ proto.msg.ContactsGet.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required uint32 Crc32Hash = 2;
+ * optional uint32 Crc32Hash = 2;
  * @return {number}
  */
 proto.msg.ContactsGet.prototype.getCrc32hash = function() {
@@ -1019,25 +949,7 @@ proto.msg.ContactsGet.prototype.getCrc32hash = function() {
  * @return {!proto.msg.ContactsGet} returns this
  */
 proto.msg.ContactsGet.prototype.setCrc32hash = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsGet} returns this
- */
-proto.msg.ContactsGet.prototype.clearCrc32hash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsGet.prototype.hasCrc32hash = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -1118,8 +1030,10 @@ proto.msg.ContactsDelete.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readInt64String());
-      msg.addUserids(value);
+      var values = /** @type {!Array<string>} */ (reader.isDelimited() ? reader.readPackedInt64String() : [reader.readInt64String()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addUserids(values[i]);
+      }
       break;
     default:
       reader.skipField();
@@ -1152,7 +1066,7 @@ proto.msg.ContactsDelete.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getUseridsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt64String(
+    writer.writePackedInt64String(
       1,
       f
     );
@@ -1413,17 +1327,17 @@ proto.msg.ContactsBlock.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputUser User = 1;
- * @return {!proto.msg.InputUser}
+ * optional InputUser User = 1;
+ * @return {?proto.msg.InputUser}
  */
 proto.msg.ContactsBlock.prototype.getUser = function() {
-  return /** @type{!proto.msg.InputUser} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 1, 1));
+  return /** @type{?proto.msg.InputUser} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputUser} value
+ * @param {?proto.msg.InputUser|undefined} value
  * @return {!proto.msg.ContactsBlock} returns this
 */
 proto.msg.ContactsBlock.prototype.setUser = function(value) {
@@ -1432,11 +1346,11 @@ proto.msg.ContactsBlock.prototype.setUser = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.ContactsBlock} returns this
  */
 proto.msg.ContactsBlock.prototype.clearUser = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setUser(undefined);
 };
 
 
@@ -1564,17 +1478,17 @@ proto.msg.ContactsUnblock.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputUser User = 2;
- * @return {!proto.msg.InputUser}
+ * optional InputUser User = 2;
+ * @return {?proto.msg.InputUser}
  */
 proto.msg.ContactsUnblock.prototype.getUser = function() {
-  return /** @type{!proto.msg.InputUser} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 2, 1));
+  return /** @type{?proto.msg.InputUser} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputUser} value
+ * @param {?proto.msg.InputUser|undefined} value
  * @return {!proto.msg.ContactsUnblock} returns this
 */
 proto.msg.ContactsUnblock.prototype.setUser = function(value) {
@@ -1583,11 +1497,11 @@ proto.msg.ContactsUnblock.prototype.setUser = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.ContactsUnblock} returns this
  */
 proto.msg.ContactsUnblock.prototype.clearUser = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setUser(undefined);
 };
 
 
@@ -1632,8 +1546,8 @@ proto.msg.ContactsGetBlocked.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.ContactsGetBlocked.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offset: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    limit: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    offset: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    limit: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -1707,15 +1621,15 @@ proto.msg.ContactsGetBlocked.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsGetBlocked.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getOffset();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getLimit();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
@@ -1725,7 +1639,7 @@ proto.msg.ContactsGetBlocked.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * required int32 Offset = 1;
+ * optional int32 Offset = 1;
  * @return {number}
  */
 proto.msg.ContactsGetBlocked.prototype.getOffset = function() {
@@ -1738,30 +1652,12 @@ proto.msg.ContactsGetBlocked.prototype.getOffset = function() {
  * @return {!proto.msg.ContactsGetBlocked} returns this
  */
 proto.msg.ContactsGetBlocked.prototype.setOffset = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsGetBlocked} returns this
- */
-proto.msg.ContactsGetBlocked.prototype.clearOffset = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsGetBlocked.prototype.hasOffset = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 Limit = 2;
+ * optional int32 Limit = 2;
  * @return {number}
  */
 proto.msg.ContactsGetBlocked.prototype.getLimit = function() {
@@ -1774,25 +1670,7 @@ proto.msg.ContactsGetBlocked.prototype.getLimit = function() {
  * @return {!proto.msg.ContactsGetBlocked} returns this
  */
 proto.msg.ContactsGetBlocked.prototype.setLimit = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsGetBlocked} returns this
- */
-proto.msg.ContactsGetBlocked.prototype.clearLimit = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsGetBlocked.prototype.hasLimit = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -1828,7 +1706,7 @@ proto.msg.ContactsSearch.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsSearch.toObject = function(includeInstance, msg) {
   var f, obj = {
-    q: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    q: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -1898,8 +1776,8 @@ proto.msg.ContactsSearch.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsSearch.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getQ();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -1909,7 +1787,7 @@ proto.msg.ContactsSearch.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Q = 1;
+ * optional string Q = 1;
  * @return {string}
  */
 proto.msg.ContactsSearch.prototype.getQ = function() {
@@ -1922,25 +1800,7 @@ proto.msg.ContactsSearch.prototype.getQ = function() {
  * @return {!proto.msg.ContactsSearch} returns this
  */
 proto.msg.ContactsSearch.prototype.setQ = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsSearch} returns this
- */
-proto.msg.ContactsSearch.prototype.clearQ = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsSearch.prototype.hasQ = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -1976,9 +1836,9 @@ proto.msg.ContactsGetTopPeers.prototype.toObject = function(opt_includeInstance)
  */
 proto.msg.ContactsGetTopPeers.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offset: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    limit: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    category: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    offset: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    limit: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    category: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -2056,22 +1916,22 @@ proto.msg.ContactsGetTopPeers.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsGetTopPeers.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getOffset();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getLimit();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {!proto.msg.TopPeerCategory} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getCategory();
+  if (f !== 0.0) {
     writer.writeEnum(
       3,
       f
@@ -2081,7 +1941,7 @@ proto.msg.ContactsGetTopPeers.serializeBinaryToWriter = function(message, writer
 
 
 /**
- * required int32 Offset = 1;
+ * optional int32 Offset = 1;
  * @return {number}
  */
 proto.msg.ContactsGetTopPeers.prototype.getOffset = function() {
@@ -2094,30 +1954,12 @@ proto.msg.ContactsGetTopPeers.prototype.getOffset = function() {
  * @return {!proto.msg.ContactsGetTopPeers} returns this
  */
 proto.msg.ContactsGetTopPeers.prototype.setOffset = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsGetTopPeers} returns this
- */
-proto.msg.ContactsGetTopPeers.prototype.clearOffset = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsGetTopPeers.prototype.hasOffset = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 Limit = 2;
+ * optional int32 Limit = 2;
  * @return {number}
  */
 proto.msg.ContactsGetTopPeers.prototype.getLimit = function() {
@@ -2130,30 +1972,12 @@ proto.msg.ContactsGetTopPeers.prototype.getLimit = function() {
  * @return {!proto.msg.ContactsGetTopPeers} returns this
  */
 proto.msg.ContactsGetTopPeers.prototype.setLimit = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsGetTopPeers} returns this
- */
-proto.msg.ContactsGetTopPeers.prototype.clearLimit = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsGetTopPeers.prototype.hasLimit = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required TopPeerCategory Category = 3;
+ * optional TopPeerCategory Category = 3;
  * @return {!proto.msg.TopPeerCategory}
  */
 proto.msg.ContactsGetTopPeers.prototype.getCategory = function() {
@@ -2166,25 +1990,7 @@ proto.msg.ContactsGetTopPeers.prototype.getCategory = function() {
  * @return {!proto.msg.ContactsGetTopPeers} returns this
  */
 proto.msg.ContactsGetTopPeers.prototype.setCategory = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsGetTopPeers} returns this
- */
-proto.msg.ContactsGetTopPeers.prototype.clearCategory = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsGetTopPeers.prototype.hasCategory = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
 
@@ -2220,7 +2026,7 @@ proto.msg.ContactsResetTopPeer.prototype.toObject = function(opt_includeInstance
  */
 proto.msg.ContactsResetTopPeer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    category: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    category: jspb.Message.getFieldWithDefault(msg, 1, 0),
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f)
   };
 
@@ -2296,8 +2102,8 @@ proto.msg.ContactsResetTopPeer.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsResetTopPeer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!proto.msg.TopPeerCategory} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getCategory();
+  if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
@@ -2315,7 +2121,7 @@ proto.msg.ContactsResetTopPeer.serializeBinaryToWriter = function(message, write
 
 
 /**
- * required TopPeerCategory Category = 1;
+ * optional TopPeerCategory Category = 1;
  * @return {!proto.msg.TopPeerCategory}
  */
 proto.msg.ContactsResetTopPeer.prototype.getCategory = function() {
@@ -2328,40 +2134,22 @@ proto.msg.ContactsResetTopPeer.prototype.getCategory = function() {
  * @return {!proto.msg.ContactsResetTopPeer} returns this
  */
 proto.msg.ContactsResetTopPeer.prototype.setCategory = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsResetTopPeer} returns this
- */
-proto.msg.ContactsResetTopPeer.prototype.clearCategory = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsResetTopPeer.prototype.hasCategory = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputPeer Peer = 2;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 2;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.ContactsResetTopPeer.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.ContactsResetTopPeer} returns this
 */
 proto.msg.ContactsResetTopPeer.prototype.setPeer = function(value) {
@@ -2370,11 +2158,11 @@ proto.msg.ContactsResetTopPeer.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.ContactsResetTopPeer} returns this
  */
 proto.msg.ContactsResetTopPeer.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -2426,8 +2214,8 @@ proto.msg.ContactsTopPeers.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsTopPeers.toObject = function(includeInstance, msg) {
   var f, obj = {
-    category: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    count: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    category: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    count: jspb.Message.getFieldWithDefault(msg, 2, 0),
     peersList: jspb.Message.toObjectList(msg.getPeersList(),
     proto.msg.TopPeer.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
@@ -2522,15 +2310,15 @@ proto.msg.ContactsTopPeers.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsTopPeers.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!proto.msg.TopPeerCategory} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getCategory();
+  if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getCount();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
@@ -2564,7 +2352,7 @@ proto.msg.ContactsTopPeers.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required TopPeerCategory Category = 1;
+ * optional TopPeerCategory Category = 1;
  * @return {!proto.msg.TopPeerCategory}
  */
 proto.msg.ContactsTopPeers.prototype.getCategory = function() {
@@ -2577,30 +2365,12 @@ proto.msg.ContactsTopPeers.prototype.getCategory = function() {
  * @return {!proto.msg.ContactsTopPeers} returns this
  */
 proto.msg.ContactsTopPeers.prototype.setCategory = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsTopPeers} returns this
- */
-proto.msg.ContactsTopPeers.prototype.clearCategory = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsTopPeers.prototype.hasCategory = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 Count = 2;
+ * optional int32 Count = 2;
  * @return {number}
  */
 proto.msg.ContactsTopPeers.prototype.getCount = function() {
@@ -2613,25 +2383,7 @@ proto.msg.ContactsTopPeers.prototype.getCount = function() {
  * @return {!proto.msg.ContactsTopPeers} returns this
  */
 proto.msg.ContactsTopPeers.prototype.setCount = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsTopPeers} returns this
- */
-proto.msg.ContactsTopPeers.prototype.clearCount = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsTopPeers.prototype.hasCount = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -2781,10 +2533,10 @@ proto.msg.TopPeer.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.TopPeer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
+    teamid: jspb.Message.getFieldWithDefault(msg, 100, "0"),
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
-    rate: (f = jspb.Message.getOptionalFloatingPointField(msg, 2)) == null ? undefined : f,
-    lastupdate: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    rate: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    lastupdate: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -2867,8 +2619,8 @@ proto.msg.TopPeer.prototype.serializeBinary = function() {
  */
 proto.msg.TopPeer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 100));
-  if (f != null) {
+  f = message.getTeamid();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       100,
       f
@@ -2882,15 +2634,15 @@ proto.msg.TopPeer.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.Peer.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getRate();
+  if (f !== 0.0) {
     writer.writeFloat(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getLastupdate();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
@@ -2913,40 +2665,22 @@ proto.msg.TopPeer.prototype.getTeamid = function() {
  * @return {!proto.msg.TopPeer} returns this
  */
 proto.msg.TopPeer.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 100, value);
+  return jspb.Message.setProto3StringIntField(this, 100, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.TopPeer} returns this
- */
-proto.msg.TopPeer.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 100, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TopPeer.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 100) != null;
-};
-
-
-/**
- * required Peer Peer = 1;
- * @return {!proto.msg.Peer}
+ * optional Peer Peer = 1;
+ * @return {?proto.msg.Peer}
  */
 proto.msg.TopPeer.prototype.getPeer = function() {
-  return /** @type{!proto.msg.Peer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.Peer, 1, 1));
+  return /** @type{?proto.msg.Peer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.Peer, 1));
 };
 
 
 /**
- * @param {!proto.msg.Peer} value
+ * @param {?proto.msg.Peer|undefined} value
  * @return {!proto.msg.TopPeer} returns this
 */
 proto.msg.TopPeer.prototype.setPeer = function(value) {
@@ -2955,11 +2689,11 @@ proto.msg.TopPeer.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.TopPeer} returns this
  */
 proto.msg.TopPeer.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -2973,7 +2707,7 @@ proto.msg.TopPeer.prototype.hasPeer = function() {
 
 
 /**
- * required float Rate = 2;
+ * optional float Rate = 2;
  * @return {number}
  */
 proto.msg.TopPeer.prototype.getRate = function() {
@@ -2986,25 +2720,7 @@ proto.msg.TopPeer.prototype.getRate = function() {
  * @return {!proto.msg.TopPeer} returns this
  */
 proto.msg.TopPeer.prototype.setRate = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TopPeer} returns this
- */
-proto.msg.TopPeer.prototype.clearRate = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TopPeer.prototype.hasRate = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 
@@ -3022,25 +2738,7 @@ proto.msg.TopPeer.prototype.getLastupdate = function() {
  * @return {!proto.msg.TopPeer} returns this
  */
 proto.msg.TopPeer.prototype.setLastupdate = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.TopPeer} returns this
- */
-proto.msg.TopPeer.prototype.clearLastupdate = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.TopPeer.prototype.hasLastupdate = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -3087,7 +2785,7 @@ proto.msg.BlockedContactsMany.toObject = function(includeInstance, msg) {
     proto.msg.BlockedContact.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     core_types_pb.User.toObject, includeInstance),
-    total: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    total: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -3183,8 +2881,8 @@ proto.msg.BlockedContactsMany.serializeBinaryToWriter = function(message, writer
       core_types_pb.User.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getTotal();
+  if (f !== 0) {
     writer.writeInt32(
       3,
       f
@@ -3283,25 +2981,7 @@ proto.msg.BlockedContactsMany.prototype.getTotal = function() {
  * @return {!proto.msg.BlockedContactsMany} returns this
  */
 proto.msg.BlockedContactsMany.prototype.setTotal = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.BlockedContactsMany} returns this
- */
-proto.msg.BlockedContactsMany.prototype.clearTotal = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.BlockedContactsMany.prototype.hasTotal = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -3337,8 +3017,8 @@ proto.msg.BlockedContact.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.BlockedContact.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    date: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    userid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    date: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -3412,15 +3092,15 @@ proto.msg.BlockedContact.prototype.serializeBinary = function() {
  */
 proto.msg.BlockedContact.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getUserid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getDate();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
@@ -3430,7 +3110,7 @@ proto.msg.BlockedContact.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 UserID = 1;
+ * optional int64 UserID = 1;
  * @return {number}
  */
 proto.msg.BlockedContact.prototype.getUserid = function() {
@@ -3443,30 +3123,12 @@ proto.msg.BlockedContact.prototype.getUserid = function() {
  * @return {!proto.msg.BlockedContact} returns this
  */
 proto.msg.BlockedContact.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.BlockedContact} returns this
- */
-proto.msg.BlockedContact.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.BlockedContact.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 Date = 2;
+ * optional int64 Date = 2;
  * @return {number}
  */
 proto.msg.BlockedContact.prototype.getDate = function() {
@@ -3479,25 +3141,7 @@ proto.msg.BlockedContact.prototype.getDate = function() {
  * @return {!proto.msg.BlockedContact} returns this
  */
 proto.msg.BlockedContact.prototype.setDate = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.BlockedContact} returns this
- */
-proto.msg.BlockedContact.prototype.clearDate = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.BlockedContact.prototype.hasDate = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -3544,7 +3188,7 @@ proto.msg.ContactsImported.toObject = function(includeInstance, msg) {
     core_types_pb.ContactUser.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     core_types_pb.User.toObject, includeInstance),
-    empty: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
+    empty: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -3640,8 +3284,8 @@ proto.msg.ContactsImported.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.User.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getEmpty();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -3740,25 +3384,7 @@ proto.msg.ContactsImported.prototype.getEmpty = function() {
  * @return {!proto.msg.ContactsImported} returns this
  */
 proto.msg.ContactsImported.prototype.setEmpty = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsImported} returns this
- */
-proto.msg.ContactsImported.prototype.clearEmpty = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsImported.prototype.hasEmpty = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -3805,11 +3431,11 @@ proto.msg.ContactsMany.toObject = function(includeInstance, msg) {
     core_types_pb.PhoneContact.toObject, includeInstance),
     contactusersList: jspb.Message.toObjectList(msg.getContactusersList(),
     core_types_pb.ContactUser.toObject, includeInstance),
-    modified: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
+    modified: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     core_types_pb.User.toObject, includeInstance),
-    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f,
-    hash: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
+    empty: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    hash: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -3918,8 +3544,8 @@ proto.msg.ContactsMany.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.ContactUser.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getModified();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -3933,15 +3559,15 @@ proto.msg.ContactsMany.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.User.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getEmpty();
+  if (f) {
     writer.writeBool(
       5,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getHash();
+  if (f !== 0) {
     writer.writeUint32(
       6,
       f
@@ -4027,7 +3653,7 @@ proto.msg.ContactsMany.prototype.clearContactusersList = function() {
 
 
 /**
- * required bool Modified = 3;
+ * optional bool Modified = 3;
  * @return {boolean}
  */
 proto.msg.ContactsMany.prototype.getModified = function() {
@@ -4040,25 +3666,7 @@ proto.msg.ContactsMany.prototype.getModified = function() {
  * @return {!proto.msg.ContactsMany} returns this
  */
 proto.msg.ContactsMany.prototype.setModified = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsMany} returns this
- */
-proto.msg.ContactsMany.prototype.clearModified = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsMany.prototype.hasModified = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -4114,25 +3722,7 @@ proto.msg.ContactsMany.prototype.getEmpty = function() {
  * @return {!proto.msg.ContactsMany} returns this
  */
 proto.msg.ContactsMany.prototype.setEmpty = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsMany} returns this
- */
-proto.msg.ContactsMany.prototype.clearEmpty = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsMany.prototype.hasEmpty = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -4150,25 +3740,7 @@ proto.msg.ContactsMany.prototype.getHash = function() {
  * @return {!proto.msg.ContactsMany} returns this
  */
 proto.msg.ContactsMany.prototype.setHash = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ContactsMany} returns this
- */
-proto.msg.ContactsMany.prototype.clearHash = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ContactsMany.prototype.hasHash = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
