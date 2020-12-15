@@ -36,11 +36,11 @@ export const getWsServerUrl = () => {
         return null;
     } else {
         if (serverMode === 'prod') {
-            return 'cyrus.river.im';
+            return 'edge.river.im';
         } else if (serverMode === 'dev') {
             return 'river-rony.ronaksoftware.com';
         } else if (serverMode === 'other') {
-            return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'cyrus.river.im';
+            return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im';
         }
     }
     return null;
@@ -123,7 +123,7 @@ class DevTools extends React.Component<IProps, IState> {
             open: false,
             serverMode,
             throttleInterval: parseInt(localStorage.getItem(C_LOCALSTORAGE.DebugThrottleInterval) || '200', 10),
-            url: localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'cyrus.river.im',
+            url: localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im',
             verboseAPICall: localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true',
         };
 

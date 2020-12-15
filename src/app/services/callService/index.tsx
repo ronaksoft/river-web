@@ -162,9 +162,8 @@ export default class CallService {
                 track.enabled = enable;
                 this.propagateMediaSettings({video: enable});
             });
-        } else if (enable) {
-            this.upgradeMediaStream();
         }
+        this.modifyMediaStream(enable);
     }
 
     public toggleAudio(enable: boolean) {
@@ -840,24 +839,25 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.MediaSettingsUpdate, this.callInfo[callId].participants[connId]);
     }
 
-    private upgradeMediaStream() {
-        this.initStream({audio: true, video: true}).then((stream) => {
+    private modifyMediaStream(video: boolean) {
+        this.destroy();
+        this.initStream({audio: true, video}).then((stream) => {
             if (this.activeCallId) {
-                stream.getVideoTracks().forEach((track) => {
-                    if (this.localStream) {
-                        this.localStream.addTrack(track);
-                    }
-                    for (const [connId, pc] of Object.entries(this.peerConnections)) {
+                for (const [connId, pc] of Object.entries(this.peerConnections)) {
+                    pc.connection.getSenders().forEach((track) => {
+                        pc.connection.removeTrack(track);
+                    });
+                    stream.getTracks().forEach((track) => {
                         pc.connection.addTrack(track, stream);
-                        pc.connection.createOffer(this.offerOptions).then((res) => {
-                            return pc.connection.setLocalDescription(res).then(() => {
-                                return this.sendSDPOffer(this.parseNumberValue(connId), res);
-                            });
+                    });
+                    pc.connection.createOffer(this.offerOptions).then((res) => {
+                        return pc.connection.setLocalDescription(res).then(() => {
+                            return this.sendSDPOffer(this.parseNumberValue(connId), res);
                         });
-                    }
-                });
+                    });
+                }
             }
-            this.propagateMediaSettings({video: true});
+            this.propagateMediaSettings({video});
         });
     }
 

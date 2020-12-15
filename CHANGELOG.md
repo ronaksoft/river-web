@@ -1,3 +1,6 @@
+## 0.36.9-call
+* Minor bugs fixed
+
 ## 0.36.8-call
 * Rony compatible version
 * Worker new mechanism

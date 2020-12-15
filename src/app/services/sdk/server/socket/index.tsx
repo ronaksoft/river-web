@@ -16,7 +16,7 @@ import {
     EventNetworkStatus,
     EventWasmInit,
     EventWebSocketClose,
-    EventSocketReady, EventSocketConnected
+    EventSocketReady, EventSocketConnected, EventAuthProgress, EventOnline, EventOffline, EventChange
 } from "../../../events";
 import {C_LOCALSTORAGE, C_MSG} from "../../const";
 import {getWsServerUrl} from "../../../../components/DevTools";
@@ -24,7 +24,7 @@ import {getWsServerUrl} from "../../../../components/DevTools";
 //@ts-ignore
 import RiverWorker from 'worker-loader?filename=river.js!../../worker';
 
-export const defaultGateway = 'cyrus.river.im';
+export const defaultGateway = 'edge.river.im';
 
 export const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
 
@@ -48,6 +48,31 @@ export interface ISendPayload {
     teamAccessHash?: string;
     withSend: boolean;
 }
+
+const C_JS_MSG = {
+    Auth: 'auth',
+    AuthProgress: 'authProgress',
+    CreateAuthKey: 'createAuthKey',
+    Decode: 'decode',
+    Encode: 'encode',
+    GenInputPassword: 'genInputPassword',
+    GenSrpHash: 'genSrpHash',
+    GetServerTime: 'getServerTime',
+    Save: 'save',
+    Update: 'update',
+    WASMLoaded: 'wasmLoaded',
+};
+
+const C_WASM_MSG = {
+    Auth: 'auth',
+    Decode: 'decode',
+    Encode: 'encode',
+    GenInputPassword: 'genInputPassword',
+    GenSrpHash: 'genSrpHash',
+    Init: 'init',
+    Load: 'load',
+    SetServerTime: 'setServerTime',
+};
 
 export default class Socket {
     public static getInstance() {
@@ -86,10 +111,10 @@ export default class Socket {
         this.worker = new RiverWorker();
 
         setTimeout(() => {
-            this.workerMessage('init', {});
+            this.workerMessage(C_WASM_MSG.Init, {});
         }, 100);
 
-        window.addEventListener('online', () => {
+        window.addEventListener(EventOnline, () => {
             this.online = true;
             this.dispatchEvent(EventNetworkStatus, {online: true});
             this.initTimeout = setTimeout(() => {
@@ -97,7 +122,7 @@ export default class Socket {
             }, 10);
         });
 
-        window.addEventListener('offline', () => {
+        window.addEventListener(EventOffline, () => {
             this.online = false;
             this.dispatchEvent(EventNetworkStatus, {online: false});
             this.closeWire();
@@ -114,69 +139,14 @@ export default class Socket {
         // @ts-ignore
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         if (connection) {
-            connection.addEventListener('change', () => {
-                window.console.log('connection changed!');
+            connection.addEventListener(EventChange, () => {
+                window.console.info('connection changed!');
                 this.dispatchEvent(EventCheckNetwork, {});
             });
         }
 
         this.worker.onmessage = (e) => {
-            const d = e.data;
-            switch (d.cmd) {
-                case 'wasmLoaded':
-                    this.wasmLoaded();
-                    break;
-                case 'save':
-                    localStorage.setItem(C_LOCALSTORAGE.ConnInfo, d.data);
-                    break;
-                case 'createAuthKey':
-                    if (this.fnCreateAuthKey) {
-                        this.fnCreateAuthKey().then((duration: number) => {
-                            if (!this.started && this.connected) {
-                                this.dispatchEvent(EventSocketReady, {duration});
-                            }
-                        });
-                    }
-                    break;
-                case 'getServerTime':
-                    if (this.fnGetServerTime) {
-                        this.fnGetServerTime().then(() => {
-                            if (!this.started && this.connected) {
-                                this.dispatchEvent(EventSocketReady, {duration: 0});
-                            }
-                        });
-                    }
-                    break;
-                case 'decode':
-                    this.decode(d.data);
-                    break;
-                case 'update':
-                    if (this.fnUpdate) {
-                        this.fnUpdate(d.data);
-                    }
-                    break;
-                case 'encode':
-                    this.encode(d.data);
-                    break;
-                case 'authProgress':
-                    this.dispatchEvent('authProgress', d.data);
-                    break;
-                case 'genSrpHash':
-                    if (this.resolveGenSrpHashFn) {
-                        this.resolveGenSrpHashFn(d.data.reqId, d.data.msg);
-                    }
-                    break;
-                case 'genInputPassword':
-                    if (this.resolveGenInputPasswordFn) {
-                        this.resolveGenInputPasswordFn(d.data.reqId, d.data.msg);
-                    }
-                    break;
-                case 'auth':
-                    if (this.resolveAuthStepFn) {
-                        this.resolveAuthStepFn(d.data.reqId, d.data.step, d.data.data);
-                    }
-                    break;
-            }
+            this.messageHandler(e.data.cmd, e.data.data);
         };
 
         this.checkNetwork();
@@ -184,7 +154,7 @@ export default class Socket {
 
     public setServerTime(time: number) {
         serverTime = time;
-        this.workerMessage('setServerTime', time);
+        this.workerMessage(C_WASM_MSG.SetServerTime, time);
     }
 
     public setResolveEncryptFn(fn: any) {
@@ -216,15 +186,15 @@ export default class Socket {
     }
 
     public fnGenSrpHash(data: { reqId: number, pass: string, algorithm: number, algorithmData: string }) {
-        this.workerMessage('genSrpHash', data);
+        this.workerMessage(C_WASM_MSG.GenSrpHash, data);
     }
 
     public fnGenInputPassword(data: { reqId: number, pass: string, accountPass: string }) {
-        this.workerMessage('genInputPassword', data);
+        this.workerMessage(C_WASM_MSG.GenInputPassword, data);
     }
 
     public authStep(data: { step: number, reqId: number, data?: Uint8Array }) {
-        this.workerMessage('auth', {
+        this.workerMessage(C_WASM_MSG.Auth, {
             data: data.data ? uint8ToBase64(data.data) : '',
             reqId: data.reqId,
             step: data.step,
@@ -242,7 +212,7 @@ export default class Socket {
             payload.teamId = data.inputTeam.id;
             payload.teamAccessHash = data.inputTeam.accesshash;
         }
-        this.workerMessage('encode', payload);
+        this.workerMessage(C_WASM_MSG.Encode, payload);
     }
 
     public setCreateAuthKey(fn: any) {
@@ -282,6 +252,66 @@ export default class Socket {
     public tryAgain() {
         this.tryCounter = 0;
         this.closeWire(true);
+    }
+
+    private messageHandler(cmd: string, data: any) {
+        switch (cmd) {
+            case C_JS_MSG.WASMLoaded:
+                this.wasmLoaded();
+                break;
+            case C_JS_MSG.Save:
+                localStorage.setItem(C_LOCALSTORAGE.ConnInfo, data);
+                break;
+            case C_JS_MSG.CreateAuthKey:
+                if (this.fnCreateAuthKey) {
+                    this.fnCreateAuthKey().then((duration: number) => {
+                        if (!this.started && this.connected) {
+                            this.started = true;
+                            this.dispatchEvent(EventSocketReady, {duration});
+                        }
+                    });
+                }
+                break;
+            case C_JS_MSG.GetServerTime:
+                if (this.fnGetServerTime) {
+                    this.fnGetServerTime().then(() => {
+                        if (!this.started && this.connected) {
+                            this.started = true;
+                            this.dispatchEvent(EventSocketReady, {duration: 0});
+                        }
+                    });
+                }
+                break;
+            case C_JS_MSG.Decode:
+                this.decode(data);
+                break;
+            case C_JS_MSG.Update:
+                if (this.fnUpdate) {
+                    this.fnUpdate(data);
+                }
+                break;
+            case C_JS_MSG.Encode:
+                this.encode(data);
+                break;
+            case C_JS_MSG.AuthProgress:
+                this.dispatchEvent(EventAuthProgress, data);
+                break;
+            case C_JS_MSG.GenSrpHash:
+                if (this.resolveGenSrpHashFn) {
+                    this.resolveGenSrpHashFn(data.reqId, data.msg);
+                }
+                break;
+            case C_JS_MSG.GenInputPassword:
+                if (this.resolveGenInputPasswordFn) {
+                    this.resolveGenInputPasswordFn(data.reqId, data.msg);
+                }
+                break;
+            case C_JS_MSG.Auth:
+                if (this.resolveAuthStepFn) {
+                    this.resolveAuthStepFn(data.reqId, data.step, data.data);
+                }
+                break;
+        }
     }
 
     private initWebSocket() {
@@ -330,7 +360,10 @@ export default class Socket {
             if (checkPong(event.data)) {
                 this.pingCounter = 0;
             } else {
-                this.workerMessage('decode', {data: uint8ToBase64(new Uint8Array(event.data)), withParse: true});
+                this.workerMessage(C_WASM_MSG.Decode, {
+                    data: uint8ToBase64(new Uint8Array(event.data)),
+                    withParse: true
+                });
             }
         };
 
@@ -392,12 +425,11 @@ export default class Socket {
     }
 
     private wasmLoaded() {
-        this.workerMessage('load', {
+        this.workerMessage(C_WASM_MSG.Load, {
             connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo),
             serverKeys
         });
         this.initWebSocket();
-        // this.workerMessage('initSDK', 0);
         setTimeout(() => {
             this.dispatchEvent(EventWasmInit, null);
         }, 50);

@@ -134,7 +134,7 @@ class SignUp extends React.Component<IProps, IState> {
             sendToPhone: false,
             step,
             tries: 0,
-            workspace: 'cyrus.river.im',
+            workspace: 'edge.river.im',
             workspaceError: '',
             workspaceInfo: {},
         };
@@ -480,7 +480,7 @@ class SignUp extends React.Component<IProps, IState> {
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
                 const localWorkspace = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl);
-                if ((localWorkspace || 'cyrus.river.im') !== workspace) {
+                if ((localWorkspace || 'edge.river.im') !== workspace) {
                     this.workspaceManager.closeWire();
                     localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
                     localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, workspace);

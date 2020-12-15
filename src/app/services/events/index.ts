@@ -23,3 +23,6 @@ export const EventFileDownloaded = 'File_Downloaded';
 export const EventMediaDBUpdated = 'Media_DB_Updated';
 export const EventRightMenuToggled = 'Right_Menu_Toggled';
 export const EventAuthProgress = 'authProgress';
+export const EventOnline = 'online';
+export const EventOffline = 'offline';
+export const EventChange = 'change';
