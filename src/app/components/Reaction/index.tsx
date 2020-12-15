@@ -36,7 +36,7 @@ export const Reaction = ({message, onContextMenu, onClick}: IProps) => {
     };
     return (
         <div className="message-reaction" onContextMenu={onContextMenu} onClick={onClick}>
-            {!message.me ? ellipsisView() : null}
+            {message.me ? ellipsisView() : null}
             {message.reactionsList.slice(0, 3).map((item, index) => {
                 return (<div key={`${item.reaction}_${index}`} className="reaction-item">
                     <div className="reaction-wrapper">
@@ -45,7 +45,7 @@ export const Reaction = ({message, onContextMenu, onClick}: IProps) => {
                     {(item.total || 0) > 1 && <div className="reaction-counter">{localize(item.total || 0)}</div>}
                 </div>);
             })}
-            {message.me ? ellipsisView() : null}
+            {!message.me ? ellipsisView() : null}
         </div>
     );
 };

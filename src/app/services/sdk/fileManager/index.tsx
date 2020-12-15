@@ -1016,7 +1016,9 @@ export default class FileManager {
         data.setPartid(partNum);
         data.setTotalparts(totalParts);
         data.setBytes(bytes);
-        return this.httpWorkers[0].send(C_MSG.FileSavePart, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress);
+        return this.httpWorkers[0].send(C_MSG.FileSavePart, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress).then((res) => {
+            return res.data as Bool;
+        });
     }
 
     /* Receive chunk over http */
@@ -1034,7 +1036,9 @@ export default class FileManager {
         if (C_USER_THROTTLE && offset === 0 && limit === 0) {
             return this.receiveBundleFileChunk(data);
         } else {
-            return this.httpWorkers[0].send(C_MSG.FileGet, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress);
+            return this.httpWorkers[0].send(C_MSG.FileGet, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress).then((res) => {
+                return res.data as File;
+            });
         }
     }
 
@@ -1085,6 +1089,8 @@ export default class FileManager {
             }
         }
 
+        const len = limits.length;
+
         const data = new MessageContainer();
         // tslint:disable-next-line:forin
         for (const key in tempInputs) {
@@ -1096,23 +1102,35 @@ export default class FileManager {
 
             data.addEnvelopes(me);
         }
-        data.setLength(limits.length);
+        data.setLength(len);
 
-        this.httpWorkers[0].send(C_MSG.MessageContainer, data.serializeBinary()).then((msgContainer: MessageContainer) => {
-            msgContainer.getEnvelopesList().forEach((msgEnv) => {
-                const c = msgEnv.getConstructor() || 0;
-                const ri = msgEnv.getRequestid() || 0;
-                const res = Presenter.getMessage(c, msgEnv.getMessage_asU8());
-                if (c === C_MSG.File) {
+
+        this.httpWorkers[0].send(C_MSG.MessageContainer, data.serializeBinary()).then((res) => {
+            if (res.constructor === C_MSG.File) {
+                if (len !== 1) {
+                    throw Error('please check rony http dispatcher');
+                } else {
+                    const ri = data.getEnvelopesList()[0].getRequestid();
                     if (tempInputs[ri] && tempInputs[ri].resolve) {
-                        tempInputs[ri].resolve(res);
-                    }
-                } else if (c === C_MSG.Error) {
-                    if (tempInputs[ri] && tempInputs[ri].reject) {
-                        tempInputs[ri].reject(res.toObject());
+                        tempInputs[ri].resolve(res.data);
                     }
                 }
-            });
+            } else if (res.constructor === C_MSG.MessageContainer) {
+                (res.data as MessageContainer).getEnvelopesList().forEach((msgEnv) => {
+                    const c = msgEnv.getConstructor() || 0;
+                    const ri = msgEnv.getRequestid() || 0;
+                    const msg = Presenter.getMessage(c, msgEnv.getMessage_asU8());
+                    if (c === C_MSG.File) {
+                        if (tempInputs[ri] && tempInputs[ri].resolve) {
+                            tempInputs[ri].resolve(msg);
+                        }
+                    } else if (c === C_MSG.Error) {
+                        if (tempInputs[ri] && tempInputs[ri].reject) {
+                            tempInputs[ri].reject(msg.toObject());
+                        }
+                    }
+                });
+            }
         }).catch((err) => {
             // tslint:disable-next-line:forin
             for (const key in tempInputs) {

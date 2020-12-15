@@ -876,7 +876,10 @@ export default class Server {
 
     private getServerTime() {
         const data = new SystemGetServerTime();
-        return this.send(C_MSG.SystemGetServerTime, data.serializeBinary(), true).then((res: SystemServerTime.AsObject) => {
+        return this.send(C_MSG.SystemGetServerTime, data.serializeBinary(), true, {
+            retry: 2,
+            timeout: 2000,
+        }).then((res: SystemServerTime.AsObject) => {
             this.socket.setServerTime(res.timestamp);
             return res;
         });
@@ -891,6 +894,8 @@ export default class Server {
                     return this.send(C_MSG.InitCompleteAuth, step2Req, true).then((step2Res: Uint8Array) => {
                         return this.authStep(3, step2Res).then(() => {
                             return this.getServerTime().then(() => {
+                                return Math.floor(Date.now() / 1000) - t;
+                            }).catch((err) => {
                                 return Math.floor(Date.now() / 1000) - t;
                             });
                         });

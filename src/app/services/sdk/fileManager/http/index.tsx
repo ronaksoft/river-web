@@ -12,7 +12,7 @@ import Presenter from '../../presenters';
 import axios from 'axios';
 import {base64ToU8a, uint8ToBase64} from './utils';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
-import {C_LOCALSTORAGE, C_MSG} from '../../const';
+import {C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../../const';
 import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
 import Socket, {ISendPayload, serverTime} from '../../server/socket';
@@ -26,6 +26,11 @@ export interface IHttpRequest {
     constructor: number;
     data: Uint8Array;
     reqId: number;
+}
+
+export interface IHttpResponse {
+    constructor: number;
+    data: any;
 }
 
 interface IMessageListener {
@@ -116,7 +121,7 @@ export default class Http {
     }
 
     /* Send HTTP Message */
-    public send(constructor: number, data: Uint8Array, cancel?: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
+    public send(constructor: number, data: Uint8Array, cancel?: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<IHttpResponse> {
         let internalResolve = null;
         let internalReject = null;
 
@@ -177,7 +182,6 @@ export default class Http {
     private initWorkerEvent() {
         this.worker.onmessage = (e) => {
             const d = e.data;
-            window.console.log(d, e);
             switch (d.cmd) {
                 case 'wasmLoaded':
                     this.workerMessage('load', {
@@ -189,7 +193,6 @@ export default class Http {
                     }
                     break;
                 case 'ready':
-                    window.console.log(d);
                     if (this.readyHandler) {
                         this.readyHandler();
                     }
@@ -273,16 +276,21 @@ export default class Http {
         if (!this.messageListeners.hasOwnProperty(reqId)) {
             return;
         }
-        const res = Presenter.getMessage(constructor, base64ToU8a(base64));
-        if (constructor === C_MSG.Error) {
-            this.messageListeners[reqId].reject(res.toObject());
-        } else {
-            this.messageListeners[reqId].resolve(res);
-        }
-        delete this.messageListeners[reqId];
-        const index = this.sentQueue.indexOf(reqId);
-        if (index > -1) {
-            this.sentQueue.splice(index);
+
+        try {
+            const res = Presenter.getMessage(constructor, base64ToU8a(base64));
+            if (constructor === C_MSG.Error) {
+                this.messageListeners[reqId].reject({constructor, data: res.toObject()});
+            } else {
+                this.messageListeners[reqId].resolve({constructor, data: res});
+            }
+            delete this.messageListeners[reqId];
+            const index = this.sentQueue.indexOf(reqId);
+            if (index > -1) {
+                this.sentQueue.splice(index);
+            }
+        } catch (e) {
+            window.console.warn(`cannot parse "${C_MSG_NAME[constructor]}"`, e);
         }
     }
 
