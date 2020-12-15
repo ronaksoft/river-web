@@ -287,6 +287,7 @@
       "hint": "راهنما",
       "has_password_note": "تایید دومرحله\u200Cای روی حساب شما فعال شده است، شما می‌توانید رمز خود را عوض کنید یا به کلی غیر فعال نمایید.",
       "pass_is_incorrect": "رمز اشتباه است",
+      "password_successfully_activated": "رمز با موفقیت فعال شد",
       "password_successfully_changed": "رمز با موفقیت تغییر کرد",
       "password_successfully_removed": "رمز با موفقیت حذف شد",
       "enable_recovery": "فعال سازی بازیابی",

@@ -161,14 +161,14 @@ export default class Socket {
                 case 'authProgress':
                     this.dispatchEvent('authProgress', d.data);
                     break;
-                case 'genSrpHashCallback':
+                case 'genSrpHash':
                     if (this.resolveGenSrpHashFn) {
-                        this.resolveGenSrpHashFn(d.data.reqId, d.data.data);
+                        this.resolveGenSrpHashFn(d.data.reqId, d.data.msg);
                     }
                     break;
-                case 'genInputPasswordCallback':
+                case 'genInputPassword':
                     if (this.resolveGenInputPasswordFn) {
-                        this.resolveGenInputPasswordFn(d.data.reqId, d.data.data);
+                        this.resolveGenInputPasswordFn(d.data.reqId, d.data.msg);
                     }
                     break;
                 case 'auth':

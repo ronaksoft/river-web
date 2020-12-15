@@ -254,6 +254,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
         });
     }
 
+    public closeSearch() {
+        this.closeSearchHandler();
+    }
+
     public scrollTop() {
         // const el = document.querySelector((this.isMobile || !this.hasScrollbar) ? '.dialog-container' : '.dialogs-inner > div > div:first-child');
         const el = document.querySelector('.dialogs-inner > div > div:first-child');

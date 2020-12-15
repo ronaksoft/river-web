@@ -34,7 +34,6 @@ const ctx: IWorker = self as any;
 
 // @ts-ignore
 const go = new Go();
-
 /* eslint-enable */
 
 const workerMessage = (cmd: string, data: any) => {
@@ -52,16 +51,16 @@ ctx.onmessage = ((e) => {
 const messageHandler = (cmd: string, data: any) => {
     switch (cmd) {
         case 'init':
-            console.time('init');
+            console.time('wasm init');
             fetch('/bin/river.wasm?v32').then((response) => {
                 WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
-                    console.timeEnd('init');
+                    console.timeEnd('wasm init');
                     go.run(res.instance);
                 }).catch((err) => {
-                    console.log(err);
+                    console.warn(err);
                     response.arrayBuffer().then((data) => {
                         WebAssembly.instantiate(data, go.importObject).then((res) => {
-                            console.timeEnd('init');
+                            console.timeEnd('wasm init');
                             go.run(res.instance);
                         });
                     });
@@ -128,17 +127,11 @@ ctx.jsUpdate = (msg) => {
 };
 
 ctx.jsGenSrpHash = (reqId, msg) => {
-    workerMessage('genSrpHash', {
-        msg,
-        reqId,
-    });
+    workerMessage('genSrpHash', {msg, reqId});
 };
 
 ctx.jsGenInputPassword = (reqId, msg) => {
-    workerMessage('genInputPassword', {
-        msg,
-        reqId,
-    });
+    workerMessage('genInputPassword', {msg, reqId});
 };
 
 ctx.jsSave = (data) => {
@@ -150,6 +143,5 @@ ctx.jsAuthProgress = (progress) => {
 };
 
 ctx.jsLoaded = () => {
-    console.log('loaded');
     workerMessage('wasmLoaded', {});
 };

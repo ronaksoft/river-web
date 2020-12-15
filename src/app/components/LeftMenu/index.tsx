@@ -509,6 +509,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             });
         } else {
             if (this.dialogRef) {
+                this.dialogRef.closeSearch();
                 this.dialogRef.scrollTop();
             }
             if (this.contactsMenuRef) {

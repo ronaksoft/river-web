@@ -291,6 +291,7 @@
       "hint": "Hint",
       "has_password_note": "Two Step Verification is activated on your account, You can change your pass phrase or deactivated it anytime.",
       "pass_is_incorrect": "Password is incorrect",
+      "password_successfully_activated": "Password successfully activated",
       "password_successfully_changed": "Password successfully changed",
       "password_successfully_removed": "Password successfully removed",
       "enable_recovery": "Enable Recovery",

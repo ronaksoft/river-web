@@ -12,6 +12,17 @@
   flex-direction: column;
   height: 100%;
 
+  &.notice {
+    align-items: center;
+    justify-content: center;
+    padding-top: 24px;
+    padding-bottom: 48px;
+
+    .tsv-gap {
+      display: none;
+    }
+  }
+
   .tsv-header {
     display: flex;
     align-items: center;
@@ -39,8 +50,11 @@
 
   .tsv-success {
     text-align: center;
-    font-size: 16px;
+    font-size: 28px;
     padding: 12px;
+    color: var(--river);
+    font-weight: 100;
+    text-transform: uppercase;
   }
 
   .tsv-input {
