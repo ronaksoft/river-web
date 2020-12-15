@@ -39,7 +39,7 @@ import {Modality, ModalityService} from "kk-modality";
 import './App.scss';
 
 export const C_VERSION = '0.36.9-call';
-export const C_ELECTRON_VERSIONS = ['10.1.1', '8.5.2'];
+export const C_ELECTRON_VERSIONS = ['11.1.0', '8.5.2'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {

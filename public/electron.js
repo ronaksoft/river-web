@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint-disable */
 const path = require('path');
 const {app, BrowserWindow, shell, ipcMain, Menu, systemPreferences, nativeTheme, screen} = require('electron');
 const isDev = require('electron-is-dev');
@@ -113,15 +113,13 @@ createWindow = (forceShow) => {
         show: false,
         webPreferences: {
             nodeIntegration: false,
-            nodeIntegrationInWorker: false,
             preload: path.join(__dirname, '/preload.js'),
             webSecurity: false,
-            backgroundThrottling: false,
-            contextIsolation: false,
+            backgroundThrottling: true,
+            v8CacheOptions: 'bypassHeatCheck',
         },
         height: 860,
         width: 1280,
-        simpleFullscreen: true,
         vibrancy: 'dark',
         darkTheme: true,
         icon: windowIcon,
