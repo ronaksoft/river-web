@@ -868,7 +868,7 @@ class SignUp extends React.Component<IProps, IState> {
                 }, () => {
                     this.focus('f-phone');
                 });
-                FileManager.getInstance().setUrl(this.state.workspace);
+                // FileManager.getInstance().setUrl(this.state.workspace);
             });
         }
     }

@@ -511,6 +511,7 @@ export default class FileManager {
                                 window.console.debug(`${chunk.part}/${chunkInfo.totalParts} uploaded, res: ${res}`);
                             }
                         }).catch((err) => {
+                            window.console.log(err);
                             if (this.fileUploadQueue.hasOwnProperty(id)) {
                                 this.fileUploadQueue[id].pipelines--;
 
@@ -763,15 +764,21 @@ export default class FileManager {
     /* Convert blob to Uint8array */
     private convertBlobToU8a(blob: Blob): Promise<Uint8Array> {
         return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.onload = (e: any) => {
-                if (e && e.target) {
-                    resolve(e.target.result);
-                } else {
-                    reject();
-                }
-            };
-            fileReader.readAsArrayBuffer(blob);
+            if (blob.arrayBuffer) {
+                blob.arrayBuffer().then((res) => {
+                    resolve(new Uint8Array(res));
+                });
+            } else {
+                const fileReader = new FileReader();
+                fileReader.onload = (e: any) => {
+                    if (e && e.target) {
+                        resolve(new Uint8Array(e.target.result));
+                    } else {
+                        reject();
+                    }
+                };
+                fileReader.readAsArrayBuffer(blob);
+            }
         });
     }
 

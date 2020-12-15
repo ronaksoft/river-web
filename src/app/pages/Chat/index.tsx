@@ -4724,6 +4724,7 @@ class Chat extends React.Component<IProps, IState> {
 
             this.chatInputTypingHandler(TypingAction.TYPINGACTIONUPLOADING, peer);
             Promise.all(uploadPromises).then((arr) => {
+                window.console.log(arr);
                 this.chatInputTypingHandler(TypingAction.TYPINGACTIONCANCEL, peer);
                 this.progressBroadcaster.remove(id);
                 if (!sha256FileLocation && arr.length !== 0) {
@@ -4779,6 +4780,7 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 });
             }).catch((err) => {
+                window.console.warn(err);
                 this.progressBroadcaster.remove(id);
                 this.chatInputTypingHandler(TypingAction.TYPINGACTIONCANCEL, peer);
                 if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED && this.selectedPeerName === peerName) {
