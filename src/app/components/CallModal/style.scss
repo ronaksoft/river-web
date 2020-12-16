@@ -105,6 +105,16 @@
       background: linear-gradient(180deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
       z-index: 12;
 
+      &.main-call-action {
+        opacity: 1;
+        background-color: transparent;
+
+        > div:not(.call-settings-notice) {
+          transition: opacity 0.3s;
+          opacity: 0;
+        }
+      }
+
       .call-settings {
         display: flex;
         align-items: center;
@@ -123,18 +133,18 @@
             justify-content: center;
           }
         }
+      }
 
-        .call-settings-notice {
-          position: absolute;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          padding: 24px;
-          text-align: center;
-          background-color: var(--glass-dark-ultra);
-          color: var(--white);
-          z-index: 10;
-        }
+      .call-settings-notice {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 24px;
+        text-align: center;
+        background-color: var(--glass-dark-ultra);
+        color: var(--white);
+        z-index: 10;
       }
 
       .call-item {
@@ -179,6 +189,14 @@
     &:hover {
       .call-modal-header, .call-modal-action {
         opacity: 1;
+      }
+
+      .call-modal-action.main-call-action {
+        background: linear-gradient(180deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
+
+        > div {
+          opacity: 1;
+        }
       }
     }
   }

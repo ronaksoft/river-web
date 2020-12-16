@@ -525,6 +525,7 @@
     "muted": "Muted",
     "call_back": "Call Back",
     "call_timeout": "no answer",
-    "is_not_available": "is not available"
+    "is_not_available": "is not available",
+    "audio_muted": "Microphone is muted"
   }
 }

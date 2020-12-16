@@ -12,6 +12,7 @@ import {FormControlLabel, Switch} from "@material-ui/core";
 import {MicOffRounded, MicRounded, VideocamOffRounded, VideocamRounded} from "@material-ui/icons";
 import CallService, {C_CALL_EVENT} from "../../services/callService";
 import i18n from '../../services/i18n';
+import {clone} from "lodash";
 
 export interface IMediaSettings {
     video: boolean;
@@ -33,6 +34,7 @@ class CallSettings extends React.Component<IProps, IState> {
     private audioContext: AudioContext | undefined;
     private audioAnalyserInterval: any;
     private audioStream: MediaStream | undefined;
+    private mounted: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -50,12 +52,13 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mounted = false;
+        this.stopAudioAnalyzer();
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
             }
         });
-        this.stopAudioAnalyzer();
     }
 
     public setMediaSettings({audio, video}: { audio: boolean, video: boolean }) {
@@ -70,38 +73,44 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     public startAudioAnalyzer() {
+        window.console.log('here');
+        if (this.audioContext || this.audioStream) {
+            return;
+        }
         this.initAudioAnalyzer();
     }
 
     public render() {
         const {mediaSettings, muteNotice} = this.state;
-        return <div className="call-settings">
-            <FormControlLabel
-                className="call-settings-switch"
-                control={
-                    <Switch
-                        checked={mediaSettings.video}
-                        onChange={this.mediaSettingsChangeHandler('video')}
-                        color="primary"
-                    />
-                }
-                label={mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
-                labelPlacement="start"
-            />
-            <FormControlLabel
-                className="call-settings-switch"
-                control={
-                    <Switch
-                        checked={mediaSettings.audio}
-                        onChange={this.mediaSettingsChangeHandler('audio')}
-                        color="primary"
-                    />
-                }
-                label={mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
-                labelPlacement="start"
-            />
+        return <>
+            <div className="call-settings">
+                <FormControlLabel
+                    className="call-settings-switch"
+                    control={
+                        <Switch
+                            checked={mediaSettings.video}
+                            onChange={this.mediaSettingsChangeHandler('video')}
+                            color="primary"
+                        />
+                    }
+                    label={mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
+                    labelPlacement="start"
+                />
+                <FormControlLabel
+                    className="call-settings-switch"
+                    control={
+                        <Switch
+                            checked={mediaSettings.audio}
+                            onChange={this.mediaSettingsChangeHandler('audio')}
+                            color="primary"
+                        />
+                    }
+                    label={mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
+                    labelPlacement="start"
+                />
+            </div>
             {muteNotice && <div className="call-settings-notice">{i18n.t('call.audio_muted')}</div>}
-        </div>;
+        </>;
     }
 
     private mediaSettingsChangeHandler = (key: string) => (e: any, checked: boolean) => {
@@ -110,23 +119,25 @@ class CallSettings extends React.Component<IProps, IState> {
         this.setState({
             mediaSettings,
         });
+        window.console.log(mediaSettings);
         if (key === 'audio') {
             this.callService.toggleAudio(checked);
         } else if (key === 'video') {
             this.callService.toggleVideo(checked);
         }
         if (this.props.onMediaSettingsChange) {
-            this.props.onMediaSettingsChange(mediaSettings);
+            this.props.onMediaSettingsChange(clone(mediaSettings));
         }
     }
 
     private eventLocalStreamUpdateHandler = () => {
+        window.console.log('here', this.callService.getStreamState());
         this.setState({
             mediaSettings: this.callService.getStreamState(),
         });
     }
 
-    private initAudioAnalyzer() {
+    private initAudioAnalyzer = () => {
         return navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
             this.audioStream = stream;
             const tracks = stream.getAudioTracks();
@@ -142,15 +153,17 @@ class CallSettings extends React.Component<IProps, IState> {
             source.connect(audioAnalyser);
             const data = new Uint8Array(audioAnalyser.frequencyBinCount);
             const analyze = () => {
+                if (!this.mounted) {
+                    clearInterval(this.audioAnalyserInterval);
+                    return;
+                }
                 if (this.state.mediaSettings.audio) {
                     return;
                 }
                 audioAnalyser.getByteFrequencyData(data);
                 this.normalizeAnalyze(data);
             };
-            this.audioAnalyserInterval = setInterval(() => {
-                analyze();
-            }, 500);
+            this.audioAnalyserInterval = setInterval(analyze, 767);
             analyze();
             return Promise.resolve();
         });
@@ -165,6 +178,7 @@ class CallSettings extends React.Component<IProps, IState> {
         }
         val = val / 10;
         const {muteNotice} = this.state;
+        window.console.log(val);
         if (val > 40 && !muteNotice) {
             this.setState({
                 muteNotice: true,
@@ -177,6 +191,7 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private stopAudioAnalyzer() {
+        clearInterval(this.audioAnalyserInterval);
         if (this.audioStream) {
             this.audioStream.getTracks().forEach((track) => {
                 track.stop();
@@ -187,7 +202,6 @@ class CallSettings extends React.Component<IProps, IState> {
         }
         this.audioContext.close();
         this.audioContext = undefined;
-        clearInterval(this.audioAnalyserInterval);
     }
 }
 

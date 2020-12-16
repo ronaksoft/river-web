@@ -343,7 +343,7 @@ class CallModal extends React.Component<IProps, IState> {
                 {this.getCalleeContent()}
             </div>
             <div className="call-modal-action">
-                <CallSettings ref={this.callSettingsRefHandler}
+                <CallSettings ref={this.callSettingsRefHandler} key="init-settings"
                               onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
                 <div className="call-buttons">
                     <div className="call-item call-end" onClick={this.closeHandler}>
@@ -401,8 +401,8 @@ class CallModal extends React.Component<IProps, IState> {
             {isCaller && !callStarted && <div className="call-status">
                 {i18n.t('call.is_ringing')}
             </div>}
-            <div className="call-modal-action">
-                <CallSettings ref={this.callSettingsRefHandler}
+            <div className="call-modal-action main-call-action">
+                <CallSettings ref={this.callSettingsRefHandler} key="call-settings"
                               onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
                 <div className="call-item call-end" onClick={this.hangupCallHandler}>
                     <CallEndRounded/>
@@ -455,13 +455,13 @@ class CallModal extends React.Component<IProps, IState> {
                     if (this.callVideoRef) {
                         this.callVideoRef.initRemoteConnection();
                     }
+                    if (this.callSettingsRef) {
+                        this.callSettingsRef.startAudioAnalyzer();
+                    }
                 });
             }).catch(() => {
                 this.closeHandler();
             });
-        }
-        if (this.callSettingsRef) {
-            this.callSettingsRef.startAudioAnalyzer();
         }
     }
 
@@ -498,12 +498,16 @@ class CallModal extends React.Component<IProps, IState> {
 
     private hangupCallHandler = () => {
         this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
-            this.timerEnd = Date.now();
-            this.setState({
-                callStarted: false,
-                isCaller: false,
-                mode: 'call_report',
-            });
+            if (this.state.callStarted) {
+                this.timerEnd = Date.now();
+                this.setState({
+                    callStarted: false,
+                    isCaller: false,
+                    mode: 'call_report',
+                });
+            } else {
+                this.closeHandler();
+            }
         });
     }
 

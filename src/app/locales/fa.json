@@ -521,6 +521,7 @@
     "muted": "بی صدا",
     "call_back": "تماس مجدد",
     "call_timeout": "پاسخی دریافت نشد",
-    "is_not_available": "در دسترس نیست"
+    "is_not_available": "در دسترس نیست",
+    "audio_muted": "میکروفن بی صدا هست"
   }
 }
