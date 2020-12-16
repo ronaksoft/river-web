@@ -94,7 +94,11 @@ const messageHandler = (cmd: string, data: any) => {
             break;
         case 'encode':
             if (ctx.wasmEncode) {
-                ctx.wasmEncode(data.withSend, data.reqId, data.constructor, data.payload, data.teamId, data.teamAccessHash);
+                if (data.teamId && data.teamAccessHash) {
+                    ctx.wasmEncode(data.withSend, data.reqId, data.constructor, data.payload, data.teamId, data.teamAccessHash);
+                } else {
+                    ctx.wasmEncode(data.withSend, data.reqId, data.constructor, data.payload);
+                }
             }
             break;
         case 'genSrpHash':

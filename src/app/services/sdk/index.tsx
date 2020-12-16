@@ -550,7 +550,7 @@ export default class APIManager {
         });
     }
 
-    public setMessagesReadHistory(peer: InputPeer, maxId: number): Promise<Bool> {
+    public readMessageHistory(peer: InputPeer, maxId: number): Promise<Bool> {
         const data = new MessagesReadHistory();
         data.setPeer(peer);
         data.setMaxid(maxId);

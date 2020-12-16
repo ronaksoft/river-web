@@ -3154,7 +3154,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         keys.forEach((key) => {
-            this.apiManager.setMessagesReadHistory(this.dialogReadMap[key].peer, this.dialogReadMap[key].id);
+            this.apiManager.readMessageHistory(this.dialogReadMap[key].peer, this.dialogReadMap[key].id);
             delete this.dialogReadMap[key];
         });
     }
