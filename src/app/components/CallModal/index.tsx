@@ -460,6 +460,9 @@ class CallModal extends React.Component<IProps, IState> {
                 this.closeHandler();
             });
         }
+        if (this.callSettingsRef) {
+            this.callSettingsRef.startAudioAnalyzer();
+        }
     }
 
     private callAcceptHandler = (video: boolean) => () => {
@@ -477,6 +480,9 @@ class CallModal extends React.Component<IProps, IState> {
             }
             if (this.callVideoRef) {
                 this.callVideoRef.initRemoteConnection();
+            }
+            if (this.callSettingsRef) {
+                this.callSettingsRef.startAudioAnalyzer();
             }
         }).catch((err) => {
             window.console.log(err);

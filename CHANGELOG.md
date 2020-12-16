@@ -1,3 +1,8 @@
+## 0.36.11-call
+* Panel improvements
+* Reaction improvements
+* DB destroy bug fixed
+
 ## 0.36.10-call
 * About updated
 * Minor bugs fixed

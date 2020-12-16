@@ -138,6 +138,21 @@ html[mac="1"] {
   }
 }
 
+@media(-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+  html[mac="1"] {
+    .message-reaction {
+      .reaction-item {
+        .reaction-wrapper {
+          .reaction-emoji {
+            transform: translate(0.11em, 0.11em) scale(1.2);
+          }
+        }
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-night"] {
   .message-reaction {

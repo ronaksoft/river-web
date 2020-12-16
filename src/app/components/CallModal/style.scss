@@ -123,6 +123,18 @@
             justify-content: center;
           }
         }
+
+        .call-settings-notice {
+          position: absolute;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          padding: 24px;
+          text-align: center;
+          background-color: var(--glass-dark-ultra);
+          color: var(--white);
+          z-index: 10;
+        }
       }
 
       .call-item {
