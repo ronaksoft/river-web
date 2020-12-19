@@ -1327,7 +1327,7 @@ export default class UpdateManager {
             const lastMessagePromise: any[] = [];
             transaction.toCheckDialogIds.forEach((toCheck) => {
                 if (this.messageRepo) {
-                    lastMessageInput.push({teamId: toCheck.teamid, peerId: toCheck.peerid, peerType: toCheck.peertype});
+                    lastMessageInput.push({peerId: toCheck.peerid, peerType: toCheck.peertype, teamId: toCheck.teamid});
                     lastMessagePromise.push(this.messageRepo.getLastMessage(toCheck.teamid, toCheck.peerid, toCheck.peertype));
                 }
             });
