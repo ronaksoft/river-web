@@ -587,6 +587,7 @@ class Message extends React.Component<IProps, IState> {
         if (this.list) {
             this.list.forceUpdate(callback);
         }
+        this.listCount = this.state.items.length;
     }
 
     public setFitList(fit: boolean) {

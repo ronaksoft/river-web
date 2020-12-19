@@ -33,7 +33,7 @@ import NewMessage from '../../components/NewMessage';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog, IPeer} from '../../repository/dialog/interface';
 import UpdateManager, {
-    IDialogDBUpdated,
+    IDialogDBUpdated, IDialogRemoved,
     IMessageDBRemoved,
     IMessageDBUpdated,
     IMessageIdDBUpdated
@@ -500,6 +500,9 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: message db removed
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageDBRemoved, this.updateMessageDBRemovedHandler));
+
+        // Update: dialog removed
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDialogRemoved, this.updateDialogRemovedHandler));
 
         // TODO: add timestamp to pending message
 
@@ -1491,7 +1494,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messageRef) {
             this.messageRef.clearAll();
         }
-        this.messageRepo.list(this.teamId, {before, limit: 40,peer, withPending: true}, (data) => {
+        this.messageRepo.list(this.teamId, {before, limit: 40, peer, withPending: true}, (data) => {
             // Checks peerid on transition
             if (this.selectedPeerName !== dialogPeerName || !this.messageRef) {
                 this.setLoading(false);
@@ -2825,6 +2828,17 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    private updateDialogRemovedHandler = (data: IDialogRemoved) => {
+        if (data.peerNames.length === 0) {
+            return;
+        }
+        setTimeout(() => {
+            data.peerNames.forEach((peerName) => {
+                this.dialogRemove(peerName);
+            });
+        }, 1023);
+    }
+
     /* Notify on new message received */
     private notifyMessage(data: PartialDeep<UpdateNewMessage.AsObject>) {
         const message = data.message as IMessage;
@@ -3706,7 +3720,7 @@ class Chat extends React.Component<IProps, IState> {
                 for (const i in this.messageSelectedIds) {
                     if (this.messageSelectedIds.hasOwnProperty(i)) {
                         const msg = messages[this.messageSelectedIds[i]];
-                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0 || msg.peerid === currentUserId) && !msg.messageaction) {
+                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0 || msg.peerid === currentUserId || msg.messagetype === C_MESSAGE_TYPE.System)) {
                             removeForAll = false;
                             if (!allPending) {
                                 break;
@@ -4059,9 +4073,15 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
             case 'clear':
-                if (dialog.topmessageid) {
-                    this.apiManager.clearMessage(peer, dialog.topmessageid, false);
-                }
+                this.modalityService.open({
+                    cancelText: i18n.t('general.cancel'),
+                    confirmText: i18n.t('general.yes'),
+                    title: i18n.t('general.are_you_sure'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm' && dialog.topmessageid) {
+                        this.apiManager.clearMessage(peer, dialog.topmessageid, false);
+                    }
+                });
                 break;
             case 'pin':
                 this.apiManager.dialogTogglePin(peer, true).then(() => {
@@ -4783,7 +4803,7 @@ class Chat extends React.Component<IProps, IState> {
                 window.console.warn(err);
                 this.progressBroadcaster.remove(id);
                 this.chatInputTypingHandler(TypingAction.TYPINGACTIONCANCEL, peer);
-                if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED && this.selectedPeerName === peerName) {
+                if (err && err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED && this.selectedPeerName === peerName) {
                     const messages = this.messages;
                     const index = findLastIndex(messages, (o) => {
                         return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;

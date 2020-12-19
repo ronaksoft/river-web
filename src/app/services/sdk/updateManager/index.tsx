@@ -93,6 +93,10 @@ export interface IGifUse {
     time: number;
 }
 
+export interface IDialogRemoved {
+    peerNames: string[];
+}
+
 interface IUpdateContainer extends Partial<UpdateContainer.AsObject> {
     lastOne?: boolean;
 }
@@ -1303,9 +1307,6 @@ export default class UpdateManager {
 
     private processTransactionStep2(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         const promises: any[] = [];
-        if (transaction.clearDialogs.length > 0) {
-            promises.push(this.applyClearDialogs(transaction.clearDialogs, transaction.reloadLabels));
-        }
         if (transaction.labelRanges.length > 0) {
             promises.push(this.applyLabelRange(transaction.labelRanges));
         }
@@ -1322,14 +1323,16 @@ export default class UpdateManager {
 
     private processTransactionStep3(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         if (transaction.toCheckDialogIds.length > 0 && this.dialogRepo) {
+            const lastMessageInput: { teamId: string, peerId: string, peerType: number }[] = [];
             const lastMessagePromise: any[] = [];
             transaction.toCheckDialogIds.forEach((toCheck) => {
                 if (this.messageRepo) {
+                    lastMessageInput.push({teamId: toCheck.teamid, peerId: toCheck.peerid, peerType: toCheck.peertype});
                     lastMessagePromise.push(this.messageRepo.getLastMessage(toCheck.teamid, toCheck.peerid, toCheck.peertype));
                 }
             });
             const messagePromise = Promise.all(lastMessagePromise).then((arr) => {
-                arr.forEach((msg: IMessage | undefined) => {
+                arr.forEach((msg: IMessage | undefined, index) => {
                     if (msg) {
                         const messageTitle = getMessageTitle(msg);
                         this.mergeDialog(transaction.dialogs, {
@@ -1349,6 +1352,21 @@ export default class UpdateManager {
                             teamid: msg.teamid || '0',
                             topmessageid: msg.id,
                         });
+                    } else {
+                        // Remove dialog otherwise
+                        const input = lastMessageInput[index];
+                        if (input) {
+                            const peerName = GetPeerName(input.peerId, input.peerType);
+                            if (transaction.removedMessages.hasOwnProperty(peerName)) {
+                                transaction.clearDialogs.push({
+                                    maxId: 1000000000000,
+                                    peerId: input.peerId,
+                                    peerType: input.peerType,
+                                    remove: true,
+                                    teamId: input.teamId,
+                                });
+                            }
+                        }
                     }
                 });
                 return Promise.resolve();
@@ -1389,6 +1407,31 @@ export default class UpdateManager {
     }
 
     private processTransactionStep4(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
+        const promises: any[] = [];
+        if (transaction.clearDialogs.length > 0) {
+            promises.push(this.applyClearDialogs(transaction.clearDialogs, transaction.reloadLabels).then((res) => {
+                if (transaction.clearDialogs.length > 0) {
+                    this.callHandlers(this.teamId, C_MSG.UpdateDialogRemoved, {
+                        peerNames: transaction.clearDialogs.filter(o => o.remove).map(o => {
+                            return GetPeerName(o.peerId, o.peerType);
+                        }),
+                    });
+                }
+                return res;
+            }));
+        }
+        if (promises.length > 0) {
+            Promise.all(promises).then(() => {
+                this.processTransactionStep5(transaction, transactionResolve, doneFn);
+            }).catch((err) => {
+                window.console.log('processTransaction4', err);
+            });
+        } else {
+            this.processTransactionStep5(transaction, transactionResolve, doneFn);
+        }
+    }
+
+    private processTransactionStep5(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         if (transaction.updateId) {
             this.setLastUpdateId(transaction.updateId);
             this.flushLastUpdateId();
