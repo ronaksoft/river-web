@@ -2880,7 +2880,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.teamMap.hasOwnProperty(message.teamid || '0') && !this.teamMap[message.teamid || '0'].notify) {
             return;
         }
-        const teamName = this.teamMap[message.teamid || '0'].name || '';
+        const teamName = this.teamMap[message.teamid || '0'] ? this.teamMap[message.teamid || '0'].name || '' : '';
         this.canNotifyOtherTeam(message).then((ok) => {
             if (ok) {
                 if (message.peertype === PeerType.PEERGROUP) {
