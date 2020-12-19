@@ -1,3 +1,6 @@
+## 0.36.12-call
+* Known bugs fixed
+
 ## 0.36.11-call
 * Panel improvements
 * Reaction improvements
