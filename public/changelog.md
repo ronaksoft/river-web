@@ -1,3 +1,7 @@
+## 0.36.14-call
+* Modals max height modified
+* Guaranteed commands added in API Manager
+
 ## 0.36.13-call
 * Overall improvements
 * Voice recorder bug fixed
