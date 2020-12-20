@@ -2409,7 +2409,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.apiManager.getSystemConfig();
                 this.startSyncing(res.updateid || 0);
                 this.sendAllPendingMessages();
-                this.apiManager.sendAllGuaranteedCommands()
+                this.apiManager.sendAllGuaranteedCommands();
             } else {
                 setTimeout(() => {
                     this.startSyncing(res.updateid || 0);
