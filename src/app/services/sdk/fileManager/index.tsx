@@ -23,6 +23,7 @@ import {isMobile} from "../../utilities/localize";
 import Presenter from "../presenters";
 import APIManager from "../index";
 import {MessageContainer, MessageEnvelope} from "../messages/rony_pb";
+import {EventSocketReady} from "../../events";
 
 export interface IFileProgress {
     active?: boolean;
@@ -159,7 +160,7 @@ export default class FileManager {
             }
         } else {
             if (!this.fileSeverInitialized) {
-                window.addEventListener('fnStarted', () => {
+                window.addEventListener(EventSocketReady, () => {
                     this.initFileServer();
                 });
             }

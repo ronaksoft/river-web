@@ -4744,7 +4744,6 @@ class Chat extends React.Component<IProps, IState> {
 
             this.chatInputTypingHandler(TypingAction.TYPINGACTIONUPLOADING, peer);
             Promise.all(uploadPromises).then((arr) => {
-                window.console.log(arr);
                 this.chatInputTypingHandler(TypingAction.TYPINGACTIONCANCEL, peer);
                 this.progressBroadcaster.remove(id);
                 if (!sha256FileLocation && arr.length !== 0) {

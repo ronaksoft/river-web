@@ -348,6 +348,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private firstLoad: boolean = true;
     private microphonePermission: boolean = false;
     private startPosHold: number = 0;
+    private recordingVoice: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -543,6 +544,9 @@ class ChatInput extends React.Component<IProps, IState> {
         clearInterval(this.timerInterval);
         clearTimeout(this.typingTimeout);
         clearTimeout(this.preventMessageSendTimeout);
+        if (this.recorder) {
+            this.recorder.close();
+        }
     }
 
     public getUploaderOptions(): IUploaderOptions {
@@ -1478,6 +1482,9 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* On record voice start handler */
     private voiceRecord() {
+        if (this.recordingVoice) {
+            return;
+        }
         if (!this.recorder) {
             this.initRecorder();
         }
@@ -1490,6 +1497,7 @@ class ChatInput extends React.Component<IProps, IState> {
         try {
             this.recorder.stop();
             this.recorder.start().then(() => {
+                this.recordingVoice = true;
                 this.startTimer();
                 const audioAnalyser = this.recorder.audioContext.createAnalyser();
                 audioAnalyser.minDecibels = -100;
@@ -1739,6 +1747,10 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.computeFinalBars();
                 this.sendVoice();
             }
+        };
+
+        this.recorder.onstop = () => {
+            this.recordingVoice = false;
         };
     }
 

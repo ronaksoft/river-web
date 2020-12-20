@@ -1,3 +1,7 @@
+## 0.36.13-call
+* Overall improvements
+* Voice recorder bug fixed
+
 ## 0.36.12-call
 * Known bugs fixed
 

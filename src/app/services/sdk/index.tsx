@@ -553,7 +553,7 @@ export default class APIManager {
     public readMessageHistory(peer: InputPeer, maxId: number): Promise<Bool> {
         const data = new MessagesReadHistory();
         data.setPeer(peer);
-        data.setMaxid(maxId);
+        data.setMaxid(Math.floor(maxId));
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesReadHistory, data.serializeBinary(), true, {
             retry: 3,

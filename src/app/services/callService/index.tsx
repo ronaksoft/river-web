@@ -987,7 +987,7 @@ export default class CallService {
 
     private callHandlers(name: number, data: any) {
         if (!this.listeners.hasOwnProperty(name)) {
-            return Promise.reject();
+            return Promise.resolve();
         }
         return new Promise((resolve, reject) => {
             try {
