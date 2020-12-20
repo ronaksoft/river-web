@@ -1,3 +1,6 @@
+## 0.36.15-call
+* Minor bugs fixed
+
 ## 0.36.14-call
 * Modals max height modified
 * Guaranteed commands added in API Manager

@@ -892,6 +892,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     /* Decides what content the participants' "more" menu must have */
     private avatarContextMenuItem() {
         const {group} = this.state;
+        const hasPhoto = (group && group.photo && group.photo.photosmall && group.photo.photosmall.fileid !== '0');
         const menuItems: Array<{ cmd: 'show' | 'remove' | 'change', title: string }> = [{
             cmd: 'show',
             title: i18n.t('settings.show_photo'),
@@ -900,10 +901,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             title: i18n.t('settings.remove_photo'),
         }, {
             cmd: 'change',
-            title: i18n.t('settings.change_photo'),
+            title: i18n.t(hasPhoto ? 'settings.change_photo' : 'settings.set_a_new_photo'),
         }];
         return menuItems.filter((item) => {
-            return (item.cmd === 'change') || ((item.cmd === 'show' || item.cmd === 'remove') && (group && group.photo && group.photo.photosmall && group.photo.photosmall.fileid !== '0'));
+            return (item.cmd === 'change') || ((item.cmd === 'show' || item.cmd === 'remove') && hasPhoto);
         }).map((item, index) => {
             return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler(item.cmd)}
                               className="context-item">{item.title}</MenuItem>);
