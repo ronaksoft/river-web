@@ -270,6 +270,10 @@
     "synced_contacts_removed_successfully": "Synced contacts removed successfully",
     "first_name_is_required": "Firstname is required",
     "phone_is_required": "Phone is required",
+    "cannot_update_username": "Error in updating username",
+    "error_in_updating_profile": "Error in updating profile",
+    "cannot_update_profile_picture": "Error in updating profile picture",
+    "cannot_update_group_picture": "Error in updating group picture",
     "change_phone_number": {
       "title": "Change phone number",
       "text": "You can change your River number here. Your Account and all your cloud data - messages, media, contacts etc. will be moved to the new number.",

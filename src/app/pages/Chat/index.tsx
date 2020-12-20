@@ -2980,7 +2980,9 @@ class Chat extends React.Component<IProps, IState> {
                 inputFile.setFilename(`picture_${fileId}.jpg`);
                 inputFile.setMd5checksum('');
                 inputFile.setTotalparts(1);
-                this.apiManager.groupUploadPicture(res.id || '', inputFile);
+                this.apiManager.groupUploadPicture(res.id || '', inputFile).then(() => {
+                    this.textErrorHandler(i18n.t('settings.cannot_update_group_picture'));
+                });
             }
         });
     }

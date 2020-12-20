@@ -127,6 +127,13 @@ class SettingsModal extends React.Component<IProps, IState> {
         }
     }
 
+    private getMaxHeight() {
+        if (!this.props.maxHeight) {
+            return window.innerHeight - 32;
+        }
+        return Math.min(window.innerHeight - 32, this.props.maxHeight);
+    }
+
     private resizeHandler = (e: any) => {
         // if (this.autoHeight) {
         //     return;
@@ -141,8 +148,9 @@ class SettingsModal extends React.Component<IProps, IState> {
                 if (this.props.minHeight && this.autoHeight < this.props.minHeight) {
                     this.autoHeight = this.props.minHeight;
                 }
-                if (this.props.maxHeight && this.autoHeight > this.props.maxHeight) {
-                    this.autoHeight = this.props.maxHeight;
+                const maxHeight = this.getMaxHeight();
+                if (this.autoHeight > maxHeight) {
+                    this.autoHeight = maxHeight;
                 }
                 this.forceUpdate();
             } catch (e) {

@@ -1684,7 +1684,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
             return;
         }
         if (firstname.length === 0) {
-            this.props.onError(i18n.t('settings.first_name_is_required'));
+            if (this.props.onError) {
+                this.props.onError(i18n.t('settings.first_name_is_required'));
+            }
             return;
         }
         this.apiManager.updateProfile(firstname, lastname, bio).then(() => {
@@ -1700,6 +1702,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
             });
             this.userRepo.importBulk(false, [user]);
         }).catch(() => {
+            if (this.props.onError) {
+                this.props.onError(i18n.t('settings.error_in_updating_profile'));
+            }
             this.setState({
                 bio: '',
                 editProfile: false,
@@ -1735,6 +1740,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
             });
             this.userRepo.importBulk(false, [user]);
         }).catch(() => {
+            if (this.props.onError) {
+                this.props.onError('settings.cannot_update_username');
+            }
             this.setState({
                 editUsername: false,
                 user,
@@ -1818,6 +1826,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 });
             });
         }).catch(() => {
+            if (this.props.onError) {
+                this.props.onError(i18n.t('settings.cannot_update_profile_picture'));
+            }
             this.progressBroadcaster.remove(id);
             this.setState({
                 uploadingPhoto: false,

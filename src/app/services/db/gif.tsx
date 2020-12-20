@@ -19,7 +19,7 @@ export default class GifDB {
     }
 
     private static instance: GifDB;
-    private db: DexieGifDB;
+    private readonly db: DexieGifDB;
 
     private constructor() {
         this.db = new DexieGifDB();

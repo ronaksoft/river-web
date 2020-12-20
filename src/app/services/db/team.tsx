@@ -19,7 +19,7 @@ export default class TeamDB {
     }
 
     private static instance: TeamDB;
-    private db: DexieTeamDB;
+    private readonly db: DexieTeamDB;
 
     private constructor() {
         this.db = new DexieTeamDB();

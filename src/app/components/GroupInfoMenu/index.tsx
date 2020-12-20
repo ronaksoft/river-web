@@ -818,6 +818,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 }, 100);
             });
         }).catch(() => {
+            if (this.props.onError) {
+                this.props.onError(i18n.t('settings.cannot_update_group_picture'));
+            }
             this.progressBroadcaster.remove(id);
             this.setState({
                 uploadingPhoto: false,

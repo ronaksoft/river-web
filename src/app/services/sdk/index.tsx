@@ -343,7 +343,7 @@ export default class APIManager {
         const data = new AccountResetAuthorization();
         data.setAuthid(id);
         this.logVerbose(data);
-        return this.server.send(C_MSG.AccountResetAuthorization, data.serializeBinary(), true);
+        return this.server.send(C_MSG.AccountResetAuthorization, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public updateStatus(online: boolean): Promise<Bool.AsObject> {
@@ -385,7 +385,7 @@ export default class APIManager {
         data.setContactsList(arr);
         data.setReplace(replace);
         this.logVerbose(data);
-        return this.server.send(C_MSG.ContactsImport, data.serializeBinary(), false);
+        return this.server.send(C_MSG.ContactsImport, data.serializeBinary(), false, undefined, undefined, true);
     }
 
     public getContacts(crc?: number): Promise<ContactsMany.AsObject> {
@@ -405,7 +405,7 @@ export default class APIManager {
         const data = new ContactsDelete();
         data.setUseridsList(contactIds);
         this.logVerbose(data);
-        return this.server.send(C_MSG.ContactsDelete, data.serializeBinary(), true);
+        return this.server.send(C_MSG.ContactsDelete, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public deleteAllContacts() {
@@ -468,7 +468,7 @@ export default class APIManager {
                 code: C_ERR.ErrCodeInternal,
                 items: C_ERR_ITEM.ErrItemTimeout
             }],
-        });
+        }, undefined, true);
     }
 
     public sendMediaMessage(randomId: number, peer: InputPeer, mediaType: InputMediaType, mediaData: Uint8Array, replyTo?: number): Promise<MessagesSent.AsObject> {
@@ -500,7 +500,7 @@ export default class APIManager {
         data.setPeer(peer);
         data.setMessageidsList(ids);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesReadContents, data.serializeBinary(), false);
+        return this.server.send(C_MSG.MessagesReadContents, data.serializeBinary(), false, undefined, undefined, true);
     }
 
     public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
@@ -606,7 +606,7 @@ export default class APIManager {
         data.setTokentype(PushTokenProvider.PUSHTOKENFIREBASE);
         data.setClientid('river');
         this.logVerbose(data);
-        return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
+        return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public removeMessage(peer: InputPeer, ids: number[], revoke: boolean): Promise<Bool.AsObject> {
@@ -615,7 +615,7 @@ export default class APIManager {
         data.setMessageidsList(ids);
         data.setRevoke(revoke);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesDelete, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesDelete, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public forwardMessage(peer: InputPeer, ids: number[], randomId: number, targetPeer: InputPeer, silence: boolean): Promise<Bool.AsObject> {
@@ -626,7 +626,7 @@ export default class APIManager {
         data.setRandomid(randomId);
         data.setSilence(silence);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesForward, data.serializeBinary(), false);
+        return this.server.send(C_MSG.MessagesForward, data.serializeBinary(), false, undefined, undefined, true);
     }
 
     public clearMessage(peer: InputPeer, maxId: number, clearDialog: boolean) {
@@ -635,7 +635,7 @@ export default class APIManager {
         data.setMaxid(maxId);
         data.setDelete(clearDialog);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesClearHistory, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesClearHistory, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public usernameAvailable(username: string): Promise<Bool.AsObject> {
@@ -680,7 +680,7 @@ export default class APIManager {
         const data = new AccountRemovePhoto();
         data.setPhotoid(id || '0');
         this.logVerbose(data);
-        return this.server.send(C_MSG.AccountRemovePhoto, data.serializeBinary(), true);
+        return this.server.send(C_MSG.AccountRemovePhoto, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public getUserFull(usersInput: InputUser[]): Promise<UsersMany.AsObject> {
@@ -733,7 +733,7 @@ export default class APIManager {
         data.setGroupid(peer.getId() || '');
         data.setTitle(title);
         this.logVerbose(data);
-        return this.server.send(C_MSG.GroupsEditTitle, data.serializeBinary(), true);
+        return this.server.send(C_MSG.GroupsEditTitle, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public groupRemoveMember(peer: InputPeer, user: InputUser): Promise<Bool.AsObject> {
@@ -741,7 +741,7 @@ export default class APIManager {
         data.setGroupid(peer.getId() || '');
         data.setUser(user);
         this.logVerbose(data);
-        return this.server.send(C_MSG.GroupsDeleteUser, data.serializeBinary(), true);
+        return this.server.send(C_MSG.GroupsDeleteUser, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public groupAddMember(peer: InputPeer, user: InputUser, limit: number): Promise<Bool.AsObject> {
@@ -750,7 +750,7 @@ export default class APIManager {
         data.setUser(user);
         data.setForwardlimit(limit);
         this.logVerbose(data);
-        return this.server.send(C_MSG.GroupsAddUser, data.serializeBinary(), true);
+        return this.server.send(C_MSG.GroupsAddUser, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public groupUpdateAdmin(peer: InputPeer, user: InputUser, admin: boolean): Promise<Bool.AsObject> {
@@ -759,7 +759,7 @@ export default class APIManager {
         data.setUser(user);
         data.setAdmin(admin);
         this.logVerbose(data);
-        return this.server.send(C_MSG.GroupsUpdateAdmin, data.serializeBinary(), true);
+        return this.server.send(C_MSG.GroupsUpdateAdmin, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public groupToggleAdmin(peer: InputPeer, adminEnabled: boolean): Promise<Bool.AsObject> {
@@ -767,7 +767,7 @@ export default class APIManager {
         data.setGroupid(peer.getId() || '');
         data.setAdminenabled(adminEnabled);
         this.logVerbose(data);
-        return this.server.send(C_MSG.GroupsToggleAdmins, data.serializeBinary(), true);
+        return this.server.send(C_MSG.GroupsToggleAdmins, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public groupUploadPicture(groupId: string, file: InputFile): Promise<GroupPhoto.AsObject> {
@@ -792,7 +792,7 @@ export default class APIManager {
         data.setGroupid(groupId);
         data.setPhotoid(id || '0');
         this.logVerbose(data);
-        return this.server.send(C_MSG.GroupsRemovePhoto, data.serializeBinary(), true);
+        return this.server.send(C_MSG.GroupsRemovePhoto, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public groupSeenBy(groupId: string): Promise<GroupsHistoryStats.AsObject> {
@@ -825,7 +825,7 @@ export default class APIManager {
         data.setPeer(peer);
         data.setPin(pin);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesToggleDialogPin, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesToggleDialogPin, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public getPrivacy(privacyKey: PrivacyKey): Promise<AccountPrivacyRules.AsObject> {
@@ -844,7 +844,7 @@ export default class APIManager {
         data.setPhonenumberList(phoneNumberList || []);
         data.setProfilephotoList(profilePhotoList || []);
         this.logVerbose(data);
-        return this.server.send(C_MSG.AccountSetPrivacy, data.serializeBinary(), false);
+        return this.server.send(C_MSG.AccountSetPrivacy, data.serializeBinary(), false, undefined, undefined, true);
     }
 
     public saveDraft(peer: InputPeer, body: string, replyTo?: number, entities?: MessageEntity.AsObject[]): Promise<Bool.AsObject> {
@@ -872,14 +872,14 @@ export default class APIManager {
         const data = new MessagesClearDraft();
         data.setPeer(peer);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesClearDraft, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesClearDraft, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public setLang(langCode: string): Promise<Bool.AsObject> {
         const data = new AccountSetLang();
         data.setLangcode(langCode);
         this.logVerbose(data);
-        return this.server.send(C_MSG.AccountSetLang, data.serializeBinary(), true, {timeout: 3000});
+        return this.server.send(C_MSG.AccountSetLang, data.serializeBinary(), true, {timeout: 3000}, undefined, true);
     }
 
     public labelCreate(name: string, color: string,): Promise<Label.AsObject> {
@@ -897,14 +897,14 @@ export default class APIManager {
         data.setName(name);
         data.setColour(color);
         this.logVerbose(data);
-        return this.server.send(C_MSG.LabelsEdit, data.serializeBinary(), true);
+        return this.server.send(C_MSG.LabelsEdit, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public labelDelete(ids: number[]): Promise<Bool.AsObject> {
         const data = new LabelsDelete();
         data.setLabelidsList(ids);
         this.logVerbose(data);
-        return this.server.send(C_MSG.LabelsDelete, data.serializeBinary(), true);
+        return this.server.send(C_MSG.LabelsDelete, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public labelGet(): Promise<LabelsMany.AsObject> {
@@ -919,7 +919,7 @@ export default class APIManager {
         data.setLabelidsList(labelIds);
         data.setMessageidsList(msgIds);
         this.logVerbose(data);
-        return this.server.send(C_MSG.LabelsAddToMessage, data.serializeBinary(), true);
+        return this.server.send(C_MSG.LabelsAddToMessage, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public labelRemoveFromMessage(peer: InputPeer, labelIds: number[], msgIds: number[]): Promise<Bool.AsObject> {
@@ -928,7 +928,7 @@ export default class APIManager {
         data.setLabelidsList(labelIds);
         data.setMessageidsList(msgIds);
         this.logVerbose(data);
-        return this.server.send(C_MSG.LabelsRemoveFromMessage, data.serializeBinary(), true);
+        return this.server.send(C_MSG.LabelsRemoveFromMessage, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public labelList(id: number, min: number, max: number, limit: number): Promise<LabelItems.AsObject> {
@@ -955,7 +955,7 @@ export default class APIManager {
         data.setPhone(phone);
         data.setUser(inputUser);
         this.logVerbose(data);
-        return this.server.send(C_MSG.ContactsAdd, data.serializeBinary(), true);
+        return this.server.send(C_MSG.ContactsAdd, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public accountChangeNumber(phone: string, phoneCode: string, phoneHash: string, inputPassword?: InputPassword): Promise<User.AsObject> {
@@ -1026,14 +1026,14 @@ export default class APIManager {
         const data = new ContactsBlock();
         data.setUser(inputUser);
         this.logVerbose(data);
-        return this.server.send(C_MSG.ContactsBlock, data.serializeBinary(), true);
+        return this.server.send(C_MSG.ContactsBlock, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public accountUnblock(inputUser: InputUser): Promise<any> {
         const data = new ContactsUnblock();
         data.setUser(inputUser);
         this.logVerbose(data);
-        return this.server.send(C_MSG.ContactsUnblock, data.serializeBinary(), true);
+        return this.server.send(C_MSG.ContactsUnblock, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public botStart(inputPeer: InputPeer, randomId: number): Promise<Bool.AsObject> {
@@ -1070,7 +1070,7 @@ export default class APIManager {
         data.setCategory(category);
         data.setPeer(peer);
         this.logVerbose(data);
-        return this.server.send(C_MSG.ContactsResetTopPeer, data.serializeBinary(), true);
+        return this.server.send(C_MSG.ContactsResetTopPeer, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public getSystemConfig(): Promise<SystemConfig.AsObject> {
@@ -1098,14 +1098,14 @@ export default class APIManager {
         data.setDoc(inputDocument);
         data.setAttributesList(attributeList);
         this.logVerbose(data);
-        return this.server.send(C_MSG.GifSave, data.serializeBinary(), false);
+        return this.server.send(C_MSG.GifSave, data.serializeBinary(), false, undefined, undefined, true);
     }
 
     public removeGif(inputDocument: InputDocument): Promise<Bool.AsObject> {
         const data = new GifDelete();
         data.setDoc(inputDocument);
         this.logVerbose(data);
-        return this.server.send(C_MSG.GifDelete, data.serializeBinary(), false);
+        return this.server.send(C_MSG.GifDelete, data.serializeBinary(), false, undefined, undefined, true);
     }
 
     public accountGetTeams(): Promise<TeamsMany.AsObject> {
@@ -1144,7 +1144,7 @@ export default class APIManager {
         data.setPeer(inputPeer);
         data.setReaction(reaction);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesSendReaction, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesSendReaction, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public reactionRemove(inputPeer: InputPeer, id: number, reactions: string[]): Promise<Bool.AsObject> {
@@ -1153,7 +1153,7 @@ export default class APIManager {
         data.setPeer(inputPeer);
         data.setReactionsList(reactions);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesDeleteReaction, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesDeleteReaction, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public reactionList(inputPeer: InputPeer, id: number, hash: number): Promise<MessagesReactionList.AsObject> {
@@ -1171,7 +1171,7 @@ export default class APIManager {
         data.setMessageid(id);
         data.setSilent(silent);
         this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesTogglePin, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesTogglePin, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public teamListMember(teamId: string): Promise<TeamMembers.AsObject> {
@@ -1186,7 +1186,7 @@ export default class APIManager {
         data.setTeamid(teamId);
         data.setUserid(userId);
         this.logVerbose(data);
-        return this.server.send(C_MSG.TeamPromote, data.serializeBinary(), true);
+        return this.server.send(C_MSG.TeamPromote, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public teamDemoteMember(teamId: string, userId: string): Promise<Bool.AsObject> {
@@ -1194,7 +1194,7 @@ export default class APIManager {
         data.setTeamid(teamId);
         data.setUserid(userId);
         this.logVerbose(data);
-        return this.server.send(C_MSG.TeamDemote, data.serializeBinary(), true);
+        return this.server.send(C_MSG.TeamDemote, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public teamAddMember(teamId: string, userId: string): Promise<Bool.AsObject> {
@@ -1203,7 +1203,7 @@ export default class APIManager {
         data.setUserid(userId);
         data.setManager(false);
         this.logVerbose(data);
-        return this.server.send(C_MSG.TeamAddMember, data.serializeBinary(), false);
+        return this.server.send(C_MSG.TeamAddMember, data.serializeBinary(), false, undefined, undefined, true);
     }
 
     public teamRemoveMember(teamId: string, userId: string): Promise<Bool.AsObject> {
@@ -1211,7 +1211,7 @@ export default class APIManager {
         data.setTeamid(teamId);
         data.setUserid(userId);
         this.logVerbose(data);
-        return this.server.send(C_MSG.TeamRemoveMember, data.serializeBinary(), true);
+        return this.server.send(C_MSG.TeamRemoveMember, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public teamEdit(teamId: string, name: string): Promise<Bool.AsObject> {
@@ -1219,7 +1219,7 @@ export default class APIManager {
         data.setTeamid(teamId);
         data.setName(name);
         this.logVerbose(data);
-        return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true);
+        return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public callInit(inputPeer: InputPeer): Promise<PhoneInit.AsObject> {

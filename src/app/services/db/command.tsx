@@ -1,28 +1,28 @@
 /*
-    Creation Time: 2018 - Sep - 29
+    Creation Time: 2020 - Dec - 20
     Created by:  (hamidrezakk)
     Maintainers:
        1.  HamidrezaKK (hamidrezakks@gmail.com)
     Auditor: HamidrezaKK
-    Copyright Ronak Software Group 2018
+    Copyright Ronak Software Group 2020
 */
 
-import {DexieDialogDB} from './dexie/dialog';
+import {DexieCommandDB} from "./dexie/command";
 
-export default class DialogDB {
+export default class CommandDB {
     public static getInstance() {
         if (!this.instance) {
-            this.instance = new DialogDB();
+            this.instance = new CommandDB();
         }
 
         return this.instance;
     }
 
-    private static instance: DialogDB;
-    private readonly db: DexieDialogDB;
+    private static instance: CommandDB;
+    private readonly db: DexieCommandDB;
 
     private constructor() {
-        this.db = new DexieDialogDB();
+        this.db = new DexieCommandDB();
         this.db.open();
     }
 

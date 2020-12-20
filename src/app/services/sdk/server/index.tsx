@@ -21,6 +21,8 @@ import {SystemConfig, SystemGetServerTime, SystemServerTime} from "../messages/s
 import {InputPassword, InputTeam} from "../messages/core.types_pb";
 import {Error as RiverError, KeyValue, MessageContainer, MessageEnvelope} from "../messages/rony_pb";
 import {getServerKeys} from "../../../components/DevTools";
+import CommandRepo from "../../../repository/command";
+import RiverTime from "../../utilities/river_time";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;
@@ -32,14 +34,16 @@ interface IErrorPair {
 }
 
 interface IRequestOptions {
+    guaranteeRetry?: number;
+    inputTeam?: InputTeam.AsObject;
     retry?: number;
     retryErrors?: IErrorPair[];
     retryWait?: number;
     timeout?: number;
-    inputTeam?: InputTeam.AsObject;
 }
 
 export interface IServerRequest {
+    commandId?: number;
     constructor: number;
     data: Uint8Array;
     inputTeam?: InputTeam.AsObject;
@@ -87,10 +91,14 @@ export default class Server {
     private systemConfig: Partial<SystemConfig.AsObject> = {dcsList: []};
     private inputTeam: InputTeam.AsObject | undefined;
     private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
+    private commandRepo: CommandRepo;
+    private riverTime: RiverTime;
 
     public constructor() {
         this.socket = Socket.getInstance();
         this.reqId = 0;
+        this.commandRepo = CommandRepo.getInstance();
+        this.riverTime = RiverTime.getInstance();
         this.getLastActivityTime();
         this.startIdleCheck();
         const version = this.shouldMigrate();
@@ -167,70 +175,85 @@ export default class Server {
     }
 
     /* Send a request to WASM worker over CustomEvent in window object */
-    public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions, reqIdFn?: (rId: number) => void, force?: boolean): Promise<any> {
-        let internalResolve = null;
-        let internalReject = null;
+    public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions, reqIdFn?: (rId: number) => void, guarantee?: boolean): Promise<any> {
+        const createRequest = (commandId?: number) => {
+            let internalResolve = null;
+            let internalReject = null;
 
-        const reqId = ++this.reqId;
-        if (reqIdFn) {
-            reqIdFn(reqId);
-        }
-        // retry on E00 Server error
-        if (!options) {
-            options = {
-                retry: 3,
-                retryErrors: [{
-                    code: C_ERR.ErrCodeInternal,
-                    items: C_ERR_ITEM.ErrItemServer,
-                }],
-            };
-        } else {
-            if (options.retryErrors) {
-                if (!options.retryErrors.find(o => o.code === C_ERR.ErrCodeInternal && o.items === C_ERR_ITEM.ErrItemServer)) {
-                    options.retryErrors.push({
+            const reqId = ++this.reqId;
+            if (reqIdFn) {
+                reqIdFn(reqId);
+            }
+            // retry on E00 Server error
+            if (!options) {
+                options = {
+                    retry: 3,
+                    retryErrors: [{
                         code: C_ERR.ErrCodeInternal,
                         items: C_ERR_ITEM.ErrItemServer,
-                    });
+                    }],
+                };
+            } else {
+                if (options.retryErrors) {
+                    if (!options.retryErrors.find(o => o.code === C_ERR.ErrCodeInternal && o.items === C_ERR_ITEM.ErrItemServer)) {
+                        options.retryErrors.push({
+                            code: C_ERR.ErrCodeInternal,
+                            items: C_ERR_ITEM.ErrItemServer,
+                        });
+                    }
                 }
             }
+
+            const request: IServerRequest = {
+                commandId,
+                constructor,
+                data,
+                inputTeam: options.inputTeam || this.inputTeam,
+                options,
+                reqId,
+                retry: 0,
+                timeout: null,
+            };
+
+            const promise = new Promise((res, rej) => {
+                internalResolve = res;
+                internalReject = rej;
+                if (this.isReady || (this.isConnected && this.isUnAuth(constructor))) {
+                    if (instant) {
+                        this.sendRequest(request);
+                    } else {
+                        this.sendThrottledRequest(request);
+                    }
+                }
+            });
+
+            /* Add request to the queue manager */
+            this.messageListeners[reqId] = {
+                reject: internalReject,
+                request,
+                resolve: internalResolve,
+                state: 0,
+            };
+
+            this.sentQueue.push(reqId);
+
+            return promise;
+        };
+
+        if (guarantee) {
+            return this.commandRepo.create({
+                cmd: constructor,
+                data,
+                inputTeam: options ? options.inputTeam || this.inputTeam : this.inputTeam,
+                instant,
+                timestamp: this.riverTime.now(),
+                try: options ? options.guaranteeRetry || 0 : 0,
+            }).then((commandId) => {
+                return createRequest(commandId);
+            });
+        } else {
+            return createRequest();
         }
-
-        // if (this.inputTeam) {
-        //     this.inputTeam.accesshash = '5675765';
-        // }
-        const request: IServerRequest = {
-            constructor,
-            data,
-            inputTeam: options.inputTeam || this.inputTeam,
-            options,
-            reqId,
-            retry: 0,
-            timeout: null,
-        };
-
-        const promise = new Promise((res, rej) => {
-            internalResolve = res;
-            internalReject = rej;
-            if (this.isReady || (this.isConnected && this.isUnAuth(constructor)) || force) {
-                if (instant) {
-                    this.sendRequest(request);
-                } else {
-                    this.sendThrottledRequest(request);
-                }
-            }
-        });
-
-        /* Add request to the queue manager */
-        this.messageListeners[reqId] = {
-            reject: internalReject,
-            request,
-            resolve: internalResolve,
-            state: 0,
-        };
-
-        this.sentQueue.push(reqId);
-
-        return promise;
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array) {
@@ -326,6 +349,10 @@ export default class Server {
         const index = this.cancelList.indexOf(request.reqId);
         if (index > -1) {
             this.cancelList.splice(index, 1);
+            const req = this.messageListeners[request.reqId];
+            if (req && req.request.commandId) {
+                this.commandRepo.remove(req.request.commandId);
+            }
             delete this.messageListeners[request.reqId];
             window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId} cancelled`, 'color: #cc0000');
             return true;
@@ -456,6 +483,7 @@ export default class Server {
                     }
                 }
                 clearTimeout(this.messageListeners[reqId].request.timeout);
+                this.handleGuaranteedCommand(this.messageListeners[reqId].request);
                 this.cleanQueue(reqId);
             }
         } catch (e) {
@@ -915,6 +943,13 @@ export default class Server {
         ta.setValue(teamAccessHash);
 
         return [ti, ta];
+    }
+
+    private handleGuaranteedCommand(request: IServerRequest) {
+        if (!request.commandId) {
+            return;
+        }
+        this.commandRepo.remove(request.commandId);
     }
 
     private dispatchEvent(cmd: string, data: any) {
