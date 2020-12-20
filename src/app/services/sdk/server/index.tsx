@@ -340,6 +340,18 @@ export default class Server {
         }
     }
 
+    public sendAllGuaranteedCommands() {
+        const time = this.riverTime.now();
+        this.commandRepo.list(time).then((res) => {
+            this.commandRepo.removeMany(res.map(o => o.id));
+            res.forEach((item) => {
+                this.send(item.cmd, item.data, item.instant, {
+                    inputTeam: item.inputTeam,
+                });
+            });
+        });
+    }
+
     private cancelRequestByEnvelope(envelope: MessageEnvelope) {
         // @ts-ignore
         this.cancelRequest({constructor: envelope.getConstructor() || 0, reqId: envelope.getRequestid() || 0});

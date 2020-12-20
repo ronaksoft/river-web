@@ -38,6 +38,10 @@ export default class CommandRepo {
         return this.db.commands.delete(id);
     }
 
+    public removeMany(ids: number[]) {
+        return this.db.commands.bulkDelete(ids);
+    }
+
     public list(timestamp: number) {
         return this.db.commands.filter((o) => {
             return o.timestamp < timestamp;

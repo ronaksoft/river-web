@@ -1323,6 +1323,10 @@ export default class APIManager {
         return this.server.isStarted();
     }
 
+    public sendAllGuaranteedCommands() {
+        this.server.sendAllGuaranteedCommands();
+    }
+
     private logVerbose(data: any) {
         if (this.verboseAPI && data && data.toObject) {
             window.console.info('%cRequest', 'background-color: #008AAA', data.toObject());
