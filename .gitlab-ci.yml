@@ -21,8 +21,6 @@ build:app:
     - cp -r ./build/* $BUILD_DIR/app
     - cp ./nginx.conf.template $BUILD_DIR/app/
     - cp ./nginx-ssl.conf.template $BUILD_DIR/app/
-#    - cp ./manifest-aid.js $BUILD_DIR/app/
-#    - node manifest-aid.js $BUILD_DIR/app/
 
   artifacts:
     untracked: true
