@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/dialog';
 import {IDialog, IDialogWithUpdateId, IDraft, IPeer} from './interface';
-import {throttle, differenceWith, find, uniqBy, cloneDeep} from 'lodash';
+import {throttle, differenceWith, find, uniqBy, cloneDeep, isEmpty} from 'lodash';
 import APIManager, {currentUserId} from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
@@ -359,9 +359,8 @@ export default class DialogRepo {
         if (newDialog.force !== true && newDialog.topmessageid !== undefined && newDialog.topmessageid < (dialog.topmessageid || 0)) {
             newDialog.topmessageid = dialog.topmessageid;
         }
-        if (newDialog.draft && !newDialog.draft.peerid) {
+        if (dialog.draft && newDialog.draft && isEmpty(newDialog.draft)) {
             dialog.draft = {};
-            newDialog.draft = {};
         }
         if (newDialog.unreadcount === 0 && (dialog.unreadcount || 0) > 0) {
             dialog.scroll_pos = -1;

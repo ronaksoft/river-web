@@ -1,3 +1,8 @@
+## 0.36.16-call
+* Safari optimization
+* A bug fixed in draft
+* Minor bugs fixed
+
 ## 0.36.15-call
 * Minor bugs fixed
 

@@ -53,18 +53,25 @@ const messageHandler = (cmd: string, data: any) => {
         case 'init':
             console.time('wasm init');
             fetch('/bin/river.wasm?v32').then((response) => {
-                WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
-                    console.timeEnd('wasm init');
-                    go.run(res.instance);
-                }).catch((err) => {
-                    console.warn(err);
+                const alternativeFn = () => {
                     response.arrayBuffer().then((data) => {
                         WebAssembly.instantiate(data, go.importObject).then((res) => {
                             console.timeEnd('wasm init');
                             go.run(res.instance);
                         });
                     });
-                });
+                };
+                if (WebAssembly.instantiateStreaming) {
+                    WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
+                        console.timeEnd('wasm init');
+                        go.run(res.instance);
+                    }).catch((err) => {
+                        console.warn(err);
+                        alternativeFn();
+                    });
+                } else {
+                    alternativeFn();
+                }
             });
             break;
         case 'load':

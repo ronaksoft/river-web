@@ -306,9 +306,11 @@ export default class CachedFileService {
                                         this.files[name].blurSrc[blurRadius] = URL.createObjectURL(blurredBlob);
                                         resolve(this.files[name].blurSrc[blurRadius]);
                                     });
-                                } else {
+                                } else if (this.files[name]) {
                                     this.files[name].src = URL.createObjectURL(blob);
                                     resolve(this.files[name].src);
+                                } else {
+                                    reject();
                                 }
                             }
                         });

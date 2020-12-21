@@ -35,7 +35,7 @@ import {
     UpdateUserPhoto,
     UpdateUserTyping,
 } from '../messages/updates_pb';
-import {cloneDeep, uniq} from 'lodash';
+import {cloneDeep, isEmpty, uniq} from 'lodash';
 import MessageRepo, {getMediaDocument, modifyReactions} from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';
 import {IDialog, IPeer} from "../../../repository/dialog/interface";
@@ -1083,6 +1083,9 @@ export default class UpdateManager {
         const dialogId = `${dialog.teamid || '0'}_${dialog.peerid || '0'}_${dialog.peertype || '0'}`;
         const d = dialogs[dialogId];
         if (d) {
+            if (d.draft && dialog.draft && isEmpty(dialog.draft)) {
+                d.draft = {};
+            }
             if ((d.readinboxmaxid || 0) > (dialog.readinboxmaxid || 0)) {
                 dialog.readinboxmaxid = (d.readinboxmaxid || 0);
             }
@@ -1097,7 +1100,7 @@ export default class UpdateManager {
                 dialogs[dialogId] = kMerge(d, dialog);
             }
         } else {
-            dialogs[dialogId] = dialog;
+            dialogs[dialogId] = cloneDeep(dialog);
         }
     }
 

@@ -82,23 +82,45 @@ export default function VideoPlaceholder({innerRef, userId, srcObject, className
         if (!video.videoWidth || !video.videoHeight) {
             return;
         }
-        const canvas = new OffscreenCanvas(video.videoWidth, video.videoHeight);
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-            ctx.canvas.height = video.videoHeight;
-            ctx.canvas.width = video.videoWidth;
-            ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-            const imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight);
-            glur(imageData.data, video.videoWidth, video.videoHeight, 10);
-            ctx.putImageData(imageData, 0, 0);
-            canvas.convertToBlob({
-                quality: 0.8,
-                type: 'image/jpeg',
-            }).then((blob) => {
-                if (blob) {
-                    setImg(URL.createObjectURL(blob));
-                }
-            });
+
+        if (window.OffscreenCanvas) {
+            const canvas = new OffscreenCanvas(video.videoWidth, video.videoHeight);
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.canvas.height = video.videoHeight;
+                ctx.canvas.width = video.videoWidth;
+                ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                const imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight);
+                glur(imageData.data, video.videoWidth, video.videoHeight, 10);
+                ctx.putImageData(imageData, 0, 0);
+                canvas.convertToBlob({
+                    quality: 0.8,
+                    type: 'image/jpeg',
+                }).then((blob) => {
+                    if (blob) {
+                        setImg(URL.createObjectURL(blob));
+                    }
+                });
+            }
+        } else {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.width;
+            canvas.height = video.height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.canvas.height = video.videoHeight;
+                ctx.canvas.width = video.videoWidth;
+                ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                const imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight);
+                glur(imageData.data, video.videoWidth, video.videoHeight, 10);
+                ctx.putImageData(imageData, 0, 0);
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        setImg(URL.createObjectURL(blob));
+                    }
+                    canvas.remove();
+                }, 'image/jpeg', 0.8);
+            }
         }
     };
 

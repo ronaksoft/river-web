@@ -138,6 +138,9 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private initAudioAnalyzer = () => {
+        if (!window.AudioContext) {
+            return Promise.reject('no AudioContext');
+        }
         return navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
             this.audioStream = stream;
             const tracks = stream.getAudioTracks();
