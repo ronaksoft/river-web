@@ -83,16 +83,20 @@ export default function VideoPlaceholder({innerRef, userId, srcObject, className
             return;
         }
 
+        const draw = (ctx: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D) => {
+            ctx.canvas.height = video.videoHeight;
+            ctx.canvas.width = video.videoWidth;
+            ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+            const imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight);
+            glur(imageData.data, video.videoWidth, video.videoHeight, 10);
+            ctx.putImageData(imageData, 0, 0);
+        };
+
         if (window.OffscreenCanvas) {
             const canvas = new OffscreenCanvas(video.videoWidth, video.videoHeight);
             const ctx = canvas.getContext('2d');
             if (ctx) {
-                ctx.canvas.height = video.videoHeight;
-                ctx.canvas.width = video.videoWidth;
-                ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                const imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight);
-                glur(imageData.data, video.videoWidth, video.videoHeight, 10);
-                ctx.putImageData(imageData, 0, 0);
+                draw(ctx);
                 canvas.convertToBlob({
                     quality: 0.8,
                     type: 'image/jpeg',
@@ -108,12 +112,7 @@ export default function VideoPlaceholder({innerRef, userId, srcObject, className
             canvas.height = video.height;
             const ctx = canvas.getContext('2d');
             if (ctx) {
-                ctx.canvas.height = video.videoHeight;
-                ctx.canvas.width = video.videoWidth;
-                ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                const imageData = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight);
-                glur(imageData.data, video.videoWidth, video.videoHeight, 10);
-                ctx.putImageData(imageData, 0, 0);
+                draw(ctx);
                 canvas.toBlob((blob) => {
                     if (blob) {
                         setImg(URL.createObjectURL(blob));
