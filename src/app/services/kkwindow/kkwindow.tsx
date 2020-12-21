@@ -77,6 +77,7 @@ const scrollbarThumbStyle: any = {
 
 const C_TRY_SCROLL_TOP = 20;
 
+// TODO: measure width as well for better reaction render
 class KKWindow extends React.Component<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
         if (props.count === state.items.length) {
