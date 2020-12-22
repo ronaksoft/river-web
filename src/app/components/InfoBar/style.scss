@@ -56,7 +56,8 @@
     width: 92px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+    padding-right: 8px;
 
     button {
       padding: 8px;
@@ -98,6 +99,8 @@ html[direction="rtl"] {
     .buttons {
       right: auto;
       left: 0;
+      padding-right: 0;
+      padding-left: 8px;
     }
 
     .back-to-chats {
