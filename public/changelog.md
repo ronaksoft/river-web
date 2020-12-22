@@ -1,9 +1,9 @@
 ## 1.0.0
 * 🎉 Video and Voice call
-* New Code Presenter
-* Upgraded to latest react
-* New WASM architecture
-* New Web-Worker architecture
+* 🎉 New Code Presenter
+* 🎉 Upgraded to latest react
+* 🎉 New WASM architecture
+* 🎉 New Web-Worker architecture
 * Code rewriting
 * Various bugs fixed and many improvements
 
