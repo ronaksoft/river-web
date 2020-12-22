@@ -27,3 +27,4 @@ yarn-error.log*
 .sass-cache/
 .idea/
 .tmp/
+.eslintcache
