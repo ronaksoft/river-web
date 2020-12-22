@@ -73,7 +73,6 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     public startAudioAnalyzer() {
-        window.console.log('here');
         if (this.audioContext || this.audioStream) {
             return;
         }
@@ -131,7 +130,6 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private eventLocalStreamUpdateHandler = () => {
-        window.console.log('here', this.callService.getStreamState());
         this.setState({
             mediaSettings: this.callService.getStreamState(),
         });
