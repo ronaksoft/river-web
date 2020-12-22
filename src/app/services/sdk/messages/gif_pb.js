@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -203,7 +205,7 @@ proto.msg.GifGetSaved.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.GifGetSaved.toObject = function(includeInstance, msg) {
   var f, obj = {
-    hash: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    hash: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -273,8 +275,8 @@ proto.msg.GifGetSaved.prototype.serializeBinary = function() {
  */
 proto.msg.GifGetSaved.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getHash();
+  if (f !== 0) {
     writer.writeFixed32(
       1,
       f
@@ -284,7 +286,7 @@ proto.msg.GifGetSaved.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required fixed32 Hash = 1;
+ * optional fixed32 Hash = 1;
  * @return {number}
  */
 proto.msg.GifGetSaved.prototype.getHash = function() {
@@ -297,25 +299,7 @@ proto.msg.GifGetSaved.prototype.getHash = function() {
  * @return {!proto.msg.GifGetSaved} returns this
  */
 proto.msg.GifGetSaved.prototype.setHash = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.GifGetSaved} returns this
- */
-proto.msg.GifGetSaved.prototype.clearHash = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GifGetSaved.prototype.hasHash = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -456,17 +440,17 @@ proto.msg.GifSave.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputDocument Doc = 1;
- * @return {!proto.msg.InputDocument}
+ * optional InputDocument Doc = 1;
+ * @return {?proto.msg.InputDocument}
  */
 proto.msg.GifSave.prototype.getDoc = function() {
-  return /** @type{!proto.msg.InputDocument} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputDocument, 1, 1));
+  return /** @type{?proto.msg.InputDocument} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputDocument, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputDocument} value
+ * @param {?proto.msg.InputDocument|undefined} value
  * @return {!proto.msg.GifSave} returns this
 */
 proto.msg.GifSave.prototype.setDoc = function(value) {
@@ -475,11 +459,11 @@ proto.msg.GifSave.prototype.setDoc = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.GifSave} returns this
  */
 proto.msg.GifSave.prototype.clearDoc = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setDoc(undefined);
 };
 
 
@@ -645,17 +629,17 @@ proto.msg.GifDelete.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required InputDocument Doc = 1;
- * @return {!proto.msg.InputDocument}
+ * optional InputDocument Doc = 1;
+ * @return {?proto.msg.InputDocument}
  */
 proto.msg.GifDelete.prototype.getDoc = function() {
-  return /** @type{!proto.msg.InputDocument} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputDocument, 1, 1));
+  return /** @type{?proto.msg.InputDocument} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputDocument, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputDocument} value
+ * @param {?proto.msg.InputDocument|undefined} value
  * @return {!proto.msg.GifDelete} returns this
 */
 proto.msg.GifDelete.prototype.setDoc = function(value) {
@@ -664,11 +648,11 @@ proto.msg.GifDelete.prototype.setDoc = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.GifDelete} returns this
  */
 proto.msg.GifDelete.prototype.clearDoc = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setDoc(undefined);
 };
 
 
@@ -713,8 +697,8 @@ proto.msg.GifSearch.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.GifSearch.toObject = function(includeInstance, msg) {
   var f, obj = {
-    query: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    hash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    query: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    hash: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -788,15 +772,15 @@ proto.msg.GifSearch.prototype.serializeBinary = function() {
  */
 proto.msg.GifSearch.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getQuery();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getHash();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
@@ -806,7 +790,7 @@ proto.msg.GifSearch.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Query = 1;
+ * optional string Query = 1;
  * @return {string}
  */
 proto.msg.GifSearch.prototype.getQuery = function() {
@@ -819,30 +803,12 @@ proto.msg.GifSearch.prototype.getQuery = function() {
  * @return {!proto.msg.GifSearch} returns this
  */
 proto.msg.GifSearch.prototype.setQuery = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.GifSearch} returns this
- */
-proto.msg.GifSearch.prototype.clearQuery = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GifSearch.prototype.hasQuery = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 Hash = 2;
+ * optional int64 Hash = 2;
  * @return {number}
  */
 proto.msg.GifSearch.prototype.getHash = function() {
@@ -855,25 +821,7 @@ proto.msg.GifSearch.prototype.getHash = function() {
  * @return {!proto.msg.GifSearch} returns this
  */
 proto.msg.GifSearch.prototype.setHash = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.GifSearch} returns this
- */
-proto.msg.GifSearch.prototype.clearHash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.GifSearch.prototype.hasHash = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -916,7 +864,7 @@ proto.msg.FoundGifs.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.FoundGifs.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nextoffset: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    nextoffset: jspb.Message.getFieldWithDefault(msg, 1, 0),
     gifsList: jspb.Message.toObjectList(msg.getGifsList(),
     proto.msg.FoundGif.toObject, includeInstance)
   };
@@ -993,8 +941,8 @@ proto.msg.FoundGifs.prototype.serializeBinary = function() {
  */
 proto.msg.FoundGifs.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getNextoffset();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
@@ -1012,7 +960,7 @@ proto.msg.FoundGifs.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int32 NextOffset = 1;
+ * optional int32 NextOffset = 1;
  * @return {number}
  */
 proto.msg.FoundGifs.prototype.getNextoffset = function() {
@@ -1025,25 +973,7 @@ proto.msg.FoundGifs.prototype.getNextoffset = function() {
  * @return {!proto.msg.FoundGifs} returns this
  */
 proto.msg.FoundGifs.prototype.setNextoffset = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.FoundGifs} returns this
- */
-proto.msg.FoundGifs.prototype.clearNextoffset = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FoundGifs.prototype.hasNextoffset = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -1117,7 +1047,7 @@ proto.msg.FoundGif.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.FoundGif.toObject = function(includeInstance, msg) {
   var f, obj = {
-    url: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    url: jspb.Message.getFieldWithDefault(msg, 1, ""),
     doc: (f = msg.getDoc()) && chat_messages_medias_pb.Document.toObject(includeInstance, f),
     thumb: (f = msg.getThumb()) && chat_messages_medias_pb.Document.toObject(includeInstance, f)
   };
@@ -1199,8 +1129,8 @@ proto.msg.FoundGif.prototype.serializeBinary = function() {
  */
 proto.msg.FoundGif.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getUrl();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -1226,7 +1156,7 @@ proto.msg.FoundGif.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Url = 1;
+ * optional string Url = 1;
  * @return {string}
  */
 proto.msg.FoundGif.prototype.getUrl = function() {
@@ -1239,40 +1169,22 @@ proto.msg.FoundGif.prototype.getUrl = function() {
  * @return {!proto.msg.FoundGif} returns this
  */
 proto.msg.FoundGif.prototype.setUrl = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.FoundGif} returns this
- */
-proto.msg.FoundGif.prototype.clearUrl = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.FoundGif.prototype.hasUrl = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required Document Doc = 2;
- * @return {!proto.msg.Document}
+ * optional Document Doc = 2;
+ * @return {?proto.msg.Document}
  */
 proto.msg.FoundGif.prototype.getDoc = function() {
-  return /** @type{!proto.msg.Document} */ (
-    jspb.Message.getWrapperField(this, chat_messages_medias_pb.Document, 2, 1));
+  return /** @type{?proto.msg.Document} */ (
+    jspb.Message.getWrapperField(this, chat_messages_medias_pb.Document, 2));
 };
 
 
 /**
- * @param {!proto.msg.Document} value
+ * @param {?proto.msg.Document|undefined} value
  * @return {!proto.msg.FoundGif} returns this
 */
 proto.msg.FoundGif.prototype.setDoc = function(value) {
@@ -1281,11 +1193,11 @@ proto.msg.FoundGif.prototype.setDoc = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.FoundGif} returns this
  */
 proto.msg.FoundGif.prototype.clearDoc = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setDoc(undefined);
 };
 
 
@@ -1299,17 +1211,17 @@ proto.msg.FoundGif.prototype.hasDoc = function() {
 
 
 /**
- * required Document Thumb = 3;
- * @return {!proto.msg.Document}
+ * optional Document Thumb = 3;
+ * @return {?proto.msg.Document}
  */
 proto.msg.FoundGif.prototype.getThumb = function() {
-  return /** @type{!proto.msg.Document} */ (
-    jspb.Message.getWrapperField(this, chat_messages_medias_pb.Document, 3, 1));
+  return /** @type{?proto.msg.Document} */ (
+    jspb.Message.getWrapperField(this, chat_messages_medias_pb.Document, 3));
 };
 
 
 /**
- * @param {!proto.msg.Document} value
+ * @param {?proto.msg.Document|undefined} value
  * @return {!proto.msg.FoundGif} returns this
 */
 proto.msg.FoundGif.prototype.setThumb = function(value) {
@@ -1318,11 +1230,11 @@ proto.msg.FoundGif.prototype.setThumb = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.FoundGif} returns this
  */
 proto.msg.FoundGif.prototype.clearThumb = function() {
-  return jspb.Message.setField(this, 3, undefined);
+  return this.setThumb(undefined);
 };
 
 
@@ -1374,10 +1286,10 @@ proto.msg.SavedGifs.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.SavedGifs.toObject = function(includeInstance, msg) {
   var f, obj = {
-    hash: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    hash: jspb.Message.getFieldWithDefault(msg, 1, 0),
     docsList: jspb.Message.toObjectList(msg.getDocsList(),
     chat_messages_medias_pb.MediaDocument.toObject, includeInstance),
-    notmodified: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
+    notmodified: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -1456,8 +1368,8 @@ proto.msg.SavedGifs.prototype.serializeBinary = function() {
  */
 proto.msg.SavedGifs.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getHash();
+  if (f !== 0) {
     writer.writeFixed32(
       1,
       f
@@ -1471,8 +1383,8 @@ proto.msg.SavedGifs.serializeBinaryToWriter = function(message, writer) {
       chat_messages_medias_pb.MediaDocument.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getNotmodified();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -1482,7 +1394,7 @@ proto.msg.SavedGifs.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required fixed32 Hash = 1;
+ * optional fixed32 Hash = 1;
  * @return {number}
  */
 proto.msg.SavedGifs.prototype.getHash = function() {
@@ -1495,25 +1407,7 @@ proto.msg.SavedGifs.prototype.getHash = function() {
  * @return {!proto.msg.SavedGifs} returns this
  */
 proto.msg.SavedGifs.prototype.setHash = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SavedGifs} returns this
- */
-proto.msg.SavedGifs.prototype.clearHash = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SavedGifs.prototype.hasHash = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -1556,7 +1450,7 @@ proto.msg.SavedGifs.prototype.clearDocsList = function() {
 
 
 /**
- * required bool NotModified = 3;
+ * optional bool NotModified = 3;
  * @return {boolean}
  */
 proto.msg.SavedGifs.prototype.getNotmodified = function() {
@@ -1569,25 +1463,7 @@ proto.msg.SavedGifs.prototype.getNotmodified = function() {
  * @return {!proto.msg.SavedGifs} returns this
  */
 proto.msg.SavedGifs.prototype.setNotmodified = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SavedGifs} returns this
- */
-proto.msg.SavedGifs.prototype.clearNotmodified = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SavedGifs.prototype.hasNotmodified = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 

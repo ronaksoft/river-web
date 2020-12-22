@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -338,9 +340,9 @@ proto.msg.ReplyKeyboardMarkup.prototype.toObject = function(opt_includeInstance)
  */
 proto.msg.ReplyKeyboardMarkup.toObject = function(includeInstance, msg) {
   var f, obj = {
-    singleuse: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    selective: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
-    resize: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
+    singleuse: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    selective: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    resize: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
     rowsList: jspb.Message.toObjectList(msg.getRowsList(),
     proto.msg.KeyboardButtonRow.toObject, includeInstance)
   };
@@ -425,22 +427,22 @@ proto.msg.ReplyKeyboardMarkup.prototype.serializeBinary = function() {
  */
 proto.msg.ReplyKeyboardMarkup.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSingleuse();
+  if (f) {
     writer.writeBool(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getSelective();
+  if (f) {
     writer.writeBool(
       2,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getResize();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -471,25 +473,7 @@ proto.msg.ReplyKeyboardMarkup.prototype.getSingleuse = function() {
  * @return {!proto.msg.ReplyKeyboardMarkup} returns this
  */
 proto.msg.ReplyKeyboardMarkup.prototype.setSingleuse = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ReplyKeyboardMarkup} returns this
- */
-proto.msg.ReplyKeyboardMarkup.prototype.clearSingleuse = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ReplyKeyboardMarkup.prototype.hasSingleuse = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -507,25 +491,7 @@ proto.msg.ReplyKeyboardMarkup.prototype.getSelective = function() {
  * @return {!proto.msg.ReplyKeyboardMarkup} returns this
  */
 proto.msg.ReplyKeyboardMarkup.prototype.setSelective = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ReplyKeyboardMarkup} returns this
- */
-proto.msg.ReplyKeyboardMarkup.prototype.clearSelective = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ReplyKeyboardMarkup.prototype.hasSelective = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -543,25 +509,7 @@ proto.msg.ReplyKeyboardMarkup.prototype.getResize = function() {
  * @return {!proto.msg.ReplyKeyboardMarkup} returns this
  */
 proto.msg.ReplyKeyboardMarkup.prototype.setResize = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ReplyKeyboardMarkup} returns this
- */
-proto.msg.ReplyKeyboardMarkup.prototype.clearResize = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ReplyKeyboardMarkup.prototype.hasResize = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -795,7 +743,7 @@ proto.msg.ReplyKeyboardHide.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ReplyKeyboardHide.toObject = function(includeInstance, msg) {
   var f, obj = {
-    selective: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f
+    selective: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
   };
 
   if (includeInstance) {
@@ -865,8 +813,8 @@ proto.msg.ReplyKeyboardHide.prototype.serializeBinary = function() {
  */
 proto.msg.ReplyKeyboardHide.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSelective();
+  if (f) {
     writer.writeBool(
       1,
       f
@@ -876,7 +824,7 @@ proto.msg.ReplyKeyboardHide.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * required bool Selective = 1;
+ * optional bool Selective = 1;
  * @return {boolean}
  */
 proto.msg.ReplyKeyboardHide.prototype.getSelective = function() {
@@ -889,25 +837,7 @@ proto.msg.ReplyKeyboardHide.prototype.getSelective = function() {
  * @return {!proto.msg.ReplyKeyboardHide} returns this
  */
 proto.msg.ReplyKeyboardHide.prototype.setSelective = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ReplyKeyboardHide} returns this
- */
-proto.msg.ReplyKeyboardHide.prototype.clearSelective = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ReplyKeyboardHide.prototype.hasSelective = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -943,8 +873,8 @@ proto.msg.ReplyKeyboardForceReply.prototype.toObject = function(opt_includeInsta
  */
 proto.msg.ReplyKeyboardForceReply.toObject = function(includeInstance, msg) {
   var f, obj = {
-    singleuse: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    selective: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
+    singleuse: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    selective: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -1018,15 +948,15 @@ proto.msg.ReplyKeyboardForceReply.prototype.serializeBinary = function() {
  */
 proto.msg.ReplyKeyboardForceReply.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSingleuse();
+  if (f) {
     writer.writeBool(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getSelective();
+  if (f) {
     writer.writeBool(
       2,
       f
@@ -1049,25 +979,7 @@ proto.msg.ReplyKeyboardForceReply.prototype.getSingleuse = function() {
  * @return {!proto.msg.ReplyKeyboardForceReply} returns this
  */
 proto.msg.ReplyKeyboardForceReply.prototype.setSingleuse = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ReplyKeyboardForceReply} returns this
- */
-proto.msg.ReplyKeyboardForceReply.prototype.clearSingleuse = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ReplyKeyboardForceReply.prototype.hasSingleuse = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -1085,25 +997,7 @@ proto.msg.ReplyKeyboardForceReply.prototype.getSelective = function() {
  * @return {!proto.msg.ReplyKeyboardForceReply} returns this
  */
 proto.msg.ReplyKeyboardForceReply.prototype.setSelective = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ReplyKeyboardForceReply} returns this
- */
-proto.msg.ReplyKeyboardForceReply.prototype.clearSelective = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ReplyKeyboardForceReply.prototype.hasSelective = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -1299,7 +1193,7 @@ proto.msg.KeyboardButtonEnvelope.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.KeyboardButtonEnvelope.toObject = function(includeInstance, msg) {
   var f, obj = {
-    constructor: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    constructor: jspb.Message.getFieldWithDefault(msg, 1, 0),
     data: msg.getData_asB64()
   };
 
@@ -1374,15 +1268,15 @@ proto.msg.KeyboardButtonEnvelope.prototype.serializeBinary = function() {
  */
 proto.msg.KeyboardButtonEnvelope.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getConstructor();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getData_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -1392,7 +1286,7 @@ proto.msg.KeyboardButtonEnvelope.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required int64 Constructor = 1;
+ * optional int64 Constructor = 1;
  * @return {number}
  */
 proto.msg.KeyboardButtonEnvelope.prototype.getConstructor = function() {
@@ -1405,25 +1299,7 @@ proto.msg.KeyboardButtonEnvelope.prototype.getConstructor = function() {
  * @return {!proto.msg.KeyboardButtonEnvelope} returns this
  */
 proto.msg.KeyboardButtonEnvelope.prototype.setConstructor = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.KeyboardButtonEnvelope} returns this
- */
-proto.msg.KeyboardButtonEnvelope.prototype.clearConstructor = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.KeyboardButtonEnvelope.prototype.hasConstructor = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -1465,25 +1341,7 @@ proto.msg.KeyboardButtonEnvelope.prototype.getData_asU8 = function() {
  * @return {!proto.msg.KeyboardButtonEnvelope} returns this
  */
 proto.msg.KeyboardButtonEnvelope.prototype.setData = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.KeyboardButtonEnvelope} returns this
- */
-proto.msg.KeyboardButtonEnvelope.prototype.clearData = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.KeyboardButtonEnvelope.prototype.hasData = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -1519,7 +1377,7 @@ proto.msg.Button.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.Button.toObject = function(includeInstance, msg) {
   var f, obj = {
-    text: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    text: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -1589,8 +1447,8 @@ proto.msg.Button.prototype.serializeBinary = function() {
  */
 proto.msg.Button.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getText();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -1600,7 +1458,7 @@ proto.msg.Button.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Text = 1;
+ * optional string Text = 1;
  * @return {string}
  */
 proto.msg.Button.prototype.getText = function() {
@@ -1613,25 +1471,7 @@ proto.msg.Button.prototype.getText = function() {
  * @return {!proto.msg.Button} returns this
  */
 proto.msg.Button.prototype.setText = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.Button} returns this
- */
-proto.msg.Button.prototype.clearText = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Button.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -1667,8 +1507,8 @@ proto.msg.ButtonUrl.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ButtonUrl.toObject = function(includeInstance, msg) {
   var f, obj = {
-    text: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    url: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    text: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    url: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -1742,15 +1582,15 @@ proto.msg.ButtonUrl.prototype.serializeBinary = function() {
  */
 proto.msg.ButtonUrl.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getText();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getUrl();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
@@ -1760,7 +1600,7 @@ proto.msg.ButtonUrl.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Text = 1;
+ * optional string Text = 1;
  * @return {string}
  */
 proto.msg.ButtonUrl.prototype.getText = function() {
@@ -1773,30 +1613,12 @@ proto.msg.ButtonUrl.prototype.getText = function() {
  * @return {!proto.msg.ButtonUrl} returns this
  */
 proto.msg.ButtonUrl.prototype.setText = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonUrl} returns this
- */
-proto.msg.ButtonUrl.prototype.clearText = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonUrl.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Url = 2;
+ * optional string Url = 2;
  * @return {string}
  */
 proto.msg.ButtonUrl.prototype.getUrl = function() {
@@ -1809,25 +1631,7 @@ proto.msg.ButtonUrl.prototype.getUrl = function() {
  * @return {!proto.msg.ButtonUrl} returns this
  */
 proto.msg.ButtonUrl.prototype.setUrl = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonUrl} returns this
- */
-proto.msg.ButtonUrl.prototype.clearUrl = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonUrl.prototype.hasUrl = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -1863,7 +1667,7 @@ proto.msg.ButtonCallback.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ButtonCallback.toObject = function(includeInstance, msg) {
   var f, obj = {
-    text: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    text: jspb.Message.getFieldWithDefault(msg, 1, ""),
     data: msg.getData_asB64()
   };
 
@@ -1938,15 +1742,15 @@ proto.msg.ButtonCallback.prototype.serializeBinary = function() {
  */
 proto.msg.ButtonCallback.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getText();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getData_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -1956,7 +1760,7 @@ proto.msg.ButtonCallback.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Text = 1;
+ * optional string Text = 1;
  * @return {string}
  */
 proto.msg.ButtonCallback.prototype.getText = function() {
@@ -1969,25 +1773,7 @@ proto.msg.ButtonCallback.prototype.getText = function() {
  * @return {!proto.msg.ButtonCallback} returns this
  */
 proto.msg.ButtonCallback.prototype.setText = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonCallback} returns this
- */
-proto.msg.ButtonCallback.prototype.clearText = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonCallback.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -2029,25 +1815,7 @@ proto.msg.ButtonCallback.prototype.getData_asU8 = function() {
  * @return {!proto.msg.ButtonCallback} returns this
  */
 proto.msg.ButtonCallback.prototype.setData = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonCallback} returns this
- */
-proto.msg.ButtonCallback.prototype.clearData = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonCallback.prototype.hasData = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -2083,7 +1851,7 @@ proto.msg.ButtonRequestPhone.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.ButtonRequestPhone.toObject = function(includeInstance, msg) {
   var f, obj = {
-    text: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    text: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -2153,8 +1921,8 @@ proto.msg.ButtonRequestPhone.prototype.serializeBinary = function() {
  */
 proto.msg.ButtonRequestPhone.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getText();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -2164,7 +1932,7 @@ proto.msg.ButtonRequestPhone.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * required string Text = 1;
+ * optional string Text = 1;
  * @return {string}
  */
 proto.msg.ButtonRequestPhone.prototype.getText = function() {
@@ -2177,25 +1945,7 @@ proto.msg.ButtonRequestPhone.prototype.getText = function() {
  * @return {!proto.msg.ButtonRequestPhone} returns this
  */
 proto.msg.ButtonRequestPhone.prototype.setText = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonRequestPhone} returns this
- */
-proto.msg.ButtonRequestPhone.prototype.clearText = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonRequestPhone.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -2231,7 +1981,7 @@ proto.msg.ButtonRequestGeoLocation.prototype.toObject = function(opt_includeInst
  */
 proto.msg.ButtonRequestGeoLocation.toObject = function(includeInstance, msg) {
   var f, obj = {
-    text: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    text: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -2301,8 +2051,8 @@ proto.msg.ButtonRequestGeoLocation.prototype.serializeBinary = function() {
  */
 proto.msg.ButtonRequestGeoLocation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getText();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -2312,7 +2062,7 @@ proto.msg.ButtonRequestGeoLocation.serializeBinaryToWriter = function(message, w
 
 
 /**
- * required string Text = 1;
+ * optional string Text = 1;
  * @return {string}
  */
 proto.msg.ButtonRequestGeoLocation.prototype.getText = function() {
@@ -2325,25 +2075,7 @@ proto.msg.ButtonRequestGeoLocation.prototype.getText = function() {
  * @return {!proto.msg.ButtonRequestGeoLocation} returns this
  */
 proto.msg.ButtonRequestGeoLocation.prototype.setText = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonRequestGeoLocation} returns this
- */
-proto.msg.ButtonRequestGeoLocation.prototype.clearText = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonRequestGeoLocation.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -2379,9 +2111,9 @@ proto.msg.ButtonSwitchInline.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.ButtonSwitchInline.toObject = function(includeInstance, msg) {
   var f, obj = {
-    text: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    query: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    samepeer: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
+    text: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    query: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    samepeer: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -2459,22 +2191,22 @@ proto.msg.ButtonSwitchInline.prototype.serializeBinary = function() {
  */
 proto.msg.ButtonSwitchInline.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getText();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getQuery();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getSamepeer();
+  if (f) {
     writer.writeBool(
       3,
       f
@@ -2484,7 +2216,7 @@ proto.msg.ButtonSwitchInline.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * required string Text = 1;
+ * optional string Text = 1;
  * @return {string}
  */
 proto.msg.ButtonSwitchInline.prototype.getText = function() {
@@ -2497,30 +2229,12 @@ proto.msg.ButtonSwitchInline.prototype.getText = function() {
  * @return {!proto.msg.ButtonSwitchInline} returns this
  */
 proto.msg.ButtonSwitchInline.prototype.setText = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonSwitchInline} returns this
- */
-proto.msg.ButtonSwitchInline.prototype.clearText = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonSwitchInline.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Query = 2;
+ * optional string Query = 2;
  * @return {string}
  */
 proto.msg.ButtonSwitchInline.prototype.getQuery = function() {
@@ -2533,25 +2247,7 @@ proto.msg.ButtonSwitchInline.prototype.getQuery = function() {
  * @return {!proto.msg.ButtonSwitchInline} returns this
  */
 proto.msg.ButtonSwitchInline.prototype.setQuery = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonSwitchInline} returns this
- */
-proto.msg.ButtonSwitchInline.prototype.clearQuery = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonSwitchInline.prototype.hasQuery = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -2569,25 +2265,7 @@ proto.msg.ButtonSwitchInline.prototype.getSamepeer = function() {
  * @return {!proto.msg.ButtonSwitchInline} returns this
  */
 proto.msg.ButtonSwitchInline.prototype.setSamepeer = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonSwitchInline} returns this
- */
-proto.msg.ButtonSwitchInline.prototype.clearSamepeer = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonSwitchInline.prototype.hasSamepeer = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -2623,7 +2301,7 @@ proto.msg.ButtonBuy.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ButtonBuy.toObject = function(includeInstance, msg) {
   var f, obj = {
-    text: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    text: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -2693,8 +2371,8 @@ proto.msg.ButtonBuy.prototype.serializeBinary = function() {
  */
 proto.msg.ButtonBuy.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getText();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -2704,7 +2382,7 @@ proto.msg.ButtonBuy.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Text = 1;
+ * optional string Text = 1;
  * @return {string}
  */
 proto.msg.ButtonBuy.prototype.getText = function() {
@@ -2717,25 +2395,7 @@ proto.msg.ButtonBuy.prototype.getText = function() {
  * @return {!proto.msg.ButtonBuy} returns this
  */
 proto.msg.ButtonBuy.prototype.setText = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ButtonBuy} returns this
- */
-proto.msg.ButtonBuy.prototype.clearText = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ButtonBuy.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 

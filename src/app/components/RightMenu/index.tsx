@@ -19,6 +19,7 @@ interface IProps {
     onDeleteAndExitGroup?: () => void;
     onMessageAttachmentAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
     onToggleMenu: (open: boolean) => void;
+    onError?: (message: string) => void;
 }
 
 interface IState {
@@ -102,10 +103,10 @@ class RightMenu extends React.PureComponent<IProps, IState> {
                 {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
                 <GroupInfoMenu key="group-info" peer={peer} teamId={this.teamId} onClose={this.closeHandler}
                                onAction={this.props.onMessageAttachmentAction}
-                               onDeleteAndExitGroup={this.props.onDeleteAndExitGroup}/>}
+                               onDeleteAndExitGroup={this.props.onDeleteAndExitGroup} onError={this.props.onError}/>}
                 {Boolean(rightMenu && peer && (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER)) &&
                 <UserInfoMenu key="user-info" peer={peer} teamId={this.teamId} onClose={this.closeHandler}
-                              onAction={this.props.onMessageAttachmentAction}/>}
+                              onAction={this.props.onMessageAttachmentAction} onError={this.props.onError}/>}
             </div>
         );
     }

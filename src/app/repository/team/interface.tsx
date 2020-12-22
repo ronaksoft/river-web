@@ -9,7 +9,7 @@
 
 import {Team} from "../../services/sdk/messages/core.types_pb";
 
-export interface ITeam extends Team.AsObject{
+export interface ITeam extends Partial<Team.AsObject> {
     unread_counter?: number;
     notify?: boolean;
     count_unread?: boolean;

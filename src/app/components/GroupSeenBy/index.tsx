@@ -70,7 +70,7 @@ class GroupSeenBy extends React.Component<any, IState> {
         return (
             <SettingsModal open={open} title={i18n.t('chat.seen_by')}
                            icon={<VisibilityRounded/>} onClose={this.modalCloseHandler} height={this.getHeight()}
-                           autoHeight={true} minHeight={49} maxHeight={225}
+                           autoHeight={true} minHeight={49} maxHeight={380}
             >
                 <div className="seen-by-list-dialog">
                     {loading ? <Loading/> : list.length > 0 ? list.map((id) => {

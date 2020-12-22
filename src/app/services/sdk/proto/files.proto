@@ -1,40 +1,41 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+option go_package = '.;msg';
 
 // FileSavePart
 // @Function
 // @Return: Bool
 message FileSavePart {
-    required int64 FileID = 1 [jstype = JS_STRING];
-    required int32 PartID = 2;
-    required int32 TotalParts = 3;
-    required bytes Bytes = 4;
+    int64 FileID = 1 [jstype = JS_STRING];
+    int32 PartID = 2;
+    int32 TotalParts = 3;
+    bytes Bytes = 4;
 }
 
 // FileGetPart
 // @Function
 // @Return: File
 message FileGet {
-    required InputFileLocation Location = 1;
-    required int32 Offset = 2;
-    required int32 Limit = 3;
+    InputFileLocation Location = 1;
+    int32 Offset = 2;
+    int32 Limit = 3;
 }
 
 // FileGetBySha256
 // @Function
 // @Return: FileLocation
 message FileGetBySha256 {
-    required bytes Sha256 = 1;
-    required int32 FileSize = 2;
+    bytes Sha256 = 1;
+    int32 FileSize = 2;
 }
 
 // File
 message File {
-    required FileType Type = 1;
-    required int64 ModifiedTime = 2;
-    required bytes Bytes = 4;
-    optional string MD5Hash = 5;
+    FileType Type = 1;
+    int64 ModifiedTime = 2;
+    bytes Bytes = 4;
+    string MD5Hash = 5;
 }
 
 // FileType

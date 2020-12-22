@@ -1,8 +1,14 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
 import "calendar.proto";
 import "chat.messages.medias.proto";
+import "chat.phone.proto";
+
+option go_package = '.;msg';
+
+
+
 
 // UpdateGetState
 // @Function
@@ -14,19 +20,19 @@ message UpdateGetState {
 // @Function
 // @Return: UpdateDifference
 message UpdateGetDifference {
-    required int64 From = 1;
-    required int32 Limit = 2;
+    int64 From = 1;
+    int32 Limit = 2;
 }
 
 // UpdateDifference
 message UpdateDifference {
-    required bool More = 1;
-    required int64 MaxUpdateID = 2;
-    required int64 MinUpdateID = 3;
+    bool More = 1;
+    int64 MaxUpdateID = 2;
+    int64 MinUpdateID = 3;
     repeated UpdateEnvelope Updates = 4;
     repeated User Users = 5;
     repeated Group Groups = 6;
-    optional int64 CurrentUpdateID = 7;
+    int64 CurrentUpdateID = 7;
 }
 
 // UpdateTooLong
@@ -36,216 +42,216 @@ message UpdateTooLong {
 
 // UpdateState
 message UpdateState {
-    required int64 UpdateID = 1;
+    int64 UpdateID = 1;
 }
 
 // UpdateMessageID
 message UpdateMessageID {
-    required int32 UCount = 100;
-    required int64 MessageID = 1;
-    required int64 RandomID = 2;
+    int32 UCount = 100;
+    int64 MessageID = 1;
+    int64 RandomID = 2;
 }
 
 // UpdateNewMessage
 message UpdateNewMessage {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required UserMessage Message = 1;
-    required User Sender = 2;
-    optional fixed64 AccessHash = 3 [jstype = JS_STRING];
-    optional int64 SenderRefID = 4;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    UserMessage Message = 1;
+    User Sender = 2;
+    fixed64 AccessHash = 3 [jstype = JS_STRING];
+    int64 SenderRefID = 4;
 }
 
 // UpdateMessageEdited
 message UpdateMessageEdited {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required UserMessage Message = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    UserMessage Message = 1;
 }
 
 // UpdateMessageDeleted
 message UpdateMessagesDeleted {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
     repeated int64 MessageIDs = 1;
-    optional Peer Peer = 2;
+    Peer Peer = 2;
 }
 
 // UpdateReadHistoryInbox
 message UpdateReadHistoryInbox {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required Peer Peer = 1;
-    required int64 MaxID = 2;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
+    int64 MaxID = 2;
 }
 
 // UpdateReadHistoryOutbox
 message UpdateReadHistoryOutbox {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required Peer Peer = 1;
-    required int64 MaxID = 2;
-    optional int64 UserID = 3;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
+    int64 MaxID = 2;
+    int64 UserID = 3;
 }
 
 // UpdateMessagePinned
 message UpdateMessagePinned {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required Peer Peer = 1;
-    required int64 UserID = 2;
-    required int64 MsgID = 3;
-    required int64 Version = 5;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
+    int64 UserID = 2;
+    int64 MsgID = 3;
+    int64 Version = 5;
 }
 
 // UpdateUserTyping
 message UpdateUserTyping {
-    required int32 UCount = 100;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required int64 UserID = 1 [jstype = JS_STRING];
-    required TypingAction Action = 2;
-    required int64 PeerID = 3 [jstype = JS_STRING];
-    optional int32 PeerType = 4;
+    int32 UCount = 100;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    int64 UserID = 1 [jstype = JS_STRING];
+    TypingAction Action = 2;
+    int64 PeerID = 3 [jstype = JS_STRING];
+    int32 PeerType = 4;
 }
 
 // UpdateUserStatus
 message UpdateUserStatus {
-    required int32 UCount = 100;
-    required int64 UserID = 1 [jstype = JS_STRING];
-    required int32 Status = 2;
+    int32 UCount = 100;
+    int64 UserID = 1 [jstype = JS_STRING];
+    int32 Status = 2;
 }
 
 // UpdateUsername
 message UpdateUsername {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 UserID = 1 [jstype = JS_STRING];
-    required string Username = 2;
-    required string FirstName = 3;
-    required string LastName = 4;
-    required string Bio = 5;
-    optional string Phone = 6;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 UserID = 1 [jstype = JS_STRING];
+    string Username = 2;
+    string FirstName = 3;
+    string LastName = 4;
+    string Bio = 5;
+    string Phone = 6;
 }
 
 // UpdateUserPhoto
 message UpdateUserPhoto {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 UserID = 1 [jstype = JS_STRING];
-    optional UserPhoto Photo = 2;
-    optional int64 PhotoID = 3 [jstype = JS_STRING];
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 UserID = 1 [jstype = JS_STRING];
+    UserPhoto Photo = 2;
+    int64 PhotoID = 3 [jstype = JS_STRING];
     repeated int64 DeletedPhotoIDs = 4 [jstype = JS_STRING];
 }
 
 // UpdateNotifySettings
 message UpdateNotifySettings {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required int64 UserID = 1 [jstype = JS_STRING];
-    required Peer NotifyPeer = 2;
-    required PeerNotifySettings Settings = 3;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    int64 UserID = 1 [jstype = JS_STRING];
+    Peer NotifyPeer = 2;
+    PeerNotifySettings Settings = 3;
 }
 
 // UpdateGroupParticipantAdd
 message UpdateGroupParticipantAdd {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 GroupID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
-    required int64 InviterID = 3 [jstype = JS_STRING];
-    required int64 Date = 4;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 GroupID = 1 [jstype = JS_STRING];
+    int64 UserID = 2 [jstype = JS_STRING];
+    int64 InviterID = 3 [jstype = JS_STRING];
+    int64 Date = 4;
 }
 
 // UpdateGroupParticipantDeleted
 message UpdateGroupParticipantDeleted {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 GroupID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 GroupID = 1 [jstype = JS_STRING];
+    int64 UserID = 2 [jstype = JS_STRING];
 }
 
 // UpdateGroupParticipantAdmin
 message UpdateGroupParticipantAdmin {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 GroupID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
-    required bool IsAdmin = 3;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 GroupID = 1 [jstype = JS_STRING];
+    int64 UserID = 2 [jstype = JS_STRING];
+    bool IsAdmin = 3;
 }
 
 // UpdateGroupAdmins
 message UpdateGroupAdmins {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 GroupID = 1 [jstype = JS_STRING];
-    required bool AdminEnabled = 2;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 GroupID = 1 [jstype = JS_STRING];
+    bool AdminEnabled = 2;
 }
 
 // UpdateGroupPhoto
 message UpdateGroupPhoto {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 GroupID = 1 [jstype = JS_STRING];
-    optional GroupPhoto Photo = 2;
-    optional int64 PhotoID = 3 [jstype = JS_STRING];
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 GroupID = 1 [jstype = JS_STRING];
+    GroupPhoto Photo = 2;
+    int64 PhotoID = 3 [jstype = JS_STRING];
 }
 
 // UpdateReadMessagesContents
 message UpdateReadMessagesContents {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
     repeated int64 MessageIDs = 1;
-    required Peer Peer = 2;
+    Peer Peer = 2;
 }
 
 // UpdateAuthorizationReset
 message UpdateAuthorizationReset {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
 }
 
 // UpdateDraftMessage
 message UpdateDraftMessage {
-    required int32 UCount = 100;
-    optional int64 UpdateID = 101;
-    required DraftMessage Message = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    DraftMessage Message = 1;
 }
 
 // UpdateDraftMessageCleared
 message UpdateDraftMessageCleared {
-    required int32 UCount = 100;
-    optional int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required Peer Peer = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
 
 }
 
 // UpdateDialogPinned
 message UpdateDialogPinned {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required Peer Peer = 1;
-    required bool Pinned = 2;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
+    bool Pinned = 2;
 }
 
 // UpdateDialogPinnedOrder
 message UpdateDialogPinnedReorder {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
     repeated Peer Peer = 1;
 }
 
 // UpdateAccountPrivacy
 message UpdateAccountPrivacy {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
     repeated PrivacyRule ChatInvite = 1;
     repeated PrivacyRule LastSeen = 2;
     repeated PrivacyRule PhoneNumber = 3;
@@ -256,10 +262,10 @@ message UpdateAccountPrivacy {
 
 // UpdateLabelItemAdded
 message UpdateLabelItemsAdded {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required Peer Peer = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;
     repeated Label Labels = 5;
@@ -267,10 +273,10 @@ message UpdateLabelItemsAdded {
 
 // UpdateLabelItemsRemoved
 message UpdateLabelItemsRemoved {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    optional int64 TeamID = 102 [jstype = JS_STRING];
-    required Peer Peer = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;
     repeated Label Labels = 5;
@@ -278,181 +284,181 @@ message UpdateLabelItemsRemoved {
 
 // UpdateLabelSet
 message UpdateLabelSet {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
     repeated Label Labels = 1;
 }
 
 // UpdateLabelDeleted
 message UpdateLabelDeleted {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
     repeated int32 LabelIDs = 1;
 }
 
 // UpdateUserBlocked
 message UpdateUserBlocked {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 UserID = 1 [jstype = JS_STRING];
-    required bool Blocked = 2;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 UserID = 1 [jstype = JS_STRING];
+    bool Blocked = 2;
 }
 
 // UpdateMessagePoll
 message UpdateMessagePoll {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 PollID = 1;
-    optional MediaPoll Poll = 2;
-    required PollResults Results = 3;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 PollID = 1;
+    MediaPoll Poll = 2;
+    PollResults Results = 3;
 }
 
 // UpdateBotCallbackQuery
 message UpdateBotCallbackQuery {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 QueryID = 1;
-    required int64 UserID = 2;
-    required Peer Peer = 3;
-    optional int64 MessageID = 4;
-    optional bytes Data = 5;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 QueryID = 1;
+    int64 UserID = 2;
+    Peer Peer = 3;
+    int64 MessageID = 4;
+    bytes Data = 5;
 }
 
 // UpdateBotInlineQuery
 message UpdateBotInlineQuery {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 QueryID = 1;
-    required int64 UserID = 2;
-    required Peer Peer = 3;
-    required string Query = 4;
-    optional string Offset = 5;
-    optional GeoLocation Geo = 6;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 QueryID = 1;
+    int64 UserID = 2;
+    Peer Peer = 3;
+    string Query = 4;
+    string Offset = 5;
+    GeoLocation Geo = 6;
 }
 
 // UpdateBotInlineSend
 message UpdateBotInlineSend {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 UserID = 2;
-    required string Query = 3;
-    required string ResultID = 4;
-    optional GeoLocation Geo = 5;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 UserID = 2;
+    string Query = 3;
+    string ResultID = 4;
+    GeoLocation Geo = 5;
 }
 
 // UpdateTeamCreated
 message UpdateTeamCreated {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required Team Team = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    Team Team = 1;
 }
 
 // UpdateTeamMemberAdded
 message UpdateTeamMemberAdded {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required User User = 2;
-    required ContactUser Contact = 3;
-    required int64 AdderID = 4 [jstype = JS_STRING];
-    required fixed32 Hash = 5;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    User User = 2;
+    ContactUser Contact = 3;
+    int64 AdderID = 4 [jstype = JS_STRING];
+    fixed32 Hash = 5;
 }
 
 // UpdateTeamMemberRemoved
 message UpdateTeamMemberRemoved {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required int64 UserID = 2 [jstype = JS_STRING];
-    required int64 RemoverID = 3 [jstype = JS_STRING];
-    required fixed32 Hash = 4;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    int64 UserID = 2 [jstype = JS_STRING];
+    int64 RemoverID = 3 [jstype = JS_STRING];
+    fixed32 Hash = 4;
 }
 
 // UpdateTeamMemberStatus
 message UpdateTeamMemberStatus {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required int64 ChangerID = 3 [jstype = JS_STRING];
-    required bool Admin = 4;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    int64 ChangerID = 3 [jstype = JS_STRING];
+    bool Admin = 4;
 }
 
 // UpdateTeamPhoto
 message UpdateTeamPhoto {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required TeamPhoto Photo = 2;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    TeamPhoto Photo = 2;
 }
 
 // UpdateTeam
 message UpdateTeam {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 TeamID = 1 [jstype = JS_STRING];
-    required string Name = 2;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    string Name = 2;
 }
 
 // UpdateCommunityMessage
 message UpdateCommunityMessage {
-    required int64 TeamID = 100 [jstype = JS_STRING];
-    required int64 SenderID = 1;
-    required int64 ReceiverID = 2;
-    required string Body = 3;
-    required int64 CreatedOn = 4;
-    required uint64 GlobalMsgID = 5;
+    int64 TeamID = 100 [jstype = JS_STRING];
+    int64 SenderID = 1;
+    int64 ReceiverID = 2;
+    string Body = 3;
+    int64 CreatedOn = 4;
+    uint64 GlobalMsgID = 5;
     repeated MessageEntity Entities = 6;
-    required int64 SenderMsgID = 7;
+    int64 SenderMsgID = 7;
 }
 
 // UpdateCommunityReadOutbox
 message UpdateCommunityReadOutbox {
-    required int64 TeamID = 100 [jstype = JS_STRING];
-    required int64 SenderID = 1;
-    required int64 ReceiverID = 2;
-    required int64 SenderMsgID = 3;
+    int64 TeamID = 100 [jstype = JS_STRING];
+    int64 SenderID = 1;
+    int64 ReceiverID = 2;
+    int64 SenderMsgID = 3;
 }
 
 // UpdateCommunityTyping
 message UpdateCommunityTyping {
-    required int64 TeamID = 100 [jstype = JS_STRING];
-    required int64 SenderID = 1;
-    required int64 ReceiverID = 2;
-    required TypingAction Action = 3;
+    int64 TeamID = 100 [jstype = JS_STRING];
+    int64 SenderID = 1;
+    int64 ReceiverID = 2;
+    TypingAction Action = 3;
 }
 
 // UpdateReaction
 message UpdateReaction {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 MessageID = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 MessageID = 1;
     repeated ReactionCounter Counter = 2;
-    optional int64 TeamID = 3 [jstype = JS_STRING];
-    optional Peer Peer = 4;
-    optional User Sender = 5;
+    int64 TeamID = 3 [jstype = JS_STRING];
+    Peer Peer = 4;
+    User Sender = 5;
     repeated string YourReactions = 6;
-    optional string Reaction = 7;
+    string Reaction = 7;
 }
 
 // UpdateCalendarEventAdded
 message UpdateCalendarEventAdded {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required CalendarEvent Event = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    CalendarEvent Event = 1;
 }
 
 // UpdateCalendarEventRemoved
 message UpdateCalendarEventRemoved {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required int64 EventID = 102 [jstype = JS_STRING];
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 EventID = 102 [jstype = JS_STRING];
 }
 
 // UpdateCalendarEventEdited
 message UpdateCalendarEventEdited {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
-    required CalendarEvent Event = 1;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    CalendarEvent Event = 1;
 }
 
 // RedirectTarget
@@ -468,16 +474,29 @@ enum RedirectTarget {
 
 // UpdateRedirect
 message UpdateRedirect {
-    required int32 UCount = 100;
-    required int64 UpdateID = 101;
+    int32 UCount = 100;
+    int64 UpdateID = 101;
     repeated ClientRedirect Redirects = 1;
-    required bool Empty = 2;
+    bool Empty = 2;
 }
 
 // ClientRedirect
 message ClientRedirect {
-    required string HostPort = 1;
-    required bool Permanent = 2;
-    required RedirectTarget Target = 3;
+    string HostPort = 1;
+    bool Permanent = 2;
+    RedirectTarget Target = 3;
     repeated string Alternatives = 4;
+}
+
+// UpdatePhone
+message UpdatePhoneCall {
+    int32 UCount = 100;
+    int64 TeamID = 1 [jstype = JS_STRING];
+    int64 PeerID = 2 [jstype = JS_STRING];
+    int32 PeerType = 3;
+    int64 CallID = 4 [jstype = JS_STRING];
+    int64 UserID = 5 [jstype = JS_STRING];
+    fixed64 AccessHash = 6 [jstype = JS_STRING];
+    PhoneCallAction Action = 7;
+    bytes ActionData = 8;
 }

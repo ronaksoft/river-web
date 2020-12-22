@@ -16,11 +16,13 @@ import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../App";
-import {EventCheckNetwork, EventWebSocketClose, EventWebSocketOpen} from "../../events";
-import {SystemConfig} from "../messages/system_pb";
-import {InputPassword, InputTeam, MessageContainer, MessageEnvelope} from "../messages/core.types_pb";
-import {Error as RiverError} from "../messages/core.types_pb";
+import {EventCheckNetwork, EventWebSocketClose, EventSocketReady, EventSocketConnected} from "../../events";
+import {SystemConfig, SystemGetServerTime, SystemServerTime} from "../messages/system_pb";
+import {InputPassword, InputTeam} from "../messages/core.types_pb";
+import {Error as RiverError, KeyValue, MessageContainer, MessageEnvelope} from "../messages/rony_pb";
 import {getServerKeys} from "../../../components/DevTools";
+import CommandRepo from "../../../repository/command";
+import RiverTime from "../../utilities/river_time";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;
@@ -32,14 +34,16 @@ interface IErrorPair {
 }
 
 interface IRequestOptions {
+    guaranteeRetry?: number;
+    inputTeam?: InputTeam.AsObject;
     retry?: number;
     retryErrors?: IErrorPair[];
     retryWait?: number;
     timeout?: number;
-    inputTeam?: InputTeam.AsObject;
 }
 
 export interface IServerRequest {
+    commandId?: number;
     constructor: number;
     data: Uint8Array;
     inputTeam?: InputTeam.AsObject;
@@ -76,6 +80,7 @@ export default class Server {
     private sentQueue: number[] = [];
     private updateQueue: any[] = [];
     private readonly updateManager: UpdateManager | undefined;
+    private isReady: boolean = false;
     private isConnected: boolean = false;
     private requestQueue: MessageEnvelope[] = [];
     private readonly executeSendThrottledRequestThrottle: any;
@@ -83,13 +88,17 @@ export default class Server {
     private lastActivityTime: number = 0;
     private cancelList: number[] = [];
     private updateInterval: any = null;
-    private systemConfig: SystemConfig.AsObject = {dcsList: []};
+    private systemConfig: Partial<SystemConfig.AsObject> = {dcsList: []};
     private inputTeam: InputTeam.AsObject | undefined;
     private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
+    private commandRepo: CommandRepo;
+    private riverTime: RiverTime;
 
     public constructor() {
         this.socket = Socket.getInstance();
         this.reqId = 0;
+        this.commandRepo = CommandRepo.getInstance();
+        this.riverTime = RiverTime.getInstance();
         this.getLastActivityTime();
         this.startIdleCheck();
         const version = this.shouldMigrate();
@@ -105,6 +114,14 @@ export default class Server {
                     window.console.warn(e);
                 }
             }
+            this.socket.setCreateAuthKey(() => {
+                return this.createAuthKey();
+            });
+
+            this.socket.setGetServerTime(() => {
+                return this.getServerTime();
+            });
+
             this.socket.setCallback((data: any) => {
                 this.response(data);
             });
@@ -117,19 +134,27 @@ export default class Server {
                 this.error(data);
             });
 
+            this.socket.setResolveAuthStepFn(this.authStepResolve);
+
             this.socket.setResolveGenSrpHashFn(this.genSrpHashResolve);
 
             this.socket.setResolveGenInputPasswordFn(this.genInputPasswordResolve);
 
-            window.addEventListener(EventWebSocketOpen, () => {
-                this.isConnected = true;
+            window.addEventListener(EventSocketReady, () => {
+                this.isReady = true;
                 this.flushSentQueue();
                 if (this.executeSendThrottledRequestThrottle) {
                     this.executeSendThrottledRequestThrottle();
                 }
             });
 
+            window.addEventListener(EventSocketConnected, () => {
+                this.isConnected = true;
+                this.flushSentQueue();
+            });
+
             window.addEventListener(EventWebSocketClose, () => {
+                this.isReady = false;
                 this.isConnected = false;
             });
 
@@ -150,70 +175,85 @@ export default class Server {
     }
 
     /* Send a request to WASM worker over CustomEvent in window object */
-    public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions, reqIdFn?: (rId: number) => void): Promise<any> {
-        let internalResolve = null;
-        let internalReject = null;
+    public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions, reqIdFn?: (rId: number) => void, guarantee?: boolean): Promise<any> {
+        const createRequest = (commandId?: number) => {
+            let internalResolve = null;
+            let internalReject = null;
 
-        const reqId = ++this.reqId;
-        if (reqIdFn) {
-            reqIdFn(reqId);
-        }
-        // retry on E00 Server error
-        if (!options) {
-            options = {
-                retry: 3,
-                retryErrors: [{
-                    code: C_ERR.ErrCodeInternal,
-                    items: C_ERR_ITEM.ErrItemServer,
-                }],
-            };
-        } else {
-            if (options.retryErrors) {
-                if (!options.retryErrors.find(o => o.code === C_ERR.ErrCodeInternal && o.items === C_ERR_ITEM.ErrItemServer)) {
-                    options.retryErrors.push({
+            const reqId = ++this.reqId;
+            if (reqIdFn) {
+                reqIdFn(reqId);
+            }
+            // retry on E00 Server error
+            if (!options) {
+                options = {
+                    retry: 3,
+                    retryErrors: [{
                         code: C_ERR.ErrCodeInternal,
                         items: C_ERR_ITEM.ErrItemServer,
-                    });
+                    }],
+                };
+            } else {
+                if (options.retryErrors) {
+                    if (!options.retryErrors.find(o => o.code === C_ERR.ErrCodeInternal && o.items === C_ERR_ITEM.ErrItemServer)) {
+                        options.retryErrors.push({
+                            code: C_ERR.ErrCodeInternal,
+                            items: C_ERR_ITEM.ErrItemServer,
+                        });
+                    }
                 }
             }
+
+            const request: IServerRequest = {
+                commandId,
+                constructor,
+                data,
+                inputTeam: options.inputTeam || this.inputTeam,
+                options,
+                reqId,
+                retry: 0,
+                timeout: null,
+            };
+
+            const promise = new Promise((res, rej) => {
+                internalResolve = res;
+                internalReject = rej;
+                if (this.isReady || (this.isConnected && this.isUnAuth(constructor))) {
+                    if (instant) {
+                        this.sendRequest(request);
+                    } else {
+                        this.sendThrottledRequest(request);
+                    }
+                }
+            });
+
+            /* Add request to the queue manager */
+            this.messageListeners[reqId] = {
+                reject: internalReject,
+                request,
+                resolve: internalResolve,
+                state: 0,
+            };
+
+            this.sentQueue.push(reqId);
+
+            return promise;
+        };
+
+        if (guarantee) {
+            return this.commandRepo.create({
+                cmd: constructor,
+                data,
+                inputTeam: options ? options.inputTeam || this.inputTeam : this.inputTeam,
+                instant,
+                timestamp: this.riverTime.now(),
+                try: options ? options.guaranteeRetry || 0 : 0,
+            }).then((commandId) => {
+                return createRequest(commandId);
+            });
+        } else {
+            return createRequest();
         }
-
-        // if (this.inputTeam) {
-        //     this.inputTeam.accesshash = '5675765';
-        // }
-        const request: IServerRequest = {
-            constructor,
-            data,
-            inputTeam: options.inputTeam || this.inputTeam,
-            options,
-            reqId,
-            retry: 0,
-            timeout: null,
-        };
-
-        const promise = new Promise((res, rej) => {
-            internalResolve = res;
-            internalReject = rej;
-            if (this.isConnected) {
-                if (instant) {
-                    this.sendRequest(request);
-                } else {
-                    this.sendThrottledRequest(request);
-                }
-            }
-        });
-
-        /* Add request to the queue manager */
-        this.messageListeners[reqId] = {
-            reject: internalReject,
-            request,
-            resolve: internalResolve,
-            state: 0,
-        };
-
-        this.sentQueue.push(reqId);
-
-        return promise;
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array) {
@@ -273,7 +313,7 @@ export default class Server {
         return promise;
     }
 
-    public getSystemConfig(): SystemConfig.AsObject {
+    public getSystemConfig(): Partial<SystemConfig.AsObject> {
         return this.systemConfig;
     }
 
@@ -300,6 +340,18 @@ export default class Server {
         }
     }
 
+    public sendAllGuaranteedCommands() {
+        const time = this.riverTime.now();
+        this.commandRepo.list(time).then((res) => {
+            this.commandRepo.removeMany(res.map(o => o.id));
+            res.forEach((item) => {
+                this.send(item.cmd, item.data, item.instant, {
+                    inputTeam: item.inputTeam,
+                });
+            });
+        });
+    }
+
     private cancelRequestByEnvelope(envelope: MessageEnvelope) {
         // @ts-ignore
         this.cancelRequest({constructor: envelope.getConstructor() || 0, reqId: envelope.getRequestid() || 0});
@@ -309,6 +361,10 @@ export default class Server {
         const index = this.cancelList.indexOf(request.reqId);
         if (index > -1) {
             this.cancelList.splice(index, 1);
+            const req = this.messageListeners[request.reqId];
+            if (req && req.request.commandId) {
+                this.commandRepo.remove(req.request.commandId);
+            }
             delete this.messageListeners[request.reqId];
             window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId} cancelled`, 'color: #cc0000');
             return true;
@@ -340,17 +396,14 @@ export default class Server {
         data.setMessage(request.data);
         data.setRequestid(request.reqId);
         if (request.inputTeam && request.inputTeam.id !== '0') {
-            const inputTeam = new InputTeam();
-            inputTeam.setAccesshash(request.inputTeam.accesshash || '0');
-            inputTeam.setId(request.inputTeam.id || '0');
-            data.setTeam(inputTeam);
+            data.setHeaderList(this.getTeamHeader(request.inputTeam.id || '0', request.inputTeam.accesshash || '0'));
         }
         this.requestQueue.push(data);
         this.executeSendThrottledRequestThrottle();
     }
 
     private executeSendThrottledRequest = () => {
-        if (!this.isConnected) {
+        if (!this.isReady) {
             return;
         }
         const execute = (envs: MessageEnvelope[]) => {
@@ -434,7 +487,7 @@ export default class Server {
                     }
                 } else {
                     if (this.messageListeners[reqId].resolve) {
-                        if (constructor === C_MSG.AccountPassword) {
+                        if (constructor === C_MSG.AccountPassword || constructor === C_MSG.InitResponse || constructor === C_MSG.InitAuthCompleted) {
                             this.messageListeners[reqId].resolve(res);
                         } else {
                             this.messageListeners[reqId].resolve(res.toObject());
@@ -442,6 +495,7 @@ export default class Server {
                     }
                 }
                 clearTimeout(this.messageListeners[reqId].request.timeout);
+                this.handleGuaranteedCommand(this.messageListeners[reqId].request);
                 this.cleanQueue(reqId);
             }
         } catch (e) {
@@ -470,16 +524,25 @@ export default class Server {
                 if (resp.code === C_ERR.ErrCodeInvalid && resp.items === C_ERR_ITEM.ErrItemAuth) {
                     const authErrorEvent = new CustomEvent('authErrorEvent', {});
                     window.dispatchEvent(authErrorEvent);
+                } else {
+                    window.console.warn(resp);
                 }
             }
         }
     }
 
     private flushSentQueue() {
+        if (!this.isConnected) {
+            return;
+        }
+
         const skipIds = this.getSkippableRequestIds();
         this.sentQueue.forEach((reqId) => {
             if (this.messageListeners[reqId]) {
                 const msg = this.messageListeners[reqId];
+                if (!this.isReady && !this.isUnAuth(msg.request.constructor)) {
+                    return;
+                }
                 if (skipIds.length > 0 && skipIds.indexOf(msg.request.reqId) > -1) {
                     if (msg.reject) {
                         msg.reject({
@@ -493,6 +556,10 @@ export default class Server {
                 }
             }
         });
+    }
+
+    private isUnAuth(constructor: number) {
+        return (constructor === C_MSG.InitConnect || constructor === C_MSG.InitCompleteAuth || constructor === C_MSG.SystemGetServerTime);
     }
 
     private dispatchTimeout(reqId: number) {
@@ -729,7 +796,7 @@ export default class Server {
         this.lastActivityTime = this.getTime();
     }
 
-    private checkRetry(id: number, error: RiverError.AsObject) {
+    private checkRetry(id: number, error: Partial<RiverError.AsObject>) {
         if (!this.messageListeners[id]) {
             return true;
         }
@@ -757,7 +824,7 @@ export default class Server {
         request.retry++;
         request.timeout = null;
 
-        if (this.isConnected) {
+        if (this.isReady || (this.isConnected && this.isUnAuth(request.constructor))) {
             setTimeout(() => {
                 this.sendRequest(request);
             }, req.options.retryWait || 0);
@@ -796,6 +863,16 @@ export default class Server {
         }
     }
 
+    private authStepResolve = (reqId: number, step: number, data: string) => {
+        if (!this.serviceMessagesListeners[reqId]) {
+            return;
+        }
+        const req = this.serviceMessagesListeners[reqId];
+        if (req && req.resolve) {
+            req.resolve(base64ToU8a(data));
+        }
+    }
+
     private getSkippableRequestIds() {
         const containList: number[] = [];
         const reqIds: number[] = [];
@@ -810,6 +887,81 @@ export default class Server {
             }
         });
         return reqIds;
+    }
+
+    public authStep(step: number, data?: Uint8Array) {
+        let internalResolve = null;
+        let internalReject = null;
+
+        const reqId = ++this.reqId;
+
+        const promise = new Promise<Uint8Array>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+
+        this.serviceMessagesListeners[reqId] = {
+            reject: internalReject,
+            resolve: internalResolve,
+        };
+
+        this.socket.authStep({
+            data,
+            reqId,
+            step,
+        });
+
+        return promise;
+    }
+
+    private getServerTime() {
+        const data = new SystemGetServerTime();
+        return this.send(C_MSG.SystemGetServerTime, data.serializeBinary(), true, {
+            retry: 2,
+            timeout: 2000,
+        }).then((res: SystemServerTime.AsObject) => {
+            this.socket.setServerTime(res.timestamp);
+            return res;
+        });
+    }
+
+    private createAuthKey() {
+        window.console.log('createAuthKey');
+        const t = Math.floor(Date.now() / 1000);
+        return this.authStep(1).then((step1Req) => {
+            return this.send(C_MSG.InitConnect, step1Req, true).then((step1Res: Uint8Array) => {
+                return this.authStep(2, step1Res).then((step2Req) => {
+                    return this.send(C_MSG.InitCompleteAuth, step2Req, true).then((step2Res: Uint8Array) => {
+                        return this.authStep(3, step2Res).then(() => {
+                            return this.getServerTime().then(() => {
+                                return Math.floor(Date.now() / 1000) - t;
+                            }).catch((err) => {
+                                return Math.floor(Date.now() / 1000) - t;
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    private getTeamHeader(teamId: string, teamAccessHash: string): Array<KeyValue> {
+        const ti = new KeyValue();
+        ti.setKey('TeamID');
+        ti.setValue(teamId);
+
+        const ta = new KeyValue();
+        ta.setKey('TeamAccess');
+        ta.setValue(teamAccessHash);
+
+        return [ti, ta];
+    }
+
+    private handleGuaranteedCommand(request: IServerRequest) {
+        if (!request.commandId) {
+            return;
+        }
+        this.commandRepo.remove(request.commandId);
     }
 
     private dispatchEvent(cmd: string, data: any) {

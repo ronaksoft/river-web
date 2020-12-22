@@ -6,33 +6,21 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class DocumentAttributeAudio extends jspb.Message {
-  hasVoice(): boolean;
-  clearVoice(): void;
-  getVoice(): boolean | undefined;
+  getVoice(): boolean;
   setVoice(value: boolean): void;
 
-  hasDuration(): boolean;
-  clearDuration(): void;
-  getDuration(): number | undefined;
+  getDuration(): number;
   setDuration(value: number): void;
 
-  hasTitle(): boolean;
-  clearTitle(): void;
-  getTitle(): string | undefined;
+  getTitle(): string;
   setTitle(value: string): void;
 
-  hasPerformer(): boolean;
-  clearPerformer(): void;
-  getPerformer(): string | undefined;
+  getPerformer(): string;
   setPerformer(value: string): void;
 
-  hasAlbum(): boolean;
-  clearAlbum(): void;
-  getAlbum(): string | undefined;
+  getAlbum(): string;
   setAlbum(value: string): void;
 
-  hasWaveform(): boolean;
-  clearWaveform(): void;
   getWaveform(): Uint8Array | string;
   getWaveform_asU8(): Uint8Array;
   getWaveform_asB64(): string;
@@ -50,34 +38,26 @@ export class DocumentAttributeAudio extends jspb.Message {
 
 export namespace DocumentAttributeAudio {
   export type AsObject = {
-    voice?: boolean,
-    duration?: number,
-    title?: string,
-    performer?: string,
-    album?: string,
+    voice: boolean,
+    duration: number,
+    title: string,
+    performer: string,
+    album: string,
     waveform: Uint8Array | string,
   }
 }
 
 export class DocumentAttributeVideo extends jspb.Message {
-  hasWidth(): boolean;
-  clearWidth(): void;
-  getWidth(): number | undefined;
+  getWidth(): number;
   setWidth(value: number): void;
 
-  hasHeight(): boolean;
-  clearHeight(): void;
-  getHeight(): number | undefined;
+  getHeight(): number;
   setHeight(value: number): void;
 
-  hasDuration(): boolean;
-  clearDuration(): void;
-  getDuration(): number | undefined;
+  getDuration(): number;
   setDuration(value: number): void;
 
-  hasRound(): boolean;
-  clearRound(): void;
-  getRound(): boolean | undefined;
+  getRound(): boolean;
   setRound(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -92,22 +72,18 @@ export class DocumentAttributeVideo extends jspb.Message {
 
 export namespace DocumentAttributeVideo {
   export type AsObject = {
-    width?: number,
-    height?: number,
-    duration?: number,
-    round?: boolean,
+    width: number,
+    height: number,
+    duration: number,
+    round: boolean,
   }
 }
 
 export class DocumentAttributePhoto extends jspb.Message {
-  hasWidth(): boolean;
-  clearWidth(): void;
-  getWidth(): number | undefined;
+  getWidth(): number;
   setWidth(value: number): void;
 
-  hasHeight(): boolean;
-  clearHeight(): void;
-  getHeight(): number | undefined;
+  getHeight(): number;
   setHeight(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -122,15 +98,13 @@ export class DocumentAttributePhoto extends jspb.Message {
 
 export namespace DocumentAttributePhoto {
   export type AsObject = {
-    width?: number,
-    height?: number,
+    width: number,
+    height: number,
   }
 }
 
 export class DocumentAttributeFile extends jspb.Message {
-  hasFilename(): boolean;
-  clearFilename(): void;
-  getFilename(): string | undefined;
+  getFilename(): string;
   setFilename(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -145,14 +119,12 @@ export class DocumentAttributeFile extends jspb.Message {
 
 export namespace DocumentAttributeFile {
   export type AsObject = {
-    filename?: string,
+    filename: string,
   }
 }
 
 export class DocumentAttributeAnimated extends jspb.Message {
-  hasSound(): boolean;
-  clearSound(): void;
-  getSound(): boolean | undefined;
+  getSound(): boolean;
   setSound(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -167,18 +139,14 @@ export class DocumentAttributeAnimated extends jspb.Message {
 
 export namespace DocumentAttributeAnimated {
   export type AsObject = {
-    sound?: boolean,
+    sound: boolean,
   }
 }
 
 export class DocumentAttribute extends jspb.Message {
-  hasType(): boolean;
-  clearType(): void;
-  getType(): DocumentAttributeType | undefined;
+  getType(): DocumentAttributeType;
   setType(value: DocumentAttributeType): void;
 
-  hasData(): boolean;
-  clearData(): void;
   getData(): Uint8Array | string;
   getData_asU8(): Uint8Array;
   getData_asB64(): string;
@@ -196,45 +164,31 @@ export class DocumentAttribute extends jspb.Message {
 
 export namespace DocumentAttribute {
   export type AsObject = {
-    type?: DocumentAttributeType,
+    type: DocumentAttributeType,
     data: Uint8Array | string,
   }
 }
 
 export class Document extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
+  getDate(): number;
   setDate(value: number): void;
 
-  hasMimetype(): boolean;
-  clearMimetype(): void;
-  getMimetype(): string | undefined;
+  getMimetype(): string;
   setMimetype(value: string): void;
 
-  hasFilesize(): boolean;
-  clearFilesize(): void;
-  getFilesize(): number | undefined;
+  getFilesize(): number;
   setFilesize(value: number): void;
 
-  hasVersion(): boolean;
-  clearVersion(): void;
-  getVersion(): number | undefined;
+  getVersion(): number;
   setVersion(value: number): void;
 
-  hasClusterid(): boolean;
-  clearClusterid(): void;
-  getClusterid(): number | undefined;
+  getClusterid(): number;
   setClusterid(value: number): void;
 
   clearAttributesList(): void;
@@ -247,13 +201,9 @@ export class Document extends jspb.Message {
   getThumbnail(): core_types_pb.FileLocation | undefined;
   setThumbnail(value?: core_types_pb.FileLocation): void;
 
-  hasMd5checksum(): boolean;
-  clearMd5checksum(): void;
-  getMd5checksum(): string | undefined;
+  getMd5checksum(): string;
   setMd5checksum(value: string): void;
 
-  hasTinythumbnail(): boolean;
-  clearTinythumbnail(): void;
   getTinythumbnail(): Uint8Array | string;
   getTinythumbnail_asU8(): Uint8Array;
   getTinythumbnail_asB64(): string;
@@ -271,34 +221,28 @@ export class Document extends jspb.Message {
 
 export namespace Document {
   export type AsObject = {
-    id?: string,
-    accesshash?: string,
-    date?: number,
-    mimetype?: string,
-    filesize?: number,
-    version?: number,
-    clusterid?: number,
+    id: string,
+    accesshash: string,
+    date: number,
+    mimetype: string,
+    filesize: number,
+    version: number,
+    clusterid: number,
     attributesList: Array<DocumentAttribute.AsObject>,
     thumbnail?: core_types_pb.FileLocation.AsObject,
-    md5checksum?: string,
+    md5checksum: string,
     tinythumbnail: Uint8Array | string,
   }
 }
 
 export class InputMediaWebDocument extends jspb.Message {
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
+  getUrl(): string;
   setUrl(value: string): void;
 
-  hasDocsize(): boolean;
-  clearDocsize(): void;
-  getDocsize(): number | undefined;
+  getDocsize(): number;
   setDocsize(value: number): void;
 
-  hasMimetype(): boolean;
-  clearMimetype(): void;
-  getMimetype(): string | undefined;
+  getMimetype(): string;
   setMimetype(value: string): void;
 
   clearAttributesList(): void;
@@ -318,27 +262,21 @@ export class InputMediaWebDocument extends jspb.Message {
 
 export namespace InputMediaWebDocument {
   export type AsObject = {
-    url?: string,
-    docsize?: number,
-    mimetype?: string,
+    url: string,
+    docsize: number,
+    mimetype: string,
     attributesList: Array<DocumentAttribute.AsObject>,
   }
 }
 
 export class MediaWebDocument extends jspb.Message {
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
+  getUrl(): string;
   setUrl(value: string): void;
 
-  hasDocsize(): boolean;
-  clearDocsize(): void;
-  getDocsize(): number | undefined;
+  getDocsize(): number;
   setDocsize(value: number): void;
 
-  hasMimetype(): boolean;
-  clearMimetype(): void;
-  getMimetype(): string | undefined;
+  getMimetype(): string;
   setMimetype(value: string): void;
 
   clearAttributesList(): void;
@@ -346,9 +284,7 @@ export class MediaWebDocument extends jspb.Message {
   setAttributesList(value: Array<DocumentAttribute>): void;
   addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -363,11 +299,11 @@ export class MediaWebDocument extends jspb.Message {
 
 export namespace MediaWebDocument {
   export type AsObject = {
-    url?: string,
-    docsize?: number,
-    mimetype?: string,
+    url: string,
+    docsize: number,
+    mimetype: string,
     attributesList: Array<DocumentAttribute.AsObject>,
-    accesshash?: string,
+    accesshash: string,
   }
 }
 
@@ -388,24 +324,16 @@ export namespace MediaWebPage {
 }
 
 export class InputMediaContact extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasVcard(): boolean;
-  clearVcard(): void;
-  getVcard(): string | undefined;
+  getVcard(): string;
   setVcard(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -420,32 +348,24 @@ export class InputMediaContact extends jspb.Message {
 
 export namespace InputMediaContact {
   export type AsObject = {
-    phone?: string,
-    firstname?: string,
-    lastname?: string,
-    vcard?: string,
+    phone: string,
+    firstname: string,
+    lastname: string,
+    vcard: string,
   }
 }
 
 export class MediaContact extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasVcard(): boolean;
-  clearVcard(): void;
-  getVcard(): string | undefined;
+  getVcard(): string;
   setVcard(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -460,17 +380,17 @@ export class MediaContact extends jspb.Message {
 
 export namespace MediaContact {
   export type AsObject = {
-    phone?: string,
-    firstname?: string,
-    lastname?: string,
-    vcard?: string,
+    phone: string,
+    firstname: string,
+    lastname: string,
+    vcard: string,
   }
 }
 
 export class InputMediaUploadedDocument extends jspb.Message {
   hasFile(): boolean;
   clearFile(): void;
-  getFile(): core_types_pb.InputFile;
+  getFile(): core_types_pb.InputFile | undefined;
   setFile(value?: core_types_pb.InputFile): void;
 
   hasThumbnail(): boolean;
@@ -478,14 +398,10 @@ export class InputMediaUploadedDocument extends jspb.Message {
   getThumbnail(): core_types_pb.InputFile | undefined;
   setThumbnail(value?: core_types_pb.InputFile): void;
 
-  hasMimetype(): boolean;
-  clearMimetype(): void;
-  getMimetype(): string | undefined;
+  getMimetype(): string;
   setMimetype(value: string): void;
 
-  hasCaption(): boolean;
-  clearCaption(): void;
-  getCaption(): string | undefined;
+  getCaption(): string;
   setCaption(value: string): void;
 
   clearStickersList(): void;
@@ -503,8 +419,6 @@ export class InputMediaUploadedDocument extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasTinythumbnail(): boolean;
-  clearTinythumbnail(): void;
   getTinythumbnail(): Uint8Array | string;
   getTinythumbnail_asU8(): Uint8Array;
   getTinythumbnail_asB64(): string;
@@ -522,10 +436,10 @@ export class InputMediaUploadedDocument extends jspb.Message {
 
 export namespace InputMediaUploadedDocument {
   export type AsObject = {
-    file: core_types_pb.InputFile.AsObject,
+    file?: core_types_pb.InputFile.AsObject,
     thumbnail?: core_types_pb.InputFile.AsObject,
-    mimetype?: string,
-    caption?: string,
+    mimetype: string,
+    caption: string,
     stickersList: Array<core_types_pb.InputDocument.AsObject>,
     attributesList: Array<DocumentAttribute.AsObject>,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
@@ -534,14 +448,12 @@ export namespace InputMediaUploadedDocument {
 }
 
 export class InputMediaDocument extends jspb.Message {
-  hasCaption(): boolean;
-  clearCaption(): void;
-  getCaption(): string | undefined;
+  getCaption(): string;
   setCaption(value: string): void;
 
   hasDocument(): boolean;
   clearDocument(): void;
-  getDocument(): core_types_pb.InputDocument;
+  getDocument(): core_types_pb.InputDocument | undefined;
   setDocument(value?: core_types_pb.InputDocument): void;
 
   clearEntitiesList(): void;
@@ -559,8 +471,6 @@ export class InputMediaDocument extends jspb.Message {
   setAttributesList(value: Array<DocumentAttribute>): void;
   addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
 
-  hasTinythumbnail(): boolean;
-  clearTinythumbnail(): void;
   getTinythumbnail(): Uint8Array | string;
   getTinythumbnail_asU8(): Uint8Array;
   getTinythumbnail_asB64(): string;
@@ -578,8 +488,8 @@ export class InputMediaDocument extends jspb.Message {
 
 export namespace InputMediaDocument {
   export type AsObject = {
-    caption?: string,
-    document: core_types_pb.InputDocument.AsObject,
+    caption: string,
+    document?: core_types_pb.InputDocument.AsObject,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
     thumbnail?: core_types_pb.InputFile.AsObject,
     attributesList: Array<DocumentAttribute.AsObject>,
@@ -590,17 +500,13 @@ export namespace InputMediaDocument {
 export class InputMediaMessageDocument extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasCaption(): boolean;
-  clearCaption(): void;
-  getCaption(): string | undefined;
+  getCaption(): string;
   setCaption(value: string): void;
 
   clearEntitiesList(): void;
@@ -620,27 +526,23 @@ export class InputMediaMessageDocument extends jspb.Message {
 
 export namespace InputMediaMessageDocument {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    messageid?: number,
-    caption?: string,
+    peer?: core_types_pb.InputPeer.AsObject,
+    messageid: number,
+    caption: string,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
 
 export class MediaDocument extends jspb.Message {
-  hasCaption(): boolean;
-  clearCaption(): void;
-  getCaption(): string | undefined;
+  getCaption(): string;
   setCaption(value: string): void;
 
-  hasTtlinseconds(): boolean;
-  clearTtlinseconds(): void;
-  getTtlinseconds(): number | undefined;
+  getTtlinseconds(): number;
   setTtlinseconds(value: number): void;
 
   hasDoc(): boolean;
   clearDoc(): void;
-  getDoc(): Document;
+  getDoc(): Document | undefined;
   setDoc(value?: Document): void;
 
   clearEntitiesList(): void;
@@ -660,27 +562,21 @@ export class MediaDocument extends jspb.Message {
 
 export namespace MediaDocument {
   export type AsObject = {
-    caption?: string,
-    ttlinseconds?: number,
-    doc: Document.AsObject,
+    caption: string,
+    ttlinseconds: number,
+    doc?: Document.AsObject,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
 
 export class InputMediaGeoLocation extends jspb.Message {
-  hasLat(): boolean;
-  clearLat(): void;
-  getLat(): number | undefined;
+  getLat(): number;
   setLat(value: number): void;
 
-  hasLong(): boolean;
-  clearLong(): void;
-  getLong(): number | undefined;
+  getLong(): number;
   setLong(value: number): void;
 
-  hasCaption(): boolean;
-  clearCaption(): void;
-  getCaption(): string | undefined;
+  getCaption(): string;
   setCaption(value: string): void;
 
   clearEntitiesList(): void;
@@ -700,27 +596,21 @@ export class InputMediaGeoLocation extends jspb.Message {
 
 export namespace InputMediaGeoLocation {
   export type AsObject = {
-    lat?: number,
-    pb_long?: number,
-    caption?: string,
+    lat: number,
+    pb_long: number,
+    caption: string,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
 
 export class MediaGeoLocation extends jspb.Message {
-  hasLat(): boolean;
-  clearLat(): void;
-  getLat(): number | undefined;
+  getLat(): number;
   setLat(value: number): void;
 
-  hasLong(): boolean;
-  clearLong(): void;
-  getLong(): number | undefined;
+  getLong(): number;
   setLong(value: number): void;
 
-  hasCaption(): boolean;
-  clearCaption(): void;
-  getCaption(): string | undefined;
+  getCaption(): string;
   setCaption(value: string): void;
 
   clearEntitiesList(): void;
@@ -740,9 +630,9 @@ export class MediaGeoLocation extends jspb.Message {
 
 export namespace MediaGeoLocation {
   export type AsObject = {
-    lat?: number,
-    pb_long?: number,
-    caption?: string,
+    lat: number,
+    pb_long: number,
+    caption: string,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
   }
 }
@@ -750,7 +640,7 @@ export namespace MediaGeoLocation {
 export class InputMediaPoll extends jspb.Message {
   hasPoll(): boolean;
   clearPoll(): void;
-  getPoll(): MediaPoll;
+  getPoll(): MediaPoll | undefined;
   setPoll(value?: MediaPoll): void;
 
   serializeBinary(): Uint8Array;
@@ -765,39 +655,27 @@ export class InputMediaPoll extends jspb.Message {
 
 export namespace InputMediaPoll {
   export type AsObject = {
-    poll: MediaPoll.AsObject,
+    poll?: MediaPoll.AsObject,
   }
 }
 
 export class MediaPoll extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasClosed(): boolean;
-  clearClosed(): void;
-  getClosed(): boolean | undefined;
+  getClosed(): boolean;
   setClosed(value: boolean): void;
 
-  hasPublicvoters(): boolean;
-  clearPublicvoters(): void;
-  getPublicvoters(): boolean | undefined;
+  getPublicvoters(): boolean;
   setPublicvoters(value: boolean): void;
 
-  hasMultichoice(): boolean;
-  clearMultichoice(): void;
-  getMultichoice(): boolean | undefined;
+  getMultichoice(): boolean;
   setMultichoice(value: boolean): void;
 
-  hasQuiz(): boolean;
-  clearQuiz(): void;
-  getQuiz(): boolean | undefined;
+  getQuiz(): boolean;
   setQuiz(value: boolean): void;
 
-  hasQuestion(): boolean;
-  clearQuestion(): void;
-  getQuestion(): string | undefined;
+  getQuestion(): string;
   setQuestion(value: string): void;
 
   clearAnswersList(): void;
@@ -817,24 +695,20 @@ export class MediaPoll extends jspb.Message {
 
 export namespace MediaPoll {
   export type AsObject = {
-    id?: number,
-    closed?: boolean,
-    publicvoters?: boolean,
-    multichoice?: boolean,
-    quiz?: boolean,
-    question?: string,
+    id: number,
+    closed: boolean,
+    publicvoters: boolean,
+    multichoice: boolean,
+    quiz: boolean,
+    question: string,
     answersList: Array<PollAnswer.AsObject>,
   }
 }
 
 export class PollAnswer extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
-  hasOption(): boolean;
-  clearOption(): void;
   getOption(): Uint8Array | string;
   getOption_asU8(): Uint8Array;
   getOption_asB64(): string;
@@ -852,7 +726,7 @@ export class PollAnswer extends jspb.Message {
 
 export namespace PollAnswer {
   export type AsObject = {
-    text?: string,
+    text: string,
     option: Uint8Array | string,
   }
 }
@@ -863,9 +737,7 @@ export class PollResults extends jspb.Message {
   setResultsList(value: Array<PollAnswerVoters>): void;
   addResults(value?: PollAnswerVoters, index?: number): PollAnswerVoters;
 
-  hasTotalvoters(): boolean;
-  clearTotalvoters(): void;
-  getTotalvoters(): number | undefined;
+  getTotalvoters(): number;
   setTotalvoters(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -881,31 +753,23 @@ export class PollResults extends jspb.Message {
 export namespace PollResults {
   export type AsObject = {
     resultsList: Array<PollAnswerVoters.AsObject>,
-    totalvoters?: number,
+    totalvoters: number,
   }
 }
 
 export class PollAnswerVoters extends jspb.Message {
-  hasChosen(): boolean;
-  clearChosen(): void;
-  getChosen(): boolean | undefined;
+  getChosen(): boolean;
   setChosen(value: boolean): void;
 
-  hasCorrect(): boolean;
-  clearCorrect(): void;
-  getCorrect(): boolean | undefined;
+  getCorrect(): boolean;
   setCorrect(value: boolean): void;
 
-  hasOption(): boolean;
-  clearOption(): void;
   getOption(): Uint8Array | string;
   getOption_asU8(): Uint8Array;
   getOption_asB64(): string;
   setOption(value: Uint8Array | string): void;
 
-  hasVoters(): boolean;
-  clearVoters(): void;
-  getVoters(): number | undefined;
+  getVoters(): number;
   setVoters(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -920,10 +784,10 @@ export class PollAnswerVoters extends jspb.Message {
 
 export namespace PollAnswerVoters {
   export type AsObject = {
-    chosen?: boolean,
-    correct?: boolean,
+    chosen: boolean,
+    correct: boolean,
     option: Uint8Array | string,
-    voters?: number,
+    voters: number,
   }
 }
 

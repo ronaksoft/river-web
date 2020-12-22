@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import SettingsModal from '../SettingsModal';
-import {VerifiedUserRounded, VerifiedUserOutlined, CheckCircleOutlineRounded} from '@material-ui/icons';
+import {VerifiedUserRounded, VerifiedUserOutlined} from '@material-ui/icons';
 import i18n from '../../services/i18n';
 import Button from '@material-ui/core/Button';
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
@@ -19,6 +19,7 @@ import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/acc
 import {C_ERR, C_ERR_ITEM, C_MSG} from "../../services/sdk/const";
 import {InputPassword} from "../../services/sdk/messages/core.types_pb";
 import RecoveryQuestionModal from "../RecoveryQuestionModal";
+import Success from "../SVG/success";
 
 import './style.scss';
 
@@ -45,6 +46,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
     private apiManager: APIManager;
     private timeout: any = null;
     private recoveryQuestionModalRef: RecoveryQuestionModal | undefined;
+    private activate: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -58,13 +60,14 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
             password: '',
             passwordConfirm: '',
             securityQuestions: [],
-            step: 2
+            step: 2,
         };
 
         this.apiManager = APIManager.getInstance();
     }
 
     public openDialog(edit: boolean) {
+        this.activate = !edit;
         this.setState({
             mode: 'change',
             open: true,
@@ -174,12 +177,12 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
                             </Button>
                         </DialogActions>
                     </div>}
-                    {Boolean(step === 3) && <div className="tsv-dialog">
+                    {Boolean(step === 3) && <div className="tsv-dialog notice">
                         <div className="tsv-header">
-                            <CheckCircleOutlineRounded/>
+                            <Success/>
                         </div>
                         <div className="tsv-success">
-                            {mode === 'change' ? i18n.t('settings.2fa.password_successfully_changed') : i18n.t('settings.2fa.password_successfully_removed')}
+                            {i18n.t(mode === 'change' ? this.activate ? 'settings.2fa.password_successfully_activated' : 'settings.2fa.password_successfully_changed' : 'settings.2fa.password_successfully_removed')}
                         </div>
                         <div className="tsv-gap"/>
                     </div>}

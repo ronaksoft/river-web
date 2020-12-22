@@ -19,7 +19,7 @@ export default class TopPeerDB {
     }
 
     private static instance: TopPeerDB;
-    private db: DexieTopPeerDB;
+    private readonly db: DexieTopPeerDB;
 
     private constructor() {
         this.db = new DexieTopPeerDB();

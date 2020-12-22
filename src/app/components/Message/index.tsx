@@ -304,6 +304,7 @@ class Message extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
         this.containerResizeThrottle = throttle(this.getContainerSize, 10);
 
+        /* eslint-disable sort-keys */
         this.menuItem = {
             1: {
                 cmd: 'reply',
@@ -370,6 +371,7 @@ class Message extends React.Component<IProps, IState> {
                 title: i18n.t('chat.unpin'),
             },
         };
+        /* eslint-enable sort-keys */
     }
 
     public componentDidMount() {
@@ -515,34 +517,13 @@ class Message extends React.Component<IProps, IState> {
         }
         if (this.containerRef && !this.isAtEnd()) {
             const options: any = {
-                // duration of the scroll per 1000px, default 500
-                speed: 1000,
-
-                // minimum duration of the scroll
-                minDuration: 96,
-
-                // maximum duration of the scroll
-                maxDuration: 196,
-
+                cancelOnUserAction: true,
                 // @ts-ignore
                 element: this.containerRef,
-
-                // Additional offset value that gets added to the desiredOffset.  This is
-                // useful when passing a DOM object as the desiredOffset and wanting to adjust
-                // for an fixed nav or to add some padding.
-                offset: 0,
-
-                // should animated scroll be canceled on user scroll/keypress
-                // if set to "false" user input will be disabled until animated scroll is complete
-                // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
-                cancelOnUserAction: true,
-
-                // Set passive event Listeners to be true by default. Stops Chrome from complaining.
-                passive: true,
-
-                // Scroll horizontally rather than vertically (which is the default)
                 horizontal: false,
-
+                maxDuration: 196,
+                minDuration: 96,
+                offset: 0,
                 onComplete: () => {
                     if (!this.isAtEnd()) {
                         this.animateToEnd();
@@ -553,7 +534,9 @@ class Message extends React.Component<IProps, IState> {
                             }
                         }, 100);
                     }
-                }
+                },
+                passive: true,
+                speed: 1000,
             };
             animateScrollTo((this.containerRef.scrollHeight - this.containerRef.clientHeight) + 1, options);
         }
@@ -604,6 +587,7 @@ class Message extends React.Component<IProps, IState> {
         if (this.list) {
             this.list.forceUpdate(callback);
         }
+        this.listCount = this.state.items.length;
     }
 
     public setFitList(fit: boolean) {
@@ -666,7 +650,7 @@ class Message extends React.Component<IProps, IState> {
                         {this.contextMenuItem()}
                     </Menu>
                     {this.state.enableDrag &&
-                    <div style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, zIndex: 10000}}
+                    <div style={{bottom: 0, left: 0, position: 'absolute', right: 0, top: 0, zIndex: 10000}}
                          ref={this.droppableAreaRefHandler}
                          onDrop={this.dropHandler}
                     />}
@@ -757,7 +741,7 @@ class Message extends React.Component<IProps, IState> {
             1: [1, 2, 3, 4, 13, 7, 12, 8, 9, 10, 11, 14, 15, 16],
             2: [1, 2, 4, 13, 7, 12, 8, 9, 10, 11, 15, 16],
             3: [6, 5, 9, 10, 11],
-            4: [4, 9, 14],
+            4: [4, 9],
         };
         const selection = window.getSelection();
         const hasCopy = Boolean(selection && selection.type === 'Range');
@@ -788,13 +772,7 @@ class Message extends React.Component<IProps, IState> {
             });
         } else if (isSystemMessage) {
             menuTypes[4].forEach((key) => {
-                if (key === 14) {
-                    if (me) {
-                        menuItems.push(this.menuItem[key]);
-                    }
-                } else {
-                    menuItems.push(this.menuItem[key]);
-                }
+                menuItems.push(this.menuItem[key]);
             });
         } else if (me && id > 0) {
             menuTypes[1].forEach((key) => {
@@ -1149,10 +1127,10 @@ class Message extends React.Component<IProps, IState> {
             }
         }
 
-        this.messageScroll = {start, end, overscanStart, overscanEnd};
+        this.messageScroll = {end, overscanEnd, overscanStart, start};
 
         if (this.props.onRendered) {
-            this.props.onRendered({start, end, overscanStart, overscanEnd});
+            this.props.onRendered({end, overscanEnd, overscanStart, start});
         }
     }
 

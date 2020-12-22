@@ -11,9 +11,7 @@ export class ContactsImport extends jspb.Message {
   setContactsList(value: Array<core_types_pb.PhoneContact>): void;
   addContacts(value?: core_types_pb.PhoneContact, index?: number): core_types_pb.PhoneContact;
 
-  hasReplace(): boolean;
-  clearReplace(): void;
-  getReplace(): boolean | undefined;
+  getReplace(): boolean;
   setReplace(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -29,29 +27,23 @@ export class ContactsImport extends jspb.Message {
 export namespace ContactsImport {
   export type AsObject = {
     contactsList: Array<core_types_pb.PhoneContact.AsObject>,
-    replace?: boolean,
+    replace: boolean,
   }
 }
 
 export class ContactsAdd extends jspb.Message {
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.InputUser;
+  getUser(): core_types_pb.InputUser | undefined;
   setUser(value?: core_types_pb.InputUser): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -66,17 +58,15 @@ export class ContactsAdd extends jspb.Message {
 
 export namespace ContactsAdd {
   export type AsObject = {
-    user: core_types_pb.InputUser.AsObject,
-    firstname?: string,
-    lastname?: string,
-    phone?: string,
+    user?: core_types_pb.InputUser.AsObject,
+    firstname: string,
+    lastname: string,
+    phone: string,
   }
 }
 
 export class ContactsGet extends jspb.Message {
-  hasCrc32hash(): boolean;
-  clearCrc32hash(): void;
-  getCrc32hash(): number | undefined;
+  getCrc32hash(): number;
   setCrc32hash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -91,7 +81,7 @@ export class ContactsGet extends jspb.Message {
 
 export namespace ContactsGet {
   export type AsObject = {
-    crc32hash?: number,
+    crc32hash: number,
   }
 }
 
@@ -136,7 +126,7 @@ export namespace ContactsDeleteAll {
 export class ContactsBlock extends jspb.Message {
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.InputUser;
+  getUser(): core_types_pb.InputUser | undefined;
   setUser(value?: core_types_pb.InputUser): void;
 
   serializeBinary(): Uint8Array;
@@ -151,14 +141,14 @@ export class ContactsBlock extends jspb.Message {
 
 export namespace ContactsBlock {
   export type AsObject = {
-    user: core_types_pb.InputUser.AsObject,
+    user?: core_types_pb.InputUser.AsObject,
   }
 }
 
 export class ContactsUnblock extends jspb.Message {
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.InputUser;
+  getUser(): core_types_pb.InputUser | undefined;
   setUser(value?: core_types_pb.InputUser): void;
 
   serializeBinary(): Uint8Array;
@@ -173,19 +163,15 @@ export class ContactsUnblock extends jspb.Message {
 
 export namespace ContactsUnblock {
   export type AsObject = {
-    user: core_types_pb.InputUser.AsObject,
+    user?: core_types_pb.InputUser.AsObject,
   }
 }
 
 export class ContactsGetBlocked extends jspb.Message {
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): number | undefined;
+  getOffset(): number;
   setOffset(value: number): void;
 
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -200,15 +186,13 @@ export class ContactsGetBlocked extends jspb.Message {
 
 export namespace ContactsGetBlocked {
   export type AsObject = {
-    offset?: number,
-    limit?: number,
+    offset: number,
+    limit: number,
   }
 }
 
 export class ContactsSearch extends jspb.Message {
-  hasQ(): boolean;
-  clearQ(): void;
-  getQ(): string | undefined;
+  getQ(): string;
   setQ(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -223,24 +207,18 @@ export class ContactsSearch extends jspb.Message {
 
 export namespace ContactsSearch {
   export type AsObject = {
-    q?: string,
+    q: string,
   }
 }
 
 export class ContactsGetTopPeers extends jspb.Message {
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): number | undefined;
+  getOffset(): number;
   setOffset(value: number): void;
 
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
-  hasCategory(): boolean;
-  clearCategory(): void;
-  getCategory(): TopPeerCategory | undefined;
+  getCategory(): TopPeerCategory;
   setCategory(value: TopPeerCategory): void;
 
   serializeBinary(): Uint8Array;
@@ -255,21 +233,19 @@ export class ContactsGetTopPeers extends jspb.Message {
 
 export namespace ContactsGetTopPeers {
   export type AsObject = {
-    offset?: number,
-    limit?: number,
-    category?: TopPeerCategory,
+    offset: number,
+    limit: number,
+    category: TopPeerCategory,
   }
 }
 
 export class ContactsResetTopPeer extends jspb.Message {
-  hasCategory(): boolean;
-  clearCategory(): void;
-  getCategory(): TopPeerCategory | undefined;
+  getCategory(): TopPeerCategory;
   setCategory(value: TopPeerCategory): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   serializeBinary(): Uint8Array;
@@ -284,20 +260,16 @@ export class ContactsResetTopPeer extends jspb.Message {
 
 export namespace ContactsResetTopPeer {
   export type AsObject = {
-    category?: TopPeerCategory,
-    peer: core_types_pb.InputPeer.AsObject,
+    category: TopPeerCategory,
+    peer?: core_types_pb.InputPeer.AsObject,
   }
 }
 
 export class ContactsTopPeers extends jspb.Message {
-  hasCategory(): boolean;
-  clearCategory(): void;
-  getCategory(): TopPeerCategory | undefined;
+  getCategory(): TopPeerCategory;
   setCategory(value: TopPeerCategory): void;
 
-  hasCount(): boolean;
-  clearCount(): void;
-  getCount(): number | undefined;
+  getCount(): number;
   setCount(value: number): void;
 
   clearPeersList(): void;
@@ -327,8 +299,8 @@ export class ContactsTopPeers extends jspb.Message {
 
 export namespace ContactsTopPeers {
   export type AsObject = {
-    category?: TopPeerCategory,
-    count?: number,
+    category: TopPeerCategory,
+    count: number,
     peersList: Array<TopPeer.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
     groupsList: Array<core_types_pb.Group.AsObject>,
@@ -336,24 +308,18 @@ export namespace ContactsTopPeers {
 }
 
 export class TopPeer extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.Peer;
+  getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  hasRate(): boolean;
-  clearRate(): void;
-  getRate(): number | undefined;
+  getRate(): number;
   setRate(value: number): void;
 
-  hasLastupdate(): boolean;
-  clearLastupdate(): void;
-  getLastupdate(): number | undefined;
+  getLastupdate(): number;
   setLastupdate(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -368,10 +334,10 @@ export class TopPeer extends jspb.Message {
 
 export namespace TopPeer {
   export type AsObject = {
-    teamid?: string,
-    peer: core_types_pb.Peer.AsObject,
-    rate?: number,
-    lastupdate?: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
+    rate: number,
+    lastupdate: number,
   }
 }
 
@@ -386,9 +352,7 @@ export class BlockedContactsMany extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
-  hasTotal(): boolean;
-  clearTotal(): void;
-  getTotal(): number | undefined;
+  getTotal(): number;
   setTotal(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -405,19 +369,15 @@ export namespace BlockedContactsMany {
   export type AsObject = {
     contactsList: Array<BlockedContact.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
-    total?: number,
+    total: number,
   }
 }
 
 export class BlockedContact extends jspb.Message {
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
+  getDate(): number;
   setDate(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -432,8 +392,8 @@ export class BlockedContact extends jspb.Message {
 
 export namespace BlockedContact {
   export type AsObject = {
-    userid?: number,
-    date?: number,
+    userid: number,
+    date: number,
   }
 }
 
@@ -448,9 +408,7 @@ export class ContactsImported extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -467,7 +425,7 @@ export namespace ContactsImported {
   export type AsObject = {
     contactusersList: Array<core_types_pb.ContactUser.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
-    empty?: boolean,
+    empty: boolean,
   }
 }
 
@@ -482,9 +440,7 @@ export class ContactsMany extends jspb.Message {
   setContactusersList(value: Array<core_types_pb.ContactUser>): void;
   addContactusers(value?: core_types_pb.ContactUser, index?: number): core_types_pb.ContactUser;
 
-  hasModified(): boolean;
-  clearModified(): void;
-  getModified(): boolean | undefined;
+  getModified(): boolean;
   setModified(value: boolean): void;
 
   clearUsersList(): void;
@@ -492,14 +448,10 @@ export class ContactsMany extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): number | undefined;
+  getHash(): number;
   setHash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -516,10 +468,10 @@ export namespace ContactsMany {
   export type AsObject = {
     contactsList: Array<core_types_pb.PhoneContact.AsObject>,
     contactusersList: Array<core_types_pb.ContactUser.AsObject>,
-    modified?: boolean,
+    modified: boolean,
     usersList: Array<core_types_pb.User.AsObject>,
-    empty?: boolean,
-    hash?: number,
+    empty: boolean,
+    hash: number,
   }
 }
 

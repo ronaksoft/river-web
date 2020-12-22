@@ -288,7 +288,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                         return;
                     }
                     blurFn(ctx);
-                    canvas.convertToBlob({type: 'image/jpeg', quality: 0.9}).then((data) => {
+                    canvas.convertToBlob({quality: 0.9, type: 'image/jpeg'}).then((data) => {
                         URL.revokeObjectURL(this.lastPreview);
                         const preview = URL.createObjectURL(data);
                         resolve({

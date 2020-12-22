@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -1232,8 +1234,10 @@ proto.msg.SystemGetResponse.deserializeBinaryFromReader = function(msg, reader) 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readFixed64());
-      msg.addRequestids(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedFixed64() : [reader.readFixed64()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addRequestids(values[i]);
+      }
       break;
     default:
       reader.skipField();
@@ -1266,7 +1270,7 @@ proto.msg.SystemGetResponse.serializeBinaryToWriter = function(message, writer) 
   var f = undefined;
   f = message.getRequestidsList();
   if (f.length > 0) {
-    writer.writeRepeatedFixed64(
+    writer.writePackedFixed64(
       1,
       f
     );
@@ -1343,19 +1347,19 @@ proto.msg.ClientUsage.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ClientUsage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    year: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    month: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    day: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    userid: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    foregroundtime: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    avgresponsetime: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
-    totalrequests: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
-    receivedmessages: (f = jspb.Message.getField(msg, 8)) == null ? undefined : f,
-    sentmessages: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
-    receivedmedia: (f = jspb.Message.getField(msg, 10)) == null ? undefined : f,
-    sentmedia: (f = jspb.Message.getField(msg, 11)) == null ? undefined : f,
-    uploadbytes: (f = jspb.Message.getField(msg, 12)) == null ? undefined : f,
-    downloadbytes: (f = jspb.Message.getField(msg, 13)) == null ? undefined : f
+    year: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    month: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    day: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    userid: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    foregroundtime: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    avgresponsetime: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    totalrequests: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    receivedmessages: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    sentmessages: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    receivedmedia: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    sentmedia: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    uploadbytes: jspb.Message.getFieldWithDefault(msg, 12, 0),
+    downloadbytes: jspb.Message.getFieldWithDefault(msg, 13, 0)
   };
 
   if (includeInstance) {
@@ -1473,92 +1477,92 @@ proto.msg.ClientUsage.prototype.serializeBinary = function() {
  */
 proto.msg.ClientUsage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getYear();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getMonth();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getDay();
+  if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getUserid();
+  if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getForegroundtime();
+  if (f !== 0) {
     writer.writeInt64(
       5,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getAvgresponsetime();
+  if (f !== 0) {
     writer.writeInt64(
       6,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getTotalrequests();
+  if (f !== 0) {
     writer.writeInt64(
       7,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 8));
-  if (f != null) {
+  f = message.getReceivedmessages();
+  if (f !== 0) {
     writer.writeInt64(
       8,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 9));
-  if (f != null) {
+  f = message.getSentmessages();
+  if (f !== 0) {
     writer.writeInt64(
       9,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 10));
-  if (f != null) {
+  f = message.getReceivedmedia();
+  if (f !== 0) {
     writer.writeInt64(
       10,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 11));
-  if (f != null) {
+  f = message.getSentmedia();
+  if (f !== 0) {
     writer.writeInt64(
       11,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 12));
-  if (f != null) {
+  f = message.getUploadbytes();
+  if (f !== 0) {
     writer.writeInt64(
       12,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 13));
-  if (f != null) {
+  f = message.getDownloadbytes();
+  if (f !== 0) {
     writer.writeInt64(
       13,
       f
@@ -1568,7 +1572,7 @@ proto.msg.ClientUsage.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int32 Year = 1;
+ * optional int32 Year = 1;
  * @return {number}
  */
 proto.msg.ClientUsage.prototype.getYear = function() {
@@ -1581,30 +1585,12 @@ proto.msg.ClientUsage.prototype.getYear = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setYear = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearYear = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasYear = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 Month = 2;
+ * optional int32 Month = 2;
  * @return {number}
  */
 proto.msg.ClientUsage.prototype.getMonth = function() {
@@ -1617,30 +1603,12 @@ proto.msg.ClientUsage.prototype.getMonth = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setMonth = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearMonth = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasMonth = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int32 Day = 3;
+ * optional int32 Day = 3;
  * @return {number}
  */
 proto.msg.ClientUsage.prototype.getDay = function() {
@@ -1653,30 +1621,12 @@ proto.msg.ClientUsage.prototype.getDay = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setDay = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearDay = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasDay = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required int64 UserID = 4;
+ * optional int64 UserID = 4;
  * @return {number}
  */
 proto.msg.ClientUsage.prototype.getUserid = function() {
@@ -1689,30 +1639,12 @@ proto.msg.ClientUsage.prototype.getUserid = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required int64 ForegroundTime = 5;
+ * optional int64 ForegroundTime = 5;
  * @return {number}
  */
 proto.msg.ClientUsage.prototype.getForegroundtime = function() {
@@ -1725,30 +1657,12 @@ proto.msg.ClientUsage.prototype.getForegroundtime = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setForegroundtime = function(value) {
-  return jspb.Message.setField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearForegroundtime = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasForegroundtime = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required int64 AvgResponseTime = 6;
+ * optional int64 AvgResponseTime = 6;
  * @return {number}
  */
 proto.msg.ClientUsage.prototype.getAvgresponsetime = function() {
@@ -1761,30 +1675,12 @@ proto.msg.ClientUsage.prototype.getAvgresponsetime = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setAvgresponsetime = function(value) {
-  return jspb.Message.setField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearAvgresponsetime = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasAvgresponsetime = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * required int64 TotalRequests = 7;
+ * optional int64 TotalRequests = 7;
  * @return {number}
  */
 proto.msg.ClientUsage.prototype.getTotalrequests = function() {
@@ -1797,25 +1693,7 @@ proto.msg.ClientUsage.prototype.getTotalrequests = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setTotalrequests = function(value) {
-  return jspb.Message.setField(this, 7, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearTotalrequests = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasTotalrequests = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -1833,25 +1711,7 @@ proto.msg.ClientUsage.prototype.getReceivedmessages = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setReceivedmessages = function(value) {
-  return jspb.Message.setField(this, 8, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearReceivedmessages = function() {
-  return jspb.Message.setField(this, 8, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasReceivedmessages = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
@@ -1869,25 +1729,7 @@ proto.msg.ClientUsage.prototype.getSentmessages = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setSentmessages = function(value) {
-  return jspb.Message.setField(this, 9, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearSentmessages = function() {
-  return jspb.Message.setField(this, 9, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasSentmessages = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
@@ -1905,25 +1747,7 @@ proto.msg.ClientUsage.prototype.getReceivedmedia = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setReceivedmedia = function(value) {
-  return jspb.Message.setField(this, 10, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearReceivedmedia = function() {
-  return jspb.Message.setField(this, 10, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasReceivedmedia = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.setProto3IntField(this, 10, value);
 };
 
 
@@ -1941,25 +1765,7 @@ proto.msg.ClientUsage.prototype.getSentmedia = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setSentmedia = function(value) {
-  return jspb.Message.setField(this, 11, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearSentmedia = function() {
-  return jspb.Message.setField(this, 11, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasSentmedia = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.setProto3IntField(this, 11, value);
 };
 
 
@@ -1977,25 +1783,7 @@ proto.msg.ClientUsage.prototype.getUploadbytes = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setUploadbytes = function(value) {
-  return jspb.Message.setField(this, 12, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearUploadbytes = function() {
-  return jspb.Message.setField(this, 12, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasUploadbytes = function() {
-  return jspb.Message.getField(this, 12) != null;
+  return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
@@ -2013,25 +1801,7 @@ proto.msg.ClientUsage.prototype.getDownloadbytes = function() {
  * @return {!proto.msg.ClientUsage} returns this
  */
 proto.msg.ClientUsage.prototype.setDownloadbytes = function(value) {
-  return jspb.Message.setField(this, 13, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.ClientUsage} returns this
- */
-proto.msg.ClientUsage.prototype.clearDownloadbytes = function() {
-  return jspb.Message.setField(this, 13, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.ClientUsage.prototype.hasDownloadbytes = function() {
-  return jspb.Message.getField(this, 13) != null;
+  return jspb.Message.setProto3IntField(this, 13, value);
 };
 
 
@@ -2074,27 +1844,30 @@ proto.msg.SystemConfig.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.SystemConfig.toObject = function(includeInstance, msg) {
   var f, obj = {
-    gifbot: (f = jspb.Message.getField(msg, 110)) == null ? undefined : f,
-    wikibot: (f = jspb.Message.getField(msg, 111)) == null ? undefined : f,
-    testmode: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    phonecallenabled: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
-    expireon: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    groupmaxsize: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    forwardedmaxcount: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    onlineupdateperiodinsec: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
-    edittimelimitinsec: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
-    revoketimelimitinsec: (f = jspb.Message.getField(msg, 8)) == null ? undefined : f,
-    pinneddialogsmaxcount: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
-    urlprefix: (f = jspb.Message.getField(msg, 10)) == null ? undefined : f,
-    messagemaxlength: (f = jspb.Message.getField(msg, 11)) == null ? undefined : f,
-    captionmaxlength: (f = jspb.Message.getField(msg, 12)) == null ? undefined : f,
+    gifbot: jspb.Message.getFieldWithDefault(msg, 110, ""),
+    wikibot: jspb.Message.getFieldWithDefault(msg, 111, ""),
+    testmode: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    phonecallenabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    expireon: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    groupmaxsize: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    forwardedmaxcount: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    onlineupdateperiodinsec: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    edittimelimitinsec: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    revoketimelimitinsec: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    pinneddialogsmaxcount: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    urlprefix: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    messagemaxlength: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    captionmaxlength: jspb.Message.getFieldWithDefault(msg, 12, 0),
     dcsList: jspb.Message.toObjectList(msg.getDcsList(),
     proto.msg.DataCenter.toObject, includeInstance),
-    maxlabels: (f = jspb.Message.getField(msg, 14)) == null ? undefined : f,
-    toppeerdecayrate: (f = jspb.Message.getOptionalFloatingPointField(msg, 15)) == null ? undefined : f,
-    toppeermaxstep: (f = jspb.Message.getOptionalFloatingPointField(msg, 16)) == null ? undefined : f,
-    maxactivesessions: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
-    reactionsList: (f = jspb.Message.getRepeatedField(msg, 18)) == null ? undefined : f
+    maxlabels: jspb.Message.getFieldWithDefault(msg, 14, 0),
+    toppeerdecayrate: jspb.Message.getFloatingPointFieldWithDefault(msg, 15, 0.0),
+    toppeermaxstep: jspb.Message.getFloatingPointFieldWithDefault(msg, 16, 0.0),
+    maxactivesessions: jspb.Message.getFieldWithDefault(msg, 17, 0),
+    reactionsList: (f = jspb.Message.getRepeatedField(msg, 18)) == null ? undefined : f,
+    maxuploadsize: jspb.Message.getFieldWithDefault(msg, 19, 0),
+    maxuploadpartsize: jspb.Message.getFieldWithDefault(msg, 20, 0),
+    maxuploadparts: jspb.Message.getFieldWithDefault(msg, 21, 0)
   };
 
   if (includeInstance) {
@@ -2212,6 +1985,18 @@ proto.msg.SystemConfig.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.addReactions(value);
       break;
+    case 19:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setMaxuploadsize(value);
+      break;
+    case 20:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setMaxuploadpartsize(value);
+      break;
+    case 21:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setMaxuploadparts(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2241,99 +2026,99 @@ proto.msg.SystemConfig.prototype.serializeBinary = function() {
  */
 proto.msg.SystemConfig.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 110));
-  if (f != null) {
+  f = message.getGifbot();
+  if (f.length > 0) {
     writer.writeString(
       110,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 111));
-  if (f != null) {
+  f = message.getWikibot();
+  if (f.length > 0) {
     writer.writeString(
       111,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTestmode();
+  if (f) {
     writer.writeBool(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getPhonecallenabled();
+  if (f) {
     writer.writeBool(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getExpireon();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getGroupmaxsize();
+  if (f !== 0) {
     writer.writeInt32(
       4,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getForwardedmaxcount();
+  if (f !== 0) {
     writer.writeInt32(
       5,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getOnlineupdateperiodinsec();
+  if (f !== 0) {
     writer.writeInt32(
       6,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getEdittimelimitinsec();
+  if (f !== 0) {
     writer.writeInt32(
       7,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 8));
-  if (f != null) {
+  f = message.getRevoketimelimitinsec();
+  if (f !== 0) {
     writer.writeInt32(
       8,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 9));
-  if (f != null) {
+  f = message.getPinneddialogsmaxcount();
+  if (f !== 0) {
     writer.writeInt32(
       9,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 10));
-  if (f != null) {
+  f = message.getUrlprefix();
+  if (f !== 0) {
     writer.writeInt32(
       10,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 11));
-  if (f != null) {
+  f = message.getMessagemaxlength();
+  if (f !== 0) {
     writer.writeInt32(
       11,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 12));
-  if (f != null) {
+  f = message.getCaptionmaxlength();
+  if (f !== 0) {
     writer.writeInt32(
       12,
       f
@@ -2347,29 +2132,29 @@ proto.msg.SystemConfig.serializeBinaryToWriter = function(message, writer) {
       proto.msg.DataCenter.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 14));
-  if (f != null) {
+  f = message.getMaxlabels();
+  if (f !== 0) {
     writer.writeInt32(
       14,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 15));
-  if (f != null) {
+  f = message.getToppeerdecayrate();
+  if (f !== 0.0) {
     writer.writeFloat(
       15,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 16));
-  if (f != null) {
+  f = message.getToppeermaxstep();
+  if (f !== 0.0) {
     writer.writeFloat(
       16,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 17));
-  if (f != null) {
+  f = message.getMaxactivesessions();
+  if (f !== 0) {
     writer.writeUint32(
       17,
       f
@@ -2379,6 +2164,27 @@ proto.msg.SystemConfig.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeRepeatedString(
       18,
+      f
+    );
+  }
+  f = message.getMaxuploadsize();
+  if (f !== 0) {
+    writer.writeInt64(
+      19,
+      f
+    );
+  }
+  f = message.getMaxuploadpartsize();
+  if (f !== 0) {
+    writer.writeInt64(
+      20,
+      f
+    );
+  }
+  f = message.getMaxuploadparts();
+  if (f !== 0) {
+    writer.writeInt64(
+      21,
       f
     );
   }
@@ -2399,25 +2205,7 @@ proto.msg.SystemConfig.prototype.getGifbot = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setGifbot = function(value) {
-  return jspb.Message.setField(this, 110, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearGifbot = function() {
-  return jspb.Message.setField(this, 110, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasGifbot = function() {
-  return jspb.Message.getField(this, 110) != null;
+  return jspb.Message.setProto3StringField(this, 110, value);
 };
 
 
@@ -2435,30 +2223,12 @@ proto.msg.SystemConfig.prototype.getWikibot = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setWikibot = function(value) {
-  return jspb.Message.setField(this, 111, value);
+  return jspb.Message.setProto3StringField(this, 111, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearWikibot = function() {
-  return jspb.Message.setField(this, 111, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasWikibot = function() {
-  return jspb.Message.getField(this, 111) != null;
-};
-
-
-/**
- * required bool TestMode = 1;
+ * optional bool TestMode = 1;
  * @return {boolean}
  */
 proto.msg.SystemConfig.prototype.getTestmode = function() {
@@ -2471,30 +2241,12 @@ proto.msg.SystemConfig.prototype.getTestmode = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setTestmode = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearTestmode = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasTestmode = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bool PhoneCallEnabled = 2;
+ * optional bool PhoneCallEnabled = 2;
  * @return {boolean}
  */
 proto.msg.SystemConfig.prototype.getPhonecallenabled = function() {
@@ -2507,30 +2259,12 @@ proto.msg.SystemConfig.prototype.getPhonecallenabled = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setPhonecallenabled = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearPhonecallenabled = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasPhonecallenabled = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 ExpireOn = 3;
+ * optional int64 ExpireOn = 3;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getExpireon = function() {
@@ -2543,30 +2277,12 @@ proto.msg.SystemConfig.prototype.getExpireon = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setExpireon = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearExpireon = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasExpireon = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required int32 GroupMaxSize = 4;
+ * optional int32 GroupMaxSize = 4;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getGroupmaxsize = function() {
@@ -2579,30 +2295,12 @@ proto.msg.SystemConfig.prototype.getGroupmaxsize = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setGroupmaxsize = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearGroupmaxsize = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasGroupmaxsize = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required int32 ForwardedMaxCount = 5;
+ * optional int32 ForwardedMaxCount = 5;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getForwardedmaxcount = function() {
@@ -2615,30 +2313,12 @@ proto.msg.SystemConfig.prototype.getForwardedmaxcount = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setForwardedmaxcount = function(value) {
-  return jspb.Message.setField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearForwardedmaxcount = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasForwardedmaxcount = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required int32 OnlineUpdatePeriodInSec = 6;
+ * optional int32 OnlineUpdatePeriodInSec = 6;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getOnlineupdateperiodinsec = function() {
@@ -2651,30 +2331,12 @@ proto.msg.SystemConfig.prototype.getOnlineupdateperiodinsec = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setOnlineupdateperiodinsec = function(value) {
-  return jspb.Message.setField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearOnlineupdateperiodinsec = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasOnlineupdateperiodinsec = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * required int32 EditTimeLimitInSec = 7;
+ * optional int32 EditTimeLimitInSec = 7;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getEdittimelimitinsec = function() {
@@ -2687,30 +2349,12 @@ proto.msg.SystemConfig.prototype.getEdittimelimitinsec = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setEdittimelimitinsec = function(value) {
-  return jspb.Message.setField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearEdittimelimitinsec = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasEdittimelimitinsec = function() {
-  return jspb.Message.getField(this, 7) != null;
-};
-
-
-/**
- * required int32 RevokeTimeLimitInSec = 8;
+ * optional int32 RevokeTimeLimitInSec = 8;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getRevoketimelimitinsec = function() {
@@ -2723,30 +2367,12 @@ proto.msg.SystemConfig.prototype.getRevoketimelimitinsec = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setRevoketimelimitinsec = function(value) {
-  return jspb.Message.setField(this, 8, value);
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearRevoketimelimitinsec = function() {
-  return jspb.Message.setField(this, 8, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasRevoketimelimitinsec = function() {
-  return jspb.Message.getField(this, 8) != null;
-};
-
-
-/**
- * required int32 PinnedDialogsMaxCount = 9;
+ * optional int32 PinnedDialogsMaxCount = 9;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getPinneddialogsmaxcount = function() {
@@ -2759,30 +2385,12 @@ proto.msg.SystemConfig.prototype.getPinneddialogsmaxcount = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setPinneddialogsmaxcount = function(value) {
-  return jspb.Message.setField(this, 9, value);
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearPinneddialogsmaxcount = function() {
-  return jspb.Message.setField(this, 9, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasPinneddialogsmaxcount = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
-/**
- * required int32 UrlPrefix = 10;
+ * optional int32 UrlPrefix = 10;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getUrlprefix = function() {
@@ -2795,30 +2403,12 @@ proto.msg.SystemConfig.prototype.getUrlprefix = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setUrlprefix = function(value) {
-  return jspb.Message.setField(this, 10, value);
+  return jspb.Message.setProto3IntField(this, 10, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearUrlprefix = function() {
-  return jspb.Message.setField(this, 10, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasUrlprefix = function() {
-  return jspb.Message.getField(this, 10) != null;
-};
-
-
-/**
- * required int32 MessageMaxLength = 11;
+ * optional int32 MessageMaxLength = 11;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getMessagemaxlength = function() {
@@ -2831,30 +2421,12 @@ proto.msg.SystemConfig.prototype.getMessagemaxlength = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setMessagemaxlength = function(value) {
-  return jspb.Message.setField(this, 11, value);
+  return jspb.Message.setProto3IntField(this, 11, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearMessagemaxlength = function() {
-  return jspb.Message.setField(this, 11, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasMessagemaxlength = function() {
-  return jspb.Message.getField(this, 11) != null;
-};
-
-
-/**
- * required int32 CaptionMaxLength = 12;
+ * optional int32 CaptionMaxLength = 12;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getCaptionmaxlength = function() {
@@ -2867,25 +2439,7 @@ proto.msg.SystemConfig.prototype.getCaptionmaxlength = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setCaptionmaxlength = function(value) {
-  return jspb.Message.setField(this, 12, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearCaptionmaxlength = function() {
-  return jspb.Message.setField(this, 12, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasCaptionmaxlength = function() {
-  return jspb.Message.getField(this, 12) != null;
+  return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
@@ -2928,7 +2482,7 @@ proto.msg.SystemConfig.prototype.clearDcsList = function() {
 
 
 /**
- * required int32 MaxLabels = 14;
+ * optional int32 MaxLabels = 14;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getMaxlabels = function() {
@@ -2941,30 +2495,12 @@ proto.msg.SystemConfig.prototype.getMaxlabels = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setMaxlabels = function(value) {
-  return jspb.Message.setField(this, 14, value);
+  return jspb.Message.setProto3IntField(this, 14, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearMaxlabels = function() {
-  return jspb.Message.setField(this, 14, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasMaxlabels = function() {
-  return jspb.Message.getField(this, 14) != null;
-};
-
-
-/**
- * required float TopPeerDecayRate = 15;
+ * optional float TopPeerDecayRate = 15;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getToppeerdecayrate = function() {
@@ -2977,30 +2513,12 @@ proto.msg.SystemConfig.prototype.getToppeerdecayrate = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setToppeerdecayrate = function(value) {
-  return jspb.Message.setField(this, 15, value);
+  return jspb.Message.setProto3FloatField(this, 15, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearToppeerdecayrate = function() {
-  return jspb.Message.setField(this, 15, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasToppeerdecayrate = function() {
-  return jspb.Message.getField(this, 15) != null;
-};
-
-
-/**
- * required float TopPeerMaxStep = 16;
+ * optional float TopPeerMaxStep = 16;
  * @return {number}
  */
 proto.msg.SystemConfig.prototype.getToppeermaxstep = function() {
@@ -3013,25 +2531,7 @@ proto.msg.SystemConfig.prototype.getToppeermaxstep = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setToppeermaxstep = function(value) {
-  return jspb.Message.setField(this, 16, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearToppeermaxstep = function() {
-  return jspb.Message.setField(this, 16, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasToppeermaxstep = function() {
-  return jspb.Message.getField(this, 16) != null;
+  return jspb.Message.setProto3FloatField(this, 16, value);
 };
 
 
@@ -3049,25 +2549,7 @@ proto.msg.SystemConfig.prototype.getMaxactivesessions = function() {
  * @return {!proto.msg.SystemConfig} returns this
  */
 proto.msg.SystemConfig.prototype.setMaxactivesessions = function(value) {
-  return jspb.Message.setField(this, 17, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemConfig} returns this
- */
-proto.msg.SystemConfig.prototype.clearMaxactivesessions = function() {
-  return jspb.Message.setField(this, 17, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemConfig.prototype.hasMaxactivesessions = function() {
-  return jspb.Message.getField(this, 17) != null;
+  return jspb.Message.setProto3IntField(this, 17, value);
 };
 
 
@@ -3108,6 +2590,60 @@ proto.msg.SystemConfig.prototype.clearReactionsList = function() {
 };
 
 
+/**
+ * optional int64 MaxUploadSize = 19;
+ * @return {number}
+ */
+proto.msg.SystemConfig.prototype.getMaxuploadsize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.SystemConfig} returns this
+ */
+proto.msg.SystemConfig.prototype.setMaxuploadsize = function(value) {
+  return jspb.Message.setProto3IntField(this, 19, value);
+};
+
+
+/**
+ * optional int64 MaxUploadPartSize = 20;
+ * @return {number}
+ */
+proto.msg.SystemConfig.prototype.getMaxuploadpartsize = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 20, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.SystemConfig} returns this
+ */
+proto.msg.SystemConfig.prototype.setMaxuploadpartsize = function(value) {
+  return jspb.Message.setProto3IntField(this, 20, value);
+};
+
+
+/**
+ * optional int64 MaxUploadParts = 21;
+ * @return {number}
+ */
+proto.msg.SystemConfig.prototype.getMaxuploadparts = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 21, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.SystemConfig} returns this
+ */
+proto.msg.SystemConfig.prototype.setMaxuploadparts = function(value) {
+  return jspb.Message.setProto3IntField(this, 21, value);
+};
+
+
 
 
 
@@ -3140,11 +2676,11 @@ proto.msg.DataCenter.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.DataCenter.toObject = function(includeInstance, msg) {
   var f, obj = {
-    ip: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    port: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    http: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
-    websocket: (f = jspb.Message.getBooleanField(msg, 4)) == null ? undefined : f,
-    quic: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
+    ip: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    port: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    http: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+    websocket: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+    quic: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -3230,36 +2766,36 @@ proto.msg.DataCenter.prototype.serializeBinary = function() {
  */
 proto.msg.DataCenter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getIp();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getPort();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getHttp();
+  if (f) {
     writer.writeBool(
       3,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getWebsocket();
+  if (f) {
     writer.writeBool(
       4,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getQuic();
+  if (f) {
     writer.writeBool(
       5,
       f
@@ -3269,7 +2805,7 @@ proto.msg.DataCenter.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string IP = 1;
+ * optional string IP = 1;
  * @return {string}
  */
 proto.msg.DataCenter.prototype.getIp = function() {
@@ -3282,30 +2818,12 @@ proto.msg.DataCenter.prototype.getIp = function() {
  * @return {!proto.msg.DataCenter} returns this
  */
 proto.msg.DataCenter.prototype.setIp = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DataCenter} returns this
- */
-proto.msg.DataCenter.prototype.clearIp = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DataCenter.prototype.hasIp = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 Port = 2;
+ * optional int32 Port = 2;
  * @return {number}
  */
 proto.msg.DataCenter.prototype.getPort = function() {
@@ -3318,30 +2836,12 @@ proto.msg.DataCenter.prototype.getPort = function() {
  * @return {!proto.msg.DataCenter} returns this
  */
 proto.msg.DataCenter.prototype.setPort = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DataCenter} returns this
- */
-proto.msg.DataCenter.prototype.clearPort = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DataCenter.prototype.hasPort = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required bool Http = 3;
+ * optional bool Http = 3;
  * @return {boolean}
  */
 proto.msg.DataCenter.prototype.getHttp = function() {
@@ -3354,30 +2854,12 @@ proto.msg.DataCenter.prototype.getHttp = function() {
  * @return {!proto.msg.DataCenter} returns this
  */
 proto.msg.DataCenter.prototype.setHttp = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DataCenter} returns this
- */
-proto.msg.DataCenter.prototype.clearHttp = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DataCenter.prototype.hasHttp = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required bool Websocket = 4;
+ * optional bool Websocket = 4;
  * @return {boolean}
  */
 proto.msg.DataCenter.prototype.getWebsocket = function() {
@@ -3390,30 +2872,12 @@ proto.msg.DataCenter.prototype.getWebsocket = function() {
  * @return {!proto.msg.DataCenter} returns this
  */
 proto.msg.DataCenter.prototype.setWebsocket = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DataCenter} returns this
- */
-proto.msg.DataCenter.prototype.clearWebsocket = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DataCenter.prototype.hasWebsocket = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required bool Quic = 5;
+ * optional bool Quic = 5;
  * @return {boolean}
  */
 proto.msg.DataCenter.prototype.getQuic = function() {
@@ -3426,25 +2890,7 @@ proto.msg.DataCenter.prototype.getQuic = function() {
  * @return {!proto.msg.DataCenter} returns this
  */
 proto.msg.DataCenter.prototype.setQuic = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DataCenter} returns this
- */
-proto.msg.DataCenter.prototype.clearQuic = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DataCenter.prototype.hasQuic = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -3488,8 +2934,8 @@ proto.msg.SystemSalts.prototype.toObject = function(opt_includeInstance) {
 proto.msg.SystemSalts.toObject = function(includeInstance, msg) {
   var f, obj = {
     saltsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
-    startsfrom: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    duration: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    startsfrom: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    duration: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -3527,8 +2973,10 @@ proto.msg.SystemSalts.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.addSalts(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt64() : [reader.readInt64()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addSalts(values[i]);
+      }
       break;
     case 2:
       var value = /** @type {number} */ (reader.readInt64());
@@ -3569,20 +3017,20 @@ proto.msg.SystemSalts.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getSaltsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt64(
+    writer.writePackedInt64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getStartsfrom();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getDuration();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
@@ -3629,7 +3077,7 @@ proto.msg.SystemSalts.prototype.clearSaltsList = function() {
 
 
 /**
- * required int64 StartsFrom = 2;
+ * optional int64 StartsFrom = 2;
  * @return {number}
  */
 proto.msg.SystemSalts.prototype.getStartsfrom = function() {
@@ -3642,30 +3090,12 @@ proto.msg.SystemSalts.prototype.getStartsfrom = function() {
  * @return {!proto.msg.SystemSalts} returns this
  */
 proto.msg.SystemSalts.prototype.setStartsfrom = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemSalts} returns this
- */
-proto.msg.SystemSalts.prototype.clearStartsfrom = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemSalts.prototype.hasStartsfrom = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 Duration = 3;
+ * optional int64 Duration = 3;
  * @return {number}
  */
 proto.msg.SystemSalts.prototype.getDuration = function() {
@@ -3678,25 +3108,7 @@ proto.msg.SystemSalts.prototype.getDuration = function() {
  * @return {!proto.msg.SystemSalts} returns this
  */
 proto.msg.SystemSalts.prototype.setDuration = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemSalts} returns this
- */
-proto.msg.SystemSalts.prototype.clearDuration = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemSalts.prototype.hasDuration = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -3732,13 +3144,13 @@ proto.msg.AppUpdate.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AppUpdate.toObject = function(includeInstance, msg) {
   var f, obj = {
-    available: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    mandatory: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
-    identifier: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    versionname: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    downloadurl: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    description: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
-    displayinterval: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f
+    available: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    mandatory: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    identifier: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    versionname: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    downloadurl: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    description: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    displayinterval: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -3832,50 +3244,50 @@ proto.msg.AppUpdate.prototype.serializeBinary = function() {
  */
 proto.msg.AppUpdate.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getAvailable();
+  if (f) {
     writer.writeBool(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getMandatory();
+  if (f) {
     writer.writeBool(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getIdentifier();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getVersionname();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getDownloadurl();
+  if (f.length > 0) {
     writer.writeString(
       5,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getDescription();
+  if (f.length > 0) {
     writer.writeString(
       6,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getDisplayinterval();
+  if (f !== 0) {
     writer.writeInt32(
       7,
       f
@@ -3885,7 +3297,7 @@ proto.msg.AppUpdate.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required bool Available = 1;
+ * optional bool Available = 1;
  * @return {boolean}
  */
 proto.msg.AppUpdate.prototype.getAvailable = function() {
@@ -3898,30 +3310,12 @@ proto.msg.AppUpdate.prototype.getAvailable = function() {
  * @return {!proto.msg.AppUpdate} returns this
  */
 proto.msg.AppUpdate.prototype.setAvailable = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AppUpdate} returns this
- */
-proto.msg.AppUpdate.prototype.clearAvailable = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AppUpdate.prototype.hasAvailable = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bool Mandatory = 2;
+ * optional bool Mandatory = 2;
  * @return {boolean}
  */
 proto.msg.AppUpdate.prototype.getMandatory = function() {
@@ -3934,30 +3328,12 @@ proto.msg.AppUpdate.prototype.getMandatory = function() {
  * @return {!proto.msg.AppUpdate} returns this
  */
 proto.msg.AppUpdate.prototype.setMandatory = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AppUpdate} returns this
- */
-proto.msg.AppUpdate.prototype.clearMandatory = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AppUpdate.prototype.hasMandatory = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string Identifier = 3;
+ * optional string Identifier = 3;
  * @return {string}
  */
 proto.msg.AppUpdate.prototype.getIdentifier = function() {
@@ -3970,30 +3346,12 @@ proto.msg.AppUpdate.prototype.getIdentifier = function() {
  * @return {!proto.msg.AppUpdate} returns this
  */
 proto.msg.AppUpdate.prototype.setIdentifier = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AppUpdate} returns this
- */
-proto.msg.AppUpdate.prototype.clearIdentifier = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AppUpdate.prototype.hasIdentifier = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required string VersionName = 4;
+ * optional string VersionName = 4;
  * @return {string}
  */
 proto.msg.AppUpdate.prototype.getVersionname = function() {
@@ -4006,30 +3364,12 @@ proto.msg.AppUpdate.prototype.getVersionname = function() {
  * @return {!proto.msg.AppUpdate} returns this
  */
 proto.msg.AppUpdate.prototype.setVersionname = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AppUpdate} returns this
- */
-proto.msg.AppUpdate.prototype.clearVersionname = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AppUpdate.prototype.hasVersionname = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required string DownloadUrl = 5;
+ * optional string DownloadUrl = 5;
  * @return {string}
  */
 proto.msg.AppUpdate.prototype.getDownloadurl = function() {
@@ -4042,30 +3382,12 @@ proto.msg.AppUpdate.prototype.getDownloadurl = function() {
  * @return {!proto.msg.AppUpdate} returns this
  */
 proto.msg.AppUpdate.prototype.setDownloadurl = function(value) {
-  return jspb.Message.setField(this, 5, value);
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AppUpdate} returns this
- */
-proto.msg.AppUpdate.prototype.clearDownloadurl = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AppUpdate.prototype.hasDownloadurl = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required string Description = 6;
+ * optional string Description = 6;
  * @return {string}
  */
 proto.msg.AppUpdate.prototype.getDescription = function() {
@@ -4078,30 +3400,12 @@ proto.msg.AppUpdate.prototype.getDescription = function() {
  * @return {!proto.msg.AppUpdate} returns this
  */
 proto.msg.AppUpdate.prototype.setDescription = function(value) {
-  return jspb.Message.setField(this, 6, value);
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.AppUpdate} returns this
- */
-proto.msg.AppUpdate.prototype.clearDescription = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AppUpdate.prototype.hasDescription = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * required int32 DisplayInterval = 7;
+ * optional int32 DisplayInterval = 7;
  * @return {number}
  */
 proto.msg.AppUpdate.prototype.getDisplayinterval = function() {
@@ -4114,25 +3418,7 @@ proto.msg.AppUpdate.prototype.getDisplayinterval = function() {
  * @return {!proto.msg.AppUpdate} returns this
  */
 proto.msg.AppUpdate.prototype.setDisplayinterval = function(value) {
-  return jspb.Message.setField(this, 7, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.AppUpdate} returns this
- */
-proto.msg.AppUpdate.prototype.clearDisplayinterval = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.AppUpdate.prototype.hasDisplayinterval = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -4168,10 +3454,10 @@ proto.msg.SystemInfo.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.SystemInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
-    workgroupname: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    bigphotourl: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    smallphotourl: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    storageurl: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    workgroupname: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    bigphotourl: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    smallphotourl: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    storageurl: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -4253,29 +3539,29 @@ proto.msg.SystemInfo.prototype.serializeBinary = function() {
  */
 proto.msg.SystemInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getWorkgroupname();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getBigphotourl();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getSmallphotourl();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getStorageurl();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -4285,7 +3571,7 @@ proto.msg.SystemInfo.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string WorkGroupName = 1;
+ * optional string WorkGroupName = 1;
  * @return {string}
  */
 proto.msg.SystemInfo.prototype.getWorkgroupname = function() {
@@ -4298,30 +3584,12 @@ proto.msg.SystemInfo.prototype.getWorkgroupname = function() {
  * @return {!proto.msg.SystemInfo} returns this
  */
 proto.msg.SystemInfo.prototype.setWorkgroupname = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemInfo} returns this
- */
-proto.msg.SystemInfo.prototype.clearWorkgroupname = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemInfo.prototype.hasWorkgroupname = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string BigPhotoUrl = 2;
+ * optional string BigPhotoUrl = 2;
  * @return {string}
  */
 proto.msg.SystemInfo.prototype.getBigphotourl = function() {
@@ -4334,30 +3602,12 @@ proto.msg.SystemInfo.prototype.getBigphotourl = function() {
  * @return {!proto.msg.SystemInfo} returns this
  */
 proto.msg.SystemInfo.prototype.setBigphotourl = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemInfo} returns this
- */
-proto.msg.SystemInfo.prototype.clearBigphotourl = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemInfo.prototype.hasBigphotourl = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string SmallPhotoUrl = 3;
+ * optional string SmallPhotoUrl = 3;
  * @return {string}
  */
 proto.msg.SystemInfo.prototype.getSmallphotourl = function() {
@@ -4370,25 +3620,7 @@ proto.msg.SystemInfo.prototype.getSmallphotourl = function() {
  * @return {!proto.msg.SystemInfo} returns this
  */
 proto.msg.SystemInfo.prototype.setSmallphotourl = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemInfo} returns this
- */
-proto.msg.SystemInfo.prototype.clearSmallphotourl = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemInfo.prototype.hasSmallphotourl = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -4406,25 +3638,7 @@ proto.msg.SystemInfo.prototype.getStorageurl = function() {
  * @return {!proto.msg.SystemInfo} returns this
  */
 proto.msg.SystemInfo.prototype.setStorageurl = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemInfo} returns this
- */
-proto.msg.SystemInfo.prototype.clearStorageurl = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemInfo.prototype.hasStorageurl = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -4460,7 +3674,7 @@ proto.msg.SystemServerTime.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.SystemServerTime.toObject = function(includeInstance, msg) {
   var f, obj = {
-    timestamp: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    timestamp: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -4530,8 +3744,8 @@ proto.msg.SystemServerTime.prototype.serializeBinary = function() {
  */
 proto.msg.SystemServerTime.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTimestamp();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
@@ -4541,7 +3755,7 @@ proto.msg.SystemServerTime.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 Timestamp = 1;
+ * optional int64 Timestamp = 1;
  * @return {number}
  */
 proto.msg.SystemServerTime.prototype.getTimestamp = function() {
@@ -4554,25 +3768,7 @@ proto.msg.SystemServerTime.prototype.getTimestamp = function() {
  * @return {!proto.msg.SystemServerTime} returns this
  */
 proto.msg.SystemServerTime.prototype.setTimestamp = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.SystemServerTime} returns this
- */
-proto.msg.SystemServerTime.prototype.clearTimestamp = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.SystemServerTime.prototype.hasTimestamp = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 

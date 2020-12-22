@@ -1,6 +1,8 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+option go_package = '.;msg';
+
 
 // SystemGetPublicKeys
 // @Function
@@ -54,84 +56,87 @@ message SystemGetResponse {
 
 // ClientUsage
 message ClientUsage {
-    required int32 Year = 1;
-    required int32 Month = 2;
-    required int32 Day = 3;
-    required int64 UserID = 4;
-    required int64 ForegroundTime = 5; // The time client is on foreground in seconds
-    required int64 AvgResponseTime = 6; // The average response time for each api
-    required int64 TotalRequests = 7; // Total requests sent to server
-    optional int64 ReceivedMessages = 8;
-    optional int64 SentMessages = 9;
-    optional int64 ReceivedMedia = 10;
-    optional int64 SentMedia = 11;
-    optional int64 UploadBytes = 12;
-    optional int64 DownloadBytes = 13;
+    int32 Year = 1;
+    int32 Month = 2;
+    int32 Day = 3;
+    int64 UserID = 4;
+    int64 ForegroundTime = 5; // The time client is on foreground in seconds
+    int64 AvgResponseTime = 6; // The average response time for each api
+    int64 TotalRequests = 7; // Total requests sent to server
+    int64 ReceivedMessages = 8;
+    int64 SentMessages = 9;
+    int64 ReceivedMedia = 10;
+    int64 SentMedia = 11;
+    int64 UploadBytes = 12;
+    int64 DownloadBytes = 13;
 }
 
 // SystemConfig
 message SystemConfig {
-    optional string GifBot = 110;
-    optional string WikiBot = 111;
-    required bool TestMode = 1;
-    required bool PhoneCallEnabled = 2;
-    required int64 ExpireOn = 3;
-    required int32 GroupMaxSize = 4;
-    required int32 ForwardedMaxCount = 5;
-    required int32 OnlineUpdatePeriodInSec = 6; // The client should update its online status every N milliseconds
-    required int32 EditTimeLimitInSec = 7;
-    required int32 RevokeTimeLimitInSec = 8;
-    required int32 PinnedDialogsMaxCount = 9;
-    required int32 UrlPrefix = 10;
-    required int32 MessageMaxLength = 11;
-    required int32 CaptionMaxLength = 12;
+    string GifBot = 110;
+    string WikiBot = 111;
+    bool TestMode = 1;
+    bool PhoneCallEnabled = 2;
+    int64 ExpireOn = 3;
+    int32 GroupMaxSize = 4;
+    int32 ForwardedMaxCount = 5;
+    int32 OnlineUpdatePeriodInSec = 6; // The client should update its online status every N milliseconds
+    int32 EditTimeLimitInSec = 7;
+    int32 RevokeTimeLimitInSec = 8;
+    int32 PinnedDialogsMaxCount = 9;
+    int32 UrlPrefix = 10;
+    int32 MessageMaxLength = 11;
+    int32 CaptionMaxLength = 12;
     repeated DataCenter DCs = 13;
-    required int32 MaxLabels = 14;
-    required float TopPeerDecayRate = 15;
-    required float TopPeerMaxStep = 16;
-    optional uint32 MaxActiveSessions = 17;
+    int32 MaxLabels = 14;
+    float TopPeerDecayRate = 15;
+    float TopPeerMaxStep = 16;
+    uint32 MaxActiveSessions = 17;
     repeated string Reactions = 18;
+    int64 MaxUploadSize = 19;
+    int64 MaxUploadPartSize = 20;
+    int64 MaxUploadParts = 21;
 }
 
 // DataCenter
 message DataCenter {
-    required string IP = 1;
-    required int32 Port = 2;
-    required bool Http = 3;
-    required bool Websocket = 4;
-    required bool Quic = 5;
+    string IP = 1;
+    int32 Port = 2;
+    bool Http = 3;
+    bool Websocket = 4;
+    bool Quic = 5;
 
 }
 
 // SystemSalts
 message SystemSalts {
     repeated int64 Salts = 1;
-    required int64 StartsFrom = 2;
-    required int64 Duration = 3;
+    int64 StartsFrom = 2;
+    int64 Duration = 3;
 }
 
 // AppUpdate
 message AppUpdate {
-    required bool Available = 1;
-    required bool Mandatory = 2;
-    required string Identifier = 3;
-    required string VersionName = 4;
-    required string DownloadUrl = 5;
-    required string Description = 6;
-    required int32 DisplayInterval = 7;
+    bool Available = 1;
+    bool Mandatory = 2;
+    string Identifier = 3;
+    string VersionName = 4;
+    string DownloadUrl = 5;
+    string Description = 6;
+    int32 DisplayInterval = 7;
 }
 
 // SystemInfo
 message SystemInfo {
-    required string WorkGroupName = 1;
-    required string BigPhotoUrl = 2;
-    required string SmallPhotoUrl = 3;
-    optional string StorageUrl = 4;
+    string WorkGroupName = 1;
+    string BigPhotoUrl = 2;
+    string SmallPhotoUrl = 3;
+    string StorageUrl = 4;
 }
 
 // SystemServerTime
 message SystemServerTime {
-    required int64 Timestamp = 1; // In Seconds
+    int64 Timestamp = 1; // In Seconds
 }
 
 // SystemPublicKeys

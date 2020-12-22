@@ -9,7 +9,7 @@
 
 import {ParticipantType, User} from "../../services/sdk/messages/core.types_pb";
 
-export interface IUser extends User.AsObject {
+export interface IUser extends Partial<User.AsObject> {
     accesshash?: string;
     category?: string;
     clientid?: string;

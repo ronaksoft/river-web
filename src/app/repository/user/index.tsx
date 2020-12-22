@@ -300,7 +300,7 @@ export default class UserRepo {
             return this.createMany(list);
         }).then((res) => {
             if (callerId) {
-                this.broadcastEvent(UserDBUpdated, {ids, callerId});
+                this.broadcastEvent(UserDBUpdated, {callerId, ids});
             } else {
                 this.throttleBroadcast(ids);
             }

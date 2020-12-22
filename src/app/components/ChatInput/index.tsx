@@ -225,7 +225,7 @@ interface IProps {
     getDialog: (peerName: string) => IDialog | null;
     onAction: (cmd: string, message?: IMessage) => (e?: any) => void;
     onBulkAction: (cmd: string) => (e?: any) => void;
-    onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
+    onClearDraft?: (data: Partial<UpdateDraftMessageCleared.AsObject>) => void;
     onFileSelect: (files: File[], options: IUploaderOptions) => void;
     onContactSelect: (users: IUser[], caption: string, params: IMessageParam) => void;
     onMapSelect: (item: IGeoItem, params: IMessageParam) => void;
@@ -348,6 +348,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private firstLoad: boolean = true;
     private microphonePermission: boolean = false;
     private startPosHold: number = 0;
+    private recordingVoice: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -543,6 +544,9 @@ class ChatInput extends React.Component<IProps, IState> {
         clearInterval(this.timerInterval);
         clearTimeout(this.typingTimeout);
         clearTimeout(this.preventMessageSendTimeout);
+        if (this.recorder) {
+            this.recorder.close();
+        }
     }
 
     public getUploaderOptions(): IUploaderOptions {
@@ -1386,7 +1390,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private initOldDraft(oldPeer: InputPeer, mode: number, message: IMessage | null) {
         const oldPeerObj = oldPeer.toObject();
-        const draftMessage: DraftMessage.AsObject = {
+        const draftMessage: Partial<DraftMessage.AsObject> = {
             body: this.textarea ? this.textarea.value : '',
             date: this.riverTime.now(),
             entitiesList: message ? message.entitiesList : undefined,
@@ -1478,6 +1482,9 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* On record voice start handler */
     private voiceRecord() {
+        if (this.recordingVoice) {
+            return;
+        }
         if (!this.recorder) {
             this.initRecorder();
         }
@@ -1490,6 +1497,7 @@ class ChatInput extends React.Component<IProps, IState> {
         try {
             this.recorder.stop();
             this.recorder.start().then(() => {
+                this.recordingVoice = true;
                 this.startTimer();
                 const audioAnalyser = this.recorder.audioContext.createAnalyser();
                 audioAnalyser.minDecibels = -100;
@@ -1628,9 +1636,8 @@ class ChatInput extends React.Component<IProps, IState> {
                 message,
                 mode: previewMessageMode,
             });
-        } else {
-            this.stopTimer();
         }
+        this.stopTimer();
         this.clearPreviewMessage(true)();
     }
 
@@ -1712,21 +1719,22 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Initialize opus recorder and bind listeners */
     private initRecorder() {
         this.recorder = new Recorder({
+            encoderApplication: 2048,
             encoderPath: '/recorder/encoderWorker.min.js?v8',
-            maxFramesPerPage: 16,
+            maxFramesPerPage: 40,
             monitorGain: 0,
             numberOfChannels: 1,
             recordingGain: 1,
             wavBitDepth: 16,
         });
 
-        this.recorder.ondataavailable = (typedArray: any) => {
+        this.recorder.ondataavailable = (buff: ArrayBuffer) => {
             if (this.voiceCanceled) {
                 this.voiceCanceled = false;
                 this.clearPreviewMessage(true)();
                 return;
             }
-            this.voice = new Blob([typedArray], {type: 'audio/ogg'});
+            this.voice = new Blob([buff], {type: 'audio/ogg'});
             if (this.state.voiceMode === 'play' && this.voicePlayerRef) {
                 this.computeFinalBars();
                 this.voicePlayerRef.setData({
@@ -1739,6 +1747,10 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.computeFinalBars();
                 this.sendVoice();
             }
+        };
+
+        this.recorder.onstop = () => {
+            this.recordingVoice = false;
         };
     }
 
@@ -2227,7 +2239,7 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Insert at selection */
     private insertAtCursor(text: string) {
         if (!this.textarea) {
-            return;
+            return undefined;
         }
         let pos: number = 0;
         let textVal: string = this.textarea.value;

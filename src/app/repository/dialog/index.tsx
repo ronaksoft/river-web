@@ -9,8 +9,8 @@
 
 import DB from '../../services/db/dialog';
 import {IDialog, IDialogWithUpdateId, IDraft, IPeer} from './interface';
-import {throttle, differenceWith, find, uniqBy, cloneDeep} from 'lodash';
-import APIManager from '../../services/sdk';
+import {throttle, differenceWith, find, uniqBy, cloneDeep, isEmpty} from 'lodash';
+import APIManager, {currentUserId} from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
@@ -18,7 +18,7 @@ import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
 import {C_MESSAGE_ICON, getMessageTitle} from '../../components/Dialog/utils';
 import {kMerge} from "../../services/utilities/kDash";
-import {PeerType} from "../../services/sdk/messages/core.types_pb";
+import {PeerType, UserMessage} from "../../services/sdk/messages/core.types_pb";
 import Dexie from "dexie";
 import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
 
@@ -43,7 +43,6 @@ export default class DialogRepo {
     private db: DexieDialogDB;
     private apiManager: APIManager;
     private messageRepo: MessageRepo;
-    private userId: string;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private lazyMap: { [key: string]: IDialog } = {};
@@ -58,12 +57,10 @@ export default class DialogRepo {
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDbDebounced, 256);
-        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
     }
 
     public loadConnInfo() {
         APIManager.getInstance().loadConnInfo();
-        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
     }
 
     /* Drafts Start*/
@@ -113,13 +110,13 @@ export default class DialogRepo {
         const getDialogs = ({resolve, reject, dialogs}: any) => {
             dialogs = dialogs || [];
             // @ts-ignore
-            this.getManyForSnapshot(teamId, {skip: safeSkip, limit: safeLimit}).then((remoteRes) => {
+            this.getManyForSnapshot(teamId, {limit: safeLimit, skip: safeSkip}).then((remoteRes) => {
                 // window.console.log('intersectionBy', intersectionBy(cloneDeep(remoteRes.dialogs), dialogs, 'peerid'));
                 dialogs.push.apply(dialogs, remoteRes.dialogs);
                 dialogs = uniqBy(dialogs, 'peerid');
                 if (remoteRes.dialogs.length === safeLimit) {
                     safeSkip += safeLimit;
-                    return getDialogs({limit: safeLimit, skip: safeSkip, resolve, reject, dialogs});
+                    return getDialogs({dialogs, limit: safeLimit, reject, resolve, skip: safeSkip});
                 } else {
                     return resolve({
                         dialogs,
@@ -136,13 +133,13 @@ export default class DialogRepo {
             });
         };
         return new Promise((resolve, reject) => {
-            getDialogs({resolve, reject});
+            getDialogs({reject, resolve});
         });
     }
 
     public getMany(teamId: string, {skip, limit}: any): Promise<IDialog[]> {
         return this.apiManager.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId) as Array<UserMessage.AsObject>;
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {
@@ -160,7 +157,7 @@ export default class DialogRepo {
     }
 
     public getManyForSnapshot(teamId: string, {skip, limit}: { skip?: number, limit?: number }): Promise<IDialogWithUpdateId> {
-        if (this.userId === '0' || this.userId === '') {
+        if (currentUserId === '0' || currentUserId === '') {
             this.loadConnInfo();
         }
         return this.apiManager.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
@@ -172,7 +169,7 @@ export default class DialogRepo {
             //         window.console.log('user', remoteRes.usersList.find(o=> o.id === d.peerid));
             //     }
             // });
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId) as Array<UserMessage.AsObject>;
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {
@@ -207,14 +204,14 @@ export default class DialogRepo {
             return [teamId, ...p];
         });
         return this.db.dialogs.where(`[teamid+peerid+peertype]`).anyOf(query).offset(skip || 0).limit(limit).toArray().then((res) => {
-            if (peerIds.indexOf(this.userId) > -1 && !find(res, {peerid: this.userId})) {
+            if (peerIds.indexOf(currentUserId) > -1 && !find(res, {peerid: currentUserId})) {
                 res.unshift({
                     accesshash: '0',
                     last_update: Date.now(),
-                    peerid: this.userId,
+                    peerid: currentUserId,
                     peertype: PeerType.PEERUSER,
                     preview: '',
-                    sender_id: this.userId,
+                    sender_id: currentUserId,
                     teamid: teamId,
                 });
             }
@@ -278,7 +275,7 @@ export default class DialogRepo {
         return this.db.dialogs.where('[teamid+peerid+peertype]').anyOf(queries).toArray().then((result) => {
             const createItems: IDialog[] = differenceWith(tempDialogs, result, (i1, i2) => i1.teamid === i2.teamid && i1.peerid === i2.peerid && i1.peertype === i2.peertype);
             const updateItems: IDialog[] = result.map((dialog: IDialog) => {
-                const t = find(tempDialogs, {teamid: dialog.teamid, peerid: dialog.peerid, peertype: dialog.peertype});
+                const t = find(tempDialogs, {peerid: dialog.peerid, peertype: dialog.peertype, teamid: dialog.teamid});
                 if (t) {
                     return this.mergeCheck(dialog, t);
                 } else {
@@ -362,9 +359,8 @@ export default class DialogRepo {
         if (newDialog.force !== true && newDialog.topmessageid !== undefined && newDialog.topmessageid < (dialog.topmessageid || 0)) {
             newDialog.topmessageid = dialog.topmessageid;
         }
-        if (newDialog.draft && !newDialog.draft.peerid) {
+        if (dialog.draft && newDialog.draft && isEmpty(newDialog.draft)) {
             dialog.draft = {};
-            newDialog.draft = {};
         }
         if (newDialog.unreadcount === 0 && (dialog.unreadcount || 0) > 0) {
             dialog.scroll_pos = -1;
@@ -436,11 +432,11 @@ export default class DialogRepo {
         dialog.action_data = msg.actiondata;
         dialog.preview = messageTitle.text;
         dialog.preview_icon = messageTitle.icon;
-        dialog.preview_me = (msg.senderid === this.userId);
+        dialog.preview_me = (msg.senderid === currentUserId);
         dialog.preview_rtl = msg.rtl;
         dialog.last_update = msg.createdon;
         dialog.sender_id = msg.senderid;
-        dialog.saved_messages = (msg.peerid === this.userId);
+        dialog.saved_messages = (msg.peerid === currentUserId);
         return dialog;
     }
 }

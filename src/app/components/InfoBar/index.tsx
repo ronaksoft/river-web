@@ -10,10 +10,10 @@
 import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import i18n from "../../services/i18n";
-import {InfoOutlined, KeyboardArrowLeftRounded, CancelOutlined, SearchRounded} from "@material-ui/icons";
+import {CallRounded, CancelOutlined, InfoOutlined, KeyboardArrowLeftRounded, SearchRounded} from "@material-ui/icons";
 import StatusBar from "../StatusBar";
 import {IconButton, Tooltip} from "@material-ui/core";
-import {omitBy, isNil} from "lodash";
+import {isNil, omitBy} from "lodash";
 import UserRepo from "../../repository/user";
 
 import './style.scss';
@@ -33,10 +33,12 @@ interface IState {
     isOnline: boolean;
     isUpdating: boolean;
     teamId: string;
+    withCall: boolean;
 }
 
 class InfoBar extends React.Component<IProps, IState> {
     private currentUserId: string = UserRepo.getInstance().getCurrentUserId();
+    private userRepo: UserRepo;
 
     constructor(props: IProps) {
         super(props);
@@ -47,14 +49,19 @@ class InfoBar extends React.Component<IProps, IState> {
             isUpdating: false,
             peer: null,
             teamId: props.teamId,
+            withCall: true,
         };
+
+        this.userRepo = UserRepo.getInstance();
     }
 
     public setPeer(teamId: string, peer: InputPeer | null) {
         this.setState({
             peer,
             teamId,
+            withCall: false,
         });
+        this.checkCall(peer);
     }
 
     public setStatus(state: {
@@ -69,9 +76,9 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer, teamId} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall} = this.state;
         return (
-            <div className="info-bar">
+            <div className={'info-bar' + (withCall ? ' with-call' : '')}>
                 {this.props.isMobileView ?
                     <div className="back-to-chats" onClick={this.props.onBack}>
                         <KeyboardArrowLeftRounded/>
@@ -87,6 +94,13 @@ class InfoBar extends React.Component<IProps, IState> {
                            peer={peer} teamId={teamId} currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
+                    {withCall && <Tooltip
+                        title={i18n.t('call.call')}
+                    >
+                        <IconButton
+                            onClick={this.props.onAction('call')}
+                        ><CallRounded/></IconButton>
+                    </Tooltip>}
                     <Tooltip
                         title={i18n.t('chat.search_messages')}
                     >
@@ -104,6 +118,25 @@ class InfoBar extends React.Component<IProps, IState> {
                 </div>
             </div>
         );
+    }
+
+    private checkCall(peer: InputPeer | null) {
+        if (!peer) {
+            return;
+        }
+        if (peer.getType() === PeerType.PEERUSER) {
+            this.userRepo.get(peer.getId() || '0').then((user) => {
+                if (user) {
+                    this.setState({
+                        withCall: !Boolean(user.isbot || user.official),
+                    });
+                }
+            });
+        } else if (peer.getType() === PeerType.PEERGROUP) {
+            this.setState({
+                withCall: true,
+            });
+        }
     }
 }
 

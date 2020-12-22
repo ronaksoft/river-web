@@ -19,7 +19,7 @@ export default class MessageDB {
     }
 
     private static instance: MessageDB;
-    private db: DexieMessageDB;
+    private readonly db: DexieMessageDB;
 
     private constructor() {
         this.db = new DexieMessageDB();

@@ -36,13 +36,14 @@ import {localize} from "../../services/utilities/localize";
 import {TeamMember} from "../../services/sdk/messages/team_pb";
 import {findIndex} from "lodash";
 import ContactPicker from "../ContactPicker";
-import {Error as RiverError} from "../../services/sdk/messages/core.types_pb";
+import {Error as RiverError} from "../../services/sdk/messages/rony_pb";
 import {ITeam} from "../../repository/team/interface";
 import {switchClasses} from "../SettingsMenu";
 import TeamRepo from "../../repository/team";
 import {ModalityService} from "kk-modality";
 
 import './style.scss';
+import {PartialDeep} from "type-fest";
 
 interface IMember {
     admin: boolean;
@@ -316,7 +317,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                 className="member-container"
                                 direction={this.rtl ? 'ltr' : 'rtl'}
                             >{({index, style}) => {
-                                return this.rowRender({index, style, key: index});
+                                return this.rowRender({index, key: index, style});
                             }}
                             </VariableSizeList>
                         )}
@@ -348,7 +349,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                     style={listStyle}
                                     direction={this.rtl ? 'ltr' : 'rtl'}
                                 >{({index, style}) => {
-                                    return this.rowRender({index, style, key: index});
+                                    return this.rowRender({index, key: index, style});
                                 }}
                                 </VariableSizeList>
                             </Scrollbars>
@@ -441,14 +442,14 @@ class SettingsTeam extends React.Component<IProps, IState> {
         });
     }
 
-    private trimList(members: TeamMember.AsObject[]) {
+    private trimList(members: PartialDeep<TeamMember.AsObject>[]) {
         const admins: IUser[] = [];
         let users: IUser[] = [];
         members.forEach((m) => {
             if (m.admin) {
-                admins.push(m.user);
+                admins.push(m.user as IUser);
             } else {
-                users.push(m.user);
+                users.push(m.user as IUser);
             }
         });
         users = categorizeContact(users);
@@ -460,11 +461,11 @@ class SettingsTeam extends React.Component<IProps, IState> {
             admin: true,
             id: u.id || '0',
             t: u,
-        })), ...users.map(u => ({admin: false, id: u.id || '0', category: u.category, t: u}))];
+        })), ...users.map(u => ({admin: false, category: u.category, id: u.id || '0', t: u}))];
         return list;
     }
 
-    private listToMembers(list: IMember[]): TeamMember.AsObject[] {
+    private listToMembers(list: IMember[]): PartialDeep<TeamMember.AsObject>[] {
         return list.filter(i => !i.category).map(i => ({
             admin: i.admin || false,
             user: i.t || {},

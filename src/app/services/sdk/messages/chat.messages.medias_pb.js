@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -555,11 +557,11 @@ proto.msg.DocumentAttributeAudio.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.DocumentAttributeAudio.toObject = function(includeInstance, msg) {
   var f, obj = {
-    voice: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    duration: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    title: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    performer: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    album: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
+    voice: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    duration: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    title: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    performer: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    album: jspb.Message.getFieldWithDefault(msg, 5, ""),
     waveform: msg.getWaveform_asB64()
   };
 
@@ -650,43 +652,43 @@ proto.msg.DocumentAttributeAudio.prototype.serializeBinary = function() {
  */
 proto.msg.DocumentAttributeAudio.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getVoice();
+  if (f) {
     writer.writeBool(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getDuration();
+  if (f !== 0) {
     writer.writeUint32(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getTitle();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getPerformer();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getAlbum();
+  if (f.length > 0) {
     writer.writeString(
       5,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getWaveform_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       6,
       f
@@ -696,7 +698,7 @@ proto.msg.DocumentAttributeAudio.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required bool Voice = 1;
+ * optional bool Voice = 1;
  * @return {boolean}
  */
 proto.msg.DocumentAttributeAudio.prototype.getVoice = function() {
@@ -709,30 +711,12 @@ proto.msg.DocumentAttributeAudio.prototype.getVoice = function() {
  * @return {!proto.msg.DocumentAttributeAudio} returns this
  */
 proto.msg.DocumentAttributeAudio.prototype.setVoice = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeAudio} returns this
- */
-proto.msg.DocumentAttributeAudio.prototype.clearVoice = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeAudio.prototype.hasVoice = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required uint32 Duration = 2;
+ * optional uint32 Duration = 2;
  * @return {number}
  */
 proto.msg.DocumentAttributeAudio.prototype.getDuration = function() {
@@ -745,30 +729,12 @@ proto.msg.DocumentAttributeAudio.prototype.getDuration = function() {
  * @return {!proto.msg.DocumentAttributeAudio} returns this
  */
 proto.msg.DocumentAttributeAudio.prototype.setDuration = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeAudio} returns this
- */
-proto.msg.DocumentAttributeAudio.prototype.clearDuration = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeAudio.prototype.hasDuration = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string Title = 3;
+ * optional string Title = 3;
  * @return {string}
  */
 proto.msg.DocumentAttributeAudio.prototype.getTitle = function() {
@@ -781,30 +747,12 @@ proto.msg.DocumentAttributeAudio.prototype.getTitle = function() {
  * @return {!proto.msg.DocumentAttributeAudio} returns this
  */
 proto.msg.DocumentAttributeAudio.prototype.setTitle = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeAudio} returns this
- */
-proto.msg.DocumentAttributeAudio.prototype.clearTitle = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeAudio.prototype.hasTitle = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required string Performer = 4;
+ * optional string Performer = 4;
  * @return {string}
  */
 proto.msg.DocumentAttributeAudio.prototype.getPerformer = function() {
@@ -817,30 +765,12 @@ proto.msg.DocumentAttributeAudio.prototype.getPerformer = function() {
  * @return {!proto.msg.DocumentAttributeAudio} returns this
  */
 proto.msg.DocumentAttributeAudio.prototype.setPerformer = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeAudio} returns this
- */
-proto.msg.DocumentAttributeAudio.prototype.clearPerformer = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeAudio.prototype.hasPerformer = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required string Album = 5;
+ * optional string Album = 5;
  * @return {string}
  */
 proto.msg.DocumentAttributeAudio.prototype.getAlbum = function() {
@@ -853,25 +783,7 @@ proto.msg.DocumentAttributeAudio.prototype.getAlbum = function() {
  * @return {!proto.msg.DocumentAttributeAudio} returns this
  */
 proto.msg.DocumentAttributeAudio.prototype.setAlbum = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeAudio} returns this
- */
-proto.msg.DocumentAttributeAudio.prototype.clearAlbum = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeAudio.prototype.hasAlbum = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
@@ -913,25 +825,7 @@ proto.msg.DocumentAttributeAudio.prototype.getWaveform_asU8 = function() {
  * @return {!proto.msg.DocumentAttributeAudio} returns this
  */
 proto.msg.DocumentAttributeAudio.prototype.setWaveform = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeAudio} returns this
- */
-proto.msg.DocumentAttributeAudio.prototype.clearWaveform = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeAudio.prototype.hasWaveform = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -967,10 +861,10 @@ proto.msg.DocumentAttributeVideo.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.DocumentAttributeVideo.toObject = function(includeInstance, msg) {
   var f, obj = {
-    width: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    height: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    duration: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    round: (f = jspb.Message.getBooleanField(msg, 4)) == null ? undefined : f
+    width: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    duration: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    round: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -1052,29 +946,29 @@ proto.msg.DocumentAttributeVideo.prototype.serializeBinary = function() {
  */
 proto.msg.DocumentAttributeVideo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getWidth();
+  if (f !== 0) {
     writer.writeUint32(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getHeight();
+  if (f !== 0) {
     writer.writeUint32(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getDuration();
+  if (f !== 0) {
     writer.writeUint32(
       3,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getRound();
+  if (f) {
     writer.writeBool(
       4,
       f
@@ -1084,7 +978,7 @@ proto.msg.DocumentAttributeVideo.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required uint32 Width = 1;
+ * optional uint32 Width = 1;
  * @return {number}
  */
 proto.msg.DocumentAttributeVideo.prototype.getWidth = function() {
@@ -1097,30 +991,12 @@ proto.msg.DocumentAttributeVideo.prototype.getWidth = function() {
  * @return {!proto.msg.DocumentAttributeVideo} returns this
  */
 proto.msg.DocumentAttributeVideo.prototype.setWidth = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeVideo} returns this
- */
-proto.msg.DocumentAttributeVideo.prototype.clearWidth = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeVideo.prototype.hasWidth = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required uint32 Height = 2;
+ * optional uint32 Height = 2;
  * @return {number}
  */
 proto.msg.DocumentAttributeVideo.prototype.getHeight = function() {
@@ -1133,30 +1009,12 @@ proto.msg.DocumentAttributeVideo.prototype.getHeight = function() {
  * @return {!proto.msg.DocumentAttributeVideo} returns this
  */
 proto.msg.DocumentAttributeVideo.prototype.setHeight = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeVideo} returns this
- */
-proto.msg.DocumentAttributeVideo.prototype.clearHeight = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeVideo.prototype.hasHeight = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required uint32 Duration = 3;
+ * optional uint32 Duration = 3;
  * @return {number}
  */
 proto.msg.DocumentAttributeVideo.prototype.getDuration = function() {
@@ -1169,30 +1027,12 @@ proto.msg.DocumentAttributeVideo.prototype.getDuration = function() {
  * @return {!proto.msg.DocumentAttributeVideo} returns this
  */
 proto.msg.DocumentAttributeVideo.prototype.setDuration = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeVideo} returns this
- */
-proto.msg.DocumentAttributeVideo.prototype.clearDuration = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeVideo.prototype.hasDuration = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required bool Round = 4;
+ * optional bool Round = 4;
  * @return {boolean}
  */
 proto.msg.DocumentAttributeVideo.prototype.getRound = function() {
@@ -1205,25 +1045,7 @@ proto.msg.DocumentAttributeVideo.prototype.getRound = function() {
  * @return {!proto.msg.DocumentAttributeVideo} returns this
  */
 proto.msg.DocumentAttributeVideo.prototype.setRound = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeVideo} returns this
- */
-proto.msg.DocumentAttributeVideo.prototype.clearRound = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeVideo.prototype.hasRound = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
@@ -1259,8 +1081,8 @@ proto.msg.DocumentAttributePhoto.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.DocumentAttributePhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
-    width: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    height: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    width: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -1334,15 +1156,15 @@ proto.msg.DocumentAttributePhoto.prototype.serializeBinary = function() {
  */
 proto.msg.DocumentAttributePhoto.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getWidth();
+  if (f !== 0) {
     writer.writeUint32(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getHeight();
+  if (f !== 0) {
     writer.writeUint32(
       2,
       f
@@ -1352,7 +1174,7 @@ proto.msg.DocumentAttributePhoto.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required uint32 Width = 1;
+ * optional uint32 Width = 1;
  * @return {number}
  */
 proto.msg.DocumentAttributePhoto.prototype.getWidth = function() {
@@ -1365,30 +1187,12 @@ proto.msg.DocumentAttributePhoto.prototype.getWidth = function() {
  * @return {!proto.msg.DocumentAttributePhoto} returns this
  */
 proto.msg.DocumentAttributePhoto.prototype.setWidth = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributePhoto} returns this
- */
-proto.msg.DocumentAttributePhoto.prototype.clearWidth = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributePhoto.prototype.hasWidth = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required uint32 Height = 2;
+ * optional uint32 Height = 2;
  * @return {number}
  */
 proto.msg.DocumentAttributePhoto.prototype.getHeight = function() {
@@ -1401,25 +1205,7 @@ proto.msg.DocumentAttributePhoto.prototype.getHeight = function() {
  * @return {!proto.msg.DocumentAttributePhoto} returns this
  */
 proto.msg.DocumentAttributePhoto.prototype.setHeight = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributePhoto} returns this
- */
-proto.msg.DocumentAttributePhoto.prototype.clearHeight = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributePhoto.prototype.hasHeight = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -1455,7 +1241,7 @@ proto.msg.DocumentAttributeFile.prototype.toObject = function(opt_includeInstanc
  */
 proto.msg.DocumentAttributeFile.toObject = function(includeInstance, msg) {
   var f, obj = {
-    filename: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
+    filename: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -1525,8 +1311,8 @@ proto.msg.DocumentAttributeFile.prototype.serializeBinary = function() {
  */
 proto.msg.DocumentAttributeFile.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getFilename();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -1536,7 +1322,7 @@ proto.msg.DocumentAttributeFile.serializeBinaryToWriter = function(message, writ
 
 
 /**
- * required string Filename = 1;
+ * optional string Filename = 1;
  * @return {string}
  */
 proto.msg.DocumentAttributeFile.prototype.getFilename = function() {
@@ -1549,25 +1335,7 @@ proto.msg.DocumentAttributeFile.prototype.getFilename = function() {
  * @return {!proto.msg.DocumentAttributeFile} returns this
  */
 proto.msg.DocumentAttributeFile.prototype.setFilename = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeFile} returns this
- */
-proto.msg.DocumentAttributeFile.prototype.clearFilename = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeFile.prototype.hasFilename = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -1603,7 +1371,7 @@ proto.msg.DocumentAttributeAnimated.prototype.toObject = function(opt_includeIns
  */
 proto.msg.DocumentAttributeAnimated.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sound: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f
+    sound: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
   };
 
   if (includeInstance) {
@@ -1673,8 +1441,8 @@ proto.msg.DocumentAttributeAnimated.prototype.serializeBinary = function() {
  */
 proto.msg.DocumentAttributeAnimated.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSound();
+  if (f) {
     writer.writeBool(
       1,
       f
@@ -1697,25 +1465,7 @@ proto.msg.DocumentAttributeAnimated.prototype.getSound = function() {
  * @return {!proto.msg.DocumentAttributeAnimated} returns this
  */
 proto.msg.DocumentAttributeAnimated.prototype.setSound = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttributeAnimated} returns this
- */
-proto.msg.DocumentAttributeAnimated.prototype.clearSound = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttributeAnimated.prototype.hasSound = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -1751,7 +1501,7 @@ proto.msg.DocumentAttribute.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.DocumentAttribute.toObject = function(includeInstance, msg) {
   var f, obj = {
-    type: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
     data: msg.getData_asB64()
   };
 
@@ -1826,15 +1576,15 @@ proto.msg.DocumentAttribute.prototype.serializeBinary = function() {
  */
 proto.msg.DocumentAttribute.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!proto.msg.DocumentAttributeType} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getType();
+  if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getData_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -1844,7 +1594,7 @@ proto.msg.DocumentAttribute.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * required DocumentAttributeType Type = 1;
+ * optional DocumentAttributeType Type = 1;
  * @return {!proto.msg.DocumentAttributeType}
  */
 proto.msg.DocumentAttribute.prototype.getType = function() {
@@ -1857,25 +1607,7 @@ proto.msg.DocumentAttribute.prototype.getType = function() {
  * @return {!proto.msg.DocumentAttribute} returns this
  */
 proto.msg.DocumentAttribute.prototype.setType = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttribute} returns this
- */
-proto.msg.DocumentAttribute.prototype.clearType = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttribute.prototype.hasType = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
@@ -1917,25 +1649,7 @@ proto.msg.DocumentAttribute.prototype.getData_asU8 = function() {
  * @return {!proto.msg.DocumentAttribute} returns this
  */
 proto.msg.DocumentAttribute.prototype.setData = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.DocumentAttribute} returns this
- */
-proto.msg.DocumentAttribute.prototype.clearData = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.DocumentAttribute.prototype.hasData = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -1978,17 +1692,17 @@ proto.msg.Document.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.Document.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    accesshash: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    date: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    mimetype: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    filesize: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    version: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
-    clusterid: (f = jspb.Message.getField(msg, 7)) == null ? undefined : f,
+    id: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    accesshash: jspb.Message.getFieldWithDefault(msg, 2, "0"),
+    date: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    mimetype: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    filesize: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    version: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    clusterid: jspb.Message.getFieldWithDefault(msg, 7, 0),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
     proto.msg.DocumentAttribute.toObject, includeInstance),
     thumbnail: (f = msg.getThumbnail()) && core_types_pb.FileLocation.toObject(includeInstance, f),
-    md5checksum: (f = jspb.Message.getField(msg, 10)) == null ? undefined : f,
+    md5checksum: jspb.Message.getFieldWithDefault(msg, 10, ""),
     tinythumbnail: msg.getTinythumbnail_asB64()
   };
 
@@ -2101,50 +1815,50 @@ proto.msg.Document.prototype.serializeBinary = function() {
  */
 proto.msg.Document.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getId();
+  if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getAccesshash();
+  if (parseInt(f, 10) !== 0) {
     writer.writeFixed64String(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getDate();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getMimetype();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getFilesize();
+  if (f !== 0) {
     writer.writeInt32(
       5,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getVersion();
+  if (f !== 0) {
     writer.writeInt32(
       6,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getClusterid();
+  if (f !== 0) {
     writer.writeInt32(
       7,
       f
@@ -2166,15 +1880,15 @@ proto.msg.Document.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.FileLocation.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 10));
-  if (f != null) {
+  f = message.getMd5checksum();
+  if (f.length > 0) {
     writer.writeString(
       10,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 11));
-  if (f != null) {
+  f = message.getTinythumbnail_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       11,
       f
@@ -2184,7 +1898,7 @@ proto.msg.Document.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 ID = 1;
+ * optional int64 ID = 1;
  * @return {string}
  */
 proto.msg.Document.prototype.getId = function() {
@@ -2197,30 +1911,12 @@ proto.msg.Document.prototype.getId = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setId = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearId = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasId = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required fixed64 AccessHash = 2;
+ * optional fixed64 AccessHash = 2;
  * @return {string}
  */
 proto.msg.Document.prototype.getAccesshash = function() {
@@ -2233,30 +1929,12 @@ proto.msg.Document.prototype.getAccesshash = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setAccesshash = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearAccesshash = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasAccesshash = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 Date = 3;
+ * optional int64 Date = 3;
  * @return {number}
  */
 proto.msg.Document.prototype.getDate = function() {
@@ -2269,30 +1947,12 @@ proto.msg.Document.prototype.getDate = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setDate = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearDate = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasDate = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required string MimeType = 4;
+ * optional string MimeType = 4;
  * @return {string}
  */
 proto.msg.Document.prototype.getMimetype = function() {
@@ -2305,30 +1965,12 @@ proto.msg.Document.prototype.getMimetype = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setMimetype = function(value) {
-  return jspb.Message.setField(this, 4, value);
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearMimetype = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasMimetype = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required int32 FileSize = 5;
+ * optional int32 FileSize = 5;
  * @return {number}
  */
 proto.msg.Document.prototype.getFilesize = function() {
@@ -2341,30 +1983,12 @@ proto.msg.Document.prototype.getFilesize = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setFilesize = function(value) {
-  return jspb.Message.setField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearFilesize = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasFilesize = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required int32 Version = 6;
+ * optional int32 Version = 6;
  * @return {number}
  */
 proto.msg.Document.prototype.getVersion = function() {
@@ -2377,30 +2001,12 @@ proto.msg.Document.prototype.getVersion = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setVersion = function(value) {
-  return jspb.Message.setField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearVersion = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasVersion = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * required int32 ClusterID = 7;
+ * optional int32 ClusterID = 7;
  * @return {number}
  */
 proto.msg.Document.prototype.getClusterid = function() {
@@ -2413,25 +2019,7 @@ proto.msg.Document.prototype.getClusterid = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setClusterid = function(value) {
-  return jspb.Message.setField(this, 7, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearClusterid = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasClusterid = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -2524,25 +2112,7 @@ proto.msg.Document.prototype.getMd5checksum = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setMd5checksum = function(value) {
-  return jspb.Message.setField(this, 10, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearMd5checksum = function() {
-  return jspb.Message.setField(this, 10, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasMd5checksum = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 
@@ -2584,25 +2154,7 @@ proto.msg.Document.prototype.getTinythumbnail_asU8 = function() {
  * @return {!proto.msg.Document} returns this
  */
 proto.msg.Document.prototype.setTinythumbnail = function(value) {
-  return jspb.Message.setField(this, 11, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.Document} returns this
- */
-proto.msg.Document.prototype.clearTinythumbnail = function() {
-  return jspb.Message.setField(this, 11, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.Document.prototype.hasTinythumbnail = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.setProto3BytesField(this, 11, value);
 };
 
 
@@ -2645,9 +2197,9 @@ proto.msg.InputMediaWebDocument.prototype.toObject = function(opt_includeInstanc
  */
 proto.msg.InputMediaWebDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
-    url: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    docsize: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    mimetype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    url: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    docsize: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    mimetype: jspb.Message.getFieldWithDefault(msg, 3, ""),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
     proto.msg.DocumentAttribute.toObject, includeInstance)
   };
@@ -2732,22 +2284,22 @@ proto.msg.InputMediaWebDocument.prototype.serializeBinary = function() {
  */
 proto.msg.InputMediaWebDocument.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getUrl();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getDocsize();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getMimetype();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -2765,7 +2317,7 @@ proto.msg.InputMediaWebDocument.serializeBinaryToWriter = function(message, writ
 
 
 /**
- * required string Url = 1;
+ * optional string Url = 1;
  * @return {string}
  */
 proto.msg.InputMediaWebDocument.prototype.getUrl = function() {
@@ -2778,30 +2330,12 @@ proto.msg.InputMediaWebDocument.prototype.getUrl = function() {
  * @return {!proto.msg.InputMediaWebDocument} returns this
  */
 proto.msg.InputMediaWebDocument.prototype.setUrl = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaWebDocument} returns this
- */
-proto.msg.InputMediaWebDocument.prototype.clearUrl = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaWebDocument.prototype.hasUrl = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 DocSize = 2;
+ * optional int32 DocSize = 2;
  * @return {number}
  */
 proto.msg.InputMediaWebDocument.prototype.getDocsize = function() {
@@ -2814,30 +2348,12 @@ proto.msg.InputMediaWebDocument.prototype.getDocsize = function() {
  * @return {!proto.msg.InputMediaWebDocument} returns this
  */
 proto.msg.InputMediaWebDocument.prototype.setDocsize = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaWebDocument} returns this
- */
-proto.msg.InputMediaWebDocument.prototype.clearDocsize = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaWebDocument.prototype.hasDocsize = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string MimeType = 3;
+ * optional string MimeType = 3;
  * @return {string}
  */
 proto.msg.InputMediaWebDocument.prototype.getMimetype = function() {
@@ -2850,25 +2366,7 @@ proto.msg.InputMediaWebDocument.prototype.getMimetype = function() {
  * @return {!proto.msg.InputMediaWebDocument} returns this
  */
 proto.msg.InputMediaWebDocument.prototype.setMimetype = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaWebDocument} returns this
- */
-proto.msg.InputMediaWebDocument.prototype.clearMimetype = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaWebDocument.prototype.hasMimetype = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -2949,12 +2447,12 @@ proto.msg.MediaWebDocument.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.MediaWebDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
-    url: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    docsize: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    mimetype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    url: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    docsize: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    mimetype: jspb.Message.getFieldWithDefault(msg, 3, ""),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
     proto.msg.DocumentAttribute.toObject, includeInstance),
-    accesshash: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+    accesshash: jspb.Message.getFieldWithDefault(msg, 5, "0")
   };
 
   if (includeInstance) {
@@ -3041,22 +2539,22 @@ proto.msg.MediaWebDocument.prototype.serializeBinary = function() {
  */
 proto.msg.MediaWebDocument.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getUrl();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getDocsize();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getMimetype();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -3070,8 +2568,8 @@ proto.msg.MediaWebDocument.serializeBinaryToWriter = function(message, writer) {
       proto.msg.DocumentAttribute.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getAccesshash();
+  if (parseInt(f, 10) !== 0) {
     writer.writeFixed64String(
       5,
       f
@@ -3081,7 +2579,7 @@ proto.msg.MediaWebDocument.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Url = 1;
+ * optional string Url = 1;
  * @return {string}
  */
 proto.msg.MediaWebDocument.prototype.getUrl = function() {
@@ -3094,30 +2592,12 @@ proto.msg.MediaWebDocument.prototype.getUrl = function() {
  * @return {!proto.msg.MediaWebDocument} returns this
  */
 proto.msg.MediaWebDocument.prototype.setUrl = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaWebDocument} returns this
- */
-proto.msg.MediaWebDocument.prototype.clearUrl = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaWebDocument.prototype.hasUrl = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 DocSize = 2;
+ * optional int32 DocSize = 2;
  * @return {number}
  */
 proto.msg.MediaWebDocument.prototype.getDocsize = function() {
@@ -3130,30 +2610,12 @@ proto.msg.MediaWebDocument.prototype.getDocsize = function() {
  * @return {!proto.msg.MediaWebDocument} returns this
  */
 proto.msg.MediaWebDocument.prototype.setDocsize = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaWebDocument} returns this
- */
-proto.msg.MediaWebDocument.prototype.clearDocsize = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaWebDocument.prototype.hasDocsize = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string MimeType = 3;
+ * optional string MimeType = 3;
  * @return {string}
  */
 proto.msg.MediaWebDocument.prototype.getMimetype = function() {
@@ -3166,25 +2628,7 @@ proto.msg.MediaWebDocument.prototype.getMimetype = function() {
  * @return {!proto.msg.MediaWebDocument} returns this
  */
 proto.msg.MediaWebDocument.prototype.setMimetype = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaWebDocument} returns this
- */
-proto.msg.MediaWebDocument.prototype.clearMimetype = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaWebDocument.prototype.hasMimetype = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -3227,7 +2671,7 @@ proto.msg.MediaWebDocument.prototype.clearAttributesList = function() {
 
 
 /**
- * required fixed64 AccessHash = 5;
+ * optional fixed64 AccessHash = 5;
  * @return {string}
  */
 proto.msg.MediaWebDocument.prototype.getAccesshash = function() {
@@ -3240,25 +2684,7 @@ proto.msg.MediaWebDocument.prototype.getAccesshash = function() {
  * @return {!proto.msg.MediaWebDocument} returns this
  */
 proto.msg.MediaWebDocument.prototype.setAccesshash = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaWebDocument} returns this
- */
-proto.msg.MediaWebDocument.prototype.clearAccesshash = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaWebDocument.prototype.hasAccesshash = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3StringIntField(this, 5, value);
 };
 
 
@@ -3395,10 +2821,10 @@ proto.msg.InputMediaContact.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.InputMediaContact.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    firstname: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    lastname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    vcard: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    firstname: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    lastname: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    vcard: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -3480,29 +2906,29 @@ proto.msg.InputMediaContact.prototype.serializeBinary = function() {
  */
 proto.msg.InputMediaContact.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getFirstname();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getLastname();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getVcard();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -3512,7 +2938,7 @@ proto.msg.InputMediaContact.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.InputMediaContact.prototype.getPhone = function() {
@@ -3525,30 +2951,12 @@ proto.msg.InputMediaContact.prototype.getPhone = function() {
  * @return {!proto.msg.InputMediaContact} returns this
  */
 proto.msg.InputMediaContact.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaContact} returns this
- */
-proto.msg.InputMediaContact.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaContact.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string FirstName = 2;
+ * optional string FirstName = 2;
  * @return {string}
  */
 proto.msg.InputMediaContact.prototype.getFirstname = function() {
@@ -3561,30 +2969,12 @@ proto.msg.InputMediaContact.prototype.getFirstname = function() {
  * @return {!proto.msg.InputMediaContact} returns this
  */
 proto.msg.InputMediaContact.prototype.setFirstname = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaContact} returns this
- */
-proto.msg.InputMediaContact.prototype.clearFirstname = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaContact.prototype.hasFirstname = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string LastName = 3;
+ * optional string LastName = 3;
  * @return {string}
  */
 proto.msg.InputMediaContact.prototype.getLastname = function() {
@@ -3597,25 +2987,7 @@ proto.msg.InputMediaContact.prototype.getLastname = function() {
  * @return {!proto.msg.InputMediaContact} returns this
  */
 proto.msg.InputMediaContact.prototype.setLastname = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaContact} returns this
- */
-proto.msg.InputMediaContact.prototype.clearLastname = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaContact.prototype.hasLastname = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -3633,25 +3005,7 @@ proto.msg.InputMediaContact.prototype.getVcard = function() {
  * @return {!proto.msg.InputMediaContact} returns this
  */
 proto.msg.InputMediaContact.prototype.setVcard = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaContact} returns this
- */
-proto.msg.InputMediaContact.prototype.clearVcard = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaContact.prototype.hasVcard = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -3687,10 +3041,10 @@ proto.msg.MediaContact.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.MediaContact.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    firstname: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    lastname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    vcard: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    firstname: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    lastname: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    vcard: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -3772,29 +3126,29 @@ proto.msg.MediaContact.prototype.serializeBinary = function() {
  */
 proto.msg.MediaContact.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getFirstname();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getLastname();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getVcard();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -3804,7 +3158,7 @@ proto.msg.MediaContact.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.MediaContact.prototype.getPhone = function() {
@@ -3817,30 +3171,12 @@ proto.msg.MediaContact.prototype.getPhone = function() {
  * @return {!proto.msg.MediaContact} returns this
  */
 proto.msg.MediaContact.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaContact} returns this
- */
-proto.msg.MediaContact.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaContact.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string FirstName = 2;
+ * optional string FirstName = 2;
  * @return {string}
  */
 proto.msg.MediaContact.prototype.getFirstname = function() {
@@ -3853,30 +3189,12 @@ proto.msg.MediaContact.prototype.getFirstname = function() {
  * @return {!proto.msg.MediaContact} returns this
  */
 proto.msg.MediaContact.prototype.setFirstname = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaContact} returns this
- */
-proto.msg.MediaContact.prototype.clearFirstname = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaContact.prototype.hasFirstname = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string LastName = 3;
+ * optional string LastName = 3;
  * @return {string}
  */
 proto.msg.MediaContact.prototype.getLastname = function() {
@@ -3889,25 +3207,7 @@ proto.msg.MediaContact.prototype.getLastname = function() {
  * @return {!proto.msg.MediaContact} returns this
  */
 proto.msg.MediaContact.prototype.setLastname = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaContact} returns this
- */
-proto.msg.MediaContact.prototype.clearLastname = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaContact.prototype.hasLastname = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -3925,25 +3225,7 @@ proto.msg.MediaContact.prototype.getVcard = function() {
  * @return {!proto.msg.MediaContact} returns this
  */
 proto.msg.MediaContact.prototype.setVcard = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaContact} returns this
- */
-proto.msg.MediaContact.prototype.clearVcard = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaContact.prototype.hasVcard = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -3988,8 +3270,8 @@ proto.msg.InputMediaUploadedDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
     file: (f = msg.getFile()) && core_types_pb.InputFile.toObject(includeInstance, f),
     thumbnail: (f = msg.getThumbnail()) && core_types_pb.InputFile.toObject(includeInstance, f),
-    mimetype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    caption: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+    mimetype: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    caption: jspb.Message.getFieldWithDefault(msg, 4, ""),
     stickersList: jspb.Message.toObjectList(msg.getStickersList(),
     core_types_pb.InputDocument.toObject, includeInstance),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
@@ -4115,15 +3397,15 @@ proto.msg.InputMediaUploadedDocument.serializeBinaryToWriter = function(message,
       core_types_pb.InputFile.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getMimetype();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getCaption();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -4153,8 +3435,8 @@ proto.msg.InputMediaUploadedDocument.serializeBinaryToWriter = function(message,
       core_types_pb.MessageEntity.serializeBinaryToWriter
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 8));
-  if (f != null) {
+  f = message.getTinythumbnail_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       8,
       f
@@ -4164,17 +3446,17 @@ proto.msg.InputMediaUploadedDocument.serializeBinaryToWriter = function(message,
 
 
 /**
- * required InputFile File = 1;
- * @return {!proto.msg.InputFile}
+ * optional InputFile File = 1;
+ * @return {?proto.msg.InputFile}
  */
 proto.msg.InputMediaUploadedDocument.prototype.getFile = function() {
-  return /** @type{!proto.msg.InputFile} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputFile, 1, 1));
+  return /** @type{?proto.msg.InputFile} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputFile, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputFile} value
+ * @param {?proto.msg.InputFile|undefined} value
  * @return {!proto.msg.InputMediaUploadedDocument} returns this
 */
 proto.msg.InputMediaUploadedDocument.prototype.setFile = function(value) {
@@ -4183,11 +3465,11 @@ proto.msg.InputMediaUploadedDocument.prototype.setFile = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.InputMediaUploadedDocument} returns this
  */
 proto.msg.InputMediaUploadedDocument.prototype.clearFile = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setFile(undefined);
 };
 
 
@@ -4238,7 +3520,7 @@ proto.msg.InputMediaUploadedDocument.prototype.hasThumbnail = function() {
 
 
 /**
- * required string MimeType = 3;
+ * optional string MimeType = 3;
  * @return {string}
  */
 proto.msg.InputMediaUploadedDocument.prototype.getMimetype = function() {
@@ -4251,30 +3533,12 @@ proto.msg.InputMediaUploadedDocument.prototype.getMimetype = function() {
  * @return {!proto.msg.InputMediaUploadedDocument} returns this
  */
 proto.msg.InputMediaUploadedDocument.prototype.setMimetype = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaUploadedDocument} returns this
- */
-proto.msg.InputMediaUploadedDocument.prototype.clearMimetype = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaUploadedDocument.prototype.hasMimetype = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required string Caption = 4;
+ * optional string Caption = 4;
  * @return {string}
  */
 proto.msg.InputMediaUploadedDocument.prototype.getCaption = function() {
@@ -4287,25 +3551,7 @@ proto.msg.InputMediaUploadedDocument.prototype.getCaption = function() {
  * @return {!proto.msg.InputMediaUploadedDocument} returns this
  */
 proto.msg.InputMediaUploadedDocument.prototype.setCaption = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaUploadedDocument} returns this
- */
-proto.msg.InputMediaUploadedDocument.prototype.clearCaption = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaUploadedDocument.prototype.hasCaption = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -4461,25 +3707,7 @@ proto.msg.InputMediaUploadedDocument.prototype.getTinythumbnail_asU8 = function(
  * @return {!proto.msg.InputMediaUploadedDocument} returns this
  */
 proto.msg.InputMediaUploadedDocument.prototype.setTinythumbnail = function(value) {
-  return jspb.Message.setField(this, 8, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaUploadedDocument} returns this
- */
-proto.msg.InputMediaUploadedDocument.prototype.clearTinythumbnail = function() {
-  return jspb.Message.setField(this, 8, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaUploadedDocument.prototype.hasTinythumbnail = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.setProto3BytesField(this, 8, value);
 };
 
 
@@ -4522,7 +3750,7 @@ proto.msg.InputMediaDocument.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.InputMediaDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
-    caption: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    caption: jspb.Message.getFieldWithDefault(msg, 1, ""),
     document: (f = msg.getDocument()) && core_types_pb.InputDocument.toObject(includeInstance, f),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     core_types_pb.MessageEntity.toObject, includeInstance),
@@ -4623,8 +3851,8 @@ proto.msg.InputMediaDocument.prototype.serializeBinary = function() {
  */
 proto.msg.InputMediaDocument.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getCaption();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
@@ -4662,8 +3890,8 @@ proto.msg.InputMediaDocument.serializeBinaryToWriter = function(message, writer)
       proto.msg.DocumentAttribute.serializeBinaryToWriter
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getTinythumbnail_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       6,
       f
@@ -4673,7 +3901,7 @@ proto.msg.InputMediaDocument.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * required string Caption = 1;
+ * optional string Caption = 1;
  * @return {string}
  */
 proto.msg.InputMediaDocument.prototype.getCaption = function() {
@@ -4686,40 +3914,22 @@ proto.msg.InputMediaDocument.prototype.getCaption = function() {
  * @return {!proto.msg.InputMediaDocument} returns this
  */
 proto.msg.InputMediaDocument.prototype.setCaption = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaDocument} returns this
- */
-proto.msg.InputMediaDocument.prototype.clearCaption = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaDocument.prototype.hasCaption = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputDocument Document = 2;
- * @return {!proto.msg.InputDocument}
+ * optional InputDocument Document = 2;
+ * @return {?proto.msg.InputDocument}
  */
 proto.msg.InputMediaDocument.prototype.getDocument = function() {
-  return /** @type{!proto.msg.InputDocument} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputDocument, 2, 1));
+  return /** @type{?proto.msg.InputDocument} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputDocument, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputDocument} value
+ * @param {?proto.msg.InputDocument|undefined} value
  * @return {!proto.msg.InputMediaDocument} returns this
 */
 proto.msg.InputMediaDocument.prototype.setDocument = function(value) {
@@ -4728,11 +3938,11 @@ proto.msg.InputMediaDocument.prototype.setDocument = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.InputMediaDocument} returns this
  */
 proto.msg.InputMediaDocument.prototype.clearDocument = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setDocument(undefined);
 };
 
 
@@ -4896,25 +4106,7 @@ proto.msg.InputMediaDocument.prototype.getTinythumbnail_asU8 = function() {
  * @return {!proto.msg.InputMediaDocument} returns this
  */
 proto.msg.InputMediaDocument.prototype.setTinythumbnail = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaDocument} returns this
- */
-proto.msg.InputMediaDocument.prototype.clearTinythumbnail = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaDocument.prototype.hasTinythumbnail = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
@@ -4958,8 +4150,8 @@ proto.msg.InputMediaMessageDocument.prototype.toObject = function(opt_includeIns
 proto.msg.InputMediaMessageDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    messageid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    caption: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    messageid: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    caption: jspb.Message.getFieldWithDefault(msg, 3, ""),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     core_types_pb.MessageEntity.toObject, includeInstance)
   };
@@ -5053,15 +4245,15 @@ proto.msg.InputMediaMessageDocument.serializeBinaryToWriter = function(message, 
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getMessageid();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getCaption();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -5079,17 +4271,17 @@ proto.msg.InputMediaMessageDocument.serializeBinaryToWriter = function(message, 
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.InputMediaMessageDocument.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.InputMediaMessageDocument} returns this
 */
 proto.msg.InputMediaMessageDocument.prototype.setPeer = function(value) {
@@ -5098,11 +4290,11 @@ proto.msg.InputMediaMessageDocument.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.InputMediaMessageDocument} returns this
  */
 proto.msg.InputMediaMessageDocument.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -5116,7 +4308,7 @@ proto.msg.InputMediaMessageDocument.prototype.hasPeer = function() {
 
 
 /**
- * required int64 MessageID = 2;
+ * optional int64 MessageID = 2;
  * @return {number}
  */
 proto.msg.InputMediaMessageDocument.prototype.getMessageid = function() {
@@ -5129,30 +4321,12 @@ proto.msg.InputMediaMessageDocument.prototype.getMessageid = function() {
  * @return {!proto.msg.InputMediaMessageDocument} returns this
  */
 proto.msg.InputMediaMessageDocument.prototype.setMessageid = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaMessageDocument} returns this
- */
-proto.msg.InputMediaMessageDocument.prototype.clearMessageid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaMessageDocument.prototype.hasMessageid = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string Caption = 3;
+ * optional string Caption = 3;
  * @return {string}
  */
 proto.msg.InputMediaMessageDocument.prototype.getCaption = function() {
@@ -5165,25 +4339,7 @@ proto.msg.InputMediaMessageDocument.prototype.getCaption = function() {
  * @return {!proto.msg.InputMediaMessageDocument} returns this
  */
 proto.msg.InputMediaMessageDocument.prototype.setCaption = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaMessageDocument} returns this
- */
-proto.msg.InputMediaMessageDocument.prototype.clearCaption = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaMessageDocument.prototype.hasCaption = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -5264,8 +4420,8 @@ proto.msg.MediaDocument.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.MediaDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
-    caption: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    ttlinseconds: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    caption: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    ttlinseconds: jspb.Message.getFieldWithDefault(msg, 2, 0),
     doc: (f = msg.getDoc()) && proto.msg.Document.toObject(includeInstance, f),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     core_types_pb.MessageEntity.toObject, includeInstance)
@@ -5352,15 +4508,15 @@ proto.msg.MediaDocument.prototype.serializeBinary = function() {
  */
 proto.msg.MediaDocument.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getCaption();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getTtlinseconds();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
@@ -5399,25 +4555,7 @@ proto.msg.MediaDocument.prototype.getCaption = function() {
  * @return {!proto.msg.MediaDocument} returns this
  */
 proto.msg.MediaDocument.prototype.setCaption = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaDocument} returns this
- */
-proto.msg.MediaDocument.prototype.clearCaption = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaDocument.prototype.hasCaption = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -5435,40 +4573,22 @@ proto.msg.MediaDocument.prototype.getTtlinseconds = function() {
  * @return {!proto.msg.MediaDocument} returns this
  */
 proto.msg.MediaDocument.prototype.setTtlinseconds = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaDocument} returns this
- */
-proto.msg.MediaDocument.prototype.clearTtlinseconds = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaDocument.prototype.hasTtlinseconds = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required Document Doc = 3;
- * @return {!proto.msg.Document}
+ * optional Document Doc = 3;
+ * @return {?proto.msg.Document}
  */
 proto.msg.MediaDocument.prototype.getDoc = function() {
-  return /** @type{!proto.msg.Document} */ (
-    jspb.Message.getWrapperField(this, proto.msg.Document, 3, 1));
+  return /** @type{?proto.msg.Document} */ (
+    jspb.Message.getWrapperField(this, proto.msg.Document, 3));
 };
 
 
 /**
- * @param {!proto.msg.Document} value
+ * @param {?proto.msg.Document|undefined} value
  * @return {!proto.msg.MediaDocument} returns this
 */
 proto.msg.MediaDocument.prototype.setDoc = function(value) {
@@ -5477,11 +4597,11 @@ proto.msg.MediaDocument.prototype.setDoc = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.MediaDocument} returns this
  */
 proto.msg.MediaDocument.prototype.clearDoc = function() {
-  return jspb.Message.setField(this, 3, undefined);
+  return this.setDoc(undefined);
 };
 
 
@@ -5571,9 +4691,9 @@ proto.msg.InputMediaGeoLocation.prototype.toObject = function(opt_includeInstanc
  */
 proto.msg.InputMediaGeoLocation.toObject = function(includeInstance, msg) {
   var f, obj = {
-    lat: (f = jspb.Message.getOptionalFloatingPointField(msg, 1)) == null ? undefined : f,
-    pb_long: (f = jspb.Message.getOptionalFloatingPointField(msg, 2)) == null ? undefined : f,
-    caption: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    lat: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    pb_long: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    caption: jspb.Message.getFieldWithDefault(msg, 3, ""),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     core_types_pb.MessageEntity.toObject, includeInstance)
   };
@@ -5658,22 +4778,22 @@ proto.msg.InputMediaGeoLocation.prototype.serializeBinary = function() {
  */
 proto.msg.InputMediaGeoLocation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getLat();
+  if (f !== 0.0) {
     writer.writeFloat(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getLong();
+  if (f !== 0.0) {
     writer.writeFloat(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getCaption();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -5691,7 +4811,7 @@ proto.msg.InputMediaGeoLocation.serializeBinaryToWriter = function(message, writ
 
 
 /**
- * required float Lat = 1;
+ * optional float Lat = 1;
  * @return {number}
  */
 proto.msg.InputMediaGeoLocation.prototype.getLat = function() {
@@ -5704,30 +4824,12 @@ proto.msg.InputMediaGeoLocation.prototype.getLat = function() {
  * @return {!proto.msg.InputMediaGeoLocation} returns this
  */
 proto.msg.InputMediaGeoLocation.prototype.setLat = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3FloatField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaGeoLocation} returns this
- */
-proto.msg.InputMediaGeoLocation.prototype.clearLat = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaGeoLocation.prototype.hasLat = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required float Long = 2;
+ * optional float Long = 2;
  * @return {number}
  */
 proto.msg.InputMediaGeoLocation.prototype.getLong = function() {
@@ -5740,25 +4842,7 @@ proto.msg.InputMediaGeoLocation.prototype.getLong = function() {
  * @return {!proto.msg.InputMediaGeoLocation} returns this
  */
 proto.msg.InputMediaGeoLocation.prototype.setLong = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaGeoLocation} returns this
- */
-proto.msg.InputMediaGeoLocation.prototype.clearLong = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaGeoLocation.prototype.hasLong = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 
@@ -5776,25 +4860,7 @@ proto.msg.InputMediaGeoLocation.prototype.getCaption = function() {
  * @return {!proto.msg.InputMediaGeoLocation} returns this
  */
 proto.msg.InputMediaGeoLocation.prototype.setCaption = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.InputMediaGeoLocation} returns this
- */
-proto.msg.InputMediaGeoLocation.prototype.clearCaption = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.InputMediaGeoLocation.prototype.hasCaption = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -5875,9 +4941,9 @@ proto.msg.MediaGeoLocation.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.MediaGeoLocation.toObject = function(includeInstance, msg) {
   var f, obj = {
-    lat: (f = jspb.Message.getOptionalFloatingPointField(msg, 1)) == null ? undefined : f,
-    pb_long: (f = jspb.Message.getOptionalFloatingPointField(msg, 2)) == null ? undefined : f,
-    caption: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    lat: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    pb_long: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    caption: jspb.Message.getFieldWithDefault(msg, 3, ""),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     core_types_pb.MessageEntity.toObject, includeInstance)
   };
@@ -5962,22 +5028,22 @@ proto.msg.MediaGeoLocation.prototype.serializeBinary = function() {
  */
 proto.msg.MediaGeoLocation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getLat();
+  if (f !== 0.0) {
     writer.writeFloat(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getLong();
+  if (f !== 0.0) {
     writer.writeFloat(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getCaption();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -5995,7 +5061,7 @@ proto.msg.MediaGeoLocation.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required float Lat = 1;
+ * optional float Lat = 1;
  * @return {number}
  */
 proto.msg.MediaGeoLocation.prototype.getLat = function() {
@@ -6008,30 +5074,12 @@ proto.msg.MediaGeoLocation.prototype.getLat = function() {
  * @return {!proto.msg.MediaGeoLocation} returns this
  */
 proto.msg.MediaGeoLocation.prototype.setLat = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3FloatField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaGeoLocation} returns this
- */
-proto.msg.MediaGeoLocation.prototype.clearLat = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaGeoLocation.prototype.hasLat = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required float Long = 2;
+ * optional float Long = 2;
  * @return {number}
  */
 proto.msg.MediaGeoLocation.prototype.getLong = function() {
@@ -6044,25 +5092,7 @@ proto.msg.MediaGeoLocation.prototype.getLong = function() {
  * @return {!proto.msg.MediaGeoLocation} returns this
  */
 proto.msg.MediaGeoLocation.prototype.setLong = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaGeoLocation} returns this
- */
-proto.msg.MediaGeoLocation.prototype.clearLong = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaGeoLocation.prototype.hasLong = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 
@@ -6080,25 +5110,7 @@ proto.msg.MediaGeoLocation.prototype.getCaption = function() {
  * @return {!proto.msg.MediaGeoLocation} returns this
  */
 proto.msg.MediaGeoLocation.prototype.setCaption = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaGeoLocation} returns this
- */
-proto.msg.MediaGeoLocation.prototype.clearCaption = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaGeoLocation.prototype.hasCaption = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -6255,17 +5267,17 @@ proto.msg.InputMediaPoll.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required MediaPoll Poll = 1;
- * @return {!proto.msg.MediaPoll}
+ * optional MediaPoll Poll = 1;
+ * @return {?proto.msg.MediaPoll}
  */
 proto.msg.InputMediaPoll.prototype.getPoll = function() {
-  return /** @type{!proto.msg.MediaPoll} */ (
-    jspb.Message.getWrapperField(this, proto.msg.MediaPoll, 1, 1));
+  return /** @type{?proto.msg.MediaPoll} */ (
+    jspb.Message.getWrapperField(this, proto.msg.MediaPoll, 1));
 };
 
 
 /**
- * @param {!proto.msg.MediaPoll} value
+ * @param {?proto.msg.MediaPoll|undefined} value
  * @return {!proto.msg.InputMediaPoll} returns this
 */
 proto.msg.InputMediaPoll.prototype.setPoll = function(value) {
@@ -6274,11 +5286,11 @@ proto.msg.InputMediaPoll.prototype.setPoll = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.InputMediaPoll} returns this
  */
 proto.msg.InputMediaPoll.prototype.clearPoll = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPoll(undefined);
 };
 
 
@@ -6330,12 +5342,12 @@ proto.msg.MediaPoll.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.MediaPoll.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    closed: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
-    publicvoters: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f,
-    multichoice: (f = jspb.Message.getBooleanField(msg, 4)) == null ? undefined : f,
-    quiz: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f,
-    question: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
+    id: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    closed: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    publicvoters: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+    multichoice: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+    quiz: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    question: jspb.Message.getFieldWithDefault(msg, 6, ""),
     answersList: jspb.Message.toObjectList(msg.getAnswersList(),
     proto.msg.PollAnswer.toObject, includeInstance)
   };
@@ -6432,43 +5444,43 @@ proto.msg.MediaPoll.prototype.serializeBinary = function() {
  */
 proto.msg.MediaPoll.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getId();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getClosed();
+  if (f) {
     writer.writeBool(
       2,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getPublicvoters();
+  if (f) {
     writer.writeBool(
       3,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getMultichoice();
+  if (f) {
     writer.writeBool(
       4,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getQuiz();
+  if (f) {
     writer.writeBool(
       5,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getQuestion();
+  if (f.length > 0) {
     writer.writeString(
       6,
       f
@@ -6486,7 +5498,7 @@ proto.msg.MediaPoll.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 ID = 1;
+ * optional int64 ID = 1;
  * @return {number}
  */
 proto.msg.MediaPoll.prototype.getId = function() {
@@ -6499,25 +5511,7 @@ proto.msg.MediaPoll.prototype.getId = function() {
  * @return {!proto.msg.MediaPoll} returns this
  */
 proto.msg.MediaPoll.prototype.setId = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaPoll} returns this
- */
-proto.msg.MediaPoll.prototype.clearId = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaPoll.prototype.hasId = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -6535,25 +5529,7 @@ proto.msg.MediaPoll.prototype.getClosed = function() {
  * @return {!proto.msg.MediaPoll} returns this
  */
 proto.msg.MediaPoll.prototype.setClosed = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaPoll} returns this
- */
-proto.msg.MediaPoll.prototype.clearClosed = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaPoll.prototype.hasClosed = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -6571,25 +5547,7 @@ proto.msg.MediaPoll.prototype.getPublicvoters = function() {
  * @return {!proto.msg.MediaPoll} returns this
  */
 proto.msg.MediaPoll.prototype.setPublicvoters = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaPoll} returns this
- */
-proto.msg.MediaPoll.prototype.clearPublicvoters = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaPoll.prototype.hasPublicvoters = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -6607,25 +5565,7 @@ proto.msg.MediaPoll.prototype.getMultichoice = function() {
  * @return {!proto.msg.MediaPoll} returns this
  */
 proto.msg.MediaPoll.prototype.setMultichoice = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaPoll} returns this
- */
-proto.msg.MediaPoll.prototype.clearMultichoice = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaPoll.prototype.hasMultichoice = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
@@ -6643,30 +5583,12 @@ proto.msg.MediaPoll.prototype.getQuiz = function() {
  * @return {!proto.msg.MediaPoll} returns this
  */
 proto.msg.MediaPoll.prototype.setQuiz = function(value) {
-  return jspb.Message.setField(this, 5, value);
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaPoll} returns this
- */
-proto.msg.MediaPoll.prototype.clearQuiz = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaPoll.prototype.hasQuiz = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * required string Question = 6;
+ * optional string Question = 6;
  * @return {string}
  */
 proto.msg.MediaPoll.prototype.getQuestion = function() {
@@ -6679,25 +5601,7 @@ proto.msg.MediaPoll.prototype.getQuestion = function() {
  * @return {!proto.msg.MediaPoll} returns this
  */
 proto.msg.MediaPoll.prototype.setQuestion = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.MediaPoll} returns this
- */
-proto.msg.MediaPoll.prototype.clearQuestion = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.MediaPoll.prototype.hasQuestion = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
@@ -6771,7 +5675,7 @@ proto.msg.PollAnswer.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PollAnswer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    text: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    text: jspb.Message.getFieldWithDefault(msg, 1, ""),
     option: msg.getOption_asB64()
   };
 
@@ -6846,15 +5750,15 @@ proto.msg.PollAnswer.prototype.serializeBinary = function() {
  */
 proto.msg.PollAnswer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getText();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getOption_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -6864,7 +5768,7 @@ proto.msg.PollAnswer.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string Text = 1;
+ * optional string Text = 1;
  * @return {string}
  */
 proto.msg.PollAnswer.prototype.getText = function() {
@@ -6877,30 +5781,12 @@ proto.msg.PollAnswer.prototype.getText = function() {
  * @return {!proto.msg.PollAnswer} returns this
  */
 proto.msg.PollAnswer.prototype.setText = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PollAnswer} returns this
- */
-proto.msg.PollAnswer.prototype.clearText = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PollAnswer.prototype.hasText = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bytes Option = 2;
+ * optional bytes Option = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.PollAnswer.prototype.getOption = function() {
@@ -6909,7 +5795,7 @@ proto.msg.PollAnswer.prototype.getOption = function() {
 
 
 /**
- * required bytes Option = 2;
+ * optional bytes Option = 2;
  * This is a type-conversion wrapper around `getOption()`
  * @return {string}
  */
@@ -6920,7 +5806,7 @@ proto.msg.PollAnswer.prototype.getOption_asB64 = function() {
 
 
 /**
- * required bytes Option = 2;
+ * optional bytes Option = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getOption()`
@@ -6937,25 +5823,7 @@ proto.msg.PollAnswer.prototype.getOption_asU8 = function() {
  * @return {!proto.msg.PollAnswer} returns this
  */
 proto.msg.PollAnswer.prototype.setOption = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PollAnswer} returns this
- */
-proto.msg.PollAnswer.prototype.clearOption = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PollAnswer.prototype.hasOption = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -7000,7 +5868,7 @@ proto.msg.PollResults.toObject = function(includeInstance, msg) {
   var f, obj = {
     resultsList: jspb.Message.toObjectList(msg.getResultsList(),
     proto.msg.PollAnswerVoters.toObject, includeInstance),
-    totalvoters: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    totalvoters: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -7083,8 +5951,8 @@ proto.msg.PollResults.serializeBinaryToWriter = function(message, writer) {
       proto.msg.PollAnswerVoters.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getTotalvoters();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
@@ -7132,7 +6000,7 @@ proto.msg.PollResults.prototype.clearResultsList = function() {
 
 
 /**
- * required int64 TotalVoters = 2;
+ * optional int64 TotalVoters = 2;
  * @return {number}
  */
 proto.msg.PollResults.prototype.getTotalvoters = function() {
@@ -7145,25 +6013,7 @@ proto.msg.PollResults.prototype.getTotalvoters = function() {
  * @return {!proto.msg.PollResults} returns this
  */
 proto.msg.PollResults.prototype.setTotalvoters = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PollResults} returns this
- */
-proto.msg.PollResults.prototype.clearTotalvoters = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PollResults.prototype.hasTotalvoters = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -7199,10 +6049,10 @@ proto.msg.PollAnswerVoters.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PollAnswerVoters.toObject = function(includeInstance, msg) {
   var f, obj = {
-    chosen: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    correct: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
+    chosen: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    correct: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
     option: msg.getOption_asB64(),
-    voters: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    voters: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -7284,29 +6134,29 @@ proto.msg.PollAnswerVoters.prototype.serializeBinary = function() {
  */
 proto.msg.PollAnswerVoters.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getChosen();
+  if (f) {
     writer.writeBool(
       1,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getCorrect();
+  if (f) {
     writer.writeBool(
       2,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getOption_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getVoters();
+  if (f !== 0) {
     writer.writeInt64(
       4,
       f
@@ -7316,7 +6166,7 @@ proto.msg.PollAnswerVoters.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required bool Chosen = 1;
+ * optional bool Chosen = 1;
  * @return {boolean}
  */
 proto.msg.PollAnswerVoters.prototype.getChosen = function() {
@@ -7329,30 +6179,12 @@ proto.msg.PollAnswerVoters.prototype.getChosen = function() {
  * @return {!proto.msg.PollAnswerVoters} returns this
  */
 proto.msg.PollAnswerVoters.prototype.setChosen = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PollAnswerVoters} returns this
- */
-proto.msg.PollAnswerVoters.prototype.clearChosen = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PollAnswerVoters.prototype.hasChosen = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bool Correct = 2;
+ * optional bool Correct = 2;
  * @return {boolean}
  */
 proto.msg.PollAnswerVoters.prototype.getCorrect = function() {
@@ -7365,30 +6197,12 @@ proto.msg.PollAnswerVoters.prototype.getCorrect = function() {
  * @return {!proto.msg.PollAnswerVoters} returns this
  */
 proto.msg.PollAnswerVoters.prototype.setCorrect = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PollAnswerVoters} returns this
- */
-proto.msg.PollAnswerVoters.prototype.clearCorrect = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PollAnswerVoters.prototype.hasCorrect = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required bytes Option = 3;
+ * optional bytes Option = 3;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.PollAnswerVoters.prototype.getOption = function() {
@@ -7397,7 +6211,7 @@ proto.msg.PollAnswerVoters.prototype.getOption = function() {
 
 
 /**
- * required bytes Option = 3;
+ * optional bytes Option = 3;
  * This is a type-conversion wrapper around `getOption()`
  * @return {string}
  */
@@ -7408,7 +6222,7 @@ proto.msg.PollAnswerVoters.prototype.getOption_asB64 = function() {
 
 
 /**
- * required bytes Option = 3;
+ * optional bytes Option = 3;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getOption()`
@@ -7425,30 +6239,12 @@ proto.msg.PollAnswerVoters.prototype.getOption_asU8 = function() {
  * @return {!proto.msg.PollAnswerVoters} returns this
  */
 proto.msg.PollAnswerVoters.prototype.setOption = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PollAnswerVoters} returns this
- */
-proto.msg.PollAnswerVoters.prototype.clearOption = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PollAnswerVoters.prototype.hasOption = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required int64 Voters = 4;
+ * optional int64 Voters = 4;
  * @return {number}
  */
 proto.msg.PollAnswerVoters.prototype.getVoters = function() {
@@ -7461,25 +6257,7 @@ proto.msg.PollAnswerVoters.prototype.getVoters = function() {
  * @return {!proto.msg.PollAnswerVoters} returns this
  */
 proto.msg.PollAnswerVoters.prototype.setVoters = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PollAnswerVoters} returns this
- */
-proto.msg.PollAnswerVoters.prototype.clearVoters = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PollAnswerVoters.prototype.hasVoters = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 

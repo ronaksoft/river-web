@@ -411,8 +411,8 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
     /* View downloaded document */
     public viewDocumentHandler = () => {
-        const {fileState, message} = this.state;
-        if (this.mediaBigRef && (fileState === 'view' || fileState === 'open')) {
+        const {fileState, message, streamReady} = this.state;
+        if (this.mediaBigRef && (fileState === 'view' || fileState === 'open' || (!message.downloaded && streamReady))) {
             this.showMediaHandler(this.mediaBigRef);
             if (!this.contentRead && this.props.onAction) {
                 this.contentRead = true;
@@ -459,7 +459,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 </div>
                 {Boolean(info.caption.length > 0) &&
                 <div className={'media-caption ' + (message.rtl ? 'rtl' : 'ltr')}
-                     style={{minWidth: this.pictureContentSize.width, maxWidth: this.pictureContentSize.maxWidth}}
+                     style={{maxWidth: this.pictureContentSize.maxWidth, minWidth: this.pictureContentSize.width}}
                      onClick={this.captionClickHandler}
                 >{renderBody(info.caption, info.entityList, this.isElectron, this.props.onBodyAction, this.props.measureFn)}</div>}
             </div>

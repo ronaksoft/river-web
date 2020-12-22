@@ -10,7 +10,7 @@
 import MessageDB from '../../services/db/message';
 import {IMessage, IPendingMessage, IReactionInfo} from './interface';
 import {cloneDeep, differenceBy, find, throttle, uniq, difference, groupBy} from 'lodash';
-import APIManager from '../../services/sdk';
+import APIManager, {currentUserId} from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import {
@@ -98,7 +98,7 @@ export const getMediaDocument = (msg: IMessage) => {
 
 export const modifyReactions = (reactions: ReactionCounter.AsObject[]): ReactionCounter.AsObject[] => {
     return reactions.filter(o => o.reaction && o.reaction.length > 0 && o.total).sort((a, b) => {
-        return (a.total || 0) - (b.total || 0);
+        return (b.total || 0) - (a.total || 0);
     });
 };
 
@@ -191,7 +191,7 @@ export default class MessageRepo {
         return attrOut;
     }
 
-    public static parseMessage(msg: UserMessage.AsObject, userId: string): IMessage {
+    public static parseMessage(msg: Partial<UserMessage.AsObject>, userId: string): IMessage {
         const out: IMessage = msg;
         if (msg.entitiesList && msg.entitiesList.length > 0) {
             out.mention_me = msg.entitiesList.some((entity) => {
@@ -345,7 +345,7 @@ export default class MessageRepo {
         return out;
     }
 
-    public static parseMessageMany(msg: UserMessage.AsObject[], userId: string): IMessage[] {
+    public static parseMessageMany(msg: Partial<UserMessage.AsObject>[], userId: string): IMessage[] {
         return msg.map((m) => {
             return this.parseMessage(m, userId);
         });
@@ -366,7 +366,6 @@ export default class MessageRepo {
     private apiManager: APIManager;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
-    private userId: string;
     private messageBundle: { [key: string]: IMessageBundle } = {};
     private readonly getBundleMessageThrottle: any = null;
     private actionList: IMessageAction[] = [];
@@ -374,7 +373,6 @@ export default class MessageRepo {
 
     private constructor() {
         APIManager.getInstance().loadConnInfo();
-        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
         this.dbService = MessageDB.getInstance();
         this.db = this.dbService.getDB();
         this.apiManager = APIManager.getInstance();
@@ -385,11 +383,10 @@ export default class MessageRepo {
 
     public loadConnInfo() {
         APIManager.getInstance().loadConnInfo();
-        this.userId = APIManager.getInstance().getConnInfo().UserID || '0';
     }
 
     public getCurrentUserId(): string {
-        return this.userId;
+        return currentUserId;
     }
 
     public getValidPendingMessages() {
@@ -493,7 +490,7 @@ export default class MessageRepo {
             //
         });
         return this.db.messages.bulkDelete(ids).then((res) => {
-            this.broadcastEvent('Message_DB_Removed', {ids, callerId});
+            this.broadcastEvent('Message_DB_Removed', {callerId, ids});
             return res;
         });
     }
@@ -612,7 +609,7 @@ export default class MessageRepo {
         return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, Dexie.minKey], [teamId, peerId, peerType, Dexie.maxKey], true, true)
             .filter((item: IMessage) => {
                 if (mode) {
-                    const ok = mode === 'in' ? Boolean(item.senderid !== this.userId) : Boolean(item.senderid === this.userId);
+                    const ok = mode === 'in' ? Boolean(item.senderid !== currentUserId) : Boolean(item.senderid === currentUserId);
                     return ok && (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
                 } else {
                     return (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
@@ -788,7 +785,7 @@ export default class MessageRepo {
             return Promise.resolve();
         }
 
-        if (this.userId === '0' || this.userId === '') {
+        if (currentUserId === '0' || currentUserId === '') {
             this.loadConnInfo();
         }
 
@@ -823,7 +820,7 @@ export default class MessageRepo {
 
     public remove(id: number, callerId?: number): Promise<any> {
         return this.db.messages.delete(id).then((res) => {
-            this.broadcastEvent('Message_DB_Removed', {ids: [id], callerId});
+            this.broadcastEvent('Message_DB_Removed', {callerId, ids: [id]});
             return res;
         });
     }
@@ -904,7 +901,7 @@ export default class MessageRepo {
         });
 
         this.actionList.push({
-            clear: {teamId, peerId, peerType, id},
+            clear: {id, peerId, peerType, teamId},
             msgs: [],
             reject: internalReject,
             resolve: internalResolve,
@@ -1031,7 +1028,7 @@ export default class MessageRepo {
                 }
             });
             return this.createMany([...trimmedCreateItems, ...updateItems]).then((res) => {
-                this.broadcastEvent('Message_DB_Added', {newMsg: peerIdMap, callerId});
+                this.broadcastEvent('Message_DB_Added', {callerId, newMsg: peerIdMap});
                 return res;
             });
         });
@@ -1051,7 +1048,7 @@ export default class MessageRepo {
         return this.checkHoles(teamId, peer, id, asc, limit).then((remoteMessages) => {
             this.userRepo.importBulk(false, remoteMessages.usersList);
             this.groupRepo.importBulk(remoteMessages.groupsList);
-            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, this.userId);
+            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId) as Array<UserMessage.AsObject>;
             return this.importBulk(remoteMessages.messagesList).then(() => {
                 if (asc) {
                     return [...messages, ...remoteMessages.messagesList];
@@ -1131,7 +1128,7 @@ export default class MessageRepo {
                 const dataIds = Object.keys(data.reqs);
                 res.messagesList.forEach((msg) => {
                     const idStr = String(msg.id || 0);
-                    const message = MessageRepo.parseMessage(msg, this.userId);
+                    const message = MessageRepo.parseMessage(msg, currentUserId);
                     messages.push(message);
                     if (data.reqs[idStr]) {
                         data.reqs[idStr].promises.forEach((promise) => {
@@ -1209,11 +1206,11 @@ export default class MessageRepo {
                         messages.push(this.getHoleMessage(teamId, peerId, peerType, edgeMessage.id || 0, !asc));
                         // window.console.log('insert hole at', edgeMessage.id);
                     }
-                    messages.push(...MessageRepo.parseMessageMany(res, this.userId));
+                    messages.push(...MessageRepo.parseMessageMany(res, currentUserId));
                     return this.upsert(messages);
                 });
             } else {
-                return this.upsert(MessageRepo.parseMessageMany(res, this.userId));
+                return this.upsert(MessageRepo.parseMessageMany(res, currentUserId));
             }
         });
     }

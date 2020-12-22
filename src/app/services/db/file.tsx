@@ -19,7 +19,7 @@ export default class FileDB {
     }
 
     private static instance: FileDB;
-    private db: DexieFileDB;
+    private readonly db: DexieFileDB;
 
     private constructor() {
         this.db = new DexieFileDB();

@@ -8,15 +8,18 @@
 */
 
 import {C_MSG} from '../const';
-import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/auth_pb';
+import {
+    AuthSentCode,
+    AuthCheckedPhone,
+    AuthAuthorization,
+    AuthRecalled,
+} from '../messages/auth_pb';
 import {BlockedContactsMany, ContactsImported, ContactsMany, ContactsTopPeers} from '../messages/contacts_pb';
 import {
     Bool,
-    Error,
     FileLocation, GroupPhoto,
     Label,
-    LabelsMany,
-    MessageContainer, Pong, Team,
+    LabelsMany, Pong, Team,
     UserPhoto
 } from '../messages/core.types_pb';
 import {
@@ -41,10 +44,15 @@ import {BotCallbackAnswer, BotResults} from "../messages/chat.bot_pb";
 import {FoundGifs, SavedGifs} from "../messages/gif_pb";
 import {TeamMembers, TeamsMany} from "../messages/team_pb";
 import {GroupsHistoryStats} from "../messages/chat.groups_pb";
+import {PhoneCall, PhoneInit} from "../messages/chat.phone_pb";
+import {Error, MessageContainer} from "../messages/rony_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
         switch (constructor) {
+            case C_MSG.InitResponse:
+            case C_MSG.InitAuthCompleted:
+                return data;
             case C_MSG.AuthSentCode:
                 return AuthSentCode.deserializeBinary(data);
             case C_MSG.AuthCheckedPhone:
@@ -141,6 +149,10 @@ export default class Presenter {
                 return TeamsMany.deserializeBinary(data);
             case C_MSG.TeamMembers:
                 return TeamMembers.deserializeBinary(data);
+            case C_MSG.PhoneInit:
+                return PhoneInit.deserializeBinary(data);
+            case C_MSG.PhoneCall:
+                return PhoneCall.deserializeBinary(data);
             case C_MSG.Pong:
                 return Pong.deserializeBinary(data);
             default:

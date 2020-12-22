@@ -67,7 +67,8 @@
     "clear": "حذف",
     "open": "بگشا",
     "via_gif": " با @",
-    "all": "همه"
+    "all": "همه",
+    "select_all": "انتخاب همه"
   },
   "chat": {
     "search": "جستجو",
@@ -122,7 +123,8 @@
     "seen_by": "مشاهده کنندگان",
     "seen_by_placeholder": "هیچ کس",
     "pin": "سنجاق",
-    "unpin": "برداشتن سنجاق"
+    "unpin": "برداشتن سنجاق",
+    "last_admin_error": "شما نمی‌توانید خارج شوید، ادمینی باقی نماده!"
   },
   "peer_info": {
     "notify_settings": "تنظیمات اعلان‌ها",
@@ -146,7 +148,8 @@
     "add_member": "افزودن عضو",
     "leave_the": "خروج از",
     "participants": "{0} عضو",
-    "no_shared_media": "محتوای اشتراکی وجود ندارد!"
+    "no_shared_media": "محتوای اشتراکی وجود ندارد!",
+    "user_cannot_be_added": "شما اجازه افزودن {0} را ندارید"
   },
   "dialog": {
     "search": "جستجو...",
@@ -222,10 +225,11 @@
     "paradise": "بهشت",
     "ocean": "اقیانوس",
     "rainbow": "رنگین‌کمان",
-    "show_photo": "نمایش عکس",
+    "show_photo": "نمایش تصویر",
     "set_as_avatar": "استفاده به عنوان آواتار",
-    "remove_photo": "حذف عکس",
-    "change_photo": "تغییر عکس",
+    "remove_photo": "حذف تصویر",
+    "change_photo": "تغییر تصویر",
+    "set_a_new_photo": "انتخاب تصویر",
     "debug_mode": "حالت دیباگ",
     "set_test_url": "Set test url",
     "test_url": "Test URL",
@@ -251,8 +255,8 @@
     "privacy_last_seen_hint": "چه کسی می‌تواند برچسب زمانی مرا ببیند؟",
     "privacy_phone_number": "شماره تلفن",
     "privacy_phone_number_hint": "چه کسی می‌تواند شماره مرا ببیند؟",
-    "privacy_profile_photo": "عکس پروفایل",
-    "privacy_profile_photo_hint": "چه کسی می‌تواند عکس مرا ببیند؟",
+    "privacy_profile_photo": "تصویر پروفایل",
+    "privacy_profile_photo_hint": "چه کسی می‌تواند تصویر مرا ببیند؟",
     "privacy_everyone": "همه",
     "privacy_my_contacts": "مخاطب‌های من",
     "privacy_no_one": "هیچ‌ کس",
@@ -261,6 +265,12 @@
     "contacts": "مخاطب‌ها",
     "remove_synced_contacts": "پاک کردن مخاطب‌ها",
     "synced_contacts_removed_successfully": "مخاطب‌ها با موفقیت پاک شدند",
+    "first_name_is_required": "نام اجباری است",
+    "phone_is_required": "شماره تلفن اجباری است",
+    "cannot_update_username": "خطا در بروزرسانی نام کاربری",
+    "error_in_updating_profile": "خطا در بروزرسانی پروفایل",
+    "cannot_update_profile_picture": "خطا در بروزرسانی تصویر پروفایل",
+    "cannot_update_group_picture": "خطا در بروزرسانی تصویر گروه",
     "change_phone_number": {
       "title": "تغییر شماره تلفن",
       "text": "شما می\u200Cتوانید در اینجا شماره تلفنتان را در ریور تغییر دهید. حساب کاربری شما و تمامی داده\u200Cهای ابری شامل پیام\u200Cها، رسانه\u200Cها، مخاطبین و... به شماره جدیدتان انتقال خواهند یافت.",
@@ -282,6 +292,7 @@
       "hint": "راهنما",
       "has_password_note": "تایید دومرحله\u200Cای روی حساب شما فعال شده است، شما می‌توانید رمز خود را عوض کنید یا به کلی غیر فعال نمایید.",
       "pass_is_incorrect": "رمز اشتباه است",
+      "password_successfully_activated": "رمز با موفقیت فعال شد",
       "password_successfully_changed": "رمز با موفقیت تغییر کرد",
       "password_successfully_removed": "رمز با موفقیت حذف شد",
       "enable_recovery": "فعال سازی بازیابی",
@@ -409,6 +420,7 @@
     "updating": "در حال بروزرسانی...",
     "last_seen": "آخرین بازدید",
     "recently": "به تازگی",
+    "a_long_time_ago": "مدت‌ها قبل",
     "online": "آنلاین",
     "typing": "در حال تایپ...",
     "typing_2": "در حال تایپ",
@@ -443,8 +455,8 @@
     "left": "گروه را ترک کرد",
     "changed_the_title": "عنوان گروه را تغییر داد",
     "changed_the_title_to": "عنوان گروه را به '{0}' تغییر داد",
-    "removed_the_group_photo": "عکس گروه را حذف کرد",
-    "changed_the_group_photo": "عکس گروه را تغییر داد",
+    "removed_the_group_photo": "تصویر گروه را حذف کرد",
+    "changed_the_group_photo": "تصویر گروه را تغییر داد",
     "cleared_the_history": "تاریخچه را پاک کرد",
     "history_cleared": "تاریخچه پاک شده",
     "added": "افزود",
@@ -453,7 +465,7 @@
     "unread_messages": "پیام‌های جدید",
     "draft": "پیش‌نویس:",
     "replied_message": "پیام پاسخ داده شده",
-    "took_an_screenshot": "از صفحه عکس گرفت",
+    "took_an_screenshot": "از صفحه تصویر گرفت",
     "unsupported_file": "این فایل پشتیبانی نمی‌شود",
     "drop_here": "اینجا رها کنید",
     "pinned_message": "پیام سنجاق شده",
@@ -505,5 +517,16 @@
   },
   "reaction": {
     "list": "لیست واکنش‌ها"
+  },
+  "call": {
+    "call": "تماس",
+    "is_calling": "در تماس...",
+    "is_ringing": "در حال زنگ خوردن",
+    "rate_this_call": "به این تماس امتیاز دهید",
+    "muted": "بی صدا",
+    "call_back": "تماس مجدد",
+    "call_timeout": "پاسخی دریافت نشد",
+    "is_not_available": "در دسترس نیست",
+    "audio_muted": "میکروفن بی صدا هست"
   }
 }

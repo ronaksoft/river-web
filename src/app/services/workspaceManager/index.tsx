@@ -7,11 +7,12 @@
     Copyright Ronak Software Group 2019
 */
 
-import {MessageEnvelope, ProtoMessage} from '../sdk/messages/core.types_pb';
+import {ProtoMessage} from '../sdk/messages/core.types_pb';
 import {checkPong, ping} from '../sdk/server/socket';
 import Presenter from '../sdk/presenters';
 import {C_MSG} from '../sdk/const';
 import {SystemGetInfo, SystemGetServerTime, SystemInfo} from '../sdk/messages/system_pb';
+import {MessageEnvelope} from "../sdk/messages/rony_pb";
 
 export interface IHttpRequest {
     constructor: number;

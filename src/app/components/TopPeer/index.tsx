@@ -22,7 +22,7 @@ import {Link} from "react-router-dom";
 import {IUser} from "../../repository/user/interface";
 import {IGroup} from "../../repository/group/interface";
 import {CloseRounded} from "@material-ui/icons";
-import APIManager from "../../services/sdk";
+import APIManager, {currentUserId} from "../../services/sdk";
 import {findIndex} from 'lodash';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import {TopPeerCategory} from "../../services/sdk/messages/contacts_pb";
@@ -58,7 +58,6 @@ class TopPeer extends React.Component<IProps, IState> {
     private searchRepo: SearchRepo;
     private topPeerRepo: TopPeerRepo;
     private apiManager: APIManager;
-    private readonly userId: string = '0';
 
     constructor(props: IProps) {
         super(props);
@@ -72,10 +71,13 @@ class TopPeer extends React.Component<IProps, IState> {
         this.searchRepo = SearchRepo.getInstance();
         this.topPeerRepo = TopPeerRepo.getInstance();
         this.apiManager = APIManager.getInstance();
-        this.userId = this.apiManager.getConnInfo().UserID || '0';
     }
 
     public componentDidMount(): void {
+        this.reload();
+    }
+
+    public reload() {
         this.searchRepo.getSearchTopPeers(this.props.teamId, this.props.type, C_TOP_PEER_LEN, this.props.onlyUser).then((list) => {
             this.setState({
                 list,
@@ -120,9 +122,9 @@ class TopPeer extends React.Component<IProps, IState> {
             case PeerType.PEEREXTERNALUSER:
                 return <>
                     <UserAvatar id={item.item.id || '0'} noDetail={true} className="top-peer-avatar"
-                                savedMessages={item.item.id === this.userId}/>
+                                savedMessages={item.item.id === currentUserId}/>
                     <UserName id={item.item.id || '0'} noIcon={true} onlyFirstName={true} noDetail={true}
-                              you={item.item.id === this.userId} className="top-peer-name"
+                              you={item.item.id === currentUserId} className="top-peer-name"
                               youPlaceholder={i18n.t('general.saved_messages')}/>
                 </>;
             case PeerType.PEERGROUP:

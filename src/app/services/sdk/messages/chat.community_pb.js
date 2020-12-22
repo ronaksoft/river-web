@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -274,15 +276,15 @@ proto.msg.CommunitySendMessage.prototype.toObject = function(opt_includeInstance
  */
 proto.msg.CommunitySendMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    randomid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    randomid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    body: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    body: jspb.Message.getFieldWithDefault(msg, 3, ""),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     core_types_pb.MessageEntity.toObject, includeInstance),
-    replymarkup: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
+    replymarkup: jspb.Message.getFieldWithDefault(msg, 6, 0),
     replymarkupdata: msg.getReplymarkupdata_asB64(),
-    senderid: (f = jspb.Message.getField(msg, 8)) == null ? undefined : f,
-    sendermsgid: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f
+    senderid: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    sendermsgid: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -382,8 +384,8 @@ proto.msg.CommunitySendMessage.prototype.serializeBinary = function() {
  */
 proto.msg.CommunitySendMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getRandomid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
@@ -397,8 +399,8 @@ proto.msg.CommunitySendMessage.serializeBinaryToWriter = function(message, write
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getBody();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -412,29 +414,29 @@ proto.msg.CommunitySendMessage.serializeBinaryToWriter = function(message, write
       core_types_pb.MessageEntity.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getReplymarkup();
+  if (f !== 0) {
     writer.writeInt64(
       6,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 7));
-  if (f != null) {
+  f = message.getReplymarkupdata_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       7,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 8));
-  if (f != null) {
+  f = message.getSenderid();
+  if (f !== 0) {
     writer.writeInt64(
       8,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 9));
-  if (f != null) {
+  f = message.getSendermsgid();
+  if (f !== 0) {
     writer.writeInt64(
       9,
       f
@@ -444,7 +446,7 @@ proto.msg.CommunitySendMessage.serializeBinaryToWriter = function(message, write
 
 
 /**
- * required int64 RandomID = 1;
+ * optional int64 RandomID = 1;
  * @return {number}
  */
 proto.msg.CommunitySendMessage.prototype.getRandomid = function() {
@@ -457,40 +459,22 @@ proto.msg.CommunitySendMessage.prototype.getRandomid = function() {
  * @return {!proto.msg.CommunitySendMessage} returns this
  */
 proto.msg.CommunitySendMessage.prototype.setRandomid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMessage} returns this
- */
-proto.msg.CommunitySendMessage.prototype.clearRandomid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMessage.prototype.hasRandomid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputPeer Peer = 2;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 2;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.CommunitySendMessage.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.CommunitySendMessage} returns this
 */
 proto.msg.CommunitySendMessage.prototype.setPeer = function(value) {
@@ -499,11 +483,11 @@ proto.msg.CommunitySendMessage.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.CommunitySendMessage} returns this
  */
 proto.msg.CommunitySendMessage.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -517,7 +501,7 @@ proto.msg.CommunitySendMessage.prototype.hasPeer = function() {
 
 
 /**
- * required string Body = 3;
+ * optional string Body = 3;
  * @return {string}
  */
 proto.msg.CommunitySendMessage.prototype.getBody = function() {
@@ -530,25 +514,7 @@ proto.msg.CommunitySendMessage.prototype.getBody = function() {
  * @return {!proto.msg.CommunitySendMessage} returns this
  */
 proto.msg.CommunitySendMessage.prototype.setBody = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMessage} returns this
- */
-proto.msg.CommunitySendMessage.prototype.clearBody = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMessage.prototype.hasBody = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -604,25 +570,7 @@ proto.msg.CommunitySendMessage.prototype.getReplymarkup = function() {
  * @return {!proto.msg.CommunitySendMessage} returns this
  */
 proto.msg.CommunitySendMessage.prototype.setReplymarkup = function(value) {
-  return jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMessage} returns this
- */
-proto.msg.CommunitySendMessage.prototype.clearReplymarkup = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMessage.prototype.hasReplymarkup = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -664,30 +612,12 @@ proto.msg.CommunitySendMessage.prototype.getReplymarkupdata_asU8 = function() {
  * @return {!proto.msg.CommunitySendMessage} returns this
  */
 proto.msg.CommunitySendMessage.prototype.setReplymarkupdata = function(value) {
-  return jspb.Message.setField(this, 7, value);
+  return jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMessage} returns this
- */
-proto.msg.CommunitySendMessage.prototype.clearReplymarkupdata = function() {
-  return jspb.Message.setField(this, 7, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMessage.prototype.hasReplymarkupdata = function() {
-  return jspb.Message.getField(this, 7) != null;
-};
-
-
-/**
- * required int64 SenderID = 8;
+ * optional int64 SenderID = 8;
  * @return {number}
  */
 proto.msg.CommunitySendMessage.prototype.getSenderid = function() {
@@ -700,30 +630,12 @@ proto.msg.CommunitySendMessage.prototype.getSenderid = function() {
  * @return {!proto.msg.CommunitySendMessage} returns this
  */
 proto.msg.CommunitySendMessage.prototype.setSenderid = function(value) {
-  return jspb.Message.setField(this, 8, value);
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMessage} returns this
- */
-proto.msg.CommunitySendMessage.prototype.clearSenderid = function() {
-  return jspb.Message.setField(this, 8, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMessage.prototype.hasSenderid = function() {
-  return jspb.Message.getField(this, 8) != null;
-};
-
-
-/**
- * required int64 SenderMsgID = 9;
+ * optional int64 SenderMsgID = 9;
  * @return {number}
  */
 proto.msg.CommunitySendMessage.prototype.getSendermsgid = function() {
@@ -736,25 +648,7 @@ proto.msg.CommunitySendMessage.prototype.getSendermsgid = function() {
  * @return {!proto.msg.CommunitySendMessage} returns this
  */
 proto.msg.CommunitySendMessage.prototype.setSendermsgid = function(value) {
-  return jspb.Message.setField(this, 9, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMessage} returns this
- */
-proto.msg.CommunitySendMessage.prototype.clearSendermsgid = function() {
-  return jspb.Message.setField(this, 9, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMessage.prototype.hasSendermsgid = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
@@ -790,14 +684,14 @@ proto.msg.CommunitySendMedia.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.CommunitySendMedia.toObject = function(includeInstance, msg) {
   var f, obj = {
-    randomid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    randomid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    mediatype: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    mediatype: jspb.Message.getFieldWithDefault(msg, 3, 0),
     mediadata: msg.getMediadata_asB64(),
-    replyto: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-    cleardraft: (f = jspb.Message.getBooleanField(msg, 6)) == null ? undefined : f,
-    senderid: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
-    sendermsgid: (f = jspb.Message.getField(msg, 10)) == null ? undefined : f
+    replyto: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    cleardraft: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
+    senderid: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    sendermsgid: jspb.Message.getFieldWithDefault(msg, 10, 0)
   };
 
   if (includeInstance) {
@@ -896,8 +790,8 @@ proto.msg.CommunitySendMedia.prototype.serializeBinary = function() {
  */
 proto.msg.CommunitySendMedia.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getRandomid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
@@ -911,43 +805,43 @@ proto.msg.CommunitySendMedia.serializeBinaryToWriter = function(message, writer)
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {!proto.msg.InputMediaType} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getMediatype();
+  if (f !== 0.0) {
     writer.writeEnum(
       3,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getMediadata_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       4,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getReplyto();
+  if (f !== 0) {
     writer.writeInt64(
       5,
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
+  f = message.getCleardraft();
+  if (f) {
     writer.writeBool(
       6,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 9));
-  if (f != null) {
+  f = message.getSenderid();
+  if (f !== 0) {
     writer.writeInt64(
       9,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 10));
-  if (f != null) {
+  f = message.getSendermsgid();
+  if (f !== 0) {
     writer.writeInt64(
       10,
       f
@@ -957,7 +851,7 @@ proto.msg.CommunitySendMedia.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * required int64 RandomID = 1;
+ * optional int64 RandomID = 1;
  * @return {number}
  */
 proto.msg.CommunitySendMedia.prototype.getRandomid = function() {
@@ -970,40 +864,22 @@ proto.msg.CommunitySendMedia.prototype.getRandomid = function() {
  * @return {!proto.msg.CommunitySendMedia} returns this
  */
 proto.msg.CommunitySendMedia.prototype.setRandomid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMedia} returns this
- */
-proto.msg.CommunitySendMedia.prototype.clearRandomid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMedia.prototype.hasRandomid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required InputPeer Peer = 2;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 2;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.CommunitySendMedia.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.CommunitySendMedia} returns this
 */
 proto.msg.CommunitySendMedia.prototype.setPeer = function(value) {
@@ -1012,11 +888,11 @@ proto.msg.CommunitySendMedia.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.CommunitySendMedia} returns this
  */
 proto.msg.CommunitySendMedia.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 2, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -1030,7 +906,7 @@ proto.msg.CommunitySendMedia.prototype.hasPeer = function() {
 
 
 /**
- * required InputMediaType MediaType = 3;
+ * optional InputMediaType MediaType = 3;
  * @return {!proto.msg.InputMediaType}
  */
 proto.msg.CommunitySendMedia.prototype.getMediatype = function() {
@@ -1043,30 +919,12 @@ proto.msg.CommunitySendMedia.prototype.getMediatype = function() {
  * @return {!proto.msg.CommunitySendMedia} returns this
  */
 proto.msg.CommunitySendMedia.prototype.setMediatype = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMedia} returns this
- */
-proto.msg.CommunitySendMedia.prototype.clearMediatype = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMedia.prototype.hasMediatype = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required bytes MediaData = 4;
+ * optional bytes MediaData = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.CommunitySendMedia.prototype.getMediadata = function() {
@@ -1075,7 +933,7 @@ proto.msg.CommunitySendMedia.prototype.getMediadata = function() {
 
 
 /**
- * required bytes MediaData = 4;
+ * optional bytes MediaData = 4;
  * This is a type-conversion wrapper around `getMediadata()`
  * @return {string}
  */
@@ -1086,7 +944,7 @@ proto.msg.CommunitySendMedia.prototype.getMediadata_asB64 = function() {
 
 
 /**
- * required bytes MediaData = 4;
+ * optional bytes MediaData = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getMediadata()`
@@ -1103,25 +961,7 @@ proto.msg.CommunitySendMedia.prototype.getMediadata_asU8 = function() {
  * @return {!proto.msg.CommunitySendMedia} returns this
  */
 proto.msg.CommunitySendMedia.prototype.setMediadata = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMedia} returns this
- */
-proto.msg.CommunitySendMedia.prototype.clearMediadata = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMedia.prototype.hasMediadata = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -1139,25 +979,7 @@ proto.msg.CommunitySendMedia.prototype.getReplyto = function() {
  * @return {!proto.msg.CommunitySendMedia} returns this
  */
 proto.msg.CommunitySendMedia.prototype.setReplyto = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMedia} returns this
- */
-proto.msg.CommunitySendMedia.prototype.clearReplyto = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMedia.prototype.hasReplyto = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -1175,30 +997,12 @@ proto.msg.CommunitySendMedia.prototype.getCleardraft = function() {
  * @return {!proto.msg.CommunitySendMedia} returns this
  */
 proto.msg.CommunitySendMedia.prototype.setCleardraft = function(value) {
-  return jspb.Message.setField(this, 6, value);
+  return jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMedia} returns this
- */
-proto.msg.CommunitySendMedia.prototype.clearCleardraft = function() {
-  return jspb.Message.setField(this, 6, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMedia.prototype.hasCleardraft = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * required int64 SenderID = 9;
+ * optional int64 SenderID = 9;
  * @return {number}
  */
 proto.msg.CommunitySendMedia.prototype.getSenderid = function() {
@@ -1211,30 +1015,12 @@ proto.msg.CommunitySendMedia.prototype.getSenderid = function() {
  * @return {!proto.msg.CommunitySendMedia} returns this
  */
 proto.msg.CommunitySendMedia.prototype.setSenderid = function(value) {
-  return jspb.Message.setField(this, 9, value);
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMedia} returns this
- */
-proto.msg.CommunitySendMedia.prototype.clearSenderid = function() {
-  return jspb.Message.setField(this, 9, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMedia.prototype.hasSenderid = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
-/**
- * required int64 SenderMsgID = 10;
+ * optional int64 SenderMsgID = 10;
  * @return {number}
  */
 proto.msg.CommunitySendMedia.prototype.getSendermsgid = function() {
@@ -1247,25 +1033,7 @@ proto.msg.CommunitySendMedia.prototype.getSendermsgid = function() {
  * @return {!proto.msg.CommunitySendMedia} returns this
  */
 proto.msg.CommunitySendMedia.prototype.setSendermsgid = function(value) {
-  return jspb.Message.setField(this, 10, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySendMedia} returns this
- */
-proto.msg.CommunitySendMedia.prototype.clearSendermsgid = function() {
-  return jspb.Message.setField(this, 10, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySendMedia.prototype.hasSendermsgid = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.setProto3IntField(this, 10, value);
 };
 
 
@@ -1302,8 +1070,8 @@ proto.msg.CommunitySetTyping.prototype.toObject = function(opt_includeInstance) 
 proto.msg.CommunitySetTyping.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
-    action: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    senderid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    action: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    senderid: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -1390,15 +1158,15 @@ proto.msg.CommunitySetTyping.serializeBinaryToWriter = function(message, writer)
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {!proto.msg.TypingAction} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getAction();
+  if (f !== 0.0) {
     writer.writeEnum(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getSenderid();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
@@ -1408,17 +1176,17 @@ proto.msg.CommunitySetTyping.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.CommunitySetTyping.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.CommunitySetTyping} returns this
 */
 proto.msg.CommunitySetTyping.prototype.setPeer = function(value) {
@@ -1427,11 +1195,11 @@ proto.msg.CommunitySetTyping.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.CommunitySetTyping} returns this
  */
 proto.msg.CommunitySetTyping.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -1445,7 +1213,7 @@ proto.msg.CommunitySetTyping.prototype.hasPeer = function() {
 
 
 /**
- * required TypingAction Action = 2;
+ * optional TypingAction Action = 2;
  * @return {!proto.msg.TypingAction}
  */
 proto.msg.CommunitySetTyping.prototype.getAction = function() {
@@ -1458,30 +1226,12 @@ proto.msg.CommunitySetTyping.prototype.getAction = function() {
  * @return {!proto.msg.CommunitySetTyping} returns this
  */
 proto.msg.CommunitySetTyping.prototype.setAction = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySetTyping} returns this
- */
-proto.msg.CommunitySetTyping.prototype.clearAction = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySetTyping.prototype.hasAction = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 SenderID = 3;
+ * optional int64 SenderID = 3;
  * @return {number}
  */
 proto.msg.CommunitySetTyping.prototype.getSenderid = function() {
@@ -1494,25 +1244,7 @@ proto.msg.CommunitySetTyping.prototype.getSenderid = function() {
  * @return {!proto.msg.CommunitySetTyping} returns this
  */
 proto.msg.CommunitySetTyping.prototype.setSenderid = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunitySetTyping} returns this
- */
-proto.msg.CommunitySetTyping.prototype.clearSenderid = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunitySetTyping.prototype.hasSenderid = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -1548,10 +1280,10 @@ proto.msg.CommunityGetUpdates.prototype.toObject = function(opt_includeInstance)
  */
 proto.msg.CommunityGetUpdates.toObject = function(includeInstance, msg) {
   var f, obj = {
-    waitafterinms: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    waitmaxinms: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    sizelimit: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    offsetid: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    waitafterinms: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    waitmaxinms: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    sizelimit: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    offsetid: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -1633,29 +1365,29 @@ proto.msg.CommunityGetUpdates.prototype.serializeBinary = function() {
  */
 proto.msg.CommunityGetUpdates.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getWaitafterinms();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getWaitmaxinms();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getSizelimit();
+  if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getOffsetid();
+  if (f !== 0) {
     writer.writeInt64(
       4,
       f
@@ -1665,7 +1397,7 @@ proto.msg.CommunityGetUpdates.serializeBinaryToWriter = function(message, writer
 
 
 /**
- * required int32 WaitAfterInMS = 1;
+ * optional int32 WaitAfterInMS = 1;
  * @return {number}
  */
 proto.msg.CommunityGetUpdates.prototype.getWaitafterinms = function() {
@@ -1678,30 +1410,12 @@ proto.msg.CommunityGetUpdates.prototype.getWaitafterinms = function() {
  * @return {!proto.msg.CommunityGetUpdates} returns this
  */
 proto.msg.CommunityGetUpdates.prototype.setWaitafterinms = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityGetUpdates} returns this
- */
-proto.msg.CommunityGetUpdates.prototype.clearWaitafterinms = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityGetUpdates.prototype.hasWaitafterinms = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 WaitMaxInMS = 2;
+ * optional int32 WaitMaxInMS = 2;
  * @return {number}
  */
 proto.msg.CommunityGetUpdates.prototype.getWaitmaxinms = function() {
@@ -1714,30 +1428,12 @@ proto.msg.CommunityGetUpdates.prototype.getWaitmaxinms = function() {
  * @return {!proto.msg.CommunityGetUpdates} returns this
  */
 proto.msg.CommunityGetUpdates.prototype.setWaitmaxinms = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityGetUpdates} returns this
- */
-proto.msg.CommunityGetUpdates.prototype.clearWaitmaxinms = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityGetUpdates.prototype.hasWaitmaxinms = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int32 SizeLimit = 3;
+ * optional int32 SizeLimit = 3;
  * @return {number}
  */
 proto.msg.CommunityGetUpdates.prototype.getSizelimit = function() {
@@ -1750,25 +1446,7 @@ proto.msg.CommunityGetUpdates.prototype.getSizelimit = function() {
  * @return {!proto.msg.CommunityGetUpdates} returns this
  */
 proto.msg.CommunityGetUpdates.prototype.setSizelimit = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityGetUpdates} returns this
- */
-proto.msg.CommunityGetUpdates.prototype.clearSizelimit = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityGetUpdates.prototype.hasSizelimit = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -1786,25 +1464,7 @@ proto.msg.CommunityGetUpdates.prototype.getOffsetid = function() {
  * @return {!proto.msg.CommunityGetUpdates} returns this
  */
 proto.msg.CommunityGetUpdates.prototype.setOffsetid = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityGetUpdates} returns this
- */
-proto.msg.CommunityGetUpdates.prototype.clearOffsetid = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityGetUpdates.prototype.hasOffsetid = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -1840,8 +1500,8 @@ proto.msg.CommunityGetMembers.prototype.toObject = function(opt_includeInstance)
  */
 proto.msg.CommunityGetMembers.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offset: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    limit: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    offset: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    limit: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -1915,15 +1575,15 @@ proto.msg.CommunityGetMembers.prototype.serializeBinary = function() {
  */
 proto.msg.CommunityGetMembers.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getOffset();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getLimit();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
@@ -1946,25 +1606,7 @@ proto.msg.CommunityGetMembers.prototype.getOffset = function() {
  * @return {!proto.msg.CommunityGetMembers} returns this
  */
 proto.msg.CommunityGetMembers.prototype.setOffset = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityGetMembers} returns this
- */
-proto.msg.CommunityGetMembers.prototype.clearOffset = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityGetMembers.prototype.hasOffset = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -1982,25 +1624,7 @@ proto.msg.CommunityGetMembers.prototype.getLimit = function() {
  * @return {!proto.msg.CommunityGetMembers} returns this
  */
 proto.msg.CommunityGetMembers.prototype.setLimit = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityGetMembers} returns this
- */
-proto.msg.CommunityGetMembers.prototype.clearLimit = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityGetMembers.prototype.hasLimit = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -2036,7 +1660,7 @@ proto.msg.CommunityRecall.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.CommunityRecall.toObject = function(includeInstance, msg) {
   var f, obj = {
-    teamid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    teamid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     accesskey: msg.getAccesskey_asB64()
   };
 
@@ -2111,15 +1735,15 @@ proto.msg.CommunityRecall.prototype.serializeBinary = function() {
  */
 proto.msg.CommunityRecall.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getTeamid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getAccesskey_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
@@ -2129,7 +1753,7 @@ proto.msg.CommunityRecall.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 TeamID = 1;
+ * optional int64 TeamID = 1;
  * @return {number}
  */
 proto.msg.CommunityRecall.prototype.getTeamid = function() {
@@ -2142,30 +1766,12 @@ proto.msg.CommunityRecall.prototype.getTeamid = function() {
  * @return {!proto.msg.CommunityRecall} returns this
  */
 proto.msg.CommunityRecall.prototype.setTeamid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityRecall} returns this
- */
-proto.msg.CommunityRecall.prototype.clearTeamid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityRecall.prototype.hasTeamid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bytes AccessKey = 2;
+ * optional bytes AccessKey = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.CommunityRecall.prototype.getAccesskey = function() {
@@ -2174,7 +1780,7 @@ proto.msg.CommunityRecall.prototype.getAccesskey = function() {
 
 
 /**
- * required bytes AccessKey = 2;
+ * optional bytes AccessKey = 2;
  * This is a type-conversion wrapper around `getAccesskey()`
  * @return {string}
  */
@@ -2185,7 +1791,7 @@ proto.msg.CommunityRecall.prototype.getAccesskey_asB64 = function() {
 
 
 /**
- * required bytes AccessKey = 2;
+ * optional bytes AccessKey = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAccesskey()`
@@ -2202,25 +1808,7 @@ proto.msg.CommunityRecall.prototype.getAccesskey_asU8 = function() {
  * @return {!proto.msg.CommunityRecall} returns this
  */
 proto.msg.CommunityRecall.prototype.setAccesskey = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityRecall} returns this
- */
-proto.msg.CommunityRecall.prototype.clearAccesskey = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityRecall.prototype.hasAccesskey = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
@@ -2256,10 +1844,10 @@ proto.msg.CommunityAuthorizeUser.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.CommunityAuthorizeUser.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    firstname: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    lastname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    provider: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    phone: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    firstname: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    lastname: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    provider: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -2341,29 +1929,29 @@ proto.msg.CommunityAuthorizeUser.prototype.serializeBinary = function() {
  */
 proto.msg.CommunityAuthorizeUser.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getFirstname();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getLastname();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getProvider();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -2373,7 +1961,7 @@ proto.msg.CommunityAuthorizeUser.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required string Phone = 1;
+ * optional string Phone = 1;
  * @return {string}
  */
 proto.msg.CommunityAuthorizeUser.prototype.getPhone = function() {
@@ -2386,30 +1974,12 @@ proto.msg.CommunityAuthorizeUser.prototype.getPhone = function() {
  * @return {!proto.msg.CommunityAuthorizeUser} returns this
  */
 proto.msg.CommunityAuthorizeUser.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityAuthorizeUser} returns this
- */
-proto.msg.CommunityAuthorizeUser.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityAuthorizeUser.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string FirstName = 2;
+ * optional string FirstName = 2;
  * @return {string}
  */
 proto.msg.CommunityAuthorizeUser.prototype.getFirstname = function() {
@@ -2422,25 +1992,7 @@ proto.msg.CommunityAuthorizeUser.prototype.getFirstname = function() {
  * @return {!proto.msg.CommunityAuthorizeUser} returns this
  */
 proto.msg.CommunityAuthorizeUser.prototype.setFirstname = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityAuthorizeUser} returns this
- */
-proto.msg.CommunityAuthorizeUser.prototype.clearFirstname = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityAuthorizeUser.prototype.hasFirstname = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -2458,25 +2010,7 @@ proto.msg.CommunityAuthorizeUser.prototype.getLastname = function() {
  * @return {!proto.msg.CommunityAuthorizeUser} returns this
  */
 proto.msg.CommunityAuthorizeUser.prototype.setLastname = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityAuthorizeUser} returns this
- */
-proto.msg.CommunityAuthorizeUser.prototype.clearLastname = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityAuthorizeUser.prototype.hasLastname = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -2494,25 +2028,7 @@ proto.msg.CommunityAuthorizeUser.prototype.getProvider = function() {
  * @return {!proto.msg.CommunityAuthorizeUser} returns this
  */
 proto.msg.CommunityAuthorizeUser.prototype.setProvider = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityAuthorizeUser} returns this
- */
-proto.msg.CommunityAuthorizeUser.prototype.clearProvider = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityAuthorizeUser.prototype.hasProvider = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -2548,10 +2064,10 @@ proto.msg.CommunityUser.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.CommunityUser.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    firstname: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    lastname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    phone: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    userid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    firstname: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    lastname: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    phone: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -2633,29 +2149,29 @@ proto.msg.CommunityUser.prototype.serializeBinary = function() {
  */
 proto.msg.CommunityUser.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getUserid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getFirstname();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getLastname();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getPhone();
+  if (f.length > 0) {
     writer.writeString(
       4,
       f
@@ -2665,7 +2181,7 @@ proto.msg.CommunityUser.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 UserID = 1;
+ * optional int64 UserID = 1;
  * @return {number}
  */
 proto.msg.CommunityUser.prototype.getUserid = function() {
@@ -2678,30 +2194,12 @@ proto.msg.CommunityUser.prototype.getUserid = function() {
  * @return {!proto.msg.CommunityUser} returns this
  */
 proto.msg.CommunityUser.prototype.setUserid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUser} returns this
- */
-proto.msg.CommunityUser.prototype.clearUserid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUser.prototype.hasUserid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string FirstName = 2;
+ * optional string FirstName = 2;
  * @return {string}
  */
 proto.msg.CommunityUser.prototype.getFirstname = function() {
@@ -2714,30 +2212,12 @@ proto.msg.CommunityUser.prototype.getFirstname = function() {
  * @return {!proto.msg.CommunityUser} returns this
  */
 proto.msg.CommunityUser.prototype.setFirstname = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUser} returns this
- */
-proto.msg.CommunityUser.prototype.clearFirstname = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUser.prototype.hasFirstname = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string LastName = 3;
+ * optional string LastName = 3;
  * @return {string}
  */
 proto.msg.CommunityUser.prototype.getLastname = function() {
@@ -2750,30 +2230,12 @@ proto.msg.CommunityUser.prototype.getLastname = function() {
  * @return {!proto.msg.CommunityUser} returns this
  */
 proto.msg.CommunityUser.prototype.setLastname = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUser} returns this
- */
-proto.msg.CommunityUser.prototype.clearLastname = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUser.prototype.hasLastname = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required string Phone = 4;
+ * optional string Phone = 4;
  * @return {string}
  */
 proto.msg.CommunityUser.prototype.getPhone = function() {
@@ -2786,25 +2248,7 @@ proto.msg.CommunityUser.prototype.getPhone = function() {
  * @return {!proto.msg.CommunityUser} returns this
  */
 proto.msg.CommunityUser.prototype.setPhone = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUser} returns this
- */
-proto.msg.CommunityUser.prototype.clearPhone = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUser.prototype.hasPhone = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -2840,9 +2284,9 @@ proto.msg.CommunityUpdateEnvelope.prototype.toObject = function(opt_includeInsta
  */
 proto.msg.CommunityUpdateEnvelope.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offsetid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    partitionid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    constructor: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    offsetid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    partitionid: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    constructor: jspb.Message.getFieldWithDefault(msg, 3, 0),
     update: msg.getUpdate_asB64()
   };
 
@@ -2925,29 +2369,29 @@ proto.msg.CommunityUpdateEnvelope.prototype.serializeBinary = function() {
  */
 proto.msg.CommunityUpdateEnvelope.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getOffsetid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getPartitionid();
+  if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getConstructor();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getUpdate_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       4,
       f
@@ -2957,7 +2401,7 @@ proto.msg.CommunityUpdateEnvelope.serializeBinaryToWriter = function(message, wr
 
 
 /**
- * required int64 OffsetID = 1;
+ * optional int64 OffsetID = 1;
  * @return {number}
  */
 proto.msg.CommunityUpdateEnvelope.prototype.getOffsetid = function() {
@@ -2970,30 +2414,12 @@ proto.msg.CommunityUpdateEnvelope.prototype.getOffsetid = function() {
  * @return {!proto.msg.CommunityUpdateEnvelope} returns this
  */
 proto.msg.CommunityUpdateEnvelope.prototype.setOffsetid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUpdateEnvelope} returns this
- */
-proto.msg.CommunityUpdateEnvelope.prototype.clearOffsetid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUpdateEnvelope.prototype.hasOffsetid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int32 PartitionID = 2;
+ * optional int32 PartitionID = 2;
  * @return {number}
  */
 proto.msg.CommunityUpdateEnvelope.prototype.getPartitionid = function() {
@@ -3006,30 +2432,12 @@ proto.msg.CommunityUpdateEnvelope.prototype.getPartitionid = function() {
  * @return {!proto.msg.CommunityUpdateEnvelope} returns this
  */
 proto.msg.CommunityUpdateEnvelope.prototype.setPartitionid = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUpdateEnvelope} returns this
- */
-proto.msg.CommunityUpdateEnvelope.prototype.clearPartitionid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUpdateEnvelope.prototype.hasPartitionid = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int64 Constructor = 3;
+ * optional int64 Constructor = 3;
  * @return {number}
  */
 proto.msg.CommunityUpdateEnvelope.prototype.getConstructor = function() {
@@ -3042,25 +2450,7 @@ proto.msg.CommunityUpdateEnvelope.prototype.getConstructor = function() {
  * @return {!proto.msg.CommunityUpdateEnvelope} returns this
  */
 proto.msg.CommunityUpdateEnvelope.prototype.setConstructor = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUpdateEnvelope} returns this
- */
-proto.msg.CommunityUpdateEnvelope.prototype.clearConstructor = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUpdateEnvelope.prototype.hasConstructor = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -3102,25 +2492,7 @@ proto.msg.CommunityUpdateEnvelope.prototype.getUpdate_asU8 = function() {
  * @return {!proto.msg.CommunityUpdateEnvelope} returns this
  */
 proto.msg.CommunityUpdateEnvelope.prototype.setUpdate = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUpdateEnvelope} returns this
- */
-proto.msg.CommunityUpdateEnvelope.prototype.clearUpdate = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUpdateEnvelope.prototype.hasUpdate = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -3165,7 +2537,7 @@ proto.msg.CommunityUpdateContainer.toObject = function(includeInstance, msg) {
   var f, obj = {
     updatesList: jspb.Message.toObjectList(msg.getUpdatesList(),
     proto.msg.CommunityUpdateEnvelope.toObject, includeInstance),
-    empty: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f
+    empty: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -3248,8 +2620,8 @@ proto.msg.CommunityUpdateContainer.serializeBinaryToWriter = function(message, w
       proto.msg.CommunityUpdateEnvelope.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getEmpty();
+  if (f) {
     writer.writeBool(
       2,
       f
@@ -3310,25 +2682,7 @@ proto.msg.CommunityUpdateContainer.prototype.getEmpty = function() {
  * @return {!proto.msg.CommunityUpdateContainer} returns this
  */
 proto.msg.CommunityUpdateContainer.prototype.setEmpty = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.CommunityUpdateContainer} returns this
- */
-proto.msg.CommunityUpdateContainer.prototype.clearEmpty = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.CommunityUpdateContainer.prototype.hasEmpty = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 

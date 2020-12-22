@@ -19,6 +19,7 @@ import CachedPhoto from '../CachedPhoto';
 import CachedMessageService, {ICachedMessageServiceBroadcastItemData} from '../../services/cachedMessageService';
 import i18n from '../../services/i18n';
 import {GetPeerName} from "../../repository/dialog";
+import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
 
@@ -40,7 +41,6 @@ interface IState {
 
 class MessagePreview extends React.PureComponent<IProps, IState> {
     private messageRepo: MessageRepo;
-    private userId: string = '';
     private cachedMessageService: CachedMessageService;
     private eventReferences: any[] = [];
     private lastId: number = 0;
@@ -71,7 +71,6 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.userId = this.messageRepo.getCurrentUserId();
         if (!this.state.previewMessage && this.state.message.replyto && this.state.message.replyto !== 0) {
             this.getMessage();
         } else if (this.props.pinnedMessage && this.state.message.id !== 0) {
@@ -193,7 +192,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
             return '';
         }
         let cn = '';
-        if (msg.senderid === this.userId) {
+        if (msg.senderid === currentUserId) {
             cn = 'reply-you';
         } else {
             cn = 'reply';

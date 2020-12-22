@@ -40,6 +40,7 @@ interface IProps {
     onClose?: () => void;
     onAction: (cmd: string, user?: IUser) => void;
     teamId: string;
+    onError: (text: string) => void;
 }
 
 interface IState {
@@ -217,10 +218,12 @@ class UserDialog extends React.Component<IProps, IState> {
                                 label={i18n.t('general.phone')}
                                 fullWidth={true}
                                 inputProps={{
+                                    inputMode: "tel",
                                     maxLength: 32,
                                 }}
                                 value={phone}
                                 className="input-edit"
+                                type="tel"
                                 onChange={this.phoneChangeHandler}
                             />}
                         </div>}
@@ -353,6 +356,12 @@ class UserDialog extends React.Component<IProps, IState> {
         if (!user) {
             return;
         }
+
+        if (firstname.length === 0) {
+            this.props.onError(i18n.t('settings.first_name_is_required'));
+            return;
+        }
+
         if ((user.username || '') !== '' && phone === '') {
             const inputUser = new InputUser();
             inputUser.setAccesshash(user.accesshash || '');
@@ -374,14 +383,11 @@ class UserDialog extends React.Component<IProps, IState> {
                 });
             });
         } else {
-            if (phone === '') {
-                this.setState({
-                    edit: false,
-                    firstname: user.firstname || '',
-                    lastname: user.lastname || '',
-                });
+            if ((user.phone || '') === '' && phone === '') {
+                this.props.onError(i18n.t('settings.phone_is_required'));
                 return;
             }
+
             const contacts: PhoneContact.AsObject[] = [];
             contacts.push({
                 clientid: isInContact ? user.clientid : String(UniqueId.getRandomId()),
@@ -392,6 +398,11 @@ class UserDialog extends React.Component<IProps, IState> {
             this.apiManager.contactImport(true, contacts).then((data) => {
                 const items: any[] = [];
                 data.usersList.forEach((item) => {
+                    const contact = data.contactusersList.find(o => o.id === item.id);
+                    if (contact) {
+                        item.firstname = contact.firstname;
+                        item.lastname = contact.lastname;
+                    }
                     items.push(item);
                 });
                 this.userRepo.importBulk(true, items);

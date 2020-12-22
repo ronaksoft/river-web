@@ -1,5 +1,11 @@
-## 0.36.4
-* More retries in bad network while syncing
+## 1.0.0
+* 🎉 Video and Voice call
+* New Code Presenter
+* Upgraded to latest react
+* New WASM architecture
+* New Web-Worker architecture
+* Code rewriting
+* Various bugs fixed and many improvements
 
 ## 0.36.3
 * Loading UI bug fixed

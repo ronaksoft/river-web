@@ -98,8 +98,9 @@ class UserName extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {onlyFirstName, defaultString, noIcon} = this.props;
-        let {postfix, prefix, peerType} = this.props;
+        const {onlyFirstName, defaultString, noIcon, noDetail} = this.props;
+        const {peerType} = this.props;
+        let {postfix, prefix} = this.props;
         prefix = prefix || '';
         postfix = postfix || '';
         const {user, className} = this.state;
@@ -108,7 +109,7 @@ class UserName extends React.PureComponent<IProps, IState> {
         }
         const style = {
             color: 'auto',
-            cursor: 'pointer',
+            cursor: noDetail ? 'default' : 'pointer',
         };
         if (this.props.uniqueColor === true && this.state.forceColor) {
             style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, TextColors);

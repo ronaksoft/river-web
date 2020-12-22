@@ -10,17 +10,13 @@ import * as chat_wallpaper_pb from "./chat.wallpaper_pb";
 export class BotStart extends jspb.Message {
   hasBot(): boolean;
   clearBot(): void;
-  getBot(): core_types_pb.InputPeer;
+  getBot(): core_types_pb.InputPeer | undefined;
   setBot(value?: core_types_pb.InputPeer): void;
 
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
-  hasStartparam(): boolean;
-  clearStartparam(): void;
-  getStartparam(): string | undefined;
+  getStartparam(): string;
   setStartparam(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -35,16 +31,14 @@ export class BotStart extends jspb.Message {
 
 export namespace BotStart {
   export type AsObject = {
-    bot: core_types_pb.InputPeer.AsObject,
-    randomid?: number,
-    startparam?: string,
+    bot?: core_types_pb.InputPeer.AsObject,
+    randomid: number,
+    startparam: string,
   }
 }
 
 export class BotRecall extends jspb.Message {
-  hasVersion(): boolean;
-  clearVersion(): void;
-  getVersion(): number | undefined;
+  getVersion(): number;
   setVersion(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -59,24 +53,18 @@ export class BotRecall extends jspb.Message {
 
 export namespace BotRecall {
   export type AsObject = {
-    version?: number,
+    version: number,
   }
 }
 
 export class BotSetInfo extends jspb.Message {
-  hasBotid(): boolean;
-  clearBotid(): void;
-  getBotid(): number | undefined;
+  getBotid(): number;
   setBotid(value: number): void;
 
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
-  hasOwner(): boolean;
-  clearOwner(): void;
-  getOwner(): number | undefined;
+  getOwner(): number;
   setOwner(value: number): void;
 
   clearBotcommandsList(): void;
@@ -84,19 +72,13 @@ export class BotSetInfo extends jspb.Message {
   setBotcommandsList(value: Array<core_types_pb.BotCommands>): void;
   addBotcommands(value?: core_types_pb.BotCommands, index?: number): core_types_pb.BotCommands;
 
-  hasDescription(): boolean;
-  clearDescription(): void;
-  getDescription(): string | undefined;
+  getDescription(): string;
   setDescription(value: string): void;
 
-  hasInlineplaceholder(): boolean;
-  clearInlineplaceholder(): void;
-  getInlineplaceholder(): string | undefined;
+  getInlineplaceholder(): string;
   setInlineplaceholder(value: string): void;
 
-  hasInlinegeo(): boolean;
-  clearInlinegeo(): void;
-  getInlinegeo(): boolean | undefined;
+  getInlinegeo(): boolean;
   setInlinegeo(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -111,25 +93,21 @@ export class BotSetInfo extends jspb.Message {
 
 export namespace BotSetInfo {
   export type AsObject = {
-    botid?: number,
-    randomid?: number,
-    owner?: number,
+    botid: number,
+    randomid: number,
+    owner: number,
     botcommandsList: Array<core_types_pb.BotCommands.AsObject>,
-    description?: string,
-    inlineplaceholder?: string,
-    inlinegeo?: boolean,
+    description: string,
+    inlineplaceholder: string,
+    inlinegeo: boolean,
   }
 }
 
 export class BotGet extends jspb.Message {
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -144,35 +122,27 @@ export class BotGet extends jspb.Message {
 
 export namespace BotGet {
   export type AsObject = {
-    userid?: string,
-    limit?: number,
+    userid: string,
+    limit: number,
   }
 }
 
 export class BotSendMessage extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasCleardraft(): boolean;
-  clearCleardraft(): void;
-  getCleardraft(): boolean | undefined;
+  getCleardraft(): boolean;
   setCleardraft(value: boolean): void;
 
   clearEntitiesList(): void;
@@ -180,13 +150,9 @@ export class BotSendMessage extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasReplymarkup(): boolean;
-  clearReplymarkup(): void;
-  getReplymarkup(): number | undefined;
+  getReplymarkup(): number;
   setReplymarkup(value: number): void;
 
-  hasReplymarkupdata(): boolean;
-  clearReplymarkupdata(): void;
   getReplymarkupdata(): Uint8Array | string;
   getReplymarkupdata_asU8(): Uint8Array;
   getReplymarkupdata_asB64(): string;
@@ -204,36 +170,30 @@ export class BotSendMessage extends jspb.Message {
 
 export namespace BotSendMessage {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    body?: string,
-    replyto?: number,
-    cleardraft?: boolean,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    body: string,
+    replyto: number,
+    cleardraft: boolean,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    replymarkup?: number,
+    replymarkup: number,
     replymarkupdata: Uint8Array | string,
   }
 }
 
 export class BotEditMessage extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
   clearEntitiesList(): void;
@@ -241,13 +201,9 @@ export class BotEditMessage extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasReplymarkup(): boolean;
-  clearReplymarkup(): void;
-  getReplymarkup(): number | undefined;
+  getReplymarkup(): number;
   setReplymarkup(value: number): void;
 
-  hasReplymarkupdata(): boolean;
-  clearReplymarkupdata(): void;
   getReplymarkupdata(): Uint8Array | string;
   getReplymarkupdata_asU8(): Uint8Array;
   getReplymarkupdata_asB64(): string;
@@ -265,42 +221,34 @@ export class BotEditMessage extends jspb.Message {
 
 export namespace BotEditMessage {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    body?: string,
-    messageid?: number,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    body: string,
+    messageid: number,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    replymarkup?: number,
+    replymarkup: number,
     replymarkupdata: Uint8Array | string,
   }
 }
 
 export class BotSendMedia extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMediatype(): boolean;
-  clearMediatype(): void;
-  getMediatype(): core_types_pb.InputMediaType | undefined;
+  getMediatype(): core_types_pb.InputMediaType;
   setMediatype(value: core_types_pb.InputMediaType): void;
 
-  hasMediadata(): boolean;
-  clearMediadata(): void;
   getMediadata(): Uint8Array | string;
   getMediadata_asU8(): Uint8Array;
   getMediadata_asB64(): string;
   setMediadata(value: Uint8Array | string): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -315,32 +263,24 @@ export class BotSendMedia extends jspb.Message {
 
 export namespace BotSendMedia {
   export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    mediatype?: core_types_pb.InputMediaType,
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    mediatype: core_types_pb.InputMediaType,
     mediadata: Uint8Array | string,
-    replyto?: number,
+    replyto: number,
   }
 }
 
 export class BotSaveFilePart extends jspb.Message {
-  hasFileid(): boolean;
-  clearFileid(): void;
-  getFileid(): string | undefined;
+  getFileid(): string;
   setFileid(value: string): void;
 
-  hasPartid(): boolean;
-  clearPartid(): void;
-  getPartid(): number | undefined;
+  getPartid(): number;
   setPartid(value: number): void;
 
-  hasTotalparts(): boolean;
-  clearTotalparts(): void;
-  getTotalparts(): number | undefined;
+  getTotalparts(): number;
   setTotalparts(value: number): void;
 
-  hasBytes(): boolean;
-  clearBytes(): void;
   getBytes(): Uint8Array | string;
   getBytes_asU8(): Uint8Array;
   getBytes_asB64(): string;
@@ -358,27 +298,21 @@ export class BotSaveFilePart extends jspb.Message {
 
 export namespace BotSaveFilePart {
   export type AsObject = {
-    fileid?: string,
-    partid?: number,
-    totalparts?: number,
+    fileid: string,
+    partid: number,
+    totalparts: number,
     bytes: Uint8Array | string,
   }
 }
 
 export class BotUpdateProfile extends jspb.Message {
-  hasBotid(): boolean;
-  clearBotid(): void;
-  getBotid(): number | undefined;
+  getBotid(): number;
   setBotid(value: number): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasBio(): boolean;
-  clearBio(): void;
-  getBio(): string | undefined;
+  getBio(): string;
   setBio(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -393,9 +327,9 @@ export class BotUpdateProfile extends jspb.Message {
 
 export namespace BotUpdateProfile {
   export type AsObject = {
-    botid?: number,
-    name?: string,
-    bio?: string,
+    botid: number,
+    name: string,
+    bio: string,
   }
 }
 
@@ -405,9 +339,7 @@ export class BotUpdatePhoto extends jspb.Message {
   getFile(): core_types_pb.InputFileLocation | undefined;
   setFile(value?: core_types_pb.InputFileLocation): void;
 
-  hasBotid(): boolean;
-  clearBotid(): void;
-  getBotid(): number | undefined;
+  getBotid(): number;
   setBotid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -423,19 +355,15 @@ export class BotUpdatePhoto extends jspb.Message {
 export namespace BotUpdatePhoto {
   export type AsObject = {
     file?: core_types_pb.InputFileLocation.AsObject,
-    botid?: number,
+    botid: number,
   }
 }
 
 export class BotRevokeToken extends jspb.Message {
-  hasBotid(): boolean;
-  clearBotid(): void;
-  getBotid(): number | undefined;
+  getBotid(): number;
   setBotid(value: number): void;
 
-  hasGetnew(): boolean;
-  clearGetnew(): void;
-  getGetnew(): boolean | undefined;
+  getGetnew(): boolean;
   setGetnew(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -450,15 +378,15 @@ export class BotRevokeToken extends jspb.Message {
 
 export namespace BotRevokeToken {
   export type AsObject = {
-    botid?: number,
-    getnew?: boolean,
+    botid: number,
+    getnew: boolean,
   }
 }
 
 export class BotDeleteMessage extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   clearMessageidsList(): void;
@@ -478,30 +406,22 @@ export class BotDeleteMessage extends jspb.Message {
 
 export namespace BotDeleteMessage {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
     messageidsList: Array<number>,
   }
 }
 
 export class BotSetCallbackAnswer extends jspb.Message {
-  hasQueryid(): boolean;
-  clearQueryid(): void;
-  getQueryid(): string | undefined;
+  getQueryid(): string;
   setQueryid(value: string): void;
 
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
+  getUrl(): string;
   setUrl(value: string): void;
 
-  hasMessage(): boolean;
-  clearMessage(): void;
-  getMessage(): string | undefined;
+  getMessage(): string;
   setMessage(value: string): void;
 
-  hasCachetime(): boolean;
-  clearCachetime(): void;
-  getCachetime(): number | undefined;
+  getCachetime(): number;
   setCachetime(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -516,26 +436,22 @@ export class BotSetCallbackAnswer extends jspb.Message {
 
 export namespace BotSetCallbackAnswer {
   export type AsObject = {
-    queryid?: string,
-    url?: string,
-    message?: string,
-    cachetime?: number,
+    queryid: string,
+    url: string,
+    message: string,
+    cachetime: number,
   }
 }
 
 export class BotGetCallbackAnswer extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasData(): boolean;
-  clearData(): void;
   getData(): Uint8Array | string;
   getData_asU8(): Uint8Array;
   getData_asB64(): string;
@@ -553,8 +469,8 @@ export class BotGetCallbackAnswer extends jspb.Message {
 
 export namespace BotGetCallbackAnswer {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    messageid?: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    messageid: number,
     data: Uint8Array | string,
   }
 }
@@ -562,22 +478,18 @@ export namespace BotGetCallbackAnswer {
 export class BotGetInlineResults extends jspb.Message {
   hasBot(): boolean;
   clearBot(): void;
-  getBot(): core_types_pb.InputUser;
+  getBot(): core_types_pb.InputUser | undefined;
   setBot(value?: core_types_pb.InputUser): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasQuery(): boolean;
-  clearQuery(): void;
-  getQuery(): string | undefined;
+  getQuery(): string;
   setQuery(value: string): void;
 
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): string | undefined;
+  getOffset(): string;
   setOffset(value: string): void;
 
   hasLocation(): boolean;
@@ -597,33 +509,25 @@ export class BotGetInlineResults extends jspb.Message {
 
 export namespace BotGetInlineResults {
   export type AsObject = {
-    bot: core_types_pb.InputUser.AsObject,
-    peer: core_types_pb.InputPeer.AsObject,
-    query?: string,
-    offset?: string,
+    bot?: core_types_pb.InputUser.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
+    query: string,
+    offset: string,
     location?: core_types_pb.InputGeoLocation.AsObject,
   }
 }
 
 export class BotSetInlineResults extends jspb.Message {
-  hasGallery(): boolean;
-  clearGallery(): void;
-  getGallery(): boolean | undefined;
+  getGallery(): boolean;
   setGallery(value: boolean): void;
 
-  hasPrivate(): boolean;
-  clearPrivate(): void;
-  getPrivate(): boolean | undefined;
+  getPrivate(): boolean;
   setPrivate(value: boolean): void;
 
-  hasCachetime(): boolean;
-  clearCachetime(): void;
-  getCachetime(): number | undefined;
+  getCachetime(): number;
   setCachetime(value: number): void;
 
-  hasNextoffset(): boolean;
-  clearNextoffset(): void;
-  getNextoffset(): string | undefined;
+  getNextoffset(): string;
   setNextoffset(value: string): void;
 
   clearResultsList(): void;
@@ -636,9 +540,7 @@ export class BotSetInlineResults extends jspb.Message {
   getSwitchpm(): BotInlineSwitchPM | undefined;
   setSwitchpm(value?: BotInlineSwitchPM): void;
 
-  hasQueryid(): boolean;
-  clearQueryid(): void;
-  getQueryid(): string | undefined;
+  getQueryid(): string;
   setQueryid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -653,55 +555,41 @@ export class BotSetInlineResults extends jspb.Message {
 
 export namespace BotSetInlineResults {
   export type AsObject = {
-    gallery?: boolean,
-    pb_private?: boolean,
-    cachetime?: number,
-    nextoffset?: string,
+    gallery: boolean,
+    pb_private: boolean,
+    cachetime: number,
+    nextoffset: string,
     resultsList: Array<InputBotInlineResult.AsObject>,
     switchpm?: BotInlineSwitchPM.AsObject,
-    queryid?: string,
+    queryid: string,
   }
 }
 
 export class BotSendInlineResults extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
-  hasQueryid(): boolean;
-  clearQueryid(): void;
-  getQueryid(): string | undefined;
+  getQueryid(): string;
   setQueryid(value: string): void;
 
-  hasResultid(): boolean;
-  clearResultid(): void;
-  getResultid(): string | undefined;
+  getResultid(): string;
   setResultid(value: string): void;
 
-  hasCleardraft(): boolean;
-  clearCleardraft(): void;
-  getCleardraft(): boolean | undefined;
+  getCleardraft(): boolean;
   setCleardraft(value: boolean): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasSilent(): boolean;
-  clearSilent(): void;
-  getSilent(): boolean | undefined;
+  getSilent(): boolean;
   setSilent(value: boolean): void;
 
-  hasHidevia(): boolean;
-  clearHidevia(): void;
-  getHidevia(): boolean | undefined;
+  getHidevia(): boolean;
   setHidevia(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -716,36 +604,32 @@ export class BotSendInlineResults extends jspb.Message {
 
 export namespace BotSendInlineResults {
   export type AsObject = {
-    randomid?: number,
-    queryid?: string,
-    resultid?: string,
-    cleardraft?: boolean,
-    peer: core_types_pb.InputPeer.AsObject,
-    replyto?: number,
-    silent?: boolean,
-    hidevia?: boolean,
+    randomid: number,
+    queryid: string,
+    resultid: string,
+    cleardraft: boolean,
+    peer?: core_types_pb.InputPeer.AsObject,
+    replyto: number,
+    silent: boolean,
+    hidevia: boolean,
   }
 }
 
 export class BotUploadWallPaper extends jspb.Message {
   hasFile(): boolean;
   clearFile(): void;
-  getFile(): core_types_pb.InputFileLocation;
+  getFile(): core_types_pb.InputFileLocation | undefined;
   setFile(value?: core_types_pb.InputFileLocation): void;
 
-  hasDark(): boolean;
-  clearDark(): void;
-  getDark(): boolean | undefined;
+  getDark(): boolean;
   setDark(value: boolean): void;
 
-  hasPattern(): boolean;
-  clearPattern(): void;
-  getPattern(): boolean | undefined;
+  getPattern(): boolean;
   setPattern(value: boolean): void;
 
   hasSettings(): boolean;
   clearSettings(): void;
-  getSettings(): chat_wallpaper_pb.WallPaperSettings;
+  getSettings(): chat_wallpaper_pb.WallPaperSettings | undefined;
   setSettings(value?: chat_wallpaper_pb.WallPaperSettings): void;
 
   serializeBinary(): Uint8Array;
@@ -760,42 +644,34 @@ export class BotUploadWallPaper extends jspb.Message {
 
 export namespace BotUploadWallPaper {
   export type AsObject = {
-    file: core_types_pb.InputFileLocation.AsObject,
-    dark?: boolean,
-    pattern?: boolean,
-    settings: chat_wallpaper_pb.WallPaperSettings.AsObject,
+    file?: core_types_pb.InputFileLocation.AsObject,
+    dark: boolean,
+    pattern: boolean,
+    settings?: chat_wallpaper_pb.WallPaperSettings.AsObject,
   }
 }
 
 export class BotUploadGif extends jspb.Message {
-  hasToken(): boolean;
-  clearToken(): void;
-  getToken(): string | undefined;
+  getToken(): string;
   setToken(value: string): void;
 
   hasFile(): boolean;
   clearFile(): void;
-  getFile(): core_types_pb.InputFile;
+  getFile(): core_types_pb.InputFile | undefined;
   setFile(value?: core_types_pb.InputFile): void;
 
   hasThumb(): boolean;
   clearThumb(): void;
-  getThumb(): core_types_pb.InputFile;
+  getThumb(): core_types_pb.InputFile | undefined;
   setThumb(value?: core_types_pb.InputFile): void;
 
-  hasWidth(): boolean;
-  clearWidth(): void;
-  getWidth(): number | undefined;
+  getWidth(): number;
   setWidth(value: number): void;
 
-  hasHeight(): boolean;
-  clearHeight(): void;
-  getHeight(): number | undefined;
+  getHeight(): number;
   setHeight(value: number): void;
 
-  hasMimetype(): boolean;
-  clearMimetype(): void;
-  getMimetype(): string | undefined;
+  getMimetype(): string;
   setMimetype(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -810,29 +686,23 @@ export class BotUploadGif extends jspb.Message {
 
 export namespace BotUploadGif {
   export type AsObject = {
-    token?: string,
-    file: core_types_pb.InputFile.AsObject,
-    thumb: core_types_pb.InputFile.AsObject,
-    width?: number,
-    height?: number,
-    mimetype?: string,
+    token: string,
+    file?: core_types_pb.InputFile.AsObject,
+    thumb?: core_types_pb.InputFile.AsObject,
+    width: number,
+    height: number,
+    mimetype: string,
   }
 }
 
 export class BotResults extends jspb.Message {
-  hasGallery(): boolean;
-  clearGallery(): void;
-  getGallery(): boolean | undefined;
+  getGallery(): boolean;
   setGallery(value: boolean): void;
 
-  hasQueryid(): boolean;
-  clearQueryid(): void;
-  getQueryid(): string | undefined;
+  getQueryid(): string;
   setQueryid(value: string): void;
 
-  hasNextoffset(): boolean;
-  clearNextoffset(): void;
-  getNextoffset(): string | undefined;
+  getNextoffset(): string;
   setNextoffset(value: string): void;
 
   hasSwitchpm(): boolean;
@@ -857,23 +727,19 @@ export class BotResults extends jspb.Message {
 
 export namespace BotResults {
   export type AsObject = {
-    gallery?: boolean,
-    queryid?: string,
-    nextoffset?: string,
+    gallery: boolean,
+    queryid: string,
+    nextoffset: string,
     switchpm?: BotInlineSwitchPM.AsObject,
     resultsList: Array<BotInlineResult.AsObject>,
   }
 }
 
 export class BotInlineSwitchPM extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
-  hasStartparam(): boolean;
-  clearStartparam(): void;
-  getStartparam(): string | undefined;
+  getStartparam(): string;
   setStartparam(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -888,35 +754,25 @@ export class BotInlineSwitchPM extends jspb.Message {
 
 export namespace BotInlineSwitchPM {
   export type AsObject = {
-    text?: string,
-    startparam?: string,
+    text: string,
+    startparam: string,
   }
 }
 
 export class BotInlineResult extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): core_types_pb.MediaType | undefined;
+  getType(): core_types_pb.MediaType;
   setType(value: core_types_pb.MediaType): void;
 
-  hasTitle(): boolean;
-  clearTitle(): void;
-  getTitle(): string | undefined;
+  getTitle(): string;
   setTitle(value: string): void;
 
-  hasDescription(): boolean;
-  clearDescription(): void;
-  getDescription(): string | undefined;
+  getDescription(): string;
   setDescription(value: string): void;
 
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
+  getUrl(): string;
   setUrl(value: string): void;
 
   hasThumb(): boolean;
@@ -926,7 +782,7 @@ export class BotInlineResult extends jspb.Message {
 
   hasMessage(): boolean;
   clearMessage(): void;
-  getMessage(): BotInlineMessage;
+  getMessage(): BotInlineMessage | undefined;
   setMessage(value?: BotInlineMessage): void;
 
   serializeBinary(): Uint8Array;
@@ -941,40 +797,30 @@ export class BotInlineResult extends jspb.Message {
 
 export namespace BotInlineResult {
   export type AsObject = {
-    id?: string,
-    type?: core_types_pb.MediaType,
-    title?: string,
-    description?: string,
-    url?: string,
+    id: string,
+    type: core_types_pb.MediaType,
+    title: string,
+    description: string,
+    url: string,
     thumb?: chat_messages_medias_pb.MediaWebDocument.AsObject,
-    message: BotInlineMessage.AsObject,
+    message?: BotInlineMessage.AsObject,
   }
 }
 
 export class InputBotInlineResult extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): core_types_pb.InputMediaType | undefined;
+  getType(): core_types_pb.InputMediaType;
   setType(value: core_types_pb.InputMediaType): void;
 
-  hasTitle(): boolean;
-  clearTitle(): void;
-  getTitle(): string | undefined;
+  getTitle(): string;
   setTitle(value: string): void;
 
-  hasDescription(): boolean;
-  clearDescription(): void;
-  getDescription(): string | undefined;
+  getDescription(): string;
   setDescription(value: string): void;
 
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
+  getUrl(): string;
   setUrl(value: string): void;
 
   hasThumb(): boolean;
@@ -984,7 +830,7 @@ export class InputBotInlineResult extends jspb.Message {
 
   hasMessage(): boolean;
   clearMessage(): void;
-  getMessage(): InputBotInlineMessage;
+  getMessage(): InputBotInlineMessage | undefined;
   setMessage(value?: InputBotInlineMessage): void;
 
   serializeBinary(): Uint8Array;
@@ -999,27 +845,23 @@ export class InputBotInlineResult extends jspb.Message {
 
 export namespace InputBotInlineResult {
   export type AsObject = {
-    id?: string,
-    type?: core_types_pb.InputMediaType,
-    title?: string,
-    description?: string,
-    url?: string,
+    id: string,
+    type: core_types_pb.InputMediaType,
+    title: string,
+    description: string,
+    url: string,
     thumb?: chat_messages_medias_pb.InputMediaWebDocument.AsObject,
-    message: InputBotInlineMessage.AsObject,
+    message?: InputBotInlineMessage.AsObject,
   }
 }
 
 export class BotInlineMessage extends jspb.Message {
-  hasMediadata(): boolean;
-  clearMediadata(): void;
   getMediadata(): Uint8Array | string;
   getMediadata_asU8(): Uint8Array;
   getMediadata_asB64(): string;
   setMediadata(value: Uint8Array | string): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
   clearEntitiesList(): void;
@@ -1027,18 +869,12 @@ export class BotInlineMessage extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasReplymarkup(): boolean;
-  clearReplymarkup(): void;
-  getReplymarkup(): number | undefined;
+  getReplymarkup(): number;
   setReplymarkup(value: number): void;
 
-  hasReplymarkupdata(): boolean;
-  clearReplymarkupdata(): void;
   getReplymarkupdata(): Uint8Array | string;
   getReplymarkupdata_asU8(): Uint8Array;
   getReplymarkupdata_asB64(): string;
@@ -1057,30 +893,24 @@ export class BotInlineMessage extends jspb.Message {
 export namespace BotInlineMessage {
   export type AsObject = {
     mediadata: Uint8Array | string,
-    body?: string,
+    body: string,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    replyto?: number,
-    replymarkup?: number,
+    replyto: number,
+    replymarkup: number,
     replymarkupdata: Uint8Array | string,
   }
 }
 
 export class InputBotInlineMessage extends jspb.Message {
-  hasInputmediadata(): boolean;
-  clearInputmediadata(): void;
   getInputmediadata(): Uint8Array | string;
   getInputmediadata_asU8(): Uint8Array;
   getInputmediadata_asB64(): string;
   setInputmediadata(value: Uint8Array | string): void;
 
-  hasNowebpage(): boolean;
-  clearNowebpage(): void;
-  getNowebpage(): boolean | undefined;
+  getNowebpage(): boolean;
   setNowebpage(value: boolean): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
   clearEntitiesList(): void;
@@ -1088,18 +918,12 @@ export class InputBotInlineMessage extends jspb.Message {
   setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
   addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasReplymarkup(): boolean;
-  clearReplymarkup(): void;
-  getReplymarkup(): number | undefined;
+  getReplymarkup(): number;
   setReplymarkup(value: number): void;
 
-  hasReplymarkupdata(): boolean;
-  clearReplymarkupdata(): void;
   getReplymarkupdata(): Uint8Array | string;
   getReplymarkupdata_asU8(): Uint8Array;
   getReplymarkupdata_asB64(): string;
@@ -1118,18 +942,16 @@ export class InputBotInlineMessage extends jspb.Message {
 export namespace InputBotInlineMessage {
   export type AsObject = {
     inputmediadata: Uint8Array | string,
-    nowebpage?: boolean,
-    body?: string,
+    nowebpage: boolean,
+    body: string,
     entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
-    replyto?: number,
-    replymarkup?: number,
+    replyto: number,
+    replymarkup: number,
     replymarkupdata: Uint8Array | string,
   }
 }
 
 export class BotToken extends jspb.Message {
-  hasToken(): boolean;
-  clearToken(): void;
   getToken(): Uint8Array | string;
   getToken_asU8(): Uint8Array;
   getToken_asB64(): string;
@@ -1152,14 +974,10 @@ export namespace BotToken {
 }
 
 export class BotRecalled extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -1174,25 +992,19 @@ export class BotRecalled extends jspb.Message {
 
 export namespace BotRecalled {
   export type AsObject = {
-    id?: number,
-    username?: string,
+    id: number,
+    username: string,
   }
 }
 
 export class BotCallbackAnswer extends jspb.Message {
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
+  getUrl(): string;
   setUrl(value: string): void;
 
-  hasMessage(): boolean;
-  clearMessage(): void;
-  getMessage(): string | undefined;
+  getMessage(): string;
   setMessage(value: string): void;
 
-  hasCachetime(): boolean;
-  clearCachetime(): void;
-  getCachetime(): number | undefined;
+  getCachetime(): number;
   setCachetime(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1207,9 +1019,9 @@ export class BotCallbackAnswer extends jspb.Message {
 
 export namespace BotCallbackAnswer {
   export type AsObject = {
-    url?: string,
-    message?: string,
-    cachetime?: number,
+    url: string,
+    message: string,
+    cachetime: number,
   }
 }
 
@@ -1218,6 +1030,9 @@ export class BotsMany extends jspb.Message {
   getBotsList(): Array<core_types_pb.BotInfo>;
   setBotsList(value: Array<core_types_pb.BotInfo>): void;
   addBots(value?: core_types_pb.BotInfo, index?: number): core_types_pb.BotInfo;
+
+  getEmpty(): boolean;
+  setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotsMany.AsObject;
@@ -1232,13 +1047,14 @@ export class BotsMany extends jspb.Message {
 export namespace BotsMany {
   export type AsObject = {
     botsList: Array<core_types_pb.BotInfo.AsObject>,
+    empty: boolean,
   }
 }
 
 export class BotGetCommands extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   serializeBinary(): Uint8Array;
@@ -1253,7 +1069,7 @@ export class BotGetCommands extends jspb.Message {
 
 export namespace BotGetCommands {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
   }
 }
 
@@ -1262,6 +1078,9 @@ export class BotCommandsMany extends jspb.Message {
   getCommandsList(): Array<core_types_pb.BotCommands>;
   setCommandsList(value: Array<core_types_pb.BotCommands>): void;
   addCommands(value?: core_types_pb.BotCommands, index?: number): core_types_pb.BotCommands;
+
+  getEmpty(): boolean;
+  setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotCommandsMany.AsObject;
@@ -1276,6 +1095,7 @@ export class BotCommandsMany extends jspb.Message {
 export namespace BotCommandsMany {
   export type AsObject = {
     commandsList: Array<core_types_pb.BotCommands.AsObject>,
+    empty: boolean,
   }
 }
 

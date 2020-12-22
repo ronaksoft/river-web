@@ -274,7 +274,7 @@
       bottom: 0;
       right: 0;
       width: 0;
-      z-index: 10000;
+      z-index: 1000;
       box-shadow: -12px 0 15px -9px rgba(96, 96, 96, 0.3) inset;
       overflow: hidden;
       transition: all 0.1s;
@@ -366,6 +366,17 @@
 
   &.with-panel {
     padding-left: 40px;
+
+    &::before {
+      position: absolute;
+      content: '';
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 40px;
+      background-color: var(--panel-color);
+      z-index: 101;
+    }
   }
 }
 
@@ -522,6 +533,11 @@ html[direction="rtl"] {
     &.with-panel {
       padding-right: 40px;
       padding-left: 0;
+
+      &::before {
+        left: auto;
+        right: 0;
+      }
     }
   }
 }
@@ -601,6 +617,10 @@ html[theme="dark"] {
   }
 
   .left-menu {
+    &.with-panel::before {
+      background-color: var(--dark-low);
+    }
+
     .left-panel {
       background-color: var(--dark-low);
     }
@@ -621,6 +641,16 @@ html[theme="dark-night"] {
           background-color: var(--dark-medium);
         }
       }
+    }
+  }
+
+  .left-menu {
+    &.with-panel::before {
+      background-color: var(--dark-low);
+    }
+
+    .left-panel {
+      background-color: var(--dark-low);
     }
   }
 }
@@ -656,6 +686,16 @@ html[theme="dark-blue"] {
           background-color: var(--dark-blue-medium);
         }
       }
+    }
+  }
+
+  .left-menu {
+    &.with-panel::before {
+      background-color: var(--dark-blue-low);
+    }
+
+    .left-panel {
+      background-color: var(--dark-blue-low);
     }
   }
 }

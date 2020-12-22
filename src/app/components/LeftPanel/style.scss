@@ -95,6 +95,8 @@
         color: var(--white);
         overflow: hidden;
         display: none;
+        opacity: 1;
+        transition: opacity 0.2s;
 
         .inner {
           white-space: nowrap;
@@ -122,6 +124,7 @@
         }
 
         .folder-name {
+          opacity: 1;
           display: block;
         }
 

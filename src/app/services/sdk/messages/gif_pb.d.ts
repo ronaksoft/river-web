@@ -7,9 +7,7 @@ import * as chat_messages_medias_pb from "./chat.messages.medias_pb";
 import * as core_types_pb from "./core.types_pb";
 
 export class GifGetSaved extends jspb.Message {
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): number | undefined;
+  getHash(): number;
   setHash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -24,14 +22,14 @@ export class GifGetSaved extends jspb.Message {
 
 export namespace GifGetSaved {
   export type AsObject = {
-    hash?: number,
+    hash: number,
   }
 }
 
 export class GifSave extends jspb.Message {
   hasDoc(): boolean;
   clearDoc(): void;
-  getDoc(): core_types_pb.InputDocument;
+  getDoc(): core_types_pb.InputDocument | undefined;
   setDoc(value?: core_types_pb.InputDocument): void;
 
   clearAttributesList(): void;
@@ -51,7 +49,7 @@ export class GifSave extends jspb.Message {
 
 export namespace GifSave {
   export type AsObject = {
-    doc: core_types_pb.InputDocument.AsObject,
+    doc?: core_types_pb.InputDocument.AsObject,
     attributesList: Array<chat_messages_medias_pb.DocumentAttribute.AsObject>,
   }
 }
@@ -59,7 +57,7 @@ export namespace GifSave {
 export class GifDelete extends jspb.Message {
   hasDoc(): boolean;
   clearDoc(): void;
-  getDoc(): core_types_pb.InputDocument;
+  getDoc(): core_types_pb.InputDocument | undefined;
   setDoc(value?: core_types_pb.InputDocument): void;
 
   serializeBinary(): Uint8Array;
@@ -74,19 +72,15 @@ export class GifDelete extends jspb.Message {
 
 export namespace GifDelete {
   export type AsObject = {
-    doc: core_types_pb.InputDocument.AsObject,
+    doc?: core_types_pb.InputDocument.AsObject,
   }
 }
 
 export class GifSearch extends jspb.Message {
-  hasQuery(): boolean;
-  clearQuery(): void;
-  getQuery(): string | undefined;
+  getQuery(): string;
   setQuery(value: string): void;
 
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): number | undefined;
+  getHash(): number;
   setHash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -101,15 +95,13 @@ export class GifSearch extends jspb.Message {
 
 export namespace GifSearch {
   export type AsObject = {
-    query?: string,
-    hash?: number,
+    query: string,
+    hash: number,
   }
 }
 
 export class FoundGifs extends jspb.Message {
-  hasNextoffset(): boolean;
-  clearNextoffset(): void;
-  getNextoffset(): number | undefined;
+  getNextoffset(): number;
   setNextoffset(value: number): void;
 
   clearGifsList(): void;
@@ -129,25 +121,23 @@ export class FoundGifs extends jspb.Message {
 
 export namespace FoundGifs {
   export type AsObject = {
-    nextoffset?: number,
+    nextoffset: number,
     gifsList: Array<FoundGif.AsObject>,
   }
 }
 
 export class FoundGif extends jspb.Message {
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
+  getUrl(): string;
   setUrl(value: string): void;
 
   hasDoc(): boolean;
   clearDoc(): void;
-  getDoc(): chat_messages_medias_pb.Document;
+  getDoc(): chat_messages_medias_pb.Document | undefined;
   setDoc(value?: chat_messages_medias_pb.Document): void;
 
   hasThumb(): boolean;
   clearThumb(): void;
-  getThumb(): chat_messages_medias_pb.Document;
+  getThumb(): chat_messages_medias_pb.Document | undefined;
   setThumb(value?: chat_messages_medias_pb.Document): void;
 
   serializeBinary(): Uint8Array;
@@ -162,16 +152,14 @@ export class FoundGif extends jspb.Message {
 
 export namespace FoundGif {
   export type AsObject = {
-    url?: string,
-    doc: chat_messages_medias_pb.Document.AsObject,
-    thumb: chat_messages_medias_pb.Document.AsObject,
+    url: string,
+    doc?: chat_messages_medias_pb.Document.AsObject,
+    thumb?: chat_messages_medias_pb.Document.AsObject,
   }
 }
 
 export class SavedGifs extends jspb.Message {
-  hasHash(): boolean;
-  clearHash(): void;
-  getHash(): number | undefined;
+  getHash(): number;
   setHash(value: number): void;
 
   clearDocsList(): void;
@@ -179,9 +167,7 @@ export class SavedGifs extends jspb.Message {
   setDocsList(value: Array<chat_messages_medias_pb.MediaDocument>): void;
   addDocs(value?: chat_messages_medias_pb.MediaDocument, index?: number): chat_messages_medias_pb.MediaDocument;
 
-  hasNotmodified(): boolean;
-  clearNotmodified(): void;
-  getNotmodified(): boolean | undefined;
+  getNotmodified(): boolean;
   setNotmodified(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -196,9 +182,9 @@ export class SavedGifs extends jspb.Message {
 
 export namespace SavedGifs {
   export type AsObject = {
-    hash?: number,
+    hash: number,
     docsList: Array<chat_messages_medias_pb.MediaDocument.AsObject>,
-    notmodified?: boolean,
+    notmodified: boolean,
   }
 }
 

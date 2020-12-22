@@ -38,8 +38,8 @@ import {Modality, ModalityService} from "kk-modality";
 
 import './App.scss';
 
-export const C_VERSION = '0.36.4';
-export const C_ELECTRON_VERSIONS = ['10.1.1', '8.5.2'];
+export const C_VERSION = '1.0.0';
+export const C_ELECTRON_VERSIONS = ['11.1.0', '8.5.2'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {
@@ -241,7 +241,7 @@ class App extends React.Component<{}, IState> {
                     <SnackbarProvider maxSnack={3}>
                         {Routes}
                     </SnackbarProvider>
-                    <Modality queueSize={5} dialogClasses={{root: 'confirm-dialog', paper: 'confirm-dialog-paper'}}/>
+                    <Modality queueSize={5} dialogClasses={{paper: 'confirm-dialog-paper', root: 'confirm-dialog'}}/>
                 </MuiThemeProvider>
             </div>
         );
@@ -254,13 +254,11 @@ class App extends React.Component<{}, IState> {
         this.mainRepo.destroyDB().then(() => {
             const serverMode = localStorage.getItem(C_LOCALSTORAGE.ServerMode) || 'prod';
             const testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
-            const testFileUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || '';
             const serverKeys = localStorage.getItem(C_LOCALSTORAGE.ServerKeys) || '';
             const verboseMode = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) || '';
             localStorage.clear();
             localStorage.setItem(C_LOCALSTORAGE.ServerMode, serverMode);
             localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, testUrl);
-            localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, testFileUrl);
             if (serverKeys) {
                 localStorage.setItem(C_LOCALSTORAGE.ServerKeys, serverKeys);
             }

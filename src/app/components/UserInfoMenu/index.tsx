@@ -48,6 +48,7 @@ interface IProps {
     onClose: (e: any) => void;
     peer: InputPeer | null;
     teamId: string;
+    onError: (text: string) => void;
 }
 
 interface IState {
@@ -64,7 +65,7 @@ interface IState {
     user: IUser | null;
 }
 
-export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
+export const isMuted = (notifySettings?: Partial<PeerNotifySettings.AsObject>) => {
     if (!notifySettings) {
         return false;
     } else if (notifySettings.muteuntil === -1) {
@@ -239,9 +240,11 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             label={i18n.t('general.phone')}
                                             fullWidth={true}
                                             inputProps={{
+                                                inputMode: "tel",
                                                 maxLength: 32,
                                             }}
                                             value={phone}
+                                            type="tel"
                                             className="input-edit"
                                             onChange={this.phoneChangeHandler}
                                         />}
@@ -381,6 +384,12 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         if (!user) {
             return;
         }
+
+        if (firstname.length === 0) {
+            this.props.onError(i18n.t('settings.first_name_is_required'));
+            return;
+        }
+
         if ((user.username || '') !== '' && phone === '') {
             const inputUser = new InputUser();
             inputUser.setAccesshash(user.accesshash || '');
@@ -402,14 +411,11 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 });
             });
         } else {
-            if (phone === '') {
-                this.setState({
-                    edit: false,
-                    firstname: user.firstname || '',
-                    lastname: user.lastname || '',
-                });
+            if ((user.phone || '') === '' && phone === '') {
+                this.props.onError(i18n.t('settings.phone_is_required'));
                 return;
             }
+
             const contacts: PhoneContact.AsObject[] = [];
             contacts.push({
                 clientid: isInContact ? user.clientid : String(UniqueId.getRandomId()),
@@ -420,6 +426,11 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             this.apiManager.contactImport(true, contacts).then((data) => {
                 const items: any[] = [];
                 data.usersList.forEach((item) => {
+                    const contact = data.contactusersList.find(o => o.id === item.id);
+                    if (contact) {
+                        item.firstname = contact.firstname;
+                        item.lastname = contact.lastname;
+                    }
                     items.push(item);
                 });
                 this.userRepo.importBulk(true, items, false, this.callerId);

@@ -28,7 +28,6 @@ import {FixedSizeList} from "react-window";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
 import {getMessageTitle} from "./utils";
-import UserRepo from "../../repository/user";
 import ChipInput from "material-ui-chip-input";
 import Chip from "@material-ui/core/Chip";
 import LabelRepo from "../../repository/label";
@@ -41,6 +40,7 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import TopPeer from '../TopPeer';
 import {TopPeerType} from "../../repository/topPeer";
 import {GetPeerName} from "../../repository/dialog";
+import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
 
@@ -85,7 +85,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private containerRef: any;
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
-    private readonly userId: string = '';
     private labelRepo: LabelRepo;
     private labelMap: { [key: number]: number } = {};
     private broadcaster: Broadcaster;
@@ -93,6 +92,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private labelPopoverRef: LabelPopover | undefined;
     private scrollbarsRef: Scrollbars | undefined;
     private firstTimeInit: boolean = false;
+    private topPeerRef: TopPeer | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -117,7 +117,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.searchDebounce = debounce(this.search, 512);
         this.isMobile = IsMobile.isAny();
         this.hasScrollbar = getScrollbarWidth() > 0;
-        this.userId = UserRepo.getInstance().getCurrentUserId();
         this.labelRepo = LabelRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
 
@@ -174,6 +173,12 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.getLabelList();
         this.eventReferences.push(this.broadcaster.listen('Label_DB_Updated', this.getLabelList));
         this.firstTimeInit = true;
+    }
+
+    public reloadTopPeer() {
+        if (this.topPeerRef) {
+            this.topPeerRef.reload();
+        }
     }
 
     public componentWillUnmount() {
@@ -249,38 +254,24 @@ class Dialog extends React.PureComponent<IProps, IState> {
         });
     }
 
+    public closeSearch() {
+        this.closeSearchHandler();
+    }
+
     public scrollTop() {
         // const el = document.querySelector((this.isMobile || !this.hasScrollbar) ? '.dialog-container' : '.dialogs-inner > div > div:first-child');
         const el = document.querySelector('.dialogs-inner > div > div:first-child');
         if (el) {
             const options: any = {
-                // duration of the scroll per 1000px, default 500
-                speed: 500,
-
-                // minimum duration of the scroll
-                minDuration: 128,
-
-                // maximum duration of the scroll
-                maxDuration: 256,
-
+                cancelOnUserAction: true,
                 // @ts-ignore
                 element: el,
-
-                // Additional offset value that gets added to the desiredOffset.  This is
-                // useful when passing a DOM object as the desiredOffset and wanting to adjust
-                // for an fixed nav or to add some padding.
-                offset: 0,
-
-                // should animated scroll be canceled on user scroll/keypress
-                // if set to "false" user input will be disabled until animated scroll is complete
-                // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
-                cancelOnUserAction: true,
-
-                // Set passive event Listeners to be true by default. Stops Chrome from complaining.
-                passive: true,
-
-                // Scroll horizontally rather than vertically (which is the default)
                 horizontal: false,
+                maxDuration: 256,
+                minDuration: 128,
+                offset: 0,
+                passive: true,
+                speed: 500,
             };
             animateScrollTo(0, options);
         }
@@ -326,7 +317,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                                    onApply={this.labelPopoverApplyHandler} closeAfterSelect={true}
                                                    onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
-                {searchEnable && <TopPeer teamId={this.props.teamId} type={TopPeerType.Search} visible={focus}/>}
+                {searchEnable && <TopPeer ref={this.topPeerRefHandler} teamId={this.props.teamId} type={TopPeerType.Search} visible={focus}/>}
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
                     <AutoSizer>
@@ -445,7 +436,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                 direction={this.rtl ? 'ltr' : 'rtl'}
                             >
                                 {({index, style}) => {
-                                    return this.rowRender({index, style, key: index});
+                                    return this.rowRender({index, key: index, style});
                                 }}
                             </FixedSizeList>);
                         }}
@@ -481,7 +472,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                         style={listStyle}
                                     >
                                         {({index, style}) => {
-                                            return this.rowRender({index, style, key: index});
+                                            return this.rowRender({index, key: index, style});
                                         }}
                                     </FixedSizeList>
                                 </Scrollbars>
@@ -590,7 +581,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
         const peerType = searchItems[moreIndex].peertype;
         const dialog = searchItems[moreIndex];
         if (!dialog) {
-            return;
+            return null;
         }
         const muted = isMuted(dialog.notifysettings);
         if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
@@ -721,7 +712,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     preview_icon: messageTitle.icon,
                     preview_me: msg.me,
                     preview_rtl: msg.rtl,
-                    saved_messages: msg.peerid === this.userId,
+                    saved_messages: msg.peerid === currentUserId,
                     sender_id: msg.senderid,
                     teamid: msg.teamid || '0',
                     topmessageid: msg.id,
@@ -888,6 +879,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
         //         focus: false,
         //     });
         // }, 256);
+    }
+
+    private topPeerRefHandler = (ref: any) => {
+        this.topPeerRef = ref;
     }
 }
 

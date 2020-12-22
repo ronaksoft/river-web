@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -442,7 +444,7 @@ proto.msg.UsersMany.toObject = function(includeInstance, msg) {
   var f, obj = {
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     core_types_pb.User.toObject, includeInstance),
-    empty: (f = jspb.Message.getBooleanField(msg, 5)) == null ? undefined : f
+    empty: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -525,8 +527,8 @@ proto.msg.UsersMany.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.User.serializeBinaryToWriter
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
+  f = message.getEmpty();
+  if (f) {
     writer.writeBool(
       5,
       f
@@ -587,25 +589,7 @@ proto.msg.UsersMany.prototype.getEmpty = function() {
  * @return {!proto.msg.UsersMany} returns this
  */
 proto.msg.UsersMany.prototype.setEmpty = function(value) {
-  return jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.UsersMany} returns this
- */
-proto.msg.UsersMany.prototype.clearEmpty = function() {
-  return jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.UsersMany.prototype.hasEmpty = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 

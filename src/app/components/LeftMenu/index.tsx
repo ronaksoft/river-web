@@ -290,7 +290,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl, hasUpdate, teamId, withPanel} = this.state;
         const className = (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (overlayMode ? ' label-mode' : '') + (dialogHover ? ' dialog-hover' : '') + (shrunkMenu ? ' shrunk-menu' : '');
         return (
-            <div className={'left-menu' + (withPanel ? ' with-panel' : '')}>
+            <div className={'left-menu' + ((withPanel && teamList.length !== 1) ? ' with-panel' : '')}>
                 {withPanel && teamList.length > 1 &&
                 <LeftPanel ref={this.leftPanelRefHandler} selectedTeamId={teamId}
                            onTeamChange={this.leftPanelTeamChangeHandler}/>}
@@ -509,6 +509,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             });
         } else {
             if (this.dialogRef) {
+                this.dialogRef.closeSearch();
                 this.dialogRef.scrollTop();
             }
             if (this.contactsMenuRef) {
@@ -591,8 +592,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private connectionStatus() {
         if (!this.props.mobileView || !this.state.connectionStatus) {
-            return;
+            return null;
         }
+
         let body: any = '';
         if (!this.state.isOnline) {
             body = <span>{i18n.t('status.waiting_for_network')}</span>;
@@ -601,8 +603,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         } else if (this.state.isUpdating) {
             body = <span>{i18n.t('status.updating')}</span>;
         }
+
         if (body === '') {
-            return;
+            return null;
         } else {
             return (<div className={'status-alert' + (this.state.connectionStatusHide ? ' hide' : '')}>{body}</div>);
         }
@@ -739,6 +742,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 if (this.props.onTeamChange) {
                     this.props.onTeamChange(item);
                 }
+                if (this.dialogRef) {
+                    this.dialogRef.reloadTopPeer();
+                }
             }, 10);
         }
     }
@@ -769,6 +775,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     if (this.state.leftMenu === 'contacts' && this.contactsMenuRef) {
                         this.contactsMenuRef.reload(true);
                     }
+                }
+                if (this.dialogRef) {
+                    this.dialogRef.reloadTopPeer();
                 }
             }, 10);
         }

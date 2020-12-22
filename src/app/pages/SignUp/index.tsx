@@ -38,7 +38,7 @@ import {AuthAuthorization} from "../../services/sdk/messages/auth_pb";
 import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/accounts_pb";
 import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
-import {EventFocus, EventWasmInit, EventWebSocketOpen} from "../../services/events";
+import {EventFocus, EventWasmInit, EventSocketReady} from "../../services/events";
 import {detect} from 'detect-browser';
 import {C_VERSION} from "../../../App";
 import SessionDialog from "../../components/SessionDialog";
@@ -85,7 +85,7 @@ interface IState {
     tries: number;
     workspace: string;
     workspaceError: string;
-    workspaceInfo: SystemInfo.AsObject;
+    workspaceInfo: Partial<SystemInfo.AsObject>;
 }
 
 class SignUp extends React.Component<IProps, IState> {
@@ -134,7 +134,7 @@ class SignUp extends React.Component<IProps, IState> {
             sendToPhone: false,
             step,
             tries: 0,
-            workspace: 'cyrus.river.im',
+            workspace: 'edge.river.im',
             workspaceError: '',
             workspaceInfo: {},
         };
@@ -144,7 +144,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         window.addEventListener(EventWasmInit, this.wasmInitHandler);
-        window.addEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.addEventListener(EventSocketReady, this.wsOpenHandler);
         window.addEventListener(EventFocus, this.windowFocusHandler);
         this.apiManager.loadConnInfo();
         if (this.apiManager.getConnInfo().AuthID === '0' && this.props.match.params.mode !== 'workspace') {
@@ -179,7 +179,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     public componentWillUnmount() {
         window.removeEventListener(EventWasmInit, this.wasmInitHandler);
-        window.removeEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.removeEventListener(EventSocketReady, this.wsOpenHandler);
         window.removeEventListener(EventFocus, this.windowFocusHandler);
         clearInterval(this.countdownInterval);
         this.eventReferences.forEach((canceller) => {
@@ -476,12 +476,11 @@ class SignUp extends React.Component<IProps, IState> {
                     this.initPhoneInput();
                 });
                 if (res.storageurl && res.storageurl.length > 0) {
-                    localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, res.storageurl || '');
                     localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
                 const localWorkspace = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl);
-                if ((localWorkspace || 'cyrus.river.im') !== workspace) {
+                if ((localWorkspace || 'edge.river.im') !== workspace) {
                     this.workspaceManager.closeWire();
                     localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
                     localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, workspace);
@@ -845,7 +844,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     private dispatchWSOpenEvent() {
         setTimeout(() => {
-            const event = new CustomEvent(EventWebSocketOpen);
+            const event = new CustomEvent(EventSocketReady);
             window.dispatchEvent(event);
         }, 100);
     }
@@ -869,11 +868,7 @@ class SignUp extends React.Component<IProps, IState> {
                 }, () => {
                     this.focus('f-phone');
                 });
-                if (res.storageurl && res.storageurl.length > 0) {
-                    localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, res.storageurl || '');
-                    // localStorage.setItem(C_LOCALSTORAGE.ServerMode, 'other');
-                    FileManager.getInstance().setUrl(res.storageurl);
-                }
+                // FileManager.getInstance().setUrl(this.state.workspace);
             });
         }
     }

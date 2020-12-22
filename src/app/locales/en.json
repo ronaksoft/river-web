@@ -68,7 +68,8 @@
     "clear": "Clear",
     "open": "Open",
     "via_gif": " via @",
-    "all": "All"
+    "all": "All",
+    "select_all": "Select All"
   },
   "chat": {
     "search": "Search",
@@ -123,7 +124,8 @@
     "seen_by": "Seen by",
     "seen_by_placeholder": "no one",
     "pin": "Pin",
-    "unpin": "Unpin"
+    "unpin": "Unpin",
+    "last_admin_error": "You cannot leave, no admin left!"
   },
   "peer_info": {
     "notify_settings": "Notify Settings",
@@ -147,7 +149,8 @@
     "add_member": "Add member",
     "leave_the": "Leave the",
     "participants": "{0} participants",
-    "no_shared_media": "No Shared Media Here!"
+    "no_shared_media": "No Shared Media Here!",
+    "user_cannot_be_added": "You cannot add {0}"
   },
   "dialog": {
     "search": "Search...",
@@ -230,6 +233,7 @@
     "set_as_avatar": "Set as avatar",
     "remove_photo": "Remove Photo",
     "change_photo": "Change Photo",
+    "set_a_new_photo": "Set a new photo",
     "debug_mode": "Debug Mode",
     "set_test_url": "Set test URL",
     "test_url": "Test URL",
@@ -265,6 +269,12 @@
     "contacts": "Contacts",
     "remove_synced_contacts": "Remove Synced Contacts",
     "synced_contacts_removed_successfully": "Synced contacts removed successfully",
+    "first_name_is_required": "Firstname is required",
+    "phone_is_required": "Phone is required",
+    "cannot_update_username": "Error in updating username",
+    "error_in_updating_profile": "Error in updating profile",
+    "cannot_update_profile_picture": "Error in updating profile picture",
+    "cannot_update_group_picture": "Error in updating group picture",
     "change_phone_number": {
       "title": "Change phone number",
       "text": "You can change your River number here. Your Account and all your cloud data - messages, media, contacts etc. will be moved to the new number.",
@@ -286,6 +296,7 @@
       "hint": "Hint",
       "has_password_note": "Two Step Verification is activated on your account, You can change your pass phrase or deactivated it anytime.",
       "pass_is_incorrect": "Password is incorrect",
+      "password_successfully_activated": "Password successfully activated",
       "password_successfully_changed": "Password successfully changed",
       "password_successfully_removed": "Password successfully removed",
       "enable_recovery": "Enable Recovery",
@@ -413,6 +424,7 @@
     "updating": "Updating...",
     "last_seen": "Last seen",
     "recently": "recently",
+    "a_long_time_ago": "a long time ago",
     "online": "online",
     "typing": "typing...",
     "typing_2": "typing",
@@ -509,5 +521,16 @@
   },
   "reaction": {
     "list": "Reaction List"
+  },
+  "call": {
+    "call": "Call",
+    "is_calling": "Is calling...",
+    "is_ringing": "Is ringing...",
+    "rate_this_call": "Rate this call",
+    "muted": "Muted",
+    "call_back": "Call Back",
+    "call_timeout": "no answer",
+    "is_not_available": "is not available",
+    "audio_muted": "Microphone is muted"
   }
 }

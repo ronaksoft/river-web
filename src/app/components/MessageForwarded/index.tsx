@@ -22,7 +22,7 @@ interface IProps {
 }
 
 const MessageForwarded = ({message, peer, onDoubleClick}: IProps) => {
-    if (!message.fwdsenderid || message.fwdsenderid === '0') {
+    if ((!message.fwdsenderid || message.fwdsenderid === '0') && !message.fwd) {
         return null;
     }
     return (
@@ -41,6 +41,6 @@ const MessageForwarded = ({message, peer, onDoubleClick}: IProps) => {
             </div>
         </div>
     );
-}
+};
 
 export default MessageForwarded;

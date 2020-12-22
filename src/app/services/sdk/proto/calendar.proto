@@ -1,13 +1,16 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
+
+option go_package = '.;msg';
+
 
 // CalendarGetEvents
 // @Function
 // @Return: CalendarEventInstances
 message CalendarGetEvents {
-    required int64 From = 1;
-    required int64 To = 2;
-    optional int32 Filter = 3;
+    int64 From = 1;
+    int64 To = 2;
+    int32 Filter = 3;
 }
 
 // RecurringPeriod
@@ -23,15 +26,15 @@ enum RecurringPeriod {
 // @Function
 // @Return: CalendarEventDescriptor
 message CalendarSetEvent {
-    required string Name = 1;
-    required int64 Date = 2;
-    required int64 StartRange = 3;
-    required int64 Duration = 4;
-    required bool Recurring = 5;
-    optional RecurringPeriod Period = 6;
-    optional bool AllDay = 7;
-    optional bool Team = 8;
-    optional bool Global = 9;
+    string Name = 1;
+    int64 Date = 2;
+    int64 StartRange = 3;
+    int64 Duration = 4;
+    bool Recurring = 5;
+    RecurringPeriod Period = 6;
+    bool AllDay = 7;
+    bool Team = 8;
+    bool Global = 9;
 }
 
 // CalendarEditPolicy
@@ -45,38 +48,38 @@ enum CalendarEditPolicy {
 // @Function
 // @Return: CalendarEvent
 message CalendarEditEvent {
-    required int64 EventID = 1;
-    required string Name = 2;
-    required int64 Date = 3;
-    required int64 StartRange = 4;
-    required int64 Duration = 5;
-    required bool Recurring = 6;
-    optional RecurringPeriod Period = 7;
-    optional bool AllDay = 8;
-    required CalendarEditPolicy Policy = 9;
+    int64 EventID = 1;
+    string Name = 2;
+    int64 Date = 3;
+    int64 StartRange = 4;
+    int64 Duration = 5;
+    bool Recurring = 6;
+    RecurringPeriod Period = 7;
+    bool AllDay = 8;
+    CalendarEditPolicy Policy = 9;
 }
 
 // CalendarRemoveEvent
 // @Function
 // @Return: Bool
 message CalendarRemoveEvent {
-    required int64 EventID = 1;
+    int64 EventID = 1;
 }
 
 // CalendarEvent
 message CalendarEvent {
-    required int64 ID = 1;
-    required string Name = 2;
-    required bool Recurring = 3;
-    optional RecurringPeriod Period = 4;
-    optional bool AllDay = 5;
+    int64 ID = 1;
+    string Name = 2;
+    bool Recurring = 3;
+    RecurringPeriod Period = 4;
+    bool AllDay = 5;
 }
 
 // CalendarEventInstance
 message CalendarEventInstance {
-    required int64 ID = 1;
-    required int64 EventID = 2;
-    required int64 Start = 3;
-    required int64 End = 4;
-    optional string Colour = 5;
+    int64 ID = 1;
+    int64 EventID = 2;
+    int64 Start = 3;
+    int64 End = 4;
+    string Colour = 5;
 }

@@ -19,7 +19,7 @@ export default class MediaDB {
     }
 
     private static instance: MediaDB;
-    private db: DexieMediaDB;
+    private readonly db: DexieMediaDB;
 
     private constructor() {
         this.db = new DexieMediaDB();

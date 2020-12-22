@@ -82,7 +82,7 @@ const getSystemMessageTitle = (message: IMessage) => {
 };
 
 export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean, maxChars?: number): { text: string, icon: number } => {
-    const messageIcon: { text: string, icon: number } = {text: '', icon: C_MESSAGE_ICON.None};
+    const messageIcon: { text: string, icon: number } = {icon: C_MESSAGE_ICON.None, text: ''};
     if (message.messagetype === C_MESSAGE_TYPE.System) {
         messageIcon.text = getSystemMessageTitle(message);
     } else {

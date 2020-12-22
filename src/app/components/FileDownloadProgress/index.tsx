@@ -15,9 +15,10 @@ import {getHumanReadableSize} from '../MessageFile';
 import {InputFileLocation} from "../../services/sdk/messages/core.types_pb";
 
 import './style.scss';
+import {SetOptional} from "type-fest";
 
 interface IProps {
-    fileLocation: InputFileLocation.AsObject;
+    fileLocation: SetOptional<InputFileLocation.AsObject, 'version'>;
     className?: string;
     fileSize?: number;
     onAction?: (cmd: 'cancel' | 'download') => void;
@@ -31,7 +32,7 @@ interface IState {
 }
 
 class FileDownloadProgress extends React.PureComponent<IProps, IState> {
-    public static getUid(fileLocation: InputFileLocation.AsObject) {
+    public static getUid(fileLocation: SetOptional<InputFileLocation.AsObject, 'version'>) {
         return `${fileLocation.fileid}_${fileLocation.clusterid}`;
     }
 

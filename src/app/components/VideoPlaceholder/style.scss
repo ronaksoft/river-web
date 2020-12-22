@@ -1,0 +1,95 @@
+/*
+    Creation Time: 2020 - Nov - 17
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.video-placeholder {
+  position: relative;
+  height: 100%;
+  width: 100%;
+
+  .video-img {
+    position: relative;
+    width: 100%;
+    filter: brightness(0.5);
+
+    &.upper {
+      z-index: 10;
+    }
+  }
+
+  video {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .video-user-placeholder {
+    position: absolute;
+    height: 96px;
+    width: 96px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 15;
+    transition: all 0.2s;
+  }
+
+  .video-audio-muted {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 0;
+    line-height: 1.3em;
+    background-color: var(--glass-dark-ultra);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+
+    svg {
+      font-size: 16px;
+      margin: 0 6px;
+    }
+  }
+}
+
+.video-swap {
+  .video-placeholder {
+    background-color: var(--dark);
+
+    &.no-image {
+      height: 96px;
+    }
+
+    .video-img {
+      &.upper {
+        z-index: 17;
+      }
+    }
+
+    .video-user-placeholder {
+      height: 48px;
+      width: 48px;
+      z-index: 18;
+    }
+
+    .video-audio-muted {
+      padding: 4px 0;
+      font-size: 12px;
+
+      svg {
+        font-size: 12px;
+        margin: 0 3px;
+      }
+    }
+  }
+}

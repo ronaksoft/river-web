@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -69,7 +71,7 @@ proto.msg.PasswordAlgorithmVer6A.toObject = function(includeInstance, msg) {
   var f, obj = {
     salt1: msg.getSalt1_asB64(),
     salt2: msg.getSalt2_asB64(),
-    g: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    g: jspb.Message.getFieldWithDefault(msg, 3, 0),
     p: msg.getP_asB64()
   };
 
@@ -152,29 +154,29 @@ proto.msg.PasswordAlgorithmVer6A.prototype.serializeBinary = function() {
  */
 proto.msg.PasswordAlgorithmVer6A.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getSalt1_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       1,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getSalt2_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getG();
+  if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getP_asU8();
+  if (f.length > 0) {
     writer.writeBytes(
       4,
       f
@@ -184,7 +186,7 @@ proto.msg.PasswordAlgorithmVer6A.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required bytes Salt1 = 1;
+ * optional bytes Salt1 = 1;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.PasswordAlgorithmVer6A.prototype.getSalt1 = function() {
@@ -193,7 +195,7 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getSalt1 = function() {
 
 
 /**
- * required bytes Salt1 = 1;
+ * optional bytes Salt1 = 1;
  * This is a type-conversion wrapper around `getSalt1()`
  * @return {string}
  */
@@ -204,7 +206,7 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getSalt1_asB64 = function() {
 
 
 /**
- * required bytes Salt1 = 1;
+ * optional bytes Salt1 = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSalt1()`
@@ -221,30 +223,12 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getSalt1_asU8 = function() {
  * @return {!proto.msg.PasswordAlgorithmVer6A} returns this
  */
 proto.msg.PasswordAlgorithmVer6A.prototype.setSalt1 = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PasswordAlgorithmVer6A} returns this
- */
-proto.msg.PasswordAlgorithmVer6A.prototype.clearSalt1 = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PasswordAlgorithmVer6A.prototype.hasSalt1 = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bytes Salt2 = 2;
+ * optional bytes Salt2 = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.PasswordAlgorithmVer6A.prototype.getSalt2 = function() {
@@ -253,7 +237,7 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getSalt2 = function() {
 
 
 /**
- * required bytes Salt2 = 2;
+ * optional bytes Salt2 = 2;
  * This is a type-conversion wrapper around `getSalt2()`
  * @return {string}
  */
@@ -264,7 +248,7 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getSalt2_asB64 = function() {
 
 
 /**
- * required bytes Salt2 = 2;
+ * optional bytes Salt2 = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSalt2()`
@@ -281,30 +265,12 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getSalt2_asU8 = function() {
  * @return {!proto.msg.PasswordAlgorithmVer6A} returns this
  */
 proto.msg.PasswordAlgorithmVer6A.prototype.setSalt2 = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PasswordAlgorithmVer6A} returns this
- */
-proto.msg.PasswordAlgorithmVer6A.prototype.clearSalt2 = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PasswordAlgorithmVer6A.prototype.hasSalt2 = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int32 G = 3;
+ * optional int32 G = 3;
  * @return {number}
  */
 proto.msg.PasswordAlgorithmVer6A.prototype.getG = function() {
@@ -317,30 +283,12 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getG = function() {
  * @return {!proto.msg.PasswordAlgorithmVer6A} returns this
  */
 proto.msg.PasswordAlgorithmVer6A.prototype.setG = function(value) {
-  return jspb.Message.setField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.PasswordAlgorithmVer6A} returns this
- */
-proto.msg.PasswordAlgorithmVer6A.prototype.clearG = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PasswordAlgorithmVer6A.prototype.hasG = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * required bytes P = 4;
+ * optional bytes P = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.PasswordAlgorithmVer6A.prototype.getP = function() {
@@ -349,7 +297,7 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getP = function() {
 
 
 /**
- * required bytes P = 4;
+ * optional bytes P = 4;
  * This is a type-conversion wrapper around `getP()`
  * @return {string}
  */
@@ -360,7 +308,7 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getP_asB64 = function() {
 
 
 /**
- * required bytes P = 4;
+ * optional bytes P = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getP()`
@@ -377,25 +325,7 @@ proto.msg.PasswordAlgorithmVer6A.prototype.getP_asU8 = function() {
  * @return {!proto.msg.PasswordAlgorithmVer6A} returns this
  */
 proto.msg.PasswordAlgorithmVer6A.prototype.setP = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.PasswordAlgorithmVer6A} returns this
- */
-proto.msg.PasswordAlgorithmVer6A.prototype.clearP = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.PasswordAlgorithmVer6A.prototype.hasP = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 

@@ -21,7 +21,7 @@ export default class UserDB {
     }
 
     private static instance: UserDB;
-    private db: DexieUserDB;
+    private readonly db: DexieUserDB;
     private users: { [key: string]: IUser } = {};
     private groups: { [key: string]: IGroup } = {};
 

@@ -2,8 +2,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  flex-direction: row-reverse;
+  justify-content: flex-start;
+  flex-direction: row;
   user-select: none;
   height: 0;
   z-index: 100;
@@ -69,7 +69,7 @@
 .bubble-wrapper {
   &.you {
     .message-reaction {
-      justify-content: flex-start;
+      justify-content: flex-end;
     }
   }
 }
@@ -132,6 +132,21 @@ html[mac="1"] {
 
         .reaction-emoji {
           transform: translateY(2px);
+        }
+      }
+    }
+  }
+}
+
+@media(-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+  html[mac="1"] {
+    .message-reaction {
+      .reaction-item {
+        .reaction-wrapper {
+          .reaction-emoji {
+            transform: translate(0.11em, 0.11em) scale(1.2);
+          }
         }
       }
     }

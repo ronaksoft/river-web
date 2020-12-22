@@ -65,7 +65,7 @@ class AboutDialog extends React.Component<IProps, IState> {
                     </div>
                     <div className="copyright-container">
                         <img src={ronakLogo} alt="ronak-logo"/>
-                        <span>Copyright © 2016 - 2019 Ronak Software Group</span>
+                        <span>Copyright © 2016 - 2020 Ronak Software Group</span>
                     </div>
                 </div>
             </Dialog>

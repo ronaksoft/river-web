@@ -146,69 +146,43 @@ export namespace SystemGetResponse {
 }
 
 export class ClientUsage extends jspb.Message {
-  hasYear(): boolean;
-  clearYear(): void;
-  getYear(): number | undefined;
+  getYear(): number;
   setYear(value: number): void;
 
-  hasMonth(): boolean;
-  clearMonth(): void;
-  getMonth(): number | undefined;
+  getMonth(): number;
   setMonth(value: number): void;
 
-  hasDay(): boolean;
-  clearDay(): void;
-  getDay(): number | undefined;
+  getDay(): number;
   setDay(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
-  hasForegroundtime(): boolean;
-  clearForegroundtime(): void;
-  getForegroundtime(): number | undefined;
+  getForegroundtime(): number;
   setForegroundtime(value: number): void;
 
-  hasAvgresponsetime(): boolean;
-  clearAvgresponsetime(): void;
-  getAvgresponsetime(): number | undefined;
+  getAvgresponsetime(): number;
   setAvgresponsetime(value: number): void;
 
-  hasTotalrequests(): boolean;
-  clearTotalrequests(): void;
-  getTotalrequests(): number | undefined;
+  getTotalrequests(): number;
   setTotalrequests(value: number): void;
 
-  hasReceivedmessages(): boolean;
-  clearReceivedmessages(): void;
-  getReceivedmessages(): number | undefined;
+  getReceivedmessages(): number;
   setReceivedmessages(value: number): void;
 
-  hasSentmessages(): boolean;
-  clearSentmessages(): void;
-  getSentmessages(): number | undefined;
+  getSentmessages(): number;
   setSentmessages(value: number): void;
 
-  hasReceivedmedia(): boolean;
-  clearReceivedmedia(): void;
-  getReceivedmedia(): number | undefined;
+  getReceivedmedia(): number;
   setReceivedmedia(value: number): void;
 
-  hasSentmedia(): boolean;
-  clearSentmedia(): void;
-  getSentmedia(): number | undefined;
+  getSentmedia(): number;
   setSentmedia(value: number): void;
 
-  hasUploadbytes(): boolean;
-  clearUploadbytes(): void;
-  getUploadbytes(): number | undefined;
+  getUploadbytes(): number;
   setUploadbytes(value: number): void;
 
-  hasDownloadbytes(): boolean;
-  clearDownloadbytes(): void;
-  getDownloadbytes(): number | undefined;
+  getDownloadbytes(): number;
   setDownloadbytes(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -223,91 +197,63 @@ export class ClientUsage extends jspb.Message {
 
 export namespace ClientUsage {
   export type AsObject = {
-    year?: number,
-    month?: number,
-    day?: number,
-    userid?: number,
-    foregroundtime?: number,
-    avgresponsetime?: number,
-    totalrequests?: number,
-    receivedmessages?: number,
-    sentmessages?: number,
-    receivedmedia?: number,
-    sentmedia?: number,
-    uploadbytes?: number,
-    downloadbytes?: number,
+    year: number,
+    month: number,
+    day: number,
+    userid: number,
+    foregroundtime: number,
+    avgresponsetime: number,
+    totalrequests: number,
+    receivedmessages: number,
+    sentmessages: number,
+    receivedmedia: number,
+    sentmedia: number,
+    uploadbytes: number,
+    downloadbytes: number,
   }
 }
 
 export class SystemConfig extends jspb.Message {
-  hasGifbot(): boolean;
-  clearGifbot(): void;
-  getGifbot(): string | undefined;
+  getGifbot(): string;
   setGifbot(value: string): void;
 
-  hasWikibot(): boolean;
-  clearWikibot(): void;
-  getWikibot(): string | undefined;
+  getWikibot(): string;
   setWikibot(value: string): void;
 
-  hasTestmode(): boolean;
-  clearTestmode(): void;
-  getTestmode(): boolean | undefined;
+  getTestmode(): boolean;
   setTestmode(value: boolean): void;
 
-  hasPhonecallenabled(): boolean;
-  clearPhonecallenabled(): void;
-  getPhonecallenabled(): boolean | undefined;
+  getPhonecallenabled(): boolean;
   setPhonecallenabled(value: boolean): void;
 
-  hasExpireon(): boolean;
-  clearExpireon(): void;
-  getExpireon(): number | undefined;
+  getExpireon(): number;
   setExpireon(value: number): void;
 
-  hasGroupmaxsize(): boolean;
-  clearGroupmaxsize(): void;
-  getGroupmaxsize(): number | undefined;
+  getGroupmaxsize(): number;
   setGroupmaxsize(value: number): void;
 
-  hasForwardedmaxcount(): boolean;
-  clearForwardedmaxcount(): void;
-  getForwardedmaxcount(): number | undefined;
+  getForwardedmaxcount(): number;
   setForwardedmaxcount(value: number): void;
 
-  hasOnlineupdateperiodinsec(): boolean;
-  clearOnlineupdateperiodinsec(): void;
-  getOnlineupdateperiodinsec(): number | undefined;
+  getOnlineupdateperiodinsec(): number;
   setOnlineupdateperiodinsec(value: number): void;
 
-  hasEdittimelimitinsec(): boolean;
-  clearEdittimelimitinsec(): void;
-  getEdittimelimitinsec(): number | undefined;
+  getEdittimelimitinsec(): number;
   setEdittimelimitinsec(value: number): void;
 
-  hasRevoketimelimitinsec(): boolean;
-  clearRevoketimelimitinsec(): void;
-  getRevoketimelimitinsec(): number | undefined;
+  getRevoketimelimitinsec(): number;
   setRevoketimelimitinsec(value: number): void;
 
-  hasPinneddialogsmaxcount(): boolean;
-  clearPinneddialogsmaxcount(): void;
-  getPinneddialogsmaxcount(): number | undefined;
+  getPinneddialogsmaxcount(): number;
   setPinneddialogsmaxcount(value: number): void;
 
-  hasUrlprefix(): boolean;
-  clearUrlprefix(): void;
-  getUrlprefix(): number | undefined;
+  getUrlprefix(): number;
   setUrlprefix(value: number): void;
 
-  hasMessagemaxlength(): boolean;
-  clearMessagemaxlength(): void;
-  getMessagemaxlength(): number | undefined;
+  getMessagemaxlength(): number;
   setMessagemaxlength(value: number): void;
 
-  hasCaptionmaxlength(): boolean;
-  clearCaptionmaxlength(): void;
-  getCaptionmaxlength(): number | undefined;
+  getCaptionmaxlength(): number;
   setCaptionmaxlength(value: number): void;
 
   clearDcsList(): void;
@@ -315,30 +261,31 @@ export class SystemConfig extends jspb.Message {
   setDcsList(value: Array<DataCenter>): void;
   addDcs(value?: DataCenter, index?: number): DataCenter;
 
-  hasMaxlabels(): boolean;
-  clearMaxlabels(): void;
-  getMaxlabels(): number | undefined;
+  getMaxlabels(): number;
   setMaxlabels(value: number): void;
 
-  hasToppeerdecayrate(): boolean;
-  clearToppeerdecayrate(): void;
-  getToppeerdecayrate(): number | undefined;
+  getToppeerdecayrate(): number;
   setToppeerdecayrate(value: number): void;
 
-  hasToppeermaxstep(): boolean;
-  clearToppeermaxstep(): void;
-  getToppeermaxstep(): number | undefined;
+  getToppeermaxstep(): number;
   setToppeermaxstep(value: number): void;
 
-  hasMaxactivesessions(): boolean;
-  clearMaxactivesessions(): void;
-  getMaxactivesessions(): number | undefined;
+  getMaxactivesessions(): number;
   setMaxactivesessions(value: number): void;
 
   clearReactionsList(): void;
   getReactionsList(): Array<string>;
   setReactionsList(value: Array<string>): void;
   addReactions(value: string, index?: number): string;
+
+  getMaxuploadsize(): number;
+  setMaxuploadsize(value: number): void;
+
+  getMaxuploadpartsize(): number;
+  setMaxuploadpartsize(value: number): void;
+
+  getMaxuploadparts(): number;
+  setMaxuploadparts(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SystemConfig.AsObject;
@@ -352,53 +299,46 @@ export class SystemConfig extends jspb.Message {
 
 export namespace SystemConfig {
   export type AsObject = {
-    gifbot?: string,
-    wikibot?: string,
-    testmode?: boolean,
-    phonecallenabled?: boolean,
-    expireon?: number,
-    groupmaxsize?: number,
-    forwardedmaxcount?: number,
-    onlineupdateperiodinsec?: number,
-    edittimelimitinsec?: number,
-    revoketimelimitinsec?: number,
-    pinneddialogsmaxcount?: number,
-    urlprefix?: number,
-    messagemaxlength?: number,
-    captionmaxlength?: number,
+    gifbot: string,
+    wikibot: string,
+    testmode: boolean,
+    phonecallenabled: boolean,
+    expireon: number,
+    groupmaxsize: number,
+    forwardedmaxcount: number,
+    onlineupdateperiodinsec: number,
+    edittimelimitinsec: number,
+    revoketimelimitinsec: number,
+    pinneddialogsmaxcount: number,
+    urlprefix: number,
+    messagemaxlength: number,
+    captionmaxlength: number,
     dcsList: Array<DataCenter.AsObject>,
-    maxlabels?: number,
-    toppeerdecayrate?: number,
-    toppeermaxstep?: number,
-    maxactivesessions?: number,
-    reactionsList?: Array<string>,
+    maxlabels: number,
+    toppeerdecayrate: number,
+    toppeermaxstep: number,
+    maxactivesessions: number,
+    reactionsList: Array<string>,
+    maxuploadsize: number,
+    maxuploadpartsize: number,
+    maxuploadparts: number,
   }
 }
 
 export class DataCenter extends jspb.Message {
-  hasIp(): boolean;
-  clearIp(): void;
-  getIp(): string | undefined;
+  getIp(): string;
   setIp(value: string): void;
 
-  hasPort(): boolean;
-  clearPort(): void;
-  getPort(): number | undefined;
+  getPort(): number;
   setPort(value: number): void;
 
-  hasHttp(): boolean;
-  clearHttp(): void;
-  getHttp(): boolean | undefined;
+  getHttp(): boolean;
   setHttp(value: boolean): void;
 
-  hasWebsocket(): boolean;
-  clearWebsocket(): void;
-  getWebsocket(): boolean | undefined;
+  getWebsocket(): boolean;
   setWebsocket(value: boolean): void;
 
-  hasQuic(): boolean;
-  clearQuic(): void;
-  getQuic(): boolean | undefined;
+  getQuic(): boolean;
   setQuic(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -413,11 +353,11 @@ export class DataCenter extends jspb.Message {
 
 export namespace DataCenter {
   export type AsObject = {
-    ip?: string,
-    port?: number,
-    http?: boolean,
-    websocket?: boolean,
-    quic?: boolean,
+    ip: string,
+    port: number,
+    http: boolean,
+    websocket: boolean,
+    quic: boolean,
   }
 }
 
@@ -427,14 +367,10 @@ export class SystemSalts extends jspb.Message {
   setSaltsList(value: Array<number>): void;
   addSalts(value: number, index?: number): number;
 
-  hasStartsfrom(): boolean;
-  clearStartsfrom(): void;
-  getStartsfrom(): number | undefined;
+  getStartsfrom(): number;
   setStartsfrom(value: number): void;
 
-  hasDuration(): boolean;
-  clearDuration(): void;
-  getDuration(): number | undefined;
+  getDuration(): number;
   setDuration(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -450,45 +386,31 @@ export class SystemSalts extends jspb.Message {
 export namespace SystemSalts {
   export type AsObject = {
     saltsList: Array<number>,
-    startsfrom?: number,
-    duration?: number,
+    startsfrom: number,
+    duration: number,
   }
 }
 
 export class AppUpdate extends jspb.Message {
-  hasAvailable(): boolean;
-  clearAvailable(): void;
-  getAvailable(): boolean | undefined;
+  getAvailable(): boolean;
   setAvailable(value: boolean): void;
 
-  hasMandatory(): boolean;
-  clearMandatory(): void;
-  getMandatory(): boolean | undefined;
+  getMandatory(): boolean;
   setMandatory(value: boolean): void;
 
-  hasIdentifier(): boolean;
-  clearIdentifier(): void;
-  getIdentifier(): string | undefined;
+  getIdentifier(): string;
   setIdentifier(value: string): void;
 
-  hasVersionname(): boolean;
-  clearVersionname(): void;
-  getVersionname(): string | undefined;
+  getVersionname(): string;
   setVersionname(value: string): void;
 
-  hasDownloadurl(): boolean;
-  clearDownloadurl(): void;
-  getDownloadurl(): string | undefined;
+  getDownloadurl(): string;
   setDownloadurl(value: string): void;
 
-  hasDescription(): boolean;
-  clearDescription(): void;
-  getDescription(): string | undefined;
+  getDescription(): string;
   setDescription(value: string): void;
 
-  hasDisplayinterval(): boolean;
-  clearDisplayinterval(): void;
-  getDisplayinterval(): number | undefined;
+  getDisplayinterval(): number;
   setDisplayinterval(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -503,35 +425,27 @@ export class AppUpdate extends jspb.Message {
 
 export namespace AppUpdate {
   export type AsObject = {
-    available?: boolean,
-    mandatory?: boolean,
-    identifier?: string,
-    versionname?: string,
-    downloadurl?: string,
-    description?: string,
-    displayinterval?: number,
+    available: boolean,
+    mandatory: boolean,
+    identifier: string,
+    versionname: string,
+    downloadurl: string,
+    description: string,
+    displayinterval: number,
   }
 }
 
 export class SystemInfo extends jspb.Message {
-  hasWorkgroupname(): boolean;
-  clearWorkgroupname(): void;
-  getWorkgroupname(): string | undefined;
+  getWorkgroupname(): string;
   setWorkgroupname(value: string): void;
 
-  hasBigphotourl(): boolean;
-  clearBigphotourl(): void;
-  getBigphotourl(): string | undefined;
+  getBigphotourl(): string;
   setBigphotourl(value: string): void;
 
-  hasSmallphotourl(): boolean;
-  clearSmallphotourl(): void;
-  getSmallphotourl(): string | undefined;
+  getSmallphotourl(): string;
   setSmallphotourl(value: string): void;
 
-  hasStorageurl(): boolean;
-  clearStorageurl(): void;
-  getStorageurl(): string | undefined;
+  getStorageurl(): string;
   setStorageurl(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -546,17 +460,15 @@ export class SystemInfo extends jspb.Message {
 
 export namespace SystemInfo {
   export type AsObject = {
-    workgroupname?: string,
-    bigphotourl?: string,
-    smallphotourl?: string,
-    storageurl?: string,
+    workgroupname: string,
+    bigphotourl: string,
+    smallphotourl: string,
+    storageurl: string,
   }
 }
 
 export class SystemServerTime extends jspb.Message {
-  hasTimestamp(): boolean;
-  clearTimestamp(): void;
-  getTimestamp(): number | undefined;
+  getTimestamp(): number;
   setTimestamp(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -571,7 +483,7 @@ export class SystemServerTime extends jspb.Message {
 
 export namespace SystemServerTime {
   export type AsObject = {
-    timestamp?: number,
+    timestamp: number,
   }
 }
 

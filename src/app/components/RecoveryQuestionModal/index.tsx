@@ -234,7 +234,7 @@ class RecoveryQuestionModal extends React.Component<IProps, IState> {
                 cnt++;
             }
         });
-        return answer ? (cnt < 4) : (cnt < 6);
+        return answer ? (cnt < 5) : (cnt < 6);
     }
 }
 

@@ -16,15 +16,21 @@ import {IUser} from '../../repository/user/interface';
 import i18n from '../../services/i18n';
 
 import './style.scss';
+import {localize} from "../../services/utilities/localize";
 
 interface IProps {
     onDone: (contacts: IUser[], caption: string) => void;
     teamId: string;
     title?: string;
+    groupId?: string;
+    sendIcon?: any;
+    limit?: number;
+    selectAll?: boolean;
 }
 
 interface IState {
     caption: string;
+    defaultCount: number;
     hiddenContacts: IUser[];
     open: boolean;
     page: string;
@@ -32,11 +38,14 @@ interface IState {
 }
 
 class ContactPicker extends React.Component<IProps, IState> {
+    private contactListRef: ContactList | undefined;
+
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             caption: '',
+            defaultCount: 0,
             hiddenContacts: [],
             open: false,
             page: '1',
@@ -52,7 +61,9 @@ class ContactPicker extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, open, recipients, hiddenContacts} = this.state;
+        const {page, open, recipients, hiddenContacts, defaultCount} = this.state;
+        const showSelectAll = Boolean(defaultCount && (this.props.limit || 0) >= defaultCount && recipients.length !== defaultCount);
+        const limit = this.props.limit || 0;
         return (
             <Dialog
                 className="contact-picker"
@@ -77,12 +88,25 @@ class ContactPicker extends React.Component<IProps, IState> {
                                     </IconButton>
                                     {this.props.title || i18n.t('general.choose_recipients')}
                                 </div>
-                                <ContactList onChange={this.addRecipientChangeHandler} mode="chip"
-                                             teamId={this.props.teamId} hiddenContacts={hiddenContacts}/>
-                                {Boolean(recipients.length > 0) && <div className="actions-bar">
-                                    <div className="add-action send" onClick={this.doneHandler}>
-                                        <SendRounded/>
+                                <ContactList ref={this.contactListRefHandler} onChange={this.addRecipientChangeHandler}
+                                             mode="chip" groupId={this.props.groupId} teamId={this.props.teamId}
+                                             hiddenContacts={hiddenContacts} hideYou={Boolean(this.props.groupId)}
+                                             onDefaultLoad={this.contactListDefaultLoadHandler}
+                                             disableCheckSelected={this.props.selectAll}/>
+                                {Boolean(recipients.length > 0 && (!limit || limit >= recipients.length)) &&
+                                <div className="actions-bar">
+                                    <div
+                                        className={'add-action send' + (Boolean(this.props.sendIcon) ? ' no-animation' : '')}
+                                        onClick={this.doneHandler}>
+                                        {this.props.sendIcon || <SendRounded/>}
                                     </div>
+                                </div>}
+                                {Boolean(limit && this.props.selectAll) && <div className="dialog-footer">
+                                    <div
+                                        className={'counter' + (recipients.length > limit ? ' exceeded' : '')}>{`${localize(recipients.length)}/${localize(this.props.limit || 0)}`}</div>
+                                    {showSelectAll && this.props.selectAll &&
+                                    <div className="select-all"
+                                         onClick={this.selectAllHandler}>{i18n.t('general.select_all')}</div>}
                                 </div>}
                             </div>
                         </div>
@@ -110,6 +134,25 @@ class ContactPicker extends React.Component<IProps, IState> {
         if (this.props.onDone) {
             this.props.onDone(this.state.recipients, this.state.caption);
             this.handleClose();
+        }
+    }
+
+    private contactListDefaultLoadHandler = (count: number) => {
+        if (!this.props.selectAll) {
+            return;
+        }
+        this.setState({
+            defaultCount: count - 1,
+        });
+    }
+
+    private contactListRefHandler = (ref: any) => {
+        this.contactListRef = ref;
+    }
+
+    private selectAllHandler = () => {
+        if (this.contactListRef) {
+            this.contactListRef.selectAll();
         }
     }
 }

@@ -6,23 +6,15 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class FileSavePart extends jspb.Message {
-  hasFileid(): boolean;
-  clearFileid(): void;
-  getFileid(): string | undefined;
+  getFileid(): string;
   setFileid(value: string): void;
 
-  hasPartid(): boolean;
-  clearPartid(): void;
-  getPartid(): number | undefined;
+  getPartid(): number;
   setPartid(value: number): void;
 
-  hasTotalparts(): boolean;
-  clearTotalparts(): void;
-  getTotalparts(): number | undefined;
+  getTotalparts(): number;
   setTotalparts(value: number): void;
 
-  hasBytes(): boolean;
-  clearBytes(): void;
   getBytes(): Uint8Array | string;
   getBytes_asU8(): Uint8Array;
   getBytes_asB64(): string;
@@ -40,9 +32,9 @@ export class FileSavePart extends jspb.Message {
 
 export namespace FileSavePart {
   export type AsObject = {
-    fileid?: string,
-    partid?: number,
-    totalparts?: number,
+    fileid: string,
+    partid: number,
+    totalparts: number,
     bytes: Uint8Array | string,
   }
 }
@@ -50,17 +42,13 @@ export namespace FileSavePart {
 export class FileGet extends jspb.Message {
   hasLocation(): boolean;
   clearLocation(): void;
-  getLocation(): core_types_pb.InputFileLocation;
+  getLocation(): core_types_pb.InputFileLocation | undefined;
   setLocation(value?: core_types_pb.InputFileLocation): void;
 
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): number | undefined;
+  getOffset(): number;
   setOffset(value: number): void;
 
-  hasLimit(): boolean;
-  clearLimit(): void;
-  getLimit(): number | undefined;
+  getLimit(): number;
   setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -75,23 +63,19 @@ export class FileGet extends jspb.Message {
 
 export namespace FileGet {
   export type AsObject = {
-    location: core_types_pb.InputFileLocation.AsObject,
-    offset?: number,
-    limit?: number,
+    location?: core_types_pb.InputFileLocation.AsObject,
+    offset: number,
+    limit: number,
   }
 }
 
 export class FileGetBySha256 extends jspb.Message {
-  hasSha256(): boolean;
-  clearSha256(): void;
   getSha256(): Uint8Array | string;
   getSha256_asU8(): Uint8Array;
   getSha256_asB64(): string;
   setSha256(value: Uint8Array | string): void;
 
-  hasFilesize(): boolean;
-  clearFilesize(): void;
-  getFilesize(): number | undefined;
+  getFilesize(): number;
   setFilesize(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -107,31 +91,23 @@ export class FileGetBySha256 extends jspb.Message {
 export namespace FileGetBySha256 {
   export type AsObject = {
     sha256: Uint8Array | string,
-    filesize?: number,
+    filesize: number,
   }
 }
 
 export class File extends jspb.Message {
-  hasType(): boolean;
-  clearType(): void;
-  getType(): FileType | undefined;
+  getType(): FileType;
   setType(value: FileType): void;
 
-  hasModifiedtime(): boolean;
-  clearModifiedtime(): void;
-  getModifiedtime(): number | undefined;
+  getModifiedtime(): number;
   setModifiedtime(value: number): void;
 
-  hasBytes(): boolean;
-  clearBytes(): void;
   getBytes(): Uint8Array | string;
   getBytes_asU8(): Uint8Array;
   getBytes_asB64(): string;
   setBytes(value: Uint8Array | string): void;
 
-  hasMd5hash(): boolean;
-  clearMd5hash(): void;
-  getMd5hash(): string | undefined;
+  getMd5hash(): string;
   setMd5hash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -146,10 +122,10 @@ export class File extends jspb.Message {
 
 export namespace File {
   export type AsObject = {
-    type?: FileType,
-    modifiedtime?: number,
+    type: FileType,
+    modifiedtime: number,
     bytes: Uint8Array | string,
-    md5hash?: string,
+    md5hash: string,
   }
 }
 

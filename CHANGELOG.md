@@ -1,4 +1,60 @@
-## 0.36.4
+## 1.0.0
+* 🎉 Video and Voice call
+
+## 0.36.16-call
+* Safari optimization
+* A bug fixed in draft
+* Minor bugs fixed
+
+## 0.36.15-call
+* Minor bugs fixed
+
+## 0.36.14-call
+* Modals max height modified
+* Guaranteed commands added in API Manager
+
+## 0.36.13-call
+* Overall improvements
+* Voice recorder bug fixed
+
+## 0.36.12-call
+* Known bugs fixed
+
+## 0.36.11-call
+* Panel improvements
+* Reaction improvements
+* DB destroy bug fixed
+* Call mute notice implemented
+
+## 0.36.10-call
+* About updated
+* Minor bugs fixed
+
+## 0.36.9-call
+* Minor bugs fixed
+
+## 0.36.8-call
+* Rony compatible version
+* Worker new mechanism
+* WASM rewrite
+
+## 0.36.7-call
+* WebWorkers bug updated
+* Group call recipient selector updated
+* CodeViewer is now support more languages
+* Known bugs fixed
+
+## 0.36.6-call
+* Call updated
+* Call timeout and busy implemented
+* Call ringing tone implemented
+
+## 0.36.5-call
+* Call updated
+
+## 0.36.4-call
+* Call implemented
+* Known bugs fixed
 * More retries in bad network while syncing
 
 ## 0.36.3

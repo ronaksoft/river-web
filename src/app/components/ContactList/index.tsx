@@ -36,6 +36,10 @@ import {InputAdornment} from "@material-ui/core";
 import {PeerType} from "../../services/sdk/messages/core.types_pb";
 
 import './style.scss';
+import GroupRepo from "../../repository/group";
+import {IGroup} from "../../repository/group/interface";
+import {OfficialIcon} from "../SVG/official";
+import {currentUserId} from "../../services/sdk";
 
 interface IProps {
     className?: string;
@@ -49,6 +53,9 @@ interface IProps {
     globalSearch?: boolean;
     teamId: string;
     hideYou?: boolean;
+    groupId?: string;
+    showOfficialBadge?: boolean;
+    onDefaultLoad?: (count: number) => void;
 }
 
 interface IState {
@@ -117,11 +124,13 @@ class ContactList extends React.Component<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private readonly rtl: boolean = false;
     private extraHidden: IUser[] = [];
+    private groupRepo: GroupRepo;
 
     constructor(props: IProps) {
         super(props);
 
         this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
 
         if (props.hideYou) {
             this.extraHidden = [{
@@ -190,39 +199,40 @@ class ContactList extends React.Component<IProps, IState> {
         this.getDefault();
     }
 
+    public selectAll() {
+        const {selectedContacts} = this.state;
+        this.defaultContact.forEach((contact) => {
+            if (findIndex(selectedContacts, {id: contact.id || ''}) > -1 || contact.id === currentUserId) {
+                return;
+            }
+            selectedContacts.push(contact);
+        });
+        if (this.list) {
+            this.list.resetAfterIndex(0, false);
+        }
+        this.setState({
+            contacts: categorizeContact(this.getTrimmedList(selectedContacts)),
+            selectedContacts,
+        }, () => {
+            this.dispatchContactChange();
+        });
+    }
+
     public scrollTop() {
         const className = this.props.className ? `.${this.props.className}` : '';
         const el = document.querySelector((this.isMobile || !this.hasScrollbar) ? `.contact-container${className}` : `.contacts-inner${className} > div > div:first-child`);
         // const el = document.querySelector(`.contacts-inner${className} > div > div:first-child`);
         if (el) {
             const options: any = {
-                // duration of the scroll per 1000px, default 500
-                speed: 500,
-
-                // minimum duration of the scroll
-                minDuration: 128,
-
-                // maximum duration of the scroll
-                maxDuration: 256,
-
+                cancelOnUserAction: true,
                 // @ts-ignore
                 element: el,
-
-                // Additional offset value that gets added to the desiredOffset.  This is
-                // useful when passing a DOM object as the desiredOffset and wanting to adjust
-                // for an fixed nav or to add some padding.
-                offset: 0,
-
-                // should animated scroll be canceled on user scroll/keypress
-                // if set to "false" user input will be disabled until animated scroll is complete
-                // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
-                cancelOnUserAction: true,
-
-                // Set passive event Listeners to be true by default. Stops Chrome from complaining.
-                passive: true,
-
-                // Scroll horizontally rather than vertically (which is the default)
                 horizontal: false,
+                maxDuration: 256,
+                minDuration: 128,
+                offset: 0,
+                passive: true,
+                speed: 500,
             };
             animateScrollTo(0, options);
         }
@@ -306,7 +316,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 className={'contact-container ' + (this.props.className || '')}
                                 direction={this.rtl ? 'ltr' : 'rtl'}
                             >{({index, style}) => {
-                                return this.rowRender({index, style, key: index});
+                                return this.rowRender({index, key: index, style});
                             }}
                             </VariableSizeList>
                         )}
@@ -338,7 +348,7 @@ class ContactList extends React.Component<IProps, IState> {
                                     className="contact-container"
                                     style={listStyle}
                                 >{({index, style}) => {
-                                    return this.rowRender({index, style, key: index});
+                                    return this.rowRender({index, key: index, style});
                                 }}
                                 </VariableSizeList>
                             </Scrollbars>
@@ -394,6 +404,7 @@ class ContactList extends React.Component<IProps, IState> {
                         </div>
                     );
                 } else {
+                    const {showOfficialBadge} = this.props;
                     return (
                         <div style={style} key={contact.id || ''} className="contact-item">
                             <Link to={`/chat/${this.props.teamId}/${contact.id}_${PeerType.PEERUSER}`}>
@@ -401,7 +412,8 @@ class ContactList extends React.Component<IProps, IState> {
                                     <UserAvatar id={contact.id || ''}/>
                                 </span>
                                 <span className="name">
-                                    <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
+                                    <span className="inner">{`${contact.firstname} ${contact.lastname}`}
+                                        {showOfficialBadge && contact.official && <OfficialIcon/>}</span>
                                     <LastSeen className="last-seen" id={contact.id || ''} teamId={this.props.teamId}/>
                                 </span>
                                 <span
@@ -453,7 +465,16 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Get all contacts */
-    private getDefault(fill?: boolean) {
+    private getDefault() {
+        const {groupId} = this.props;
+        if (groupId) {
+            this.getDefaultGroupMembers(groupId);
+        } else {
+            this.getDefaultContacts();
+        }
+    }
+
+    private getDefaultGroupMembers(groupId: string) {
         const {loading} = this.state;
         if (loading) {
             return;
@@ -461,20 +482,51 @@ class ContactList extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        const fn = (us: IUser[]) => {
+        const fn = (cache: boolean) => (group: IGroup) => {
+            const us: IUser[] = (group.participantList || []).map((member) => ({
+                accesshash: member.accesshash,
+                firstname: member.firstname,
+                id: member.userid,
+                lastname: member.lastname,
+                photo: member.photo,
+                username: member.username,
+            }));
             this.defaultContact = us;
             this.contactsRes = clone(us);
-            if (fill !== false) {
-                if (this.list) {
-                    this.list.resetAfterIndex(0, false);
-                }
-                this.setState({
-                    contacts: categorizeContact(this.getTrimmedList([])),
-                    loading: false,
-                });
+            if (this.props.onDefaultLoad) {
+                this.props.onDefaultLoad(us.length);
             }
+            this.setState({
+                contacts: categorizeContact(this.getTrimmedList([])),
+                loading: false,
+            });
         };
-        this.userRepo.getAllContacts(this.props.teamId, fn).then(fn);
+        this.groupRepo.getFull(this.props.teamId, groupId, fn(true), true).then(fn(false));
+    }
+
+    private getDefaultContacts() {
+        const {loading} = this.state;
+        if (loading) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
+        const fn = (cache: boolean) => (us: IUser[]) => {
+            this.defaultContact = us;
+            this.contactsRes = clone(us);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
+            if (this.props.onDefaultLoad) {
+                this.props.onDefaultLoad(us.length);
+            }
+            this.setState({
+                contacts: categorizeContact(this.getTrimmedList([])),
+                loading: false,
+            });
+        };
+        this.userRepo.getAllContacts(this.props.teamId, fn(true)).then(fn(false));
     }
 
     /* Searches the given string */
@@ -496,6 +548,25 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
+        const {groupId} = this.props;
+        if (groupId) {
+            this.searchGroupMembers(text);
+        } else {
+            this.searchContacts(text);
+        }
+    }
+
+    private searchGroupMembers(text: string) {
+        const reg = new RegExp(text || '', 'gi');
+        this.contactsRes = clone(this.defaultContact.filter((u) => {
+            return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(`${u.firstname} ${u.lastname}`));
+        }));
+        this.setState({
+            contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
+        });
+    }
+
+    private searchContacts(text: string) {
         this.userRepo.getManyCache(this.props.teamId, true, {keyword: text, limit: 12}).then((res) => {
             this.contactsRes = clone(res || []);
             if (this.list) {
@@ -616,7 +687,7 @@ class ContactList extends React.Component<IProps, IState> {
     /* Context menu items renderer */
     private contextMenuItem() {
         if (!this.props.onContextMenuAction) {
-            return;
+            return null;
         }
         const {contacts, moreIndex} = this.state;
         if (!contacts[moreIndex]) {

@@ -25,19 +25,27 @@ const intersectRange = (r1: ITypedRange, r2: ITypedRange): ITypedRange[] | null 
     // Non zero-length ranges
     if ((start <= otherStart) && (otherStart < end) && (end < otherEnd)) {
         if (start !== otherStart) {
-            return [{start, end: otherStart, types: r1.types}, {start: otherStart, end, types}, {start: end, end: otherEnd, types: r2.types}];
+            return [{end: otherStart, start, types: r1.types}, {end, start: otherStart, types}, {
+                end: otherEnd,
+                start: end,
+                types: r2.types
+            }];
         } else {
-            return [{start: otherStart, end, types}, {start: end, end: otherEnd, types: r2.types}];
+            return [{end, start: otherStart, types}, {end: otherEnd, start: end, types: r2.types}];
         }
     } else if ((start <= otherStart) && (otherStart <= otherEnd) && (otherEnd <= end)) {
         if (start === otherStart && end === otherEnd) {
-            return [{start: otherStart, end: otherEnd, types}];
+            return [{end: otherEnd, start: otherStart, types}];
         } else if (start === otherStart && end !== otherEnd) {
-            return [{start: otherStart, end: otherEnd, types}, {start: otherEnd, end, types: r2.types}];
+            return [{end: otherEnd, start: otherStart, types}, {end, start: otherEnd, types: r2.types}];
         } else if (start !== otherStart && end === otherEnd) {
-            return [{start, end: otherStart, types: r1.types}, {start: otherStart, end: otherEnd, types}];
+            return [{end: otherStart, start, types: r1.types}, {end: otherEnd, start: otherStart, types}];
         } else {
-            return [{start, end: otherStart, types: r1.types}, {start: otherStart, end: otherEnd, types}, {start: otherEnd, end, types: r2.types}];
+            return [{end: otherStart, start, types: r1.types}, {
+                end: otherEnd,
+                start: otherStart,
+                types
+            }, {end, start: otherEnd, types: r2.types}];
         }
     }
 

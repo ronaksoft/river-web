@@ -19,7 +19,7 @@ export default class DialogDB {
     }
 
     private static instance: DialogDB;
-    private db: DexieDialogDB;
+    private readonly db: DexieDialogDB;
 
     private constructor() {
         this.db = new DexieDialogDB();

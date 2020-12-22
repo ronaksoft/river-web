@@ -9,8 +9,9 @@
 
 import {IMessage} from '../message/interface';
 import {Dialog} from "../../services/sdk/messages/core.types_pb";
+import {PartialDeep} from "type-fest";
 
-export interface IDialog extends Dialog.AsObject {
+export interface IDialog extends PartialDeep<Dialog.AsObject> {
     action_code?: number;
     action_data?: any;
     force?: boolean;

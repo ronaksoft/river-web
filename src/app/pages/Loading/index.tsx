@@ -19,6 +19,7 @@ import DevTools from "../../components/DevTools";
 import {C_VERSION} from "../../../App";
 
 import './style.scss';
+import {EventAuthProgress, EventSocketReady} from "../../services/events";
 
 interface IProps {
     match?: any;
@@ -56,9 +57,8 @@ class Loading extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        window.addEventListener('wasmInit', this.wasmInitHandler);
-        window.addEventListener('authProgress', this.authProgressHandler);
-        window.addEventListener('fnStarted', this.fnStartedHandler);
+        window.addEventListener(EventAuthProgress, this.authProgressHandler);
+        window.addEventListener(EventSocketReady, this.fnStartedHandler);
         this.apiManager.loadConnInfo();
         if ((this.apiManager.getConnInfo().UserID || 0) > 0) {
             this.props.history.push('/chat/0/null');
@@ -76,9 +76,8 @@ class Loading extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('wasmInit', this.wasmInitHandler);
-        window.removeEventListener('authProgress', this.authProgressHandler);
-        window.removeEventListener('fnStarted', this.fnStartedHandler);
+        window.removeEventListener(EventAuthProgress, this.authProgressHandler);
+        window.removeEventListener(EventSocketReady, this.fnStartedHandler);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
@@ -159,10 +158,6 @@ class Loading extends React.Component<IProps, IState> {
         }
         this.setState({percent});
         this.tm = setTimeout(this.increase, 10);
-    }
-
-    private wasmInitHandler = () => {
-        // this.apiManager.authRecall('0');
     }
 
     private authProgressHandler = (event: any) => {

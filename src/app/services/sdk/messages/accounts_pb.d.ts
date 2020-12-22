@@ -8,12 +8,12 @@ import * as core_types_pb from "./core.types_pb";
 export class AccountSetNotifySettings extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   hasSettings(): boolean;
   clearSettings(): void;
-  getSettings(): core_types_pb.PeerNotifySettings;
+  getSettings(): core_types_pb.PeerNotifySettings | undefined;
   setSettings(value?: core_types_pb.PeerNotifySettings): void;
 
   serializeBinary(): Uint8Array;
@@ -28,15 +28,15 @@ export class AccountSetNotifySettings extends jspb.Message {
 
 export namespace AccountSetNotifySettings {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
-    settings: core_types_pb.PeerNotifySettings.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
+    settings?: core_types_pb.PeerNotifySettings.AsObject,
   }
 }
 
 export class AccountGetNotifySettings extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
+  getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
   serializeBinary(): Uint8Array;
@@ -51,44 +51,30 @@ export class AccountGetNotifySettings extends jspb.Message {
 
 export namespace AccountGetNotifySettings {
   export type AsObject = {
-    peer: core_types_pb.InputPeer.AsObject,
+    peer?: core_types_pb.InputPeer.AsObject,
   }
 }
 
 export class AccountRegisterDevice extends jspb.Message {
-  hasToken(): boolean;
-  clearToken(): void;
-  getToken(): string | undefined;
+  getToken(): string;
   setToken(value: string): void;
 
-  hasDevicemodel(): boolean;
-  clearDevicemodel(): void;
-  getDevicemodel(): string | undefined;
+  getDevicemodel(): string;
   setDevicemodel(value: string): void;
 
-  hasSystemversion(): boolean;
-  clearSystemversion(): void;
-  getSystemversion(): string | undefined;
+  getSystemversion(): string;
   setSystemversion(value: string): void;
 
-  hasAppversion(): boolean;
-  clearAppversion(): void;
-  getAppversion(): string | undefined;
+  getAppversion(): string;
   setAppversion(value: string): void;
 
-  hasLangcode(): boolean;
-  clearLangcode(): void;
-  getLangcode(): string | undefined;
+  getLangcode(): string;
   setLangcode(value: string): void;
 
-  hasTokentype(): boolean;
-  clearTokentype(): void;
-  getTokentype(): core_types_pb.PushTokenProvider | undefined;
+  getTokentype(): core_types_pb.PushTokenProvider;
   setTokentype(value: core_types_pb.PushTokenProvider): void;
 
-  hasClientid(): boolean;
-  clearClientid(): void;
-  getClientid(): string | undefined;
+  getClientid(): string;
   setClientid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -103,25 +89,21 @@ export class AccountRegisterDevice extends jspb.Message {
 
 export namespace AccountRegisterDevice {
   export type AsObject = {
-    token?: string,
-    devicemodel?: string,
-    systemversion?: string,
-    appversion?: string,
-    langcode?: string,
-    tokentype?: core_types_pb.PushTokenProvider,
-    clientid?: string,
+    token: string,
+    devicemodel: string,
+    systemversion: string,
+    appversion: string,
+    langcode: string,
+    tokentype: core_types_pb.PushTokenProvider,
+    clientid: string,
   }
 }
 
 export class AccountUnregisterDevice extends jspb.Message {
-  hasTokentype(): boolean;
-  clearTokentype(): void;
-  getTokentype(): number | undefined;
+  getTokentype(): number;
   setTokentype(value: number): void;
 
-  hasToken(): boolean;
-  clearToken(): void;
-  getToken(): string | undefined;
+  getToken(): string;
   setToken(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -136,25 +118,19 @@ export class AccountUnregisterDevice extends jspb.Message {
 
 export namespace AccountUnregisterDevice {
   export type AsObject = {
-    tokentype?: number,
-    token?: string,
+    tokentype: number,
+    token: string,
   }
 }
 
 export class AccountUpdateProfile extends jspb.Message {
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasBio(): boolean;
-  clearBio(): void;
-  getBio(): string | undefined;
+  getBio(): string;
   setBio(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -169,16 +145,14 @@ export class AccountUpdateProfile extends jspb.Message {
 
 export namespace AccountUpdateProfile {
   export type AsObject = {
-    firstname?: string,
-    lastname?: string,
-    bio?: string,
+    firstname: string,
+    lastname: string,
+    bio: string,
   }
 }
 
 export class AccountCheckUsername extends jspb.Message {
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -193,14 +167,12 @@ export class AccountCheckUsername extends jspb.Message {
 
 export namespace AccountCheckUsername {
   export type AsObject = {
-    username?: string,
+    username: string,
   }
 }
 
 export class AccountUpdateUsername extends jspb.Message {
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -215,19 +187,17 @@ export class AccountUpdateUsername extends jspb.Message {
 
 export namespace AccountUpdateUsername {
   export type AsObject = {
-    username?: string,
+    username: string,
   }
 }
 
 export class AccountUploadPhoto extends jspb.Message {
   hasFile(): boolean;
   clearFile(): void;
-  getFile(): core_types_pb.InputFile;
+  getFile(): core_types_pb.InputFile | undefined;
   setFile(value?: core_types_pb.InputFile): void;
 
-  hasReturnobject(): boolean;
-  clearReturnobject(): void;
-  getReturnobject(): boolean | undefined;
+  getReturnobject(): boolean;
   setReturnobject(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -242,15 +212,13 @@ export class AccountUploadPhoto extends jspb.Message {
 
 export namespace AccountUploadPhoto {
   export type AsObject = {
-    file: core_types_pb.InputFile.AsObject,
-    returnobject?: boolean,
+    file?: core_types_pb.InputFile.AsObject,
+    returnobject: boolean,
   }
 }
 
 export class AccountUpdatePhoto extends jspb.Message {
-  hasPhotoid(): boolean;
-  clearPhotoid(): void;
-  getPhotoid(): string | undefined;
+  getPhotoid(): string;
   setPhotoid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -265,14 +233,12 @@ export class AccountUpdatePhoto extends jspb.Message {
 
 export namespace AccountUpdatePhoto {
   export type AsObject = {
-    photoid?: string,
+    photoid: string,
   }
 }
 
 export class AccountRemovePhoto extends jspb.Message {
-  hasPhotoid(): boolean;
-  clearPhotoid(): void;
-  getPhotoid(): string | undefined;
+  getPhotoid(): string;
   setPhotoid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -287,19 +253,15 @@ export class AccountRemovePhoto extends jspb.Message {
 
 export namespace AccountRemovePhoto {
   export type AsObject = {
-    photoid?: string,
+    photoid: string,
   }
 }
 
 export class AccountSendChangePhoneCode extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasApphash(): boolean;
-  clearApphash(): void;
-  getApphash(): string | undefined;
+  getApphash(): string;
   setApphash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -314,20 +276,16 @@ export class AccountSendChangePhoneCode extends jspb.Message {
 
 export namespace AccountSendChangePhoneCode {
   export type AsObject = {
-    phone?: string,
-    apphash?: string,
+    phone: string,
+    apphash: string,
   }
 }
 
 export class AccountResendChangePhoneCode extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasPhonecodehash(): boolean;
-  clearPhonecodehash(): void;
-  getPhonecodehash(): string | undefined;
+  getPhonecodehash(): string;
   setPhonecodehash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -342,25 +300,19 @@ export class AccountResendChangePhoneCode extends jspb.Message {
 
 export namespace AccountResendChangePhoneCode {
   export type AsObject = {
-    phone?: string,
-    phonecodehash?: string,
+    phone: string,
+    phonecodehash: string,
   }
 }
 
 export class AccountChangePhone extends jspb.Message {
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasPhonecodehash(): boolean;
-  clearPhonecodehash(): void;
-  getPhonecodehash(): string | undefined;
+  getPhonecodehash(): string;
   setPhonecodehash(value: string): void;
 
-  hasPhonecode(): boolean;
-  clearPhonecode(): void;
-  getPhonecode(): string | undefined;
+  getPhonecode(): string;
   setPhonecode(value: string): void;
 
   hasPassword(): boolean;
@@ -380,9 +332,9 @@ export class AccountChangePhone extends jspb.Message {
 
 export namespace AccountChangePhone {
   export type AsObject = {
-    phone?: string,
-    phonecodehash?: string,
-    phonecode?: string,
+    phone: string,
+    phonecodehash: string,
+    phonecode: string,
     password?: core_types_pb.InputPassword.AsObject,
   }
 }
@@ -440,9 +392,7 @@ export namespace AccountSetPrivacy {
 }
 
 export class AccountGetPrivacy extends jspb.Message {
-  hasKey(): boolean;
-  clearKey(): void;
-  getKey(): core_types_pb.PrivacyKey | undefined;
+  getKey(): core_types_pb.PrivacyKey;
   setKey(value: core_types_pb.PrivacyKey): void;
 
   serializeBinary(): Uint8Array;
@@ -457,7 +407,7 @@ export class AccountGetPrivacy extends jspb.Message {
 
 export namespace AccountGetPrivacy {
   export type AsObject = {
-    key?: core_types_pb.PrivacyKey,
+    key: core_types_pb.PrivacyKey,
   }
 }
 
@@ -478,9 +428,7 @@ export namespace AccountGetAuthorizations {
 }
 
 export class AccountResetAuthorization extends jspb.Message {
-  hasAuthid(): boolean;
-  clearAuthid(): void;
-  getAuthid(): string | undefined;
+  getAuthid(): string;
   setAuthid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -495,14 +443,12 @@ export class AccountResetAuthorization extends jspb.Message {
 
 export namespace AccountResetAuthorization {
   export type AsObject = {
-    authid?: string,
+    authid: string,
   }
 }
 
 export class AccountUpdateStatus extends jspb.Message {
-  hasOnline(): boolean;
-  clearOnline(): void;
-  getOnline(): boolean | undefined;
+  getOnline(): boolean;
   setOnline(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -517,14 +463,12 @@ export class AccountUpdateStatus extends jspb.Message {
 
 export namespace AccountUpdateStatus {
   export type AsObject = {
-    online?: boolean,
+    online: boolean,
   }
 }
 
 export class AccountSetLang extends jspb.Message {
-  hasLangcode(): boolean;
-  clearLangcode(): void;
-  getLangcode(): string | undefined;
+  getLangcode(): string;
   setLangcode(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -539,7 +483,7 @@ export class AccountSetLang extends jspb.Message {
 
 export namespace AccountSetLang {
   export type AsObject = {
-    langcode?: string,
+    langcode: string,
   }
 }
 
@@ -587,28 +531,20 @@ export class AccountUpdatePasswordSettings extends jspb.Message {
   getPassword(): core_types_pb.InputPassword | undefined;
   setPassword(value?: core_types_pb.InputPassword): void;
 
-  hasPasswordhash(): boolean;
-  clearPasswordhash(): void;
   getPasswordhash(): Uint8Array | string;
   getPasswordhash_asU8(): Uint8Array;
   getPasswordhash_asB64(): string;
   setPasswordhash(value: Uint8Array | string): void;
 
-  hasAlgorithm(): boolean;
-  clearAlgorithm(): void;
-  getAlgorithm(): number | undefined;
+  getAlgorithm(): number;
   setAlgorithm(value: number): void;
 
-  hasAlgorithmdata(): boolean;
-  clearAlgorithmdata(): void;
   getAlgorithmdata(): Uint8Array | string;
   getAlgorithmdata_asU8(): Uint8Array;
   getAlgorithmdata_asB64(): string;
   setAlgorithmdata(value: Uint8Array | string): void;
 
-  hasHint(): boolean;
-  clearHint(): void;
-  getHint(): string | undefined;
+  getHint(): string;
   setHint(value: string): void;
 
   clearQuestionsList(): void;
@@ -630,9 +566,9 @@ export namespace AccountUpdatePasswordSettings {
   export type AsObject = {
     password?: core_types_pb.InputPassword.AsObject,
     passwordhash: Uint8Array | string,
-    algorithm?: number,
+    algorithm: number,
     algorithmdata: Uint8Array | string,
-    hint?: string,
+    hint: string,
     questionsList: Array<SecurityQuestion.AsObject>,
   }
 }
@@ -643,21 +579,15 @@ export class AccountRecoverPassword extends jspb.Message {
   setAnswersList(value: Array<SecurityAnswer>): void;
   addAnswers(value?: SecurityAnswer, index?: number): SecurityAnswer;
 
-  hasAlgorithm(): boolean;
-  clearAlgorithm(): void;
-  getAlgorithm(): number | undefined;
+  getAlgorithm(): number;
   setAlgorithm(value: number): void;
 
-  hasAlgorithmdata(): boolean;
-  clearAlgorithmdata(): void;
   getAlgorithmdata(): Uint8Array | string;
   getAlgorithmdata_asU8(): Uint8Array;
   getAlgorithmdata_asB64(): string;
   setAlgorithmdata(value: Uint8Array | string): void;
 
-  hasSrpid(): boolean;
-  clearSrpid(): void;
-  getSrpid(): string | undefined;
+  getSrpid(): string;
   setSrpid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -673,9 +603,9 @@ export class AccountRecoverPassword extends jspb.Message {
 export namespace AccountRecoverPassword {
   export type AsObject = {
     answersList: Array<SecurityAnswer.AsObject>,
-    algorithm?: number,
+    algorithm: number,
     algorithmdata: Uint8Array | string,
-    srpid?: string,
+    srpid: string,
   }
 }
 
@@ -696,9 +626,7 @@ export namespace AccountGetTeams {
 }
 
 export class AccountPasswordSettings extends jspb.Message {
-  hasHint(): boolean;
-  clearHint(): void;
-  getHint(): string | undefined;
+  getHint(): string;
   setHint(value: string): void;
 
   clearQuestionsList(): void;
@@ -718,7 +646,7 @@ export class AccountPasswordSettings extends jspb.Message {
 
 export namespace AccountPasswordSettings {
   export type AsObject = {
-    hint?: string,
+    hint: string,
     questionsList: Array<RecoveryQuestion.AsObject>,
   }
 }
@@ -746,14 +674,10 @@ export namespace SecurityQuestions {
 }
 
 export class RecoveryQuestion extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -768,25 +692,19 @@ export class RecoveryQuestion extends jspb.Message {
 
 export namespace RecoveryQuestion {
   export type AsObject = {
-    id?: number,
-    text?: string,
+    id: number,
+    text: string,
   }
 }
 
 export class SecurityQuestion extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
+  getText(): string;
   setText(value: string): void;
 
-  hasAnswer(): boolean;
-  clearAnswer(): void;
-  getAnswer(): string | undefined;
+  getAnswer(): string;
   setAnswer(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -801,21 +719,17 @@ export class SecurityQuestion extends jspb.Message {
 
 export namespace SecurityQuestion {
   export type AsObject = {
-    id?: number,
-    text?: string,
-    answer?: string,
+    id: number,
+    text: string,
+    answer: string,
   }
 }
 
 export class SecurityAnswer extends jspb.Message {
-  hasQuestionid(): boolean;
-  clearQuestionid(): void;
-  getQuestionid(): number | undefined;
+  getQuestionid(): number;
   setQuestionid(value: number): void;
 
-  hasAnswer(): boolean;
-  clearAnswer(): void;
-  getAnswer(): string | undefined;
+  getAnswer(): string;
   setAnswer(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -830,51 +744,37 @@ export class SecurityAnswer extends jspb.Message {
 
 export namespace SecurityAnswer {
   export type AsObject = {
-    questionid?: number,
-    answer?: string,
+    questionid: number,
+    answer: string,
   }
 }
 
 export class AccountPassword extends jspb.Message {
-  hasHaspassword(): boolean;
-  clearHaspassword(): void;
-  getHaspassword(): boolean | undefined;
+  getHaspassword(): boolean;
   setHaspassword(value: boolean): void;
 
-  hasHint(): boolean;
-  clearHint(): void;
-  getHint(): string | undefined;
+  getHint(): string;
   setHint(value: string): void;
 
-  hasAlgorithm(): boolean;
-  clearAlgorithm(): void;
-  getAlgorithm(): number | undefined;
+  getAlgorithm(): number;
   setAlgorithm(value: number): void;
 
-  hasAlgorithmdata(): boolean;
-  clearAlgorithmdata(): void;
   getAlgorithmdata(): Uint8Array | string;
   getAlgorithmdata_asU8(): Uint8Array;
   getAlgorithmdata_asB64(): string;
   setAlgorithmdata(value: Uint8Array | string): void;
 
-  hasSrpb(): boolean;
-  clearSrpb(): void;
   getSrpb(): Uint8Array | string;
   getSrpb_asU8(): Uint8Array;
   getSrpb_asB64(): string;
   setSrpb(value: Uint8Array | string): void;
 
-  hasRandomdata(): boolean;
-  clearRandomdata(): void;
   getRandomdata(): Uint8Array | string;
   getRandomdata_asU8(): Uint8Array;
   getRandomdata_asB64(): string;
   setRandomdata(value: Uint8Array | string): void;
 
-  hasSrpid(): boolean;
-  clearSrpid(): void;
-  getSrpid(): string | undefined;
+  getSrpid(): string;
   setSrpid(value: string): void;
 
   clearQuestionsList(): void;
@@ -894,13 +794,13 @@ export class AccountPassword extends jspb.Message {
 
 export namespace AccountPassword {
   export type AsObject = {
-    haspassword?: boolean,
-    hint?: string,
-    algorithm?: number,
+    haspassword: boolean,
+    hint: string,
+    algorithm: number,
     algorithmdata: Uint8Array | string,
     srpb: Uint8Array | string,
     randomdata: Uint8Array | string,
-    srpid?: string,
+    srpid: string,
     questionsList: Array<RecoveryQuestion.AsObject>,
   }
 }
@@ -928,49 +828,31 @@ export namespace AccountAuthorizations {
 }
 
 export class AccountAuthorization extends jspb.Message {
-  hasAuthid(): boolean;
-  clearAuthid(): void;
-  getAuthid(): string | undefined;
+  getAuthid(): string;
   setAuthid(value: string): void;
 
-  hasModel(): boolean;
-  clearModel(): void;
-  getModel(): string | undefined;
+  getModel(): string;
   setModel(value: string): void;
 
-  hasAppversion(): boolean;
-  clearAppversion(): void;
-  getAppversion(): string | undefined;
+  getAppversion(): string;
   setAppversion(value: string): void;
 
-  hasSystemversion(): boolean;
-  clearSystemversion(): void;
-  getSystemversion(): string | undefined;
+  getSystemversion(): string;
   setSystemversion(value: string): void;
 
-  hasLangcode(): boolean;
-  clearLangcode(): void;
-  getLangcode(): string | undefined;
+  getLangcode(): string;
   setLangcode(value: string): void;
 
-  hasCreatedat(): boolean;
-  clearCreatedat(): void;
-  getCreatedat(): number | undefined;
+  getCreatedat(): number;
   setCreatedat(value: number): void;
 
-  hasActiveat(): boolean;
-  clearActiveat(): void;
-  getActiveat(): number | undefined;
+  getActiveat(): number;
   setActiveat(value: number): void;
 
-  hasClientip(): boolean;
-  clearClientip(): void;
-  getClientip(): string | undefined;
+  getClientip(): string;
   setClientip(value: string): void;
 
-  hasLastaccess(): boolean;
-  clearLastaccess(): void;
-  getLastaccess(): number | undefined;
+  getLastaccess(): number;
   setLastaccess(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -985,15 +867,15 @@ export class AccountAuthorization extends jspb.Message {
 
 export namespace AccountAuthorization {
   export type AsObject = {
-    authid?: string,
-    model?: string,
-    appversion?: string,
-    systemversion?: string,
-    langcode?: string,
-    createdat?: number,
-    activeat?: number,
-    clientip?: string,
-    lastaccess?: number,
+    authid: string,
+    model: string,
+    appversion: string,
+    systemversion: string,
+    langcode: string,
+    createdat: number,
+    activeat: number,
+    clientip: string,
+    lastaccess: number,
   }
 }
 

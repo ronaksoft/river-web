@@ -181,7 +181,7 @@ export default class TopPeerRepo {
         return this.getDbByType(type).where('[teamid+id+peertype]').anyOf(ids).toArray().then((result) => {
             const createItems: ITopPeer[] = differenceWith(topPeers, result, (i1, i2) => i1.teamid === i2.teamid && i1.id === i2.id && i1.peertype === i2.peertype).map((t) => this.computeRate(t));
             const updateItems: ITopPeer[] = result.map((topPeer: ITopPeer) => {
-                const t = find(topPeers, {teamid: topPeer.teamid, id: topPeer.id, peertype: topPeer.peertype});
+                const t = find(topPeers, {id: topPeer.id, peertype: topPeer.peertype, teamid: topPeer.teamid});
                 if (t) {
                     return this.computeRate(t, topPeer);
                 } else {

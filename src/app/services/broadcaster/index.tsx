@@ -61,7 +61,7 @@ export default class Broadcaster {
 
     private callHandlers(name: string, data: any) {
         if (!this.listeners.hasOwnProperty(name)) {
-            return Promise.reject();
+            return Promise.resolve();
         }
         return new Promise((resolve, reject) => {
             try {

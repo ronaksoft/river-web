@@ -18,7 +18,7 @@ import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
 import {emojiList} from "../ChatInput/emojis";
 import {IUser} from "../../repository/user/interface";
-import APIManager from "../../services/sdk";
+import {currentUserId} from "../../services/sdk";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import i18n from '../../services/i18n';
 
@@ -86,7 +86,6 @@ class MentionInput extends React.Component<IProps, IState> {
 
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
-    private readonly userId: string = '';
 
     constructor(props: IProps) {
         super(props);
@@ -97,7 +96,6 @@ class MentionInput extends React.Component<IProps, IState> {
 
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
-        this.userId = APIManager.getInstance().getConnInfo().UserID || '';
     }
 
     public render() {
@@ -154,7 +152,7 @@ class MentionInput extends React.Component<IProps, IState> {
             return;
         }
         // Search engine
-        const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
+        const searchParticipant = (word: string, participants: Partial<GroupParticipant.AsObject>[]) => {
             participants.unshift({
                 accesshash: '',
                 firstname: 'all',
@@ -166,7 +164,7 @@ class MentionInput extends React.Component<IProps, IState> {
             const reg = new RegExp(word.replace('\\', ''), "i");
             let exactMatchIndex: number = -1;
             for (const [i, participant] of participants.entries()) {
-                if (this.userId !== participant.userid &&
+                if (currentUserId !== participant.userid &&
                     (reg.test(`${participant.firstname} ${participant.lastname}`) ||
                         (participant.username && reg.test(participant.username)))) {
                     users.push({

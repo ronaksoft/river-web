@@ -10,7 +10,7 @@
 import {InputMediaType, UserMessage} from "../../services/sdk/messages/core.types_pb";
 import {ReactionList} from "../../services/sdk/messages/chat.messages_pb";
 
-export interface IMessage extends UserMessage.AsObject {
+export interface IMessage extends Partial<UserMessage.AsObject> {
     actiondata?: any;
     added_labels?: number[];
     attributes?: any[];
@@ -56,6 +56,6 @@ export interface IMessageBotCol {
     buttondata?: any;
 }
 
-export interface IReactionInfo extends ReactionList.AsObject {
+export interface IReactionInfo extends Partial<ReactionList.AsObject> {
     counter?: number;
 }

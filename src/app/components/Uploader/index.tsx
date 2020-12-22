@@ -963,7 +963,7 @@ class Uploader extends React.Component<IProps, IState> {
     /* ImageEditor image ready handler */
     private imageEditorImageReadyHandler = (blob: Blob, dimension: IDimension) => {
         const {items, selected} = this.state;
-        const file = new File([blob], `cropped_file_${Date.now()}`, {type: blob.type, lastModified: Date.now()});
+        const file = new File([blob], `cropped_file_${Date.now()}`, {lastModified: Date.now(), type: blob.type});
         const preview = URL.createObjectURL(blob);
         const hold = items[selected];
         items[selected] = file;

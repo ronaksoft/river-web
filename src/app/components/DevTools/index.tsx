@@ -36,11 +36,11 @@ export const getWsServerUrl = () => {
         return null;
     } else {
         if (serverMode === 'prod') {
-            return 'cyrus.river.im';
+            return 'edge.river.im';
         } else if (serverMode === 'dev') {
-            return 'river.ronaksoftware.com';
+            return 'river-rony.ronaksoftware.com';
         } else if (serverMode === 'other') {
-            return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'cyrus.river.im';
+            return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im';
         }
     }
     return null;
@@ -55,9 +55,9 @@ export const getFileServerUrl = () => {
         if (serverMode === 'prod') {
             return 'file.river.im';
         } else if (serverMode === 'dev') {
-            return 'river.ronaksoftware.com:8080';
+            return 'river-rony.ronaksoftware.com';
         } else if (serverMode === 'other') {
-            return localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || 'file.river.im';
+            return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im';
         }
     }
     return null;
@@ -96,7 +96,6 @@ interface IState {
     serverMode: 'prod' | 'dev' | 'other';
     debugServerKeys: string;
     electronLoadUrl: string;
-    fileUrl: string;
     open: boolean;
     throttleInterval: number;
     url: string;
@@ -121,11 +120,10 @@ class DevTools extends React.Component<IProps, IState> {
         this.state = {
             debugServerKeys: localStorage.getItem(C_LOCALSTORAGE.ServerKeys) || serverKeys,
             electronLoadUrl: '',
-            fileUrl: localStorage.getItem(C_LOCALSTORAGE.WorkspaceFileUrl) || 'file.river.im',
             open: false,
             serverMode,
             throttleInterval: parseInt(localStorage.getItem(C_LOCALSTORAGE.DebugThrottleInterval) || '200', 10),
-            url: localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'cyrus.river.im',
+            url: localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im',
             verboseAPICall: localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true',
         };
 
@@ -151,7 +149,7 @@ class DevTools extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, url, fileUrl, throttleInterval, debugServerKeys, electronLoadUrl, verboseAPICall, serverMode} = this.state;
+        const {open, url, throttleInterval, debugServerKeys, electronLoadUrl, verboseAPICall, serverMode} = this.state;
         return (
             <Dialog
                 open={open}
@@ -198,14 +196,6 @@ class DevTools extends React.Component<IProps, IState> {
                                     fullWidth={true}
                                     value={url}
                                     onChange={this.debugModeUrlChange}
-                                />
-                                <TextField
-                                    margin="dense"
-                                    label={i18n.t('settings.test_file_url')}
-                                    type="text"
-                                    fullWidth={true}
-                                    value={fileUrl}
-                                    onChange={this.debugModeFileUrlChange}
                                 />
                                 <TextField
                                     margin="dense"
@@ -279,7 +269,6 @@ class DevTools extends React.Component<IProps, IState> {
     private debugModeApplyHandler = () => {
         localStorage.setItem(C_LOCALSTORAGE.ServerMode, this.state.serverMode);
         localStorage.setItem(C_LOCALSTORAGE.WorkspaceUrl, this.state.url);
-        localStorage.setItem(C_LOCALSTORAGE.WorkspaceFileUrl, this.state.fileUrl);
         localStorage.setItem(C_LOCALSTORAGE.ServerKeys, this.state.debugServerKeys);
         localStorage.setItem(C_LOCALSTORAGE.DebugThrottleInterval, String(this.state.throttleInterval));
         localStorage.setItem(C_LOCALSTORAGE.DebugVerboseAPI, this.state.verboseAPICall ? 'true' : 'false');
@@ -300,13 +289,6 @@ class DevTools extends React.Component<IProps, IState> {
     private debugModeUrlChange = (e: any) => {
         this.setState({
             url: e.currentTarget.value,
-        });
-    }
-
-    /* Debug mode file url change handler */
-    private debugModeFileUrlChange = (e: any) => {
-        this.setState({
-            fileUrl: e.currentTarget.value,
         });
     }
 

@@ -177,6 +177,21 @@ html[mac="1"] {
   }
 }
 
+@media(-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+  html[mac="1"] {
+    .reaction-picker-popover {
+      .reaction-picker {
+        .reaction-item {
+          .reaction-emoji {
+            transform: translate(0.07em, 0.09em) scale(1.2);
+          }
+        }
+      }
+    }
+  }
+}
+
 html[reaction="1"] {
   .reaction-picker-popover {
     .reaction-picker {

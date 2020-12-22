@@ -8,6 +8,8 @@
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -223,9 +225,9 @@ proto.msg.LabelsCreate.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.LabelsCreate.toObject = function(includeInstance, msg) {
   var f, obj = {
-    randomid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    colour: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    randomid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    colour: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -303,22 +305,22 @@ proto.msg.LabelsCreate.prototype.serializeBinary = function() {
  */
 proto.msg.LabelsCreate.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getRandomid();
+  if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getName();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getColour();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -341,30 +343,12 @@ proto.msg.LabelsCreate.prototype.getRandomid = function() {
  * @return {!proto.msg.LabelsCreate} returns this
  */
 proto.msg.LabelsCreate.prototype.setRandomid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsCreate} returns this
- */
-proto.msg.LabelsCreate.prototype.clearRandomid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsCreate.prototype.hasRandomid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Name = 2;
+ * optional string Name = 2;
  * @return {string}
  */
 proto.msg.LabelsCreate.prototype.getName = function() {
@@ -377,30 +361,12 @@ proto.msg.LabelsCreate.prototype.getName = function() {
  * @return {!proto.msg.LabelsCreate} returns this
  */
 proto.msg.LabelsCreate.prototype.setName = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsCreate} returns this
- */
-proto.msg.LabelsCreate.prototype.clearName = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsCreate.prototype.hasName = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string Colour = 3;
+ * optional string Colour = 3;
  * @return {string}
  */
 proto.msg.LabelsCreate.prototype.getColour = function() {
@@ -413,25 +379,7 @@ proto.msg.LabelsCreate.prototype.getColour = function() {
  * @return {!proto.msg.LabelsCreate} returns this
  */
 proto.msg.LabelsCreate.prototype.setColour = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsCreate} returns this
- */
-proto.msg.LabelsCreate.prototype.clearColour = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsCreate.prototype.hasColour = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -467,9 +415,9 @@ proto.msg.LabelsEdit.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.LabelsEdit.toObject = function(includeInstance, msg) {
   var f, obj = {
-    labelid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    colour: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    labelid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    colour: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -547,22 +495,22 @@ proto.msg.LabelsEdit.prototype.serializeBinary = function() {
  */
 proto.msg.LabelsEdit.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getLabelid();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getName();
+  if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getColour();
+  if (f.length > 0) {
     writer.writeString(
       3,
       f
@@ -572,7 +520,7 @@ proto.msg.LabelsEdit.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int32 LabelID = 1;
+ * optional int32 LabelID = 1;
  * @return {number}
  */
 proto.msg.LabelsEdit.prototype.getLabelid = function() {
@@ -585,30 +533,12 @@ proto.msg.LabelsEdit.prototype.getLabelid = function() {
  * @return {!proto.msg.LabelsEdit} returns this
  */
 proto.msg.LabelsEdit.prototype.setLabelid = function(value) {
-  return jspb.Message.setField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsEdit} returns this
- */
-proto.msg.LabelsEdit.prototype.clearLabelid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsEdit.prototype.hasLabelid = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required string Name = 2;
+ * optional string Name = 2;
  * @return {string}
  */
 proto.msg.LabelsEdit.prototype.getName = function() {
@@ -621,30 +551,12 @@ proto.msg.LabelsEdit.prototype.getName = function() {
  * @return {!proto.msg.LabelsEdit} returns this
  */
 proto.msg.LabelsEdit.prototype.setName = function(value) {
-  return jspb.Message.setField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsEdit} returns this
- */
-proto.msg.LabelsEdit.prototype.clearName = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsEdit.prototype.hasName = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required string Colour = 3;
+ * optional string Colour = 3;
  * @return {string}
  */
 proto.msg.LabelsEdit.prototype.getColour = function() {
@@ -657,25 +569,7 @@ proto.msg.LabelsEdit.prototype.getColour = function() {
  * @return {!proto.msg.LabelsEdit} returns this
  */
 proto.msg.LabelsEdit.prototype.setColour = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsEdit} returns this
- */
-proto.msg.LabelsEdit.prototype.clearColour = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsEdit.prototype.hasColour = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -756,8 +650,10 @@ proto.msg.LabelsDelete.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.addLabelids(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt32() : [reader.readInt32()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addLabelids(values[i]);
+      }
       break;
     default:
       reader.skipField();
@@ -790,7 +686,7 @@ proto.msg.LabelsDelete.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getLabelidsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt32(
+    writer.writePackedInt32(
       1,
       f
     );
@@ -1020,12 +916,16 @@ proto.msg.LabelsAddToMessage.deserializeBinaryFromReader = function(msg, reader)
       msg.setPeer(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.addLabelids(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt32() : [reader.readInt32()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addLabelids(values[i]);
+      }
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.addMessageids(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt64() : [reader.readInt64()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addMessageids(values[i]);
+      }
       break;
     default:
       reader.skipField();
@@ -1066,14 +966,14 @@ proto.msg.LabelsAddToMessage.serializeBinaryToWriter = function(message, writer)
   }
   f = message.getLabelidsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt32(
+    writer.writePackedInt32(
       3,
       f
     );
   }
   f = message.getMessageidsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt64(
+    writer.writePackedInt64(
       4,
       f
     );
@@ -1082,17 +982,17 @@ proto.msg.LabelsAddToMessage.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.LabelsAddToMessage.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.LabelsAddToMessage} returns this
 */
 proto.msg.LabelsAddToMessage.prototype.setPeer = function(value) {
@@ -1101,11 +1001,11 @@ proto.msg.LabelsAddToMessage.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.LabelsAddToMessage} returns this
  */
 proto.msg.LabelsAddToMessage.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -1276,12 +1176,16 @@ proto.msg.LabelsRemoveFromMessage.deserializeBinaryFromReader = function(msg, re
       msg.setPeer(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.addLabelids(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt32() : [reader.readInt32()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addLabelids(values[i]);
+      }
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.addMessageids(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt64() : [reader.readInt64()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addMessageids(values[i]);
+      }
       break;
     default:
       reader.skipField();
@@ -1322,14 +1226,14 @@ proto.msg.LabelsRemoveFromMessage.serializeBinaryToWriter = function(message, wr
   }
   f = message.getLabelidsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt32(
+    writer.writePackedInt32(
       3,
       f
     );
   }
   f = message.getMessageidsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt64(
+    writer.writePackedInt64(
       4,
       f
     );
@@ -1338,17 +1242,17 @@ proto.msg.LabelsRemoveFromMessage.serializeBinaryToWriter = function(message, wr
 
 
 /**
- * required InputPeer Peer = 1;
- * @return {!proto.msg.InputPeer}
+ * optional InputPeer Peer = 1;
+ * @return {?proto.msg.InputPeer}
  */
 proto.msg.LabelsRemoveFromMessage.prototype.getPeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
+  return /** @type{?proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1));
 };
 
 
 /**
- * @param {!proto.msg.InputPeer} value
+ * @param {?proto.msg.InputPeer|undefined} value
  * @return {!proto.msg.LabelsRemoveFromMessage} returns this
 */
 proto.msg.LabelsRemoveFromMessage.prototype.setPeer = function(value) {
@@ -1357,11 +1261,11 @@ proto.msg.LabelsRemoveFromMessage.prototype.setPeer = function(value) {
 
 
 /**
- * Clears the field making it undefined.
+ * Clears the message field making it undefined.
  * @return {!proto.msg.LabelsRemoveFromMessage} returns this
  */
 proto.msg.LabelsRemoveFromMessage.prototype.clearPeer = function() {
-  return jspb.Message.setField(this, 1, undefined);
+  return this.setPeer(undefined);
 };
 
 
@@ -1480,10 +1384,10 @@ proto.msg.LabelsListItems.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.LabelsListItems.toObject = function(includeInstance, msg) {
   var f, obj = {
-    labelid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    minid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    maxid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-    limit: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+    labelid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    minid: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    maxid: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    limit: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -1565,29 +1469,29 @@ proto.msg.LabelsListItems.prototype.serializeBinary = function() {
  */
 proto.msg.LabelsListItems.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getLabelid();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
+  f = message.getMinid();
+  if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
+  f = message.getMaxid();
+  if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
-  if (f != null) {
+  f = message.getLimit();
+  if (f !== 0) {
     writer.writeInt32(
       4,
       f
@@ -1597,7 +1501,7 @@ proto.msg.LabelsListItems.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int32 LabelID = 1;
+ * optional int32 LabelID = 1;
  * @return {number}
  */
 proto.msg.LabelsListItems.prototype.getLabelid = function() {
@@ -1610,25 +1514,7 @@ proto.msg.LabelsListItems.prototype.getLabelid = function() {
  * @return {!proto.msg.LabelsListItems} returns this
  */
 proto.msg.LabelsListItems.prototype.setLabelid = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsListItems} returns this
- */
-proto.msg.LabelsListItems.prototype.clearLabelid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsListItems.prototype.hasLabelid = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -1646,25 +1532,7 @@ proto.msg.LabelsListItems.prototype.getMinid = function() {
  * @return {!proto.msg.LabelsListItems} returns this
  */
 proto.msg.LabelsListItems.prototype.setMinid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsListItems} returns this
- */
-proto.msg.LabelsListItems.prototype.clearMinid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsListItems.prototype.hasMinid = function() {
-  return jspb.Message.getField(this, 2) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -1682,25 +1550,7 @@ proto.msg.LabelsListItems.prototype.getMaxid = function() {
  * @return {!proto.msg.LabelsListItems} returns this
  */
 proto.msg.LabelsListItems.prototype.setMaxid = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsListItems} returns this
- */
-proto.msg.LabelsListItems.prototype.clearMaxid = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsListItems.prototype.hasMaxid = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -1718,25 +1568,7 @@ proto.msg.LabelsListItems.prototype.getLimit = function() {
  * @return {!proto.msg.LabelsListItems} returns this
  */
 proto.msg.LabelsListItems.prototype.setLimit = function(value) {
-  return jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelsListItems} returns this
- */
-proto.msg.LabelsListItems.prototype.clearLimit = function() {
-  return jspb.Message.setField(this, 4, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelsListItems.prototype.hasLimit = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -1779,7 +1611,7 @@ proto.msg.LabelItems.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.LabelItems.toObject = function(includeInstance, msg) {
   var f, obj = {
-    labelid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+    labelid: jspb.Message.getFieldWithDefault(msg, 1, 0),
     messagesList: jspb.Message.toObjectList(msg.getMessagesList(),
     core_types_pb.UserMessage.toObject, includeInstance),
     dialogsList: jspb.Message.toObjectList(msg.getDialogsList(),
@@ -1877,8 +1709,8 @@ proto.msg.LabelItems.prototype.serializeBinary = function() {
  */
 proto.msg.LabelItems.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
+  f = message.getLabelid();
+  if (f !== 0) {
     writer.writeInt32(
       1,
       f
@@ -1920,7 +1752,7 @@ proto.msg.LabelItems.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int32 LabelID = 1;
+ * optional int32 LabelID = 1;
  * @return {number}
  */
 proto.msg.LabelItems.prototype.getLabelid = function() {
@@ -1933,25 +1765,7 @@ proto.msg.LabelItems.prototype.getLabelid = function() {
  * @return {!proto.msg.LabelItems} returns this
  */
 proto.msg.LabelItems.prototype.setLabelid = function(value) {
-  return jspb.Message.setField(this, 1, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.LabelItems} returns this
- */
-proto.msg.LabelItems.prototype.clearLabelid = function() {
-  return jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.LabelItems.prototype.hasLabelid = function() {
-  return jspb.Message.getField(this, 1) != null;
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 

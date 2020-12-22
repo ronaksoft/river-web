@@ -7,9 +7,7 @@ import * as core_types_pb from "./core.types_pb";
 import * as chat_messages_medias_pb from "./chat.messages.medias_pb";
 
 export class WallPaperGet extends jspb.Message {
-  hasCrc32hash(): boolean;
-  clearCrc32hash(): void;
-  getCrc32hash(): number | undefined;
+  getCrc32hash(): number;
   setCrc32hash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -24,19 +22,19 @@ export class WallPaperGet extends jspb.Message {
 
 export namespace WallPaperGet {
   export type AsObject = {
-    crc32hash?: number,
+    crc32hash: number,
   }
 }
 
 export class WallPaperSave extends jspb.Message {
   hasWallpaper(): boolean;
   clearWallpaper(): void;
-  getWallpaper(): InputWallPaper;
+  getWallpaper(): InputWallPaper | undefined;
   setWallpaper(value?: InputWallPaper): void;
 
   hasSettings(): boolean;
   clearSettings(): void;
-  getSettings(): WallPaperSettings;
+  getSettings(): WallPaperSettings | undefined;
   setSettings(value?: WallPaperSettings): void;
 
   serializeBinary(): Uint8Array;
@@ -51,15 +49,15 @@ export class WallPaperSave extends jspb.Message {
 
 export namespace WallPaperSave {
   export type AsObject = {
-    wallpaper: InputWallPaper.AsObject,
-    settings: WallPaperSettings.AsObject,
+    wallpaper?: InputWallPaper.AsObject,
+    settings?: WallPaperSettings.AsObject,
   }
 }
 
 export class WallPaperDelete extends jspb.Message {
   hasWallpaper(): boolean;
   clearWallpaper(): void;
-  getWallpaper(): InputWallPaper;
+  getWallpaper(): InputWallPaper | undefined;
   setWallpaper(value?: InputWallPaper): void;
 
   serializeBinary(): Uint8Array;
@@ -74,7 +72,7 @@ export class WallPaperDelete extends jspb.Message {
 
 export namespace WallPaperDelete {
   export type AsObject = {
-    wallpaper: InputWallPaper.AsObject,
+    wallpaper?: InputWallPaper.AsObject,
   }
 }
 
@@ -89,14 +87,12 @@ export class WallPaperUpload extends jspb.Message {
   getFile(): core_types_pb.InputDocument | undefined;
   setFile(value?: core_types_pb.InputDocument): void;
 
-  hasMimetype(): boolean;
-  clearMimetype(): void;
-  getMimetype(): string | undefined;
+  getMimetype(): string;
   setMimetype(value: string): void;
 
   hasSettings(): boolean;
   clearSettings(): void;
-  getSettings(): WallPaperSettings;
+  getSettings(): WallPaperSettings | undefined;
   setSettings(value?: WallPaperSettings): void;
 
   serializeBinary(): Uint8Array;
@@ -113,8 +109,8 @@ export namespace WallPaperUpload {
   export type AsObject = {
     uploadedfile?: core_types_pb.InputFile.AsObject,
     file?: core_types_pb.InputDocument.AsObject,
-    mimetype?: string,
-    settings: WallPaperSettings.AsObject,
+    mimetype: string,
+    settings?: WallPaperSettings.AsObject,
   }
 }
 
@@ -135,14 +131,10 @@ export namespace WallPaperReset {
 }
 
 export class InputWallPaper extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): number | undefined;
+  getAccesshash(): number;
   setAccesshash(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -157,40 +149,28 @@ export class InputWallPaper extends jspb.Message {
 
 export namespace InputWallPaper {
   export type AsObject = {
-    id?: number,
-    accesshash?: number,
+    id: number,
+    accesshash: number,
   }
 }
 
 export class WallPaperSettings extends jspb.Message {
-  hasBlur(): boolean;
-  clearBlur(): void;
-  getBlur(): boolean | undefined;
+  getBlur(): boolean;
   setBlur(value: boolean): void;
 
-  hasMotion(): boolean;
-  clearMotion(): void;
-  getMotion(): boolean | undefined;
+  getMotion(): boolean;
   setMotion(value: boolean): void;
 
-  hasBackgroundcolour(): boolean;
-  clearBackgroundcolour(): void;
-  getBackgroundcolour(): number | undefined;
+  getBackgroundcolour(): number;
   setBackgroundcolour(value: number): void;
 
-  hasBackgroundsecondcolour(): boolean;
-  clearBackgroundsecondcolour(): void;
-  getBackgroundsecondcolour(): number | undefined;
+  getBackgroundsecondcolour(): number;
   setBackgroundsecondcolour(value: number): void;
 
-  hasOpacity(): boolean;
-  clearOpacity(): void;
-  getOpacity(): number | undefined;
+  getOpacity(): number;
   setOpacity(value: number): void;
 
-  hasRotation(): boolean;
-  clearRotation(): void;
-  getRotation(): number | undefined;
+  getRotation(): number;
   setRotation(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -205,44 +185,32 @@ export class WallPaperSettings extends jspb.Message {
 
 export namespace WallPaperSettings {
   export type AsObject = {
-    blur?: boolean,
-    motion?: boolean,
-    backgroundcolour?: number,
-    backgroundsecondcolour?: number,
-    opacity?: number,
-    rotation?: number,
+    blur: boolean,
+    motion: boolean,
+    backgroundcolour: number,
+    backgroundsecondcolour: number,
+    opacity: number,
+    rotation: number,
   }
 }
 
 export class WallPaper extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): number | undefined;
+  getAccesshash(): number;
   setAccesshash(value: number): void;
 
-  hasCreator(): boolean;
-  clearCreator(): void;
-  getCreator(): boolean | undefined;
+  getCreator(): boolean;
   setCreator(value: boolean): void;
 
-  hasDefault(): boolean;
-  clearDefault(): void;
-  getDefault(): boolean | undefined;
+  getDefault(): boolean;
   setDefault(value: boolean): void;
 
-  hasPattern(): boolean;
-  clearPattern(): void;
-  getPattern(): boolean | undefined;
+  getPattern(): boolean;
   setPattern(value: boolean): void;
 
-  hasDark(): boolean;
-  clearDark(): void;
-  getDark(): boolean | undefined;
+  getDark(): boolean;
   setDark(value: boolean): void;
 
   hasDocument(): boolean;
@@ -267,12 +235,12 @@ export class WallPaper extends jspb.Message {
 
 export namespace WallPaper {
   export type AsObject = {
-    id?: number,
-    accesshash?: number,
-    creator?: boolean,
-    pb_default?: boolean,
-    pattern?: boolean,
-    dark?: boolean,
+    id: number,
+    accesshash: number,
+    creator: boolean,
+    pb_default: boolean,
+    pattern: boolean,
+    dark: boolean,
     document?: chat_messages_medias_pb.Document.AsObject,
     settings?: WallPaperSettings.AsObject,
   }
@@ -284,19 +252,13 @@ export class WallPapersMany extends jspb.Message {
   setWallpapersList(value: Array<WallPaper>): void;
   addWallpapers(value?: WallPaper, index?: number): WallPaper;
 
-  hasCount(): boolean;
-  clearCount(): void;
-  getCount(): number | undefined;
+  getCount(): number;
   setCount(value: number): void;
 
-  hasCrc32hash(): boolean;
-  clearCrc32hash(): void;
-  getCrc32hash(): number | undefined;
+  getCrc32hash(): number;
   setCrc32hash(value: number): void;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -312,9 +274,9 @@ export class WallPapersMany extends jspb.Message {
 export namespace WallPapersMany {
   export type AsObject = {
     wallpapersList: Array<WallPaper.AsObject>,
-    count?: number,
-    crc32hash?: number,
-    empty?: boolean,
+    count: number,
+    crc32hash: number,
+    empty: boolean,
   }
 }
 

@@ -11,14 +11,10 @@ export class GroupsCreate extends jspb.Message {
   setUsersList(value: Array<core_types_pb.InputUser>): void;
   addUsers(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
 
-  hasTitle(): boolean;
-  clearTitle(): void;
-  getTitle(): string | undefined;
+  getTitle(): string;
   setTitle(value: string): void;
 
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
+  getRandomid(): number;
   setRandomid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -34,25 +30,21 @@ export class GroupsCreate extends jspb.Message {
 export namespace GroupsCreate {
   export type AsObject = {
     usersList: Array<core_types_pb.InputUser.AsObject>,
-    title?: string,
-    randomid?: number,
+    title: string,
+    randomid: number,
   }
 }
 
 export class GroupsAddUser extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.InputUser;
+  getUser(): core_types_pb.InputUser | undefined;
   setUser(value?: core_types_pb.InputUser): void;
 
-  hasForwardlimit(): boolean;
-  clearForwardlimit(): void;
-  getForwardlimit(): number | undefined;
+  getForwardlimit(): number;
   setForwardlimit(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -67,21 +59,17 @@ export class GroupsAddUser extends jspb.Message {
 
 export namespace GroupsAddUser {
   export type AsObject = {
-    groupid?: string,
-    user: core_types_pb.InputUser.AsObject,
-    forwardlimit?: number,
+    groupid: string,
+    user?: core_types_pb.InputUser.AsObject,
+    forwardlimit: number,
   }
 }
 
 export class GroupsEditTitle extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
-  hasTitle(): boolean;
-  clearTitle(): void;
-  getTitle(): string | undefined;
+  getTitle(): string;
   setTitle(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -96,20 +84,18 @@ export class GroupsEditTitle extends jspb.Message {
 
 export namespace GroupsEditTitle {
   export type AsObject = {
-    groupid?: string,
-    title?: string,
+    groupid: string,
+    title: string,
   }
 }
 
 export class GroupsDeleteUser extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.InputUser;
+  getUser(): core_types_pb.InputUser | undefined;
   setUser(value?: core_types_pb.InputUser): void;
 
   serializeBinary(): Uint8Array;
@@ -124,15 +110,13 @@ export class GroupsDeleteUser extends jspb.Message {
 
 export namespace GroupsDeleteUser {
   export type AsObject = {
-    groupid?: string,
-    user: core_types_pb.InputUser.AsObject,
+    groupid: string,
+    user?: core_types_pb.InputUser.AsObject,
   }
 }
 
 export class GroupsGetFull extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -147,19 +131,15 @@ export class GroupsGetFull extends jspb.Message {
 
 export namespace GroupsGetFull {
   export type AsObject = {
-    groupid?: string,
+    groupid: string,
   }
 }
 
 export class GroupsToggleAdmins extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
-  hasAdminenabled(): boolean;
-  clearAdminenabled(): void;
-  getAdminenabled(): boolean | undefined;
+  getAdminenabled(): boolean;
   setAdminenabled(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -174,25 +154,21 @@ export class GroupsToggleAdmins extends jspb.Message {
 
 export namespace GroupsToggleAdmins {
   export type AsObject = {
-    groupid?: string,
-    adminenabled?: boolean,
+    groupid: string,
+    adminenabled: boolean,
   }
 }
 
 export class GroupsUpdateAdmin extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.InputUser;
+  getUser(): core_types_pb.InputUser | undefined;
   setUser(value?: core_types_pb.InputUser): void;
 
-  hasAdmin(): boolean;
-  clearAdmin(): void;
-  getAdmin(): boolean | undefined;
+  getAdmin(): boolean;
   setAdmin(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -207,26 +183,22 @@ export class GroupsUpdateAdmin extends jspb.Message {
 
 export namespace GroupsUpdateAdmin {
   export type AsObject = {
-    groupid?: string,
-    user: core_types_pb.InputUser.AsObject,
-    admin?: boolean,
+    groupid: string,
+    user?: core_types_pb.InputUser.AsObject,
+    admin: boolean,
   }
 }
 
 export class GroupsUploadPhoto extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
   hasFile(): boolean;
   clearFile(): void;
-  getFile(): core_types_pb.InputFile;
+  getFile(): core_types_pb.InputFile | undefined;
   setFile(value?: core_types_pb.InputFile): void;
 
-  hasReturnobject(): boolean;
-  clearReturnobject(): void;
-  getReturnobject(): boolean | undefined;
+  getReturnobject(): boolean;
   setReturnobject(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -241,21 +213,17 @@ export class GroupsUploadPhoto extends jspb.Message {
 
 export namespace GroupsUploadPhoto {
   export type AsObject = {
-    groupid?: string,
-    file: core_types_pb.InputFile.AsObject,
-    returnobject?: boolean,
+    groupid: string,
+    file?: core_types_pb.InputFile.AsObject,
+    returnobject: boolean,
   }
 }
 
 export class GroupsRemovePhoto extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
-  hasPhotoid(): boolean;
-  clearPhotoid(): void;
-  getPhotoid(): string | undefined;
+  getPhotoid(): string;
   setPhotoid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -270,20 +238,16 @@ export class GroupsRemovePhoto extends jspb.Message {
 
 export namespace GroupsRemovePhoto {
   export type AsObject = {
-    groupid?: string,
-    photoid?: string,
+    groupid: string,
+    photoid: string,
   }
 }
 
 export class GroupsUpdatePhoto extends jspb.Message {
-  hasPhotoid(): boolean;
-  clearPhotoid(): void;
-  getPhotoid(): string | undefined;
+  getPhotoid(): string;
   setPhotoid(value: string): void;
 
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -298,15 +262,13 @@ export class GroupsUpdatePhoto extends jspb.Message {
 
 export namespace GroupsUpdatePhoto {
   export type AsObject = {
-    photoid?: string,
-    groupid?: string,
+    photoid: string,
+    groupid: string,
   }
 }
 
 export class GroupsGetReadHistoryStats extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): string | undefined;
+  getGroupid(): string;
   setGroupid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -321,7 +283,7 @@ export class GroupsGetReadHistoryStats extends jspb.Message {
 
 export namespace GroupsGetReadHistoryStats {
   export type AsObject = {
-    groupid?: string,
+    groupid: string,
   }
 }
 
@@ -336,9 +298,7 @@ export class GroupsHistoryStats extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -355,19 +315,15 @@ export namespace GroupsHistoryStats {
   export type AsObject = {
     statsList: Array<ReadHistoryStat.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
-    empty?: boolean,
+    empty: boolean,
   }
 }
 
 export class ReadHistoryStat extends jspb.Message {
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -382,8 +338,8 @@ export class ReadHistoryStat extends jspb.Message {
 
 export namespace ReadHistoryStat {
   export type AsObject = {
-    userid?: string,
-    messageid?: number,
+    userid: string,
+    messageid: number,
   }
 }
 

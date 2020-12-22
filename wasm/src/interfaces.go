@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"fmt"
-	"git.ronaksoftware.com/river/msg/msg"
+	"git.ronaksoft.com/river/msg/go/msg"
 	"github.com/monnand/dhkx"
 	"math/big"
 	"syscall/js"

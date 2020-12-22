@@ -3,11 +3,10 @@
 // file: core.types.proto
 
 import * as jspb from "google-protobuf";
+import * as rony_pb from "./rony_pb";
 
 export class Ping extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -22,14 +21,12 @@ export class Ping extends jspb.Message {
 
 export namespace Ping {
   export type AsObject = {
-    id?: number,
+    id: number,
   }
 }
 
 export class Pong extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -44,106 +41,26 @@ export class Pong extends jspb.Message {
 
 export namespace Pong {
   export type AsObject = {
-    id?: number,
-  }
-}
-
-export class MessageEnvelope extends jspb.Message {
-  hasConstructor(): boolean;
-  clearConstructor(): void;
-  getConstructor(): number | undefined;
-  setConstructor(value: number): void;
-
-  hasRequestid(): boolean;
-  clearRequestid(): void;
-  getRequestid(): number | undefined;
-  setRequestid(value: number): void;
-
-  hasMessage(): boolean;
-  clearMessage(): void;
-  getMessage(): Uint8Array | string;
-  getMessage_asU8(): Uint8Array;
-  getMessage_asB64(): string;
-  setMessage(value: Uint8Array | string): void;
-
-  hasTeam(): boolean;
-  clearTeam(): void;
-  getTeam(): InputTeam | undefined;
-  setTeam(value?: InputTeam): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MessageEnvelope.AsObject;
-  static toObject(includeInstance: boolean, msg: MessageEnvelope): MessageEnvelope.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: MessageEnvelope, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MessageEnvelope;
-  static deserializeBinaryFromReader(message: MessageEnvelope, reader: jspb.BinaryReader): MessageEnvelope;
-}
-
-export namespace MessageEnvelope {
-  export type AsObject = {
-    constructor?: number,
-    requestid?: number,
-    message: Uint8Array | string,
-    team?: InputTeam.AsObject,
-  }
-}
-
-export class MessageContainer extends jspb.Message {
-  hasLength(): boolean;
-  clearLength(): void;
-  getLength(): number | undefined;
-  setLength(value: number): void;
-
-  clearEnvelopesList(): void;
-  getEnvelopesList(): Array<MessageEnvelope>;
-  setEnvelopesList(value: Array<MessageEnvelope>): void;
-  addEnvelopes(value?: MessageEnvelope, index?: number): MessageEnvelope;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MessageContainer.AsObject;
-  static toObject(includeInstance: boolean, msg: MessageContainer): MessageContainer.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: MessageContainer, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MessageContainer;
-  static deserializeBinaryFromReader(message: MessageContainer, reader: jspb.BinaryReader): MessageContainer;
-}
-
-export namespace MessageContainer {
-  export type AsObject = {
-    length?: number,
-    envelopesList: Array<MessageEnvelope.AsObject>,
+    id: number,
   }
 }
 
 export class UpdateEnvelope extends jspb.Message {
-  hasConstructor(): boolean;
-  clearConstructor(): void;
-  getConstructor(): number | undefined;
+  getConstructor(): number;
   setConstructor(value: number): void;
 
-  hasUpdate(): boolean;
-  clearUpdate(): void;
   getUpdate(): Uint8Array | string;
   getUpdate_asU8(): Uint8Array;
   getUpdate_asB64(): string;
   setUpdate(value: Uint8Array | string): void;
 
-  hasUcount(): boolean;
-  clearUcount(): void;
-  getUcount(): number | undefined;
+  getUcount(): number;
   setUcount(value: number): void;
 
-  hasUpdateid(): boolean;
-  clearUpdateid(): void;
-  getUpdateid(): number | undefined;
+  getUpdateid(): number;
   setUpdateid(value: number): void;
 
-  hasTimestamp(): boolean;
-  clearTimestamp(): void;
-  getTimestamp(): number | undefined;
+  getTimestamp(): number;
   setTimestamp(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -158,18 +75,16 @@ export class UpdateEnvelope extends jspb.Message {
 
 export namespace UpdateEnvelope {
   export type AsObject = {
-    constructor?: number,
+    constructor: number,
     update: Uint8Array | string,
-    ucount?: number,
-    updateid?: number,
-    timestamp?: number,
+    ucount: number,
+    updateid: number,
+    timestamp: number,
   }
 }
 
 export class UpdateContainer extends jspb.Message {
-  hasLength(): boolean;
-  clearLength(): void;
-  getLength(): number | undefined;
+  getLength(): number;
   setLength(value: number): void;
 
   clearUpdatesList(): void;
@@ -177,14 +92,10 @@ export class UpdateContainer extends jspb.Message {
   setUpdatesList(value: Array<UpdateEnvelope>): void;
   addUpdates(value?: UpdateEnvelope, index?: number): UpdateEnvelope;
 
-  hasMinupdateid(): boolean;
-  clearMinupdateid(): void;
-  getMinupdateid(): number | undefined;
+  getMinupdateid(): number;
   setMinupdateid(value: number): void;
 
-  hasMaxupdateid(): boolean;
-  clearMaxupdateid(): void;
-  getMaxupdateid(): number | undefined;
+  getMaxupdateid(): number;
   setMaxupdateid(value: number): void;
 
   clearUsersList(): void;
@@ -209,30 +120,24 @@ export class UpdateContainer extends jspb.Message {
 
 export namespace UpdateContainer {
   export type AsObject = {
-    length?: number,
+    length: number,
     updatesList: Array<UpdateEnvelope.AsObject>,
-    minupdateid?: number,
-    maxupdateid?: number,
+    minupdateid: number,
+    maxupdateid: number,
     usersList: Array<User.AsObject>,
     groupsList: Array<Group.AsObject>,
   }
 }
 
 export class ProtoMessage extends jspb.Message {
-  hasAuthid(): boolean;
-  clearAuthid(): void;
-  getAuthid(): number | undefined;
+  getAuthid(): number;
   setAuthid(value: number): void;
 
-  hasMessagekey(): boolean;
-  clearMessagekey(): void;
   getMessagekey(): Uint8Array | string;
   getMessagekey_asU8(): Uint8Array;
   getMessagekey_asB64(): string;
   setMessagekey(value: Uint8Array | string): void;
 
-  hasPayload(): boolean;
-  clearPayload(): void;
   getPayload(): Uint8Array | string;
   getPayload_asU8(): Uint8Array;
   getPayload_asB64(): string;
@@ -250,32 +155,26 @@ export class ProtoMessage extends jspb.Message {
 
 export namespace ProtoMessage {
   export type AsObject = {
-    authid?: number,
+    authid: number,
     messagekey: Uint8Array | string,
     payload: Uint8Array | string,
   }
 }
 
 export class ProtoEncryptedPayload extends jspb.Message {
-  hasServersalt(): boolean;
-  clearServersalt(): void;
-  getServersalt(): number | undefined;
+  getServersalt(): number;
   setServersalt(value: number): void;
 
-  hasMessageid(): boolean;
-  clearMessageid(): void;
-  getMessageid(): number | undefined;
+  getMessageid(): number;
   setMessageid(value: number): void;
 
-  hasSessionid(): boolean;
-  clearSessionid(): void;
-  getSessionid(): number | undefined;
+  getSessionid(): number;
   setSessionid(value: number): void;
 
   hasEnvelope(): boolean;
   clearEnvelope(): void;
-  getEnvelope(): MessageEnvelope;
-  setEnvelope(value?: MessageEnvelope): void;
+  getEnvelope(): rony_pb.MessageEnvelope | undefined;
+  setEnvelope(value?: rony_pb.MessageEnvelope): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProtoEncryptedPayload.AsObject;
@@ -289,38 +188,10 @@ export class ProtoEncryptedPayload extends jspb.Message {
 
 export namespace ProtoEncryptedPayload {
   export type AsObject = {
-    serversalt?: number,
-    messageid?: number,
-    sessionid?: number,
-    envelope: MessageEnvelope.AsObject,
-  }
-}
-
-export class Error extends jspb.Message {
-  hasCode(): boolean;
-  clearCode(): void;
-  getCode(): string | undefined;
-  setCode(value: string): void;
-
-  hasItems(): boolean;
-  clearItems(): void;
-  getItems(): string | undefined;
-  setItems(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Error.AsObject;
-  static toObject(includeInstance: boolean, msg: Error): Error.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Error, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Error;
-  static deserializeBinaryFromReader(message: Error, reader: jspb.BinaryReader): Error;
-}
-
-export namespace Error {
-  export type AsObject = {
-    code?: string,
-    items?: string,
+    serversalt: number,
+    messageid: number,
+    sessionid: number,
+    envelope?: rony_pb.MessageEnvelope.AsObject,
   }
 }
 
@@ -347,9 +218,7 @@ export namespace Ack {
 }
 
 export class Bool extends jspb.Message {
-  hasResult(): boolean;
-  clearResult(): void;
-  getResult(): boolean | undefined;
+  getResult(): boolean;
   setResult(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -364,49 +233,33 @@ export class Bool extends jspb.Message {
 
 export namespace Bool {
   export type AsObject = {
-    result?: boolean,
+    result: boolean,
   }
 }
 
 export class Dialog extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
+  getPeerid(): string;
   setPeerid(value: string): void;
 
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
+  getPeertype(): number;
   setPeertype(value: number): void;
 
-  hasTopmessageid(): boolean;
-  clearTopmessageid(): void;
-  getTopmessageid(): number | undefined;
+  getTopmessageid(): number;
   setTopmessageid(value: number): void;
 
-  hasReadinboxmaxid(): boolean;
-  clearReadinboxmaxid(): void;
-  getReadinboxmaxid(): number | undefined;
+  getReadinboxmaxid(): number;
   setReadinboxmaxid(value: number): void;
 
-  hasReadoutboxmaxid(): boolean;
-  clearReadoutboxmaxid(): void;
-  getReadoutboxmaxid(): number | undefined;
+  getReadoutboxmaxid(): number;
   setReadoutboxmaxid(value: number): void;
 
-  hasUnreadcount(): boolean;
-  clearUnreadcount(): void;
-  getUnreadcount(): number | undefined;
+  getUnreadcount(): number;
   setUnreadcount(value: number): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   hasNotifysettings(): boolean;
@@ -414,14 +267,10 @@ export class Dialog extends jspb.Message {
   getNotifysettings(): PeerNotifySettings | undefined;
   setNotifysettings(value?: PeerNotifySettings): void;
 
-  hasMentionedcount(): boolean;
-  clearMentionedcount(): void;
-  getMentionedcount(): number | undefined;
+  getMentionedcount(): number;
   setMentionedcount(value: number): void;
 
-  hasPinned(): boolean;
-  clearPinned(): void;
-  getPinned(): boolean | undefined;
+  getPinned(): boolean;
   setPinned(value: boolean): void;
 
   hasDraft(): boolean;
@@ -429,9 +278,7 @@ export class Dialog extends jspb.Message {
   getDraft(): DraftMessage | undefined;
   setDraft(value?: DraftMessage): void;
 
-  hasPinnedmessageid(): boolean;
-  clearPinnedmessageid(): void;
-  getPinnedmessageid(): number | undefined;
+  getPinnedmessageid(): number;
   setPinnedmessageid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -446,36 +293,30 @@ export class Dialog extends jspb.Message {
 
 export namespace Dialog {
   export type AsObject = {
-    teamid?: string,
-    peerid?: string,
-    peertype?: number,
-    topmessageid?: number,
-    readinboxmaxid?: number,
-    readoutboxmaxid?: number,
-    unreadcount?: number,
-    accesshash?: string,
+    teamid: string,
+    peerid: string,
+    peertype: number,
+    topmessageid: number,
+    readinboxmaxid: number,
+    readoutboxmaxid: number,
+    unreadcount: number,
+    accesshash: string,
     notifysettings?: PeerNotifySettings.AsObject,
-    mentionedcount?: number,
-    pinned?: boolean,
+    mentionedcount: number,
+    pinned: boolean,
     draft?: DraftMessage.AsObject,
-    pinnedmessageid?: number,
+    pinnedmessageid: number,
   }
 }
 
 export class InputPeer extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): PeerType | undefined;
+  getType(): PeerType;
   setType(value: PeerType): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -490,26 +331,20 @@ export class InputPeer extends jspb.Message {
 
 export namespace InputPeer {
   export type AsObject = {
-    id?: string,
-    type?: PeerType,
-    accesshash?: string,
+    id: string,
+    type: PeerType,
+    accesshash: string,
   }
 }
 
 export class Peer extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): number | undefined;
+  getType(): number;
   setType(value: number): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -524,27 +359,21 @@ export class Peer extends jspb.Message {
 
 export namespace Peer {
   export type AsObject = {
-    id?: string,
-    type?: number,
-    accesshash?: string,
+    id: string,
+    type: number,
+    accesshash: string,
   }
 }
 
 export class InputPassword extends jspb.Message {
-  hasSrpid(): boolean;
-  clearSrpid(): void;
-  getSrpid(): string | undefined;
+  getSrpid(): string;
   setSrpid(value: string): void;
 
-  hasA(): boolean;
-  clearA(): void;
   getA(): Uint8Array | string;
   getA_asU8(): Uint8Array;
   getA_asB64(): string;
   setA(value: Uint8Array | string): void;
 
-  hasM1(): boolean;
-  clearM1(): void;
   getM1(): Uint8Array | string;
   getM1_asU8(): Uint8Array;
   getM1_asB64(): string;
@@ -562,31 +391,23 @@ export class InputPassword extends jspb.Message {
 
 export namespace InputPassword {
   export type AsObject = {
-    srpid?: string,
+    srpid: string,
     a: Uint8Array | string,
     m1: Uint8Array | string,
   }
 }
 
 export class InputFileLocation extends jspb.Message {
-  hasClusterid(): boolean;
-  clearClusterid(): void;
-  getClusterid(): number | undefined;
+  getClusterid(): number;
   setClusterid(value: number): void;
 
-  hasFileid(): boolean;
-  clearFileid(): void;
-  getFileid(): string | undefined;
+  getFileid(): string;
   setFileid(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
-  hasVersion(): boolean;
-  clearVersion(): void;
-  getVersion(): number | undefined;
+  getVersion(): number;
   setVersion(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -601,27 +422,21 @@ export class InputFileLocation extends jspb.Message {
 
 export namespace InputFileLocation {
   export type AsObject = {
-    clusterid?: number,
-    fileid?: string,
-    accesshash?: string,
-    version?: number,
+    clusterid: number,
+    fileid: string,
+    accesshash: string,
+    version: number,
   }
 }
 
 export class FileLocation extends jspb.Message {
-  hasClusterid(): boolean;
-  clearClusterid(): void;
-  getClusterid(): number | undefined;
+  getClusterid(): number;
   setClusterid(value: number): void;
 
-  hasFileid(): boolean;
-  clearFileid(): void;
-  getFileid(): string | undefined;
+  getFileid(): string;
   setFileid(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -636,26 +451,24 @@ export class FileLocation extends jspb.Message {
 
 export namespace FileLocation {
   export type AsObject = {
-    clusterid?: number,
-    fileid?: string,
-    accesshash?: string,
+    clusterid: number,
+    fileid: string,
+    accesshash: string,
   }
 }
 
 export class UserPhoto extends jspb.Message {
   hasPhotobig(): boolean;
   clearPhotobig(): void;
-  getPhotobig(): FileLocation;
+  getPhotobig(): FileLocation | undefined;
   setPhotobig(value?: FileLocation): void;
 
   hasPhotosmall(): boolean;
   clearPhotosmall(): void;
-  getPhotosmall(): FileLocation;
+  getPhotosmall(): FileLocation | undefined;
   setPhotosmall(value?: FileLocation): void;
 
-  hasPhotoid(): boolean;
-  clearPhotoid(): void;
-  getPhotoid(): string | undefined;
+  getPhotoid(): string;
   setPhotoid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -670,21 +483,17 @@ export class UserPhoto extends jspb.Message {
 
 export namespace UserPhoto {
   export type AsObject = {
-    photobig: FileLocation.AsObject,
-    photosmall: FileLocation.AsObject,
-    photoid?: string,
+    photobig?: FileLocation.AsObject,
+    photosmall?: FileLocation.AsObject,
+    photoid: string,
   }
 }
 
 export class InputUser extends jspb.Message {
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -699,45 +508,31 @@ export class InputUser extends jspb.Message {
 
 export namespace InputUser {
   export type AsObject = {
-    userid?: string,
-    accesshash?: string,
+    userid: string,
+    accesshash: string,
   }
 }
 
 export class User extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
-  hasStatus(): boolean;
-  clearStatus(): void;
-  getStatus(): UserStatus | undefined;
+  getStatus(): UserStatus;
   setStatus(value: UserStatus): void;
 
-  hasRestricted(): boolean;
-  clearRestricted(): void;
-  getRestricted(): boolean | undefined;
+  getRestricted(): boolean;
   setRestricted(value: boolean): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   hasPhoto(): boolean;
@@ -745,19 +540,13 @@ export class User extends jspb.Message {
   getPhoto(): UserPhoto | undefined;
   setPhoto(value?: UserPhoto): void;
 
-  hasBio(): boolean;
-  clearBio(): void;
-  getBio(): string | undefined;
+  getBio(): string;
   setBio(value: string): void;
 
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasLastseen(): boolean;
-  clearLastseen(): void;
-  getLastseen(): number | undefined;
+  getLastseen(): number;
   setLastseen(value: number): void;
 
   clearPhotogalleryList(): void;
@@ -765,19 +554,13 @@ export class User extends jspb.Message {
   setPhotogalleryList(value: Array<UserPhoto>): void;
   addPhotogallery(value?: UserPhoto, index?: number): UserPhoto;
 
-  hasIsbot(): boolean;
-  clearIsbot(): void;
-  getIsbot(): boolean | undefined;
+  getIsbot(): boolean;
   setIsbot(value: boolean): void;
 
-  hasDeleted(): boolean;
-  clearDeleted(): void;
-  getDeleted(): boolean | undefined;
+  getDeleted(): boolean;
   setDeleted(value: boolean): void;
 
-  hasBlocked(): boolean;
-  clearBlocked(): void;
-  getBlocked(): boolean | undefined;
+  getBlocked(): boolean;
   setBlocked(value: boolean): void;
 
   hasBotinfo(): boolean;
@@ -785,9 +568,7 @@ export class User extends jspb.Message {
   getBotinfo(): BotInfo | undefined;
   setBotinfo(value?: BotInfo): void;
 
-  hasOfficial(): boolean;
-  clearOfficial(): void;
-  getOfficial(): boolean | undefined;
+  getOfficial(): boolean;
   setOfficial(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -802,60 +583,46 @@ export class User extends jspb.Message {
 
 export namespace User {
   export type AsObject = {
-    id?: string,
-    firstname?: string,
-    lastname?: string,
-    username?: string,
-    status?: UserStatus,
-    restricted?: boolean,
-    accesshash?: string,
+    id: string,
+    firstname: string,
+    lastname: string,
+    username: string,
+    status: UserStatus,
+    restricted: boolean,
+    accesshash: string,
     photo?: UserPhoto.AsObject,
-    bio?: string,
-    phone?: string,
-    lastseen?: number,
-    photogalleryList?: Array<UserPhoto.AsObject>,
-    isbot?: boolean,
-    deleted?: boolean,
-    blocked?: boolean,
+    bio: string,
+    phone: string,
+    lastseen: number,
+    photogalleryList: Array<UserPhoto.AsObject>,
+    isbot: boolean,
+    deleted: boolean,
+    blocked: boolean,
     botinfo?: BotInfo.AsObject,
-    official?: boolean,
+    official: boolean,
   }
 }
 
 export class ContactUser extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
-  hasClientid(): boolean;
-  clearClientid(): void;
-  getClientid(): string | undefined;
+  getClientid(): string;
   setClientid(value: string): void;
 
   hasPhoto(): boolean;
@@ -875,36 +642,28 @@ export class ContactUser extends jspb.Message {
 
 export namespace ContactUser {
   export type AsObject = {
-    id?: string,
-    firstname?: string,
-    lastname?: string,
-    accesshash?: string,
-    phone?: string,
-    username?: string,
-    clientid?: string,
+    id: string,
+    firstname: string,
+    lastname: string,
+    accesshash: string,
+    phone: string,
+    username: string,
+    clientid: string,
     photo?: UserPhoto.AsObject,
   }
 }
 
 export class Bot extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
-  hasBio(): boolean;
-  clearBio(): void;
-  getBio(): string | undefined;
+  getBio(): string;
   setBio(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -919,22 +678,18 @@ export class Bot extends jspb.Message {
 
 export namespace Bot {
   export type AsObject = {
-    id?: string,
-    name?: string,
-    username?: string,
-    bio?: string,
+    id: string,
+    name: string,
+    username: string,
+    bio: string,
   }
 }
 
 export class BotCommands extends jspb.Message {
-  hasCommand(): boolean;
-  clearCommand(): void;
-  getCommand(): string | undefined;
+  getCommand(): string;
   setCommand(value: string): void;
 
-  hasDescription(): boolean;
-  clearDescription(): void;
-  getDescription(): string | undefined;
+  getDescription(): string;
   setDescription(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -949,25 +704,21 @@ export class BotCommands extends jspb.Message {
 
 export namespace BotCommands {
   export type AsObject = {
-    command?: string,
-    description?: string,
+    command: string,
+    description: string,
   }
 }
 
 export class BotInfo extends jspb.Message {
   hasBot(): boolean;
   clearBot(): void;
-  getBot(): Bot;
+  getBot(): Bot | undefined;
   setBot(value?: Bot): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
+  getUserid(): number;
   setUserid(value: number): void;
 
-  hasDescription(): boolean;
-  clearDescription(): void;
-  getDescription(): string | undefined;
+  getDescription(): string;
   setDescription(value: string): void;
 
   clearBotcommandsList(): void;
@@ -975,19 +726,13 @@ export class BotInfo extends jspb.Message {
   setBotcommandsList(value: Array<BotCommands>): void;
   addBotcommands(value?: BotCommands, index?: number): BotCommands;
 
-  hasInlinegeo(): boolean;
-  clearInlinegeo(): void;
-  getInlinegeo(): boolean | undefined;
+  getInlinegeo(): boolean;
   setInlinegeo(value: boolean): void;
 
-  hasInlineplaceholder(): boolean;
-  clearInlineplaceholder(): void;
-  getInlineplaceholder(): string | undefined;
+  getInlineplaceholder(): string;
   setInlineplaceholder(value: string): void;
 
-  hasInlinequery(): boolean;
-  clearInlinequery(): void;
-  getInlinequery(): boolean | undefined;
+  getInlinequery(): boolean;
   setInlinequery(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -1002,30 +747,28 @@ export class BotInfo extends jspb.Message {
 
 export namespace BotInfo {
   export type AsObject = {
-    bot: Bot.AsObject,
-    userid?: number,
-    description?: string,
+    bot?: Bot.AsObject,
+    userid: number,
+    description: string,
     botcommandsList: Array<BotCommands.AsObject>,
-    inlinegeo?: boolean,
-    inlineplaceholder?: string,
-    inlinequery?: boolean,
+    inlinegeo: boolean,
+    inlineplaceholder: string,
+    inlinequery: boolean,
   }
 }
 
 export class GroupPhoto extends jspb.Message {
   hasPhotobig(): boolean;
   clearPhotobig(): void;
-  getPhotobig(): FileLocation;
+  getPhotobig(): FileLocation | undefined;
   setPhotobig(value?: FileLocation): void;
 
   hasPhotosmall(): boolean;
   clearPhotosmall(): void;
-  getPhotosmall(): FileLocation;
+  getPhotosmall(): FileLocation | undefined;
   setPhotosmall(value?: FileLocation): void;
 
-  hasPhotoid(): boolean;
-  clearPhotoid(): void;
-  getPhotoid(): string | undefined;
+  getPhotoid(): string;
   setPhotoid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -1040,41 +783,29 @@ export class GroupPhoto extends jspb.Message {
 
 export namespace GroupPhoto {
   export type AsObject = {
-    photobig: FileLocation.AsObject,
-    photosmall: FileLocation.AsObject,
-    photoid?: string,
+    photobig?: FileLocation.AsObject,
+    photosmall?: FileLocation.AsObject,
+    photoid: string,
   }
 }
 
 export class Group extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasTitle(): boolean;
-  clearTitle(): void;
-  getTitle(): string | undefined;
+  getTitle(): string;
   setTitle(value: string): void;
 
-  hasCreatedon(): boolean;
-  clearCreatedon(): void;
-  getCreatedon(): number | undefined;
+  getCreatedon(): number;
   setCreatedon(value: number): void;
 
-  hasParticipants(): boolean;
-  clearParticipants(): void;
-  getParticipants(): number | undefined;
+  getParticipants(): number;
   setParticipants(value: number): void;
 
-  hasEditedon(): boolean;
-  clearEditedon(): void;
-  getEditedon(): number | undefined;
+  getEditedon(): number;
   setEditedon(value: number): void;
 
   clearFlagsList(): void;
@@ -1099,13 +830,13 @@ export class Group extends jspb.Message {
 
 export namespace Group {
   export type AsObject = {
-    teamid?: string,
-    id?: string,
-    title?: string,
-    createdon?: number,
-    participants?: number,
-    editedon?: number,
-    flagsList?: Array<GroupFlags>,
+    teamid: string,
+    id: string,
+    title: string,
+    createdon: number,
+    participants: number,
+    editedon: number,
+    flagsList: Array<GroupFlags>,
     photo?: GroupPhoto.AsObject,
   }
 }
@@ -1113,7 +844,7 @@ export namespace Group {
 export class GroupFull extends jspb.Message {
   hasGroup(): boolean;
   clearGroup(): void;
-  getGroup(): Group;
+  getGroup(): Group | undefined;
   setGroup(value?: Group): void;
 
   clearUsersList(): void;
@@ -1128,7 +859,7 @@ export class GroupFull extends jspb.Message {
 
   hasNotifysettings(): boolean;
   clearNotifysettings(): void;
-  getNotifysettings(): PeerNotifySettings;
+  getNotifysettings(): PeerNotifySettings | undefined;
   setNotifysettings(value?: PeerNotifySettings): void;
 
   clearPhotogalleryList(): void;
@@ -1148,43 +879,31 @@ export class GroupFull extends jspb.Message {
 
 export namespace GroupFull {
   export type AsObject = {
-    group: Group.AsObject,
+    group?: Group.AsObject,
     usersList: Array<User.AsObject>,
     participantsList: Array<GroupParticipant.AsObject>,
-    notifysettings: PeerNotifySettings.AsObject,
+    notifysettings?: PeerNotifySettings.AsObject,
     photogalleryList: Array<GroupPhoto.AsObject>,
   }
 }
 
 export class GroupParticipant extends jspb.Message {
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasType(): boolean;
-  clearType(): void;
-  getType(): ParticipantType | undefined;
+  getType(): ParticipantType;
   setType(value: ParticipantType): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
+  getUsername(): string;
   setUsername(value: string): void;
 
   hasPhoto(): boolean;
@@ -1204,109 +923,71 @@ export class GroupParticipant extends jspb.Message {
 
 export namespace GroupParticipant {
   export type AsObject = {
-    userid?: string,
-    firstname?: string,
-    lastname?: string,
-    type?: ParticipantType,
-    accesshash?: string,
-    username?: string,
+    userid: string,
+    firstname: string,
+    lastname: string,
+    type: ParticipantType,
+    accesshash: string,
+    username: string,
     photo?: UserPhoto.AsObject,
   }
 }
 
 export class UserMessage extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
+  getPeerid(): string;
   setPeerid(value: string): void;
 
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
+  getPeertype(): number;
   setPeertype(value: number): void;
 
-  hasCreatedon(): boolean;
-  clearCreatedon(): void;
-  getCreatedon(): number | undefined;
+  getCreatedon(): number;
   setCreatedon(value: number): void;
 
-  hasEditedon(): boolean;
-  clearEditedon(): void;
-  getEditedon(): number | undefined;
+  getEditedon(): number;
   setEditedon(value: number): void;
 
-  hasFwd(): boolean;
-  clearFwd(): void;
-  getFwd(): boolean | undefined;
+  getFwd(): boolean;
   setFwd(value: boolean): void;
 
-  hasFwdsenderid(): boolean;
-  clearFwdsenderid(): void;
-  getFwdsenderid(): string | undefined;
+  getFwdsenderid(): string;
   setFwdsenderid(value: string): void;
 
-  hasFwdchannelid(): boolean;
-  clearFwdchannelid(): void;
-  getFwdchannelid(): string | undefined;
+  getFwdchannelid(): string;
   setFwdchannelid(value: string): void;
 
-  hasFwdchannelmessageid(): boolean;
-  clearFwdchannelmessageid(): void;
-  getFwdchannelmessageid(): string | undefined;
+  getFwdchannelmessageid(): string;
   setFwdchannelmessageid(value: string): void;
 
-  hasFlags(): boolean;
-  clearFlags(): void;
-  getFlags(): number | undefined;
+  getFlags(): number;
   setFlags(value: number): void;
 
-  hasMessagetype(): boolean;
-  clearMessagetype(): void;
-  getMessagetype(): number | undefined;
+  getMessagetype(): number;
   setMessagetype(value: number): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
-  hasSenderid(): boolean;
-  clearSenderid(): void;
-  getSenderid(): string | undefined;
+  getSenderid(): string;
   setSenderid(value: string): void;
 
-  hasContentread(): boolean;
-  clearContentread(): void;
-  getContentread(): boolean | undefined;
+  getContentread(): boolean;
   setContentread(value: boolean): void;
 
-  hasInbox(): boolean;
-  clearInbox(): void;
-  getInbox(): boolean | undefined;
+  getInbox(): boolean;
   setInbox(value: boolean): void;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasMessageaction(): boolean;
-  clearMessageaction(): void;
-  getMessageaction(): number | undefined;
+  getMessageaction(): number;
   setMessageaction(value: number): void;
 
-  hasMessageactiondata(): boolean;
-  clearMessageactiondata(): void;
   getMessageactiondata(): Uint8Array | string;
   getMessageactiondata_asU8(): Uint8Array;
   getMessageactiondata_asB64(): string;
@@ -1317,25 +998,17 @@ export class UserMessage extends jspb.Message {
   setEntitiesList(value: Array<MessageEntity>): void;
   addEntities(value?: MessageEntity, index?: number): MessageEntity;
 
-  hasMediatype(): boolean;
-  clearMediatype(): void;
-  getMediatype(): MediaType | undefined;
+  getMediatype(): MediaType;
   setMediatype(value: MediaType): void;
 
-  hasMedia(): boolean;
-  clearMedia(): void;
   getMedia(): Uint8Array | string;
   getMedia_asU8(): Uint8Array;
   getMedia_asB64(): string;
   setMedia(value: Uint8Array | string): void;
 
-  hasReplymarkup(): boolean;
-  clearReplymarkup(): void;
-  getReplymarkup(): number | undefined;
+  getReplymarkup(): number;
   setReplymarkup(value: number): void;
 
-  hasReplymarkupdata(): boolean;
-  clearReplymarkupdata(): void;
   getReplymarkupdata(): Uint8Array | string;
   getReplymarkupdata_asU8(): Uint8Array;
   getReplymarkupdata_asB64(): string;
@@ -1346,9 +1019,7 @@ export class UserMessage extends jspb.Message {
   setLabelidsList(value: Array<number>): void;
   addLabelids(value: number, index?: number): number;
 
-  hasViabotid(): boolean;
-  clearViabotid(): void;
-  getViabotid(): string | undefined;
+  getViabotid(): string;
   setViabotid(value: string): void;
 
   clearReactionsList(): void;
@@ -1373,46 +1044,42 @@ export class UserMessage extends jspb.Message {
 
 export namespace UserMessage {
   export type AsObject = {
-    teamid?: string,
-    id?: number,
-    peerid?: string,
-    peertype?: number,
-    createdon?: number,
-    editedon?: number,
-    fwd?: boolean,
-    fwdsenderid?: string,
-    fwdchannelid?: string,
-    fwdchannelmessageid?: string,
-    flags?: number,
-    messagetype?: number,
-    body?: string,
-    senderid?: string,
-    contentread?: boolean,
-    inbox?: boolean,
-    replyto?: number,
-    messageaction?: number,
-    messageactiondata?: Uint8Array | string,
-    entitiesList?: Array<MessageEntity.AsObject>,
-    mediatype?: MediaType,
-    media?: Uint8Array | string,
-    replymarkup?: number,
-    replymarkupdata?: Uint8Array | string,
-    labelidsList?: Array<number>,
-    viabotid?: string,
-    reactionsList?: Array<ReactionCounter.AsObject>,
-    yourreactionsList?: Array<string>,
+    teamid: string,
+    id: number,
+    peerid: string,
+    peertype: number,
+    createdon: number,
+    editedon: number,
+    fwd: boolean,
+    fwdsenderid: string,
+    fwdchannelid: string,
+    fwdchannelmessageid: string,
+    flags: number,
+    messagetype: number,
+    body: string,
+    senderid: string,
+    contentread: boolean,
+    inbox: boolean,
+    replyto: number,
+    messageaction: number,
+    messageactiondata: Uint8Array | string,
+    entitiesList: Array<MessageEntity.AsObject>,
+    mediatype: MediaType,
+    media: Uint8Array | string,
+    replymarkup: number,
+    replymarkupdata: Uint8Array | string,
+    labelidsList: Array<number>,
+    viabotid: string,
+    reactionsList: Array<ReactionCounter.AsObject>,
+    yourreactionsList: Array<string>,
   }
 }
 
 export class ReactionCounter extends jspb.Message {
-  hasReaction(): boolean;
-  clearReaction(): void;
-  getReaction(): string | undefined;
+  getReaction(): string;
   setReaction(value: string): void;
 
-  hasTotal(): boolean;
-  clearTotal(): void;
-  getTotal(): number | undefined;
+  getTotal(): number;
   setTotal(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1427,35 +1094,25 @@ export class ReactionCounter extends jspb.Message {
 
 export namespace ReactionCounter {
   export type AsObject = {
-    reaction?: string,
-    total?: number,
+    reaction: string,
+    total: number,
   }
 }
 
 export class DraftMessage extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
+  getPeerid(): string;
   setPeerid(value: string): void;
 
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
+  getPeertype(): number;
   setPeertype(value: number): void;
 
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
+  getDate(): number;
   setDate(value: number): void;
 
-  hasBody(): boolean;
-  clearBody(): void;
-  getBody(): string | undefined;
+  getBody(): string;
   setBody(value: string): void;
 
   clearEntitiesList(): void;
@@ -1463,14 +1120,10 @@ export class DraftMessage extends jspb.Message {
   setEntitiesList(value: Array<MessageEntity>): void;
   addEntities(value?: MessageEntity, index?: number): MessageEntity;
 
-  hasReplyto(): boolean;
-  clearReplyto(): void;
-  getReplyto(): number | undefined;
+  getReplyto(): number;
   setReplyto(value: number): void;
 
-  hasEditedid(): boolean;
-  clearEditedid(): void;
-  getEditedid(): number | undefined;
+  getEditedid(): number;
   setEditedid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1485,36 +1138,28 @@ export class DraftMessage extends jspb.Message {
 
 export namespace DraftMessage {
   export type AsObject = {
-    teamid?: string,
-    peerid?: string,
-    peertype?: number,
-    date?: number,
-    body?: string,
-    entitiesList?: Array<MessageEntity.AsObject>,
-    replyto?: number,
-    editedid?: number,
+    teamid: string,
+    peerid: string,
+    peertype: number,
+    date: number,
+    body: string,
+    entitiesList: Array<MessageEntity.AsObject>,
+    replyto: number,
+    editedid: number,
   }
 }
 
 export class MessageEntity extends jspb.Message {
-  hasType(): boolean;
-  clearType(): void;
-  getType(): MessageEntityType | undefined;
+  getType(): MessageEntityType;
   setType(value: MessageEntityType): void;
 
-  hasOffset(): boolean;
-  clearOffset(): void;
-  getOffset(): number | undefined;
+  getOffset(): number;
   setOffset(value: number): void;
 
-  hasLength(): boolean;
-  clearLength(): void;
-  getLength(): number | undefined;
+  getLength(): number;
   setLength(value: number): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -1529,27 +1174,21 @@ export class MessageEntity extends jspb.Message {
 
 export namespace MessageEntity {
   export type AsObject = {
-    type?: MessageEntityType,
-    offset?: number,
-    length?: number,
-    userid?: string,
+    type: MessageEntityType,
+    offset: number,
+    length: number,
+    userid: string,
   }
 }
 
 export class RSAPublicKey extends jspb.Message {
-  hasFingerprint(): boolean;
-  clearFingerprint(): void;
-  getFingerprint(): number | undefined;
+  getFingerprint(): number;
   setFingerprint(value: number): void;
 
-  hasN(): boolean;
-  clearN(): void;
-  getN(): string | undefined;
+  getN(): string;
   setN(value: string): void;
 
-  hasE(): boolean;
-  clearE(): void;
-  getE(): number | undefined;
+  getE(): number;
   setE(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1564,26 +1203,20 @@ export class RSAPublicKey extends jspb.Message {
 
 export namespace RSAPublicKey {
   export type AsObject = {
-    fingerprint?: number,
-    n?: string,
-    e?: number,
+    fingerprint: number,
+    n: string,
+    e: number,
   }
 }
 
 export class DHGroup extends jspb.Message {
-  hasFingerprint(): boolean;
-  clearFingerprint(): void;
-  getFingerprint(): number | undefined;
+  getFingerprint(): number;
   setFingerprint(value: number): void;
 
-  hasPrime(): boolean;
-  clearPrime(): void;
-  getPrime(): string | undefined;
+  getPrime(): string;
   setPrime(value: string): void;
 
-  hasGen(): boolean;
-  clearGen(): void;
-  getGen(): number | undefined;
+  getGen(): number;
   setGen(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1598,31 +1231,23 @@ export class DHGroup extends jspb.Message {
 
 export namespace DHGroup {
   export type AsObject = {
-    fingerprint?: number,
-    prime?: string,
-    gen?: number,
+    fingerprint: number,
+    prime: string,
+    gen: number,
   }
 }
 
 export class PhoneContact extends jspb.Message {
-  hasClientid(): boolean;
-  clearClientid(): void;
-  getClientid(): string | undefined;
+  getClientid(): string;
   setClientid(value: string): void;
 
-  hasFirstname(): boolean;
-  clearFirstname(): void;
-  getFirstname(): string | undefined;
+  getFirstname(): string;
   setFirstname(value: string): void;
 
-  hasLastname(): boolean;
-  clearLastname(): void;
-  getLastname(): string | undefined;
+  getLastname(): string;
   setLastname(value: string): void;
 
-  hasPhone(): boolean;
-  clearPhone(): void;
-  getPhone(): string | undefined;
+  getPhone(): string;
   setPhone(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -1637,27 +1262,21 @@ export class PhoneContact extends jspb.Message {
 
 export namespace PhoneContact {
   export type AsObject = {
-    clientid?: string,
-    firstname?: string,
-    lastname?: string,
-    phone?: string,
+    clientid: string,
+    firstname: string,
+    lastname: string,
+    phone: string,
   }
 }
 
 export class PeerNotifySettings extends jspb.Message {
-  hasFlags(): boolean;
-  clearFlags(): void;
-  getFlags(): number | undefined;
+  getFlags(): number;
   setFlags(value: number): void;
 
-  hasMuteuntil(): boolean;
-  clearMuteuntil(): void;
-  getMuteuntil(): number | undefined;
+  getMuteuntil(): number;
   setMuteuntil(value: number): void;
 
-  hasSound(): boolean;
-  clearSound(): void;
-  getSound(): string | undefined;
+  getSound(): string;
   setSound(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -1672,31 +1291,23 @@ export class PeerNotifySettings extends jspb.Message {
 
 export namespace PeerNotifySettings {
   export type AsObject = {
-    flags?: number,
-    muteuntil?: number,
-    sound?: string,
+    flags: number,
+    muteuntil: number,
+    sound: string,
   }
 }
 
 export class InputFile extends jspb.Message {
-  hasFileid(): boolean;
-  clearFileid(): void;
-  getFileid(): string | undefined;
+  getFileid(): string;
   setFileid(value: string): void;
 
-  hasTotalparts(): boolean;
-  clearTotalparts(): void;
-  getTotalparts(): number | undefined;
+  getTotalparts(): number;
   setTotalparts(value: number): void;
 
-  hasFilename(): boolean;
-  clearFilename(): void;
-  getFilename(): string | undefined;
+  getFilename(): string;
   setFilename(value: string): void;
 
-  hasMd5checksum(): boolean;
-  clearMd5checksum(): void;
-  getMd5checksum(): string | undefined;
+  getMd5checksum(): string;
   setMd5checksum(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -1711,27 +1322,21 @@ export class InputFile extends jspb.Message {
 
 export namespace InputFile {
   export type AsObject = {
-    fileid?: string,
-    totalparts?: number,
-    filename?: string,
-    md5checksum?: string,
+    fileid: string,
+    totalparts: number,
+    filename: string,
+    md5checksum: string,
   }
 }
 
 export class InputDocument extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
-  hasClusterid(): boolean;
-  clearClusterid(): void;
-  getClusterid(): number | undefined;
+  getClusterid(): number;
   setClusterid(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1746,16 +1351,14 @@ export class InputDocument extends jspb.Message {
 
 export namespace InputDocument {
   export type AsObject = {
-    id?: string,
-    accesshash?: string,
-    clusterid?: number,
+    id: string,
+    accesshash: string,
+    clusterid: number,
   }
 }
 
 export class PrivacyRule extends jspb.Message {
-  hasPrivacytype(): boolean;
-  clearPrivacytype(): void;
-  getPrivacytype(): PrivacyType | undefined;
+  getPrivacytype(): PrivacyType;
   setPrivacytype(value: PrivacyType): void;
 
   clearUseridsList(): void;
@@ -1775,30 +1378,22 @@ export class PrivacyRule extends jspb.Message {
 
 export namespace PrivacyRule {
   export type AsObject = {
-    privacytype?: PrivacyType,
+    privacytype: PrivacyType,
     useridsList: Array<string>,
   }
 }
 
 export class Label extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
+  getId(): number;
   setId(value: number): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasColour(): boolean;
-  clearColour(): void;
-  getColour(): string | undefined;
+  getColour(): string;
   setColour(value: string): void;
 
-  hasCount(): boolean;
-  clearCount(): void;
-  getCount(): number | undefined;
+  getCount(): number;
   setCount(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1813,10 +1408,10 @@ export class Label extends jspb.Message {
 
 export namespace Label {
   export type AsObject = {
-    id?: number,
-    name?: string,
-    colour?: string,
-    count?: number,
+    id: number,
+    name: string,
+    colour: string,
+    count: number,
   }
 }
 
@@ -1826,9 +1421,7 @@ export class LabelsMany extends jspb.Message {
   setLabelsList(value: Array<Label>): void;
   addLabels(value?: Label, index?: number): Label;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -1844,19 +1437,15 @@ export class LabelsMany extends jspb.Message {
 export namespace LabelsMany {
   export type AsObject = {
     labelsList: Array<Label.AsObject>,
-    empty?: boolean,
+    empty: boolean,
   }
 }
 
 export class InputGeoLocation extends jspb.Message {
-  hasLat(): boolean;
-  clearLat(): void;
-  getLat(): number | undefined;
+  getLat(): number;
   setLat(value: number): void;
 
-  hasLong(): boolean;
-  clearLong(): void;
-  getLong(): number | undefined;
+  getLong(): number;
   setLong(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1871,20 +1460,16 @@ export class InputGeoLocation extends jspb.Message {
 
 export namespace InputGeoLocation {
   export type AsObject = {
-    lat?: number,
-    pb_long?: number,
+    lat: number,
+    pb_long: number,
   }
 }
 
 export class GeoLocation extends jspb.Message {
-  hasLat(): boolean;
-  clearLat(): void;
-  getLat(): number | undefined;
+  getLat(): number;
   setLat(value: number): void;
 
-  hasLong(): boolean;
-  clearLong(): void;
-  getLong(): number | undefined;
+  getLong(): number;
   setLong(value: number): void;
 
   serializeBinary(): Uint8Array;
@@ -1899,20 +1484,16 @@ export class GeoLocation extends jspb.Message {
 
 export namespace GeoLocation {
   export type AsObject = {
-    lat?: number,
-    pb_long?: number,
+    lat: number,
+    pb_long: number,
   }
 }
 
 export class InputTeam extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -1927,20 +1508,20 @@ export class InputTeam extends jspb.Message {
 
 export namespace InputTeam {
   export type AsObject = {
-    id?: string,
-    accesshash?: string,
+    id: string,
+    accesshash: string,
   }
 }
 
 export class TeamPhoto extends jspb.Message {
   hasPhotobig(): boolean;
   clearPhotobig(): void;
-  getPhotobig(): FileLocation;
+  getPhotobig(): FileLocation | undefined;
   setPhotobig(value?: FileLocation): void;
 
   hasPhotosmall(): boolean;
   clearPhotosmall(): void;
-  getPhotosmall(): FileLocation;
+  getPhotosmall(): FileLocation | undefined;
   setPhotosmall(value?: FileLocation): void;
 
   serializeBinary(): Uint8Array;
@@ -1955,30 +1536,22 @@ export class TeamPhoto extends jspb.Message {
 
 export namespace TeamPhoto {
   export type AsObject = {
-    photobig: FileLocation.AsObject,
-    photosmall: FileLocation.AsObject,
+    photobig?: FileLocation.AsObject,
+    photosmall?: FileLocation.AsObject,
   }
 }
 
 export class Team extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
-  hasCreatorid(): boolean;
-  clearCreatorid(): void;
-  getCreatorid(): string | undefined;
+  getCreatorid(): string;
   setCreatorid(value: string): void;
 
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
+  getAccesshash(): string;
   setAccesshash(value: string): void;
 
   clearFlagsList(): void;
@@ -1986,14 +1559,10 @@ export class Team extends jspb.Message {
   setFlagsList(value: Array<TeamFlags>): void;
   addFlags(value: TeamFlags, index?: number): TeamFlags;
 
-  hasCapacity(): boolean;
-  clearCapacity(): void;
-  getCapacity(): number | undefined;
+  getCapacity(): number;
   setCapacity(value: number): void;
 
-  hasCommunity(): boolean;
-  clearCommunity(): void;
-  getCommunity(): boolean | undefined;
+  getCommunity(): boolean;
   setCommunity(value: boolean): void;
 
   hasPhoto(): boolean;
@@ -2013,13 +1582,13 @@ export class Team extends jspb.Message {
 
 export namespace Team {
   export type AsObject = {
-    id?: string,
-    name?: string,
-    creatorid?: string,
-    accesshash?: string,
-    flagsList?: Array<TeamFlags>,
-    capacity?: number,
-    community?: boolean,
+    id: string,
+    name: string,
+    creatorid: string,
+    accesshash: string,
+    flagsList: Array<TeamFlags>,
+    capacity: number,
+    community: boolean,
     photo?: TeamPhoto.AsObject,
   }
 }

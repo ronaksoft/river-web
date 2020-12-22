@@ -20,6 +20,7 @@ import {kMerge} from "../../services/utilities/kDash";
 import {IMessage} from "../message/interface";
 import {getMediaDocument} from "../message";
 import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
+import {SetOptional} from "type-fest";
 
 export const md5FromBlob = (theBlob: Blob): Promise<string> => {
     const b: any = theBlob;
@@ -204,7 +205,7 @@ export default class FileRepo {
         });
     }
 
-    private getFileMap(inputFile: InputFileLocation.AsObject): Promise<IFileMap | undefined> {
+    private getFileMap(inputFile: SetOptional<InputFileLocation.AsObject, 'accesshash' | 'version'>): Promise<IFileMap | undefined> {
         return this.db.fileMap.get(GetDbFileName(inputFile.fileid, inputFile.clusterid));
     }
 

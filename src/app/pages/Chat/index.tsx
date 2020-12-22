@@ -28,12 +28,12 @@ import {
     trimStart,
     uniq,
 } from 'lodash';
-import APIManager from '../../services/sdk/index';
+import APIManager, {currentUserId} from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog, IPeer} from '../../repository/dialog/interface';
 import UpdateManager, {
-    IDialogDBUpdated,
+    IDialogDBUpdated, IDialogRemoved,
     IMessageDBRemoved,
     IMessageDBUpdated,
     IMessageIdDBUpdated
@@ -102,13 +102,11 @@ import {
     EventWasmInit,
     EventWasmStarted,
     EventWebSocketClose,
-    EventWebSocketOpen
+    EventSocketReady
 } from "../../services/events";
-import Smoother from "../../services/utilities/smoother";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
 import {
-    Error as RiverError,
     FileLocation,
     InputDocument,
     InputFile,
@@ -163,12 +161,16 @@ import {
     MediaDocument,
     MediaGeoLocation
 } from "../../services/sdk/messages/chat.messages.medias_pb";
+import {Error as RiverError} from "../../services/sdk/messages/rony_pb";
 import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 import {ITeam} from "../../repository/team/interface";
 import Socket from "../../services/sdk/server/socket";
 import PinnedMessage from "../../components/PinnedMessage";
 import {ModalityService} from "kk-modality";
+import CallModal from "../../components/CallModal";
+import ConnectionStatus from "../../components/ConnectionStatus";
+import {PartialDeep} from "type-fest";
 
 import './style.scss';
 
@@ -202,6 +204,7 @@ class Chat extends React.Component<IProps, IState> {
     private popUpDateRef: PopUpDate | undefined;
     private popUpNewMessageRef: PopUpNewMessage | undefined;
     private infoBarRef: InfoBar | undefined;
+    private connectionStatusRef: ConnectionStatus | undefined;
     private audioPlayerShellRef: AudioPlayerShell | undefined;
     private messageRef: Message | undefined;
     private chatInputRef: ChatInput | undefined;
@@ -276,13 +279,12 @@ class Chat extends React.Component<IProps, IState> {
     private isMobileBrowser = isMobile();
     private avatarService: AvatarService;
     private isBot: boolean = false;
-    private smoother: Smoother;
     private uploaderRef: Uploader | undefined;
-    private readonly userId: string = '0';
     private teamMap: { [key: string]: ITeam } = {};
     private onlineStatusInterval: any = null;
     private pinnedMessageRef: PinnedMessage | undefined;
     private modalityService: ModalityService;
+    private callModal: CallModal | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -303,7 +305,6 @@ class Chat extends React.Component<IProps, IState> {
         this.apiManager = APIManager.getInstance();
         this.apiManager.loadConnInfo();
         this.connInfo = this.apiManager.getConnInfo();
-        this.userId = this.connInfo.UserID || '0';
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
@@ -317,7 +318,6 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogsSortThrottle = throttle(this.dialogsSort, 256);
         this.isInChat = (document.visibilityState === 'visible');
         this.isMobileView = (window.innerWidth < 600);
-        this.updateManager.setUserId(this.connInfo.UserID || '');
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.bufferProgressBroadcaster = BufferProgressBroadcaster.getInstance();
         this.electronService = ElectronService.getInstance();
@@ -329,17 +329,17 @@ class Chat extends React.Component<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
+
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
-        this.smoother = new Smoother(2000, this.updateFunctionHandler);
 
         if (isProd) {
             Sentry.configureScope((scope) => {
                 scope.setUser({
                     'app_version': C_VERSION,
                     'auth_id': this.connInfo.AuthID,
-                    'user_id': this.userId
+                    'user_id': currentUserId
                 });
             });
         }
@@ -394,7 +394,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener(EventMouseWheel, this.windowMouseWheelHandler);
         window.addEventListener(EventWasmInit, this.wasmInitHandler);
         window.addEventListener(EventWasmStarted, this.fnStartedHandler);
-        window.addEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.addEventListener(EventSocketReady, this.wsOpenHandler);
         window.addEventListener(EventWebSocketClose, this.wsCloseHandler);
         window.addEventListener(EventNetworkStatus, this.networkStatusHandler);
         window.addEventListener(EventCheckNetwork, this.checkNetworkHandler);
@@ -500,6 +500,9 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: message db removed
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageDBRemoved, this.updateMessageDBRemovedHandler));
+
+        // Update: dialog removed
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDialogRemoved, this.updateDialogRemovedHandler));
 
         // TODO: add timestamp to pending message
 
@@ -608,7 +611,7 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener(EventMouseWheel, this.windowMouseWheelHandler);
         window.removeEventListener(EventWasmInit, this.wasmInitHandler);
         window.removeEventListener(EventWasmStarted, this.fnStartedHandler);
-        window.removeEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.removeEventListener(EventSocketReady, this.wsOpenHandler);
         window.removeEventListener(EventWebSocketClose, this.wsCloseHandler);
         window.removeEventListener(EventNetworkStatus, this.networkStatusHandler);
     }
@@ -680,7 +683,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onMessageDrop={this.messageMessageDropHandler}
                                          onReactionSelect={this.messageReactionSelectHandler}
                                          onError={this.textErrorHandler}
-                                         userId={this.userId}
+                                         userId={currentUserId}
                                          isBot={this.isBot}
                                 />
                                 <MoveDown key="move-down" ref={this.moveDownRefHandler}
@@ -688,7 +691,7 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                             <ChatInput key="chat-input" ref={this.chatInputRefHandler}
                                        peer={this.peer}
-                                       userId={this.userId}
+                                       userId={currentUserId}
                                        onTextSend={this.chatInputTextSendHandler}
                                        onTyping={this.chatInputTypingHandler}
                                        onBulkAction={this.chatInputBulkActionHandler}
@@ -710,7 +713,7 @@ class Chat extends React.Component<IProps, IState> {
                         {this.selectedPeerName === 'null' && <div className="column-center">
                             <div className="start-messaging no-result">
                                 <div className="start-messaging-header">
-                                    {this.getConnectionStatus()}
+                                    <ConnectionStatus ref={this.connectionStatusRefHandler} teamId={this.teamId}/>
                                 </div>
                                 <div className="start-messaging-img">
                                     <Landscape/>
@@ -724,6 +727,7 @@ class Chat extends React.Component<IProps, IState> {
                                    onMessageAttachmentAction={this.messageAttachmentActionHandler}
                                    onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}
                                    onToggleMenu={this.rightMenuToggleMenuHandler}
+                                   onError={this.textErrorHandler}
                         />
                     </div>
                     <NewMessage key="new-message" open={this.state.openNewMessage} onClose={this.onNewMessageClose}
@@ -735,7 +739,7 @@ class Chat extends React.Component<IProps, IState> {
                                   teamId={this.teamId}
                 />
                 <UserDialog key="user-dialog" ref={this.userDialogRefHandler} onAction={this.userDialogActionHandler}
-                            teamId={this.teamId}/>
+                            teamId={this.teamId} onError={this.textErrorHandler}/>
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
                                 onJumpOnMessage={this.documentViewerJumpOnMessageHandler}
                                 onError={this.textErrorHandler}/>
@@ -743,6 +747,7 @@ class Chat extends React.Component<IProps, IState> {
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
                 <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                <CallModal ref={this.callModalRefHandler} teamId={this.teamId}/>
                 {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
             </div>
         );
@@ -775,17 +780,6 @@ class Chat extends React.Component<IProps, IState> {
             this.containerRef.classList.add('chat-view');
         } else if (!enable && this.containerRef.classList.contains('chat-view')) {
             this.containerRef.classList.remove('chat-view');
-        }
-    }
-
-    private getConnectionStatus() {
-        const showIsConnecting = this.smoother.getState(this.isConnecting);
-        if (this.isConnecting && showIsConnecting) {
-            return (<span>{i18n.t('status.connecting')}</span>);
-        } else if (this.isUpdating) {
-            return (<span>{i18n.t('status.updating')}</span>);
-        } else {
-            return null;
         }
     }
 
@@ -832,6 +826,11 @@ class Chat extends React.Component<IProps, IState> {
             case 'search':
                 if (this.searchMessageRef) {
                     this.searchMessageRef.toggleVisible();
+                }
+                break;
+            case 'call':
+                if (this.callModal) {
+                    this.callModal.openDialog(this.peer);
                 }
                 break;
         }
@@ -894,6 +893,17 @@ class Chat extends React.Component<IProps, IState> {
                 isUpdating: this.isUpdating,
                 peer: this.peer,
                 selectedPeerName: this.selectedPeerName
+            });
+        }
+    }
+
+    private connectionStatusRefHandler = (ref: any) => {
+        this.connectionStatusRef = ref;
+        if (this.connectionStatusRef) {
+            this.connectionStatusRef.setStatus({
+                isConnecting: this.isConnecting,
+                isOnline: this.isOnline,
+                isUpdating: this.isUpdating,
             });
         }
     }
@@ -1469,7 +1479,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setEndOfMessage(false);
                 setTimeout(() => {
                     this.setLoading(false);
-                    this.messageLoadMoreAfterHandler(0, 0);
+                    this.messageLoadMoreAfterHandler(0, 0, true);
                 }, 100);
 
                 setTimeout(() => {
@@ -1484,7 +1494,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messageRef) {
             this.messageRef.clearAll();
         }
-        this.messageRepo.list(this.teamId, {peer, limit: 40, before, withPending: true}, (data) => {
+        this.messageRepo.list(this.teamId, {before, limit: 40, peer, withPending: true}, (data) => {
             // Checks peerid on transition
             if (this.selectedPeerName !== dialogPeerName || !this.messageRef) {
                 this.setLoading(false);
@@ -1549,25 +1559,29 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private messageLoadMoreAfterHandler = (start: number, end: number) => {
+    private messageLoadMoreAfterHandler = (start: number, end: number, force?: boolean) => {
         if (this.isLoading) {
             return;
         }
+
         const peer = this.peer;
         if (!peer) {
             return;
         }
+
         const peerName = GetPeerName(peer.getId(), peer.getType());
         if (this.selectedPeerName !== peerName) {
             this.setLoading(false);
             return;
         }
+
         const dialog = this.getDialogByPeerName(peerName);
         if (!dialog) {
             return;
         }
+
         const after = this.getMaxId();
-        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || after <= 0) {
+        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || (after <= 0 && force !== true)) {
             return;
         }
 
@@ -1814,7 +1828,7 @@ class Chat extends React.Component<IProps, IState> {
                 peertype: peer.getType(),
                 random_id: randomId,
                 rtl: this.rtlDetector.direction(text || ''),
-                senderid: this.userId,
+                senderid: currentUserId,
                 teamid: this.teamId,
             };
 
@@ -1965,8 +1979,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private checkMessageOrder(msg: IMessage) {
         if (!this.messageRef || (msg.id || 0) < 0) {
-            return;
+            return false;
         }
+
         const swap = (i1: number, i2: number) => {
             if (!this.messageRef) {
                 return;
@@ -1985,6 +2000,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.clear(i2);
             }
         };
+
         const index = findLastIndex(this.messages, {id: msg.id});
         if (index <= -1) {
             return false;
@@ -2052,7 +2068,7 @@ class Chat extends React.Component<IProps, IState> {
             const parts = name.split('_');
             const id = parts[0];
             // Saved messages
-            if (this.userId === id) {
+            if (currentUserId === id) {
                 contactPeer.setType(PeerType.PEERUSER);
                 contactPeer.setAccesshash('0');
                 contactPeer.setId(id);
@@ -2077,7 +2093,7 @@ class Chat extends React.Component<IProps, IState> {
                     user = contact;
                 }
             }
-            contactPeer.setType(dialog.peertype || 0);
+            contactPeer.setType(dialog.peertype || 0 as any);
             contactPeer.setAccesshash(dialog.accesshash || '0');
             contactPeer.setId(dialog.peerid || '');
         }
@@ -2130,7 +2146,7 @@ class Chat extends React.Component<IProps, IState> {
                     dialogs[index].preview_rtl = msg.rtl || false;
                     dialogs[index].sender_id = msg.senderid;
                     dialogs[index].last_update = msg.createdon;
-                    dialogs[index].peerid = msg.peerid || '';
+                    dialogs[index].peerid = msg.peerid || '0';
                     dialogs[index].peertype = msg.peertype || 0;
                     dialogs[index].teamid = msg.teamid || '0';
                     if (msg.mediadata) {
@@ -2158,7 +2174,7 @@ class Chat extends React.Component<IProps, IState> {
                     preview_icon: messageTitle.icon,
                     preview_me: msg.me,
                     preview_rtl: msg.rtl || false,
-                    saved_messages: (this.userId === msg.peerid),
+                    saved_messages: (currentUserId === msg.peerid),
                     sender_id: msg.senderid,
                     teamid: msg.teamid || '0',
                     topmessageid: msg.id,
@@ -2206,19 +2222,19 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateDialogsCounter(peerName: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft}: any, throttle?: boolean) {
+    private updateDialogsCounter(peerName: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft}: any, throttleUpdate?: boolean) {
         if (this.dialogMap.hasOwnProperty(peerName)) {
             const dialogs = this.dialogs;
             let index = this.dialogMap[peerName];
             if (!dialogs[index]) {
-                return;
+                return null;
             }
             // Double check
             if (GetPeerName(dialogs[index].peerid, dialogs[index].peertype) !== peerName) {
                 const t = peerName.split('_');
                 index = findIndex(dialogs, {peerid: t[0], peertype: parseInt(t[1], 10)});
                 if (index === -1) {
-                    return;
+                    return null;
                 }
             }
             let shouldUpdate = false;
@@ -2276,7 +2292,7 @@ class Chat extends React.Component<IProps, IState> {
                 shouldUpdate = true;
                 shouldSort = true;
             }
-            if (throttle !== true) {
+            if (throttleUpdate !== true) {
                 if (shouldUpdate) {
                     this.dialogsSort(dialogs, undefined, !shouldSort);
                 } else if (shouldRerender && this.dialogRef) {
@@ -2367,7 +2383,9 @@ class Chat extends React.Component<IProps, IState> {
             this.leftMenuRef.setUnreadCounter(unreadCounter);
         }
 
-        this.iframeService.setUnreadCounter(unreadCounter);
+        this.iframeService.setUnreadCounter(unreadCounter).catch(() => {
+            //
+        });
         if (ElectronService.isElectron()) {
             this.electronService.setBadgeCounter(unreadCounter);
         }
@@ -2391,6 +2409,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.apiManager.getSystemConfig();
                 this.startSyncing(res.updateid || 0);
                 this.sendAllPendingMessages();
+                this.apiManager.sendAllGuaranteedCommands();
             } else {
                 setTimeout(() => {
                     this.startSyncing(res.updateid || 0);
@@ -2521,7 +2540,6 @@ class Chat extends React.Component<IProps, IState> {
     private fnStartedHandler = () => {
         this.messageRepo.loadConnInfo();
         this.connInfo = this.apiManager.getConnInfo();
-        this.updateManager.setUserId(this.userId);
     }
 
     private networkStatusHandler = (event: any) => {
@@ -2811,9 +2829,20 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    private updateDialogRemovedHandler = (data: IDialogRemoved) => {
+        if (data.peerNames.length === 0) {
+            return;
+        }
+        setTimeout(() => {
+            data.peerNames.forEach((peerName) => {
+                this.dialogRemove(peerName);
+            });
+        }, 1023);
+    }
+
     /* Notify on new message received */
-    private notifyMessage(data: UpdateNewMessage.AsObject) {
-        const message: IMessage = data.message;
+    private notifyMessage(data: PartialDeep<UpdateNewMessage.AsObject>) {
+        const message = data.message as IMessage;
         const peerName = GetPeerName(message.peerid, message.peertype);
         if (this.isInChat && this.selectedPeerName === peerName) {
             return;
@@ -2852,7 +2881,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.teamMap.hasOwnProperty(message.teamid || '0') && !this.teamMap[message.teamid || '0'].notify) {
             return;
         }
-        const teamName = this.teamMap[message.teamid || '0'].name || '';
+        const teamName = this.teamMap[message.teamid || '0'] ? this.teamMap[message.teamid || '0'].name || '' : '';
         this.canNotifyOtherTeam(message).then((ok) => {
             if (ok) {
                 if (message.peertype === PeerType.PEERGROUP) {
@@ -2940,7 +2969,7 @@ class Chat extends React.Component<IProps, IState> {
                 peerid: res.id || '0',
                 peertype: PeerType.PEERGROUP,
                 preview: `${i18n.t('general.you')}: ${i18n.t('message.created_the_group')}`,
-                sender_id: this.userId,
+                sender_id: currentUserId,
                 teamid: this.teamId,
             };
             this.dialogs.push(dialog);
@@ -2952,7 +2981,9 @@ class Chat extends React.Component<IProps, IState> {
                 inputFile.setFilename(`picture_${fileId}.jpg`);
                 inputFile.setMd5checksum('');
                 inputFile.setTotalparts(1);
-                this.apiManager.groupUploadPicture(res.id || '', inputFile);
+                this.apiManager.groupUploadPicture(res.id || '', inputFile).then(() => {
+                    this.textErrorHandler(i18n.t('settings.cannot_update_group_picture'));
+                });
             }
         });
     }
@@ -3026,9 +3057,17 @@ class Chat extends React.Component<IProps, IState> {
                 this.sendReadHistory(this.peer, Math.floor(this.messages[this.messages.length - 1].id || 0));
             }
         }
-        if (this.chatInputRef && !this.isMobileBrowser) {
+        if (this.chatInputRef && !this.isMobileBrowser && !this.hasSelection()) {
             this.chatInputRef.focus();
         }
+    }
+
+    private hasSelection() {
+        if (!window.getSelection) {
+            return false;
+        }
+        const t = window.getSelection();
+        return !!(t && t.type === "Range");
     }
 
     private windowBlurHandler = () => {
@@ -3132,7 +3171,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         keys.forEach((key) => {
-            this.apiManager.setMessagesReadHistory(this.dialogReadMap[key].peer, this.dialogReadMap[key].id);
+            this.apiManager.readMessageHistory(this.dialogReadMap[key].peer, this.dialogReadMap[key].id);
             delete this.dialogReadMap[key];
         });
     }
@@ -3152,7 +3191,7 @@ class Chat extends React.Component<IProps, IState> {
             case 'remove':
                 const messageSelectedIds = {};
                 messageSelectedIds[message.id || 0] = true;
-                const withForAll = ((this.riverTime.now() - (message.createdon || 0)) < 86400 && message.me === true && !message.messageaction && this.selectedPeerName !== GetPeerName(this.userId, PeerType.PEERUSER));
+                const withForAll = ((this.riverTime.now() - (message.createdon || 0)) < 86400 && message.me === true && !message.messageaction && this.selectedPeerName !== GetPeerName(currentUserId, PeerType.PEERUSER));
                 this.propagateSelectedMessage();
                 this.messageSelectedIds = cloneDeep(messageSelectedIds);
                 this.modalityService.open({
@@ -3257,8 +3296,15 @@ class Chat extends React.Component<IProps, IState> {
      * We use it for scroll event in message list */
     private messageRenderedHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
         const messages = this.messages;
-        const diff = (messages.length - end) - 1;
-        this.scrollInfo = {start, end, overscanStart, overscanEnd};
+        let diff = (messages.length - end) - 1;
+        // Modify temporary message in view port
+        if (diff <= 2 && messages && messages[end] && (messages[end].id || 0) > 0) {
+            const dialog = this.getDialogByPeerName(this.selectedPeerName);
+            if (dialog && dialog.topmessageid !== messages[end].id) {
+                diff = 5;
+            }
+        }
+        this.scrollInfo = {end, overscanEnd, overscanStart, start};
         this.setEndOfMessage(diff <= 1);
         // if (this.isLoading) {
         //     return;
@@ -3478,7 +3524,7 @@ class Chat extends React.Component<IProps, IState> {
     private botSendPhoneHandler = () => {
         this.chatInputContactSelectHandler([{
             firstname: this.connInfo.FirstName || '',
-            id: this.userId,
+            id: currentUserId,
             lastname: this.connInfo.LastName || '',
             phone: this.connInfo.Phone || '',
         }], '', {});
@@ -3677,7 +3723,7 @@ class Chat extends React.Component<IProps, IState> {
                 for (const i in this.messageSelectedIds) {
                     if (this.messageSelectedIds.hasOwnProperty(i)) {
                         const msg = messages[this.messageSelectedIds[i]];
-                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0 || msg.peerid === this.userId) && !msg.messageaction) {
+                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0 || msg.peerid === currentUserId || msg.messagetype === C_MESSAGE_TYPE.System)) {
                             removeForAll = false;
                             if (!allPending) {
                                 break;
@@ -3852,12 +3898,14 @@ class Chat extends React.Component<IProps, IState> {
     /* Check if can notify user */
     private canNotify(peerName: string, d?: IDialog) {
         if (!peerName) {
-            return;
+            return false;
         }
+
         const dialog = d || this.getDialogByPeerName(peerName);
         if (dialog) {
             return !isMuted(dialog.notifysettings);
         }
+
         return true;
     }
 
@@ -3880,6 +3928,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading || !this.messageRef) {
             return;
         }
+
         const peer = this.peer;
         if (!peer || !this.messages) {
             return;
@@ -3907,7 +3956,7 @@ class Chat extends React.Component<IProps, IState> {
 
             const peerName = GetPeerName(peer.getId(), peer.getType());
 
-            this.messageRepo.list(this.teamId, {peer, after: id - 1, limit: 25}).then((res) => {
+            this.messageRepo.list(this.teamId, {after: id - 1, limit: 25, peer}).then((res) => {
                 if (this.selectedPeerName !== peerName || res.length === 0 || !this.messageRef) {
                     this.setLoading(false);
                     return;
@@ -4007,7 +4056,7 @@ class Chat extends React.Component<IProps, IState> {
                         {i18n.t('chat.delete_dialog.p1')}
                         <UserName className="group-name"
                                   id={dialog.peerid || '0'}
-                                  you={dialog.peerid === this.userId}
+                                  you={dialog.peerid === currentUserId}
                                   youPlaceholder={i18n.t('general.saved_messages')}
                                   noIcon={true}
                                   noDetail={true}
@@ -4027,9 +4076,15 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
             case 'clear':
-                if (dialog.topmessageid) {
-                    this.apiManager.clearMessage(peer, dialog.topmessageid, false);
-                }
+                this.modalityService.open({
+                    cancelText: i18n.t('general.cancel'),
+                    confirmText: i18n.t('general.yes'),
+                    title: i18n.t('general.are_you_sure'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm' && dialog.topmessageid) {
+                        this.apiManager.clearMessage(peer, dialog.topmessageid, false);
+                    }
+                });
                 break;
             case 'pin':
                 this.apiManager.dialogTogglePin(peer, true).then(() => {
@@ -4569,7 +4624,7 @@ class Chat extends React.Component<IProps, IState> {
             peertype: peer.getType(),
             random_id: randomId,
             rtl: this.rtlDetector.direction(mediaItem.caption || ''),
-            senderid: this.userId,
+            senderid: currentUserId,
             teamid: this.teamId,
             temp_file: tempImageFile,
         };
@@ -4747,9 +4802,10 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 });
             }).catch((err) => {
+                window.console.warn(err);
                 this.progressBroadcaster.remove(id);
                 this.chatInputTypingHandler(TypingAction.TYPINGACTIONCANCEL, peer);
-                if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED && this.selectedPeerName === peerName) {
+                if (err && err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED && this.selectedPeerName === peerName) {
                     const messages = this.messages;
                     const index = findLastIndex(messages, (o) => {
                         return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -4804,7 +4860,7 @@ class Chat extends React.Component<IProps, IState> {
             peertype: peer.getType(),
             random_id: randomId,
             rtl: this.rtlDetector.direction(item.caption || ''),
-            senderid: this.userId,
+            senderid: currentUserId,
             teamid: this.teamId,
             viabotid: viaBotId,
         };
@@ -4955,7 +5011,7 @@ class Chat extends React.Component<IProps, IState> {
             peerid: peer.getId(),
             peertype: peer.getType(),
             rtl,
-            senderid: this.userId,
+            senderid: currentUserId,
             teamid: this.teamId,
         };
 
@@ -5219,6 +5275,8 @@ class Chat extends React.Component<IProps, IState> {
                     this.dialogRepo.remove(this.teamId, dialog.peerid || '', dialog.peertype || 0);
                     this.messageRepo.clearHistory(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid || 0);
                 }
+            } else if (err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemLastAdmin) {
+                this.props.enqueueSnackbar(i18n.t('chat.last_admin_error'));
             }
         });
     }
@@ -5279,7 +5337,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Update dialog draft message cleared handler */
-    private updateDraftMessageClearedHandler = (data: UpdateDraftMessageCleared.AsObject) => {
+    private updateDraftMessageClearedHandler = (data: Partial<UpdateDraftMessageCleared.AsObject>) => {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         this.updateDialogsCounter(peerName, {draft: {}});
         if (this.chatInputRef && this.selectedPeerName === peerName) {
@@ -5644,8 +5702,13 @@ class Chat extends React.Component<IProps, IState> {
                 isOnline,
                 isUpdating
             });
-        } else {
-            this.forceUpdate();
+        }
+        if (this.connectionStatusRef) {
+            this.connectionStatusRef.setStatus({
+                isConnecting,
+                isOnline,
+                isUpdating
+            });
         }
         if (this.leftMenuRef && this.isMobileView) {
             this.leftMenuRef.setStatus({
@@ -5728,12 +5791,9 @@ class Chat extends React.Component<IProps, IState> {
             entities.push(entity);
             this.chatInputTextSendHandler('/start', {
                 entities,
+                peer: inputPeer,
             });
         });
-    }
-
-    private updateFunctionHandler = () => {
-        this.forceUpdate();
     }
 
     private messageMapAppend(message: IMessage) {
@@ -5987,6 +6047,10 @@ class Chat extends React.Component<IProps, IState> {
                 resolve(false);
             }
         });
+    }
+
+    private callModalRefHandler = (ref: any) => {
+        this.callModal = ref;
     }
 }
 

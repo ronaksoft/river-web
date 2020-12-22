@@ -1,16 +1,19 @@
-syntax = "proto2";
+syntax = "proto3";
 package msg;
 import "core.types.proto";
+
+option go_package = '.;msg';
+
 
 // MessageSend
 // @Function
 // @Return: MessagesSent
 message MessagesSend {
-    required int64 RandomID = 1;
-    required InputPeer Peer = 2;
-    required string Body = 5;
-    optional int64 ReplyTo = 6;
-    optional bool ClearDraft = 7;
+    int64 RandomID = 1;
+    InputPeer Peer = 2;
+    string Body = 5;
+    int64 ReplyTo = 6;
+    bool ClearDraft = 7;
     repeated MessageEntity Entities = 8;
 }
 
@@ -18,22 +21,22 @@ message MessagesSend {
 // @Function
 // @Return: Messages
 message MessagesSendMedia {
-    required int64 RandomID = 1;
-    required InputPeer Peer = 2;
-    required InputMediaType MediaType = 3;
-    required bytes MediaData = 4;
-    optional int64 ReplyTo = 5;
-    optional bool ClearDraft = 6;
+    int64 RandomID = 1;
+    InputPeer Peer = 2;
+    InputMediaType MediaType = 3;
+    bytes MediaData = 4;
+    int64 ReplyTo = 5;
+    bool ClearDraft = 6;
 }
 
 // MessagesEdit
 // @Function
 // @Return: Bool
 message MessagesEdit {
-    required int64 RandomID = 1;
-    required InputPeer Peer = 2;
-    required string Body = 3;
-    required int64 MessageID = 4;
+    int64 RandomID = 1;
+    InputPeer Peer = 2;
+    string Body = 3;
+    int64 MessageID = 4;
     repeated MessageEntity Entities = 5;
 }
 
@@ -41,15 +44,15 @@ message MessagesEdit {
 // @Function
 // Returns:
 message MessagesReadHistory {
-    required InputPeer Peer = 2;
-    required int64 MaxID = 3;
+    InputPeer Peer = 2;
+    int64 MaxID = 3;
 }
 
 // MessagesGet
 // @Function
 // Returns:     MessagesMany
 message MessagesGet {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
     repeated int64 MessagesIDs = 2;
 }
 
@@ -57,19 +60,19 @@ message MessagesGet {
 // @Function
 // Returns:     MessagesMany
 message MessagesGetHistory {
-    required InputPeer Peer = 2;
-    required int32 Limit = 3;
-    required int64 MaxID = 4;
-    required int64 MinID = 5;
+    InputPeer Peer = 2;
+    int32 Limit = 3;
+    int64 MaxID = 4;
+    int64 MinID = 5;
 }
 
 // MessagesGetDialogs
 // @Function
 // Returns:     MessagesDialogs
 message MessagesGetDialogs {
-    required int32 Limit = 2;
-    required int32 Offset = 3;
-    optional bool ExcludePinned = 4;
+    int32 Limit = 2;
+    int32 Offset = 3;
+    bool ExcludePinned = 4;
 }
 
 // MessagesGetPinnedDialogs
@@ -82,51 +85,51 @@ message MessagesGetPinnedDialogs {
 // @Function
 // Returns: Dialog
 message MessagesGetDialog {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
 }
 
 // MessagesSetTyping
 // @Function
 // Returns: Bool
 message MessagesSetTyping {
-    required InputPeer Peer = 1;
-    required TypingAction Action = 2;
+    InputPeer Peer = 1;
+    TypingAction Action = 2;
 }
 
 // MessageClearHistory
 // @Function
 // Returns: Bool
 message MessagesClearHistory {
-    required InputPeer Peer = 1;
-    required int64 MaxID = 2;
-    required bool Delete = 3;
+    InputPeer Peer = 1;
+    int64 MaxID = 2;
+    bool Delete = 3;
 }
 
 // MessagesDelete
 // @Function
 // Returns: Bool
 message MessagesDelete {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
     repeated int64 MessageIDs = 2;
-    required bool Revoke = 3;
+    bool Revoke = 3;
 }
 
 // MessagesForward
 // @Function
 // Returns: Bool
 message MessagesForward {
-    required InputPeer FromPeer = 1;
-    required InputPeer ToPeer = 2;
-    required bool Silence = 3;
+    InputPeer FromPeer = 1;
+    InputPeer ToPeer = 2;
+    bool Silence = 3;
     repeated int64 MessageIDs = 4;
-    required int64 RandomID = 5;
+    int64 RandomID = 5;
 }
 
 // MessagesReadContents
 // @Function
 // Returns: Bool
 message MessagesReadContents {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
     repeated int64 MessageIDs = 2;
 }
 
@@ -134,26 +137,26 @@ message MessagesReadContents {
 // @Function
 // Returns: Bool
 message MessagesSaveDraft {
-    required InputPeer Peer = 1;
-    required int64 ReplyTo = 2;
-    required string Body = 3;
+    InputPeer Peer = 1;
+    int64 ReplyTo = 2;
+    string Body = 3;
     repeated MessageEntity Entities = 4;
-    optional int64 EditedID = 5;
+    int64 EditedID = 5;
 }
 
 // MessagesClearDraft
 // @Function
 // @Returns: Bool
 message MessagesClearDraft {
-    required InputPeer Peer = 1;
+    InputPeer Peer = 1;
 }
 
 // MessagesToggleDialogPin
 // @Function
 // @Returns: Bool
 message MessagesToggleDialogPin {
-    required InputPeer Peer = 1;
-    required bool Pin = 2;
+    InputPeer Peer = 1;
+    bool Pin = 2;
 }
 
 // MessagesReorderPinnedDialogs
@@ -167,28 +170,28 @@ message MessagesReorderPinnedDialogs {
 // @Function
 // @Returns: Bool
 message MessagesSendScreenShotNotification {
-    required InputPeer Peer = 1;
-    required int64 RandomID = 2;
-    optional int64 ReplyTo = 3;
-    optional int64 MinID = 4;
-    optional int64 MaxID = 5;
+    InputPeer Peer = 1;
+    int64 RandomID = 2;
+    int64 ReplyTo = 3;
+    int64 MinID = 4;
+    int64 MaxID = 5;
 }
 
 // MessageSendReaction
 // @Function
 // @Returns: Bool
 message MessagesSendReaction {
-    required InputPeer Peer = 1;
-    required int64 MessageID = 2;
-    required string Reaction = 3;
+    InputPeer Peer = 1;
+    int64 MessageID = 2;
+    string Reaction = 3;
 }
 
 // MessagesDeleteReaction
 // @Function
 // @Returns: Bool
 message MessagesDeleteReaction {
-    required InputPeer Peer = 1;
-    required int64 MessageID = 2;
+    InputPeer Peer = 1;
+    int64 MessageID = 2;
     repeated string Reactions = 3;
 }
 
@@ -196,18 +199,18 @@ message MessagesDeleteReaction {
 // @Function
 // @Return: MessagesReactionList
 message MessagesGetReactionList {
-    required InputPeer Peer = 1;
-    required int64 MessageID = 2;
-    required int32 Hash = 3;
+    InputPeer Peer = 1;
+    int64 MessageID = 2;
+    int32 Hash = 3;
 }
 
 // MessagesPin
 // @Function
 // @Return: Bool
 message MessagesTogglePin {
-    required InputPeer Peer = 1;
-    required int64 MessageID = 2;
-    required bool Silent = 3;
+    InputPeer Peer = 1;
+    int64 MessageID = 2;
+    bool Silent = 3;
 }
 
 // MessagesDialogs
@@ -215,16 +218,16 @@ message MessagesDialogs {
     repeated Dialog Dialogs = 1;
     repeated User Users = 2;
     repeated UserMessage Messages = 3;
-    required int32 Count = 4;
-    required int64 UpdateID = 5;
+    int32 Count = 4;
+    int64 UpdateID = 5;
     repeated Group Groups = 6;
 }
 
 // MessagesSent
 message MessagesSent {
-    required int64 MessageID = 1;
-    required int64 RandomID = 2;
-    required int64 CreatedOn = 3;
+    int64 MessageID = 1;
+    int64 RandomID = 2;
+    int64 CreatedOn = 3;
 }
 
 // MessagesMany
@@ -232,20 +235,20 @@ message MessagesMany {
     repeated UserMessage Messages = 1;
     repeated User Users = 2;
     repeated Group Groups = 3;
-    optional bool Continuous = 4;
-    optional bool Empty = 5;
+    bool Continuous = 4;
+    bool Empty = 5;
 }
 
 // MessagesReactionList
 message MessagesReactionList {
     repeated ReactionList List = 1;
     repeated User Users = 2;
-    required int32 Hash = 3;
-    required bool Modified = 4;
+    int32 Hash = 3;
+    bool Modified = 4;
 }
 
 // ReactionList
 message ReactionList {
-    required string Reaction = 1;
+    string Reaction = 1;
     repeated int64 UserIDs = 2 [jstype = JS_STRING];
 }

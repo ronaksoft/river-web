@@ -323,7 +323,8 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                     });
                 }
             });
-        }
+        };
+
         if (accountPassword && accountPassword.getHaspassword()) {
             this.apiManager.genInputPassword(password, accountPassword).then((inputPassword) => {
                 changeNumber(inputPassword);

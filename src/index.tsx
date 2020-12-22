@@ -11,7 +11,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './App';
 import {HashRouter} from 'react-router-dom';
-import * as serviceWorker from "./serviceWorker";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 import './index.css';
 
@@ -43,7 +43,7 @@ const onSuccess = () => {
     }
 };
 
-serviceWorker.register({
+serviceWorkerRegistration.register({
     onSuccess,
     onUpdate,
 });

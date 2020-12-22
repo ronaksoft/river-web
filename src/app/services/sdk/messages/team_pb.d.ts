@@ -6,9 +6,7 @@ import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
 export class TeamGet extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
+  getId(): string;
   setId(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -23,24 +21,18 @@ export class TeamGet extends jspb.Message {
 
 export namespace TeamGet {
   export type AsObject = {
-    id?: string,
+    id: string,
   }
 }
 
 export class TeamAddMember extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasManager(): boolean;
-  clearManager(): void;
-  getManager(): boolean | undefined;
+  getManager(): boolean;
   setManager(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -55,21 +47,17 @@ export class TeamAddMember extends jspb.Message {
 
 export namespace TeamAddMember {
   export type AsObject = {
-    teamid?: string,
-    userid?: string,
-    manager?: boolean,
+    teamid: string,
+    userid: string,
+    manager: boolean,
   }
 }
 
 export class TeamRemoveMember extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -84,20 +72,16 @@ export class TeamRemoveMember extends jspb.Message {
 
 export namespace TeamRemoveMember {
   export type AsObject = {
-    teamid?: string,
-    userid?: string,
+    teamid: string,
+    userid: string,
   }
 }
 
 export class TeamPromote extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -112,20 +96,16 @@ export class TeamPromote extends jspb.Message {
 
 export namespace TeamPromote {
   export type AsObject = {
-    teamid?: string,
-    userid?: string,
+    teamid: string,
+    userid: string,
   }
 }
 
 export class TeamDemote extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -140,15 +120,13 @@ export class TeamDemote extends jspb.Message {
 
 export namespace TeamDemote {
   export type AsObject = {
-    teamid?: string,
-    userid?: string,
+    teamid: string,
+    userid: string,
   }
 }
 
 export class TeamLeave extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -163,18 +141,14 @@ export class TeamLeave extends jspb.Message {
 
 export namespace TeamLeave {
   export type AsObject = {
-    teamid?: string,
+    teamid: string,
   }
 }
 
 export class TeamJoin extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasToken(): boolean;
-  clearToken(): void;
   getToken(): Uint8Array | string;
   getToken_asU8(): Uint8Array;
   getToken_asB64(): string;
@@ -192,15 +166,13 @@ export class TeamJoin extends jspb.Message {
 
 export namespace TeamJoin {
   export type AsObject = {
-    teamid?: string,
+    teamid: string,
     token: Uint8Array | string,
   }
 }
 
 export class TeamListMembers extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -215,19 +187,15 @@ export class TeamListMembers extends jspb.Message {
 
 export namespace TeamListMembers {
   export type AsObject = {
-    teamid?: string,
+    teamid: string,
   }
 }
 
 export class TeamEdit extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
+  getName(): string;
   setName(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -242,20 +210,18 @@ export class TeamEdit extends jspb.Message {
 
 export namespace TeamEdit {
   export type AsObject = {
-    teamid?: string,
-    name?: string,
+    teamid: string,
+    name: string,
   }
 }
 
 export class TeamUploadPhoto extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   hasFile(): boolean;
   clearFile(): void;
-  getFile(): core_types_pb.InputFile;
+  getFile(): core_types_pb.InputFile | undefined;
   setFile(value?: core_types_pb.InputFile): void;
 
   serializeBinary(): Uint8Array;
@@ -270,15 +236,13 @@ export class TeamUploadPhoto extends jspb.Message {
 
 export namespace TeamUploadPhoto {
   export type AsObject = {
-    teamid?: string,
-    file: core_types_pb.InputFile.AsObject,
+    teamid: string,
+    file?: core_types_pb.InputFile.AsObject,
   }
 }
 
 export class TeamRemovePhoto extends jspb.Message {
-  hasTeamid(): boolean;
-  clearTeamid(): void;
-  getTeamid(): string | undefined;
+  getTeamid(): string;
   setTeamid(value: string): void;
 
   serializeBinary(): Uint8Array;
@@ -293,7 +257,7 @@ export class TeamRemovePhoto extends jspb.Message {
 
 export namespace TeamRemovePhoto {
   export type AsObject = {
-    teamid?: string,
+    teamid: string,
   }
 }
 
@@ -326,19 +290,15 @@ export namespace TeamMembers {
 }
 
 export class TeamMember extends jspb.Message {
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): string | undefined;
+  getUserid(): string;
   setUserid(value: string): void;
 
-  hasAdmin(): boolean;
-  clearAdmin(): void;
-  getAdmin(): boolean | undefined;
+  getAdmin(): boolean;
   setAdmin(value: boolean): void;
 
   hasUser(): boolean;
   clearUser(): void;
-  getUser(): core_types_pb.User;
+  getUser(): core_types_pb.User | undefined;
   setUser(value?: core_types_pb.User): void;
 
   serializeBinary(): Uint8Array;
@@ -353,9 +313,9 @@ export class TeamMember extends jspb.Message {
 
 export namespace TeamMember {
   export type AsObject = {
-    userid?: string,
-    admin?: boolean,
-    user: core_types_pb.User.AsObject,
+    userid: string,
+    admin: boolean,
+    user?: core_types_pb.User.AsObject,
   }
 }
 
@@ -370,9 +330,7 @@ export class TeamsMany extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
-  hasEmpty(): boolean;
-  clearEmpty(): void;
-  getEmpty(): boolean | undefined;
+  getEmpty(): boolean;
   setEmpty(value: boolean): void;
 
   serializeBinary(): Uint8Array;
@@ -389,7 +347,7 @@ export namespace TeamsMany {
   export type AsObject = {
     teamsList: Array<core_types_pb.Team.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
-    empty?: boolean,
+    empty: boolean,
   }
 }
 
