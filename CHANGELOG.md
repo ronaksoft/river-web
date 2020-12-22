@@ -1,3 +1,6 @@
+## 1.0.1
+* File endpoint updated
+
 ## 1.0.0
 * 🎉 Video and Voice call
 

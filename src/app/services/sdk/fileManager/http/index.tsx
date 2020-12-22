@@ -51,7 +51,7 @@ export default class Http {
     private reqId: number;
     private messageListeners: { [key: number]: IMessageListener } = {};
     private sentQueue: number[] = [];
-    private dataCenterUrl: string = 'http://file.river.im';
+    private dataCenterUrl: string = 'http://edge.river.im';
     // @ts-ignore
     private workerId: number = 0;
     private isWorkerReady: boolean = false;

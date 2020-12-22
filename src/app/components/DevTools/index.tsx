@@ -53,7 +53,7 @@ export const getFileServerUrl = () => {
         return null;
     } else {
         if (serverMode === 'prod') {
-            return 'file.river.im';
+            return 'edge.river.im';
         } else if (serverMode === 'dev') {
             return 'river-rony.ronaksoftware.com';
         } else if (serverMode === 'other') {
