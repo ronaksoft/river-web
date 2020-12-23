@@ -1,3 +1,6 @@
+## 1.0.2
+* Last seen recently bug patched
+
 ## 1.0.1
 * File endpoint updated
 

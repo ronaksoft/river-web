@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {Dialog, Grow, IconButton, Paper, PaperProps} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
-import Draggable from 'react-draggable';
+import Draggable, {ControlPosition} from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
 import CallService, {
     C_CALL_EVENT,
@@ -42,6 +42,7 @@ import APIManager, {currentUserId} from "../../services/sdk";
 import CallVideo from "../CallVideo";
 import CallSettings, {IMediaSettings} from "../CallSettings";
 import {clone} from "lodash";
+import {Merge} from "type-fest";
 
 import './style.scss';
 
@@ -73,9 +74,14 @@ const TransitionEffect = React.forwardRef(function Transition(
     return <Grow ref={ref} {...props} />;
 });
 
-function PaperComponent(props: PaperProps) {
+interface IPaperProps {
+    offset?: ControlPosition;
+}
+
+function PaperComponent(props: Merge<PaperProps, IPaperProps>) {
     return (
-        <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}>
+        <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
+                   positionOffset={props.offset}>
             <Paper {...props} />
         </Draggable>
     );
@@ -165,6 +171,12 @@ class CallModal extends React.Component<IProps, IState> {
     public render() {
         const {open, fullscreen, mode, cropCover, groupId} = this.state;
         const disableClose = !(mode === 'call_init' || mode === 'call_report');
+        const paperProps: IPaperProps = {
+            offset: {
+                x: -500,
+                y: -200,
+            },
+        };
         return (
             <>
                 <Dialog
@@ -178,6 +190,7 @@ class CallModal extends React.Component<IProps, IState> {
                     disableEscapeKeyDown={disableClose}
                     disableEnforceFocus={true}
                     PaperComponent={PaperComponent}
+                    PaperProps={paperProps as any}
                     fullScreen={mode === 'call_report' ? false : fullscreen}
                     TransitionComponent={TransitionEffect}
                 >
