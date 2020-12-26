@@ -112,7 +112,7 @@ class LastSeen extends React.PureComponent<IProps, IState> {
                 return (<span className="online">{i18n.t('status.online')}</span>);
             } else if (user.status === undefined || user.status === UserStatus.USERSTATUSRECENTLY) {
                 return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${i18n.t('status.recently')}`;
-            } else if (!user.status_last_modified && !user.lastseen) { // TODO: server patch
+            } else if (!lastSeen) { // TODO: server patch
                 return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${i18n.t('status.recently')}`;
             } else if (this.lastSeenFormat === 'estimated') {
                 return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${TimeUtility.timeAgo(lastSeen)}`;
