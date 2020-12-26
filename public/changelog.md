@@ -1,3 +1,6 @@
+## 1.0.4
+* Last seen updated
+
 ## 1.0.3
 * Call improvements
 * Minor bugs fixed

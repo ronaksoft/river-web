@@ -107,16 +107,17 @@ class LastSeen extends React.PureComponent<IProps, IState> {
             return i18n.tf('status.members', String(localize(group.participants || 0)));
         } else {
             const {user} = this.state;
-            if (this.state.you || (this.riverTime.now() - (user.status_last_modified || 0) < 60 && user.status === UserStatus.USERSTATUSONLINE)) {
+            const lastSeen = user.status_last_modified || user.lastseen || 0;
+            if (this.state.you || (this.riverTime.now() - lastSeen < 60 && user.status === UserStatus.USERSTATUSONLINE)) {
                 return (<span className="online">{i18n.t('status.online')}</span>);
             } else if (user.status === undefined || user.status === UserStatus.USERSTATUSRECENTLY) {
                 return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${i18n.t('status.recently')}`;
             } else if (!user.status_last_modified && !user.lastseen) { // TODO: server patch
                 return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${i18n.t('status.recently')}`;
             } else if (this.lastSeenFormat === 'estimated') {
-                return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${TimeUtility.timeAgo(user.status_last_modified || 0)}`;
+                return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${TimeUtility.timeAgo(lastSeen)}`;
             } else {
-                return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${TimeUtility.exactTimeAgo(user.status_last_modified || 0)}`;
+                return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${TimeUtility.exactTimeAgo(lastSeen)}`;
             }
         }
     }

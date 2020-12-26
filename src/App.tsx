@@ -38,7 +38,7 @@ import {Modality, ModalityService} from "kk-modality";
 
 import './App.scss';
 
-export const C_VERSION = '1.0.3';
+export const C_VERSION = '1.0.4';
 export const C_ELECTRON_VERSIONS = ['11.1.0', '8.5.2'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
