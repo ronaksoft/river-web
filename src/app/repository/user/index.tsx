@@ -280,6 +280,8 @@ export default class UserRepo {
             createItems.forEach((user: IUser) => {
                 if (user.status === UserStatus.USERSTATUSONLINE && !user.status_last_modified) {
                     user.status_last_modified = RiverTime.getInstance().now();
+                } else if (user.lastseen) {
+                    user.status_last_modified = user.lastseen;
                 }
                 if (user.remove_photo) {
                     delete user.remove_photo;
