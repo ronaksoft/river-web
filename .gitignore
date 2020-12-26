@@ -28,3 +28,4 @@ yarn-error.log*
 .idea/
 .tmp/
 .eslintcache
+.eslintcache*

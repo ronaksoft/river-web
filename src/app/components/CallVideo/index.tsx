@@ -40,8 +40,10 @@ class CallVideo extends React.Component<IProps, IState> {
             callId: props.callId,
         };
     }
+
     private callService: CallService;
     private videoRemoteRefs: IRemoteConnection[] = [];
+    private initialized: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -53,31 +55,22 @@ class CallVideo extends React.Component<IProps, IState> {
         this.callService = CallService.getInstance();
     }
 
+    public componentDidMount() {
+        if (this.initialized) {
+            // this.retrieveConnections();
+        }
+    }
 
     public componentWillUnmount() {
-        //
+        this.initialized = false;
     }
 
     public initRemoteConnection(noForceUpdate?: boolean) {
         if (noForceUpdate === true && this.videoRemoteRefs.length > 0) {
             return;
         }
-
-        const {callId} = this.state;
-        this.videoRemoteRefs = [];
-        this.callService.getParticipantList(callId).forEach((participant) => {
-            if (this.props.userId === participant.peer.userid) {
-                return;
-            }
-
-            this.videoRemoteRefs.push({
-                connId: participant.connectionid || 0,
-                media: undefined,
-                streams: undefined,
-                userId: participant.peer.userid || '0',
-            });
-        });
-
+        this.initialized = true;
+        this.retrieveConnections();
         if (noForceUpdate !== true) {
             this.forceUpdate();
         }
@@ -125,6 +118,23 @@ class CallVideo extends React.Component<IProps, IState> {
             return (<VideoPlaceholder key={item.userId} className="remote-video" innerRef={videoRemoteRefHandler}
                                       srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
                                       autoPlay={true} userId={item.userId}/>);
+        });
+    }
+
+    private retrieveConnections() {
+        const {callId} = this.state;
+        this.videoRemoteRefs = [];
+        this.callService.getParticipantList(callId).forEach((participant) => {
+            if (this.props.userId === participant.peer.userid) {
+                return;
+            }
+
+            this.videoRemoteRefs.push({
+                connId: participant.connectionid || 0,
+                media: undefined,
+                streams: undefined,
+                userId: participant.peer.userid || '0',
+            });
         });
     }
 }

@@ -44,6 +44,9 @@ precache([{
 }, {
     revision: '1',
     url: '/ringingtone/tone-2.mp3',
+}, {
+    revision: '1',
+    url: '/ringingtone/connecting-1.mp3',
 }]);
 
 // Set up App Shell-style routing, so that all navigation requests

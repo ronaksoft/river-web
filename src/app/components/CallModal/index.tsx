@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {Dialog, Grow, IconButton, Paper, PaperProps} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
-import Draggable from 'react-draggable';
+import Draggable, {ControlPosition, DraggableEventHandler} from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
 import CallService, {
     C_CALL_EVENT,
@@ -27,6 +27,8 @@ import {
     FullscreenRounded,
     VideocamRounded,
     CheckRounded,
+    DynamicFeedRounded,
+    WebAssetRounded,
 } from "@material-ui/icons";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -42,8 +44,14 @@ import APIManager, {currentUserId} from "../../services/sdk";
 import CallVideo from "../CallVideo";
 import CallSettings, {IMediaSettings} from "../CallSettings";
 import {clone} from "lodash";
+import {Merge} from "type-fest";
+import {useRef} from "react";
 
 import './style.scss';
+
+const C_MINIMIZE_WIDTH = 240;
+const C_MINIMIZE_HEIGHT = 135;
+const C_MINIMIZE__PADDING = 16;
 
 interface IProps {
     height?: string;
@@ -59,6 +67,8 @@ interface IState {
     fullscreen: boolean;
     groupId: string | undefined;
     isCaller: boolean;
+    minimize: boolean;
+    resetPosition: boolean;
     mode: 'call_init' | 'call_request' | 'call' | 'call_report' | 'call_unavailable';
     open: boolean;
     rate: number | null;
@@ -73,9 +83,23 @@ const TransitionEffect = React.forwardRef(function Transition(
     return <Grow ref={ref} {...props} />;
 });
 
-function PaperComponent(props: PaperProps) {
+interface IPaperProps {
+    disabled?: boolean;
+    offset?: ControlPosition;
+}
+
+function PaperComponent(props: Merge<PaperProps, IPaperProps>) {
+    const dragRef = useRef<boolean>(false);
+    if (!props.offset) {
+        dragRef.current = false;
+    }
+    const stopHandler: DraggableEventHandler = (e, data) => {
+        dragRef.current = Boolean(data.x || data.y);
+    };
     return (
-        <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}>
+        <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
+                   key={props.offset && dragRef.current ? 'minimized' : 'normal'} positionOffset={props.offset}
+                   disabled={props.disabled} onStop={stopHandler}>
             <Paper {...props} />
         </Draggable>
     );
@@ -89,13 +113,14 @@ class CallModal extends React.Component<IProps, IState> {
     private videoRef: HTMLVideoElement | undefined;
     private callVideoRef: CallVideo | undefined;
     private eventReferences: any[] = [];
-    private timer: number = 0;
-    private timerEnd: number = 0;
+    private timeStart: number = 0;
+    private timeEnd: number = 0;
     private contactPickerRef: ContactPicker | undefined;
     private groupParticipant: InputUser.AsObject[] = [];
     // @ts-ignore
     private callSettingsRef: CallSettings | undefined;
     private mediaSettings: IMediaSettings = {audio: true, video: true};
+    private callConnectingTone: string = '/ringingtone/connecting-1.mp3';
     private callRingingTone: string = '/ringingtone/tone-2.mp3';
 
     constructor(props: IProps) {
@@ -110,9 +135,11 @@ class CallModal extends React.Component<IProps, IState> {
             fullscreen: false,
             groupId: undefined,
             isCaller: false,
+            minimize: false,
             mode: 'call_init',
             open: false,
             rate: null,
+            resetPosition: false,
             unavailableMode: 'none',
             videoSwap: false,
         };
@@ -125,8 +152,8 @@ class CallModal extends React.Component<IProps, IState> {
         if (this.state.open) {
             return;
         }
-        this.timer = 0;
-        this.timerEnd = 0;
+        this.timeStart = 0;
+        this.timeEnd = 0;
         this.peer = peer;
         if (!this.peer) {
             return;
@@ -163,14 +190,15 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, fullscreen, mode, cropCover, groupId} = this.state;
+        const {open, fullscreen, mode, cropCover, groupId, minimize} = this.state;
         const disableClose = !(mode === 'call_init' || mode === 'call_report');
+        const paperProps: IPaperProps | undefined = this.getDraggableProps();
         return (
             <>
                 <Dialog
                     open={open}
                     onClose={this.closeHandler}
-                    className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain')}
+                    className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain') + (minimize ? ' minimize' : '')}
                     classes={{
                         paper: 'call-modal-paper',
                     }}
@@ -178,6 +206,7 @@ class CallModal extends React.Component<IProps, IState> {
                     disableEscapeKeyDown={disableClose}
                     disableEnforceFocus={true}
                     PaperComponent={PaperComponent}
+                    PaperProps={paperProps as any}
                     fullScreen={mode === 'call_report' ? false : fullscreen}
                     TransitionComponent={TransitionEffect}
                 >
@@ -190,6 +219,21 @@ class CallModal extends React.Component<IProps, IState> {
         );
     }
 
+    private getDraggableProps(): IPaperProps | undefined {
+        const {minimize} = this.state;
+        if (!minimize) {
+            return undefined;
+        }
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        return {
+            offset: {
+                x: ((w - C_MINIMIZE_WIDTH) / 2) - C_MINIMIZE__PADDING,
+                y: -(((h - C_MINIMIZE_HEIGHT) / 2) - C_MINIMIZE__PADDING),
+            },
+        };
+    }
+
     private closeHandler = () => {
         this.callService.destroyConnections(this.state.callId);
         this.callService.destroy();
@@ -197,12 +241,13 @@ class CallModal extends React.Component<IProps, IState> {
             callStarted: false,
             groupId: undefined,
             isCaller: false,
+            minimize: false,
             open: false,
             rate: null,
         });
         setTimeout(() => {
-            this.timer = 0;
-            this.timerEnd = 0;
+            this.timeStart = 0;
+            this.timeEnd = 0;
         }, 300);
         this.groupParticipant = [];
     }
@@ -219,9 +264,22 @@ class CallModal extends React.Component<IProps, IState> {
         });
     }
 
+    private toggleMinimizeHandler = () => {
+        if (!this.state.minimize && this.state.fullscreen) {
+            this.setState({
+                fullscreen: false,
+                minimize: true,
+            });
+        } else {
+            this.setState({
+                minimize: !this.state.minimize,
+            });
+        }
+    }
+
     private showPreview(video: boolean) {
-        this.timer = 0;
-        this.timerEnd = 0;
+        this.timeStart = 0;
+        this.timeEnd = 0;
         this.setState({
             fullscreen: false,
             mode: 'call_init',
@@ -255,6 +313,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private getRequestedContent() {
         const {callUserId} = this.state;
+        const mediaDevice = this.callService.getMediaDevice();
         return <div className="call-modal-content">
             {callUserId && <UserAvatar className="call-user-bg" id={callUserId} noDetail={true} big={true}/>}
             <div className="call-info">
@@ -270,9 +329,9 @@ class CallModal extends React.Component<IProps, IState> {
                 <div className="call-item call-accept" onClick={this.callAcceptHandler(false)}>
                     <CallRounded/>
                 </div>
-                <div className="call-item call-accept" onClick={this.callAcceptHandler(true)}>
+                {mediaDevice.video && <div className="call-item call-accept" onClick={this.callAcceptHandler(true)}>
                     <VideocamRounded/>
-                </div>
+                </div>}
             </div>
             <audio autoPlay={true} src={this.callRingingTone} loop={true} style={{display: 'none'}}>
                 <source src={this.callRingingTone} type="audio/mp3"/>
@@ -315,7 +374,7 @@ class CallModal extends React.Component<IProps, IState> {
                     <div className="call-item call-normal" onClick={this.closeHandler}>
                         <CloseRounded/>
                     </div>
-                    <div className="call-item call-accept" onClick={this.callHandler(false)}>
+                    <div className="call-item call-accept" onClick={this.callHandler(true)}>
                         <div className="call-item-label">{i18n.t('call.call_back')}</div>
                         <CallRounded/>
                     </div>
@@ -349,7 +408,7 @@ class CallModal extends React.Component<IProps, IState> {
                     <div className="call-item call-end" onClick={this.closeHandler}>
                         <CallEndRounded/>
                     </div>
-                    <div className="call-item call-accept" onClick={this.callHandler(false)}>
+                    <div className="call-item call-accept" onClick={this.callHandler(true)}>
                         <CallRounded/>
                     </div>
                 </div>
@@ -377,13 +436,15 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallContent() {
-        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap, callId} = this.state;
+        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap, callId, minimize} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
             {!callStarted && callUserId &&
             <UserAvatar className="call-user-bg rounded-avatar" id={callUserId} noDetail={true}/>}
-            <video className="local-video" ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
-                   onClick={this.videoClickHandler(false)} hidden={!this.mediaSettings.video}/>
+            <div className="local-video">
+                <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
+                       onClick={this.videoClickHandler(false)} hidden={!this.mediaSettings.video}/>
+            </div>
             {!this.mediaSettings.video &&
             <div className="local-video-placeholder" onClick={this.videoClickHandler(false)}>
                 <UserAvatar className="local-video-user" id={currentUserId} noDetail={true}/>
@@ -397,9 +458,15 @@ class CallModal extends React.Component<IProps, IState> {
                 <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                     {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                 </IconButton>
+                <IconButton className="call-action-item" onClick={this.toggleMinimizeHandler}>
+                    {minimize ? <WebAssetRounded/> : <DynamicFeedRounded/>}
+                </IconButton>
             </div>
             {isCaller && !callStarted && <div className="call-status">
                 {i18n.t('call.is_ringing')}
+                <audio autoPlay={true} src={this.callConnectingTone} loop={true} style={{display: 'none'}}>
+                    <source src={this.callConnectingTone} type="audio/mp3"/>
+                </audio>
             </div>}
             <div className="call-modal-action main-call-action">
                 <CallSettings ref={this.callSettingsRefHandler} key="call-settings"
@@ -408,7 +475,7 @@ class CallModal extends React.Component<IProps, IState> {
                     <CallEndRounded/>
                 </div>
                 {callStarted && <div className="call-timer">
-                    <CallTimer/>
+                    <CallTimer ref={this.callTimerRef}/>
                 </div>}
             </div>
         </div>;
@@ -416,6 +483,15 @@ class CallModal extends React.Component<IProps, IState> {
 
     private callVideoRefHandler = (ref: any) => {
         this.callVideoRef = ref;
+        if (this.callVideoRef && this.state.mode === 'call') {
+            this.callVideoRef.initRemoteConnection();
+        }
+    }
+
+    private callTimerRef = (ref: any) => {
+        if (ref && this.timeStart) {
+            ref.setTime(Math.floor((Date.now() - this.timeStart) / 1000));
+        }
     }
 
     private videoClickHandler = (remote: boolean) => () => {
@@ -448,20 +524,30 @@ class CallModal extends React.Component<IProps, IState> {
             }, 512);
         });
         if (this.peer) {
-            this.callService.call(this.peer, this.getRecipients(), video).then((callId) => {
-                this.setState({
-                    callId,
-                }, () => {
-                    if (this.callVideoRef) {
-                        this.callVideoRef.initRemoteConnection();
-                    }
-                    if (this.callSettingsRef) {
-                        this.callSettingsRef.startAudioAnalyzer();
-                    }
+            const callFn = () => {
+                this.callService.call(this.peer, this.getRecipients(), video).then((callId) => {
+                    this.setState({
+                        callId,
+                    }, () => {
+                        if (this.callVideoRef) {
+                            this.callVideoRef.initRemoteConnection();
+                        }
+                        if (this.callSettingsRef) {
+                            this.callSettingsRef.startAudioAnalyzer();
+                        }
+                    });
+                }).catch(() => {
+                    this.closeHandler();
                 });
-            }).catch(() => {
-                this.closeHandler();
-            });
+            };
+            if (!this.callService.getLocalStream()) {
+                window.console.log(this.mediaSettings);
+                this.callService.initStream(this.mediaSettings).then(() => {
+                    callFn();
+                });
+            } else {
+                callFn();
+            }
         }
     }
 
@@ -490,16 +576,16 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private rejectCallHandler = () => {
-        this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
+        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
             window.console.log(err);
         });
         this.closeHandler();
     }
 
     private hangupCallHandler = () => {
-        this.callService.reject(this.state.callId, Math.floor((this.timerEnd - this.timer) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
+        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
             if (this.state.callStarted) {
-                this.timerEnd = Date.now();
+                this.timeEnd = Date.now();
                 this.setState({
                     callStarted: false,
                     isCaller: false,
@@ -527,13 +613,13 @@ class CallModal extends React.Component<IProps, IState> {
     private eventCallRejectHandler = (data: IUpdatePhoneCall) => {
         const {callId} = this.state;
         this.callService.destroyConnections(callId);
-        if (this.timer === 0) {
+        if (this.timeStart === 0) {
             this.setState({
                 mode: 'call_unavailable',
                 unavailableMode: 'busy',
             });
         } else {
-            this.timerEnd = Date.now();
+            this.timeEnd = Date.now();
             this.setState({
                 callStarted: false,
                 isCaller: false,
@@ -548,6 +634,7 @@ class CallModal extends React.Component<IProps, IState> {
             mode: 'call_unavailable',
             unavailableMode: 'timeout',
         });
+        this.callService.destroy();
     }
 
     private videoRefHandler = (ref: any) => {
@@ -565,8 +652,8 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callVideoRef.initRemoteConnection(true);
         this.callVideoRef.setStream(connId, streams);
-        if (!this.timer) {
-            this.timer = Date.now();
+        if (!this.timeStart) {
+            this.timeStart = Date.now();
         }
         if (!this.state.callStarted) {
             this.setState({
@@ -599,7 +686,7 @@ class CallModal extends React.Component<IProps, IState> {
                 <Rating value={rate} onChange={this.rateChangeHandler}/>
             </div>
             <div className="call-duration-label">{'Duration:'}</div>
-            <div className="call-duration-value">{timerFormat(Math.floor((this.timerEnd - this.timer) / 1000))}</div>
+            <div className="call-duration-value">{timerFormat(Math.floor((this.timeEnd - this.timeStart) / 1000))}</div>
         </div>;
     }
 

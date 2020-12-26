@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 
 export function timerFormat(t: number) {
     const sec = Math.floor(t % 60);
@@ -11,19 +11,44 @@ export function timerFormat(t: number) {
     }
 }
 
-export function CallTimer() {
-    const [timer, setTimer] = useState<number>(0);
+interface IProps {
+}
 
-    useEffect(() => {
-        const interval = setInterval(() => tick(), 1000);
-        return function cleanup() {
-            clearInterval(interval);
+interface IState {
+    timer: number;
+}
+
+export class CallTimer extends React.Component<IProps, IState> {
+
+    private interval: any = null;
+
+    constructor(props: IProps) {
+        super(props);
+
+        this.state = {
+            timer: 0,
         };
-    });
-
-    function tick() {
-        setTimer(timer + 1);
     }
 
-    return (<div className="call-timer">{timerFormat(timer)}</div>);
+    public setTime(timer: number) {
+        this.setState({
+            timer,
+        });
+    }
+
+    public componentDidMount() {
+        this.interval = setInterval(() => {
+            this.setState({
+                timer: this.state.timer + 1,
+            });
+        }, 1000);
+    }
+
+    public componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
+    public render() {
+        return (<div className="call-timer">{timerFormat(this.state.timer)}</div>);
+    }
 }

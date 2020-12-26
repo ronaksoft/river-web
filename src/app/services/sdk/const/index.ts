@@ -1054,6 +1054,7 @@ export const C_LOCALSTORAGE = {
     LangDir: 'river.lang.dir',
     LastSeenFormat: 'river.last_seen_format',
     LastUpdateId: 'river.last_update_id',
+    MediaDevice: 'river.media_device',
     ReactionFrequently: 'river.reaction.frequently',
     ServerKeys: 'river.server_keys',
     ServerMode: 'river.server_mode',

@@ -917,7 +917,7 @@ export default class Server {
     private getServerTime() {
         const data = new SystemGetServerTime();
         return this.send(C_MSG.SystemGetServerTime, data.serializeBinary(), true, {
-            retry: 2,
+            retry: 5,
             timeout: 2000,
         }).then((res: SystemServerTime.AsObject) => {
             this.socket.setServerTime(res.timestamp);

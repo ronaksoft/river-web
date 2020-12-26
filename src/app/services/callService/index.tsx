@@ -8,7 +8,7 @@
 */
 
 import UpdateManager from "../sdk/updateManager";
-import {C_MSG} from "../sdk/const";
+import {C_LOCALSTORAGE, C_MSG} from "../sdk/const";
 import {UpdatePhoneCall} from "../sdk/messages/updates_pb";
 import {
     DiscardReason,
@@ -102,6 +102,36 @@ const parseData = (constructor: number, data: any) => {
     return undefined;
 };
 
+export interface IMediaDevice {
+    speaker: boolean;
+    video: boolean;
+    voice: boolean;
+}
+
+export const getMediaInputs = (): Promise<IMediaDevice> => {
+    const out: IMediaDevice = {
+        speaker: false,
+        video: false,
+        voice: false,
+    };
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+        return Promise.resolve(out);
+    }
+
+    return navigator.mediaDevices.enumerateDevices().then((res) => {
+        res.forEach((item) => {
+            if (item.kind === "audioinput") {
+                out.voice = true;
+            } else if (item.kind === "audiooutput") {
+                out.speaker = true;
+            } else if (item.kind === "videoinput") {
+                out.video = true;
+            }
+        });
+        return out;
+    });
+};
+
 export default class CallService {
     public static getInstance() {
         if (!this.instance) {
@@ -116,6 +146,13 @@ export default class CallService {
     private updateManager: UpdateManager;
     private apiManager: APIManager;
     private listeners: { [key: number]: IBroadcastItem } = {};
+
+    // Devices
+    private mediaDevice: IMediaDevice = localStorage.getItem(C_LOCALSTORAGE.MediaDevice) ? JSON.parse(localStorage.getItem(C_LOCALSTORAGE.MediaDevice)) : {
+        speaker: false,
+        video: false,
+        voice: false,
+    };
 
     // Call variables
     private localStream: MediaStream | undefined;
@@ -138,10 +175,29 @@ export default class CallService {
     private callInfo: { [key: string]: ICallInfo } = {};
 
     private constructor() {
+        this.initMediaDevice();
+
         this.updateManager = UpdateManager.getInstance();
         this.apiManager = APIManager.getInstance();
 
         this.updateManager.listen(C_MSG.UpdatePhoneCall, this.phoneCallHandler);
+    }
+
+    public initMediaDevice() {
+        getMediaInputs().then((res) => {
+            this.mediaDevice = res;
+            localStorage.setItem(C_LOCALSTORAGE.MediaDevice, JSON.stringify(this.mediaDevice));
+            if (!res.video) {
+                this.offerOptions.offerToReceiveVideo = false;
+            }
+            if (!res.voice) {
+                this.offerOptions.offerToReceiveAudio = false;
+            }
+        });
+    }
+
+    public getMediaDevice() {
+        return this.mediaDevice;
     }
 
     public initStream(constraints: MediaStreamConstraints) {
@@ -198,6 +254,7 @@ export default class CallService {
                 track.stop();
             });
         }
+        this.localStream = undefined;
     }
 
     public getLocalStream(): MediaStream | undefined {
