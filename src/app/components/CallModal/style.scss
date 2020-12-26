@@ -107,7 +107,7 @@
 
       &.main-call-action {
         opacity: 1;
-        background-color: transparent;
+        background: transparent;
 
         > div:not(.call-settings-notice) {
           transition: opacity 0.3s;
@@ -329,10 +329,6 @@
       width: 640px;
       height: 480px;
 
-      video {
-        transition: all 0.2s;
-      }
-
       .call-video {
         z-index: 2;
       }
@@ -340,6 +336,9 @@
       .local-video {
         position: relative;
         z-index: 14;
+        transition: all 0.2s;
+        width: 100%;
+        height: 100%;
       }
 
       .local-video-placeholder {
@@ -379,6 +378,10 @@
           height: auto;
           border-radius: 5px;
           box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
+
+          video {
+            width: 100%;
+          }
         }
       }
 
@@ -449,9 +452,78 @@
         }
       }
     }
+
+    &.minimize {
+      width: 240px;
+      height: 135px;
+
+      .call-modal-content, .call-modal-paper {
+        width: 100%;
+        height: 100%;
+      }
+
+      .call-modal-content {
+        .local-video, .local-video-placeholder {
+          height: 48px;
+          width: 48px;
+          border-radius: 28px;
+          overflow: hidden;
+          -webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);
+
+          video {
+            height: 100%;
+            width: 100%;
+          }
+        }
+
+        .call-modal-header .call-action-item svg {
+          font-size: 20px;
+        }
+
+        &.video-swap {
+          .local-video {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+          }
+
+          .call-video {
+            height: 48px;
+            width: 48px;
+            border-radius: 28px;
+            overflow: hidden;
+            -webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);
+          }
+        }
+
+        .call-timer {
+          right: 12px;
+          font-size: 14px;
+        }
+
+        .call-modal-action {
+          height: 72px;
+
+          .call-settings {
+            display: none !important;
+          }
+
+          .call-item {
+            width: 42px;
+            height: 42px;
+          }
+        }
+      }
+    }
   }
 
   &.call_request, &.call_unavailable {
+    .call-modal-paper {
+      transform: none !important;
+    }
+
     .call-modal-content {
       position: relative;
       width: 240px;
@@ -494,6 +566,10 @@
   }
 
   &.call_report {
+    .call-modal-paper {
+      transform: none !important;
+    }
+
     .call-modal-content {
       position: relative;
       width: 240px;

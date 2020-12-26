@@ -1,6 +1,9 @@
+## 1.0.3
+* Call improvements
+* Minor bugs fixed
+
 ## 1.0.2
 * Server last seen recently bug patched
-
 
 ## 1.0.1
 * File endpoint updated
