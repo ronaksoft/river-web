@@ -263,12 +263,6 @@
     }
   }
 
-  &.with-reaction {
-    .arrow {
-      top: 16px;
-    }
-  }
-
   .avatar {
     position: absolute;
     top: 0;
@@ -462,7 +456,17 @@
   }
 
   &.with-reaction {
-    padding-top: 16px !important;
+
+    &.rdw-0,
+    &.rdw-1.ri-2, &.rdw-1.ri-3, &.rdw-1.ri-4,
+    &.rdw-2.ri-3, &.rdw-2.ri-4,
+    &.rdw-3.ri-4 {
+      padding-top: 16px !important;
+
+      .arrow {
+        top: 16px;
+      }
+    }
   }
 
   &.you {

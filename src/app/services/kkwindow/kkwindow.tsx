@@ -224,6 +224,10 @@ class KKWindow extends React.Component<IProps, IState> {
         return this.cellMeasurer.getCellOffset(index);
     }
 
+    public getWidth(index: number) {
+        return this.cellMeasurer.getWidth(index);
+    }
+
     public takeSnapshot(noRemove?: boolean) {
         if (this.snapshotRef && this.containerRef) {
             const html = this.containerRef.innerHTML;

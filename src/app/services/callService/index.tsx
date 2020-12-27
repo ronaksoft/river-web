@@ -30,8 +30,8 @@ import UniqueId from "../uniqueId";
 import APIManager, {currentUserId} from "../sdk";
 import {orderBy} from "lodash";
 
-const C_RETRY_INTERVAL = 10000;
-const C_RETRY_LIMIT = 6;
+const C_RETRY_INTERVAL = 5000;
+const C_RETRY_LIMIT = 2;
 
 export const C_CALL_EVENT = {
     CallAccept: 0x02,
@@ -202,6 +202,12 @@ export default class CallService {
 
     public initStream(constraints: MediaStreamConstraints) {
         return navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+            if (stream.getVideoTracks().length > 0) {
+                this.offerOptions.offerToReceiveVideo = true;
+            }
+            if (stream.getAudioTracks().length > 0) {
+                this.offerOptions.offerToReceiveAudio = true;
+            }
             this.localStream = stream;
             this.callHandlers(C_CALL_EVENT.LocalStreamUpdate, stream);
             return stream;

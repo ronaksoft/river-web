@@ -118,7 +118,6 @@ class CallSettings extends React.Component<IProps, IState> {
         this.setState({
             mediaSettings,
         });
-        window.console.log(mediaSettings);
         if (key === 'audio') {
             this.callService.toggleAudio(checked);
         } else if (key === 'video') {
@@ -179,7 +178,6 @@ class CallSettings extends React.Component<IProps, IState> {
         }
         val = val / 10;
         const {muteNotice} = this.state;
-        window.console.log(val);
         if (val > 40 && !muteNotice) {
             this.setState({
                 muteNotice: true,

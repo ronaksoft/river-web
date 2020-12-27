@@ -34,6 +34,7 @@ interface IErrorPair {
 }
 
 interface IRequestOptions {
+    commandId?: number;
     guaranteeRetry?: number;
     inputTeam?: InputTeam.AsObject;
     retry?: number;
@@ -176,11 +177,12 @@ export default class Server {
 
     /* Send a request to WASM worker over CustomEvent in window object */
     public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions, reqIdFn?: (rId: number) => void, guarantee?: boolean): Promise<any> {
+        const reqId = ++this.reqId;
+
         const createRequest = (commandId?: number) => {
             let internalResolve = null;
             let internalReject = null;
 
-            const reqId = ++this.reqId;
             if (reqIdFn) {
                 reqIdFn(reqId);
             }
@@ -205,7 +207,7 @@ export default class Server {
             }
 
             const request: IServerRequest = {
-                commandId,
+                commandId: commandId || options.commandId,
                 constructor,
                 data,
                 inputTeam: options.inputTeam || this.inputTeam,
@@ -246,6 +248,7 @@ export default class Server {
                 data,
                 inputTeam: options ? options.inputTeam || this.inputTeam : this.inputTeam,
                 instant,
+                reqId,
                 timestamp: this.riverTime.now(),
                 try: options ? options.guaranteeRetry || 0 : 0,
             }).then((commandId) => {
@@ -340,14 +343,22 @@ export default class Server {
         }
     }
 
-    public sendAllGuaranteedCommands() {
+    public sendAllGuaranteedCommands(checkReqId?: boolean) {
         const time = this.riverTime.now();
         this.commandRepo.list(time).then((res) => {
-            this.commandRepo.removeMany(res.map(o => o.id));
+            if (!checkReqId) {
+                this.commandRepo.removeMany(res.map(o => o.id));
+            }
             res.forEach((item) => {
-                this.send(item.cmd, item.data, item.instant, {
-                    inputTeam: item.inputTeam,
-                });
+                if (!checkReqId || (checkReqId && !this.messageListeners.hasOwnProperty(item.reqId))) {
+                    if (checkReqId) {
+                        this.commandRepo.remove(item.id);
+                    }
+                    this.send(item.cmd, item.data, item.instant, {
+                        commandId: checkReqId ? item.id : undefined,
+                        inputTeam: item.inputTeam,
+                    });
+                }
             });
         });
     }
@@ -462,7 +473,7 @@ export default class Server {
             }
             if (res) {
                 if (this.verboseAPI) {
-                    window.console.info('%cResponse', 'background-color: #8124F9', res.toObject());
+                    window.console.info('%cResponse', 'background-color: #8124F9', res.toObject ? res.toObject() : res);
                 }
                 if (constructor === C_MSG.Error) {
                     const resData = res.toObject();
