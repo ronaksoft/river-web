@@ -168,11 +168,11 @@ import {ITeam} from "../../repository/team/interface";
 import Socket from "../../services/sdk/server/socket";
 import PinnedMessage from "../../components/PinnedMessage";
 import {ModalityService} from "kk-modality";
-import CallModal from "../../components/CallModal";
 import ConnectionStatus from "../../components/ConnectionStatus";
 import {PartialDeep} from "type-fest";
 
 import './style.scss';
+import CallService from "../../services/callService";
 
 export let notifyOptions: any[] = [];
 
@@ -284,7 +284,7 @@ class Chat extends React.Component<IProps, IState> {
     private onlineStatusInterval: any = null;
     private pinnedMessageRef: PinnedMessage | undefined;
     private modalityService: ModalityService;
-    private callModal: CallModal | undefined;
+    private callService: CallService;
 
     constructor(props: IProps) {
         super(props);
@@ -329,6 +329,7 @@ class Chat extends React.Component<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
+        this.callService = CallService.getInstance();
 
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
@@ -376,6 +377,9 @@ class Chat extends React.Component<IProps, IState> {
         if (teamId) {
             this.teamId = teamId;
             this.updateManager.setTeamId(this.teamId);
+            if (this.callService) {
+                this.callService.setTeam(teamId);
+            }
         }
         const team = localStorage.getItem(C_LOCALSTORAGE.TeamData);
         if (team) {
@@ -747,7 +751,6 @@ class Chat extends React.Component<IProps, IState> {
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
                 <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
-                <CallModal ref={this.callModalRefHandler} teamId={this.teamId}/>
                 {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
             </div>
         );
@@ -829,8 +832,8 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 break;
             case 'call':
-                if (this.callModal) {
-                    this.callModal.openDialog(this.peer);
+                if (this.callService) {
+                    this.callService.openCallDialog(this.peer);
                 }
                 break;
         }
@@ -5609,6 +5612,9 @@ class Chat extends React.Component<IProps, IState> {
         this.selectedPeerName = name;
         this.peer = peer;
         this.teamId = teamId;
+        if (this.callService) {
+            this.callService.setTeam(teamId);
+        }
         if (selectable !== undefined) {
             this.messageSelectable = selectable;
         }
@@ -5921,6 +5927,9 @@ class Chat extends React.Component<IProps, IState> {
             id: team.id || '0',
         });
         this.teamId = team.id || '0';
+        if (this.callService) {
+            this.callService.setTeam(this.teamId);
+        }
         this.setChatParams(this.teamId, this.selectedPeerName, null, false, {});
         if (this.dialogRef) {
             this.dialogRef.setDialogs([], undefined, true);
@@ -6047,10 +6056,6 @@ class Chat extends React.Component<IProps, IState> {
                 resolve(false);
             }
         });
-    }
-
-    private callModalRefHandler = (ref: any) => {
-        this.callModal = ref;
     }
 }
 

@@ -147,6 +147,10 @@ export default class CallService {
     private apiManager: APIManager;
     private listeners: { [key: number]: IBroadcastItem } = {};
 
+    // Handlers
+    private openDialogFn: ((peer: InputPeer | null) => void) | null = null;
+    private setTeamFn: ((teamId: string) => void) | null = null;
+
     // Devices
     private mediaDevice: IMediaDevice = localStorage.getItem(C_LOCALSTORAGE.MediaDevice) ? JSON.parse(localStorage.getItem(C_LOCALSTORAGE.MediaDevice)) : {
         speaker: false,
@@ -181,6 +185,26 @@ export default class CallService {
         this.apiManager = APIManager.getInstance();
 
         this.updateManager.listen(C_MSG.UpdatePhoneCall, this.phoneCallHandler);
+    }
+
+    public setDialogOpenFunction(fn: any) {
+        this.openDialogFn = fn;
+    }
+
+    public openCallDialog(peer: InputPeer | null) {
+        if (this.openDialogFn) {
+            this.openDialogFn(peer);
+        }
+    }
+
+    public setSetTeamFunction(fn: any) {
+        this.setTeamFn = fn;
+    }
+
+    public setTeam(teamId: string) {
+        if (this.setTeamFn) {
+            this.setTeamFn(teamId);
+        }
     }
 
     public initMediaDevice() {
@@ -687,6 +711,10 @@ export default class CallService {
             this.sendIceCandidate(this.activeCallId || '0', e.candidate, connId).catch((err) => {
                 window.console.log('icecandidate', err);
             });
+        });
+
+        pc.addEventListener('iceconnectionstatechange', (e) => {
+            window.console.log('iceconnectionstatechange', pc.iceConnectionState, pc.connectionState);
         });
 
         pc.addEventListener('icecandidateerror', (e) => {

@@ -48,6 +48,10 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
+        this.setState({
+            mediaSettings: this.callService.getStreamState(),
+            muteNotice: false,
+        });
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdate, this.eventLocalStreamUpdateHandler));
     }
 

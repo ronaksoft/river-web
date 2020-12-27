@@ -1,3 +1,6 @@
+## 1.0.7
+* Call switch improvements
+
 ## 1.0.6
 * Call improvements
 * Call settings improvements

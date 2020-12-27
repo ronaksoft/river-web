@@ -55,7 +55,6 @@ const C_MINIMIZE__PADDING = 16;
 
 interface IProps {
     height?: string;
-    teamId: string;
 }
 
 interface IState {
@@ -106,6 +105,7 @@ function PaperComponent(props: Merge<PaperProps, IPaperProps>) {
 }
 
 class CallModal extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private peer: InputPeer | null = null;
     private callService: CallService;
     // @ts-ignore
@@ -146,9 +146,12 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callService = CallService.getInstance();
         this.apiManager = APIManager.getInstance();
+
+        this.callService.setDialogOpenFunction(this.openDialog);
+        this.callService.setSetTeamFunction(this.setTeam);
     }
 
-    public openDialog(peer: InputPeer | null) {
+    public openDialog = (peer: InputPeer | null) => {
         if (this.state.open) {
             return;
         }
@@ -213,7 +216,7 @@ class CallModal extends React.Component<IProps, IState> {
                     {this.getContent()}
                 </Dialog>
                 <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
-                               groupId={groupId} teamId={this.props.teamId} sendIcon={<CheckRounded/>}
+                               groupId={groupId} teamId={this.teamId} sendIcon={<CheckRounded/>}
                                title={i18n.t('general.choose_recipient')} limit={11} selectAll={true}/>
             </>
         );
@@ -250,6 +253,7 @@ class CallModal extends React.Component<IProps, IState> {
             this.timeEnd = 0;
         }, 300);
         this.groupParticipant = [];
+        this.mediaSettings = {audio: true, video: true};
     }
 
     private toggleFullscreenHandler = () => {
@@ -428,8 +432,8 @@ class CallModal extends React.Component<IProps, IState> {
             </div>;
         } else if (peer.getType() === PeerType.PEERGROUP) {
             return <div className="callee-info">
-                <GroupAvatar className="callee-avatar" teamId={this.props.teamId} id={peer.getId() || '0'}/>
-                <GroupName className="callee-name" teamId={this.props.teamId} id={peer.getId() || '0'}/>
+                <GroupAvatar className="callee-avatar" teamId={this.teamId} id={peer.getId() || '0'}/>
+                <GroupName className="callee-name" teamId={this.teamId} id={peer.getId() || '0'}/>
             </div>;
         }
         return null;
@@ -729,6 +733,10 @@ class CallModal extends React.Component<IProps, IState> {
 
     private callSettingsRefHandler = (ref: any) => {
         this.callSettingsRef = ref;
+    }
+
+    private setTeam = (teamId: string) => {
+        this.teamId = teamId;
     }
 
     private mediaSettingsChangeHandler = (settings: IMediaSettings) => {

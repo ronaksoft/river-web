@@ -37,6 +37,7 @@ import Broadcaster from "./app/services/broadcaster";
 import {Modality, ModalityService} from "kk-modality";
 
 import './App.scss';
+import CallModal from "./app/components/CallModal";
 
 export const C_VERSION = '1.0.6';
 export const C_ELECTRON_VERSIONS = ['11.1.0', '8.5.2'];
@@ -241,6 +242,7 @@ class App extends React.Component<{}, IState> {
                     <SnackbarProvider maxSnack={3}>
                         {Routes}
                     </SnackbarProvider>
+                    <CallModal/>
                     <Modality queueSize={5} dialogClasses={{paper: 'confirm-dialog-paper', root: 'confirm-dialog'}}/>
                 </MuiThemeProvider>
             </div>
