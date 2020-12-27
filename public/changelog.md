@@ -1,5 +1,6 @@
 ## 1.0.7
 * Call switch improvements
+* Reaction sort updated
 
 ## 1.0.6
 * Call improvements

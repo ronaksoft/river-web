@@ -54,7 +54,9 @@ class ReactionList extends React.Component<IProps, IState> {
             loading: true,
             message,
             open: true,
-            reactionList: (message.reactionsList || []).map((o) => {
+            reactionList: (message.reactionsList || []).sort((a, b) => {
+                return (b.total || 0) - (a.total || 0);
+            }).map((o) => {
                 return {
                     counter: o.total,
                     reaction: o.reaction,
@@ -65,7 +67,9 @@ class ReactionList extends React.Component<IProps, IState> {
             this.messageRepo.getReactionList(peer, message.id || 0).then((res) => {
                 this.setState({
                     loading: false,
-                    reactionList: res || [],
+                    reactionList: res.sort((a, b) => {
+                        return (b.counter || 0) - (a.counter || 0);
+                    }) || [],
                 });
             }).catch((err) => {
                 this.setState({
