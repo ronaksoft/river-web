@@ -19,7 +19,7 @@ import {
     MediaType,
     MessageEntity,
     MessageEntityType,
-    PeerType,
+    PeerType, ReactionCounter,
 } from '../../services/sdk/messages/core.types_pb';
 import {findLastIndex, throttle} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
@@ -564,9 +564,9 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    public clear(index: number) {
+    public clear(index: number, noWidthUpdate?: boolean) {
         if (this.list) {
-            this.list.cellMeasurer.clear(index);
+            this.list.cellMeasurer.clear(index, noWidthUpdate);
         }
     }
 
@@ -969,7 +969,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div
-                            className={'bubble-wrapper _bubble' + this.getMessageClassName(message)}
+                            className={'bubble-wrapper _bubble' + this.getMessageClassName(message, index)}
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
                             onDoubleClick={this.selectMessage(index)}
                         >
@@ -1024,7 +1024,7 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private getMessageClassName(message: IMessage) {
+    private getMessageClassName(message: IMessage, index: number) {
         let cn: string = message.me && !this.isSimplified ? ' me' : ' you';
         if (message.avatar) {
             cn += ' avatar';
@@ -1040,9 +1040,15 @@ class Message extends React.Component<IProps, IState> {
             cn += ' large-emoji';
         }
         if (message.reactionsList && message.reactionsList.length > 0) {
-            cn += ' with-reaction';
+            cn += ` with-reaction ri-${this.getReactionSize(message.reactionsList)} ${this.getReactionSizeClasses(index)}`;
         }
         return cn;
+    }
+
+    private getReactionSize(list: Array<ReactionCounter.AsObject>) {
+        return Math.min(4, Math.round(list.reduce((a, b) => {
+            return a + (b.total > 1 ? 50 : 30);
+        }, 0) / 50));
     }
 
     private contextMenuHandler = (index: number) => (e: any) => {
@@ -1649,6 +1655,19 @@ class Message extends React.Component<IProps, IState> {
 
     private groupSeenByRefHandler = (ref: any) => {
         this.groupSeenByRef = ref;
+    }
+
+    private getReactionSizeClasses(index: number) {
+        if (!this.list || index < 1) {
+            return 'rdw-0';
+        }
+
+        const diff = this.list.getWidth(index) - this.list.getWidth(index - 1);
+        if (diff < 50) {
+            return 'rdw-0';
+        }
+
+        return `rdw-${Math.min(4, Math.floor(diff / 50))}`;
     }
 }
 

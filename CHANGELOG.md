@@ -1,3 +1,11 @@
+## 1.0.6
+* Call improvements
+* Call settings improvements
+* Reaction rendering improvements
+* Guaranteed command improvements
+* Overall rendering improvements
+* Minor bugs fixed
+
 ## 1.0.5
 * Last seen updated
 

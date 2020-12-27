@@ -15,6 +15,7 @@ export interface ICommand {
     id?: number;
     inputTeam?: InputTeam.AsObject;
     instant: boolean;
+    reqId: number;
     timestamp: number;
     try: number;
 }

@@ -5,6 +5,7 @@ interface IFragment {
     height: number;
     visible: boolean;
     setVisible?: (visible: boolean, force?: boolean) => void;
+    width: number;
 }
 
 export type scrollFunc = ({overscanStart, start, end, overscanEnd}: { overscanStart: number, start: number, end: number, overscanEnd: number }) => void;
@@ -94,9 +95,11 @@ export class CellMeasurer {
                     height: rect.height,
                     setVisible: undefined,
                     visible: true,
+                    width: ref.firstElementChild?.firstElementChild?.lastElementChild.clientWidth,
                 };
             } else {
                 this.fragmentList[key].height = rect.height;
+                this.fragmentList[key].width = ref.firstElementChild?.firstElementChild?.lastElementChild.clientWidth;
                 this.fragmentList[key].visible = true;
             }
             ref.style.height = `${rect.height}px`;
@@ -118,8 +121,23 @@ export class CellMeasurer {
         return this.estimatedItemSize;
     }
 
-    public clear(index: number) {
-        delete this.fragmentList[this.keyMapperFn(index)];
+    public getWidth = (index: number) => {
+        const fragment = this.fragmentList[this.keyMapperFn(index)];
+        if (fragment) {
+            return fragment.width;
+        }
+        return this.estimatedItemSize;
+    }
+
+    public clear(index: number, noWidthUpdate?: boolean) {
+        const key = this.keyMapperFn(index);
+        if (!this.fragmentList.hasOwnProperty(key)) {
+            return;
+        }
+        if (noWidthUpdate !== true) {
+            this.fragmentList[key].width = -1;
+        }
+        this.fragmentList[key].height = -1;
     }
 
     public clearAll() {
@@ -191,6 +209,7 @@ export class CellMeasurer {
                 height: -1,
                 setVisible,
                 visible: true,
+                width: -1,
             };
         }
     }
@@ -314,7 +333,7 @@ export class CellMeasurer {
             const fragment = this.fragmentList[this.keyMapperFn(i)];
             let height = fragment ? fragment.height : (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) : this.estimatedItemSize);
             if (height < 0) {
-                height = (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) :this.estimatedItemSize);
+                height = (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) : this.estimatedItemSize);
             }
             if (i === 0) {
                 this.offsetList[i] = height;

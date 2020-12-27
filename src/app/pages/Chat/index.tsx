@@ -394,7 +394,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener(EventMouseWheel, this.windowMouseWheelHandler);
         window.addEventListener(EventWasmInit, this.wasmInitHandler);
         window.addEventListener(EventWasmStarted, this.fnStartedHandler);
-        window.addEventListener(EventSocketReady, this.wsOpenHandler);
+        window.addEventListener(EventSocketReady, this.wsReadyHandler);
         window.addEventListener(EventWebSocketClose, this.wsCloseHandler);
         window.addEventListener(EventNetworkStatus, this.networkStatusHandler);
         window.addEventListener(EventCheckNetwork, this.checkNetworkHandler);
@@ -611,7 +611,7 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener(EventMouseWheel, this.windowMouseWheelHandler);
         window.removeEventListener(EventWasmInit, this.wasmInitHandler);
         window.removeEventListener(EventWasmStarted, this.fnStartedHandler);
-        window.removeEventListener(EventSocketReady, this.wsOpenHandler);
+        window.removeEventListener(EventSocketReady, this.wsReadyHandler);
         window.removeEventListener(EventWebSocketClose, this.wsCloseHandler);
         window.removeEventListener(EventNetworkStatus, this.networkStatusHandler);
     }
@@ -1121,7 +1121,7 @@ class Chat extends React.Component<IProps, IState> {
             });
             if (index > -1 && messages[index]) {
                 messages[index].reactionsList = data.counterList;
-                this.updateVisibleRows([index], true);
+                this.updateVisibleRows([index], true, true);
             }
         }
         if (this.selectedPeerName !== peerName || !this.isInChat) {
@@ -1354,7 +1354,7 @@ class Chat extends React.Component<IProps, IState> {
                 indexes.push(index);
             }
         });
-        this.updateVisibleRows(indexes, true);
+        this.updateVisibleRows(indexes, true, true);
     }
 
     // /* Update user handler */
@@ -2395,7 +2395,7 @@ class Chat extends React.Component<IProps, IState> {
         window.console.log('wasmInitHandler');
     }
 
-    private wsOpenHandler = () => {
+    private wsReadyHandler = () => {
         this.setAppStatus({
             isConnecting: false,
         });
@@ -2409,12 +2409,12 @@ class Chat extends React.Component<IProps, IState> {
                 this.apiManager.getSystemConfig();
                 this.startSyncing(res.updateid || 0);
                 this.sendAllPendingMessages();
-                this.apiManager.sendAllGuaranteedCommands();
             } else {
                 setTimeout(() => {
                     this.startSyncing(res.updateid || 0);
                 }, 1000);
             }
+            this.apiManager.sendAllGuaranteedCommands(!this.firstTimeLoad);
         });
     }
 
@@ -3397,7 +3397,7 @@ class Chat extends React.Component<IProps, IState> {
                         messages[index].yourreactionsList = [reaction];
                     }
                 }
-                this.updateVisibleRows([index], true);
+                this.updateVisibleRows([index], true, true);
             }
         });
     }
@@ -5372,7 +5372,7 @@ class Chat extends React.Component<IProps, IState> {
                     indexes.push(index);
                 }
             });
-            this.updateVisibleRows(indexes, true);
+            this.updateVisibleRows(indexes, true, true);
         }
     }
 
@@ -5750,7 +5750,7 @@ class Chat extends React.Component<IProps, IState> {
                     indexes.push(index);
                 }
             });
-            this.updateVisibleRows(indexes, true);
+            this.updateVisibleRows(indexes, true, true);
         });
     }
 
@@ -5997,7 +5997,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private updateVisibleRows(indexes: number[], withClear?: boolean) {
+    private updateVisibleRows(indexes: number[], withClear?: boolean, noWidthUpdate?: boolean) {
         if (!this.messageRef) {
             return;
         }
@@ -6009,7 +6009,7 @@ class Chat extends React.Component<IProps, IState> {
             if (fromId < 0 || toId < 0 || (id >= fromId && id <= toId)) {
                 update = true;
                 if (withClear && this.messageRef) {
-                    this.messageRef.clear(index);
+                    this.messageRef.clear(index, noWidthUpdate);
                 }
             }
         });

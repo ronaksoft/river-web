@@ -1325,8 +1325,8 @@ export default class APIManager {
         return this.server.isStarted();
     }
 
-    public sendAllGuaranteedCommands() {
-        this.server.sendAllGuaranteedCommands();
+    public sendAllGuaranteedCommands(checkReqId?: boolean) {
+        this.server.sendAllGuaranteedCommands(checkReqId);
     }
 
     private logVerbose(data: any) {

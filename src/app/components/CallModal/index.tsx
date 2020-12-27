@@ -611,13 +611,17 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private eventCallRejectHandler = (data: IUpdatePhoneCall) => {
-        const {callId} = this.state;
+        const {callId, isCaller} = this.state;
         this.callService.destroyConnections(callId);
         if (this.timeStart === 0) {
-            this.setState({
-                mode: 'call_unavailable',
-                unavailableMode: 'busy',
-            });
+            if (isCaller) {
+                this.setState({
+                    mode: 'call_unavailable',
+                    unavailableMode: 'busy',
+                });
+            } else {
+                this.closeHandler();
+            }
         } else {
             this.timeEnd = Date.now();
             this.setState({
