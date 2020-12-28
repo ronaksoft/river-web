@@ -7,7 +7,7 @@ export function timerFormat(t: number) {
     if (hour === 0) {
         return `${min < 10 ? `0${min}` : min} : ${sec < 10 ? `0${sec}` : sec}`;
     } else {
-        return `${hour < 10 ? `0${hour}` : hour} : ${min < 10 ? `0${min}` : sec} : ${sec < 10 ? `0${sec}` : sec}`;
+        return `${hour < 10 ? `0${hour}` : hour} : ${min < 10 ? `0${min}` : min} : ${sec < 10 ? `0${sec}` : sec}`;
     }
 }
 

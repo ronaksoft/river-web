@@ -608,6 +608,7 @@ class CallModal extends React.Component<IProps, IState> {
             mode: 'call_request',
             open: true,
         });
+        window.focus();
     }
 
     private eventCallAcceptHandler = (data: IUpdatePhoneCall) => {
