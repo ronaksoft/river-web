@@ -1,3 +1,6 @@
+## 1.0.9
+* Fix typo
+
 ## 1.0.8
 * A bug fixed in call timer
 * Focus window on call request

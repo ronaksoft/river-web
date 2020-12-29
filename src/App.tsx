@@ -39,7 +39,7 @@ import {Modality, ModalityService} from "kk-modality";
 import './App.scss';
 import CallModal from "./app/components/CallModal";
 
-export const C_VERSION = '1.0.8';
+export const C_VERSION = '1.0.9';
 export const C_ELECTRON_VERSIONS = ['11.1.0', '8.5.2'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
