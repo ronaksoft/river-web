@@ -836,9 +836,13 @@ export default class Server {
         request.timeout = null;
 
         if (this.isReady || (this.isConnected && this.isUnAuth(request.constructor))) {
-            setTimeout(() => {
+            if (req.options.retryWait) {
+                setTimeout(() => {
+                    this.sendRequest(request);
+                }, req.options.retryWait);
+            } else {
                 this.sendRequest(request);
-            }, req.options.retryWait || 0);
+            }
         }
 
         /* Add request to the queue manager */
@@ -929,7 +933,7 @@ export default class Server {
         const data = new SystemGetServerTime();
         return this.send(C_MSG.SystemGetServerTime, data.serializeBinary(), true, {
             retry: 5,
-            timeout: 2000,
+            timeout: 5000,
         }).then((res: SystemServerTime.AsObject) => {
             this.socket.setServerTime(res.timestamp);
             return res;
@@ -940,9 +944,15 @@ export default class Server {
         window.console.log('createAuthKey');
         const t = Math.floor(Date.now() / 1000);
         return this.authStep(1).then((step1Req) => {
-            return this.send(C_MSG.InitConnect, step1Req, true).then((step1Res: Uint8Array) => {
+            return this.send(C_MSG.InitConnect, step1Req, true, {
+                retry: 3,
+                timeout: 10000,
+            }).then((step1Res: Uint8Array) => {
                 return this.authStep(2, step1Res).then((step2Req) => {
-                    return this.send(C_MSG.InitCompleteAuth, step2Req, true).then((step2Res: Uint8Array) => {
+                    return this.send(C_MSG.InitCompleteAuth, step2Req, true, {
+                        retry: 3,
+                        timeout: 10000,
+                    }).then((step2Res: Uint8Array) => {
                         return this.authStep(3, step2Res).then(() => {
                             return this.getServerTime().then(() => {
                                 return Math.floor(Date.now() / 1000) - t;

@@ -1,3 +1,6 @@
+## 1.0.10
+* Minor improvements
+
 ## 1.0.9
 * Fix typo
 

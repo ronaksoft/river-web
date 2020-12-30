@@ -389,12 +389,15 @@ export default class UpdateManager {
                     // TODO: check
                     fn(res.updateid || 0);
                 }).catch(reject);
+            } else {
+                reject('no apiManager');
             }
         });
     }
 
     private startSyncing(lastId: number, limit: number) {
         if (!this.apiManager) {
+            window.console.log('no apiManager');
             return;
         }
         this.apiManager.getUpdateDifference(lastId, limit).then((res) => {
