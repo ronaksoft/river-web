@@ -1,3 +1,6 @@
+## 1.0.13
+* Translations updated
+
 ## 1.0.12
 * Call updated
 

@@ -4082,7 +4082,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.modalityService.open({
                     cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('general.yes'),
-                    title: i18n.t('general.are_you_sure'),
+                    description: i18n.t('chat.clear_dialog.p'),
+                    title: i18n.t('chat.clear_dialog.title'),
                 }).then((modalRes) => {
                     if (modalRes === 'confirm' && dialog.topmessageid) {
                         this.apiManager.clearMessage(peer, dialog.topmessageid, false);
