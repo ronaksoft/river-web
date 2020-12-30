@@ -117,7 +117,6 @@ class CallModal extends React.Component<IProps, IState> {
     private timeEnd: number = 0;
     private contactPickerRef: ContactPicker | undefined;
     private groupParticipant: InputUser.AsObject[] = [];
-    // @ts-ignore
     private callSettingsRef: CallSettings | undefined;
     private mediaSettings: IMediaSettings = {audio: true, video: true};
     private callConnectingTone: string = '/ringingtone/connecting-1.mp3';
@@ -157,10 +156,10 @@ class CallModal extends React.Component<IProps, IState> {
         }
         this.timeStart = 0;
         this.timeEnd = 0;
-        this.peer = peer;
         if (!this.peer) {
             return;
         }
+        this.peer = clone(peer);
         if (this.peer.getType() === PeerType.PEERUSER) {
             this.showPreview(true);
         } else if (this.peer.getType() === PeerType.PEERGROUP) {
@@ -254,6 +253,7 @@ class CallModal extends React.Component<IProps, IState> {
         }, 300);
         this.groupParticipant = [];
         this.mediaSettings = {audio: true, video: true};
+        this.peer = null;
     }
 
     private toggleFullscreenHandler = () => {
@@ -700,9 +700,15 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private rateChangeHandler = (e: any, val: number | null) => {
+        const {callId} = this.state;
+        if (!this.peer || callId === '0') {
+            this.closeHandler();
+            return;
+        }
         this.setState({
             rate: val,
         });
+        this.apiManager.callRate(this.peer, callId, val || 0);
         this.closeHandler();
     }
 

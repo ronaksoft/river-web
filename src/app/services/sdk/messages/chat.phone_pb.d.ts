@@ -193,8 +193,13 @@ export class PhoneRateCall extends jspb.Message {
   getRate(): number;
   setRate(value: number): void;
 
-  getComment(): string;
-  setComment(value: string): void;
+  getReasontype(): PhoneCallRateReason;
+  setReasontype(value: PhoneCallRateReason): void;
+
+  getReasondata(): Uint8Array | string;
+  getReasondata_asU8(): Uint8Array;
+  getReasondata_asB64(): string;
+  setReasondata(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneRateCall.AsObject;
@@ -211,7 +216,8 @@ export namespace PhoneRateCall {
     peer?: core_types_pb.InputPeer.AsObject,
     callid: string,
     rate: number,
-    comment: string,
+    reasontype: PhoneCallRateReason,
+    reasondata: Uint8Array | string,
   }
 }
 
@@ -620,6 +626,25 @@ export enum DiscardReason {
   DISCARDREASONRESERVED7 = 11,
   DISCARDREASONRESERVED8 = 12,
   DISCARDREASONRESERVED9 = 13,
+}
+
+export enum PhoneCallRateReason {
+  PHONECALLRATEREASONEMPTY = 0,
+  PHONECALLRATEREASONRESERVED1 = 1,
+  PHONECALLRATEREASONRESERVED2 = 2,
+  PHONECALLRATEREASONRESERVED3 = 3,
+  PHONECALLRATEREASONRESERVED4 = 4,
+  PHONECALLRATEREASONRESERVED5 = 5,
+  PHONECALLRATEREASONRESERVED6 = 6,
+  PHONECALLRATEREASONRESERVED7 = 7,
+  PHONECALLRATEREASONRESERVED8 = 8,
+  PHONECALLRATEREASONRESERVED9 = 9,
+  PHONECALLRATEREASONRESERVED10 = 10,
+  PHONECALLRATEREASONRESERVED11 = 11,
+  PHONECALLRATEREASONRESERVED12 = 12,
+  PHONECALLRATEREASONRESERVED13 = 13,
+  PHONECALLRATEREASONRESERVED14 = 14,
+  PHONECALLRATEREASONRESERVED15 = 15,
 }
 
 export enum PhoneCallAction {

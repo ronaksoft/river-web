@@ -281,6 +281,9 @@ export class Dialog extends jspb.Message {
   getPinnedmessageid(): number;
   setPinnedmessageid(value: number): void;
 
+  getActivecallid(): number;
+  setActivecallid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
   static toObject(includeInstance: boolean, msg: Dialog): Dialog.AsObject;
@@ -306,6 +309,7 @@ export namespace Dialog {
     pinned: boolean,
     draft?: DraftMessage.AsObject,
     pinnedmessageid: number,
+    activecallid: number,
   }
 }
 
@@ -457,6 +461,46 @@ export namespace FileLocation {
   }
 }
 
+export class WebLocation extends jspb.Message {
+  getUrl(): string;
+  setUrl(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): WebLocation.AsObject;
+  static toObject(includeInstance: boolean, msg: WebLocation): WebLocation.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: WebLocation, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): WebLocation;
+  static deserializeBinaryFromReader(message: WebLocation, reader: jspb.BinaryReader): WebLocation;
+}
+
+export namespace WebLocation {
+  export type AsObject = {
+    url: string,
+  }
+}
+
+export class InputWebLocation extends jspb.Message {
+  getUrl(): string;
+  setUrl(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputWebLocation.AsObject;
+  static toObject(includeInstance: boolean, msg: InputWebLocation): InputWebLocation.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputWebLocation, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputWebLocation;
+  static deserializeBinaryFromReader(message: InputWebLocation, reader: jspb.BinaryReader): InputWebLocation;
+}
+
+export namespace InputWebLocation {
+  export type AsObject = {
+    url: string,
+  }
+}
+
 export class UserPhoto extends jspb.Message {
   hasPhotobig(): boolean;
   clearPhotobig(): void;
@@ -470,6 +514,16 @@ export class UserPhoto extends jspb.Message {
 
   getPhotoid(): string;
   setPhotoid(value: string): void;
+
+  hasPhotobigweb(): boolean;
+  clearPhotobigweb(): void;
+  getPhotobigweb(): WebLocation | undefined;
+  setPhotobigweb(value?: WebLocation): void;
+
+  hasPhotosmallweb(): boolean;
+  clearPhotosmallweb(): void;
+  getPhotosmallweb(): WebLocation | undefined;
+  setPhotosmallweb(value?: WebLocation): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserPhoto.AsObject;
@@ -486,6 +540,8 @@ export namespace UserPhoto {
     photobig?: FileLocation.AsObject,
     photosmall?: FileLocation.AsObject,
     photoid: string,
+    photobigweb?: WebLocation.AsObject,
+    photosmallweb?: WebLocation.AsObject,
   }
 }
 

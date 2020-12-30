@@ -168,8 +168,8 @@ import {
 import {
     DiscardReason,
     PhoneAcceptCall,
-    PhoneCall, PhoneCallAction,
-    PhoneDiscardCall, PhoneInit, PhoneInitCall, PhoneParticipantSDP,
+    PhoneCall, PhoneCallAction, PhoneCallRateReason,
+    PhoneDiscardCall, PhoneInit, PhoneInitCall, PhoneParticipantSDP, PhoneRateCall,
     PhoneRequestCall,
     PhoneUpdateCall
 } from "./messages/chat.phone_pb";
@@ -1273,6 +1273,19 @@ export default class APIManager {
         data.setActiondata(actionData);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneUpdateCall, data.serializeBinary(), false);
+    }
+
+    public callRate(inputPeer: InputPeer, id: string, rate: number, reasonType?: PhoneCallRateReason, reasonData?: Uint8Array): Promise<Bool.AsObject> {
+        const data = new PhoneRateCall();
+        data.setPeer(inputPeer);
+        data.setCallid(id);
+        data.setRate(rate);
+        if (reasonType && reasonData) {
+            data.setReasontype(reasonType);
+            data.setReasondata(reasonData);
+        }
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneRateCall, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public ping(): Promise<Pong.AsObject> {

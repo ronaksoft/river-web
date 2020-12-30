@@ -4,7 +4,6 @@ package msg;
 import "rony.proto";
 option go_package = '.;msg';
 
-
 // Ping
 message Ping {
     int64 ID = 1;
@@ -14,7 +13,6 @@ message Ping {
 message Pong {
     int64 ID = 2;
 }
-
 
 // UpdateEnvelope
 message UpdateEnvelope {
@@ -86,6 +84,7 @@ message Dialog {
     bool Pinned = 10;
     DraftMessage Draft = 11;
     int64 PinnedMessageID = 12;
+    int64 ActiveCallID = 13;
 }
 
 // PeerType
@@ -133,6 +132,16 @@ message FileLocation {
     fixed64 AccessHash = 3 [jstype = JS_STRING];
 }
 
+// WebLocation
+message WebLocation {
+    string Url = 1;
+}
+
+// InputWebLocation
+message InputWebLocation {
+    string Url = 1;
+}
+
 // UserStatus
 enum UserStatus {
     UserStatusOffline = 0;
@@ -147,6 +156,8 @@ message UserPhoto {
     FileLocation PhotoBig = 1;
     FileLocation PhotoSmall = 2;
     int64 PhotoID = 3 [jstype = JS_STRING];
+    WebLocation PhotoBigWeb = 4;
+    WebLocation PhotoSmallWeb = 5;
 }
 
 // InputUser

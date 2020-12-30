@@ -77,6 +77,14 @@ message AccountUpdatePhoto {
     int64 PhotoID = 1 [jstype = JS_STRING];
 }
 
+// AccountSetWebPhoto
+// @Function
+// @Return: UserPhoto
+message AccountSetWebPhoto {
+    InputWebLocation BigPhoto = 1;
+    InputWebLocation SmallPhoto = 2;
+}
+
 // AccountRemotePhoto
 // @Function
 // @Return: Bool

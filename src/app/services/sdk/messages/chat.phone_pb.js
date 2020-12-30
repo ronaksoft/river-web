@@ -28,6 +28,7 @@ goog.exportSymbol('proto.msg.PhoneActionIceExchange', null, global);
 goog.exportSymbol('proto.msg.PhoneActionRequested', null, global);
 goog.exportSymbol('proto.msg.PhoneCall', null, global);
 goog.exportSymbol('proto.msg.PhoneCallAction', null, global);
+goog.exportSymbol('proto.msg.PhoneCallRateReason', null, global);
 goog.exportSymbol('proto.msg.PhoneDiscardCall', null, global);
 goog.exportSymbol('proto.msg.PhoneInit', null, global);
 goog.exportSymbol('proto.msg.PhoneInitCall', null, global);
@@ -1835,7 +1836,8 @@ proto.msg.PhoneRateCall.toObject = function(includeInstance, msg) {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
     callid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
     rate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    comment: jspb.Message.getFieldWithDefault(msg, 4, "")
+    reasontype: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    reasondata: msg.getReasondata_asB64()
   };
 
   if (includeInstance) {
@@ -1886,8 +1888,12 @@ proto.msg.PhoneRateCall.deserializeBinaryFromReader = function(msg, reader) {
       msg.setRate(value);
       break;
     case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setComment(value);
+      var value = /** @type {!proto.msg.PhoneCallRateReason} */ (reader.readEnum());
+      msg.setReasontype(value);
+      break;
+    case 5:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setReasondata(value);
       break;
     default:
       reader.skipField();
@@ -1940,10 +1946,17 @@ proto.msg.PhoneRateCall.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getComment();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getReasontype();
+  if (f !== 0.0) {
+    writer.writeEnum(
       4,
+      f
+    );
+  }
+  f = message.getReasondata_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      5,
       f
     );
   }
@@ -2024,20 +2037,62 @@ proto.msg.PhoneRateCall.prototype.setRate = function(value) {
 
 
 /**
- * optional string Comment = 4;
- * @return {string}
+ * optional PhoneCallRateReason ReasonType = 4;
+ * @return {!proto.msg.PhoneCallRateReason}
  */
-proto.msg.PhoneRateCall.prototype.getComment = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+proto.msg.PhoneRateCall.prototype.getReasontype = function() {
+  return /** @type {!proto.msg.PhoneCallRateReason} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /**
- * @param {string} value
+ * @param {!proto.msg.PhoneCallRateReason} value
  * @return {!proto.msg.PhoneRateCall} returns this
  */
-proto.msg.PhoneRateCall.prototype.setComment = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
+proto.msg.PhoneRateCall.prototype.setReasontype = function(value) {
+  return jspb.Message.setProto3EnumField(this, 4, value);
+};
+
+
+/**
+ * optional bytes ReasonData = 5;
+ * @return {!(string|Uint8Array)}
+ */
+proto.msg.PhoneRateCall.prototype.getReasondata = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * optional bytes ReasonData = 5;
+ * This is a type-conversion wrapper around `getReasondata()`
+ * @return {string}
+ */
+proto.msg.PhoneRateCall.prototype.getReasondata_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getReasondata()));
+};
+
+
+/**
+ * optional bytes ReasonData = 5;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getReasondata()`
+ * @return {!Uint8Array}
+ */
+proto.msg.PhoneRateCall.prototype.getReasondata_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getReasondata()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.msg.PhoneRateCall} returns this
+ */
+proto.msg.PhoneRateCall.prototype.setReasondata = function(value) {
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -4737,6 +4792,28 @@ proto.msg.DiscardReason = {
   DISCARDREASONRESERVED7: 11,
   DISCARDREASONRESERVED8: 12,
   DISCARDREASONRESERVED9: 13
+};
+
+/**
+ * @enum {number}
+ */
+proto.msg.PhoneCallRateReason = {
+  PHONECALLRATEREASONEMPTY: 0,
+  PHONECALLRATEREASONRESERVED1: 1,
+  PHONECALLRATEREASONRESERVED2: 2,
+  PHONECALLRATEREASONRESERVED3: 3,
+  PHONECALLRATEREASONRESERVED4: 4,
+  PHONECALLRATEREASONRESERVED5: 5,
+  PHONECALLRATEREASONRESERVED6: 6,
+  PHONECALLRATEREASONRESERVED7: 7,
+  PHONECALLRATEREASONRESERVED8: 8,
+  PHONECALLRATEREASONRESERVED9: 9,
+  PHONECALLRATEREASONRESERVED10: 10,
+  PHONECALLRATEREASONRESERVED11: 11,
+  PHONECALLRATEREASONRESERVED12: 12,
+  PHONECALLRATEREASONRESERVED13: 13,
+  PHONECALLRATEREASONRESERVED14: 14,
+  PHONECALLRATEREASONRESERVED15: 15
 };
 
 /**

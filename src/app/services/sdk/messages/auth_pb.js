@@ -2553,7 +2553,9 @@ proto.msg.AuthLoginByToken.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AuthLoginByToken.toObject = function(includeInstance, msg) {
   var f, obj = {
     token: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    provider: jspb.Message.getFieldWithDefault(msg, 2, "")
+    provider: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    firstname: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    lastname: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -2598,6 +2600,14 @@ proto.msg.AuthLoginByToken.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setProvider(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFirstname(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLastname(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2641,6 +2651,20 @@ proto.msg.AuthLoginByToken.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getFirstname();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getLastname();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
 };
 
 
@@ -2677,6 +2701,42 @@ proto.msg.AuthLoginByToken.prototype.getProvider = function() {
  */
 proto.msg.AuthLoginByToken.prototype.setProvider = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string Firstname = 3;
+ * @return {string}
+ */
+proto.msg.AuthLoginByToken.prototype.getFirstname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.AuthLoginByToken} returns this
+ */
+proto.msg.AuthLoginByToken.prototype.setFirstname = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string Lastname = 4;
+ * @return {string}
+ */
+proto.msg.AuthLoginByToken.prototype.getLastname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.AuthLoginByToken} returns this
+ */
+proto.msg.AuthLoginByToken.prototype.setLastname = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

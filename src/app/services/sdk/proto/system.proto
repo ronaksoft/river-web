@@ -4,17 +4,12 @@ import "core.types.proto";
 option go_package = '.;msg';
 
 
-// SystemGetPublicKeys
+// SystemGetServerKeys
 // @Function
-// @Return: SystemPublicKeys
-message SystemGetPublicKeys {
+// @Return: SystemKeys
+message SystemGetServerKeys {
 }
 
-// SystemGetDHGroups
-// @Function
-// @Return: SystemDHGroups
-message SystemGetDHGroups {
-}
 
 // SystemGetServerTime
 // @Function
@@ -139,12 +134,8 @@ message SystemServerTime {
     int64 Timestamp = 1; // In Seconds
 }
 
-// SystemPublicKeys
-message SystemPublicKeys {
+// SystemKeys
+message SystemKeys {
     repeated RSAPublicKey RSAPublicKeys = 1;
-}
-
-// SystemDHGroups
-message SystemDHGroups {
-    repeated DHGroup DHGroups = 1;
+    repeated DHGroup DHGroups = 2;
 }

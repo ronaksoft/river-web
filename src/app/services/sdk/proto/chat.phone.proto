@@ -73,11 +73,32 @@ message PhoneUpdateCall {
 
 // PhoneRateCall
 // @Function
+// @Return: Bool
 message PhoneRateCall {
     InputPeer Peer = 1;
     int64 CallID = 2 [jstype = JS_STRING];
     int32 Rate = 3;
-    string Comment = 4;
+    PhoneCallRateReason ReasonType = 4;
+    bytes ReasonData = 5;
+}
+
+enum PhoneCallRateReason {
+    PhoneCallRateReasonEmpty = 0;
+    PhoneCallRateReasonReserved1 = 1;
+    PhoneCallRateReasonReserved2 = 2;
+    PhoneCallRateReasonReserved3 = 3;
+    PhoneCallRateReasonReserved4 = 4;
+    PhoneCallRateReasonReserved5 = 5;
+    PhoneCallRateReasonReserved6 = 6;
+    PhoneCallRateReasonReserved7 = 7;
+    PhoneCallRateReasonReserved8 = 8;
+    PhoneCallRateReasonReserved9 = 9;
+    PhoneCallRateReasonReserved10 = 10;
+    PhoneCallRateReasonReserved11 = 11;
+    PhoneCallRateReasonReserved12 = 12;
+    PhoneCallRateReasonReserved13 = 13;
+    PhoneCallRateReasonReserved14 = 14;
+    PhoneCallRateReasonReserved15 = 15;
 }
 
 enum PhoneCallAction {

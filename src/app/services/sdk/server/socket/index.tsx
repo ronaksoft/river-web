@@ -273,14 +273,7 @@ export default class Socket {
                 }
                 break;
             case C_JS_MSG.GetServerTime:
-                if (this.fnGetServerTime) {
-                    this.fnGetServerTime().then(() => {
-                        if (!this.started && this.connected) {
-                            this.started = true;
-                            this.dispatchEvent(EventSocketReady, {duration: 0});
-                        }
-                    });
-                }
+                this.getServerTime();
                 break;
             case C_JS_MSG.Decode:
                 this.decode(data);
@@ -351,6 +344,8 @@ export default class Socket {
             this.dispatchEvent(EventSocketConnected, null);
             if (this.started) {
                 this.dispatchEvent(EventSocketReady, {duration: 0});
+            } else {
+                this.getServerTime();
             }
         };
 
@@ -467,6 +462,17 @@ export default class Socket {
             if (this.resolveDecryptFn) {
                 this.resolveDecryptFn(data.reqId, data.constructor, data.msg);
             }
+        }
+    }
+
+    private getServerTime() {
+        if (this.fnGetServerTime) {
+            this.fnGetServerTime().then(() => {
+                if (!this.started && this.connected) {
+                    this.started = true;
+                    this.dispatchEvent(EventSocketReady, {duration: 0});
+                }
+            });
         }
     }
 

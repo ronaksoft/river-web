@@ -1,3 +1,9 @@
+## 1.0.12
+* Call updated
+
+## 1.0.11
+* A bug fixed in connecting to the server when server fails multiple times
+
 ## 1.0.10
 * Minor improvements
 

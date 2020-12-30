@@ -288,6 +288,12 @@ export class AuthLoginByToken extends jspb.Message {
   getProvider(): string;
   setProvider(value: string): void;
 
+  getFirstname(): string;
+  setFirstname(value: string): void;
+
+  getLastname(): string;
+  setLastname(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthLoginByToken.AsObject;
   static toObject(includeInstance: boolean, msg: AuthLoginByToken): AuthLoginByToken.AsObject;
@@ -302,6 +308,8 @@ export namespace AuthLoginByToken {
   export type AsObject = {
     token: string,
     provider: string,
+    firstname: string,
+    lastname: string,
   }
 }
 

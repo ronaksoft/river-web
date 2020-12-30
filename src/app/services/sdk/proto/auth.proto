@@ -100,6 +100,8 @@ message AuthLogout {
 message AuthLoginByToken {
     string Token = 1;
     string Provider = 2;
+    string Firstname = 3;
+    string Lastname = 4;
 }
 
 // AuthCheckPhone
@@ -191,11 +193,11 @@ message AuthPasswordRecovery {
 
 // AuthRecalled
 message AuthRecalled {
-    int64  ClientID = 1 [jstype = JS_STRING];
-    int64  Timestamp = 2;
-    int64  UpdateID = 3;
-    bool   Available = 4;
-    bool   Force = 5;
+    int64 ClientID = 1 [jstype = JS_STRING];
+    int64 Timestamp = 2;
+    int64 UpdateID = 3;
+    bool Available = 4;
+    bool Force = 5;
     string CurrentVersion = 6;
 }
 

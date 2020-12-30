@@ -2022,6 +2022,78 @@ export namespace UpdatePhoneCall {
   }
 }
 
+export class UpdatePhoneCallStarted extends jspb.Message {
+  getUcount(): number;
+  setUcount(value: number): void;
+
+  getUpdateid(): number;
+  setUpdateid(value: number): void;
+
+  getTeamid(): string;
+  setTeamid(value: string): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.Peer | undefined;
+  setPeer(value?: core_types_pb.Peer): void;
+
+  getCallid(): number;
+  setCallid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdatePhoneCallStarted.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdatePhoneCallStarted): UpdatePhoneCallStarted.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdatePhoneCallStarted, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdatePhoneCallStarted;
+  static deserializeBinaryFromReader(message: UpdatePhoneCallStarted, reader: jspb.BinaryReader): UpdatePhoneCallStarted;
+}
+
+export namespace UpdatePhoneCallStarted {
+  export type AsObject = {
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
+    callid: number,
+  }
+}
+
+export class UpdatePhoneCallEnded extends jspb.Message {
+  getUcount(): number;
+  setUcount(value: number): void;
+
+  getUpdateid(): number;
+  setUpdateid(value: number): void;
+
+  getTeamid(): string;
+  setTeamid(value: string): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.Peer | undefined;
+  setPeer(value?: core_types_pb.Peer): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdatePhoneCallEnded.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdatePhoneCallEnded): UpdatePhoneCallEnded.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdatePhoneCallEnded, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdatePhoneCallEnded;
+  static deserializeBinaryFromReader(message: UpdatePhoneCallEnded, reader: jspb.BinaryReader): UpdatePhoneCallEnded;
+}
+
+export namespace UpdatePhoneCallEnded {
+  export type AsObject = {
+    ucount: number,
+    updateid: number,
+    teamid: string,
+    peer?: core_types_pb.Peer.AsObject,
+  }
+}
+
 export enum RedirectTarget {
   REDIRECTTARGETRPC = 0,
   REDIRECTTARGETFILE = 1,

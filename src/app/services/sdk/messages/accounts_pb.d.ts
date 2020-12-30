@@ -237,6 +237,34 @@ export namespace AccountUpdatePhoto {
   }
 }
 
+export class AccountSetWebPhoto extends jspb.Message {
+  hasBigphoto(): boolean;
+  clearBigphoto(): void;
+  getBigphoto(): core_types_pb.InputWebLocation | undefined;
+  setBigphoto(value?: core_types_pb.InputWebLocation): void;
+
+  hasSmallphoto(): boolean;
+  clearSmallphoto(): void;
+  getSmallphoto(): core_types_pb.InputWebLocation | undefined;
+  setSmallphoto(value?: core_types_pb.InputWebLocation): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountSetWebPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountSetWebPhoto): AccountSetWebPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountSetWebPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountSetWebPhoto;
+  static deserializeBinaryFromReader(message: AccountSetWebPhoto, reader: jspb.BinaryReader): AccountSetWebPhoto;
+}
+
+export namespace AccountSetWebPhoto {
+  export type AsObject = {
+    bigphoto?: core_types_pb.InputWebLocation.AsObject,
+    smallphoto?: core_types_pb.InputWebLocation.AsObject,
+  }
+}
+
 export class AccountRemovePhoto extends jspb.Message {
   getPhotoid(): string;
   setPhotoid(value: string): void;

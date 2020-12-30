@@ -500,3 +500,20 @@ message UpdatePhoneCall {
     PhoneCallAction Action = 7;
     bytes ActionData = 8;
 }
+
+// UpdatePhoneCallStarted
+message UpdatePhoneCallStarted {
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
+    int64 CallId = 2;
+}
+
+// UpdatePhoneCallEnded
+message UpdatePhoneCallEnded {
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 TeamID = 102 [jstype = JS_STRING];
+    Peer Peer = 1;
+}
