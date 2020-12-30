@@ -439,7 +439,7 @@ export default class Server {
         while (this.requestQueue.length > 0) {
             const envelope = this.requestQueue.shift();
             if (envelope) {
-                if (this.cancelList.length > 0) {
+                if (this.cancelList.length > 0 && this.cancelList.indexOf(envelope.getRequestid() || 0) > -1) {
                     this.cancelRequestByEnvelope(envelope);
                 } else {
                     envelopes.push(envelope);
@@ -807,6 +807,7 @@ export default class Server {
         this.lastActivityTime = this.getTime();
     }
 
+    // Dumps true if conditions violated
     private checkRetry(id: number, error: Partial<RiverError.AsObject>) {
         if (!this.messageListeners[id]) {
             return true;
