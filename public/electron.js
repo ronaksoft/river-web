@@ -113,6 +113,8 @@ createWindow = (forceShow) => {
         show: false,
         webPreferences: {
             nodeIntegration: false,
+            nodeIntegrationInWorker: false,
+            contextIsolation: false,
             preload: path.join(__dirname, '/preload.js'),
             webSecurity: false,
             backgroundThrottling: true,
