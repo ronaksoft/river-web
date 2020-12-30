@@ -156,7 +156,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
         this.timeStart = 0;
         this.timeEnd = 0;
-        if (!this.peer) {
+        if (!peer) {
             return;
         }
         this.peer = clone(peer);
@@ -602,13 +602,17 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private eventCallRequestHandler = (data: IUpdatePhoneCall) => {
+        if (this.state.mode !== 'call_request' && !window.document.hasFocus()) {
+            const popupWin = window.open('url', 'call_request', 'scrollbars=no,resizable=yes, width=1,height=1,status=no,location=no,toolbar=no');
+            popupWin.focus();
+            popupWin.close();
+        }
         this.setState({
             callId: data.callid || '0',
             callUserId: data.userid || '0',
             mode: 'call_request',
             open: true,
         });
-        window.focus();
     }
 
     private eventCallAcceptHandler = (data: IUpdatePhoneCall) => {

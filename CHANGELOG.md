@@ -1,5 +1,7 @@
 ## 1.0.13
 * Translations updated
+* Fixed a bug in call
+* Focus window chrome issue patched
 
 ## 1.0.12
 * Call updated
