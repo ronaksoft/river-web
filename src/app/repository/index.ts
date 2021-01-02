@@ -27,6 +27,8 @@ import {DexieTeamDB} from "../services/db/dexie/team";
 import TeamDB from "../services/db/team";
 import {DexieCommandDB} from "../services/db/dexie/command";
 import CommandDB from "../services/db/command";
+import {InputPeer, PeerType} from "../services/sdk/messages/core.types_pb";
+import UserRepo from "./user";
 
 export default class MainRepo {
     public static getInstance() {
@@ -49,6 +51,7 @@ export default class MainRepo {
     private gifDB: DexieGifDB;
     private teamDB: DexieTeamDB;
     private commandDB: DexieCommandDB;
+    private userRepo: UserRepo;
 
     private constructor() {
         this.userDB = UserDB.getInstance().getDB();
@@ -61,6 +64,9 @@ export default class MainRepo {
         this.gifDB = GifDB.getInstance().getDB();
         this.teamDB = TeamDB.getInstance().getDB();
         this.commandDB = CommandDB.getInstance().getDB();
+
+        // Repo
+        this.userRepo = UserRepo.getInstance();
     }
 
     public destroyDB(): Promise<any> {
@@ -95,5 +101,29 @@ export default class MainRepo {
         // @ts-ignore
         promises.push(this.dialogDB.delete());
         return Promise.all(promises);
+    }
+
+    public getInputPeerBy(id: string, type: PeerType): Promise<InputPeer> {
+        return new Promise((resolve, reject) => {
+            const inputPeer = new InputPeer();
+            if (type === PeerType.PEERUSER) {
+                this.userRepo.get(id).then((res) => {
+                    if (res) {
+                        inputPeer.setId(res.id);
+                        inputPeer.setAccesshash(res.accesshash);
+                        inputPeer.setType(PeerType.PEERUSER);
+                    } else {
+                        reject();
+                    }
+                }).catch(reject);
+            } else if (type === PeerType.PEERGROUP) {
+                inputPeer.setId(id);
+                inputPeer.setAccesshash('0');
+                inputPeer.setType(PeerType.PEERGROUP);
+                resolve(inputPeer);
+            } else {
+                reject();
+            }
+        });
     }
 }

@@ -26,7 +26,7 @@ import {
     UpdateMessageID, UpdateMessagePinned,
     UpdateMessagesDeleted,
     UpdateNewMessage,
-    UpdateNotifySettings, UpdatePhoneCall, UpdateReaction,
+    UpdateNotifySettings, UpdatePhoneCall, UpdatePhoneCallEnded, UpdatePhoneCallStarted, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateReadMessagesContents,
@@ -1075,6 +1075,28 @@ export default class UpdateManager {
                     peertype: updateMessagePinned.peer.type || 0,
                     pinnedmessageid: updateMessagePinned.msgid || 0,
                     teamid: updateMessagePinned.teamid || '0',
+                });
+                break;
+            case C_MSG.UpdatePhoneCallStarted:
+                const updatePhoneCallStarted = UpdatePhoneCallStarted.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updatePhoneCallStarted);
+                this.callUpdateHandler(updatePhoneCallStarted.teamid || '0', update.constructor, updatePhoneCallStarted);
+                this.mergeDialog(transaction.dialogs, {
+                    activecallid: updatePhoneCallStarted.callid,
+                    peerid: updatePhoneCallStarted.peer.id || '0',
+                    peertype: updatePhoneCallStarted.peer.type || 0,
+                    teamid: updatePhoneCallStarted.teamid || '0',
+                });
+                break;
+            case C_MSG.UpdatePhoneCallEnded:
+                const updatePhoneCallEnded = UpdatePhoneCallEnded.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updatePhoneCallEnded);
+                this.callUpdateHandler(updatePhoneCallEnded.teamid || '0', update.constructor, updatePhoneCallEnded);
+                this.mergeDialog(transaction.dialogs, {
+                    activecallid: 0,
+                    peerid: updatePhoneCallEnded.peer.id || '0',
+                    peertype: updatePhoneCallEnded.peer.type || 0,
+                    teamid: updatePhoneCallEnded.teamid || '0',
                 });
                 break;
             default:

@@ -63,9 +63,9 @@ class AboutDialog extends React.Component<IProps, IState> {
                     <div className="about-container">
                         River is free messaging app for desktop focuses on security and speed.
                     </div>
-                    <div className="copyright-container">
+                    <div className="copyright-container" data-copyright="hamidrezakks@gamil.com">
                         <img src={ronakLogo} alt="ronak-logo"/>
-                        <span>Copyright © 2016 - 2020 Ronak Software Group</span>
+                        <span>Copyright © 2016 - 2021 Ronak Software Group</span>
                     </div>
                 </div>
             </Dialog>

@@ -48,6 +48,7 @@ import {Merge} from "type-fest";
 import {useRef} from "react";
 
 import './style.scss';
+import MainRepo from "../../repository";
 
 const C_MINIMIZE_WIDTH = 240;
 const C_MINIMIZE_HEIGHT = 135;
@@ -110,6 +111,7 @@ class CallModal extends React.Component<IProps, IState> {
     private callService: CallService;
     // @ts-ignore
     private apiManager: APIManager;
+    private mainRepo: MainRepo;
     private videoRef: HTMLVideoElement | undefined;
     private callVideoRef: CallVideo | undefined;
     private eventReferences: any[] = [];
@@ -145,6 +147,7 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callService = CallService.getInstance();
         this.apiManager = APIManager.getInstance();
+        this.mainRepo = MainRepo.getInstance();
 
         this.callService.setDialogOpenFunction(this.openDialog);
         this.callService.setSetTeamFunction(this.setTeam);
@@ -607,6 +610,11 @@ class CallModal extends React.Component<IProps, IState> {
             popupWin.focus();
             popupWin.close();
         }
+        if (this.state.callId === '0') {
+            this.mainRepo.getInputPeerBy(data.peerid, data.peertype).then((peer) => {
+                this.peer = peer;
+            });
+        }
         this.setState({
             callId: data.callid || '0',
             callUserId: data.userid || '0',
@@ -705,6 +713,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private rateChangeHandler = (e: any, val: number | null) => {
         const {callId} = this.state;
+        window.console.log(this.peer, callId);
         if (!this.peer || callId === '0') {
             this.closeHandler();
             return;
@@ -712,7 +721,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.setState({
             rate: val,
         });
-        this.apiManager.callRate(this.peer, callId, val || 0);
+        this.apiManager.callRate(this.peer, callId, Math.floor(val || 0));
         this.closeHandler();
     }
 
