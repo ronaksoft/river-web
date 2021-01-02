@@ -72,11 +72,36 @@
         }
       }
     }
+
+    .call-indicator {
+      background-color: var(--river-light);
+      transition: 0.2s background-color;
+      padding: 5px 8px 3px;
+      margin: 2px 8px 0;
+      color: var(--white);
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        background-color: var(--river);
+      }
+
+      &.disabled {
+        background-color: var(--grey);
+        cursor: default;
+
+        &:hover {
+          background-color: var(--grey);
+        }
+      }
+    }
   }
 
   &.with-call {
     .buttons {
-      width: 140px;
+      width: 190px;
     }
   }
 }

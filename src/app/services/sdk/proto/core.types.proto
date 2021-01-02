@@ -84,7 +84,7 @@ message Dialog {
     bool Pinned = 10;
     DraftMessage Draft = 11;
     int64 PinnedMessageID = 12;
-    int64 ActiveCallID = 13;
+    int64 ActiveCallID = 13 [jstype = JS_STRING];
 }
 
 // PeerType

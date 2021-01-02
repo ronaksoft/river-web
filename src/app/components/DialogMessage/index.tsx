@@ -30,6 +30,7 @@ import {
     ScheduleRounded,
     VideocamOutlined,
     PlayArrowRounded,
+    CallRounded,
 } from '@material-ui/icons';
 import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -286,6 +287,9 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                                 savedMessages={dialog.saved_messages} onlineIndicator={selectedPeerName !== ''}/>}
                     {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupAvatar className="avatar" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
+                    {Boolean(dialog.activecallid && dialog.activecallid !== '0') && <div className="active-call">
+                        <CallRounded/>
+                    </div>}
                     <div className="dialog-top-bar">
                         {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
                         {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF || dialog.peertype === PeerType.PEEREXTERNALUSER) &&

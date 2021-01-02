@@ -2037,8 +2037,8 @@ export class UpdatePhoneCallStarted extends jspb.Message {
   getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  getCallid(): number;
-  setCallid(value: number): void;
+  getCallid(): string;
+  setCallid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdatePhoneCallStarted.AsObject;
@@ -2056,7 +2056,7 @@ export namespace UpdatePhoneCallStarted {
     updateid: number,
     teamid: string,
     peer?: core_types_pb.Peer.AsObject,
-    callid: number,
+    callid: string,
   }
 }
 

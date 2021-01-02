@@ -133,7 +133,7 @@ import {
     UpdateMessageEdited, UpdateMessagePinned,
     UpdateMessagesDeleted,
     UpdateNewMessage,
-    UpdateNotifySettings, UpdateReaction,
+    UpdateNotifySettings, UpdatePhoneCallStarted, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateReadMessagesContents,
@@ -170,9 +170,9 @@ import PinnedMessage from "../../components/PinnedMessage";
 import {ModalityService} from "kk-modality";
 import ConnectionStatus from "../../components/ConnectionStatus";
 import {PartialDeep} from "type-fest";
+import CallService from "../../services/callService";
 
 import './style.scss';
-import CallService from "../../services/callService";
 
 export let notifyOptions: any[] = [];
 
@@ -284,7 +284,7 @@ class Chat extends React.Component<IProps, IState> {
     private onlineStatusInterval: any = null;
     private pinnedMessageRef: PinnedMessage | undefined;
     private modalityService: ModalityService;
-    private callService: CallService;
+    private readonly callService: CallService;
 
     constructor(props: IProps) {
         super(props);
@@ -507,6 +507,12 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: dialog removed
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDialogRemoved, this.updateDialogRemovedHandler));
+
+        // Update: call started
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdatePhoneCallStarted, this.updatePhoneCallStartedHandler));
+
+        // Update: call ended
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdatePhoneCallEnded, this.updatePhoneCallEndedHandler));
 
         // TODO: add timestamp to pending message
 
@@ -897,6 +903,10 @@ class Chat extends React.Component<IProps, IState> {
                 peer: this.peer,
                 selectedPeerName: this.selectedPeerName
             });
+            const dialog = this.getDialogByPeerName(this.selectedPeerName);
+            if (dialog) {
+                this.infoBarRef.setCallStarted(dialog.activecallid && dialog.activecallid !== '0');
+            }
         }
     }
 
@@ -2225,7 +2235,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateDialogsCounter(peerName: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft}: any, throttleUpdate?: boolean) {
+    private updateDialogsCounter(peerName: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft, activeCallId}: any, throttleUpdate?: boolean) {
         if (this.dialogMap.hasOwnProperty(peerName)) {
             const dialogs = this.dialogs;
             let index = this.dialogMap[peerName];
@@ -2295,6 +2305,11 @@ class Chat extends React.Component<IProps, IState> {
                 shouldUpdate = true;
                 shouldSort = true;
             }
+            if (activeCallId !== undefined) {
+                dialogs[index].activecallid = activeCallId;
+                shouldUpdate = true;
+                shouldSort = true;
+            }
             if (throttleUpdate !== true) {
                 if (shouldUpdate) {
                     this.dialogsSort(dialogs, undefined, !shouldSort);
@@ -2336,6 +2351,14 @@ class Chat extends React.Component<IProps, IState> {
                         return 1;
                     }
                     if (p1 > p2) {
+                        return -1;
+                    }
+                    const c1 = i1.activecallid && i1.activecallid !== '0' ? 1 : 0;
+                    const c2 = i2.activecallid && i2.activecallid !== '0' ? 1 : 0;
+                    if (c1 < c2) {
+                        return 1;
+                    }
+                    if (c1 > c2) {
                         return -1;
                     }
                     const d1 = i1.draft && i1.draft.body ? 1 : 0;
@@ -2841,6 +2864,22 @@ class Chat extends React.Component<IProps, IState> {
                 this.dialogRemove(peerName);
             });
         }, 1023);
+    }
+
+    private updatePhoneCallStartedHandler = (data: UpdatePhoneCallStarted.AsObject) => {
+        const peerName = GetPeerName(data.peer.id, data.peer.type);
+        this.updateDialogsCounter(peerName, {activeCallId: data.callid});
+        if (this.infoBarRef && this.selectedPeerName === peerName) {
+            this.infoBarRef.setCallStarted(true);
+        }
+    }
+
+    private updatePhoneCallEndedHandler = (data: UpdatePhoneCallStarted.AsObject) => {
+        const peerName = GetPeerName(data.peer.id, data.peer.type);
+        this.updateDialogsCounter(peerName, {activeCallId: '0'});
+        if (this.infoBarRef && this.selectedPeerName === peerName) {
+            this.infoBarRef.setCallStarted(false);
+        }
     }
 
     /* Notify on new message received */
@@ -5655,8 +5694,13 @@ class Chat extends React.Component<IProps, IState> {
             this.searchMessageRef.setPeer(this.teamId, this.peer);
         }
 
+        const dialog = this.getDialogByPeerName(this.selectedPeerName);
         if (this.moveDownRef) {
-            this.moveDownRef.setDialog(this.getDialogByPeerName(this.selectedPeerName));
+            this.moveDownRef.setDialog(dialog);
+        }
+
+        if (this.infoBarRef && dialog) {
+            this.infoBarRef.setCallStarted(dialog.activecallid && dialog.activecallid !== '0');
         }
 
         if (selectable !== undefined && selectedIds !== undefined) {

@@ -1,3 +1,7 @@
+## 1.0.14
+* Call improvements
+* Known bugs fixed
+
 ## 1.0.13
 * Translations updated
 * Fixed a bug in call

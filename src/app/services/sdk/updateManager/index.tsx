@@ -669,6 +669,11 @@ export default class UpdateManager {
                 this.logVerbose(update.constructor, null);
                 this.callHandlers('all', C_MSG.UpdateAuthorizationReset, {});
                 break;
+            case C_MSG.UpdatePhoneCall:
+                const updatePhoneCall = UpdatePhoneCall.deserializeBinary(update.update as Uint8Array).toObject();
+                this.logVerbose(update.constructor, updatePhoneCall);
+                this.callHandlers('all', C_MSG.UpdatePhoneCall, updatePhoneCall);
+                break;
             /** Messages **/
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
@@ -1093,7 +1098,7 @@ export default class UpdateManager {
                 this.logVerbose(update.constructor, updatePhoneCallEnded);
                 this.callUpdateHandler(updatePhoneCallEnded.teamid || '0', update.constructor, updatePhoneCallEnded);
                 this.mergeDialog(transaction.dialogs, {
-                    activecallid: 0,
+                    activecallid: '0',
                     peerid: updatePhoneCallEnded.peer.id || '0',
                     peertype: updatePhoneCallEnded.peer.type || 0,
                     teamid: updatePhoneCallEnded.teamid || '0',

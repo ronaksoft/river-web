@@ -531,6 +531,8 @@
     "call_back": "تماس مجدد",
     "call_timeout": "پاسخی دریافت نشد",
     "is_not_available": "در دسترس نیست",
-    "audio_muted": "میکروفن بی صدا هست"
+    "audio_muted": "میکروفن بی صدا هست",
+    "call_started": "تماس فعال",
+    "join": "ورود به تماس"
   }
 }

@@ -507,7 +507,7 @@ message UpdatePhoneCallStarted {
     int64 UpdateID = 101;
     int64 TeamID = 102 [jstype = JS_STRING];
     Peer Peer = 1;
-    int64 CallId = 2;
+    int64 CallId = 2 [jstype = JS_STRING];
 }
 
 // UpdatePhoneCallEnded

@@ -535,6 +535,8 @@
     "call_back": "Call Back",
     "call_timeout": "no answer",
     "is_not_available": "is not available",
-    "audio_muted": "Microphone is muted"
+    "audio_muted": "Microphone is muted",
+    "call_started": "Call Started",
+    "join": "Join"
   }
 }

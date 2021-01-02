@@ -112,6 +112,7 @@ export default class MainRepo {
                         inputPeer.setId(res.id);
                         inputPeer.setAccesshash(res.accesshash);
                         inputPeer.setType(PeerType.PEERUSER);
+                        resolve(inputPeer);
                     } else {
                         reject();
                     }

@@ -15805,7 +15805,7 @@ proto.msg.UpdatePhoneCallStarted.toObject = function(includeInstance, msg) {
     updateid: jspb.Message.getFieldWithDefault(msg, 101, 0),
     teamid: jspb.Message.getFieldWithDefault(msg, 102, "0"),
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
-    callid: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    callid: jspb.Message.getFieldWithDefault(msg, 2, "0")
   };
 
   if (includeInstance) {
@@ -15860,7 +15860,7 @@ proto.msg.UpdatePhoneCallStarted.deserializeBinaryFromReader = function(msg, rea
       msg.setPeer(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setCallid(value);
       break;
     default:
@@ -15922,8 +15922,8 @@ proto.msg.UpdatePhoneCallStarted.serializeBinaryToWriter = function(message, wri
     );
   }
   f = message.getCallid();
-  if (f !== 0) {
-    writer.writeInt64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeInt64String(
       2,
       f
     );
@@ -16024,19 +16024,19 @@ proto.msg.UpdatePhoneCallStarted.prototype.hasPeer = function() {
 
 /**
  * optional int64 CallId = 2;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdatePhoneCallStarted.prototype.getCallid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.UpdatePhoneCallStarted} returns this
  */
 proto.msg.UpdatePhoneCallStarted.prototype.setCallid = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 

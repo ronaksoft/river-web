@@ -33,6 +33,24 @@ a.dialog-a {
     transform: translate(-50%, 0);
   }
 
+  .active-call {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--dark-color-hover);
+
+    svg {
+      color: var(--white);
+      font-size: 32px;
+    }
+  }
+
   &.pinned {
     background-color: var(--header-color);
 
@@ -386,6 +404,11 @@ html[direction="rtl"] {
   .dialog-wrapper {
     direction: rtl;
     text-align: right;
+
+    .active-call {
+      left: auto;
+      right: 0;
+    }
 
     .message-label {
       right: auto;

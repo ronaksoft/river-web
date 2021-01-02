@@ -610,6 +610,7 @@ class CallModal extends React.Component<IProps, IState> {
             popupWin.focus();
             popupWin.close();
         }
+
         if (this.state.callId === '0') {
             this.mainRepo.getInputPeerBy(data.peerid, data.peertype).then((peer) => {
                 this.peer = peer;
@@ -713,7 +714,6 @@ class CallModal extends React.Component<IProps, IState> {
 
     private rateChangeHandler = (e: any, val: number | null) => {
         const {callId} = this.state;
-        window.console.log(this.peer, callId);
         if (!this.peer || callId === '0') {
             this.closeHandler();
             return;

@@ -281,8 +281,8 @@ export class Dialog extends jspb.Message {
   getPinnedmessageid(): number;
   setPinnedmessageid(value: number): void;
 
-  getActivecallid(): number;
-  setActivecallid(value: number): void;
+  getActivecallid(): string;
+  setActivecallid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
@@ -309,7 +309,7 @@ export namespace Dialog {
     pinned: boolean,
     draft?: DraftMessage.AsObject,
     pinnedmessageid: number,
-    activecallid: number,
+    activecallid: string,
   }
 }
 

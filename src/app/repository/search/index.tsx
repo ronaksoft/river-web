@@ -101,6 +101,22 @@ export default class SearchRepo {
                             if (p1 > p2) {
                                 return -1;
                             }
+                            const c1 = i1.activecallid && i1.activecallid !== '0' ? 1 : 0;
+                            const c2 = i2.activecallid && i2.activecallid !== '0' ? 1 : 0;
+                            if (c1 < c2) {
+                                return 1;
+                            }
+                            if (c1 > c2) {
+                                return -1;
+                            }
+                            const d1 = i1.draft && i1.draft.body ? 1 : 0;
+                            const d2 = i2.draft && i2.draft.body ? 1 : 0;
+                            if (d1 < d2) {
+                                return 1;
+                            }
+                            if (d1 > d2) {
+                                return -1;
+                            }
                             if (!i1.topmessageid || !i2.topmessageid) {
                                 return 0;
                             }

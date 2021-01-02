@@ -28,6 +28,7 @@ interface IProps {
 }
 
 interface IState {
+    callStarted: boolean;
     peer: InputPeer | null;
     isConnecting: boolean;
     isOnline: boolean;
@@ -44,6 +45,7 @@ class InfoBar extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            callStarted: false,
             isConnecting: false,
             isOnline: false,
             isUpdating: false,
@@ -75,8 +77,15 @@ class InfoBar extends React.Component<IProps, IState> {
         this.setState(omitBy(state, isNil));
     }
 
+    public setCallStarted(callStarted: boolean) {
+        this.setState({
+            callStarted,
+        });
+    }
+
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted} = this.state;
+        const isGroup = (peer && peer.getType() === PeerType.PEERGROUP);
         return (
             <div className={'info-bar' + (withCall ? ' with-call' : '')}>
                 {this.props.isMobileView ?
@@ -94,13 +103,13 @@ class InfoBar extends React.Component<IProps, IState> {
                            peer={peer} teamId={teamId} currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
-                    {withCall && <Tooltip
-                        title={i18n.t('call.call')}
-                    >
-                        <IconButton
+                    {withCall && <>{callStarted ?
+                        <div
+                            className={'call-indicator ' + (!isGroup ? 'disabled' : '')}>{i18n.t(isGroup ? 'call.join' : 'call.call_started')}</div> :
+                        <Tooltip title={i18n.t('call.call')}><IconButton
                             onClick={this.props.onAction('call')}
-                        ><CallRounded/></IconButton>
-                    </Tooltip>}
+                        ><CallRounded/></IconButton></Tooltip>}
+                    </>}
                     <Tooltip
                         title={i18n.t('chat.search_messages')}
                     >
@@ -109,7 +118,7 @@ class InfoBar extends React.Component<IProps, IState> {
                         ><SearchRounded/></IconButton>
                     </Tooltip>
                     <Tooltip
-                        title={(peer && peer.getType() === PeerType.PEERGROUP) ? i18n.t('chat.group_info') : i18n.t('chat.contact_info')}
+                        title={isGroup ? i18n.t('chat.group_info') : i18n.t('chat.contact_info')}
                     >
                         <IconButton
                             onClick={this.props.onAction('info')}
