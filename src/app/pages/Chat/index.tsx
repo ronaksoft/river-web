@@ -777,6 +777,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private chatInputRefHandler = (ref: any) => {
         this.chatInputRef = ref;
+        if (this.chatInputRef) {
+            this.chatInputRef.setTeamId(this.teamId);
+        }
     }
 
     /* Set chat view

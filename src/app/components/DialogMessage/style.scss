@@ -95,6 +95,14 @@ a.dialog-a {
         width: 67%;
       }
     }
+
+    &.has-many-unread {
+      .dialog-wrapper {
+        .preview {
+          width: 65%;
+        }
+      }
+    }
   }
 
   &.muted {
@@ -394,6 +402,14 @@ a.dialog-a {
       }
     }
   }
+
+  &.has-many-unread.has-mention {
+    .dialog-wrapper {
+      .mention {
+        right: 26px;
+      }
+    }
+  }
 }
 
 html[direction="rtl"] {
@@ -401,85 +417,96 @@ html[direction="rtl"] {
     direction: rtl;
   }
 
-  .dialog-wrapper {
-    direction: rtl;
-    text-align: right;
+  .dialog {
+    .dialog-wrapper {
+      direction: rtl;
+      text-align: right;
 
-    .active-call {
-      left: auto;
-      right: 0;
-    }
-
-    .message-label {
-      right: auto;
-      left: -2px;
-      direction: ltr;
-    }
-
-    .online-indicator {
-      left: auto;
-      right: 36px;
-    }
-
-    .avatar {
-      float: right;
-      margin-right: 0;
-      margin-left: 12px;
-    }
-
-    .dialog-top-bar {
-      .muted-wrapper {
-        margin: 0 0 0 4px;
+      .active-call {
+        left: auto;
+        right: 0;
       }
 
-      .name {
-        svg {
-          margin-right: 0;
-          margin-left: 6px;
+      .message-label {
+        right: auto;
+        left: -2px;
+        direction: ltr;
+      }
+
+      .online-indicator {
+        left: auto;
+        right: 36px;
+      }
+
+      .avatar {
+        float: right;
+        margin-right: 0;
+        margin-left: 12px;
+      }
+
+      .dialog-top-bar {
+        .muted-wrapper {
+          margin: 0 0 0 4px;
         }
-      }
-    }
 
-    .preview {
-      .preview-icon {
-        margin: 0 0 0 4px;
-
-        &.gif {
-          margin-right: 4px;
+        .name {
+          svg {
+            margin-right: 0;
+            margin-left: 6px;
+          }
         }
       }
 
-      .tiny-thumb {
-        margin: 0 0 0 4px;
+      .preview {
+        .preview-icon {
+          margin: 0 0 0 4px;
+
+          &.gif {
+            margin-right: 4px;
+          }
+        }
+
+        .tiny-thumb {
+          margin: 0 0 0 4px;
+        }
+
+        .system-message {
+          direction: rtl;
+        }
+
+        .preview-message.draft-message {
+          direction: rtl;
+        }
       }
 
-      .system-message {
-        direction: rtl;
+      .unread {
+        right: auto;
+        left: -1px;
       }
 
-      .preview-message.draft-message {
-        direction: rtl;
+      .mention {
+        right: auto;
+        left: 21px;
+      }
+
+      .pin {
+        right: auto;
+        left: -2px;
+      }
+
+      .more {
+        right: auto;
+        left: -3px;
       }
     }
 
-    .unread {
-      right: auto;
-      left: -1px;
-    }
-
-    .mention {
-      right: auto;
-      left: 21px;
-    }
-
-    .pin {
-      right: auto;
-      left: -2px;
-    }
-
-    .more {
-      right: auto;
-      left: -3px;
+    &.has-many-unread.has-mention {
+      .dialog-wrapper {
+        .mention {
+          right: auto;
+          left: 26px;
+        }
+      }
     }
   }
 }

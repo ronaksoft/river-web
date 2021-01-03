@@ -448,6 +448,10 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
+    public setTeamId(teamId: string) {
+        this.teamId = teamId;
+    }
+
     public setParams(teamId: string, peer: InputPeer | null, previewMessageMode?: number, previewMessage?: IMessage) {
         this.teamId = teamId;
         if ((previewMessageMode === C_MSG_MODE.Edit || previewMessageMode === C_MSG_MODE.Reply) && this.state.selectable) {

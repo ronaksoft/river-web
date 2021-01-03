@@ -13,6 +13,7 @@
     "first_name": "نام",
     "last_name": "نام خانوادگی",
     "username": "نام کاربری",
+    "no_username": "بدون نام کاربری",
     "phone": "تلفن",
     "title": "عنوان",
     "participants": "عضو",

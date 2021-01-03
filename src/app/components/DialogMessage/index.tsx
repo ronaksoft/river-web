@@ -278,7 +278,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
               onDrop={dropHandler}
         >
             <div
-                className={'dialog' + (peerName === selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '') + (muted ? ' muted' : '') + ((dialog.unreadcount || 0) > 0 ? ' has-unread' : '') + (hasMention ? ' has-mention' : '')}
+                className={'dialog' + (peerName === selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '') + (muted ? ' muted' : '') + ((dialog.unreadcount || 0) > 0 ? ' has-unread' : '') + ((dialog.unreadcount || 0) > 99 ? ' has-many-unread' : '') + (hasMention ? ' has-mention' : '')}
             >
                 <div
                     className="dialog-wrapper">

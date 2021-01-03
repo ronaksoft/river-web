@@ -1,3 +1,8 @@
+## 1.0.15
+* Minor bug fixed in team change
+* Reaction default sort updated
+* Minor bugs fixed
+
 ## 1.0.14
 * Call improvements
 * Known bugs fixed
