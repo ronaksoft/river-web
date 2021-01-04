@@ -7,23 +7,48 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import App from './App';
-import {HashRouter} from 'react-router-dom';
+import React, {Suspense, useEffect} from 'react';
+import ReactDOM from 'react-dom';
+import NProgress from 'nprogress';
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 import './index.css';
 
-let appRef: App;
+const App = React.lazy(() => import('./App'));
+
+let appRef: any;
 const appRefHandler = (ref: any) => {
     appRef = ref;
 };
 
+NProgress.configure({
+    barSelector: '[role="loading-bar"]',
+    easing: 'linear',
+    showSpinner: false,
+    template: '<div class="loading-bar" role="loading-bar"></div>',
+    trickleSpeed: 200,
+});
+
+const Loading = () => {
+    useEffect(() => {
+        NProgress.start();
+        NProgress.inc(0.2);
+        window.console.log('start');
+
+        return () => {
+            window.console.log('done');
+            NProgress.done();
+            NProgress.remove();
+        };
+    });
+
+    return <div className="lazy-loading-container"/>;
+};
+
 ReactDOM.render((
-        <HashRouter>
+        <Suspense fallback={<Loading/>}>
             <App ref={appRefHandler}/>
-        </HashRouter>
+        </Suspense>
     ),
     document.getElementById('root') as HTMLElement,
 );

@@ -1,3 +1,7 @@
+## 1.0.17
+* Code splitting
+* Lazy loading
+
 ## 1.0.16
 * Reaction update bug fixed
 * Minor improvements + update test passed

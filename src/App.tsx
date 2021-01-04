@@ -8,6 +8,7 @@
 */
 
 import * as React from 'react';
+import {HashRouter} from 'react-router-dom';
 import Routes from './app/routes';
 import {CircularProgress, DialogContentText} from '@material-ui/core';
 import MainRepo from './app/repository';
@@ -39,7 +40,7 @@ import {Modality, ModalityService} from "kk-modality";
 import './App.scss';
 import CallModal from "./app/components/CallModal";
 
-export const C_VERSION = '1.0.16';
+export const C_VERSION = '1.0.17';
 export const C_ELECTRON_VERSIONS = ['11.1.1', '8.5.2'];
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
@@ -237,15 +238,18 @@ class App extends React.Component<{}, IState> {
 
     public render() {
         return (
-            <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
-                <MuiThemeProvider theme={getTheme()}>
-                    <SnackbarProvider maxSnack={3}>
-                        {Routes}
-                    </SnackbarProvider>
-                    <CallModal/>
-                    <Modality queueSize={5} dialogClasses={{paper: 'confirm-dialog-paper', root: 'confirm-dialog'}}/>
-                </MuiThemeProvider>
-            </div>
+            <HashRouter>
+                <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
+                    <MuiThemeProvider theme={getTheme()}>
+                        <SnackbarProvider maxSnack={3}>
+                            {Routes}
+                        </SnackbarProvider>
+                        <CallModal/>
+                        <Modality queueSize={5}
+                                  dialogClasses={{paper: 'confirm-dialog-paper', root: 'confirm-dialog'}}/>
+                    </MuiThemeProvider>
+                </div>
+            </HashRouter>
         );
     }
 
