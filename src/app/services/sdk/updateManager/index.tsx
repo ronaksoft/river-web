@@ -1147,6 +1147,12 @@ export default class UpdateManager {
             if (m.removed_labels) {
                 m.removed_labels = uniq([...(m.removed_labels || []), ...(message.removed_labels || [])]);
             }
+            if (m.reaction_list) {
+                m.reaction_list = message.reaction_list;
+            }
+            if (m.yourreactionsList) {
+                m.yourreactionsList = message.yourreactionsList;
+            }
             messages[m.id || 0] = kMerge(m, message);
         } else {
             messages[message.id || 0] = message;

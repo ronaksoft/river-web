@@ -1,3 +1,6 @@
+## 1.0.16
+* Reaction update bug fixed
+
 ## 1.0.15
 * Minor bug fixed in team change
 * Reaction default sort updated
