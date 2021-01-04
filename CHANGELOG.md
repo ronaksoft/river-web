@@ -1,3 +1,6 @@
+## 1.0.18
+* Initialize theme improvements
+
 ## 1.0.17
 * Code splitting
 * Lazy loading

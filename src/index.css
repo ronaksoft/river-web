@@ -11,6 +11,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
+    color: #f8f8f8;
 }
 
 .lazy-loading-container {
@@ -46,5 +47,23 @@ body {
     height: 6px;
     border-radius: 8px;
     background: rgba(50, 61, 71, 0.36);
+}
+
+html[theme="dark"] body,
+html[theme="dark-night"] body,
+html[theme="dark-blue"] body {
+    background-color: #232323;
+}
+
+html[theme="dark"] .lazy-loading-container,
+html[theme="dark-night"] .lazy-loading-container,
+html[theme="dark-blue"] .lazy-loading-container {
+    background-color: rgba(155, 155, 155, 0.62);
+}
+
+html[theme="dark"] #nprogress .loading-bar,
+html[theme="dark-night"] #nprogress .loading-bar,
+html[theme="dark-blue"] #nprogress .loading-bar {
+    background-color: rgba(255, 255, 255, 0.46);
 }
 

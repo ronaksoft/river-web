@@ -655,7 +655,7 @@ class Chat extends React.Component<IProps, IState> {
                         <div
                             className={'column-center' + (rightMenuShrink ? ' shrink' : '')}>
                             <div className="top">
-                                <InfoBar key="info-bar" ref={this.infoBarRefHandler} onBack={this.backToChatsHandler}
+                                <InfoBar ref={this.infoBarRefHandler} onBack={this.backToChatsHandler}
                                          onClose={this.closePeerHandler} onAction={this.messageMoreActionHandler}
                                          statusBarRefHandler={this.statusBarRefHandler}
                                          isMobileView={this.isMobileView} teamId={this.teamId}/>
