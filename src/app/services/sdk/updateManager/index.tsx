@@ -298,10 +298,6 @@ export default class UpdateManager {
             } else if (this.internalUpdateId > minId) {
                 return;
             }
-            if (minId === 0 && maxId === 0) {
-                this.processContainer(data, true);
-                return;
-            }
             if ((this.outOfSync || this.internalUpdateId + 1 !== minId)) {
                 this.outOfSyncCheck(data);
                 return;
@@ -1370,7 +1366,7 @@ export default class UpdateManager {
                     lastMessagePromise.push(this.messageRepo.getLastMessage(toCheck.teamid, toCheck.peerid, toCheck.peertype));
                 }
             });
-            const messagePromise = Promise.all(lastMessagePromise).then((arr) => {
+            const messagePromise = lastMessagePromise.length > 0 ? Promise.all(lastMessagePromise).then((arr) => {
                 arr.forEach((msg: IMessage | undefined, index) => {
                     if (msg) {
                         const messageTitle = getMessageTitle(msg);
@@ -1409,8 +1405,9 @@ export default class UpdateManager {
                     }
                 });
                 return Promise.resolve();
-            });
-            const dialogPromise = this.dialogRepo.getIn(transaction.toCheckDialogIds.map(o => [o.teamid, o.peerid, o.peertype])).then((dialogs) => {
+            }) : Promise.resolve();
+            const dialogInput: Array<[string, string, number]> = transaction.toCheckDialogIds.map(o => [o.teamid, o.peerid, o.peertype]);
+            const dialogPromise = dialogInput.length > 0 ? this.dialogRepo.getIn(dialogInput).then((dialogs) => {
                 dialogs.forEach((dialog) => {
                     if (!dialog) {
                         return;
@@ -1426,16 +1423,15 @@ export default class UpdateManager {
                     }
                 });
                 return Promise.resolve();
-            });
+            }) : Promise.resolve();
             Promise.all([messagePromise, dialogPromise]).then(() => {
                 return this.applyDialogs(transaction.dialogs).then((peers) => {
+                    this.processTransactionStep4(transaction, transactionResolve, doneFn);
                     this.callHandlers('all', C_MSG.UpdateDialogDB, {
                         counters: transaction.live ? true : transaction.lastOne,
                         incomingIds: transaction.incomingIds,
                         peers,
                     });
-                    this.processTransactionStep4(transaction, transactionResolve, doneFn);
-                    return Promise.resolve();
                 });
             }).catch((err) => {
                 window.console.log('processTransactionStep3', err);
@@ -1448,7 +1444,7 @@ export default class UpdateManager {
     private processTransactionStep4(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         const promises: any[] = [];
         if (transaction.clearDialogs.length > 0) {
-            promises.push(this.applyClearDialogs(transaction.clearDialogs, transaction.reloadLabels).then((res) => {
+            promises.push(this.applyClearDialogs(transaction.clearDialogs, transaction.reloadLabels).then(() => {
                 if (transaction.clearDialogs.length > 0) {
                     this.callHandlers(this.teamId, C_MSG.UpdateDialogRemoved, {
                         peerNames: transaction.clearDialogs.filter(o => o.remove).map(o => {
@@ -1456,7 +1452,7 @@ export default class UpdateManager {
                         }),
                     });
                 }
-                return res;
+                return Promise.resolve();
             }));
         }
         if (promises.length > 0) {

@@ -1,5 +1,6 @@
 ## 1.0.16
 * Reaction update bug fixed
+* Minor improvements + update test passed
 
 ## 1.0.15
 * Minor bug fixed in team change
