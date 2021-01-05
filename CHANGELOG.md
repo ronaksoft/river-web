@@ -1,3 +1,6 @@
+## 1.0.19
+* Mention notification bug fixed
+
 ## 1.0.18
 * Initialize theme improvements
 
