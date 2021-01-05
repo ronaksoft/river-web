@@ -1337,6 +1337,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageRef.forceUpdate(() => {
                         if (this.messageRef) {
                             this.messageRef.updateList();
+                            if (this.messageRef.refillGap() && this.moveDownRef) {
+                                this.moveDownRef.setVisible(false);
+                            }
                         }
                     });
                 }
@@ -2852,6 +2855,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.forceUpdate(() => {
                     if (this.messageRef) {
                         this.messageRef.updateList();
+                        if (this.messageRef.refillGap() && this.moveDownRef) {
+                            this.moveDownRef.setVisible(false);
+                        }
                     }
                 });
             }
@@ -5725,7 +5731,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.setSelectable(this.messageSelectable, this.messageSelectedIds);
             }
             if (this.chatInputRef) {
-                this.chatInputRef.setSelectable(this.messageSelectable, Boolean(this.messageSelectable && Object.keys(this.messageSelectedIds).length === 0));
+                const ids = Object.keys(this.messageSelectedIds);
+                this.chatInputRef.setSelectable(this.messageSelectable, Boolean(this.messageSelectable && ids.length === 0), ids);
             }
         }
     }

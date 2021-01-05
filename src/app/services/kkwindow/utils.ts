@@ -267,6 +267,23 @@ export class CellMeasurer {
         });
     }
 
+    public computeTotalHeight() {
+        this.totalHeight = 0;
+        for (let i = 0; i < this.rowCount; i++) {
+            const fragment = this.fragmentList[this.keyMapperFn(i)];
+            let height = fragment ? fragment.height : (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) : this.estimatedItemSize);
+            if (height < 0) {
+                height = (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) : this.estimatedItemSize);
+            }
+            if (i === 0) {
+                this.offsetList[i] = height;
+            } else {
+                this.offsetList[i] = this.offsetList[i - 1] + height;
+            }
+            this.totalHeight += height;
+        }
+    }
+
     private setVisibleList(force?: boolean) {
         if (Math.abs(this.start - this.lastStart) > this.updateHysteresis || Math.abs(this.end - this.lastEnd) > this.updateHysteresis || force) {
             let fromT = this.lastStart;
@@ -328,20 +345,7 @@ export class CellMeasurer {
     }
 
     private updateListHandler = () => {
-        this.totalHeight = 0;
-        for (let i = 0; i < this.rowCount; i++) {
-            const fragment = this.fragmentList[this.keyMapperFn(i)];
-            let height = fragment ? fragment.height : (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) : this.estimatedItemSize);
-            if (height < 0) {
-                height = (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) : this.estimatedItemSize);
-            }
-            if (i === 0) {
-                this.offsetList[i] = height;
-            } else {
-                this.offsetList[i] = this.offsetList[i - 1] + height;
-            }
-            this.totalHeight += height;
-        }
+        this.computeTotalHeight();
         this.setVisibleList();
         if (this.updateFn) {
             this.updateFn();

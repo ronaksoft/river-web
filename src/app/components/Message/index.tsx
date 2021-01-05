@@ -608,6 +608,13 @@ class Message extends React.Component<IProps, IState> {
         // this.containerResizeThrottle();
     }
 
+    public refillGap() {
+        if (this.list) {
+            return this.list.refillGap();
+        }
+        return false;
+    }
+
     public render() {
         const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay, containerSize, enable} = this.state;
         return (

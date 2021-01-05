@@ -279,6 +279,15 @@ class KKWindow extends React.Component<IProps, IState> {
         return this.smallerThanContainer;
     }
 
+    public refillGap() {
+        if (!this.fitList) {
+            return false;
+        }
+        this.cellMeasurer.setRowCount(this.props.count);
+        this.cellMeasurer.computeTotalHeight();
+        return this.fitListToBottom();
+    }
+
     public render() {
         const {width, height} = this.props;
         return (
@@ -473,10 +482,7 @@ class KKWindow extends React.Component<IProps, IState> {
         document.removeEventListener('mousedown', this.teardownDragging);
     }
 
-    private updateHandler = () => {
-        if (this.props.onUpdate) {
-            this.props.onUpdate();
-        }
+    private fillGap() {
         const height = this.getHeight();
         if (this.containerRef) {
             this.scrollbar.noScroll = (height >= this.cellMeasurer.getTotalHeight());
@@ -487,6 +493,14 @@ class KKWindow extends React.Component<IProps, IState> {
                 }, 100);
             }
         }
+        return height;
+    }
+
+    private updateHandler = () => {
+        if (this.props.onUpdate) {
+            this.props.onUpdate();
+        }
+        const height = this.fillGap();
         if (this.fitList) {
             this.fitListToBottom();
             // this.setNativeScroll(!this.scrollbar.noScroll);
@@ -508,6 +522,7 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     private fitListToBottom() {
+        let gapFilled = false;
         if (this.containerRef) {
             const gap = (this.getHeight() - 11) - this.cellMeasurer.getTotalHeight();
             this.smallerThanContainer = gap > 0;
@@ -521,11 +536,13 @@ class KKWindow extends React.Component<IProps, IState> {
                         start: 0
                     });
                 }
+                gapFilled = true;
             } else {
                 this.paddingTop = '0';
             }
             this.containerRef.style.paddingTop = this.paddingTop;
         }
+        return gapFilled;
     }
 
     // @ts-ignore

@@ -25,18 +25,20 @@ NProgress.configure({
     barSelector: '[role="loading-bar"]',
     easing: 'linear',
     showSpinner: false,
+    speed: 200,
     template: '<div class="loading-bar" role="loading-bar"></div>',
-    trickleSpeed: 200,
+    trickleSpeed: 100,
 });
+
+NProgress.inc(0.2);
 
 const Loading = () => {
     useEffect(() => {
         NProgress.start();
-        NProgress.inc(0.2);
-        window.console.log('start');
+        NProgress.inc(0.3);
 
         return () => {
-            window.console.log('done');
+            NProgress.set(1);
             NProgress.done();
             NProgress.remove();
         };

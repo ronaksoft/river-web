@@ -261,6 +261,7 @@ interface IState {
     rtl: boolean;
     selectable: boolean;
     selectableDisable: boolean;
+    selectableHasPending: boolean;
     textareaValue: string;
     uploadPreviewOpen: boolean;
     user: IUser | null;
@@ -371,6 +372,7 @@ class ChatInput extends React.Component<IProps, IState> {
             rtl: this.rtl,
             selectable: false,
             selectableDisable: false,
+            selectableHasPending: false,
             textareaValue: '',
             uploadPreviewOpen: false,
             user: props.peer && (props.peer.getType() === PeerType.PEERUSER && props.peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(props.peer.getId() || '') : null,
@@ -524,14 +526,20 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    public setSelectable(enable: boolean, disable: boolean) {
+    public setSelectable(enable: boolean, disable: boolean, ids: string[]) {
+        const hasPending = ids.some(o => parseInt(o, 10) < 0);
         if (enable !== this.state.selectable || disable !== this.state.selectableDisable) {
             this.clearPreviewMessage(false, () => {
                 this.setState({
                     selectable: enable,
                     selectableDisable: disable,
+                    selectableHasPending: hasPending,
                 });
             })();
+        } else if (hasPending !== this.state.selectableHasPending) {
+            this.setState({
+                selectableHasPending: hasPending,
+            });
         }
     }
 
@@ -760,6 +768,7 @@ class ChatInput extends React.Component<IProps, IState> {
         } else {
             const isBot = Boolean(this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data));
             const hasPreviewMessage = Boolean(previewMessage || (droppedMessage && droppedMessage.messagetype && droppedMessage.messagetype !== C_MESSAGE_TYPE.Normal));
+            const {selectableHasPending} = this.state;
             return (
                 <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
@@ -839,7 +848,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             </Tooltip>
                         </div>
                         <div className="right-action">
-                            <Tooltip
+                            {!selectableHasPending && <Tooltip
                                 title={i18n.t('chat.labels')}
                                 placement="top"
                             >
@@ -847,7 +856,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                             disabled={selectableDisable}>
                                     <LabelRounded/>
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip>}
                             <Tooltip
                                 title={i18n.t('input.remove')}
                                 placement="top"
@@ -857,7 +866,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                     <DeleteRounded/>
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip
+                            {!selectableHasPending && <Tooltip
                                 title={i18n.t('input.forward')}
                                 placement="top"
                             >
@@ -865,7 +874,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                             disabled={selectableDisable}>
                                     <ForwardRounded/>
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip>}
                         </div>
                     </div>}
                 </div>
@@ -2269,6 +2278,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 + text
                 + textVal.substring(endPos, textVal.length);
             pos = startPos;
+            this.startPosHold += text.length;
         } else {
             textVal += text;
         }

@@ -1,3 +1,7 @@
+## 1.0.20
+* Minor improvements
+* Known bug has been fixed
+
 ## 1.0.19
 * Mention notification bug fixed
 
