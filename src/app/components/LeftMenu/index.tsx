@@ -781,6 +781,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 }
             }, 10);
         }
+        if (this.settingsMenuRef) {
+            this.settingsMenuRef.changeTeam(team);
+        }
     }
 
     private leftPanelRefHandler = (ref: any) => {

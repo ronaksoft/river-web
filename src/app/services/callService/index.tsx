@@ -481,7 +481,7 @@ export default class CallService {
     }
 
     private callRequested(data: IUpdatePhoneCall) {
-        if (false && this.activeCallId) {
+        if (this.activeCallId) {
             this.busyHandler(data);
             return;
         }

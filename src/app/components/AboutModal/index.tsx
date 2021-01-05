@@ -11,7 +11,7 @@ import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import riverLogo from '../../../asset/image/about/river.png';
 import ronakLogo from '../../../asset/image/about/ronak.png';
-import {C_VERSION} from "../../../App";
+import {C_VERSION} from "../../../index";
 
 import './style.scss';
 

@@ -16,7 +16,7 @@ import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {Link} from "react-router-dom";
 import ElectronService from "../../services/electron";
 import DevTools from "../../components/DevTools";
-import {C_VERSION} from "../../../App";
+import {C_VERSION} from "../../../index";
 
 import './style.scss';
 import {EventAuthProgress, EventSocketReady} from "../../services/events";

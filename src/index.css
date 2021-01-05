@@ -22,6 +22,16 @@ body {
     width: 320px;
     border-radius: 6px;
     background-color: rgba(50, 61, 71, 0.07);
+    color: rgba(50, 61, 71, 0.36);
+}
+
+.lazy-loading-container .version {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: inherit;
 }
 
 /* Make clicks pass-through */
@@ -58,6 +68,7 @@ html[theme="dark"] .lazy-loading-container,
 html[theme="dark-night"] .lazy-loading-container,
 html[theme="dark-blue"] .lazy-loading-container {
     background-color: rgba(155, 155, 155, 0.62);
+    color: rgba(155, 155, 155, 0.62);
 }
 
 html[theme="dark"] #nprogress .loading-bar,

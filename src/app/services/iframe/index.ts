@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import {C_VERSION} from "../../../App";
+import {C_VERSION} from "../../../index";
 
 export const C_IFRAME_SUBJECT = {
     IsLoaded: 'is_loaded',

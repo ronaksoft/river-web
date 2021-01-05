@@ -17,7 +17,7 @@ import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
 import {findIndex, throttle} from 'lodash';
 import * as core_types_pb from '../messages/core.types_pb';
 import * as Sentry from '@sentry/browser';
-import {isProd} from "../../../../App";
+import {isProd} from "../../../../index";
 import IframeService from "../../iframe";
 import {isMobile} from "../../utilities/localize";
 import Presenter from "../presenters";

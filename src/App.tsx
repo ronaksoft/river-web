@@ -36,14 +36,11 @@ import {C_LOCALSTORAGE} from "./app/services/sdk/const";
 import {ThemeChanged} from "./app/components/SettingsMenu";
 import Broadcaster from "./app/services/broadcaster";
 import {Modality, ModalityService} from "kk-modality";
+import CallModal from "./app/components/CallModal";
+import {C_ELECTRON_VERSIONS, C_VERSION, isProd} from "./index";
 
 import './App.scss';
-import CallModal from "./app/components/CallModal";
 
-export const C_VERSION = '1.0.20';
-export const C_ELECTRON_VERSIONS = ['11.1.1', '8.5.2'];
-
-export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {
     Sentry.init({
         dsn: "https://ec65e55c384f43f2ac2ed7c66e319b1a@sentry.ronaksoftware.com/4",

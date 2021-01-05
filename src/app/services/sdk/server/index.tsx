@@ -15,7 +15,7 @@ import Socket from './socket';
 import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
 import * as Sentry from "@sentry/browser";
-import {isProd} from "../../../../App";
+import {isProd} from "../../../../index";
 import {EventCheckNetwork, EventWebSocketClose, EventSocketReady, EventSocketConnected} from "../../events";
 import {SystemConfig, SystemGetServerTime, SystemServerTime} from "../messages/system_pb";
 import {InputPassword, InputTeam} from "../messages/core.types_pb";

@@ -15,7 +15,7 @@ import {
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import ResizeObserver from "resize-observer-polyfill";
-import {isProd} from "../../../App";
+import {isProd} from "../../../index";
 
 import './style.scss';
 

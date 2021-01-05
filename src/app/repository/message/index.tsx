@@ -212,13 +212,13 @@ export default class MessageRepo {
                         out.attributes = this.parseAttributes(out.mediadata.doc.attributesList, flags);
                         out.messagetype = flags.type;
                     }
-                    if (!out.mention_me && out.mediadata.doc && out.mediadata.doc.entitiesList && (out.mediadata.doc as MediaDocument.AsObject).entitiesList.length > 0) {
-                        out.mention_me = (out.mediadata.doc as MediaDocument.AsObject).entitiesList.some((entity) => {
+                    const mediaDocument: MediaDocument.AsObject = out.mediadata;
+                    if (!out.mention_me && mediaDocument.entitiesList && mediaDocument.entitiesList.length > 0) {
+                        out.mention_me = mediaDocument.entitiesList.some((entity) => {
                             return (entity.type === MessageEntityType.MESSAGEENTITYTYPEMENTION && entity.userid === userId) ||
                                 (entity.type === MessageEntityType.MESSAGEENTITYTYPEMENTIONALL && msg.senderid !== userId);
                         });
                     }
-                    const mediaDocument: MediaDocument.AsObject = out.mediadata;
                     // Check downloaded documents
                     if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                         FileRepo.getInstance().getFileMapByMediaDocument(mediaDocument).then((res) => {

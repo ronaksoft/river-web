@@ -78,7 +78,7 @@ import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
 import CachedMessageService from "../../services/cachedMessageService";
-import {C_VERSION, isProd} from "../../../App";
+import {C_VERSION, isProd} from "../../../index";
 import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 import LeftMenu, {menuAction} from "../../components/LeftMenu";

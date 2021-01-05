@@ -106,7 +106,7 @@ import {FixedSizeList, ListOnItemsRenderedProps} from "react-window";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import IsMobile from "../../services/isMobile";
 import AvatarService from "../../services/avatarService";
-import {C_VERSION} from "../../../App";
+import {C_VERSION} from "../../../index";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import TeamRepo from "../../repository/team";
 import {ITeam} from "../../repository/team/interface";
@@ -442,6 +442,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (this.state.pageSubContent.indexOf('privacy_') > -1) {
             this.checkPrivacyDiff();
         }
+    }
+
+    public changeTeam(item: ITeam) {
+        this.teamSelectHandler(item, true)();
     }
 
     public render() {
@@ -2580,7 +2584,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private teamSelectHandler = (item: ITeam) => (e: any) => {
+    private teamSelectHandler = (item: ITeam, dontPropagate?: boolean) => () => {
         localStorage.setItem(C_LOCALSTORAGE.TeamId, item.id || '0');
         localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
             accesshash: item.accesshash,
@@ -2591,7 +2595,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             teamSelectedId: item.id || '0',
             teamSelectedName: item.name || '',
         });
-        if (this.props.onTeamChange && this.state.teamSelectedId !== item.id) {
+        if (dontPropagate !== true && this.props.onTeamChange && this.state.teamSelectedId !== item.id) {
             this.props.onTeamChange(item);
         }
     }

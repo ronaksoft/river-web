@@ -40,7 +40,7 @@ import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
 import {EventFocus, EventWasmInit, EventSocketReady} from "../../services/events";
 import {detect} from 'detect-browser';
-import {C_VERSION} from "../../../App";
+import {C_VERSION} from "../../../index";
 import SessionDialog from "../../components/SessionDialog";
 
 import './tel-input.css';

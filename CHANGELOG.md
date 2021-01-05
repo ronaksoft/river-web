@@ -1,3 +1,6 @@
+## 1.0.21
+* Minor improvements
+
 ## 1.0.20
 * Minor improvements
 * Known bug has been fixed
