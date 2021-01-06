@@ -1231,7 +1231,9 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    /* Update read history inbox handler */
+    /* Update read history inbox handler
+    *  Read message by other authIds
+    * */
     private updateReadInboxHandler = (data: UpdateReadHistoryInbox.AsObject) => {
         const peerId = data.peer.id || '';
         const peerType = data.peer.type || 0;
@@ -1264,7 +1266,9 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    /* Update read history inbox other handler */
+    /* Update read history inbox handler
+    *  Read message by other authIds in teams other than current
+    * */
     private updateReadInboxOtherHandler = (data: UpdateReadHistoryInbox.AsObject) => {
         const peerId = data.peer.id || '0';
         const peerType = data.peer.type || 0;
@@ -1275,8 +1279,8 @@ class Chat extends React.Component<IProps, IState> {
                         mentionCount: res.mention,
                         unreadCount: res.message,
                     });
-                    if (res.message === 0) {
-
+                    if (res.message === 0 && this.leftMenuRef) {
+                        this.leftMenuRef.checkUpdateFlag(data.teamid || '0');
                     }
                 });
             }

@@ -1,3 +1,6 @@
+## 1.0.22
+* Team counter bug fixed
+
 ## 1.0.21
 * Minor improvements
 

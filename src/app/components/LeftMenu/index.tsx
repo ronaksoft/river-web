@@ -41,6 +41,7 @@ import {CircularProgress} from "@material-ui/core";
 import {localize} from "../../services/utilities/localize";
 import LeftPanel from "../LeftPanel";
 import Broadcaster from "../../services/broadcaster";
+import MessageRepo from "../../repository/message";
 
 import './style.scss';
 
@@ -117,6 +118,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private leftPanelRef: LeftPanel | undefined;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private messageRepo: MessageRepo;
     private toCheckTeamIds: string[] = [];
     private readonly checkUpdateFlagThrottle: any;
 
@@ -186,7 +188,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
 
         this.broadcaster = Broadcaster.getInstance();
-        this.checkUpdateFlagThrottle = throttle(this.checkUpdateFlagThrottleHandler)
+        this.messageRepo = MessageRepo.getInstance();
+        this.checkUpdateFlagThrottle = throttle(this.checkUpdateFlagThrottleHandler, 1023);
     }
 
     public setTeam(teamId: string) {
@@ -211,16 +214,27 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public checkUpdateFlag(teamId: string) {
-        if (this.toCheckTeamIds.indexOf(teamId) === -1) {
+        if (this.toCheckTeamIds.indexOf(teamId) === -1 || this.state.teamId === teamId) {
             this.toCheckTeamIds.push(teamId);
             setTimeout(() => {
                 this.checkUpdateFlagThrottle();
-            }, 100);
+            }, 1023);
         }
     }
 
     private checkUpdateFlagThrottleHandler = () => {
-        
+        if (this.toCheckTeamIds.length === 0) {
+            return;
+        }
+        do {
+            const teamId = this.toCheckTeamIds.shift();
+            if (!teamId) {
+                return;
+            }
+            this.messageRepo.getUnreadCounterByTeam(teamId).then((count) => {
+                this.setUpdateFlag(count !== 0, teamId);
+            });
+        } while (this.toCheckTeamIds.length > 0);
     }
 
     public componentDidMount(): void {
