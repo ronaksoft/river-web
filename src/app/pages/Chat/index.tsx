@@ -1275,6 +1275,9 @@ class Chat extends React.Component<IProps, IState> {
                         mentionCount: res.mention,
                         unreadCount: res.message,
                     });
+                    if (res.message === 0) {
+
+                    }
                 });
             }
         });

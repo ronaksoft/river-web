@@ -29,7 +29,7 @@ import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
 import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
-import {omitBy, isNil, debounce, find} from "lodash";
+import {omitBy, isNil, debounce, find, throttle} from "lodash";
 import LabelMenu from "../LabelMenu";
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
@@ -117,6 +117,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private leftPanelRef: LeftPanel | undefined;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private toCheckTeamIds: string[] = [];
+    private readonly checkUpdateFlagThrottle: any;
 
     constructor(props: IProps) {
         super(props);
@@ -184,6 +186,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
 
         this.broadcaster = Broadcaster.getInstance();
+        this.checkUpdateFlagThrottle = throttle(this.checkUpdateFlagThrottleHandler)
     }
 
     public setTeam(teamId: string) {
@@ -201,10 +204,23 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             this.setState({
                 hasUpdate: enable,
             });
-            if (this.leftPanelRef) {
-                this.leftPanelRef.setUpdateFlag(enable, teamId);
-            }
         }
+        if (this.leftPanelRef) {
+            this.leftPanelRef.setUpdateFlag(enable, teamId);
+        }
+    }
+
+    public checkUpdateFlag(teamId: string) {
+        if (this.toCheckTeamIds.indexOf(teamId) === -1) {
+            this.toCheckTeamIds.push(teamId);
+            setTimeout(() => {
+                this.checkUpdateFlagThrottle();
+            }, 100);
+        }
+    }
+
+    private checkUpdateFlagThrottleHandler = () => {
+        
     }
 
     public componentDidMount(): void {
