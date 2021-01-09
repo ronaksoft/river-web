@@ -481,7 +481,7 @@ export default class CallService {
     }
 
     private callRequested(data: IUpdatePhoneCall) {
-        if (this.activeCallId) {
+        if (false && this.activeCallId) {
             this.busyHandler(data);
             return;
         }
@@ -527,7 +527,29 @@ export default class CallService {
             this.clearRetryInterval(connId);
         }
         // const actionData = (data.data as PhoneActionDiscarded.AsObject);
-        this.callHandlers(C_CALL_EVENT.CallReject, data);
+        if (data.peertype === PeerType.PEERUSER) {
+            this.callHandlers(C_CALL_EVENT.CallReject, data);
+        } else {
+            if (this.removeParticipant(data.userid)) {
+                this.callHandlers(C_CALL_EVENT.CallReject, data);
+            }
+        }
+    }
+
+    private removeParticipant(userId: string) {
+        if (!this.activeCallId) {
+            return false;
+        }
+        if (!this.callInfo[this.activeCallId]) {
+            return false;
+        }
+        const connId = this.callInfo[this.activeCallId].participantMap[userId];
+        if (this.peerConnections.hasOwnProperty(connId)) {
+            this.peerConnections[connId].connection.close();
+        }
+        delete this.callInfo[this.activeCallId].participants[connId];
+        delete this.callInfo[this.activeCallId].participantMap[userId];
+        return Object.keys(this.callInfo[this.activeCallId].participants).length <= 1;
     }
 
     private iceExchange(data: IUpdatePhoneCall) {
@@ -637,17 +659,18 @@ export default class CallService {
     }
 
     private initConnections(peer: InputPeer, id: string, initiator: boolean, sdp?: RTCSessionDescriptionInit) {
-        const userConnId = this.getConnId(id, currentUserId) || 0;
+        const currentUserConnId = this.getConnId(id, currentUserId) || 0;
         const callInfo = this.getCallInfo(id);
         if (!callInfo) {
             return Promise.reject('invalid call id');
         }
-        const promises: any[] = [];
+        const callPromises: any[] = [];
+        const acceptPromises: any[] = [];
         Object.values(callInfo.participants).forEach((participant) => {
             // Initialize connections only for greater connId,
             // full mesh initialization will take place here
-            if (userConnId > (participant.connectionid || 0)) {
-                promises.push(this.initConnection(true, participant.connectionid || 0, sdp).then((res) => {
+            if (currentUserConnId > (participant.connectionid || 0)) {
+                acceptPromises.push(this.initConnection(true, participant.connectionid || 0, sdp).then((res) => {
                     const rc = this.convertPhoneParticipant({
                         ...callInfo.participants[participant.connectionid || 0],
                         sdp: res.sdp || '',
@@ -655,46 +678,43 @@ export default class CallService {
                     });
                     return this.apiManager.callAccept(peer, id || '0', [rc]);
                 }));
-            } else if (userConnId < (participant.connectionid || 0)) {
-                const innerPromises: any[] = [];
-                innerPromises.push(this.initConnection(false, participant.connectionid || 0).then((res) => {
+            } else if (currentUserConnId < (participant.connectionid || 0)) {
+                callPromises.push(this.initConnection(false, participant.connectionid || 0).then((res) => {
                     return {
                         ...callInfo.participants[participant.connectionid || 0],
                         sdp: res.sdp || '',
                         type: res.type || 'offer'
                     };
                 }));
-                if (innerPromises.length > 0) {
-                    promises.push(Promise.all(innerPromises).then((res) => {
-                        return res.map((item: PhoneParticipantSDP.AsObject) => {
-                            return this.convertPhoneParticipant(item);
-                        });
-                    }).then((phoneParticipants) => {
-                        phoneParticipants.forEach((participant) => {
-                            const connId = participant.getConnectionid() || 0;
-                            if (this.peerConnections.hasOwnProperty(connId)) {
-                                // Retry mechanism
-                                this.peerConnections[connId].interval = setInterval(() => {
-                                    if (this.activeCallId && this.peerConnections.hasOwnProperty(connId)) {
-                                        this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
-                                        this.peerConnections[connId].try++;
-                                        if (this.peerConnections[connId].try >= C_RETRY_LIMIT) {
-                                            clearInterval(this.peerConnections[connId].interval);
-                                            this.checkCallTimout();
-                                        }
-                                    }
-                                }, C_RETRY_INTERVAL);
-                            }
-                        });
-                        return this.callUser(peer, initiator, phoneParticipants);
-                    }));
-                } else {
-                    promises.push(Promise.resolve([]));
-                }
             }
         });
-        if (promises.length > 0) {
-            return Promise.all(promises);
+        if (callPromises.length > 0) {
+            acceptPromises.push(Promise.all(callPromises).then((res) => {
+                return res.map((item: PhoneParticipantSDP.AsObject) => {
+                    return this.convertPhoneParticipant(item);
+                });
+            }).then((phoneParticipants) => {
+                phoneParticipants.forEach((participant) => {
+                    const connId = participant.getConnectionid() || 0;
+                    if (this.peerConnections.hasOwnProperty(connId)) {
+                        // Retry mechanism
+                        this.peerConnections[connId].interval = setInterval(() => {
+                            if (this.activeCallId && this.peerConnections.hasOwnProperty(connId)) {
+                                this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
+                                this.peerConnections[connId].try++;
+                                if (this.peerConnections[connId].try >= C_RETRY_LIMIT) {
+                                    clearInterval(this.peerConnections[connId].interval);
+                                    this.checkCallTimout();
+                                }
+                            }
+                        }, C_RETRY_INTERVAL);
+                    }
+                });
+                return this.callUser(peer, initiator, phoneParticipants);
+            }));
+        }
+        if (acceptPromises.length > 0) {
+            return Promise.all(acceptPromises);
         } else {
             return Promise.resolve([]);
         }

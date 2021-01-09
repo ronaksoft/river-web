@@ -8,26 +8,23 @@
 */
 
 import * as React from 'react';
+import {useRef} from 'react';
 import {Dialog, Grow, IconButton, Paper, PaperProps} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
 import Draggable, {ControlPosition, DraggableEventHandler} from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
-import CallService, {
-    C_CALL_EVENT,
-    ICallParticipant,
-    IUpdatePhoneCall
-} from "../../services/callService";
+import CallService, {C_CALL_EVENT, ICallParticipant, IUpdatePhoneCall} from "../../services/callService";
 import {
     CallEndRounded,
     CallRounded,
+    CheckRounded,
     CloseRounded,
     CropLandscapeRounded,
     CropSquareRounded,
+    DynamicFeedRounded,
     FullscreenExitRounded,
     FullscreenRounded,
     VideocamRounded,
-    CheckRounded,
-    DynamicFeedRounded,
     WebAssetRounded,
 } from "@material-ui/icons";
 import UserAvatar from "../UserAvatar";
@@ -45,7 +42,6 @@ import CallVideo from "../CallVideo";
 import CallSettings, {IMediaSettings} from "../CallSettings";
 import {clone} from "lodash";
 import {Merge} from "type-fest";
-import {useRef} from "react";
 
 import './style.scss';
 import MainRepo from "../../repository";
@@ -347,18 +343,41 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallUnavailableContent() {
-        const {callUserId} = this.state;
         return <div className="call-modal-content">
-            {callUserId &&
-            <UserAvatar key="call-user-bg" className="call-user-bg" id={callUserId} noDetail={true} big={true}/>}
-            <div className="call-info">
-                {callUserId && <UserName className="call-user-name" id={callUserId} noDetail={true}/>}
-                <div className="call-status">
-                    {this.getCallUnavailableTitle()}
-                </div>
-            </div>
+            {this.getUnavailableCalleeContent()}
             {this.getCallUnavailableActionContent()}
         </div>;
+    }
+
+    private getUnavailableCalleeContent() {
+        const peer = this.peer;
+        if (!peer) {
+            return null;
+        }
+        if (peer.getType() === PeerType.PEERUSER) {
+            return <>
+                <UserAvatar key="call-user-bg" className="call-user-bg" id={peer.getId() || '0'} noDetail={true}
+                            big={true}/>
+                <div className="call-info">
+                    <UserName className="callee-name" id={peer.getId() || '0'} noDetail={true}/>
+                    <div className="call-status">
+                        {this.getCallUnavailableTitle()}
+                    </div>
+                </div>
+            </>;
+        } else if (peer.getType() === PeerType.PEERGROUP) {
+            return <>
+                <GroupAvatar key="call-user-bg" className="call-user-bg" teamId={this.teamId} id={peer.getId() || '0'}
+                             big={true}/>
+                <div className="call-info">
+                    <GroupName className="callee-name" teamId={this.teamId} id={peer.getId() || '0'}/>
+                    <div className="call-status">
+                        {this.getCallUnavailableTitle()}
+                    </div>
+                </div>
+            </>;
+        }
+        return null;
     }
 
     private getCallUnavailableTitle() {
@@ -430,12 +449,12 @@ class CallModal extends React.Component<IProps, IState> {
         }
         if (peer.getType() === PeerType.PEERUSER) {
             return <div className="callee-info">
-                <UserAvatar className="callee-avatar" id={peer.getId() || '0'} noDetail={true}/>
+                <UserAvatar className="callee-avatar" id={peer.getId() || '0'} noDetail={true} big={true}/>
                 <UserName className="callee-name" id={peer.getId() || '0'} noDetail={true}/>
             </div>;
         } else if (peer.getType() === PeerType.PEERGROUP) {
             return <div className="callee-info">
-                <GroupAvatar className="callee-avatar" teamId={this.teamId} id={peer.getId() || '0'}/>
+                <GroupAvatar className="callee-avatar" teamId={this.teamId} id={peer.getId() || '0'} big={true}/>
                 <GroupName className="callee-name" teamId={this.teamId} id={peer.getId() || '0'}/>
             </div>;
         }
@@ -548,7 +567,6 @@ class CallModal extends React.Component<IProps, IState> {
                 });
             };
             if (!this.callService.getLocalStream()) {
-                window.console.log(this.mediaSettings);
                 this.callService.initStream(this.mediaSettings).then(() => {
                     callFn();
                 });
@@ -607,8 +625,10 @@ class CallModal extends React.Component<IProps, IState> {
     private eventCallRequestHandler = (data: IUpdatePhoneCall) => {
         if (this.state.mode !== 'call_request' && !window.document.hasFocus()) {
             const popupWin = window.open('url', 'call_request', 'scrollbars=no,resizable=yes, width=1,height=1,status=no,location=no,toolbar=no');
-            popupWin.focus();
-            popupWin.close();
+            if (popupWin) {
+                popupWin.focus();
+                popupWin.close();
+            }
         }
 
         if (this.state.callId === '0') {

@@ -104,8 +104,8 @@ class InfoBar extends React.Component<IProps, IState> {
                 />
                 <div className="buttons">
                     {withCall && <>{callStarted ?
-                        <div
-                            className={'call-indicator ' + (!isGroup ? 'disabled' : '')}>{i18n.t(isGroup ? 'call.join' : 'call.call_started')}</div> :
+                        <div className={'call-indicator ' + (!isGroup ? 'disabled' : '')}
+                        >{i18n.t(isGroup ? 'call.join' : 'call.call_started')}</div> :
                         <Tooltip title={i18n.t('call.call')}><IconButton
                             onClick={this.props.onAction('call')}
                         ><CallRounded/></IconButton></Tooltip>}
@@ -143,7 +143,7 @@ class InfoBar extends React.Component<IProps, IState> {
             });
         } else if (peer.getType() === PeerType.PEERGROUP) {
             this.setState({
-                withCall: false,
+                withCall: true,
             });
         }
     }

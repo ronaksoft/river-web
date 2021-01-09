@@ -17,15 +17,21 @@ import Broadcaster from '../../services/broadcaster';
 import {GetDbFileName} from "../../repository/file";
 
 import './style.scss';
+import {SetOptional} from "type-fest";
+import {InputFileLocation} from "../../services/sdk/messages/core.types_pb";
+import CachedPhoto from "../CachedPhoto";
 
 interface IProps {
     className?: string;
     id: string;
     forceReload?: boolean;
     teamId: string;
+    big?: boolean;
 }
 
 interface IState {
+    bigFileLocation?: SetOptional<InputFileLocation.AsObject, 'version'>;
+    bigLoaded: boolean;
     className: string;
     group: IGroup | null;
     id: string;
@@ -45,6 +51,7 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
         super(props);
 
         this.state = {
+            bigLoaded: true,
             className: props.className || '',
             group: null,
             id: props.id
@@ -84,13 +91,27 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {group, photo, className} = this.state;
+        const {group, photo, className, bigFileLocation, bigLoaded} = this.state;
         return (
             <span className={'qac ' + className}>{(group && photo) ?
                 <img className="avatar-image" src={photo} alt="avatar" draggable={false}
                      onError={this.imgErrorHandler}/> : <TextAvatar fname={(group ? group.title : undefined)}/>}
+                {Boolean(bigFileLocation) &&
+                <CachedPhoto className={'big-avatar' + (bigLoaded ? ' loaded' : '')}
+                             fileLocation={bigFileLocation} mimeType="image/jpeg"
+                             onLoad={this.bigLoadHandler}/>}
             </span>
         );
+    }
+
+    private bigLoadHandler = () => {
+        if (!this.state.bigLoaded) {
+            setTimeout(() => {
+                this.setState({
+                    bigLoaded: true,
+                });
+            }, 300);
+        }
     }
 
     private getGroup = (data?: any) => {
@@ -108,6 +129,7 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
             }
             if (group) {
                 this.setState({
+                    bigFileLocation: group.photo && group.photo.photobig ? group.photo.photobig : undefined,
                     group,
                 });
                 this.getAvatarPhoto(group);
@@ -125,6 +147,8 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
                 }, 1000);
             } else {
                 this.setState({
+                    bigFileLocation: undefined,
+                    bigLoaded: false,
                     photo: undefined,
                 });
             }
@@ -140,6 +164,8 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
             this.getAvatar(group.teamid || '0', group.id || '', GetDbFileName(group.photo.photosmall.fileid, group.photo.photosmall.clusterid));
         } else {
             this.setState({
+                bigFileLocation: undefined,
+                bigLoaded: false,
                 photo: undefined,
             });
         }

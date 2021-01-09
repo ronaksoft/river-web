@@ -231,8 +231,18 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             if (!teamId) {
                 return;
             }
+            const {teamList} = this.state;
             this.messageRepo.getUnreadCounterByTeam(teamId).then((count) => {
                 this.setUpdateFlag(count !== 0, teamId);
+                if (count === 0) {
+                    const index = findIndex(teamList, {id: teamId});
+                    if (index > -1) {
+                        teamList[index].unread_counter = 0;
+                        this.setState({
+                            teamList,
+                        });
+                    }
+                }
             });
         } while (this.toCheckTeamIds.length > 0);
     }
