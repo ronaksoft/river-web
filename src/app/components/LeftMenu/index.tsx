@@ -29,7 +29,7 @@ import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
 import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
-import {omitBy, isNil, debounce, find, throttle} from "lodash";
+import {omitBy, isNil, debounce, find, throttle, findIndex} from "lodash";
 import LabelMenu from "../LabelMenu";
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
@@ -284,6 +284,16 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
         if (this.leftPanelRef) {
             this.leftPanelRef.setUnreadCounter(counter, this.state.teamId);
+        }
+        if (counter === 0) {
+            const {teamList} = this.state;
+            const index = findIndex(teamList, {id: this.state.teamId});
+            if (index > -1) {
+                teamList[index].unread_counter = 0;
+                this.setState({
+                    teamList,
+                });
+            }
         }
     }
 
