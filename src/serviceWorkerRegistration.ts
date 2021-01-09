@@ -35,7 +35,7 @@ export function register(config?: Config) {
         }
 
         window.addEventListener('load', () => {
-            const swUrl = `${process.env.PUBLIC_URL}/service-worker.js?v2`;
+            const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
             if (isLocalhost) {
                 // This is running on localhost. Let's check if a service worker still exists or not.
@@ -95,6 +95,9 @@ function registerValidSW(swUrl: string, config?: Config) {
                     }
                 };
             };
+            if (navigator.onLine) {
+                registration.update().then(console.info);
+            }
             setInterval(() => {
                 registration.update();
             }, 900000);
