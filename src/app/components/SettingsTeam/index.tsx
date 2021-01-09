@@ -150,6 +150,9 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                     onChange={this.nameChangeHandler}
                                     variant="outlined"
                                     className="input-edit"
+                                    inputProps={{
+                                        maxLength: 20,
+                                    }}
                                 />
                             </div>
                         </div>

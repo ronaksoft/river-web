@@ -10,11 +10,13 @@
 
 import {clientsClaim} from 'workbox-core';
 import {ExpirationPlugin} from 'workbox-expiration';
-import {precacheAndRoute, createHandlerBoundToURL, precache} from 'workbox-precaching';
+import {precacheAndRoute, createHandlerBoundToURL, precache, cleanupOutdatedCaches} from 'workbox-precaching';
 import {registerRoute} from 'workbox-routing';
 import {StaleWhileRevalidate} from 'workbox-strategies';
 
 declare const self: ServiceWorkerGlobalScope;
+
+cleanupOutdatedCaches();
 
 clientsClaim();
 

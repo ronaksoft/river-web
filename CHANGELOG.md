@@ -1,3 +1,7 @@
+## 1.0.23
+* Updater improvements
+* Limit max character for team title
+
 ## 1.0.22
 * Team counter bug fixed
 
