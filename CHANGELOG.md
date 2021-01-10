@@ -1,3 +1,9 @@
+## 1.0.24
+* Improvements in FileManager
+* Improvements in CachedPhoto
+* GroupCall started
+* Minor bugs fixed
+
 ## 1.0.23
 * Updater improvements
 * Limit max character for team title

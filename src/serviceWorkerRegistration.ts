@@ -94,10 +94,10 @@ function registerValidSW(swUrl: string, config?: Config) {
                         }
                     }
                 };
+                if (navigator.onLine) {
+                    registration.update().then(console.info);
+                }
             };
-            if (navigator.onLine) {
-                registration.update().then(console.info);
-            }
             setInterval(() => {
                 registration.update();
             }, 900000);
