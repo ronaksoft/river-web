@@ -143,7 +143,7 @@ class InfoBar extends React.Component<IProps, IState> {
             });
         } else if (peer.getType() === PeerType.PEERGROUP) {
             this.setState({
-                withCall: true,
+                withCall: false,
             });
         }
     }
