@@ -126,7 +126,7 @@ export class CellMeasurer {
         if (fragment) {
             return fragment.width;
         }
-        return this.estimatedItemSize;
+        return -1;
     }
 
     public clear(index: number, noWidthUpdate?: boolean) {
