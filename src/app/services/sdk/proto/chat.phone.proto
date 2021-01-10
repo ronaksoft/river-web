@@ -111,7 +111,7 @@ enum PhoneCallAction {
     PhoneCallReactionSet = 7;
     PhoneCallSDPOffer = 8;
     PhoneCallSDPAnswer = 9;
-    PhoneCallReserved6 = 10;
+    PhoneCallAck = 10;
     PhoneCallReserved7 = 11;
     PhoneCallReserved8 = 12;
     PhoneCallReserved9 = 13;
@@ -189,6 +189,7 @@ message PhoneActionDiscarded {
     int32 Duration = 1;
     bool Video = 2;
     DiscardReason Reason = 3;
+    bool Terminate = 4;
 }
 
 // PhoneActionIceExchange
@@ -197,6 +198,10 @@ message PhoneActionIceExchange {
     int64 SdpMLineIndex = 2;
     string SdpMid = 3;
     string UsernameFragment = 4;
+}
+
+// PhoneActionAck
+message PhoneActionAck {
 }
 
 // PhoneMediaSettingsUpdated

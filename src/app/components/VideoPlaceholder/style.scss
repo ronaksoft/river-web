@@ -20,6 +20,7 @@
     filter: brightness(0.5);
     object-fit: cover;
     object-position: center center;
+    transform: rotateY(180deg);
 
     &.upper {
       z-index: 10;

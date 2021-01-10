@@ -19,7 +19,7 @@ import i18n from "../../services/i18n";
 export interface IRemoteConnection {
     connId: number;
     media?: IVideoPlaceholderRef;
-    started: boolean;
+    status: number;
     streams: MediaStream[] | undefined;
     userId: string;
 }
@@ -100,12 +100,12 @@ class CallVideo extends React.Component<IProps, IState> {
         }
     }
 
-    public setStarted(connId: number, started: boolean) {
+    public setStatus(connId: number, status: number) {
         const index = findIndex(this.videoRemoteRefs, {connId});
         if (index > -1) {
             const remote = this.videoRemoteRefs[index];
-            if (remote.started !== started) {
-                remote.started = started;
+            if (remote.status !== status) {
+                remote.status = status;
                 this.forceUpdate();
             }
         }
@@ -119,10 +119,11 @@ class CallVideo extends React.Component<IProps, IState> {
 
     private getRemoteVideoContent() {
         return this.videoRemoteRefs.map((item) => {
-            if (!item.started) {
+            if (item.status === 0 || item.status === 1) {
                 return <div key={item.userId} className="call-user-container">
                     <UserAvatar className="call-user" id={item.userId} noDetail={true} big={true}/>
-                    <div className="call-user-status">{i18n.t('call.is_calling')}</div>
+                    <div className="call-user-status"
+                    >{i18n.t(item.status ? 'call.is_ringing' : 'call.is_calling')}</div>
                 </div>;
             }
             const videoRemoteRefHandler = (ref: any) => {
@@ -154,7 +155,7 @@ class CallVideo extends React.Component<IProps, IState> {
                 this.videoRemoteRefs.push({
                     connId: participant.connectionid || 0,
                     media: undefined,
-                    started: false,
+                    status: 0,
                     streams: undefined,
                     userId: participant.peer.userid || '0',
                 });

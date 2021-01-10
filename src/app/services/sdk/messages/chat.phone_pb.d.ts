@@ -463,6 +463,9 @@ export class PhoneActionDiscarded extends jspb.Message {
   getReason(): DiscardReason;
   setReason(value: DiscardReason): void;
 
+  getTerminate(): boolean;
+  setTerminate(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionDiscarded.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneActionDiscarded): PhoneActionDiscarded.AsObject;
@@ -478,6 +481,7 @@ export namespace PhoneActionDiscarded {
     duration: number,
     video: boolean,
     reason: DiscardReason,
+    terminate: boolean,
   }
 }
 
@@ -510,6 +514,22 @@ export namespace PhoneActionIceExchange {
     sdpmlineindex: number,
     sdpmid: string,
     usernamefragment: string,
+  }
+}
+
+export class PhoneActionAck extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionAck.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionAck): PhoneActionAck.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionAck, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionAck;
+  static deserializeBinaryFromReader(message: PhoneActionAck, reader: jspb.BinaryReader): PhoneActionAck;
+}
+
+export namespace PhoneActionAck {
+  export type AsObject = {
   }
 }
 
@@ -652,7 +672,7 @@ export enum PhoneCallAction {
   PHONECALLREACTIONSET = 7,
   PHONECALLSDPOFFER = 8,
   PHONECALLSDPANSWER = 9,
-  PHONECALLRESERVED6 = 10,
+  PHONECALLACK = 10,
   PHONECALLRESERVED7 = 11,
   PHONECALLRESERVED8 = 12,
   PHONECALLRESERVED9 = 13,

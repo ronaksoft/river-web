@@ -1,3 +1,7 @@
+## 1.0.25
+* 🎉 GroupCall (beta)
+* Call Improvements
+
 ## 1.0.24
 * Improvements in FileManager
 * Improvements in CachedPhoto

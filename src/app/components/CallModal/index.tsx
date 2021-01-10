@@ -178,6 +178,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAccept, this.eventCallAcceptHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallReject, this.eventCallRejectHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallTimeout, this.eventCallTimeoutHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAck, this.eventCallAckHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.StreamUpdate, this.eventStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdate, this.eventLocalStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdate, this.eventMediaSettingsUpdateHandler));
@@ -593,7 +594,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private callAcceptHandler = (video: boolean) => () => {
         this.setState({
-            animateState: 'init',
+            animateState: 'end',
             cropCover: this.peer ? this.peer.getType() !== PeerType.PEERGROUP : false,
             mode: 'call',
         });
@@ -604,9 +605,6 @@ class CallModal extends React.Component<IProps, IState> {
             }
             this.mediaSettings = this.callService.getStreamState();
             if (this.videoRef && stream) {
-                this.setState({
-                    animateState: 'end',
-                });
                 this.videoRef.srcObject = stream;
             }
             if (this.callVideoRef) {
@@ -673,7 +671,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private eventCallAcceptHandler = ({connId, data}: { connId: number, data: IUpdatePhoneCall }) => {
         if (this.callVideoRef) {
-            this.callVideoRef.setStarted(connId, true);
+            this.callVideoRef.setStatus(connId, 2);
         }
     }
 
@@ -708,6 +706,12 @@ class CallModal extends React.Component<IProps, IState> {
         this.callService.destroy();
     }
 
+    private eventCallAckHandler = (connId: number) => {
+        if (this.callVideoRef) {
+            this.callVideoRef.setStatus(connId, 1);
+        }
+    }
+
     private videoRefHandler = (ref: any) => {
         this.videoRef = ref;
         const stream = this.callService.getLocalStream();
@@ -722,7 +726,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
 
         this.callVideoRef.initRemoteConnection(true);
-        this.callVideoRef.setStarted(connId, true);
+        this.callVideoRef.setStatus(connId, 2);
         this.callVideoRef.setStream(connId, streams);
         if (!this.timeStart) {
             this.timeStart = Date.now();
