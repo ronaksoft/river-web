@@ -13,10 +13,12 @@ import CallService, {IMediaSettings} from "../../services/callService";
 import {findIndex} from "lodash";
 
 import './style.scss';
+import UserAvatar from "../UserAvatar";
 
 export interface IRemoteConnection {
     connId: number;
     media?: IVideoPlaceholderRef;
+    started: boolean;
     streams: MediaStream[] | undefined;
     userId: string;
 }
@@ -56,8 +58,8 @@ class CallVideo extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
+        this.videoRemoteRefs = [];
         if (this.initialized) {
-            // this.retrieveConnections();
         }
     }
 
@@ -97,14 +99,31 @@ class CallVideo extends React.Component<IProps, IState> {
         }
     }
 
+    public setStarted(connId: number, started: boolean) {
+        const index = findIndex(this.videoRemoteRefs, {connId});
+        if (index > -1) {
+            const remote = this.videoRemoteRefs[index];
+            if (remote.started !== started) {
+                remote.started = started;
+                window.console.log('efrer');
+                this.forceUpdate();
+            }
+        }
+    }
+
     public render() {
-        return (<div className="call-video" onClick={this.props.onClick}>
+        return (<div className={'call-video cp-' + (this.videoRemoteRefs.length)} onClick={this.props.onClick}>
             {this.getRemoteVideoContent()}
         </div>);
     }
 
     private getRemoteVideoContent() {
         return this.videoRemoteRefs.map((item) => {
+            if (!item.started) {
+                return <div key={item.userId} className="remote-video">
+                    <UserAvatar className="call-user" id={item.userId} noDetail={true} big={true}/>
+                </div>;
+            }
             const videoRemoteRefHandler = (ref: any) => {
                 item.media = ref;
                 const streams = this.callService.getRemoteStreams(item.connId);
@@ -123,18 +142,20 @@ class CallVideo extends React.Component<IProps, IState> {
 
     private retrieveConnections() {
         const {callId} = this.state;
-        this.videoRemoteRefs = [];
         this.callService.getParticipantList(callId).forEach((participant) => {
             if (this.props.userId === participant.peer.userid) {
                 return;
             }
 
-            this.videoRemoteRefs.push({
-                connId: participant.connectionid || 0,
-                media: undefined,
-                streams: undefined,
-                userId: participant.peer.userid || '0',
-            });
+            if (findIndex(this.videoRemoteRefs, {connId: participant.connectionid || 0}) === -1) {
+                this.videoRemoteRefs.push({
+                    connId: participant.connectionid || 0,
+                    media: undefined,
+                    started: false,
+                    streams: undefined,
+                    userId: participant.peer.userid || '0',
+                });
+            }
         });
     }
 }

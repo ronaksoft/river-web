@@ -42,9 +42,9 @@ import CallVideo from "../CallVideo";
 import CallSettings, {IMediaSettings} from "../CallSettings";
 import {clone} from "lodash";
 import {Merge} from "type-fest";
+import MainRepo from "../../repository";
 
 import './style.scss';
-import MainRepo from "../../repository";
 
 const C_MINIMIZE_WIDTH = 240;
 const C_MINIMIZE_HEIGHT = 135;
@@ -370,7 +370,7 @@ class CallModal extends React.Component<IProps, IState> {
                 <GroupAvatar key="call-user-bg" className="call-user-bg" teamId={this.teamId} id={peer.getId() || '0'}
                              big={true}/>
                 <div className="call-info">
-                    <GroupName className="callee-name" teamId={this.teamId} id={peer.getId() || '0'}/>
+                    <GroupName className="callee-name" teamId={this.teamId} id={peer.getId() || '0'} noIcon={true}/>
                     <div className="call-status">
                         {this.getCallUnavailableTitle()}
                     </div>
@@ -462,11 +462,11 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallContent() {
-        const {fullscreen, animateState, callUserId, callStarted, isCaller, cropCover, videoSwap, callId, minimize} = this.state;
+        const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
-            {!callStarted && callUserId &&
-            <UserAvatar className="call-user-bg rounded-avatar" id={callUserId} noDetail={true}/>}
+            {/*{!callStarted && callUserId &&*/}
+            {/*<UserAvatar className="call-user-bg rounded-avatar" id={callUserId} noDetail={true}/>}*/}
             <div className="local-video">
                 <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
                        onClick={this.videoClickHandler(false)} hidden={!this.mediaSettings.video}/>
@@ -644,8 +644,10 @@ class CallModal extends React.Component<IProps, IState> {
         });
     }
 
-    private eventCallAcceptHandler = (data: IUpdatePhoneCall) => {
-        //
+    private eventCallAcceptHandler = ({connId, data}: { connId: number, data: IUpdatePhoneCall }) => {
+        if (this.callVideoRef) {
+            this.callVideoRef.setStarted(connId, true);
+        }
     }
 
     private eventCallRejectHandler = (data: IUpdatePhoneCall) => {
@@ -693,6 +695,8 @@ class CallModal extends React.Component<IProps, IState> {
         }
 
         this.callVideoRef.initRemoteConnection(true);
+        this.callVideoRef.setStarted(connId, true);
+        window.console.log('efered');
         this.callVideoRef.setStream(connId, streams);
         if (!this.timeStart) {
             this.timeStart = Date.now();

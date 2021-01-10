@@ -13,4 +13,37 @@
   right: 0;
   bottom: 0;
   left: 0;
+
+  &:not(.cp-1) {
+    display: grid;
+  }
+
+  &.cp-2, &.cp-3, &.cp-4 {
+    grid-template-columns: auto auto;
+  }
+
+  &.cp-5, &.cp-6, &.cp-7, &.cp-8, &.cp-9 {
+    grid-template-columns: auto auto auto;
+  }
+
+  &.cp-10, &.cp-11 {
+    grid-template-columns: auto auto auto auto;
+  }
+
+  .remote-video {
+    position: relative;
+
+    .call-user {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+
+      .avatar-image, .text-avatar {
+        border-radius: 0;
+        font-size: 40px;
+      }
+    }
+  }
 }

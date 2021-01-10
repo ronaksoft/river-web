@@ -518,7 +518,7 @@ export default class CallService {
 
         this.clearRetryInterval(connId);
 
-        this.callHandlers(C_CALL_EVENT.CallAccept, data);
+        this.callHandlers(C_CALL_EVENT.CallAccept, {connId, data});
     }
 
     private callRejected(data: IUpdatePhoneCall) {
