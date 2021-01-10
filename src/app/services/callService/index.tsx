@@ -339,7 +339,7 @@ export default class CallService {
                     return this.initConnections(peer, id, false, {
                         sdp: sdpData.sdp,
                         type: sdpData.type as any,
-                    }).then(() => {
+                    }, info.request.userid).then(() => {
                         const streamState = this.getStreamState();
                         this.mediaSettingsInit(streamState);
                         this.propagateMediaSettings(streamState);
@@ -669,6 +669,7 @@ export default class CallService {
         Object.values(callInfo.participants).forEach((participant) => {
             // Initialize connections only for greater connId,
             // full mesh initialization will take place here
+            window.console.log(currentUserConnId, participant.connectionid);
             if (currentUserConnId > (participant.connectionid || 0)) {
                 acceptPromises.push(this.initConnection(true, participant.connectionid || 0, sdp).then((res) => {
                     const rc = this.convertPhoneParticipant({
@@ -677,9 +678,15 @@ export default class CallService {
                         type: res.type || 'answer',
                     });
                     return this.apiManager.callAccept(peer, id || '0', [rc]);
+                }).catch((err) => {
+                    if (err === 'no sdp') {
+                        return Promise.resolve();
+                    }
+                    return Promise.reject(err);
                 }));
             } else if (currentUserConnId < (participant.connectionid || 0)) {
                 callPromises.push(this.initConnection(false, participant.connectionid || 0).then((res) => {
+                    window.console.log(callInfo.participants[participant.connectionid || 0]);
                     return {
                         ...callInfo.participants[participant.connectionid || 0],
                         sdp: res.sdp || '',
@@ -704,13 +711,15 @@ export default class CallService {
                                 this.peerConnections[connId].try++;
                                 if (this.peerConnections[connId].try >= C_RETRY_LIMIT) {
                                     clearInterval(this.peerConnections[connId].interval);
-                                    this.checkCallTimout();
+                                    if (initiator) {
+                                        this.checkCallTimout();
+                                    }
                                 }
                             }
                         }, C_RETRY_INTERVAL);
                     }
                 });
-                return this.callUser(peer, initiator, phoneParticipants);
+                return this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
             }));
         }
         if (acceptPromises.length > 0) {
@@ -766,16 +775,17 @@ export default class CallService {
 
         this.peerConnections[connId] = conn;
         if (remote) {
-            if (!sdp) {
-                return Promise.reject('invalid sdp');
-            }
-            return pc.setRemoteDescription(sdp).then(() => {
-                return pc.createAnswer(this.offerOptions).then((res) => {
-                    return pc.setLocalDescription(res).then(() => {
-                        return res;
+            if (sdp) {
+                return pc.setRemoteDescription(sdp).then(() => {
+                    return pc.createAnswer(this.offerOptions).then((res) => {
+                        return pc.setLocalDescription(res).then(() => {
+                            return res;
+                        });
                     });
                 });
-            });
+            } else {
+                return Promise.reject('no sdp');
+            }
         } else {
             return pc.createOffer(this.offerOptions).then((res) => {
                 return pc.setLocalDescription(res).then(() => {

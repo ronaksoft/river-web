@@ -14,6 +14,7 @@ import {findIndex} from "lodash";
 
 import './style.scss';
 import UserAvatar from "../UserAvatar";
+import i18n from "../../services/i18n";
 
 export interface IRemoteConnection {
     connId: number;
@@ -105,7 +106,6 @@ class CallVideo extends React.Component<IProps, IState> {
             const remote = this.videoRemoteRefs[index];
             if (remote.started !== started) {
                 remote.started = started;
-                window.console.log('efrer');
                 this.forceUpdate();
             }
         }
@@ -120,8 +120,9 @@ class CallVideo extends React.Component<IProps, IState> {
     private getRemoteVideoContent() {
         return this.videoRemoteRefs.map((item) => {
             if (!item.started) {
-                return <div key={item.userId} className="remote-video">
+                return <div key={item.userId} className="call-user-container">
                     <UserAvatar className="call-user" id={item.userId} noDetail={true} big={true}/>
+                    <div className="call-user-status">{i18n.t('call.is_calling')}</div>
                 </div>;
             }
             const videoRemoteRefHandler = (ref: any) => {
@@ -134,9 +135,11 @@ class CallVideo extends React.Component<IProps, IState> {
                     item.media.video.srcObject = item.streams[0];
                 }
             };
-            return (<VideoPlaceholder key={item.userId} className="remote-video" innerRef={videoRemoteRefHandler}
-                                      srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
-                                      autoPlay={true} userId={item.userId}/>);
+            return (<div className="call-user-container" key={item.userId}>
+                <VideoPlaceholder className="remote-video" innerRef={videoRemoteRefHandler}
+                                  srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
+                                  autoPlay={true} userId={item.userId}/>
+            </div>);
         });
     }
 

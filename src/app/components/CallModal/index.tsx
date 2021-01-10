@@ -119,6 +119,7 @@ class CallModal extends React.Component<IProps, IState> {
     private mediaSettings: IMediaSettings = {audio: true, video: true};
     private callConnectingTone: string = '/ringingtone/connecting-1.mp3';
     private callRingingTone: string = '/ringingtone/tone-2.mp3';
+    private loading: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -245,6 +246,7 @@ class CallModal extends React.Component<IProps, IState> {
             minimize: false,
             open: false,
             rate: null,
+            videoSwap: false,
         });
         setTimeout(() => {
             this.timeStart = 0;
@@ -253,6 +255,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.groupParticipant = [];
         this.mediaSettings = {audio: true, video: true};
         this.peer = null;
+        this.loading = false;
     }
 
     private toggleFullscreenHandler = () => {
@@ -521,6 +524,12 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private videoClickHandler = (remote: boolean) => () => {
+        if (!this.peer) {
+            return;
+        }
+        if (this.peer.getType() === PeerType.PEERGROUP) {
+            return;
+        }
         const {callStarted, videoSwap} = this.state;
         if (!callStarted) {
             return;
@@ -537,9 +546,14 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private callHandler = (video: boolean) => () => {
+        if (this.loading) {
+            return;
+        }
+        this.loading = true;
         this.setState({
             animateState: 'init',
             callUserId: this.peer ? this.peer.getId() || '0' : null,
+            cropCover: this.peer ? this.peer.getType() !== PeerType.PEERGROUP : false,
             isCaller: true,
             mode: 'call',
         }, () => {
@@ -564,6 +578,8 @@ class CallModal extends React.Component<IProps, IState> {
                     });
                 }).catch(() => {
                     this.closeHandler();
+                }).finally(() => {
+                    this.loading = false;
                 });
             };
             if (!this.callService.getLocalStream()) {
@@ -579,6 +595,7 @@ class CallModal extends React.Component<IProps, IState> {
     private callAcceptHandler = (video: boolean) => () => {
         this.setState({
             animateState: 'init',
+            cropCover: this.peer ? this.peer.getType() !== PeerType.PEERGROUP : false,
             mode: 'call',
         });
         this.callService.accept(this.state.callId, video).then((stream) => {
@@ -608,6 +625,10 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private hangupCallHandler = () => {
+        if (this.loading) {
+            return;
+        }
+        this.loading = true;
         this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
             if (this.state.callStarted) {
                 this.timeEnd = Date.now();
@@ -619,6 +640,8 @@ class CallModal extends React.Component<IProps, IState> {
             } else {
                 this.closeHandler();
             }
+        }).finally(() => {
+            this.loading = false;
         });
     }
 
@@ -629,6 +652,7 @@ class CallModal extends React.Component<IProps, IState> {
                 popupWin.focus();
                 popupWin.close();
             }
+            window.focus();
         }
 
         if (this.state.callId === '0') {
@@ -696,7 +720,6 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callVideoRef.initRemoteConnection(true);
         this.callVideoRef.setStarted(connId, true);
-        window.console.log('efered');
         this.callVideoRef.setStream(connId, streams);
         if (!this.timeStart) {
             this.timeStart = Date.now();
@@ -737,6 +760,10 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private rateChangeHandler = (e: any, val: number | null) => {
+        if (this.loading) {
+            return;
+        }
+        this.loading = true;
         const {callId} = this.state;
         if (!this.peer || callId === '0') {
             this.closeHandler();
@@ -745,7 +772,9 @@ class CallModal extends React.Component<IProps, IState> {
         this.setState({
             rate: val,
         });
-        this.apiManager.callRate(this.peer, callId, Math.floor(val || 0));
+        this.apiManager.callRate(this.peer, callId, Math.floor(val || 0)).finally(() => {
+            this.loading = false;
+        });
         this.closeHandler();
     }
 

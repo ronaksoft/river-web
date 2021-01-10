@@ -19,18 +19,18 @@
   }
 
   &.cp-2, &.cp-3, &.cp-4 {
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr 1fr;
   }
 
   &.cp-5, &.cp-6, &.cp-7, &.cp-8, &.cp-9 {
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 
   &.cp-10, &.cp-11 {
-    grid-template-columns: auto auto auto auto;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 
-  .remote-video {
+  .call-user-container {
     position: relative;
 
     .call-user {
@@ -39,6 +39,20 @@
       right: 0;
       bottom: 0;
       left: 0;
+
+      .call-user-status {
+        position: absolute;
+        top: 75%;
+        left: 50%;
+        text-align: center;
+        color: var(--white);
+        background-color: var(--glass-dark-ultra);
+        padding: 4px 12px 5px;
+        border-radius: 5px;
+        text-transform: lowercase;
+        transform: translate(-50%, -50%);
+        line-height: 1em;
+      }
 
       .avatar-image, .text-avatar {
         border-radius: 0;
