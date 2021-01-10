@@ -248,12 +248,21 @@ export default class CachedFileService {
                     if (fileRes && this.files[fileName]) {
                         this.files[fileName].retries = 0;
                         if (blurRadius && fileRes.data.size > 0) {
-                            this.getBlurredImage(fileName, fileRes.data, blurRadius).then((blurredBlob) => {
-                                this.files[fileName].blurSrc[blurRadius] = URL.createObjectURL(blurredBlob);
+                            if (this.files[fileName].blurSrc[blurRadius]) {
                                 resolve(this.files[fileName].blurSrc[blurRadius]);
-                            });
+                            } else {
+                                this.getBlurredImage(fileName, fileRes.data, blurRadius).then((blurredBlob) => {
+                                    // Use cache if already exists
+                                    if (!this.files[fileName].blurSrc[blurRadius]) {
+                                        this.files[fileName].blurSrc[blurRadius] = URL.createObjectURL(blurredBlob);
+                                    }
+                                    resolve(this.files[fileName].blurSrc[blurRadius]);
+                                });
+                            }
                         } else {
-                            this.files[fileName].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
+                            if (!this.files[fileName].src || this.files[fileName].src === '') {
+                                this.files[fileName].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
+                            }
                             resolve(this.files[fileName].src);
                         }
                     } else {

@@ -56,7 +56,7 @@ class SessionDialog extends React.Component<any, IState> {
             >
                 <div className="session-dialog">
                     <div
-                        className="session-hint">{i18n.tf('sign_up.sessions_hint', [String(localize(limit)), String(localize(count))])}</div>
+                        className="session-hint">{i18n.tf('sign_up.sessions_hint', [String(localize(limit)), String(localize(count - limit))])}</div>
                     <SettingsSession onDone={this.doneHandler} limit={limit} onSetCount={this.setCountHandler}/>
                 </div>
             </SettingsModal>

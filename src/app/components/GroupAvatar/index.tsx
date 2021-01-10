@@ -93,7 +93,7 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
     public render() {
         const {group, photo, className, bigFileLocation, bigLoaded} = this.state;
         return (
-            <span className={'qac ' + className}>{(group && photo) ?
+            <span className={'gac ' + className}>{(group && photo) ?
                 <img className="avatar-image" src={photo} alt="avatar" draggable={false}
                      onError={this.imgErrorHandler}/> : <TextAvatar fname={(group ? group.title : undefined)}/>}
                 {Boolean(bigFileLocation) &&
@@ -128,10 +128,16 @@ class GroupAvatar extends React.PureComponent<IProps, IState> {
                 return;
             }
             if (group) {
-                this.setState({
-                    bigFileLocation: group.photo && group.photo.photobig ? group.photo.photobig : undefined,
-                    group,
-                });
+                if (this.props.big) {
+                    this.setState({
+                        bigFileLocation: group.photo && group.photo.photobig ? group.photo.photobig : undefined,
+                        group,
+                    });
+                } else {
+                    this.setState({
+                        group,
+                    });
+                }
                 this.getAvatarPhoto(group);
             } else {
                 throw Error('not found');

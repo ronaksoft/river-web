@@ -63,6 +63,11 @@ interface IReceiveChunk {
     part: number;
 }
 
+interface IFilePromise {
+    reject: any;
+    resolve: any;
+}
+
 interface IChunksInfo {
     bufferCurrentPart: number;
     bufferedParts: number[];
@@ -75,9 +80,8 @@ interface IChunksInfo {
     onBuffer?: (e: IFileBuffer) => void;
     onProgress?: (e: IFileProgress) => void;
     pipelines: number;
+    promises: IFilePromise[];
     receiveChunks: IReceiveChunk[];
-    reject: any;
-    resolve: any;
     retry: number;
     sendChunks: ISendChunk[];
     size: number;
@@ -242,12 +246,6 @@ export default class FileManager {
     /* Receive the whole file */
     public receiveFile(location: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, onProgress?: (e: IFileProgress) => void) {
         const fileName = GetDbFileName(location.getFileid(), location.getClusterid());
-        if (this.fileDownloadQueue.hasOwnProperty(fileName)) {
-            return Promise.reject({
-                code: C_FILE_ERR_CODE.ALREADY_IN_QUEUE,
-                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.ALREADY_IN_QUEUE],
-            });
-        }
         let internalResolve: any = null;
         let internalReject: any = null;
 
@@ -255,6 +253,11 @@ export default class FileManager {
             internalResolve = res;
             internalReject = rej;
         });
+
+        if (this.fileDownloadQueue.hasOwnProperty(fileName)) {
+            this.fileDownloadQueue[fileName].promises.push({reject: internalReject, resolve: internalResolve});
+            return promise;
+        }
 
         const download = () => {
             this.prepareDownloadTransfer(location, md5, size, mimeType, internalResolve, internalReject, () => {
@@ -293,12 +296,8 @@ export default class FileManager {
 
     /* Download stream file */
     public downloadStreamFile(location: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, onBuffer: (e: IFileBuffer) => void, onProgress?: (e: IFileProgress) => void) {
-        if (this.fileDownloadQueue.hasOwnProperty(location.getFileid() || '')) {
-            return Promise.reject({
-                code: C_FILE_ERR_CODE.ALREADY_IN_QUEUE,
-                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.ALREADY_IN_QUEUE],
-            });
-        }
+        const fileName = GetDbFileName(location.getFileid(), location.getClusterid());
+
         let internalResolve: any = null;
         let internalReject: any = null;
 
@@ -306,6 +305,11 @@ export default class FileManager {
             internalResolve = res;
             internalReject = rej;
         });
+
+        if (this.fileDownloadQueue.hasOwnProperty(fileName)) {
+            this.fileDownloadQueue[fileName].promises.push({reject: internalReject, resolve: internalResolve});
+            return promise;
+        }
 
         const download = () => {
             this.prepareDownloadTransfer(location, md5, size, mimeType, internalResolve, internalReject, () => {
@@ -315,7 +319,7 @@ export default class FileManager {
             }, onProgress, onBuffer);
         };
 
-        this.fileRepo.get(GetDbFileName(location.getFileid(), location.getClusterid())).then((res) => {
+        this.fileRepo.get(fileName).then((res) => {
             if (res) {
                 if (onProgress) {
                     onProgress({
@@ -383,9 +387,11 @@ export default class FileManager {
                     chunk.cancel();
                 }
             });
-            this.fileUploadQueue[id].reject({
-                code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
-                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
+            this.fileUploadQueue[id].promises.forEach((promise) => {
+                promise.reject({
+                    code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
+                    message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
+                });
             });
             this.clearUploadQueueById(id);
             delete this.fileUploadQueue[id];
@@ -396,9 +402,11 @@ export default class FileManager {
                     chunk.cancel();
                 }
             });
-            this.fileDownloadQueue[id].reject({
-                code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
-                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
+            this.fileUploadQueue[id].promises.forEach((promise) => {
+                promise.reject({
+                    code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
+                    message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
+                });
             });
             this.clearDownloadQueueById(id);
             delete this.fileDownloadQueue[id];
@@ -457,9 +465,11 @@ export default class FileManager {
         if (this.fileUploadQueue.hasOwnProperty(id)) {
             if (this.fileUploadQueue[id].retry > C_MAX_RETRIES) {
                 this.clearUploadQueueById(id);
-                this.fileUploadQueue[id].reject({
-                    code: C_FILE_ERR_CODE.MAX_TRY,
-                    message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
+                this.fileUploadQueue[id].promises.forEach((promise) => {
+                    promise.reject({
+                        code: C_FILE_ERR_CODE.MAX_TRY,
+                        message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
+                    });
                 });
                 delete this.fileUploadQueue[id];
                 this.startUploadQueue();
@@ -544,7 +554,9 @@ export default class FileManager {
                     this.fileUploadQueue[id].completed = true;
                     this.clearUploadQueueById(id);
                     this.dispatchUploadProgress(id, 'complete');
-                    this.fileUploadQueue[id].resolve(this.fileUploadQueue[id].md5);
+                    this.fileUploadQueue[id].promises.forEach((promise) => {
+                        promise.resolve(this.fileUploadQueue[id].md5);
+                    });
                     delete this.fileUploadQueue[id];
                 }
                 this.startUploadQueue();
@@ -562,9 +574,11 @@ export default class FileManager {
         if (this.fileDownloadQueue.hasOwnProperty(name)) {
             if (this.fileDownloadQueue[name].retry > C_MAX_RETRIES) {
                 this.clearDownloadQueueById(name);
-                this.fileDownloadQueue[name].reject({
-                    code: C_FILE_ERR_CODE.MAX_TRY,
-                    message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
+                this.fileUploadQueue[name].promises.forEach((promise) => {
+                    promise.reject({
+                        code: C_FILE_ERR_CODE.MAX_TRY,
+                        message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
+                    });
                 });
                 if (this.fileDownloadQueue[name].size === 0) {
                     this.startInstanceDownloadQueue();
@@ -651,18 +665,24 @@ export default class FileManager {
                             const downloadInfo2 = this.fileDownloadQueue[name];
                             if (res && downloadInfo2.md5 && downloadInfo2.md5 !== '' && res.md5 !== '' && downloadInfo2.md5 !== res.md5) {
                                 this.fileRepo.remove(name).finally(() => {
-                                    downloadInfo2.reject(`md5 hashes are not match. ${downloadInfo2.md5}, ${res.md5}`);
+                                    downloadInfo2.promises.forEach((promise) => {
+                                        promise.reject(`md5 hashes are not match. ${downloadInfo2.md5}, ${res.md5}`);
+                                    });
                                     delete this.fileDownloadQueue[name];
                                 });
                             } else {
                                 this.dispatchDownloadProgress(name, 'complete');
-                                downloadInfo2.resolve();
+                                downloadInfo2.promises.forEach((promise) => {
+                                    promise.resolve();
+                                });
                                 delete this.fileDownloadQueue[name];
                             }
                         }
                     }).catch((err) => {
                         if (this.fileDownloadQueue.hasOwnProperty(name)) {
-                            this.fileDownloadQueue[name].reject(err);
+                            this.fileDownloadQueue[name].promises.forEach((promise) => {
+                                promise.reject(err);
+                            });
                             delete this.fileDownloadQueue[name];
                         }
                     });
@@ -842,8 +862,7 @@ export default class FileManager {
     private prepareUploadTransfer(id: string, md5: string, chunks: Blob[], size: number, resolve: any, reject: any, onProgress?: (e: IFileProgress) => void) {
         if (this.fileUploadQueue.hasOwnProperty(id)) {
             this.fileUploadQueue[id].onProgress = onProgress;
-            this.fileUploadQueue[id].reject = reject;
-            this.fileUploadQueue[id].resolve = resolve;
+            this.fileUploadQueue[id].promises.push({reject, resolve});
             if (this.uploadQueue.indexOf(id) === -1) {
                 this.uploadQueue.push(id);
             }
@@ -858,9 +877,8 @@ export default class FileManager {
             md5,
             onProgress,
             pipelines: 0,
+            promises: [{reject, resolve}],
             receiveChunks: [],
-            reject,
-            resolve,
             retry: 0,
             sendChunks: [],
             size,
@@ -900,8 +918,7 @@ export default class FileManager {
         if (this.fileDownloadQueue.hasOwnProperty(fileName)) {
             this.fileDownloadQueue[fileName].onProgress = onProgress;
             this.fileDownloadQueue[fileName].onBuffer = onBuffer;
-            this.fileDownloadQueue[fileName].reject = reject;
-            this.fileDownloadQueue[fileName].resolve = resolve;
+            this.fileDownloadQueue[fileName].promises.push({reject, resolve});
             return;
         }
         const chunkSize = C_DOWNLOAD_CHUNK_SIZE;
@@ -955,9 +972,8 @@ export default class FileManager {
             onBuffer,
             onProgress,
             pipelines: 0,
+            promises: [{reject, resolve}],
             receiveChunks: chunks,
-            reject,
-            resolve,
             retry: 0,
             sendChunks: [],
             size,
