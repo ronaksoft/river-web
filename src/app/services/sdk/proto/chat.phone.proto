@@ -55,7 +55,6 @@ enum DiscardReason {
 message PhoneDiscardCall {
     InputPeer Peer = 1;
     int64 CallID = 2 [jstype = JS_STRING];
-    repeated InputUser Participants = 3;
     int32 Duration = 4;
     DiscardReason Reason = 5;
 }

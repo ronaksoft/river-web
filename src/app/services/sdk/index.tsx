@@ -1253,11 +1253,10 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneAcceptCall, data.serializeBinary(), true);
     }
 
-    public callReject(inputPeer: InputPeer, id: string, participants: InputUser[], reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
+    public callReject(inputPeer: InputPeer, id: string, reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
         const data = new PhoneDiscardCall();
         data.setPeer(inputPeer);
         data.setCallid(id);
-        data.setParticipantsList(participants);
         data.setDuration(duration);
         data.setReason(reason);
         this.logVerbose(data);

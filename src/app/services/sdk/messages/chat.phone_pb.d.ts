@@ -108,11 +108,6 @@ export class PhoneDiscardCall extends jspb.Message {
   getCallid(): string;
   setCallid(value: string): void;
 
-  clearParticipantsList(): void;
-  getParticipantsList(): Array<core_types_pb.InputUser>;
-  setParticipantsList(value: Array<core_types_pb.InputUser>): void;
-  addParticipants(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
-
   getDuration(): number;
   setDuration(value: number): void;
 
@@ -133,7 +128,6 @@ export namespace PhoneDiscardCall {
   export type AsObject = {
     peer?: core_types_pb.InputPeer.AsObject,
     callid: string,
-    participantsList: Array<core_types_pb.InputUser.AsObject>,
     duration: number,
     reason: DiscardReason,
   }

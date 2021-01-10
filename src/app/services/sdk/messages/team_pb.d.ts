@@ -198,6 +198,9 @@ export class TeamEdit extends jspb.Message {
   getName(): string;
   setName(value: string): void;
 
+  getReturnteam(): boolean;
+  setReturnteam(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TeamEdit.AsObject;
   static toObject(includeInstance: boolean, msg: TeamEdit): TeamEdit.AsObject;
@@ -212,6 +215,7 @@ export namespace TeamEdit {
   export type AsObject = {
     teamid: string,
     name: string,
+    returnteam: boolean,
   }
 }
 

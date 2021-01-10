@@ -241,6 +241,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.callService.destroy();
         this.setState({
             callStarted: false,
+            cropCover: true,
             groupId: undefined,
             isCaller: false,
             minimize: false,
@@ -452,12 +453,12 @@ class CallModal extends React.Component<IProps, IState> {
         }
         if (peer.getType() === PeerType.PEERUSER) {
             return <div className="callee-info">
-                <UserAvatar className="callee-avatar" id={peer.getId() || '0'} noDetail={true} big={true}/>
+                <UserAvatar className="callee-avatar" id={peer.getId() || '0'} noDetail={true}/>
                 <UserName className="callee-name" id={peer.getId() || '0'} noDetail={true}/>
             </div>;
         } else if (peer.getType() === PeerType.PEERGROUP) {
             return <div className="callee-info">
-                <GroupAvatar className="callee-avatar" teamId={this.teamId} id={peer.getId() || '0'} big={true}/>
+                <GroupAvatar className="callee-avatar" teamId={this.teamId} id={peer.getId() || '0'}/>
                 <GroupName className="callee-name" teamId={this.teamId} id={peer.getId() || '0'}/>
             </div>;
         }
@@ -491,12 +492,10 @@ class CallModal extends React.Component<IProps, IState> {
                     {minimize ? <WebAssetRounded/> : <DynamicFeedRounded/>}
                 </IconButton>
             </div>
-            {isCaller && !callStarted && <div className="call-status">
-                {i18n.t('call.is_ringing')}
-                <audio autoPlay={true} src={this.callConnectingTone} loop={true} style={{display: 'none'}}>
-                    <source src={this.callConnectingTone} type="audio/mp3"/>
-                </audio>
-            </div>}
+            {isCaller && !callStarted &&
+            <audio autoPlay={true} src={this.callConnectingTone} loop={true} style={{display: 'none'}}>
+                <source src={this.callConnectingTone} type="audio/mp3"/>
+            </audio>}
             <div className="call-modal-action main-call-action">
                 <CallSettings ref={this.callSettingsRefHandler} key="call-settings"
                               onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
@@ -598,7 +597,11 @@ class CallModal extends React.Component<IProps, IState> {
             cropCover: this.peer ? this.peer.getType() !== PeerType.PEERGROUP : false,
             mode: 'call',
         });
-        this.callService.accept(this.state.callId, video).then((stream) => {
+        this.callService.accept(this.state.callId, video).then(() => {
+            const stream = this.callService.getLocalStream();
+            if (!stream) {
+                return;
+            }
             this.mediaSettings = this.callService.getStreamState();
             if (this.videoRef && stream) {
                 this.setState({

@@ -115,7 +115,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.PhoneDiscardCall = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.PhoneDiscardCall.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.msg.PhoneDiscardCall, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -1176,13 +1176,6 @@ proto.msg.PhoneAcceptCall.prototype.clearParticipantsList = function() {
 
 
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.msg.PhoneDiscardCall.repeatedFields_ = [3];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -1216,8 +1209,6 @@ proto.msg.PhoneDiscardCall.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
     callid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
-    participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
-    core_types_pb.InputUser.toObject, includeInstance),
     duration: jspb.Message.getFieldWithDefault(msg, 4, 0),
     reason: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
@@ -1264,11 +1255,6 @@ proto.msg.PhoneDiscardCall.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setCallid(value);
-      break;
-    case 3:
-      var value = new core_types_pb.InputUser;
-      reader.readMessage(value,core_types_pb.InputUser.deserializeBinaryFromReader);
-      msg.addParticipants(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt32());
@@ -1320,14 +1306,6 @@ proto.msg.PhoneDiscardCall.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt64String(
       2,
       f
-    );
-  }
-  f = message.getParticipantsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      3,
-      f,
-      core_types_pb.InputUser.serializeBinaryToWriter
     );
   }
   f = message.getDuration();
@@ -1399,44 +1377,6 @@ proto.msg.PhoneDiscardCall.prototype.getCallid = function() {
  */
 proto.msg.PhoneDiscardCall.prototype.setCallid = function(value) {
   return jspb.Message.setProto3StringIntField(this, 2, value);
-};
-
-
-/**
- * repeated InputUser Participants = 3;
- * @return {!Array<!proto.msg.InputUser>}
- */
-proto.msg.PhoneDiscardCall.prototype.getParticipantsList = function() {
-  return /** @type{!Array<!proto.msg.InputUser>} */ (
-    jspb.Message.getRepeatedWrapperField(this, core_types_pb.InputUser, 3));
-};
-
-
-/**
- * @param {!Array<!proto.msg.InputUser>} value
- * @return {!proto.msg.PhoneDiscardCall} returns this
-*/
-proto.msg.PhoneDiscardCall.prototype.setParticipantsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 3, value);
-};
-
-
-/**
- * @param {!proto.msg.InputUser=} opt_value
- * @param {number=} opt_index
- * @return {!proto.msg.InputUser}
- */
-proto.msg.PhoneDiscardCall.prototype.addParticipants = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.msg.InputUser, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.msg.PhoneDiscardCall} returns this
- */
-proto.msg.PhoneDiscardCall.prototype.clearParticipantsList = function() {
-  return this.setParticipantsList([]);
 };
 
 

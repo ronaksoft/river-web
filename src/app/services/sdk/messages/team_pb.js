@@ -1602,7 +1602,8 @@ proto.msg.TeamEdit.prototype.toObject = function(opt_includeInstance) {
 proto.msg.TeamEdit.toObject = function(includeInstance, msg) {
   var f, obj = {
     teamid: jspb.Message.getFieldWithDefault(msg, 1, "0"),
-    name: jspb.Message.getFieldWithDefault(msg, 2, "")
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    returnteam: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -1647,6 +1648,10 @@ proto.msg.TeamEdit.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setReturnteam(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1690,6 +1695,13 @@ proto.msg.TeamEdit.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getReturnteam();
+  if (f) {
+    writer.writeBool(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -1726,6 +1738,24 @@ proto.msg.TeamEdit.prototype.getName = function() {
  */
 proto.msg.TeamEdit.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional bool ReturnTeam = 3;
+ * @return {boolean}
+ */
+proto.msg.TeamEdit.prototype.getReturnteam = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.TeamEdit} returns this
+ */
+proto.msg.TeamEdit.prototype.setReturnteam = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 

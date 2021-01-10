@@ -40,24 +40,31 @@
       bottom: 0;
       left: 0;
 
-      .call-user-status {
-        position: absolute;
-        top: 75%;
-        left: 50%;
-        text-align: center;
-        color: var(--white);
-        background-color: var(--glass-dark-ultra);
-        padding: 4px 12px 5px;
-        border-radius: 5px;
-        text-transform: lowercase;
-        transform: translate(-50%, -50%);
-        line-height: 1em;
-      }
-
       .avatar-image, .text-avatar {
         border-radius: 0;
         font-size: 40px;
       }
+    }
+
+    .call-user-status {
+      position: absolute;
+      top: 75%;
+      left: 50%;
+      text-align: center;
+      color: var(--white);
+      background-color: var(--glass-dark-ultra);
+      padding: 4px 12px 5px;
+      border-radius: 5px;
+      text-transform: lowercase;
+      transform: translate(-50%, -50%);
+      line-height: 1em;
+      z-index: 2;
+    }
+  }
+
+  &.cp-1 {
+    .call-user-container {
+      height: 100%;
     }
   }
 }
