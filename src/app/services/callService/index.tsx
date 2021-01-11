@@ -34,14 +34,16 @@ const C_RETRY_INTERVAL = 10000;
 const C_RETRY_LIMIT = 6;
 
 export const C_CALL_EVENT = {
-    CallAccept: 0x02,
+    CallAccepted: 0x02,
     CallAck: 0x08,
-    CallReject: 0x04,
-    CallRequest: 0x01,
+    CallRejected: 0x04,
+    CallRequested: 0x01,
     CallTimeout: 0x07,
-    LocalStreamUpdate: 0x06,
-    MediaSettingsUpdate: 0x05,
-    StreamUpdate: 0x03,
+    LocalStreamUpdated: 0x06,
+    MediaSettingsUpdated: 0x05,
+    ParticipantJoined: 0x09,
+    ParticipantLeft: 0x0a,
+    StreamUpdated: 0x03,
 };
 
 export interface IUpdatePhoneCall extends Partial<UpdatePhoneCall.AsObject> {
@@ -235,7 +237,7 @@ export default class CallService {
                 this.offerOptions.offerToReceiveAudio = true;
             }
             this.localStream = stream;
-            this.callHandlers(C_CALL_EVENT.LocalStreamUpdate, stream);
+            this.callHandlers(C_CALL_EVENT.LocalStreamUpdated, stream);
             return stream;
         });
     }
@@ -375,13 +377,15 @@ export default class CallService {
         });
     }
 
-    public getParticipantList(callId: string): ICallParticipant[] {
+    public getParticipantList(callId: string, excludeCurrent?: boolean): ICallParticipant[] {
         if (!this.callInfo.hasOwnProperty(callId)) {
             return [];
         }
         const list: ICallParticipant[] = [];
         Object.values(this.callInfo[callId].participants).forEach((participant) => {
-            list.push(participant);
+            if (!excludeCurrent || participant.peer.userid !== currentUserId) {
+                list.push(participant);
+            }
         });
         return orderBy(list, ['connectionid'], ['asc']);
     }
@@ -497,7 +501,7 @@ export default class CallService {
             inputPeer.setAccesshash(data.peertype === PeerType.PEERGROUP ? '0' : (data.accesshash || '0'));
             inputPeer.setType(data.peertype || PeerType.PEERUSER);
             this.peer = inputPeer;
-            this.callHandlers(C_CALL_EVENT.CallRequest, data);
+            this.callHandlers(C_CALL_EVENT.CallRequested, data);
         } else {
             this.initCallRequest(data);
         }
@@ -528,7 +532,7 @@ export default class CallService {
 
         this.clearRetryInterval(connId);
 
-        this.callHandlers(C_CALL_EVENT.CallAccept, {connId, data});
+        this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
     }
 
     private callRejected(data: IUpdatePhoneCall) {
@@ -538,10 +542,12 @@ export default class CallService {
         }
         const actionData = (data.data as PhoneActionDiscarded.AsObject);
         if (data.peertype === PeerType.PEERUSER || actionData.terminate) {
-            this.callHandlers(C_CALL_EVENT.CallReject, data);
+            this.callHandlers(C_CALL_EVENT.CallRejected, data);
         } else {
             if (this.removeParticipant(data.userid)) {
-                this.callHandlers(C_CALL_EVENT.CallReject, data);
+                this.callHandlers(C_CALL_EVENT.CallRejected, data);
+            } else {
+                this.callHandlers(C_CALL_EVENT.ParticipantLeft, data);
             }
         }
     }
@@ -796,7 +802,7 @@ export default class CallService {
             if (e.streams.length > 0) {
                 conn.streams = [];
                 conn.streams.push(...e.streams);
-                this.callHandlers(C_CALL_EVENT.StreamUpdate, {connId, streams: e.streams});
+                this.callHandlers(C_CALL_EVENT.StreamUpdated, {connId, streams: e.streams});
             }
         });
 
@@ -983,7 +989,7 @@ export default class CallService {
         }
         this.callInfo[callId].participants[connId].mediaSettings.audio = mediaSettings.audio || false;
         this.callInfo[callId].participants[connId].mediaSettings.video = mediaSettings.video || false;
-        this.callHandlers(C_CALL_EVENT.MediaSettingsUpdate, this.callInfo[callId].participants[connId]);
+        this.callHandlers(C_CALL_EVENT.MediaSettingsUpdated, this.callInfo[callId].participants[connId]);
     }
 
     private mediaSettingsInit({video, audio}: { video?: boolean, audio?: boolean }) {
@@ -997,7 +1003,7 @@ export default class CallService {
         }
         this.callInfo[callId].participants[connId].mediaSettings.audio = audio || false;
         this.callInfo[callId].participants[connId].mediaSettings.video = video || false;
-        this.callHandlers(C_CALL_EVENT.MediaSettingsUpdate, this.callInfo[callId].participants[connId]);
+        this.callHandlers(C_CALL_EVENT.MediaSettingsUpdated, this.callInfo[callId].participants[connId]);
     }
 
     private modifyMediaStream(video: boolean) {

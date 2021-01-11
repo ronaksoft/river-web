@@ -10,11 +10,11 @@
 import * as React from 'react';
 import VideoPlaceholder, {IVideoPlaceholderRef} from "../VideoPlaceholder";
 import CallService, {IMediaSettings} from "../../services/callService";
-import {findIndex} from "lodash";
-
-import './style.scss';
+import {findIndex, differenceWith} from "lodash";
 import UserAvatar from "../UserAvatar";
 import i18n from "../../services/i18n";
+
+import './style.scss';
 
 export interface IRemoteConnection {
     connId: number;
@@ -146,21 +146,26 @@ class CallVideo extends React.Component<IProps, IState> {
 
     private retrieveConnections() {
         const {callId} = this.state;
-        this.callService.getParticipantList(callId).forEach((participant) => {
-            if (this.props.userId === participant.peer.userid) {
-                return;
-            }
-
-            if (findIndex(this.videoRemoteRefs, {connId: participant.connectionid || 0}) === -1) {
-                this.videoRemoteRefs.push({
-                    connId: participant.connectionid || 0,
-                    media: undefined,
-                    status: 0,
-                    streams: undefined,
-                    userId: participant.peer.userid || '0',
-                });
-            }
-        });
+        const participants = this.callService.getParticipantList(callId, true);
+        const addedVideos = differenceWith(participants, this.videoRemoteRefs, (o1, o2) => o1.connectionid === o2.connId);
+        const removedVideos = differenceWith(this.videoRemoteRefs, participants, (o1, o2) => o1.connId === o2.connectionid);
+        if (removedVideos.length > 0) {
+            removedVideos.forEach((video) => {
+                const index = findIndex(this.videoRemoteRefs, {connId: video.connId});
+                if (index > -1) {
+                    this.videoRemoteRefs.splice(index, 1);
+                }
+            });
+        }
+        if (addedVideos.length > 0) {
+            this.videoRemoteRefs.push(...addedVideos.map(participant => ({
+                connId: participant.connectionid || 0,
+                media: undefined,
+                status: 0,
+                streams: undefined,
+                userId: participant.peer.userid || '0',
+            })));
+        }
     }
 }
 

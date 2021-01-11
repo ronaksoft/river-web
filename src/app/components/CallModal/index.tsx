@@ -174,14 +174,15 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRequest, this.eventCallRequestHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAccept, this.eventCallAcceptHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallReject, this.eventCallRejectHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRequested, this.eventCallRequestedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAccepted, this.eventCallAcceptedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRejected, this.eventCallRejectedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallTimeout, this.eventCallTimeoutHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAck, this.eventCallAckHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.StreamUpdate, this.eventStreamUpdateHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdate, this.eventLocalStreamUpdateHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdate, this.eventMediaSettingsUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.StreamUpdated, this.eventStreamUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantLeft, this.eventParticipantLeftHandler));
     }
 
     public componentWillUnmount() {
@@ -243,6 +244,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.setState({
             callStarted: false,
             cropCover: true,
+            fullscreen: false,
             groupId: undefined,
             isCaller: false,
             minimize: false,
@@ -635,9 +637,14 @@ class CallModal extends React.Component<IProps, IState> {
                 this.timeEnd = Date.now();
                 this.setState({
                     callStarted: false,
+                    fullscreen: false,
                     isCaller: false,
                     mode: 'call_report',
                 });
+                if (this.callService) {
+                    this.callService.destroy();
+                    this.callService.destroyConnections(this.state.callId);
+                }
             } else {
                 this.closeHandler();
             }
@@ -646,7 +653,7 @@ class CallModal extends React.Component<IProps, IState> {
         });
     }
 
-    private eventCallRequestHandler = (data: IUpdatePhoneCall) => {
+    private eventCallRequestedHandler = (data: IUpdatePhoneCall) => {
         if (this.state.mode !== 'call_request' && !window.document.hasFocus()) {
             const popupWin = window.open('url', 'call_request', 'scrollbars=no,resizable=yes, width=1,height=1,status=no,location=no,toolbar=no');
             if (popupWin) {
@@ -669,13 +676,13 @@ class CallModal extends React.Component<IProps, IState> {
         });
     }
 
-    private eventCallAcceptHandler = ({connId, data}: { connId: number, data: IUpdatePhoneCall }) => {
+    private eventCallAcceptedHandler = ({connId, data}: { connId: number, data: IUpdatePhoneCall }) => {
         if (this.callVideoRef) {
             this.callVideoRef.setStatus(connId, 2);
         }
     }
 
-    private eventCallRejectHandler = (data: IUpdatePhoneCall) => {
+    private eventCallRejectedHandler = (data: IUpdatePhoneCall) => {
         const {callId, isCaller} = this.state;
         this.callService.destroyConnections(callId);
         if (this.timeStart === 0) {
@@ -691,6 +698,7 @@ class CallModal extends React.Component<IProps, IState> {
             this.timeEnd = Date.now();
             this.setState({
                 callStarted: false,
+                fullscreen: false,
                 isCaller: false,
                 mode: 'call_report',
             });
@@ -720,7 +728,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private eventStreamUpdateHandler = ({connId, streams}: { connId: number, streams: MediaStream[] }) => {
+    private eventStreamUpdatedHandler = ({connId, streams}: { connId: number, streams: MediaStream[] }) => {
         if (!this.callVideoRef) {
             return;
         }
@@ -738,7 +746,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private eventLocalStreamUpdateHandler = (stream: MediaStream) => {
+    private eventLocalStreamUpdatedHandler = (stream: MediaStream) => {
         if (!this.videoRef) {
             return;
         }
@@ -746,12 +754,20 @@ class CallModal extends React.Component<IProps, IState> {
         this.videoRef.srcObject = stream;
     }
 
-    private eventMediaSettingsUpdateHandler = (data: ICallParticipant) => {
+    private eventMediaSettingsUpdatedHandler = (data: ICallParticipant) => {
         if (!this.callVideoRef) {
             return;
         }
 
         this.callVideoRef.setMediaSettings(data.connectionid || 0, data.mediaSettings);
+    }
+
+    private eventParticipantLeftHandler = (data: ICallParticipant) => {
+        if (!this.callVideoRef) {
+            return;
+        }
+
+        this.callVideoRef.initRemoteConnection();
     }
 
     private getCallReportContent = () => {
