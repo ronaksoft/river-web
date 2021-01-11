@@ -23,8 +23,8 @@ class I18n {
 
     private static instance: I18n;
     private lang: string = 'en';
-    private translations: any = {};
-    private dictionaryList: { [key: string]: string } = {};
+    private translations: { [key: string]: string } = {};
+    private dictionaryList: { [key: string]: any } = {};
 
     private constructor() {
 

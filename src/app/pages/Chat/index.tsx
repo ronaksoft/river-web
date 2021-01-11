@@ -86,7 +86,7 @@ import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
 import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
-import {OptionsObject, withSnackbar} from "notistack";
+import {withSnackbar, WithSnackbarProps} from "notistack";
 import {scrollFunc} from "../../services/kkwindow/utils";
 import Landscape from "../../components/SVG";
 import {isMobile} from "../../services/utilities/localize";
@@ -176,11 +176,10 @@ import './style.scss';
 
 export let notifyOptions: any[] = [];
 
-interface IProps {
+interface IProps extends WithSnackbarProps {
     history?: any;
     location?: any;
     match?: any;
-    enqueueSnackbar?: (message: string | React.ReactNode, options?: OptionsObject) => OptionsObject['key'] | null;
 }
 
 interface IState {
@@ -330,6 +329,7 @@ class Chat extends React.Component<IProps, IState> {
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
         this.callService = CallService.getInstance();
+        this.callService.setEnqueueSnackbarFn(this.props.enqueueSnackbar);
 
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
@@ -6121,4 +6121,4 @@ class Chat extends React.Component<IProps, IState> {
     }
 }
 
-export default withSnackbar<any>(Chat);
+export default withSnackbar(Chat);

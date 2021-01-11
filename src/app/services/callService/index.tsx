@@ -12,7 +12,8 @@ import {C_LOCALSTORAGE, C_MSG} from "../sdk/const";
 import {UpdatePhoneCall} from "../sdk/messages/updates_pb";
 import {
     DiscardReason,
-    PhoneActionAccepted, PhoneActionAck,
+    PhoneActionAccepted,
+    PhoneActionAck,
     PhoneActionCallEmpty,
     PhoneActionCallWaiting,
     PhoneActionDiscarded,
@@ -28,7 +29,7 @@ import {
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
 import APIManager, {currentUserId} from "../sdk";
-import {orderBy, findIndex} from "lodash";
+import {findIndex, orderBy} from "lodash";
 
 const C_RETRY_INTERVAL = 10000;
 const C_RETRY_LIMIT = 6;
@@ -79,6 +80,7 @@ interface ICallInfo {
     mediaSettings: IMediaSettings;
     participantMap: { [key: string]: number };
     participants: { [key: number]: ICallParticipant };
+    requestedParticipantIds: string[]
     requests: IUpdatePhoneCall[];
 }
 
@@ -154,6 +156,7 @@ export default class CallService {
     // Handlers
     private openDialogFn: ((peer: InputPeer | null) => void) | null = null;
     private setTeamFn: ((teamId: string) => void) | null = null;
+    private enqueueSnackbarFn: any = undefined;
 
     // Devices
     private mediaDevice: IMediaDevice = localStorage.getItem(C_LOCALSTORAGE.MediaDevice) ? JSON.parse(localStorage.getItem(C_LOCALSTORAGE.MediaDevice)) : {
@@ -208,6 +211,16 @@ export default class CallService {
     public setTeam(teamId: string) {
         if (this.setTeamFn) {
             this.setTeamFn(teamId);
+        }
+    }
+
+    public setEnqueueSnackbarFn(fn: any) {
+        this.enqueueSnackbarFn = fn;
+    }
+
+    public enqueueSnackbar(message: any) {
+        if (this.enqueueSnackbarFn) {
+            this.enqueueSnackbarFn(message);
         }
     }
 
@@ -341,28 +354,24 @@ export default class CallService {
                 return Promise.reject('no call request');
             }
 
-            const promises: any = [];
-            const initFn = (request: IUpdatePhoneCall) => {
-                return this.initConnections(peer, id, false, request).then(() => {
-                    const streamState = this.getStreamState();
-                    this.mediaSettingsInit(streamState);
-                    this.propagateMediaSettings(streamState);
-                    return Promise.resolve();
-                });
+            const initFn = () => {
+                return Promise.all(info.requests.map((request) => {
+                    return this.initConnections(peer, id, false, request).then(() => {
+                        const streamState = this.getStreamState();
+                        this.mediaSettingsInit(streamState);
+                        this.propagateMediaSettings(streamState);
+                        return Promise.resolve();
+                    });
+                }));
             };
 
-            info.requests.forEach((request, index) => {
-                // if (this.isInitiator(id, request.userid || '0')) {
-                promises.push(index === 0 && !info.dialed ? this.initStream({audio: true, video}).then(() => {
-                    return initFn(request);
-                }) : initFn(request));
-                // } else {
-                //     // accept all other
-                //     promises.push(Promise.resolve('not implemented yet'));
-                // }
-            });
-
-            return Promise.all(promises);
+            if (!info.dialed) {
+                return this.initStream({audio: true, video}).then(() => {
+                    return initFn();
+                });
+            } else {
+                return initFn();
+            }
         });
     }
 
@@ -504,10 +513,28 @@ export default class CallService {
             this.callHandlers(C_CALL_EVENT.CallRequested, data);
         } else {
             this.initCallRequest(data);
+
+            // Accept other participants in group
+            if (this.shouldAccept(data)) {
+                this.accept(this.activeCallId, this.getStreamState().video);
+            }
         }
-        if (this.activeCallId && this.activeCallId === data.callid) {
-            this.accept(this.activeCallId, this.getStreamState().video);
+    }
+
+    private shouldAccept(data: IUpdatePhoneCall) {
+        if (!this.activeCallId) {
+            return false;
         }
+
+        if (!this.peer || this.peer.getType() === PeerType.PEERUSER) {
+            return false;
+        }
+
+        if (!this.callInfo.hasOwnProperty(this.activeCallId)) {
+            return false;
+        }
+
+        return this.callInfo[this.activeCallId].requestedParticipantIds.indexOf(data.userid) === -1;
     }
 
     private callAccepted(data: IUpdatePhoneCall) {
@@ -626,6 +653,7 @@ export default class CallService {
             mediaSettings: mediaState ? mediaState : {audio: true, video: true},
             participantMap: callParticipantMap,
             participants: callParticipants,
+            requestedParticipantIds: [],
             requests: [],
         };
     }
@@ -635,6 +663,7 @@ export default class CallService {
             const requests = this.callInfo[data.callid || '0'].requests;
             if (findIndex(requests, {userid: data.userid}) === -1) {
                 this.callInfo[data.callid || '0'].requests.push(data);
+                this.callInfo[data.callid || '0'].requestedParticipantIds.push(data.userid);
             }
             return;
         }
@@ -658,6 +687,7 @@ export default class CallService {
             mediaSettings: mediaState ? mediaState : {audio: true, video: true},
             participantMap: callParticipantMap,
             participants: callParticipants,
+            requestedParticipantIds: [data.userid],
             requests: [data],
         };
     }
@@ -698,6 +728,7 @@ export default class CallService {
                     sdp: res.sdp || '',
                     type: res.type || 'answer',
                 });
+                window.console.log('[webrtc] answer, from:', currentUserId, ' to:', rc.getPeer().getUserid());
                 return this.apiManager.callAccept(peer, id || '0', [rc]);
             });
         };
@@ -758,6 +789,7 @@ export default class CallService {
                         }, C_RETRY_INTERVAL);
                     }
                 });
+                window.console.log('[webrtc] call form:', currentUserId, ' to:', phoneParticipants.map(o => o.getPeer().getUserid()).join(", "));
                 return this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
             }));
         }

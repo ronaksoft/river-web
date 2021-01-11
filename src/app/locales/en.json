@@ -537,6 +537,7 @@
     "is_not_available": "is not available",
     "audio_muted": "Microphone is muted",
     "call_started": "Call Started",
-    "join_call": "Join Call"
+    "join_call": "Join Call",
+    "user_left_the_call": "{0} left the call"
   }
 }

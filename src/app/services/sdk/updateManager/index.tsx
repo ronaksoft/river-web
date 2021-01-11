@@ -59,6 +59,7 @@ import {Document, MediaDocument} from "../messages/chat.messages.medias_pb";
 import GifRepo from "../../../repository/gif";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../index";
+import RiverTime from "../../utilities/river_time";
 
 const C_MAX_UPDATE_DIFF = 5000;
 const C_DIFF_AMOUNT = 100;
@@ -201,6 +202,7 @@ export default class UpdateManager {
     private fileRepo: FileRepo | undefined;
     private topPeerRepo: TopPeerRepo | undefined;
     private gifRepo: GifRepo | undefined;
+    private riverTime: RiverTime;
 
     // Cached File Service
     private cachedFileService: CachedFileService | undefined;
@@ -231,6 +233,8 @@ export default class UpdateManager {
 
             // Initialize SDK
             this.apiManager = APIManager.getInstance();
+
+            this.riverTime = RiverTime.getInstance();
         }, 100);
 
         setInterval(() => {
@@ -642,7 +646,9 @@ export default class UpdateManager {
                 case C_MSG.UpdatePhoneCall:
                     const updatePhoneCall = UpdatePhoneCall.deserializeBinary(update.update as Uint8Array).toObject();
                     this.logVerbose(update.constructor, updatePhoneCall);
-                    this.callHandlers('all', C_MSG.UpdatePhoneCall, updatePhoneCall);
+                    if (!updatePhoneCall.timestamp || (this.riverTime.now() - updatePhoneCall.timestamp) < 60) {
+                        this.callHandlers('all', C_MSG.UpdatePhoneCall, updatePhoneCall);
+                    }
                     break;
             }
         });
@@ -668,7 +674,9 @@ export default class UpdateManager {
             case C_MSG.UpdatePhoneCall:
                 const updatePhoneCall = UpdatePhoneCall.deserializeBinary(update.update as Uint8Array).toObject();
                 this.logVerbose(update.constructor, updatePhoneCall);
-                this.callHandlers('all', C_MSG.UpdatePhoneCall, updatePhoneCall);
+                if (!updatePhoneCall.timestamp || (this.riverTime.now() - updatePhoneCall.timestamp) < 60) {
+                    this.callHandlers('all', C_MSG.UpdatePhoneCall, updatePhoneCall);
+                }
                 break;
             /** Messages **/
             case C_MSG.UpdateNewMessage:

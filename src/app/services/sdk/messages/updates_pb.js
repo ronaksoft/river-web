@@ -15415,7 +15415,8 @@ proto.msg.UpdatePhoneCall.toObject = function(includeInstance, msg) {
     userid: jspb.Message.getFieldWithDefault(msg, 5, "0"),
     accesshash: jspb.Message.getFieldWithDefault(msg, 6, "0"),
     action: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    actiondata: msg.getActiondata_asB64()
+    actiondata: msg.getActiondata_asB64(),
+    timestamp: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -15487,6 +15488,10 @@ proto.msg.UpdatePhoneCall.deserializeBinaryFromReader = function(msg, reader) {
     case 8:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setActiondata(value);
+      break;
+    case 9:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setTimestamp(value);
       break;
     default:
       reader.skipField();
@@ -15577,6 +15582,13 @@ proto.msg.UpdatePhoneCall.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       8,
+      f
+    );
+  }
+  f = message.getTimestamp();
+  if (f !== 0) {
+    writer.writeInt64(
+      9,
       f
     );
   }
@@ -15766,6 +15778,24 @@ proto.msg.UpdatePhoneCall.prototype.getActiondata_asU8 = function() {
  */
 proto.msg.UpdatePhoneCall.prototype.setActiondata = function(value) {
   return jspb.Message.setProto3BytesField(this, 8, value);
+};
+
+
+/**
+ * optional int64 Timestamp = 9;
+ * @return {number}
+ */
+proto.msg.UpdatePhoneCall.prototype.getTimestamp = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.UpdatePhoneCall} returns this
+ */
+proto.msg.UpdatePhoneCall.prototype.setTimestamp = function(value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 

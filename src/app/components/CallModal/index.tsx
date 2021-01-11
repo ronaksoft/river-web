@@ -105,7 +105,6 @@ class CallModal extends React.Component<IProps, IState> {
     private teamId: string = '0';
     private peer: InputPeer | null = null;
     private callService: CallService;
-    // @ts-ignore
     private apiManager: APIManager;
     private mainRepo: MainRepo;
     private videoRef: HTMLVideoElement | undefined;
@@ -762,12 +761,20 @@ class CallModal extends React.Component<IProps, IState> {
         this.callVideoRef.setMediaSettings(data.connectionid || 0, data.mediaSettings);
     }
 
-    private eventParticipantLeftHandler = (data: ICallParticipant) => {
+    private eventParticipantLeftHandler = (data: IUpdatePhoneCall) => {
         if (!this.callVideoRef) {
             return;
         }
 
         this.callVideoRef.initRemoteConnection();
+
+        if (this.callService) {
+            this.callService.enqueueSnackbar(<div className="call-notification">
+                <UserAvatar className="user-avatar" id={data.userid} noDetail={true}/>
+                <UserName className="user-name" id={data.userid} noDetail={true} you={true} noIcon={true}
+                          format={i18n.t('call.user_left_the_call')}/>
+            </div>);
+        }
     }
 
     private getCallReportContent = () => {

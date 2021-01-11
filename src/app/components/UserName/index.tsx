@@ -37,6 +37,7 @@ interface IProps {
     onClick?: (id: string) => void;
     peerName?: boolean;
     peerType?: PeerType;
+    format?: string;
 }
 
 interface IState {
@@ -98,7 +99,7 @@ class UserName extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {onlyFirstName, defaultString, noIcon, noDetail} = this.props;
+        const {onlyFirstName, defaultString, noIcon, noDetail, format} = this.props;
         const {peerType} = this.props;
         let {postfix, prefix} = this.props;
         prefix = prefix || '';
@@ -123,11 +124,12 @@ class UserName extends React.PureComponent<IProps, IState> {
                 </span>
             );
         } else {
+            const name = (user.id) ? (onlyFirstName ? `${prefix}${user.firstname !== '' ? user.firstname : user.lastname}${postfix}` : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`;
             return (
                 <span className={className} style={style} onClick={this.clickHandler}>
                     {Boolean(peerType === PeerType.PEEREXTERNALUSER) && <FaceRounded/>}
                     {Boolean(noIcon !== true && user.isbot) && <BotIcon/>}
-                    {(user.id) ? (onlyFirstName ? `${prefix}${user.firstname !== '' ? user.firstname : user.lastname}${postfix}` : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}
+                    {format ? format.replace('{0}', name) : name}
                     {Boolean(noIcon !== true && user.official) && <OfficialIcon/>}
                 </span>
             );

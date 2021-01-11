@@ -600,6 +600,23 @@
   }
 }
 
+.call-notification {
+  display: flex;
+  align-items: center;
+  justify-items: flex-end;
+  margin: -6px;
+
+  .user-avatar {
+    height: 24px;
+    width: 24px;
+    margin: 0 6px;
+  }
+
+  .user-name {
+    font-size: 14px;
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-night"] {
   .call-modal {

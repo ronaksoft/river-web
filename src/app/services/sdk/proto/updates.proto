@@ -499,6 +499,7 @@ message UpdatePhoneCall {
     fixed64 AccessHash = 6 [jstype = JS_STRING];
     PhoneCallAction Action = 7;
     bytes ActionData = 8;
+    int64 Timestamp = 9;
 }
 
 // UpdatePhoneCallStarted

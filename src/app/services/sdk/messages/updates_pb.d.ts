@@ -1998,6 +1998,9 @@ export class UpdatePhoneCall extends jspb.Message {
   getActiondata_asB64(): string;
   setActiondata(value: Uint8Array | string): void;
 
+  getTimestamp(): number;
+  setTimestamp(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdatePhoneCall.AsObject;
   static toObject(includeInstance: boolean, msg: UpdatePhoneCall): UpdatePhoneCall.AsObject;
@@ -2019,6 +2022,7 @@ export namespace UpdatePhoneCall {
     accesshash: string,
     action: chat_phone_pb.PhoneCallAction,
     actiondata: Uint8Array | string,
+    timestamp: number,
   }
 }
 
