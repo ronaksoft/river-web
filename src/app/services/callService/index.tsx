@@ -498,10 +498,12 @@ export default class CallService {
     }
 
     private callRequested(data: IUpdatePhoneCall) {
-        if (false && this.activeCallId) {
+        if (this.activeCallId && data.callid !== this.activeCallId) {
             this.busyHandler(data);
             return;
         }
+
+        // Send ack update so callee ringing indicator activates
         this.sendCallAck(data);
         if (!this.callInfo.hasOwnProperty(data.callid || 0)) {
             this.initCallRequest(data);
@@ -522,7 +524,7 @@ export default class CallService {
     }
 
     private shouldAccept(data: IUpdatePhoneCall) {
-        if (!this.activeCallId) {
+        if (this.activeCallId !== data.callid) {
             return false;
         }
 
@@ -589,6 +591,14 @@ export default class CallService {
         const connId = this.callInfo[this.activeCallId].participantMap[userId];
         if (this.peerConnections.hasOwnProperty(connId)) {
             this.peerConnections[connId].connection.close();
+        }
+        let index = this.callInfo[this.activeCallId].requestedParticipantIds.indexOf(userId);
+        if (index > -1) {
+            this.callInfo[this.activeCallId].requestedParticipantIds.splice(index, 1);
+        }
+        index = findIndex(this.callInfo[this.activeCallId].requests, {userid: userId});
+        if (index > -1) {
+            this.callInfo[this.activeCallId].requests.splice(index, 1);
         }
         delete this.callInfo[this.activeCallId].participants[connId];
         delete this.callInfo[this.activeCallId].participantMap[userId];
@@ -664,9 +674,11 @@ export default class CallService {
             if (findIndex(requests, {userid: data.userid}) === -1) {
                 this.callInfo[data.callid || '0'].requests.push(data);
                 this.callInfo[data.callid || '0'].requestedParticipantIds.push(data.userid);
+                window.console.log('[webrtc] request from:', data.userid);
             }
             return;
         }
+        window.console.log('[webrtc] request from:', data.userid);
         const sdpData = (data.data as PhoneActionRequested.AsObject);
         const callParticipants: { [key: number]: ICallParticipant } = {};
         const callParticipantMap: { [key: string]: number } = {};
@@ -690,6 +702,8 @@ export default class CallService {
             requestedParticipantIds: [data.userid],
             requests: [data],
         };
+
+        window.console.log('[webrtc] assigned connId:', this.getConnId(data.callid, currentUserId));
     }
 
     // @ts-ignore
