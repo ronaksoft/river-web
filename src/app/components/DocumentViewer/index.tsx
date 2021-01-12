@@ -465,7 +465,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 title: i18n.t('general.forward'),
             }, {
                 cmd: 'view',
-                title: i18n.t('settings.remove_photo'),
+                title: i18n.t('general.view_in_chat'),
             });
         }
         const viewActions = [{
@@ -496,7 +496,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         }, {
             cmd: 'view',
             icon: <ForwardToInboxRounded/>,
-            title: i18n.t('settings.remove_photo'),
+            title: i18n.t('general.view_in_chat'),
         }];
         return (
             <div className="document-viewer-controls">
