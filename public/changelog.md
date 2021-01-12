@@ -1,3 +1,6 @@
+## 1.0.27
+* Group call updated
+
 ## 1.0.26
 * Improvements in group call
 * Forward and View in chat action in Document Viewer

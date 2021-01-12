@@ -161,7 +161,7 @@ class CallVideo extends React.Component<IProps, IState> {
             this.videoRemoteRefs.push(...addedVideos.map(participant => ({
                 connId: participant.connectionid || 0,
                 media: undefined,
-                status: 0,
+                status: participant.started ? 2 : 0,
                 streams: undefined,
                 userId: participant.peer.userid || '0',
             })));

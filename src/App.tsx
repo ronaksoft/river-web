@@ -238,7 +238,7 @@ class App extends React.Component<{}, IState> {
             <HashRouter>
                 <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                     <MuiThemeProvider theme={getTheme()}>
-                        <SnackbarProvider maxSnack={3}>
+                        <SnackbarProvider maxSnack={5}>
                             {Routes}
                         </SnackbarProvider>
                         <CallModal/>

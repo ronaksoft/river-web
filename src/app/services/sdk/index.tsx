@@ -1237,7 +1237,7 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneInitCall, data.serializeBinary(), true);
     }
 
-    public callRequest(inputPeer: InputPeer, randomId: number, initiator: boolean, participants: PhoneParticipantSDP[], callId?: string): Promise<PhoneCall.AsObject> {
+    public callRequest(inputPeer: InputPeer, randomId: number, initiator: boolean, participants: PhoneParticipantSDP[], callId?: string, batch?: boolean): Promise<PhoneCall.AsObject> {
         const data = new PhoneRequestCall();
         data.setPeer(inputPeer);
         data.setRandomid(randomId);
@@ -1247,7 +1247,7 @@ export default class APIManager {
             data.setCallid(callId);
         }
         this.logVerbose(data);
-        return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), true);
+        return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), !batch);
     }
 
     public callAccept(inputPeer: InputPeer, id: string, participants: PhoneParticipantSDP[]): Promise<PhoneCall.AsObject> {

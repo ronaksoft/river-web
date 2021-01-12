@@ -104,7 +104,7 @@ function PaperComponent(props: Merge<PaperProps, IPaperProps>) {
 class CallModal extends React.Component<IProps, IState> {
     private teamId: string = '0';
     private peer: InputPeer | null = null;
-    private callService: CallService;
+    private readonly callService: CallService;
     private apiManager: APIManager;
     private mainRepo: MainRepo;
     private videoRef: HTMLVideoElement | undefined;
@@ -182,6 +182,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantLeft, this.eventParticipantLeftHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantKicked, this.eventParticipantKickedHandler));
     }
 
     public componentWillUnmount() {
@@ -774,6 +775,24 @@ class CallModal extends React.Component<IProps, IState> {
                 <UserName className="user-name" id={data.userid} noDetail={true} you={true} noIcon={true}
                           format={i18n.t('call.user_left_the_call')}/>
             </div>);
+        }
+    }
+
+    private eventParticipantKickedHandler = ({timeout, userIds}: { timeout: boolean, userIds: string[] }) => {
+        if (!this.callVideoRef) {
+            return;
+        }
+
+        this.callVideoRef.initRemoteConnection();
+
+        if (this.callService) {
+            userIds.forEach((userId) => {
+                this.callService.enqueueSnackbar(<div className="call-notification">
+                    <UserAvatar className="user-avatar" id={userId} noDetail={true}/>
+                    <UserName className="user-name" id={userId} noDetail={true} you={true} noIcon={true}
+                              format={i18n.t(timeout ? 'call.user_not_answering' : 'call.user_kicked')}/>
+                </div>);
+            });
         }
     }
 

@@ -17,7 +17,7 @@ import {
     PhoneActionCallEmpty,
     PhoneActionCallWaiting,
     PhoneActionDiscarded,
-    PhoneActionIceExchange,
+    PhoneActionIceExchange, PhoneActionKick,
     PhoneActionRequested,
     PhoneCallAction,
     PhoneMediaSettingsUpdated,
@@ -29,7 +29,7 @@ import {
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
 import APIManager, {currentUserId} from "../sdk";
-import {findIndex, orderBy} from "lodash";
+import {findIndex, orderBy, difference} from "lodash";
 
 const C_RETRY_INTERVAL = 10000;
 const C_RETRY_LIMIT = 6;
@@ -43,6 +43,7 @@ export const C_CALL_EVENT = {
     LocalStreamUpdated: 0x06,
     MediaSettingsUpdated: 0x05,
     ParticipantJoined: 0x09,
+    ParticipantKicked: 0x0b,
     ParticipantLeft: 0x0a,
     StreamUpdated: 0x03,
 };
@@ -58,6 +59,7 @@ export interface IMediaSettings {
 
 export interface ICallParticipant extends PhoneParticipant.AsObject {
     mediaSettings: IMediaSettings;
+    started?: boolean;
 }
 
 interface IConnection {
@@ -75,12 +77,13 @@ interface IBroadcastItem {
 }
 
 interface ICallInfo {
+    acceptedParticipantIds: string[]
     acceptedParticipants: number[];
     dialed: boolean;
     mediaSettings: IMediaSettings;
     participantMap: { [key: string]: number };
     participants: { [key: number]: ICallParticipant };
-    requestedParticipantIds: string[]
+    requestParticipantIds: string[];
     requests: IUpdatePhoneCall[];
 }
 
@@ -104,6 +107,8 @@ const parseData = (constructor: number, data: any) => {
             return PhoneSDPOffer.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLSDPANSWER:
             return PhoneSDPAnswer.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLKICK:
+            return PhoneActionKick.deserializeBinary(data).toObject();
     }
     return undefined;
 };
@@ -174,11 +179,6 @@ export default class CallService {
         voiceActivityDetection: true,
     };
     private configs: RTCConfiguration = {
-        iceServers: [{
-            credential: 'hamidreza',
-            urls: 'turn:vm-02.ronaksoftware.com',
-            username: 'hamid',
-        }],
         iceTransportPolicy: 'all',
     };
     private peer: InputPeer | null = null;
@@ -355,14 +355,21 @@ export default class CallService {
             }
 
             const initFn = () => {
-                return Promise.all(info.requests.map((request) => {
-                    return this.initConnections(peer, id, false, request).then(() => {
-                        const streamState = this.getStreamState();
-                        this.mediaSettingsInit(streamState);
-                        this.propagateMediaSettings(streamState);
-                        return Promise.resolve();
-                    });
-                }));
+                const promises: any[] = [];
+                do {
+                    const request = info.requests.shift();
+                    if (request) {
+                        promises.push(this.initConnections(peer, id, false, request).then(() => {
+                            const streamState = this.getStreamState();
+                            this.mediaSettingsInit(streamState);
+                            this.propagateMediaSettings(streamState);
+                            return Promise.resolve();
+                        }));
+                    } else {
+                        break;
+                    }
+                } while (info.requests.length > 0);
+                return Promise.all(promises);
             };
 
             if (!info.dialed) {
@@ -393,6 +400,9 @@ export default class CallService {
         const list: ICallParticipant[] = [];
         Object.values(this.callInfo[callId].participants).forEach((participant) => {
             if (!excludeCurrent || participant.peer.userid !== currentUserId) {
+                if (this.peerConnections.hasOwnProperty(participant.connectionid) && this.peerConnections[participant.connectionid].streams.length > 0) {
+                    participant.started = true;
+                }
                 list.push(participant);
             }
         });
@@ -460,7 +470,16 @@ export default class CallService {
     private callUser(peer: InputPeer, initiator: boolean, phoneParticipants: PhoneParticipantSDP[], callId?: string) {
         const randomId = UniqueId.getRandomId();
         return this.apiManager.callRequest(peer, randomId, initiator, phoneParticipants, callId).then((res) => {
-            this.activeCallId = res.id || '0';
+            if (!callId) {
+                this.activeCallId = res.id || '0';
+            }
+            return res;
+        });
+    }
+
+    private callUserSingle(peer: InputPeer, phoneParticipant: PhoneParticipantSDP, callId: string) {
+        const randomId = UniqueId.getRandomId();
+        return this.apiManager.callRequest(peer, randomId, false, [phoneParticipant], callId, true).then((res) => {
             return res;
         });
     }
@@ -493,6 +512,9 @@ export default class CallService {
                 break;
             case PhoneCallAction.PHONECALLACK:
                 this.callAcknowledged(data);
+                break;
+            case PhoneCallAction.PHONECALLKICK:
+                this.participantKicked(data);
                 break;
         }
     }
@@ -536,7 +558,13 @@ export default class CallService {
             return false;
         }
 
-        return this.callInfo[this.activeCallId].requestedParticipantIds.indexOf(data.userid) === -1;
+        if (this.callInfo[this.activeCallId].acceptedParticipantIds.indexOf(data.userid) > -1) {
+            return false;
+        }
+
+        this.callInfo[this.activeCallId].acceptedParticipantIds.push(data.userid);
+
+        return true;
     }
 
     private callAccepted(data: IUpdatePhoneCall) {
@@ -560,6 +588,7 @@ export default class CallService {
         this.propagateMediaSettings(this.getStreamState());
 
         this.clearRetryInterval(connId);
+        window.console.log('[webrtc] accept signal, connId:', connId);
 
         this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
     }
@@ -592,9 +621,13 @@ export default class CallService {
         if (this.peerConnections.hasOwnProperty(connId)) {
             this.peerConnections[connId].connection.close();
         }
-        let index = this.callInfo[this.activeCallId].requestedParticipantIds.indexOf(userId);
+        let index = this.callInfo[this.activeCallId].acceptedParticipantIds.indexOf(userId);
         if (index > -1) {
-            this.callInfo[this.activeCallId].requestedParticipantIds.splice(index, 1);
+            this.callInfo[this.activeCallId].acceptedParticipantIds.splice(index, 1);
+        }
+        index = this.callInfo[this.activeCallId].requestParticipantIds.indexOf(userId);
+        if (index > -1) {
+            this.callInfo[this.activeCallId].requestParticipantIds.splice(index, 1);
         }
         index = findIndex(this.callInfo[this.activeCallId].requests, {userid: userId});
         if (index > -1) {
@@ -658,22 +691,23 @@ export default class CallService {
         });
         const mediaState = this.getStreamState();
         this.callInfo[callId] = {
+            acceptedParticipantIds: [],
             acceptedParticipants: [],
             dialed: false,
             mediaSettings: mediaState ? mediaState : {audio: true, video: true},
             participantMap: callParticipantMap,
             participants: callParticipants,
-            requestedParticipantIds: [],
+            requestParticipantIds: [],
             requests: [],
         };
     }
 
     private initCallRequest(data: IUpdatePhoneCall) {
         if (this.callInfo.hasOwnProperty(data.callid || '0')) {
-            const requests = this.callInfo[data.callid || '0'].requests;
-            if (findIndex(requests, {userid: data.userid}) === -1) {
+            const requestParticipantIds = this.callInfo[data.callid || '0'].requestParticipantIds;
+            if (requestParticipantIds.indexOf(data.userid) === -1) {
                 this.callInfo[data.callid || '0'].requests.push(data);
-                this.callInfo[data.callid || '0'].requestedParticipantIds.push(data.userid);
+                this.callInfo[data.callid || '0'].requestParticipantIds.push(data.userid);
                 window.console.log('[webrtc] request from:', data.userid);
             }
             return;
@@ -694,16 +728,17 @@ export default class CallService {
         });
         const mediaState = this.getStreamState();
         this.callInfo[data.callid || '0'] = {
+            acceptedParticipantIds: [],
             acceptedParticipants: [],
             dialed: false,
             mediaSettings: mediaState ? mediaState : {audio: true, video: true},
             participantMap: callParticipantMap,
             participants: callParticipants,
-            requestedParticipantIds: [data.userid],
+            requestParticipantIds: [data.userid],
             requests: [data],
         };
 
-        window.console.log('[webrtc] assigned connId:', this.getConnId(data.callid, currentUserId));
+        window.console.log('[webrtc] assigned, connId:', this.getConnId(data.callid, currentUserId));
     }
 
     // @ts-ignore
@@ -791,14 +826,15 @@ export default class CallService {
                         // Retry mechanism
                         this.peerConnections[connId].interval = setInterval(() => {
                             if (this.activeCallId && this.peerConnections.hasOwnProperty(connId)) {
-                                this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
                                 this.peerConnections[connId].try++;
-                                if (this.peerConnections[connId].try >= C_RETRY_LIMIT) {
-                                    clearInterval(this.peerConnections[connId].interval);
-                                    if (initiator) {
-                                        this.checkCallTimout();
+                                this.callUserSingle(peer, participant, this.activeCallId).finally(() => {
+                                    if (this.peerConnections.hasOwnProperty(connId) && this.peerConnections[connId].try >= C_RETRY_LIMIT) {
+                                        clearInterval(this.peerConnections[connId].interval);
+                                        if (initiator) {
+                                            this.checkCallTimout(connId);
+                                        }
                                     }
-                                }
+                                });
                             }
                         }, C_RETRY_INTERVAL);
                     }
@@ -814,70 +850,85 @@ export default class CallService {
         }
     }
 
-    private initConnection(remote: boolean, connId: number, sdp?: RTCSessionDescriptionInit) {
+    private initConnection(remote: boolean, connId: number, sdp?: RTCSessionDescriptionInit): Promise<RTCSessionDescriptionInit> {
+        window.console.log('[webrtc] init connection, connId:', connId);
+
         const stream = this.localStream;
         if (!stream) {
             return Promise.reject('no available stream');
         }
 
-        const pc = new RTCPeerConnection(this.configs);
-        pc.addEventListener('icecandidate', (e) => {
-            this.sendIceCandidate(this.activeCallId || '0', e.candidate, connId).catch((err) => {
-                window.console.log('icecandidate', err);
-            });
-        });
+        return new Promise((resolve, reject) => {
+            try {
+                const pc = new RTCPeerConnection(this.configs);
+                pc.addEventListener('icecandidate', (e) => {
+                    this.sendIceCandidate(this.activeCallId || '0', e.candidate, connId).catch((err) => {
+                        window.console.log('[webrtc] icecandidate, connId:', connId, err);
+                    });
+                });
 
-        pc.addEventListener('iceconnectionstatechange', (e) => {
-            window.console.log('iceconnectionstatechange', pc.iceConnectionState, pc.connectionState);
-        });
+                pc.addEventListener('iceconnectionstatechange', () => {
+                    window.console.log('[webrtc] iceconnectionstatechange, connId:', connId, pc.iceConnectionState, pc.connectionState);
+                });
 
-        pc.addEventListener('icecandidateerror', (e) => {
-            window.console.log('icecandidateerror', e);
-        });
+                pc.addEventListener('icecandidateerror', (e) => {
+                    window.console.log('[webrtc] icecandidateerror, connId:', connId, e);
+                });
 
-        const conn: IConnection = {
-            accepted: remote,
-            connection: pc,
-            iceQueue: [],
-            interval: null,
-            streams: [],
-            try: 0,
-        };
+                pc.addEventListener('signalingstatechange', () => {
+                    if (pc.signalingState === 'closed') {
+                        window.console.log('[webrtc] signalingstatechange, connId:', connId, pc.signalingState);
+                    }
+                });
 
-        pc.addEventListener('track', (e) => {
-            if (e.streams.length > 0) {
-                conn.streams = [];
-                conn.streams.push(...e.streams);
-                this.callHandlers(C_CALL_EVENT.StreamUpdated, {connId, streams: e.streams});
-            }
-        });
+                const conn: IConnection = {
+                    accepted: remote,
+                    connection: pc,
+                    iceQueue: [],
+                    interval: null,
+                    streams: [],
+                    try: 0,
+                };
 
-        stream.getTracks().forEach((track) => {
-            if (stream) {
-                pc.addTrack(track, stream);
-            }
-        });
+                pc.addEventListener('track', (e) => {
+                    if (e.streams.length > 0) {
+                        conn.streams = [];
+                        conn.streams.push(...e.streams);
+                        window.console.log('[webrtc] stream, connId:', connId, ' streams', e.streams.map((o) => `${o.getVideoTracks().length > 0 ? 'video' : ' '} ${o.getAudioTracks().length > 0 ? 'audio' : ''}`).join(', '));
+                        this.callHandlers(C_CALL_EVENT.StreamUpdated, {connId, streams: e.streams});
+                    }
+                });
 
-        this.peerConnections[connId] = conn;
-        if (remote) {
-            if (sdp) {
-                return pc.setRemoteDescription(sdp).then(() => {
-                    return pc.createAnswer(this.offerOptions).then((res) => {
+                stream.getTracks().forEach((track) => {
+                    if (stream) {
+                        pc.addTrack(track, stream);
+                    }
+                });
+
+                this.peerConnections[connId] = conn;
+                if (remote) {
+                    if (sdp) {
+                        pc.setRemoteDescription(sdp).then(() => {
+                            return pc.createAnswer(this.offerOptions).then((res) => {
+                                return pc.setLocalDescription(res).then(() => {
+                                    return res;
+                                });
+                            });
+                        }).then(resolve).catch(reject);
+                    } else {
+                        reject('no sdp');
+                    }
+                } else {
+                    pc.createOffer(this.offerOptions).then((res) => {
                         return pc.setLocalDescription(res).then(() => {
                             return res;
                         });
-                    });
-                });
-            } else {
-                return Promise.reject('no sdp');
+                    }).then(resolve).catch(reject);
+                }
+            } catch (e) {
+                reject(e);
             }
-        } else {
-            return pc.createOffer(this.offerOptions).then((res) => {
-                return pc.setLocalDescription(res).then(() => {
-                    return res;
-                });
-            });
-        }
+        });
     }
 
     private getInputUsers(id: string) {
@@ -947,7 +998,7 @@ export default class CallService {
 
     private sendIceCandidate(callId: string, candidate: RTCIceCandidate | null, connId: number) {
         if (!candidate) {
-            return Promise.reject('invalid candidate');
+            return Promise.resolve();
         }
 
         const conn = this.peerConnections[connId];
@@ -961,7 +1012,7 @@ export default class CallService {
         }
 
         const peer = this.peer;
-        if (!peer || !this.activeCallId) {
+        if (!peer) {
             return Promise.reject('invalid input');
         }
 
@@ -982,7 +1033,7 @@ export default class CallService {
             actionData.setUsernamefragment(candidate.usernameFragment);
         }
 
-        return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLICEEXCHANGE, actionData.serializeBinary()).then(() => {
+        return this.apiManager.callUpdate(peer, callId, [inputUser], PhoneCallAction.PHONECALLICEEXCHANGE, actionData.serializeBinary()).then(() => {
             return Promise.resolve();
         });
     }
@@ -997,7 +1048,7 @@ export default class CallService {
             if (candidate) {
                 this.sendIceCandidate(callId, candidate, connId);
             } else {
-                return;
+                break;
             }
         }
     }
@@ -1118,6 +1169,21 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.CallAck, connId);
     }
 
+    private participantKicked(data: IUpdatePhoneCall) {
+        if (this.activeCallId !== data.callid) {
+            return;
+        }
+
+        const kickActionData = data.data as PhoneActionKick.AsObject;
+        kickActionData.useridsList.forEach((userId) => {
+            this.removeParticipant(userId);
+        });
+        this.callHandlers(C_CALL_EVENT.ParticipantKicked, {
+            timeout: kickActionData.timeout,
+            userIds: kickActionData.useridsList
+        });
+    }
+
     private sendSDPOffer(connId: number, sdp: RTCSessionDescriptionInit) {
         const callId = this.activeCallId;
         if (!callId) {
@@ -1202,7 +1268,7 @@ export default class CallService {
             return;
         }
         clearInterval(this.peerConnections[connId].interval);
-        if (this.activeCallId && this.callInfo.hasOwnProperty(connId)) {
+        if (this.activeCallId && this.callInfo.hasOwnProperty(this.activeCallId)) {
             this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
         }
     }
@@ -1214,15 +1280,60 @@ export default class CallService {
         return val;
     }
 
-    private checkCallTimout() {
-        if (!this.activeCallId || !this.callInfo.hasOwnProperty(this.activeCallId)) {
+    private checkCallTimout(connId: number) {
+        if (!this.activeCallId || !this.callInfo.hasOwnProperty(this.activeCallId) || !this.peer) {
             return;
         }
 
         if (this.callInfo[this.activeCallId].acceptedParticipants.length === 0) {
             this.reject(this.activeCallId, 0, DiscardReason.DISCARDREASONHANGUP);
             this.callHandlers(C_CALL_EVENT.CallTimeout, {});
+            window.console.log('[webrtc] call timeout, connId:', connId);
+        } else if (this.peer.getType() === PeerType.PEERGROUP) {
+            const participants = this.callInfo[this.activeCallId].participants;
+            const connIds = Object.values(participants).map(o => o.connectionid);
+            const notAnsweringConnId = difference(connIds, this.callInfo[this.activeCallId].acceptedParticipants);
+            if (notAnsweringConnId.length > 0) {
+                const userIds: string[] = [];
+                notAnsweringConnId.forEach((connId) => {
+                    const participant = participants[connId];
+                    if (participant && participant.peer.userid !== currentUserId) {
+                        userIds.push(participant.peer.userid);
+                        this.removeParticipant(participant.peer.userid);
+                    }
+                });
+                this.callHandlers(C_CALL_EVENT.ParticipantKicked, {timeout: true, userIds});
+                this.kick(this.activeCallId, userIds, true);
+            }
         }
+    }
+
+    private kick(callId: string, userIds: string[], timeout: boolean) {
+        const peer = this.peer;
+        if (!peer) {
+            return Promise.reject('invalid peer');
+        }
+
+        if (!this.callInfo.hasOwnProperty(callId)) {
+            return Promise.reject('invalid callId');
+        }
+
+        const actionData = new PhoneActionKick();
+        actionData.setUseridsList(userIds);
+        actionData.setTimeout(timeout);
+
+        const inputUsers = this.getInputUsers(callId);
+        if (!inputUsers) {
+            return Promise.reject('invalid callId');
+        }
+
+        if (inputUsers.length === 0) {
+            return Promise.reject('no participant');
+        }
+
+        return this.apiManager.callUpdate(peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLKICK, actionData.serializeBinary()).then(() => {
+            return Promise.resolve();
+        });
     }
 
     private callHandlers(name: number, data: any) {

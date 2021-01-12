@@ -112,7 +112,7 @@ enum PhoneCallAction {
     PhoneCallSDPOffer = 8;
     PhoneCallSDPAnswer = 9;
     PhoneCallAck = 10;
-    PhoneCallReserved7 = 11;
+    PhoneCallKick = 11;
     PhoneCallReserved8 = 12;
     PhoneCallReserved9 = 13;
     PhoneCallReserved10 = 14;
@@ -202,6 +202,12 @@ message PhoneActionIceExchange {
 
 // PhoneActionAck
 message PhoneActionAck {
+}
+
+// PhoneActionKick
+message PhoneActionKick {
+    repeated int64 UserIDs = 1 [jstype = JS_STRING];
+    bool Timeout = 2;
 }
 
 // PhoneMediaSettingsUpdated

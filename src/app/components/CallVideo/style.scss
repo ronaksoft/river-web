@@ -22,6 +22,14 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  &.cp-3, &.cp-4, &.cp-5, &.cp-6 {
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  &.cp-7, &.cp-8, &.cp-9, &.cp-10, &.cp-11 {
+    grid-template-rows: repeat(3, 1fr);
+  }
+
   &.cp-3 {
     .call-user-container:nth-child(3) {
       grid-column: auto / span 2;
@@ -30,6 +38,10 @@
 
   &.cp-6, &.cp-7, &.cp-8, &.cp-9 {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  &.cp-7, &.cp-8, &.cp-9 {
+    grid-template-rows: repeat(3, 1fr);
   }
 
   &.cp-5 {

@@ -533,6 +533,32 @@ export namespace PhoneActionAck {
   }
 }
 
+export class PhoneActionKick extends jspb.Message {
+  clearUseridsList(): void;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
+
+  getTimeout(): boolean;
+  setTimeout(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionKick.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionKick): PhoneActionKick.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionKick, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionKick;
+  static deserializeBinaryFromReader(message: PhoneActionKick, reader: jspb.BinaryReader): PhoneActionKick;
+}
+
+export namespace PhoneActionKick {
+  export type AsObject = {
+    useridsList: Array<string>,
+    timeout: boolean,
+  }
+}
+
 export class PhoneMediaSettingsUpdated extends jspb.Message {
   getVideo(): boolean;
   setVideo(value: boolean): void;
@@ -673,7 +699,7 @@ export enum PhoneCallAction {
   PHONECALLSDPOFFER = 8,
   PHONECALLSDPANSWER = 9,
   PHONECALLACK = 10,
-  PHONECALLRESERVED7 = 11,
+  PHONECALLKICK = 11,
   PHONECALLRESERVED8 = 12,
   PHONECALLRESERVED9 = 13,
   PHONECALLRESERVED10 = 14,

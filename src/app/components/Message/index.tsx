@@ -1674,7 +1674,12 @@ class Message extends React.Component<IProps, IState> {
             return 'rdw-4';
         }
 
-        const diff = w - this.list.getWidth(index - 1);
+        const pw = this.list.getWidth(index - 1);
+        if (pw === -1) {
+            return 'rdw-4';
+        }
+
+        const diff = w - pw;
         if (diff < 50) {
             return 'rdw-0';
         }
