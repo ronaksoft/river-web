@@ -95,7 +95,7 @@ import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
 import {
     EventBlur,
-    EventCheckNetwork, EventFileDownloaded,
+    EventFileDownloaded,
     EventFocus,
     EventMouseWheel,
     EventNetworkStatus, EventRightMenuToggled,
@@ -165,7 +165,6 @@ import {Error as RiverError} from "../../services/sdk/messages/rony_pb";
 import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 import {ITeam} from "../../repository/team/interface";
-import Socket from "../../services/sdk/server/socket";
 import PinnedMessage from "../../components/PinnedMessage";
 import {ModalityService} from "kk-modality";
 import ConnectionStatus from "../../components/ConnectionStatus";
@@ -401,7 +400,6 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener(EventSocketReady, this.wsReadyHandler);
         window.addEventListener(EventWebSocketClose, this.wsCloseHandler);
         window.addEventListener(EventNetworkStatus, this.networkStatusHandler);
-        window.addEventListener(EventCheckNetwork, this.checkNetworkHandler);
 
         // Get latest cached dialogs
         this.initDialogs();
@@ -2585,15 +2583,6 @@ class Chat extends React.Component<IProps, IState> {
         const data = event.detail;
         this.setAppStatus({
             isOnline: data.online,
-        });
-    }
-
-    private checkNetworkHandler = () => {
-        this.apiManager.ping().catch((err) => {
-            if (!(err && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemSkip)) {
-                window.console.warn('bad network');
-                Socket.getInstance().tryAgain();
-            }
         });
     }
 

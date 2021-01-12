@@ -9,9 +9,9 @@
 
 import * as React from 'react';
 import i18n from "../../services/i18n";
-import Socket from "../../services/sdk/server/socket";
 import Smoother from "../../services/utilities/smoother";
 import {isNil, omitBy} from "lodash";
+import APIManager from "../../services/sdk";
 
 interface IProps {
     teamId: string;
@@ -68,7 +68,7 @@ class ConnectionStatus extends React.Component<IProps, IState> {
     private tryAgainHandler = (e: any) => {
         e.stopPropagation();
         e.preventDefault();
-        Socket.getInstance().tryAgain();
+        APIManager.getInstance().checkNetwork();
     };
 
     private updateFunctionHandler = () => {

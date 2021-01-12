@@ -16,7 +16,7 @@ import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../index";
-import {EventCheckNetwork, EventWebSocketClose, EventSocketReady, EventSocketConnected} from "../../events";
+import {EventWebSocketClose, EventSocketReady, EventSocketConnected} from "../../events";
 import {SystemConfig, SystemGetServerTime, SystemServerTime} from "../messages/system_pb";
 import {InputPassword, InputTeam} from "../messages/core.types_pb";
 import {Error as RiverError, KeyValue, MessageContainer, MessageEnvelope} from "../messages/rony_pb";
@@ -333,6 +333,10 @@ export default class Server {
         this.socket.stop();
     }
 
+    public restartNetwork() {
+        this.socket.restartNetwork();
+    }
+
     public isStarted() {
         return this.socket.isStarted();
     }
@@ -361,6 +365,10 @@ export default class Server {
                 }
             });
         });
+    }
+
+    public setCheckPingFn(fn: any) {
+        this.socket.setCheckPingFn(fn);
     }
 
     private cancelRequestByEnvelope(envelope: MessageEnvelope) {
@@ -597,7 +605,7 @@ export default class Server {
     }
 
     private checkNetworkHandler = () => {
-        this.dispatchEvent(EventCheckNetwork, {});
+        this.socket.checkPing();
     }
 
     private cleanQueue(reqId: number) {
@@ -985,13 +993,5 @@ export default class Server {
             return;
         }
         this.commandRepo.remove(request.commandId);
-    }
-
-    private dispatchEvent(cmd: string, data: any) {
-        const fnStarted = new CustomEvent(cmd, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(fnStarted);
     }
 }

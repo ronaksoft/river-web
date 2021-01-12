@@ -12,7 +12,6 @@ import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
 import {IServerRequest, serverKeys} from '../index';
 import ElectronService from '../../../electron';
 import {
-    EventCheckNetwork,
     EventNetworkStatus,
     EventWasmInit,
     EventWebSocketClose,
@@ -106,6 +105,7 @@ export default class Socket {
     private resolveGenSrpHashFn: any | undefined;
     private resolveGenInputPasswordFn: any | undefined;
     private resolveAuthStepFn: any | undefined;
+    private checkPingFn: any | undefined;
 
     public constructor() {
         this.worker = new RiverWorker();
@@ -141,7 +141,7 @@ export default class Socket {
         if (connection) {
             connection.addEventListener(EventChange, () => {
                 window.console.info('connection changed!');
-                this.dispatchEvent(EventCheckNetwork, {});
+                this.checkPing();
             });
         }
 
@@ -249,9 +249,19 @@ export default class Socket {
         return this.started;
     }
 
-    public tryAgain() {
+    public setCheckPingFn(fn: any) {
+        this.checkPingFn = fn;
+    }
+
+    public restartNetwork() {
         this.tryCounter = 0;
         this.closeWire(true);
+    }
+
+    public checkPing() {
+        if (this.checkPingFn) {
+            this.checkPingFn();
+        }
     }
 
     private messageHandler(cmd: string, data: any) {
@@ -413,7 +423,7 @@ export default class Socket {
             if (this.lastSendTime > this.lastReceiveTime && this.online) {
                 const now = Date.now();
                 if (now - this.lastSendTime > 12000) {
-                    this.dispatchEvent(EventCheckNetwork, {});
+                    this.checkPing();
                 }
             }
         }, 12000);

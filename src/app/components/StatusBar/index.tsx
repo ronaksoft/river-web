@@ -14,11 +14,11 @@ import GroupName from "../GroupName";
 import {isTypingRender} from "../DialogMessage";
 import LastSeen from "../LastSeen";
 import i18n from "../../services/i18n";
-import Socket from "../../services/sdk/server/socket";
 import Smoother from "../../services/utilities/smoother";
 import {GetPeerName} from "../../repository/dialog";
 
 import './style.scss';
+import APIManager from "../../services/sdk";
 
 interface IProps {
     currentUserId: string;
@@ -141,7 +141,7 @@ class StatusBar extends React.Component<IProps, IState> {
     private tryAgainHandler = (e: any) => {
         e.stopPropagation();
         e.preventDefault();
-        Socket.getInstance().tryAgain();
+        APIManager.getInstance().checkNetwork();
     }
 
     private updateFunctionHandler = () => {

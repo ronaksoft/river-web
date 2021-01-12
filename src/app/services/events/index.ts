@@ -17,7 +17,6 @@ export const EventSocketConnected = 'socketConnected';
 export const EventSocketReady = 'socketReady';
 export const EventWebSocketClose = 'wsClose';
 export const EventNetworkStatus = 'networkStatus';
-export const EventCheckNetwork = 'checkNetwork';
 export const EventShowChangelog = 'showChangelog';
 export const EventFileDownloaded = 'File_Downloaded';
 export const EventMediaDBUpdated = 'Media_DB_Updated';

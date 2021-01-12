@@ -173,6 +173,7 @@ import {
     PhoneRequestCall,
     PhoneUpdateCall
 } from "./messages/chat.phone_pb";
+import {debounce} from "lodash";
 
 export let currentUserId: string = '0';
 
@@ -196,6 +197,8 @@ export default class APIManager {
 
     private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
 
+    private checkPingDebouncer: any = null;
+
     public constructor() {
         this.server = Server.getInstance();
 
@@ -218,6 +221,9 @@ export default class APIManager {
         if (id) {
             this.clientId = parseInt(id, 10);
         }
+
+        this.checkPingDebouncer = debounce(this.checkPingDebouncerHandler, 511);
+        this.server.setCheckPingFn(this.checkPingDebouncer);
     }
 
     public setTeam(team: InputTeam.AsObject | undefined) {
@@ -1341,9 +1347,22 @@ export default class APIManager {
         this.server.sendAllGuaranteedCommands(checkReqId);
     }
 
+    public checkNetwork() {
+        this.checkPingDebouncer();
+    }
+
     private logVerbose(data: any) {
         if (this.verboseAPI && data && data.toObject) {
             window.console.info('%cRequest', 'background-color: #008AAA', data.toObject());
         }
+    }
+
+    private checkPingDebouncerHandler = () => {
+        this.ping().catch((err) => {
+            if (!(err && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemSkip)) {
+                window.console.warn('bad network');
+                this.server.restartNetwork();
+            }
+        });
     }
 }
