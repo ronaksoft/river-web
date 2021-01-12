@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.11.2",
-    "@material-ui/icons": "^4.11.2",
+    "@material-ui/icons": "^5.0.0-alpha.22",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/styles": "^4.10.0",
     "@sentry/browser": "^5.15.5",

@@ -452,6 +452,13 @@
           color: var(--white);
         }
       }
+
+      .item-divider {
+        margin: 0 12px 0 4px;
+        width: 1px;
+        height: 18px;
+        background-color: var(--grey-low);
+      }
     }
 
     .sender-container {

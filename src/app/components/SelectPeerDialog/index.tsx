@@ -14,6 +14,7 @@ import SearchList, {IInputPeer} from '../SearchList';
 import {TopPeerType} from "../../repository/topPeer";
 
 import './style.scss';
+import DocumentViewerService from "../../services/documentViewerService";
 
 interface IProps {
     onClose: () => void;
@@ -31,6 +32,8 @@ interface IState {
 }
 
 class SelectPeerDialog extends React.Component<IProps, IState> {
+    private preventDocumentClose: boolean = false;
+
     constructor(props: IProps) {
         super(props);
 
@@ -40,7 +43,11 @@ class SelectPeerDialog extends React.Component<IProps, IState> {
         };
     }
 
-    public openDialog() {
+    public openDialog(preventDocumentClose?: boolean) {
+        if (preventDocumentClose) {
+            this.preventDocumentClose = true;
+            DocumentViewerService.getInstance().setPreventClosing(true);
+        }
         this.setState({
             open: true,
         });
@@ -75,6 +82,12 @@ class SelectPeerDialog extends React.Component<IProps, IState> {
             selectedPeers: [],
         });
         this.props.onClose();
+        if (this.preventDocumentClose) {
+            this.preventDocumentClose = false;
+            setTimeout(() => {
+                DocumentViewerService.getInstance().setPreventClosing(false);
+            }, 200);
+        }
     }
 
     private forwardHandler = () => {

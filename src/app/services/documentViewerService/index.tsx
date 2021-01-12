@@ -59,6 +59,7 @@ export default class DocumentViewerService {
     private onDocumentReady: any = null;
     private onDocumentPrev: any = null;
     private onDocumentNext: any = null;
+    private preventClosing: boolean = false;
     private mediaRepo: MediaRepo;
 
     public constructor() {
@@ -75,6 +76,14 @@ export default class DocumentViewerService {
 
     public setDocumentNext(fn: any) {
         this.onDocumentNext = fn;
+    }
+
+    public setPreventClosing(enable: boolean) {
+        this.preventClosing = enable;
+    }
+
+    public getPreventClosing() {
+        return this.preventClosing;
     }
 
     public loadDocument(doc: IDocument) {

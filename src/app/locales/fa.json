@@ -69,7 +69,8 @@
     "open": "بگشا",
     "via_gif": " با @",
     "all": "همه",
-    "select_all": "انتخاب همه"
+    "select_all": "انتخاب همه",
+    "view_in_chat": "مشاده در گفتگو"
   },
   "chat": {
     "search": "جستجو",
@@ -490,7 +491,12 @@
     "select_video_frame": "انتخاب فریم ویدئو",
     "add_it": "اضافه کن",
     "animated": "متحرک",
-    "crop_picture": "کراپ تصویر"
+    "crop_picture": "کراپ تصویر",
+    "rotate_cw": "چرخش به راست",
+    "rotate_ccw": "چرخش به چپ",
+    "zoom_in": "بزرگنمایی بیشتر",
+    "zoom_out": "بزرگنمایی کمتر",
+    "reset": "تنظیم مجدد"
   },
   "label": {
     "labels": "برچسب‌ها",

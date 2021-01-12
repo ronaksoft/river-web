@@ -751,7 +751,7 @@ class Chat extends React.Component<IProps, IState> {
                 <UserDialog key="user-dialog" ref={this.userDialogRefHandler} onAction={this.userDialogActionHandler}
                             teamId={this.teamId} onError={this.textErrorHandler}/>
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
-                                onJumpOnMessage={this.documentViewerJumpOnMessageHandler}
+                                onMessageAction={this.documentViewerMessageActionHandler}
                                 onError={this.textErrorHandler}/>
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
@@ -3248,7 +3248,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'remove':
                 const messageSelectedIds = {};
-                messageSelectedIds[message.id || 0] = true;
+                messageSelectedIds[message.id || 0] = -1;
                 const withForAll = ((this.riverTime.now() - (message.createdon || 0)) < 86400 && message.me === true && !message.messageaction && this.selectedPeerName !== GetPeerName(currentUserId, PeerType.PEERUSER));
                 this.propagateSelectedMessage();
                 this.messageSelectedIds = cloneDeep(messageSelectedIds);
@@ -5787,9 +5787,19 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    /* Document jump on message handler */
-    private documentViewerJumpOnMessageHandler = (id: number) => {
-        this.messageJumpToMessageHandler(id);
+    /* Document message action handler */
+    private documentViewerMessageActionHandler = (action: 'view' | 'forward', id: number) => {
+        switch (action) {
+            case 'view':
+                this.messageJumpToMessageHandler(id);
+                break;
+            case 'forward':
+                this.messageSelectedIds[id] = -1;
+                if (this.forwardDialogRef) {
+                    this.forwardDialogRef.openDialog(true);
+                }
+                break;
+        }
     }
 
     /* LabelDialog done handler */

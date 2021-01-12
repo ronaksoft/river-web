@@ -69,7 +69,8 @@
     "open": "Open",
     "via_gif": " via @",
     "all": "All",
-    "select_all": "Select All"
+    "select_all": "Select All",
+    "view_in_chat": "ٰView in chat"
   },
   "chat": {
     "search": "Search",
@@ -493,7 +494,12 @@
     "select_video_frame": "Select Video Frame",
     "add_it": "Add It",
     "animated": "Animated",
-    "crop_picture": "Crop Picture"
+    "crop_picture": "Crop Picture",
+    "rotate_cw": "Rotate Clockwise",
+    "rotate_ccw": "Rotate Counter Clockwise",
+    "zoom_in": "Zoom In",
+    "zoom_out": "Zoom Out",
+    "reset": "Reset"
   },
   "label": {
     "labels": "Labels",

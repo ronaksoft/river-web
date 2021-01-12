@@ -1,5 +1,6 @@
 ## 1.0.26
 * Improvements in group call
+* Forward and View in chat action in Document Viewer
 
 ## 1.0.25
 * 🎉 Group call (beta)

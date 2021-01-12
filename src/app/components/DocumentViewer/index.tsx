@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {
     KeyboardArrowLeftRounded, KeyboardArrowRightRounded, MoreVertRounded, RotateLeftRounded, RotateRightRounded,
-    ZoomInRounded, ZoomOutRounded, CropFreeRounded, VisibilityOutlined, PlayArrowRounded,
+    ZoomInRounded, ZoomOutRounded, CropFreeRounded, ForwardToInboxRounded, PlayArrowRounded, ForwardRounded,
 } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
@@ -89,7 +89,7 @@ interface ISize {
 interface IProps {
     className?: string;
     onAction: (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileName?: string) => void;
-    onJumpOnMessage?: (id: number) => void;
+    onMessageAction: (action: 'view' | 'forward', id: number) => void;
     onError: (text: string) => void;
 }
 
@@ -200,7 +200,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     paper: 'document-viewer-dialog-paper'
                 }}
             >
-                <ClickAwayListener onClickAway={this.dialogCloseHandler()}>
+                <ClickAwayListener disableReactTree={true} onClickAway={this.dialogCloseHandler()}>
                     <div ref={this.documentContainerRefHandler} className="document-container"
                          onMouseDown={this.mediaDocumentMouseDownHandler}
                          onWheelCapture={this.mediaDocumentWheelHandler}>
@@ -459,31 +459,68 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 cmd: 'remove_photo',
                 title: i18n.t('settings.remove_photo'),
             });
+        } else if (doc.type !== 'avatar') {
+            contextMenuItems.push({
+                cmd: 'forward',
+                title: i18n.t('general.forward'),
+            }, {
+                cmd: 'view',
+                title: i18n.t('settings.remove_photo'),
+            });
         }
+        const viewActions = [{
+            cmd: 'rotate-cw',
+            icon: <RotateRightRounded/>,
+            title: i18n.t('uploader.rotate-cw'),
+        }, {
+            cmd: 'rotate-ccw',
+            icon: <RotateLeftRounded/>,
+            title: i18n.t('uploader.rotate-ccw'),
+        }, {
+            cmd: 'zoom-out',
+            icon: <ZoomOutRounded/>,
+            title: i18n.t('uploader.zoom_out'),
+        }, {
+            cmd: 'zoom-in',
+            icon: <ZoomInRounded/>,
+            title: i18n.t('uploader.zoom_in'),
+        }, {
+            cmd: 'reset',
+            icon: <CropFreeRounded/>,
+            title: i18n.t('uploader.reset'),
+        }];
+        const messageActions = [{
+            cmd: 'forward',
+            icon: <ForwardRounded/>,
+            title: i18n.t('general.forward'),
+        }, {
+            cmd: 'view',
+            icon: <ForwardToInboxRounded/>,
+            title: i18n.t('settings.remove_photo'),
+        }];
         return (
             <div className="document-viewer-controls">
                 <div className="controls">
                     <div className="item" onClick={this.openContextMenuHandler}>
                         <MoreVertRounded/>
                     </div>
-                    <div className="item" onClick={this.transformHandler('rotate-cw')}>
-                        <RotateRightRounded/>
-                    </div>
-                    <div className="item" onClick={this.transformHandler('rotate-ccw')}>
-                        <RotateLeftRounded/>
-                    </div>
-                    <div className="item" onClick={this.transformHandler('zoom-out')}>
-                        <ZoomOutRounded/>
-                    </div>
-                    <div className="item" onClick={this.transformHandler('zoom-in')}>
-                        <ZoomInRounded/>
-                    </div>
-                    <div className="item" onClick={this.transformHandler('reset')}>
-                        <CropFreeRounded/>
-                    </div>
-                    {Boolean(doc.type !== 'avatar') && <div className="item" onClick={this.openMessageHandler}>
-                        <VisibilityOutlined/>
-                    </div>}
+                    {viewActions.map((action) => {
+                        return <Tooltip key={action.cmd} title={action.title}>
+                            <div className="item" onClick={this.transformHandler(action.cmd)}>
+                                {action.icon}
+                            </div>
+                        </Tooltip>;
+                    })}
+                    {Boolean(doc.type !== 'avatar') && <>
+                        <div className="item-divider"/>
+                        {messageActions.map((action) => {
+                            return <Tooltip key={action.cmd} title={action.title}>
+                                <div className="item" onClick={this.messageActionHandler(action.cmd as any)}>
+                                    {action.icon}
+                                </div>
+                            </Tooltip>;
+                        })}
+                    </>}
                 </div>
                 {Boolean(doc.type !== 'avatar') && <div className="sender-container">
                     {Boolean(doc.items[0].userId) && <div className="sender-container">
@@ -690,7 +727,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private dialogCloseHandler = (force?: boolean) => (e?: any) => {
-        if ((this.preventClose && force !== true) || this.state.confirmDialogOpen) {
+        if ((this.preventClose && force !== true) || this.state.confirmDialogOpen || this.documentViewerService.getPreventClosing()) {
             return;
         }
         const closeDialog = () => {
@@ -1031,6 +1068,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Close context menu handler */
     private contextMenuCloseHandler = () => {
+        this.preventClosing();
         this.setState({
             contextMenuAnchorEl: null,
         });
@@ -1069,6 +1107,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 break;
             case 'set_as_avatar':
                 this.updatePhotoHandler(this.state.gallerySelect);
+                break;
+            case 'view':
+                this.messageActionHandler('view')();
+                break;
+            case 'forward':
+                this.messageActionHandler('forward')();
                 break;
             default:
                 break;
@@ -1406,17 +1450,19 @@ class DocumentViewer extends React.Component<IProps, IState> {
         } else if (e.dir === 'Down') {
             this.dialogCloseHandler()();
         } else if (e.dir === 'Up') {
-            this.openMessageHandler();
+            this.messageActionHandler('view')();
         }
     }
 
     /* Open message handler */
-    private openMessageHandler = () => {
+    private messageActionHandler = (action: 'view' | 'forward') => () => {
         this.preventClosing();
         const {doc} = this.state;
-        if (this.props.onJumpOnMessage && doc && doc.type !== 'avatar' && doc.items.length > 0) {
-            this.props.onJumpOnMessage(doc.items[0].id || 0);
-            this.dialogCloseHandler(true)();
+        if (doc && doc.type !== 'avatar' && doc.items.length > 0) {
+            this.props.onMessageAction(action, doc.items[0].id || 0);
+            if (action === 'view') {
+                this.dialogCloseHandler(true)();
+            }
         }
     }
 
