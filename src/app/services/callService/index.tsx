@@ -17,14 +17,11 @@ import {
     PhoneActionCallEmpty,
     PhoneActionCallWaiting,
     PhoneActionDiscarded,
-    PhoneActionIceExchange, PhoneActionKick,
-    PhoneActionRequested,
+    PhoneActionIceExchange, PhoneActionMediaSettingsUpdated, PhoneActionParticipantAdded, PhoneActionParticipantRemoved,
+    PhoneActionRequested, PhoneActionSDPAnswer, PhoneActionSDPOffer,
     PhoneCallAction,
-    PhoneMediaSettingsUpdated,
     PhoneParticipant,
     PhoneParticipantSDP,
-    PhoneSDPAnswer,
-    PhoneSDPOffer
 } from "../sdk/messages/chat.phone_pb";
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
@@ -42,9 +39,10 @@ export const C_CALL_EVENT = {
     CallTimeout: 0x07,
     LocalStreamUpdated: 0x06,
     MediaSettingsUpdated: 0x05,
+    ParticipantAdded: 0x0b,
     ParticipantJoined: 0x09,
-    ParticipantKicked: 0x0b,
     ParticipantLeft: 0x0a,
+    ParticipantRemoved: 0x0c,
     StreamUpdated: 0x03,
 };
 
@@ -102,13 +100,15 @@ const parseData = (constructor: number, data: any) => {
         case PhoneCallAction.PHONECALLEMPTY:
             return PhoneActionCallEmpty.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED:
-            return PhoneMediaSettingsUpdated.deserializeBinary(data).toObject();
+            return PhoneActionMediaSettingsUpdated.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLSDPOFFER:
-            return PhoneSDPOffer.deserializeBinary(data).toObject();
+            return PhoneActionSDPOffer.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLSDPANSWER:
-            return PhoneSDPAnswer.deserializeBinary(data).toObject();
-        case PhoneCallAction.PHONECALLKICK:
-            return PhoneActionKick.deserializeBinary(data).toObject();
+            return PhoneActionSDPAnswer.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLPARTICIPANTADDED:
+            return PhoneActionParticipantAdded.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLPARTICIPANTREMOVED:
+            return PhoneActionParticipantRemoved.deserializeBinary(data).toObject();
     }
     return undefined;
 };
@@ -315,7 +315,7 @@ export default class CallService {
         return this.peerConnections[connId].streams;
     }
 
-    public call(peer: InputPeer, participants: InputUser.AsObject[], video: boolean) {
+    public callStart(peer: InputPeer, participants: InputUser.AsObject[], video: boolean) {
         this.peer = peer;
 
         return this.apiManager.callInit(peer).then((res) => {
@@ -332,7 +332,7 @@ export default class CallService {
         });
     }
 
-    public accept(id: string, video: boolean) {
+    public callAccept(id: string, video: boolean) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
@@ -382,7 +382,7 @@ export default class CallService {
         });
     }
 
-    public reject(id: string, duration: number, reason: DiscardReason) {
+    public callReject(id: string, duration: number, reason: DiscardReason) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
@@ -390,6 +390,22 @@ export default class CallService {
 
         return this.apiManager.callReject(peer, id, reason, duration).then(() => {
             this.destroyConnections(id);
+        });
+    }
+
+    private callRemoveParticipant(callId: string, userIds: string[], timeout: boolean) {
+        const peer = this.peer;
+        if (!peer) {
+            return Promise.reject('invalid peer');
+        }
+
+        const inputUsers = this.getInputUserByUserIds(callId, userIds);
+        if (inputUsers === null) {
+            return Promise.reject('invalid callId');
+        }
+
+        return this.apiManager.callRemoveParticipant(peer, callId, inputUsers, timeout).then(() => {
+            return Promise.resolve();
         });
     }
 
@@ -513,8 +529,11 @@ export default class CallService {
             case PhoneCallAction.PHONECALLACK:
                 this.callAcknowledged(data);
                 break;
-            case PhoneCallAction.PHONECALLKICK:
-                this.participantKicked(data);
+            case PhoneCallAction.PHONECALLPARTICIPANTADDED:
+                this.participantAdded(data);
+                break;
+            case PhoneCallAction.PHONECALLPARTICIPANTREMOVED:
+                this.participantRemoved(data);
                 break;
         }
     }
@@ -540,7 +559,7 @@ export default class CallService {
 
             // Accept other participants in group
             if (this.shouldAccept(data)) {
-                this.accept(this.activeCallId, this.getStreamState().video);
+                this.callAccept(this.activeCallId, this.getStreamState().video);
             }
         }
     }
@@ -980,6 +999,29 @@ export default class CallService {
         return inputUser;
     }
 
+    private getInputUserByUserIds(callId: string, userIds: string[]) {
+        const info = this.getCallInfo(callId);
+        if (!info) {
+            return null;
+        }
+
+        const inputUsers: InputUser[] = [];
+        userIds.forEach((userId) => {
+            if (info.participantMap.hasOwnProperty(userId)) {
+                const connId = info.participantMap[userId];
+                if (info.participants.hasOwnProperty(connId)) {
+                    const peer = info.participants[connId].peer;
+                    const inputUser = new InputUser();
+                    inputUser.setUserid(peer.userid || '0');
+                    inputUser.setAccesshash(peer.accesshash || '0');
+                    inputUsers.push(inputUser);
+                }
+            }
+        });
+
+        return inputUsers;
+    }
+
     private swapTempInfo(callId: string) {
         const info = this.getCallInfo('temp');
         if (!info) {
@@ -1071,14 +1113,14 @@ export default class CallService {
             this.callInfo[this.activeCallId].mediaSettings.video = video;
         }
 
-        const actionData = new PhoneMediaSettingsUpdated();
+        const actionData = new PhoneActionMediaSettingsUpdated();
         actionData.setAudio(this.callInfo[this.activeCallId].mediaSettings.audio);
         actionData.setVideo(this.callInfo[this.activeCallId].mediaSettings.video);
         this.apiManager.callUpdate(this.peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED, actionData.serializeBinary());
     }
 
     private mediaSettingsUpdated(data: IUpdatePhoneCall) {
-        const mediaSettings = data.data as PhoneMediaSettingsUpdated.AsObject;
+        const mediaSettings = data.data as PhoneActionMediaSettingsUpdated.AsObject;
         const connId = this.getConnId(data.callid, data.userid);
         const callId = data.callid || '0';
         if (connId === null || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId)) {
@@ -1126,7 +1168,7 @@ export default class CallService {
     }
 
     private sdpOfferUpdated(data: IUpdatePhoneCall) {
-        const sdpOfferData = data.data as PhoneSDPOffer.AsObject;
+        const sdpOfferData = data.data as PhoneActionSDPOffer.AsObject;
         const connId = this.getConnId(data.callid, data.userid);
         const callId = data.callid || '0';
         if (connId === null || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId) || !this.peerConnections.hasOwnProperty(connId)) {
@@ -1147,7 +1189,7 @@ export default class CallService {
     }
 
     private sdpAnswerUpdated(data: IUpdatePhoneCall) {
-        const sdpAnswerData = data.data as PhoneSDPAnswer.AsObject;
+        const sdpAnswerData = data.data as PhoneActionSDPAnswer.AsObject;
         const connId = this.getConnId(data.callid, data.userid);
         const callId = data.callid || '0';
         if (connId === null || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId) || !this.peerConnections.hasOwnProperty(connId)) {
@@ -1169,16 +1211,22 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.CallAck, connId);
     }
 
-    private participantKicked(data: IUpdatePhoneCall) {
+    private participantAdded(data: IUpdatePhoneCall) {
+        if (this.activeCallId !== data.callid) {
+            return;
+        }
+    }
+
+    private participantRemoved(data: IUpdatePhoneCall) {
         if (this.activeCallId !== data.callid) {
             return;
         }
 
-        const kickActionData = data.data as PhoneActionKick.AsObject;
+        const kickActionData = data.data as PhoneActionParticipantRemoved.AsObject;
         kickActionData.useridsList.forEach((userId) => {
             this.removeParticipant(userId);
         });
-        this.callHandlers(C_CALL_EVENT.ParticipantKicked, {
+        this.callHandlers(C_CALL_EVENT.ParticipantRemoved, {
             timeout: kickActionData.timeout,
             userIds: kickActionData.useridsList
         });
@@ -1205,7 +1253,7 @@ export default class CallService {
             return Promise.reject('invalid connId');
         }
 
-        const actionData = new PhoneSDPOffer();
+        const actionData = new PhoneActionSDPOffer();
         actionData.setSdp(sdp.sdp);
         actionData.setType(sdp.type);
 
@@ -1235,7 +1283,7 @@ export default class CallService {
             return Promise.reject('invalid connId');
         }
 
-        const actionData = new PhoneSDPAnswer();
+        const actionData = new PhoneActionSDPAnswer();
         actionData.setSdp(sdp.sdp);
         actionData.setType(sdp.type);
 
@@ -1286,7 +1334,7 @@ export default class CallService {
         }
 
         if (this.callInfo[this.activeCallId].acceptedParticipants.length === 0) {
-            this.reject(this.activeCallId, 0, DiscardReason.DISCARDREASONHANGUP);
+            this.callReject(this.activeCallId, 0, DiscardReason.DISCARDREASONHANGUP);
             this.callHandlers(C_CALL_EVENT.CallTimeout, {});
             window.console.log('[webrtc] call timeout, connId:', connId);
         } else if (this.peer.getType() === PeerType.PEERGROUP) {
@@ -1302,38 +1350,10 @@ export default class CallService {
                         this.removeParticipant(participant.peer.userid);
                     }
                 });
-                this.callHandlers(C_CALL_EVENT.ParticipantKicked, {timeout: true, userIds});
-                this.kick(this.activeCallId, userIds, true);
+                this.callHandlers(C_CALL_EVENT.ParticipantRemoved, {timeout: true, userIds});
+                this.callRemoveParticipant(this.activeCallId, userIds, true);
             }
         }
-    }
-
-    private kick(callId: string, userIds: string[], timeout: boolean) {
-        const peer = this.peer;
-        if (!peer) {
-            return Promise.reject('invalid peer');
-        }
-
-        if (!this.callInfo.hasOwnProperty(callId)) {
-            return Promise.reject('invalid callId');
-        }
-
-        const actionData = new PhoneActionKick();
-        actionData.setUseridsList(userIds);
-        actionData.setTimeout(timeout);
-
-        const inputUsers = this.getInputUsers(callId);
-        if (!inputUsers) {
-            return Promise.reject('invalid callId');
-        }
-
-        if (inputUsers.length === 0) {
-            return Promise.reject('no participant');
-        }
-
-        return this.apiManager.callUpdate(peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLKICK, actionData.serializeBinary()).then(() => {
-            return Promise.resolve();
-        });
     }
 
     private callHandlers(name: number, data: any) {

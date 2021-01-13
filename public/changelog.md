@@ -1,3 +1,7 @@
+## 1.0.28
+* Group call optimized
+* Minor bugs fixed in FileManager
+
 ## 1.0.27
 * Group call updated
 

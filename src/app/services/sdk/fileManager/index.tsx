@@ -402,7 +402,7 @@ export default class FileManager {
                     chunk.cancel();
                 }
             });
-            this.fileUploadQueue[id].promises.forEach((promise) => {
+            this.fileDownloadQueue[id].promises.forEach((promise) => {
                 promise.reject({
                     code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],

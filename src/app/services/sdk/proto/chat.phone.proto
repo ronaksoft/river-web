@@ -59,6 +59,25 @@ message PhoneDiscardCall {
     DiscardReason Reason = 5;
 }
 
+// PhoneAddParticipant
+// @Function
+// @Return: PhoneParticipants
+message PhoneAddParticipant {
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
+    repeated InputUser Participants = 3;
+}
+
+// PhoneRemoveParticipant
+// @Function
+// @Return: Bool
+message PhoneRemoveParticipant {
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
+    repeated InputUser Participants = 3;
+    bool Timeout = 4;
+}
+
 // PhoneUpdateCall
 // @Function
 // @Return: Bool
@@ -112,8 +131,8 @@ enum PhoneCallAction {
     PhoneCallSDPOffer = 8;
     PhoneCallSDPAnswer = 9;
     PhoneCallAck = 10;
-    PhoneCallKick = 11;
-    PhoneCallReserved8 = 12;
+    PhoneCallParticipantAdded = 11;
+    PhoneCallParticipantRemoved = 12;
     PhoneCallReserved9 = 13;
     PhoneCallReserved10 = 14;
     PhoneCallReserved11 = 15;
@@ -130,12 +149,17 @@ enum PhoneCallAction {
 // PhoneCall
 message PhoneCall {
     int64 ID = 1 [jstype = JS_STRING];
-    int64 Date = 2;
+    int64 CreatedOn = 2;
 }
 
 // PhoneInit
 message PhoneInit {
     repeated IceServer IceServers = 1;
+}
+
+// PhoneParticipants
+message PhoneParticipants {
+    repeated PhoneParticipant Participants = 1;
 }
 
 // IceServer
@@ -204,31 +228,36 @@ message PhoneActionIceExchange {
 message PhoneActionAck {
 }
 
-// PhoneActionKick
-message PhoneActionKick {
+// PhoneActionParticipantAdded
+message PhoneActionParticipantAdded {
+    repeated PhoneParticipant Participants = 1;
+}
+
+// PhoneActionParticipantRemoved
+message PhoneActionParticipantRemoved {
     repeated int64 UserIDs = 1 [jstype = JS_STRING];
     bool Timeout = 2;
 }
 
-// PhoneMediaSettingsUpdated
-message PhoneMediaSettingsUpdated {
+// PhoneActionMediaSettingsUpdated
+message PhoneActionMediaSettingsUpdated {
     bool Video = 1;
     bool Audio = 2;
 }
 
-// PhoneReactionSet
-message PhoneReactionSet {
+// PhoneActionReactionSet
+message PhoneActionReactionSet {
     string Reaction = 1;
 }
 
-// PhoneSDPOffer
-message PhoneSDPOffer {
+// PhoneActionSDPOffer
+message PhoneActionSDPOffer {
     string SDP = 1;
     string Type = 2;
 }
 
-// PhoneSDPAnswer
-message PhoneSDPAnswer {
+// PhoneActionSDPAnswer
+message PhoneActionSDPAnswer {
     string SDP = 1;
     string Type = 2;
 }

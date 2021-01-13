@@ -168,8 +168,17 @@ import {
 import {
     DiscardReason,
     PhoneAcceptCall,
-    PhoneCall, PhoneCallAction, PhoneCallRateReason,
-    PhoneDiscardCall, PhoneInit, PhoneInitCall, PhoneParticipantSDP, PhoneRateCall,
+    PhoneAddParticipant,
+    PhoneCall,
+    PhoneCallAction,
+    PhoneCallRateReason,
+    PhoneDiscardCall,
+    PhoneInit,
+    PhoneInitCall,
+    PhoneParticipants,
+    PhoneParticipantSDP,
+    PhoneRateCall,
+    PhoneRemoveParticipant,
     PhoneRequestCall,
     PhoneUpdateCall
 } from "./messages/chat.phone_pb";
@@ -1267,6 +1276,25 @@ export default class APIManager {
         data.setReason(reason);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
+    }
+
+    public callAddParticipant(inputPeer: InputPeer, id: string, inputUsers: InputUser[]): Promise<PhoneParticipants.AsObject> {
+        const data = new PhoneAddParticipant();
+        data.setPeer(inputPeer);
+        data.setCallid(id);
+        data.setParticipantsList(inputUsers);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneAddParticipant, data.serializeBinary(), true);
+    }
+
+    public callRemoveParticipant(inputPeer: InputPeer, id: string, inputUsers: InputUser[], timeout: boolean): Promise<Bool.AsObject> {
+        const data = new PhoneRemoveParticipant();
+        data.setPeer(inputPeer);
+        data.setCallid(id);
+        data.setParticipantsList(inputUsers);
+        data.setTimeout(timeout);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneRemoveParticipant, data.serializeBinary(), true);
     }
 
     public callUpdate(inputPeer: InputPeer, id: string, participants: InputUser[], action: PhoneCallAction, actionData: Uint8Array): Promise<Bool.AsObject> {

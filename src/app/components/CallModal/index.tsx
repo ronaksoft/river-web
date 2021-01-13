@@ -182,7 +182,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantLeft, this.eventParticipantLeftHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantKicked, this.eventParticipantKickedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantRemoved, this.eventParticipantRemovedHandler));
     }
 
     public componentWillUnmount() {
@@ -567,7 +567,7 @@ class CallModal extends React.Component<IProps, IState> {
         });
         if (this.peer) {
             const callFn = () => {
-                this.callService.call(this.peer, this.getRecipients(), video).then((callId) => {
+                this.callService.callStart(this.peer, this.getRecipients(), video).then((callId) => {
                     this.setState({
                         callId,
                     }, () => {
@@ -600,7 +600,7 @@ class CallModal extends React.Component<IProps, IState> {
             cropCover: this.peer ? this.peer.getType() !== PeerType.PEERGROUP : false,
             mode: 'call',
         });
-        this.callService.accept(this.state.callId, video).then(() => {
+        this.callService.callAccept(this.state.callId, video).then(() => {
             const stream = this.callService.getLocalStream();
             if (!stream) {
                 return;
@@ -621,7 +621,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private rejectCallHandler = () => {
-        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
+        this.callService.callReject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
             window.console.log(err);
         });
         this.closeHandler();
@@ -632,7 +632,7 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
         this.loading = true;
-        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
+        this.callService.callReject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
             if (this.state.callStarted) {
                 this.timeEnd = Date.now();
                 this.setState({
@@ -778,7 +778,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private eventParticipantKickedHandler = ({timeout, userIds}: { timeout: boolean, userIds: string[] }) => {
+    private eventParticipantRemovedHandler = ({timeout, userIds}: { timeout: boolean, userIds: string[] }) => {
         if (!this.callVideoRef) {
             return;
         }

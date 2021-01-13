@@ -410,7 +410,7 @@ class RiverService {
             return false;
         }
         if (data.cmd === 'error') {
-            this.messageListeners[data.reqId].reject(data.data);
+            this.messageListeners[data.reqId].callReject(data.data);
         } else {
             this.messageListeners[data.reqId].resolve(data.data);
         }
@@ -426,8 +426,8 @@ class RiverService {
         if (!item) {
             return;
         }
-        if (item.reject) {
-            item.reject({
+        if (item.callReject) {
+            item.callReject({
                 err: 'timeout',
                 reqId,
             });

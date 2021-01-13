@@ -44,7 +44,7 @@ import {BotCallbackAnswer, BotResults} from "../messages/chat.bot_pb";
 import {FoundGifs, SavedGifs} from "../messages/gif_pb";
 import {TeamMembers, TeamsMany} from "../messages/team_pb";
 import {GroupsHistoryStats} from "../messages/chat.groups_pb";
-import {PhoneCall, PhoneInit} from "../messages/chat.phone_pb";
+import {PhoneCall, PhoneInit, PhoneParticipants} from "../messages/chat.phone_pb";
 import {Error, MessageContainer} from "../messages/rony_pb";
 
 export default class Presenter {
@@ -153,6 +153,8 @@ export default class Presenter {
                 return PhoneInit.deserializeBinary(data);
             case C_MSG.PhoneCall:
                 return PhoneCall.deserializeBinary(data);
+            case C_MSG.PhoneParticipants:
+                return PhoneParticipants.deserializeBinary(data);
             case C_MSG.Pong:
                 return Pong.deserializeBinary(data);
             default:

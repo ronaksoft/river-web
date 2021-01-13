@@ -133,6 +133,74 @@ export namespace PhoneDiscardCall {
   }
 }
 
+export class PhoneAddParticipant extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getCallid(): string;
+  setCallid(value: string): void;
+
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<core_types_pb.InputUser>;
+  setParticipantsList(value: Array<core_types_pb.InputUser>): void;
+  addParticipants(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneAddParticipant.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneAddParticipant): PhoneAddParticipant.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneAddParticipant, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneAddParticipant;
+  static deserializeBinaryFromReader(message: PhoneAddParticipant, reader: jspb.BinaryReader): PhoneAddParticipant;
+}
+
+export namespace PhoneAddParticipant {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
+    participantsList: Array<core_types_pb.InputUser.AsObject>,
+  }
+}
+
+export class PhoneRemoveParticipant extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getCallid(): string;
+  setCallid(value: string): void;
+
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<core_types_pb.InputUser>;
+  setParticipantsList(value: Array<core_types_pb.InputUser>): void;
+  addParticipants(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
+
+  getTimeout(): boolean;
+  setTimeout(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneRemoveParticipant.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneRemoveParticipant): PhoneRemoveParticipant.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneRemoveParticipant, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneRemoveParticipant;
+  static deserializeBinaryFromReader(message: PhoneRemoveParticipant, reader: jspb.BinaryReader): PhoneRemoveParticipant;
+}
+
+export namespace PhoneRemoveParticipant {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
+    participantsList: Array<core_types_pb.InputUser.AsObject>,
+    timeout: boolean,
+  }
+}
+
 export class PhoneUpdateCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
@@ -219,8 +287,8 @@ export class PhoneCall extends jspb.Message {
   getId(): string;
   setId(value: string): void;
 
-  getDate(): number;
-  setDate(value: number): void;
+  getCreatedon(): number;
+  setCreatedon(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneCall.AsObject;
@@ -235,7 +303,7 @@ export class PhoneCall extends jspb.Message {
 export namespace PhoneCall {
   export type AsObject = {
     id: string,
-    date: number,
+    createdon: number,
   }
 }
 
@@ -258,6 +326,28 @@ export class PhoneInit extends jspb.Message {
 export namespace PhoneInit {
   export type AsObject = {
     iceserversList: Array<IceServer.AsObject>,
+  }
+}
+
+export class PhoneParticipants extends jspb.Message {
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<PhoneParticipant>;
+  setParticipantsList(value: Array<PhoneParticipant>): void;
+  addParticipants(value?: PhoneParticipant, index?: number): PhoneParticipant;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneParticipants.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneParticipants): PhoneParticipants.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneParticipants, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneParticipants;
+  static deserializeBinaryFromReader(message: PhoneParticipants, reader: jspb.BinaryReader): PhoneParticipants;
+}
+
+export namespace PhoneParticipants {
+  export type AsObject = {
+    participantsList: Array<PhoneParticipant.AsObject>,
   }
 }
 
@@ -533,7 +623,29 @@ export namespace PhoneActionAck {
   }
 }
 
-export class PhoneActionKick extends jspb.Message {
+export class PhoneActionParticipantAdded extends jspb.Message {
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<PhoneParticipant>;
+  setParticipantsList(value: Array<PhoneParticipant>): void;
+  addParticipants(value?: PhoneParticipant, index?: number): PhoneParticipant;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionParticipantAdded.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionParticipantAdded): PhoneActionParticipantAdded.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionParticipantAdded, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionParticipantAdded;
+  static deserializeBinaryFromReader(message: PhoneActionParticipantAdded, reader: jspb.BinaryReader): PhoneActionParticipantAdded;
+}
+
+export namespace PhoneActionParticipantAdded {
+  export type AsObject = {
+    participantsList: Array<PhoneParticipant.AsObject>,
+  }
+}
+
+export class PhoneActionParticipantRemoved extends jspb.Message {
   clearUseridsList(): void;
   getUseridsList(): Array<string>;
   setUseridsList(value: Array<string>): void;
@@ -543,23 +655,23 @@ export class PhoneActionKick extends jspb.Message {
   setTimeout(value: boolean): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneActionKick.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneActionKick): PhoneActionKick.AsObject;
+  toObject(includeInstance?: boolean): PhoneActionParticipantRemoved.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionParticipantRemoved): PhoneActionParticipantRemoved.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneActionKick, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneActionKick;
-  static deserializeBinaryFromReader(message: PhoneActionKick, reader: jspb.BinaryReader): PhoneActionKick;
+  static serializeBinaryToWriter(message: PhoneActionParticipantRemoved, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionParticipantRemoved;
+  static deserializeBinaryFromReader(message: PhoneActionParticipantRemoved, reader: jspb.BinaryReader): PhoneActionParticipantRemoved;
 }
 
-export namespace PhoneActionKick {
+export namespace PhoneActionParticipantRemoved {
   export type AsObject = {
     useridsList: Array<string>,
     timeout: boolean,
   }
 }
 
-export class PhoneMediaSettingsUpdated extends jspb.Message {
+export class PhoneActionMediaSettingsUpdated extends jspb.Message {
   getVideo(): boolean;
   setVideo(value: boolean): void;
 
@@ -567,43 +679,43 @@ export class PhoneMediaSettingsUpdated extends jspb.Message {
   setAudio(value: boolean): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneMediaSettingsUpdated.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneMediaSettingsUpdated): PhoneMediaSettingsUpdated.AsObject;
+  toObject(includeInstance?: boolean): PhoneActionMediaSettingsUpdated.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionMediaSettingsUpdated): PhoneActionMediaSettingsUpdated.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneMediaSettingsUpdated, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneMediaSettingsUpdated;
-  static deserializeBinaryFromReader(message: PhoneMediaSettingsUpdated, reader: jspb.BinaryReader): PhoneMediaSettingsUpdated;
+  static serializeBinaryToWriter(message: PhoneActionMediaSettingsUpdated, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionMediaSettingsUpdated;
+  static deserializeBinaryFromReader(message: PhoneActionMediaSettingsUpdated, reader: jspb.BinaryReader): PhoneActionMediaSettingsUpdated;
 }
 
-export namespace PhoneMediaSettingsUpdated {
+export namespace PhoneActionMediaSettingsUpdated {
   export type AsObject = {
     video: boolean,
     audio: boolean,
   }
 }
 
-export class PhoneReactionSet extends jspb.Message {
+export class PhoneActionReactionSet extends jspb.Message {
   getReaction(): string;
   setReaction(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneReactionSet.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneReactionSet): PhoneReactionSet.AsObject;
+  toObject(includeInstance?: boolean): PhoneActionReactionSet.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionReactionSet): PhoneActionReactionSet.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneReactionSet, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneReactionSet;
-  static deserializeBinaryFromReader(message: PhoneReactionSet, reader: jspb.BinaryReader): PhoneReactionSet;
+  static serializeBinaryToWriter(message: PhoneActionReactionSet, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionReactionSet;
+  static deserializeBinaryFromReader(message: PhoneActionReactionSet, reader: jspb.BinaryReader): PhoneActionReactionSet;
 }
 
-export namespace PhoneReactionSet {
+export namespace PhoneActionReactionSet {
   export type AsObject = {
     reaction: string,
   }
 }
 
-export class PhoneSDPOffer extends jspb.Message {
+export class PhoneActionSDPOffer extends jspb.Message {
   getSdp(): string;
   setSdp(value: string): void;
 
@@ -611,23 +723,23 @@ export class PhoneSDPOffer extends jspb.Message {
   setType(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneSDPOffer.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneSDPOffer): PhoneSDPOffer.AsObject;
+  toObject(includeInstance?: boolean): PhoneActionSDPOffer.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionSDPOffer): PhoneActionSDPOffer.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneSDPOffer, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneSDPOffer;
-  static deserializeBinaryFromReader(message: PhoneSDPOffer, reader: jspb.BinaryReader): PhoneSDPOffer;
+  static serializeBinaryToWriter(message: PhoneActionSDPOffer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionSDPOffer;
+  static deserializeBinaryFromReader(message: PhoneActionSDPOffer, reader: jspb.BinaryReader): PhoneActionSDPOffer;
 }
 
-export namespace PhoneSDPOffer {
+export namespace PhoneActionSDPOffer {
   export type AsObject = {
     sdp: string,
     type: string,
   }
 }
 
-export class PhoneSDPAnswer extends jspb.Message {
+export class PhoneActionSDPAnswer extends jspb.Message {
   getSdp(): string;
   setSdp(value: string): void;
 
@@ -635,16 +747,16 @@ export class PhoneSDPAnswer extends jspb.Message {
   setType(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PhoneSDPAnswer.AsObject;
-  static toObject(includeInstance: boolean, msg: PhoneSDPAnswer): PhoneSDPAnswer.AsObject;
+  toObject(includeInstance?: boolean): PhoneActionSDPAnswer.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionSDPAnswer): PhoneActionSDPAnswer.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: PhoneSDPAnswer, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PhoneSDPAnswer;
-  static deserializeBinaryFromReader(message: PhoneSDPAnswer, reader: jspb.BinaryReader): PhoneSDPAnswer;
+  static serializeBinaryToWriter(message: PhoneActionSDPAnswer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionSDPAnswer;
+  static deserializeBinaryFromReader(message: PhoneActionSDPAnswer, reader: jspb.BinaryReader): PhoneActionSDPAnswer;
 }
 
-export namespace PhoneSDPAnswer {
+export namespace PhoneActionSDPAnswer {
   export type AsObject = {
     sdp: string,
     type: string,
@@ -699,8 +811,8 @@ export enum PhoneCallAction {
   PHONECALLSDPOFFER = 8,
   PHONECALLSDPANSWER = 9,
   PHONECALLACK = 10,
-  PHONECALLKICK = 11,
-  PHONECALLRESERVED8 = 12,
+  PHONECALLPARTICIPANTADDED = 11,
+  PHONECALLPARTICIPANTREMOVED = 12,
   PHONECALLRESERVED9 = 13,
   PHONECALLRESERVED10 = 14,
   PHONECALLRESERVED11 = 15,
