@@ -332,6 +332,15 @@ export default class CallService {
         });
     }
 
+    public joinCall(peer: InputPeer, callId: string) {
+        if (this.activeCallId) {
+            return;
+        }
+        this.apiManager.callJoin(peer, callId).then((res) => {
+            window.console.log(res);
+        });
+    }
+
     public callAccept(id: string, video: boolean) {
         const peer = this.peer;
         if (!peer) {

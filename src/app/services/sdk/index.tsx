@@ -174,7 +174,7 @@ import {
     PhoneCallRateReason,
     PhoneDiscardCall,
     PhoneInit,
-    PhoneInitCall,
+    PhoneInitCall, PhoneJoinCall,
     PhoneParticipants,
     PhoneParticipantSDP,
     PhoneRateCall,
@@ -1276,6 +1276,14 @@ export default class APIManager {
         data.setReason(reason);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
+    }
+
+    public callJoin(inputPeer: InputPeer, id: string): Promise<PhoneParticipants.AsObject> {
+        const data = new PhoneJoinCall();
+        data.setPeer(inputPeer);
+        data.setCallid(id);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneJoinCall, data.serializeBinary(), true);
     }
 
     public callAddParticipant(inputPeer: InputPeer, id: string, inputUsers: InputUser[]): Promise<PhoneParticipants.AsObject> {

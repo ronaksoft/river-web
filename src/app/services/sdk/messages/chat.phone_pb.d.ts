@@ -133,6 +133,32 @@ export namespace PhoneDiscardCall {
   }
 }
 
+export class PhoneJoinCall extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getCallid(): string;
+  setCallid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneJoinCall.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneJoinCall): PhoneJoinCall.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneJoinCall, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneJoinCall;
+  static deserializeBinaryFromReader(message: PhoneJoinCall, reader: jspb.BinaryReader): PhoneJoinCall;
+}
+
+export namespace PhoneJoinCall {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
+  }
+}
+
 export class PhoneAddParticipant extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;

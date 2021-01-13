@@ -181,6 +181,10 @@ export default class GroupRepo {
             const createItems: IGroup[] = differenceWith(groups, result, (o1, o2) => {
                 return o1.teamid === o2.teamid && o1.id === o2.id;
             });
+            createItems.map((item) => {
+                item.participantList = uniqBy(item.participantList, 'userid');
+                return item;
+            });
             const updateItems: IGroup[] = result.map((group: IGroup) => {
                 const t = find(groups, {id: group.id, teamid: group.teamid});
                 if (t) {
@@ -205,6 +209,12 @@ export default class GroupRepo {
     }
 
     private mergeCheck(group: IGroup, newGroup: IGroup): IGroup {
+        if (newGroup.participantList) {
+            group.participantList = uniqBy(newGroup.participantList, 'userid');
+        }
+        if (newGroup.photogalleryList) {
+            group.photogalleryList = newGroup.photogalleryList;
+        }
         const d = kMerge(group, newGroup);
         d.flagsList = newGroup.flagsList || [];
         if (newGroup.remove_photo) {

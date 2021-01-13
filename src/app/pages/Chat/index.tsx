@@ -843,6 +843,12 @@ class Chat extends React.Component<IProps, IState> {
                     this.callService.openCallDialog(this.peer);
                 }
                 break;
+            case 'join_call':
+                const dialog = this.getDialogByPeerName(this.selectedPeerName);
+                if (dialog && dialog.activecallid && this.callService && this.peer) {
+                    this.callService.joinCall(this.peer, dialog.activecallid);
+                }
+                break;
         }
     }
 

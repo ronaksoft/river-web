@@ -1,3 +1,6 @@
+## 1.0.29
+* Group call join implemented
+
 ## 1.0.28
 * Group call optimized
 * Minor bugs fixed in FileManager

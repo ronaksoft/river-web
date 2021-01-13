@@ -103,15 +103,9 @@ class InfoBar extends React.Component<IProps, IState> {
                            peer={peer} teamId={teamId} currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
-                    {/*{withCall && <>{callStarted ?*/}
-                    {/*    <div className={'call-indicator ' + (!isGroup ? 'disabled' : '')}*/}
-                    {/*    >{i18n.t(isGroup ? 'call.join_call' : 'call.call_started')}</div> :*/}
-                    {/*    <Tooltip title={i18n.t('call.call')}><IconButton*/}
-                    {/*        onClick={this.props.onAction('call')}*/}
-                    {/*    ><CallRounded/></IconButton></Tooltip>}*/}
-                    {/*</>}*/}
                     {withCall && <>{callStarted ?
-                        <div className="call-indicator">{i18n.t('call.call_started')}</div> :
+                        <div className={'call-indicator ' + (!isGroup ? 'disabled' : '')} onClick={this.callJoinHandler}
+                        >{i18n.t(isGroup ? 'call.join_call' : 'call.call_started')}</div> :
                         <Tooltip title={i18n.t('call.call')}><IconButton
                             onClick={this.props.onAction('call')}
                         ><CallRounded/></IconButton></Tooltip>}
@@ -151,6 +145,12 @@ class InfoBar extends React.Component<IProps, IState> {
             this.setState({
                 withCall: true,
             });
+        }
+    }
+
+    private callJoinHandler = (e: any) => {
+        if (this.state.peer && this.state.peer.getType() === PeerType.PEERGROUP) {
+            this.props.onAction('join_call')(e);
         }
     }
 }
