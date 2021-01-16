@@ -63,6 +63,7 @@ interface IState {
     fullscreen: boolean;
     groupId: string | undefined;
     isCaller: boolean;
+    localVideoInGrid: boolean;
     minimize: boolean;
     resetPosition: boolean;
     mode: 'call_init' | 'call_request' | 'call' | 'call_report' | 'call_unavailable';
@@ -132,6 +133,7 @@ class CallModal extends React.Component<IProps, IState> {
             fullscreen: false,
             groupId: undefined,
             isCaller: false,
+            localVideoInGrid: false,
             minimize: false,
             mode: 'call_init',
             open: false,
@@ -175,7 +177,7 @@ class CallModal extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRequested, this.eventCallRequestedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAccepted, this.eventCallAcceptedHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallJoined, this.eventCallJoinedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallPreview, this.eventCallJoinedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRejected, this.eventCallRejectedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallTimeout, this.eventCallTimeoutHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAck, this.eventCallAckHandler));
@@ -183,6 +185,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantLeft, this.eventParticipantLeftHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantJoined, this.eventParticipantJoinedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantRemoved, this.eventParticipantRemovedHandler));
     }
 
@@ -248,6 +251,7 @@ class CallModal extends React.Component<IProps, IState> {
             fullscreen: false,
             groupId: undefined,
             isCaller: false,
+            localVideoInGrid: false,
             minimize: false,
             open: false,
             rate: null,
@@ -412,7 +416,7 @@ class CallModal extends React.Component<IProps, IState> {
                     <div className="call-item call-normal" onClick={this.closeHandler}>
                         <CloseRounded/>
                     </div>
-                    <div className="call-item call-accept" onClick={this.callHandler(true)}>
+                    <div className="call-item call-accept" onClick={this.callHandler()}>
                         <div className="call-item-label">{i18n.t('call.call_back')}</div>
                         <CallRounded/>
                     </div>
@@ -422,7 +426,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallInitContent() {
-        const {fullscreen, cropCover} = this.state;
+        const {fullscreen, cropCover, callId} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined} className="call-modal-content">
             <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}/>
             <div className="call-modal-header">
@@ -442,14 +446,21 @@ class CallModal extends React.Component<IProps, IState> {
             <div className="call-modal-action">
                 <CallSettings ref={this.callSettingsRefHandler} key="init-settings"
                               onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
-                <div className="call-buttons">
+                {Boolean(callId === '0') ? <div className="call-buttons">
                     <div className="call-item call-end" onClick={this.closeHandler}>
+                        <CallEndRounded/>
+                    </div>
+                    <div className="call-item call-accept" onClick={this.callHandler()}>
+                        <CallRounded/>
+                    </div>
+                </div> : <div className="call-buttons">
+                    <div className="call-item call-end" onClick={this.rejectCallHandler}>
                         <CallEndRounded/>
                     </div>
                     <div className="call-item call-accept" onClick={this.callHandler(true)}>
                         <CallRounded/>
                     </div>
-                </div>
+                </div>}
             </div>
         </div>;
     }
@@ -474,19 +485,19 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallContent() {
-        const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize} = this.state;
+        const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize, localVideoInGrid} = this.state;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
-            {/*{!callStarted && callUserId &&*/}
-            {/*<UserAvatar className="call-user-bg rounded-avatar" id={callUserId} noDetail={true}/>}*/}
-            <div className="local-video">
-                <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
-                       onClick={this.videoClickHandler(false)} hidden={!this.mediaSettings.video}/>
-            </div>
-            {!this.mediaSettings.video &&
-            <div className="local-video-placeholder" onClick={this.videoClickHandler(false)}>
-                <UserAvatar className="local-video-user" id={currentUserId} noDetail={true}/>
-            </div>}
+            {!localVideoInGrid && <>
+                <div className="local-video">
+                    <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
+                           onClick={this.videoClickHandler(false)} hidden={!this.mediaSettings.video}/>
+                </div>
+                {!this.mediaSettings.video &&
+                <div className="local-video-placeholder" onClick={this.videoClickHandler(false)}>
+                    <UserAvatar className="local-video-user" id={currentUserId} noDetail={true}/>
+                </div>}
+            </>}
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
                        onClick={this.videoClickHandler(true)}/>
             <div className="call-modal-header">
@@ -496,9 +507,10 @@ class CallModal extends React.Component<IProps, IState> {
                 <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                     {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                 </IconButton>
+                {this.peer && this.peer.getType() === PeerType.PEERUSER &&
                 <IconButton className="call-action-item" onClick={this.toggleMinimizeHandler}>
                     {minimize ? <WebAssetRounded/> : <DynamicFeedRounded/>}
-                </IconButton>
+                </IconButton>}
             </div>
             {isCaller && !callStarted &&
             <audio autoPlay={true} src={this.callConnectingTone} loop={true} style={{display: 'none'}}>
@@ -535,6 +547,12 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
         if (this.peer.getType() === PeerType.PEERGROUP) {
+            if (this.callVideoRef && !this.state.localVideoInGrid) {
+                this.callVideoRef.addLocalVideo(true, this.videoRefHandler);
+                this.setState({
+                    localVideoInGrid: true,
+                });
+            }
             return;
         }
         const {callStarted, videoSwap} = this.state;
@@ -552,7 +570,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private callHandler = (video: boolean) => () => {
+    private callHandler = (join?: boolean) => () => {
         if (this.loading) {
             return;
         }
@@ -572,7 +590,7 @@ class CallModal extends React.Component<IProps, IState> {
         });
         if (this.peer) {
             const callFn = () => {
-                this.callService.callStart(this.peer, this.getRecipients(), video).then((callId) => {
+                this.callService.callStart(this.peer, this.getRecipients(), join || false).then((callId) => {
                     this.setState({
                         callId,
                     }, () => {
@@ -583,7 +601,8 @@ class CallModal extends React.Component<IProps, IState> {
                             this.callSettingsRef.startAudioAnalyzer();
                         }
                     });
-                }).catch(() => {
+                }).catch((err) => {
+                    window.console.log(err);
                     this.closeHandler();
                 }).finally(() => {
                     this.loading = false;
@@ -687,7 +706,8 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private eventCallJoinedHandler = ({callId}: { callId: string }) => {
+    private eventCallJoinedHandler = ({peer, callId}: { peer: InputPeer, callId: string }) => {
+        this.peer = peer;
         this.showPreview(true, callId);
     }
 
@@ -800,6 +820,24 @@ class CallModal extends React.Component<IProps, IState> {
                     <UserAvatar className="user-avatar" id={userId} noDetail={true}/>
                     <UserName className="user-name" id={userId} noDetail={true} you={true} noIcon={true}
                               format={i18n.t(timeout ? 'call.user_not_answering' : 'call.user_kicked')}/>
+                </div>);
+            });
+        }
+    }
+
+    private eventParticipantJoinedHandler = ({userIds}: { userIds: string[] }) => {
+        if (!this.callVideoRef) {
+            return;
+        }
+
+        this.callVideoRef.initRemoteConnection();
+
+        if (this.callService) {
+            userIds.forEach((userId) => {
+                this.callService.enqueueSnackbar(<div className="call-notification">
+                    <UserAvatar className="user-avatar" id={userId} noDetail={true}/>
+                    <UserName className="user-name" id={userId} noDetail={true} you={true} noIcon={true}
+                              format={i18n.t('call.user_joined_the_call')}/>
                 </div>);
             });
         }

@@ -544,6 +544,7 @@
     "audio_muted": "Microphone is muted",
     "call_started": "Call Started",
     "join_call": "Join Call",
+    "user_joined_the_call": "{0} joined the call",
     "user_left_the_call": "{0} left the call",
     "user_kicked": "{0} kicked form the call",
     "user_not_answering": "{0} is not answering the call"

@@ -1,3 +1,6 @@
+## 1.0.31
+* Now user can join a group call
+
 ## 1.0.30
 * Observer on team creation
 * Left panel improvements

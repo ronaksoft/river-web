@@ -32,6 +32,7 @@ interface IProps {
 
 interface IState {
     callId: string;
+    localVideo: boolean;
 }
 
 class CallVideo extends React.Component<IProps, IState> {
@@ -47,12 +48,14 @@ class CallVideo extends React.Component<IProps, IState> {
     private callService: CallService;
     private videoRemoteRefs: IRemoteConnection[] = [];
     private initialized: boolean = false;
+    private localVideoRefFn: any;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             callId: props.callId,
+            localVideo: false,
         };
 
         this.callService = CallService.getInstance();
@@ -111,8 +114,24 @@ class CallVideo extends React.Component<IProps, IState> {
         }
     }
 
+    public addLocalVideo(enable: boolean, refFn?: (ref: any) => void) {
+        if (refFn) {
+            this.localVideoRefFn = refFn;
+        }
+        this.setState({
+            localVideo: enable,
+        });
+    }
+
     public render() {
-        return (<div className={'call-video cp-' + (this.videoRemoteRefs.length)} onClick={this.props.onClick}>
+        const {localVideo} = this.state;
+        return (<div className={'call-video cp-' + (this.videoRemoteRefs.length + (localVideo ? 1 : 0))}
+                     onClick={this.props.onClick}>
+            {localVideo && <div className="call-user-container">
+                <div className="video-placeholder">
+                    <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true}/>
+                </div>
+            </div>}
             {this.getRemoteVideoContent()}
         </div>);
     }

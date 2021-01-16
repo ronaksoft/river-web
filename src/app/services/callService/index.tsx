@@ -34,7 +34,7 @@ const C_RETRY_LIMIT = 6;
 export const C_CALL_EVENT = {
     CallAccepted: 0x02,
     CallAck: 0x08,
-    CallJoined: 0x0d,
+    CallPreview: 0x0d,
     CallRejected: 0x04,
     CallRequested: 0x01,
     CallTimeout: 0x07,
@@ -316,7 +316,7 @@ export default class CallService {
         return this.peerConnections[connId].streams;
     }
 
-    public callStart(peer: InputPeer, participants: InputUser.AsObject[], video: boolean) {
+    public callStart(peer: InputPeer, participants: InputUser.AsObject[], join: boolean) {
         this.peer = peer;
 
         return this.apiManager.callInit(peer).then((res) => {
@@ -325,11 +325,20 @@ export default class CallService {
                 urls: item.urlsList,
                 username: item.username,
             }));
-            this.initCallParticipants('temp', participants);
-            return this.initConnections(peer, 'temp', true).then((done) => {
-                this.swapTempInfo(this.activeCallId || '0');
-                return this.activeCallId || '0';
-            });
+            if (join) {
+                return this.apiManager.callJoin(peer, this.activeCallId).then((res) => {
+                    this.initParticipants(this.activeCallId, res.participantsList, true);
+                    return this.initConnections(peer, this.activeCallId, false).then(() => {
+                        return this.activeCallId || '0';
+                    });
+                });
+            } else {
+                this.initCallParticipants('temp', participants);
+                return this.initConnections(peer, 'temp', true).then(() => {
+                    this.swapTempInfo(this.activeCallId || '0');
+                    return this.activeCallId || '0';
+                });
+            }
         });
     }
 
@@ -337,11 +346,8 @@ export default class CallService {
         if (this.activeCallId) {
             return;
         }
-        this.apiManager.callJoin(peer, callId).then((res) => {
-            this.activeCallId = callId;
-            this.initParticipants(this.activeCallId, res.participantsList, true);
-            this.callHandlers(C_CALL_EVENT.CallJoined, {callId});
-        });
+        this.activeCallId = callId;
+        this.callHandlers(C_CALL_EVENT.CallPreview, {callId, peer});
     }
 
     public callAccept(id: string, video: boolean) {
@@ -734,24 +740,22 @@ export default class CallService {
     }
 
     private initParticipants(callId: string, participants: PhoneParticipant.AsObject[], bootstrap?: boolean) {
-        const fn = () => {
-            const callParticipants: { [key: number]: ICallParticipant } = {};
-            const callParticipantMap: { [key: string]: number } = {};
-            participants.forEach((participant, index) => {
-                callParticipants[index] = {
-                    admin: index === 0,
-                    connectionid: index,
-                    initiator: index === 0,
+        const fn = (callParticipants: { [key: number]: ICallParticipant }, callParticipantMap: { [key: string]: number }) => {
+            participants.forEach((participant) => {
+                callParticipants[participant.connectionid] = {
+                    admin: participant.admin,
+                    connectionid: participant.connectionid,
+                    initiator: participant.initiator,
                     mediaSettings: {audio: true, video: true},
                     peer: participant.peer,
                 };
-                callParticipantMap[participant.peer.userid || '0'] = index;
+                callParticipantMap[participant.peer.userid || '0'] = participant.connectionid;
             });
             return {participantMap: callParticipantMap, participants: callParticipants};
         };
         if (!this.callInfo.hasOwnProperty(callId)) {
             if (bootstrap) {
-                const res = fn();
+                const res = fn({}, {});
                 const mediaState = this.getStreamState();
                 this.callInfo[callId] = {
                     acceptedParticipantIds: [],
@@ -765,7 +769,7 @@ export default class CallService {
                 };
             }
         } else {
-            const res = fn();
+            const res = fn(this.callInfo[callId].participants, this.callInfo[callId].participantMap);
             this.callInfo[callId].participantMap = res.participantMap;
             this.callInfo[callId].participants = res.participants;
         }
@@ -837,7 +841,7 @@ export default class CallService {
         const callPromises: any[] = [];
         const acceptPromises: any[] = [];
         let sdp: RTCSessionDescriptionInit | undefined;
-        let requestConnId: number = -1;
+        let requestConnId: number = -1024;
 
         const initAnswerConnection = (connId: number) => {
             return this.initConnection(true, connId, sdp).then((res) => {
@@ -1258,6 +1262,7 @@ export default class CallService {
         if (connId === null) {
             return;
         }
+        this.clearRetryInterval(connId, true);
         this.callHandlers(C_CALL_EVENT.CallAck, connId);
     }
 
@@ -1266,8 +1271,9 @@ export default class CallService {
             return;
         }
         const phoneActionParticipantAdded = data.data as PhoneActionParticipantAdded.AsObject;
+        this.initParticipants(this.activeCallId, phoneActionParticipantAdded.participantsList);
         if (phoneActionParticipantAdded.participantsList.some(o => o.peer.userid !== currentUserId)) {
-            this.callHandlers(C_CALL_EVENT.ParticipantJoined, data);
+            this.callHandlers(C_CALL_EVENT.ParticipantJoined, {userIds: phoneActionParticipantAdded.participantsList.map(o => o.peer.userid)});
         }
     }
 
@@ -1365,12 +1371,12 @@ export default class CallService {
         return this.apiManager.callUpdate(peer, data.callid, [inputUser], PhoneCallAction.PHONECALLACK, actionData.serializeBinary());
     }
 
-    private clearRetryInterval(connId: number) {
+    private clearRetryInterval(connId: number, onlyClearInterval?: boolean) {
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
         clearInterval(this.peerConnections[connId].interval);
-        if (this.activeCallId && this.callInfo.hasOwnProperty(this.activeCallId)) {
+        if (onlyClearInterval !== true && this.activeCallId && this.callInfo.hasOwnProperty(this.activeCallId)) {
             this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
         }
     }

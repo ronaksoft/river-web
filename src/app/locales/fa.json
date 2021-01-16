@@ -541,6 +541,7 @@
     "audio_muted": "میکروفن بی صدا هست",
     "call_started": "تماس فعال",
     "join_call": "ورود به تماس",
+    "user_joined_the_call": "{0} به تماس افزوده شد",
     "user_left_the_call": "{0} از تماس خارج شد",
     "user_kicked": "{0} از تماس بیرون شد",
     "user_not_answering": "{0} پاسخ‌گو نیست"
