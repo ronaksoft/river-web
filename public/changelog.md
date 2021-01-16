@@ -1,3 +1,7 @@
+## 1.0.30
+* Overall improvements
+* Known bugs fixed
+
 ## 1.0.29
 * Group call join implemented
 

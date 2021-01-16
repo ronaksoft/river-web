@@ -29,7 +29,7 @@ import {
     UpdateNotifySettings, UpdatePhoneCall, UpdatePhoneCallEnded, UpdatePhoneCallStarted, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents,
+    UpdateReadMessagesContents, UpdateTeamCreated,
     UpdateUserBlocked,
     UpdateUsername,
     UpdateUserPhoto,
@@ -1108,6 +1108,11 @@ export default class UpdateManager {
                     teamid: updatePhoneCallEnded.teamid || '0',
                 });
                 break;
+            case C_MSG.UpdateTeamCreated:
+                const updateTeamCreated = UpdateTeamCreated.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateTeamCreated);
+                this.callHandlers('all', update.constructor, updateTeamCreated);
+                break;
             default:
                 break;
         }
@@ -1754,11 +1759,15 @@ export default class UpdateManager {
         if ((this.teamId !== teamId && teamId !== 'all') || !this.listenerList[eventConstructor]) {
             return false;
         }
-        Object.values(this.listenerList[eventConstructor]).forEach((fn) => {
-            if (fn) {
-                fn(data);
-            }
-        });
+        try {
+            Object.values(this.listenerList[eventConstructor]).forEach((fn) => {
+                if (fn) {
+                    fn(data);
+                }
+            });
+        } catch (e) {
+            window.console.warn('UpdateManager | callHandler', e);
+        }
         return true;
     }
 

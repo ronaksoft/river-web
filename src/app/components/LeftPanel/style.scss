@@ -15,9 +15,10 @@
   width: 40px;
   background-color: var(--panel-color);
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 64px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding: 64px 0 52px 0;
   z-index: 120;
   transition: all 0.1s;
   will-change: width;
@@ -27,6 +28,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex: 1 1;
+    width: 100%;
 
     .MuiBadge-root {
       .MuiBadge-badge {

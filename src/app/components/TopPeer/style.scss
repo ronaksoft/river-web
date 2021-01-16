@@ -52,7 +52,7 @@
       align-items: center;
       justify-content: center;
       width: 64px;
-      height: 80px;
+      height: 92px;
       padding: 0 4px;
       cursor: pointer;
 
@@ -76,14 +76,14 @@
         }
       }
 
-      .avatar-image, .text-avatar, img, .uac {
+      .avatar-image, .text-avatar, img, .uac, .gac {
         height: 48px;
         width: 48px;
       }
 
       .top-peer-avatar {
         line-height: 0;
-        margin: 0 0 4px;
+        margin: 0 0 8px;
       }
 
       .top-peer-name {

@@ -1,3 +1,8 @@
+## 1.0.30
+* Observer on team creation
+* Left panel improvements
+* TopPeer UI bug fixed
+
 ## 1.0.29
 * Group call join implemented
 

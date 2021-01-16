@@ -136,7 +136,7 @@ import {
     UpdateNotifySettings, UpdatePhoneCallStarted, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents,
+    UpdateReadMessagesContents, UpdateTeamCreated,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping
@@ -511,6 +511,9 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: call ended
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdatePhoneCallEnded, this.updatePhoneCallEndedHandler));
+
+        // Update: team created
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateTeamCreated, this.updateTeamCreatedHandler));
 
         // TODO: add timestamp to pending message
 
@@ -2890,6 +2893,12 @@ class Chat extends React.Component<IProps, IState> {
         this.updateDialogsCounter(peerName, {activeCallId: '0'});
         if (this.infoBarRef && this.selectedPeerName === peerName) {
             this.infoBarRef.setCallStarted(false);
+        }
+    }
+
+    private updateTeamCreatedHandler = (data: UpdateTeamCreated.AsObject) => {
+        if (this.leftMenuRef) {
+            this.leftMenuRef.reloadTeamList();
         }
     }
 

@@ -336,6 +336,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
     }
 
+    public reloadTeamList() {
+        this.getTeamList();
+    }
+
     public render() {
         const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu, dialogHover, teamList, teamLoading, teamMoreAnchorEl, hasUpdate, teamId, withPanel} = this.state;
         const className = (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (overlayMode ? ' label-mode' : '') + (dialogHover ? ' dialog-hover' : '') + (shrunkMenu ? ' shrunk-menu' : '');

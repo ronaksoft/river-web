@@ -14,6 +14,7 @@ import {TextAvatar} from "../UserAvatar";
 import {ITeam} from "../../repository/team/interface";
 import {findIndex} from "lodash";
 import {PersonRounded} from "@material-ui/icons";
+import Scrollbars from "react-custom-scrollbars";
 
 import './style.scss';
 
@@ -85,19 +86,29 @@ class LeftPanel extends React.Component<IProps, IState> {
                  onMouseEnter={this.panelMouseEnterHandler}
                  onMouseLeave={this.panelMouseLeaveHandler}>
                 <div className="folder-container">
-                    {teamList.map((team) => {
-                        return (<Badge key={team.id} color="primary" badgeContent={localize(team.unread_counter || 0)}
-                                       invisible={!Boolean(team.unread_counter)}
-                                       variant={selectedTeamId === team.id && panelFocus ? 'standard' : 'dot'}>
-                            <div className={'folder-item' + (selectedTeamId === team.id ? ' selected' : '')}
-                                 onClick={this.selectTeamHandler(team)}>
-                                <TextAvatar fname={team.name} icon={team.id === '0' ? <PersonRounded/> : undefined}/>
-                                <div className="folder-name">
-                                    <div className="inner">{team.name}</div>
+                    <Scrollbars
+                        universal={true}
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                        }}
+                    >
+                        {teamList.map((team) => {
+                            return (<Badge key={team.id} color="primary"
+                                           badgeContent={localize(team.unread_counter || 0)}
+                                           invisible={!Boolean(team.unread_counter)}
+                                           variant={selectedTeamId === team.id && panelFocus ? 'standard' : 'dot'}>
+                                <div className={'folder-item' + (selectedTeamId === team.id ? ' selected' : '')}
+                                     onClick={this.selectTeamHandler(team)}>
+                                    <TextAvatar fname={team.name}
+                                                icon={team.id === '0' ? <PersonRounded/> : undefined}/>
+                                    <div className="folder-name">
+                                        <div className="inner">{team.name}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        </Badge>);
-                    })}
+                            </Badge>);
+                        })}
+                    </Scrollbars>
                 </div>
             </div>);
     }
