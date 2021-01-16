@@ -1,3 +1,6 @@
+## 1.0.32
+* Known UI bugs fixed
+
 ## 1.0.31
 * Now user can join a group call
 

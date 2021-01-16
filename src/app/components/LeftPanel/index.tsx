@@ -93,6 +93,7 @@ class LeftPanel extends React.Component<IProps, IState> {
                             width: '100%',
                         }}
                     >
+                        <div className="folder-gap"/>
                         {teamList.map((team) => {
                             return (<Badge key={team.id} color="primary"
                                            badgeContent={localize(team.unread_counter || 0)}

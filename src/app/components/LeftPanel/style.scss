@@ -18,7 +18,7 @@
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
-  padding: 64px 0 52px 0;
+  padding: 48px 0 52px 0;
   z-index: 120;
   transition: all 0.1s;
   will-change: width;
@@ -35,6 +35,11 @@
       .MuiBadge-badge {
         right: 16px;
       }
+    }
+
+    .folder-gap {
+      height: 16px;
+      width: 100%;
     }
 
     .folder-item {
