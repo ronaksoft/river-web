@@ -34,6 +34,7 @@ const C_RETRY_LIMIT = 6;
 export const C_CALL_EVENT = {
     CallAccepted: 0x02,
     CallAck: 0x08,
+    CallJoined: 0x0d,
     CallRejected: 0x04,
     CallRequested: 0x01,
     CallTimeout: 0x07,
@@ -337,7 +338,9 @@ export default class CallService {
             return;
         }
         this.apiManager.callJoin(peer, callId).then((res) => {
-            window.console.log(res);
+            this.activeCallId = callId;
+            this.initParticipants(this.activeCallId, res.participantsList, true);
+            this.callHandlers(C_CALL_EVENT.CallJoined, {callId});
         });
     }
 
@@ -728,6 +731,44 @@ export default class CallService {
             requestParticipantIds: [],
             requests: [],
         };
+    }
+
+    private initParticipants(callId: string, participants: PhoneParticipant.AsObject[], bootstrap?: boolean) {
+        const fn = () => {
+            const callParticipants: { [key: number]: ICallParticipant } = {};
+            const callParticipantMap: { [key: string]: number } = {};
+            participants.forEach((participant, index) => {
+                callParticipants[index] = {
+                    admin: index === 0,
+                    connectionid: index,
+                    initiator: index === 0,
+                    mediaSettings: {audio: true, video: true},
+                    peer: participant.peer,
+                };
+                callParticipantMap[participant.peer.userid || '0'] = index;
+            });
+            return {participantMap: callParticipantMap, participants: callParticipants};
+        };
+        if (!this.callInfo.hasOwnProperty(callId)) {
+            if (bootstrap) {
+                const res = fn();
+                const mediaState = this.getStreamState();
+                this.callInfo[callId] = {
+                    acceptedParticipantIds: [],
+                    acceptedParticipants: [],
+                    dialed: false,
+                    mediaSettings: mediaState ? mediaState : {audio: true, video: true},
+                    participantMap: res.participantMap,
+                    participants: res.participants,
+                    requestParticipantIds: [],
+                    requests: [],
+                };
+            }
+        } else {
+            const res = fn();
+            this.callInfo[callId].participantMap = res.participantMap;
+            this.callInfo[callId].participants = res.participants;
+        }
     }
 
     private initCallRequest(data: IUpdatePhoneCall) {
@@ -1223,6 +1264,10 @@ export default class CallService {
     private participantAdded(data: IUpdatePhoneCall) {
         if (this.activeCallId !== data.callid) {
             return;
+        }
+        const phoneActionParticipantAdded = data.data as PhoneActionParticipantAdded.AsObject;
+        if (phoneActionParticipantAdded.participantsList.some(o => o.peer.userid !== currentUserId)) {
+            this.callHandlers(C_CALL_EVENT.ParticipantJoined, data);
         }
     }
 

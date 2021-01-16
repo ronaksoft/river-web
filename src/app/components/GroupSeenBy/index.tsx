@@ -76,7 +76,7 @@ class GroupSeenBy extends React.Component<any, IState> {
                     {loading ? <Loading/> : list.length > 0 ? list.map((id) => {
                         return (<Chip key={id} avatar={<UserAvatar id={id}/>}
                                       tabIndex={-1} className="user-chip"
-                                      label={<UserName id={id} you={true} unsafe={true}/>}/>);
+                                      label={<UserName id={id} you={true} unsafe={true} noIcon={true}/>}/>);
                     }) : <div className="seen-by-placeholder">
                         <ThreeDot/>
                     </div>}

@@ -22,7 +22,7 @@ import {
     StarsRounded,
 } from '@material-ui/icons';
 import {
-    GroupFlags,
+    GroupFlags, GroupParticipant,
     InputFile,
     InputPeer,
     InputUser,
@@ -408,8 +408,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 >
                     {this.contextMenuItem()}
                 </Menu>
-                <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
-                               teamId={this.props.teamId} title={i18n.t('peer_info.add_member')}/>
                 <Menu
                     anchorEl={avatarMenuAnchorEl}
                     open={Boolean(avatarMenuAnchorEl)}
@@ -421,6 +419,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 >
                     {this.avatarContextMenuItem()}
                 </Menu>
+                <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
+                               teamId={this.props.teamId} title={i18n.t('peer_info.add_member')}/>
             </div>
         );
     }
@@ -978,6 +978,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return;
         }
         const promises: any[] = [];
+        const newParticipants: GroupParticipant.AsObject[] = [];
         contacts.forEach((member) => {
             const user = new InputUser();
             user.setUserid(member.id || '');
@@ -989,6 +990,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     if (this.props.onError) {
                         this.props.onError(i18n.tf('peer_info.user_cannot_be_added', member.firstname || ''));
                     }
+                } else {
+                    newParticipants.push(member as GroupParticipant.AsObject);
                 }
                 return Promise.resolve();
             }));
@@ -996,12 +999,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         /* waits for all promises to be resolved */
         if (promises.length > 0) {
             Promise.all(promises).then((res) => {
-                participants.push(...contacts);
-                group.participants = participants.length;
-                this.setState({
-                    group,
-                    participants,
-                });
+                if (newParticipants.length > 0) {
+                    participants.push(...newParticipants);
+                    group.participants = participants.length;
+                    this.setState({
+                        group,
+                        participants,
+                    });
+                }
             });
         }
     }
