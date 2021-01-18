@@ -8,8 +8,8 @@
 */
 
 import * as React from 'react';
-import VideoPlaceholder, {IVideoPlaceholderRef} from "../VideoPlaceholder";
 import CallService, {IMediaSettings} from "../../services/callService";
+import CallVideoPlaceholder from "../CallVideoPlaceholder";
 import {findIndex, differenceWith} from "lodash";
 import UserAvatar from "../UserAvatar";
 import i18n from "../../services/i18n";
@@ -18,7 +18,7 @@ import './style.scss';
 
 export interface IRemoteConnection {
     connId: number;
-    media?: IVideoPlaceholderRef;
+    media?: CallVideoPlaceholder;
     status: number;
     streams: MediaStream[] | undefined;
     userId: string;
@@ -87,8 +87,8 @@ class CallVideo extends React.Component<IProps, IState> {
         if (index > -1 && streams) {
             const remote = this.videoRemoteRefs[index];
             remote.streams = streams;
-            if (remote.media && remote.media.video) {
-                remote.media.video.srcObject = streams[0];
+            if (remote.media) {
+                remote.media.setVideo(streams[0]);
             }
         }
     }
@@ -139,26 +139,26 @@ class CallVideo extends React.Component<IProps, IState> {
     private getRemoteVideoContent() {
         return this.videoRemoteRefs.map((item) => {
             if (item.status === 0 || item.status === 1) {
-                return <div key={item.userId} className="call-user-container">
+                return <div key={item.connId} className="call-user-container">
                     <UserAvatar className="call-user" id={item.userId} noDetail={true} big={true}/>
                     <div className="call-user-status"
                     >{i18n.t(item.status ? 'call.is_ringing' : 'call.is_calling')}</div>
                 </div>;
             }
-            const videoRemoteRefHandler = (ref: any) => {
+            const videoRemoteRefHandler = (ref: CallVideoPlaceholder) => {
                 item.media = ref;
                 const streams = this.callService.getRemoteStreams(item.connId);
-                if (streams && item.media && item.media.video) {
-                    item.media.video.srcObject = streams[0];
+                if (streams && item.media) {
                     item.streams = streams;
-                } else if (item.streams && item.media.video && item.media) {
-                    item.media.video.srcObject = item.streams[0];
+                }
+                if (item.streams && item.media) {
+                    item.media.setVideo(item.streams[0]);
                 }
             };
-            return (<div className="call-user-container" key={item.userId}>
-                <VideoPlaceholder className="remote-video" innerRef={videoRemoteRefHandler}
-                                  srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
-                                  autoPlay={true} userId={item.userId}/>
+            return (<div className="call-user-container" key={item.connId}>
+                <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
+                                      srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
+                                      autoPlay={true} userId={item.userId}/>
             </div>);
         });
     }

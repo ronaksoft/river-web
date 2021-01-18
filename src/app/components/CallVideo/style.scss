@@ -16,6 +16,7 @@
 
   &:not(.cp-1) {
     display: grid;
+    grid-auto-flow: row;
   }
 
   &.cp-2, &.cp-3, &.cp-4 {
@@ -24,6 +25,7 @@
 
   &.cp-3, &.cp-4, &.cp-5, &.cp-6 {
     grid-template-rows: repeat(2, 1fr);
+    height: 100%;
   }
 
   &.cp-7, &.cp-8, &.cp-9, &.cp-10, &.cp-11 {

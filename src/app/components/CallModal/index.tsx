@@ -181,6 +181,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRejected, this.eventCallRejectedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallTimeout, this.eventCallTimeoutHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAck, this.eventCallAckHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallCancelled, this.eventCallCancelledHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.StreamUpdated, this.eventStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
@@ -246,6 +247,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.callService.destroyConnections(this.state.callId);
         this.callService.destroy();
         this.setState({
+            callId: '0',
             callStarted: false,
             cropCover: true,
             fullscreen: false,
@@ -546,8 +548,9 @@ class CallModal extends React.Component<IProps, IState> {
         if (!this.peer) {
             return;
         }
+
         if (this.peer.getType() === PeerType.PEERGROUP) {
-            if (this.callVideoRef && !this.state.localVideoInGrid) {
+            if (!remote && this.callVideoRef && !this.state.localVideoInGrid) {
                 this.callVideoRef.addLocalVideo(true, this.videoRefHandler);
                 this.setState({
                     localVideoInGrid: true,
@@ -555,10 +558,12 @@ class CallModal extends React.Component<IProps, IState> {
             }
             return;
         }
+
         const {callStarted, videoSwap} = this.state;
         if (!callStarted) {
             return;
         }
+
         if (!videoSwap && !remote) {
             this.setState({
                 videoSwap: true,
@@ -746,6 +751,12 @@ class CallModal extends React.Component<IProps, IState> {
     private eventCallAckHandler = (connId: number) => {
         if (this.callVideoRef) {
             this.callVideoRef.setStatus(connId, 1);
+        }
+    }
+
+    private eventCallCancelledHandler = ({callId}: { callId: string }) => {
+        if (this.state.mode === 'call_request' && this.state.callId === callId) {
+            this.closeHandler();
         }
     }
 

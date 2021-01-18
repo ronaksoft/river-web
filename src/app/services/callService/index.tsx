@@ -28,12 +28,13 @@ import UniqueId from "../uniqueId";
 import APIManager, {currentUserId} from "../sdk";
 import {findIndex, orderBy, difference} from "lodash";
 
-const C_RETRY_INTERVAL = 10000;
-const C_RETRY_LIMIT = 6;
+const C_RETRY_INTERVAL = 5000;
+const C_RETRY_LIMIT = 2;
 
 export const C_CALL_EVENT = {
     CallAccepted: 0x02,
     CallAck: 0x08,
+    CallCancelled: 0x0e,
     CallPreview: 0x0d,
     CallRejected: 0x04,
     CallRequested: 0x01,
@@ -333,6 +334,7 @@ export default class CallService {
                     });
                 });
             } else {
+                this.activeCallId = undefined;
                 this.initCallParticipants('temp', participants);
                 return this.initConnections(peer, 'temp', true).then(() => {
                     this.swapTempInfo(this.activeCallId || '0');
@@ -1278,6 +1280,8 @@ export default class CallService {
     }
 
     private participantRemoved(data: IUpdatePhoneCall) {
+        this.callHandlers(C_CALL_EVENT.CallCancelled, {callId: data.callid});
+
         if (this.activeCallId !== data.callid) {
             return;
         }
@@ -1407,11 +1411,13 @@ export default class CallService {
                     const participant = participants[connId];
                     if (participant && participant.peer.userid !== currentUserId) {
                         userIds.push(participant.peer.userid);
-                        this.removeParticipant(participant.peer.userid);
                     }
                 });
-                this.callHandlers(C_CALL_EVENT.ParticipantRemoved, {timeout: true, userIds});
                 this.callRemoveParticipant(this.activeCallId, userIds, true);
+                userIds.forEach((userId) => {
+                    this.removeParticipant(userId);
+                });
+                this.callHandlers(C_CALL_EVENT.ParticipantRemoved, {timeout: true, userIds});
             }
         }
     }

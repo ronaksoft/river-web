@@ -483,14 +483,14 @@ class ContactList extends React.Component<IProps, IState> {
             loading: true,
         });
         const fn = (cache: boolean) => (group: IGroup) => {
-            const us: IUser[] = (group.participantList || []).map((member) => ({
+            const us: IUser[] = uniqBy((group.participantList || []).map((member) => ({
                 accesshash: member.accesshash,
                 firstname: member.firstname,
                 id: member.userid,
                 lastname: member.lastname,
                 photo: member.photo,
                 username: member.username,
-            }));
+            })), 'id');
             this.defaultContact = us;
             this.contactsRes = clone(us);
             if (this.props.onDefaultLoad) {
@@ -558,6 +558,9 @@ class ContactList extends React.Component<IProps, IState> {
 
     private searchGroupMembers(text: string) {
         const reg = new RegExp(text || '', 'gi');
+        if (this.list) {
+            this.list.resetAfterIndex(0, false);
+        }
         this.contactsRes = clone(this.defaultContact.filter((u) => {
             return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(`${u.firstname} ${u.lastname}`));
         }));

@@ -1,3 +1,7 @@
+## 1.0.33
+* Group Call improvements
+* Known bugs fixed
+
 ## 1.0.32
 * Known UI bugs fixed
 
