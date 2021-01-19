@@ -145,11 +145,22 @@ http {
         location / {
             root   /ronak/app;
             index  index.html;
-            location ~* \.html$ {
-                expires epoch;
-                add_header Pragma public;
-                add_header Cache-Control "public";
-            }
+        }
+
+        location index.html {
+            add_header Last-Modified ${DOLLAR}date_gmt;
+            add_header Cache-Control 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+            if_modified_since off;
+            expires off;
+            etag off;
+        }
+
+        location service-worker.js {
+            add_header Last-Modified ${DOLLAR}date_gmt;
+            add_header Cache-Control 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+            if_modified_since off;
+            expires off;
+            etag off;
         }
 
         location /ws {
