@@ -55,7 +55,7 @@ class AvatarCropper extends React.Component<IProps, IState> {
         const {width} = this.props;
         const {profileCropperOpen, profilePictureFile, rotate, zoom} = this.state;
         return (
-            <React.Fragment>
+            <>
                 <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                        onChange={this.fileChangeHandler} accept="image/jpeg, image/png"/>
                 <Dialog
@@ -104,7 +104,7 @@ class AvatarCropper extends React.Component<IProps, IState> {
                         </div>
                     </div>
                 </Dialog>
-            </React.Fragment>
+            </>
         );
     }
 

@@ -115,7 +115,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                                          draggable={false}/> :
                                     <TextAvatar fname={title}/>}
                                 <div className={'overlay' + (uploadingPhoto ? ' show' : '')}>
-                                    {!uploadingPhoto && <React.Fragment>
+                                    {!uploadingPhoto && <>
                                         <PhotoCameraRounded/>
                                         <div className="text">
                                             {i18n.t('peer_info.CHANGE')}
@@ -124,7 +124,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                                             <br/>
                                             {i18n.t('peer_info.PHOTO')}
                                         </div>
-                                    </React.Fragment>}
+                                    </>}
                                     {uploadingPhoto &&
                                     <div className="progress-action">
                                         <div className="progress">

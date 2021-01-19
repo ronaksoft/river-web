@@ -150,6 +150,48 @@
   }
 }
 
+html[direction="rtl"] {
+  .team-settings-section {
+    .member-container {
+      .category-item {
+        text-align: right;
+      }
+
+      .member-item {
+
+        .avatar {
+          margin-right: 0;
+          margin-left: 12px;
+        }
+
+        .admin-wrapper {
+          left: auto;
+          right: 64px;
+        }
+
+        .member-info {
+
+          .name {
+            text-align: right;
+          }
+        }
+
+        &.admin {
+          .name {
+            padding-left: 0;
+            padding-right: 16px;
+          }
+        }
+
+        .more {
+          right: auto;
+          left: 6px;
+        }
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-night"] {
   .team-settings-section {
@@ -195,48 +237,6 @@ html[theme="dark-night"] {
           svg {
             color: var(--white);
           }
-        }
-      }
-    }
-  }
-}
-
-html[direction="rtl"] {
-  .team-settings-section {
-    .member-container {
-      .category-item {
-        text-align: right;
-      }
-
-      .member-item {
-
-        .avatar {
-          margin-right: 0;
-          margin-left: 12px;
-        }
-
-        .admin-wrapper {
-          left: auto;
-          right: 64px;
-        }
-
-        .member-info {
-
-          .name {
-            text-align: right;
-          }
-        }
-
-        &.admin {
-          .name {
-            padding-left: 0;
-            padding-right: 16px;
-          }
-        }
-
-        .more {
-          right: auto;
-          left: 6px;
         }
       }
     }

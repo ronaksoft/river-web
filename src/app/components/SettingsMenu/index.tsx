@@ -40,6 +40,7 @@ import {
     GroupRounded,
     AccessTimeRounded,
     TagFacesRounded,
+    MediationRounded,
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
@@ -118,6 +119,7 @@ import {ModalityService} from "kk-modality";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
+import SettingsMediaInput from "../SettingsMediaInput";
 
 export const ThemeChanged = 'Theme_Changed';
 export const LastSeenFormatChange = 'Last_Seen_Format_Changed';
@@ -586,6 +588,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.notification')}</div>
                                     </div>
+                                    <div className="page-anchor" onClick={this.selectPageHandler('media-input')}>
+                                        <div className="icon color-media-input">
+                                            <MediationRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.media_input.title')}</div>
+                                    </div>
                                     <div className="page-anchor"
                                          onClick={this.selectPageHandler('language')}>
                                         <div className="icon color-language">
@@ -632,7 +640,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         </div>
                     </div>
                     <div className="page page-2">
-                        {Boolean(pageContent === 'theme') && <React.Fragment>
+                        {Boolean(pageContent === 'theme') && <>
                             <div className="menu-header">
                                 <IconButton
                                     onClick={this.prevHandler}
@@ -873,8 +881,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </Scrollbars>
                             </div>
-                        </React.Fragment>}
-                        {Boolean(pageContent === 'account') && <React.Fragment>
+                        </>}
+                        {Boolean(pageContent === 'account') && <>
                             <div className="menu-header">
                                 <IconButton
                                     onClick={this.prevHandler}
@@ -896,7 +904,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             {uploadingPhoto &&
                                             <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
                                             <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
-                                                {!uploadingPhoto && <React.Fragment>
+                                                {!uploadingPhoto && <>
                                                     <PhotoCameraRounded/>
                                                     <div className="text">
                                                         {i18n.t('peer_info.CHANGE')}
@@ -905,7 +913,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                         <br/>
                                                         {i18n.t('peer_info.PHOTO')}
                                                     </div>
-                                                </React.Fragment>}
+                                                </>}
                                                 {uploadingPhoto &&
                                                 <div className="progress-action">
                                                     <div className="progress">
@@ -1058,8 +1066,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </Scrollbars>}
                             </div>
-                        </React.Fragment>}
-                        {Boolean(pageContent === 'privacy') && <React.Fragment>
+                        </>}
+                        {Boolean(pageContent === 'privacy') && <>
                             <div className="menu-header">
                                 <IconButton
                                     onClick={this.prevHandler}
@@ -1131,11 +1139,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </Scrollbars>
                             </div>
-                        </React.Fragment>}
+                        </>}
                         {Boolean(pageContent === 'teams') &&
                         <SettingsTeam team={team} onPrev={this.prevHandler} onError={this.props.onError}
                                       onUpdate={this.settingsTeamUpdateHandler}/>}
-                        {Boolean(pageContent === 'storage') && <React.Fragment>
+                        {Boolean(pageContent === 'storage') && <>
                             <div className="menu-header">
                                 <IconButton
                                     onClick={this.prevHandler}
@@ -1183,8 +1191,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                          onClick={this.storageUsageHandler}>{i18n.t('settings.storage_usage')}</div>
                                 </Scrollbars>
                             </div>
-                        </React.Fragment>}
-                        {Boolean(pageContent === 'language') && <React.Fragment>
+                        </>}
+                        {Boolean(pageContent === 'language') && <>
                             <div className="menu-header">
                                 <IconButton
                                     onClick={this.prevHandler}
@@ -1211,8 +1219,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </Scrollbars>
                             </div>
-                        </React.Fragment>}
-                        {Boolean(pageContent === 'notification') && <React.Fragment>
+                        </>}
+                        {Boolean(pageContent === 'notification') && <>
                             <div className="menu-header">
                                 <IconButton
                                     onClick={this.prevHandler}
@@ -1238,7 +1246,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>
                             </div>
-                        </React.Fragment>}
+                        </>}
+                        {Boolean(pageContent === 'media-input') &&
+                        <SettingsMediaInput onPrev={this.prevHandler} onError={this.props.onError}/>}
                     </div>
                     <div className="page page-3">
                         {Boolean(pageSubContent === 'session') && <SettingsSession onPrev={this.subPrevHandler}/>}
@@ -1303,7 +1313,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 </React.Fragment>
                             );
                         })}
-                        {Boolean(pageSubContent === '2fa') && <React.Fragment>
+                        {Boolean(pageSubContent === '2fa') && <>
                             <div className="menu-header">
                                 <IconButton
                                     onClick={this.subPrevHandler}
@@ -1323,8 +1333,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </Button>
                                 </div>
                             </div>
-                        </React.Fragment>}
-                        {Boolean(pageSubContent === 'block') && <React.Fragment>
+                        </>}
+                        {Boolean(pageSubContent === 'block') && <>
                             <div className="menu-header">
                                 <IconButton
                                     onClick={this.subPrevHandler}
@@ -1336,7 +1346,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             <div className="menu-content">
                                 {this.getBlockedUserWrapper()}
                             </div>
-                        </React.Fragment>}
+                        </>}
                     </div>
                 </div>
                 <Menu

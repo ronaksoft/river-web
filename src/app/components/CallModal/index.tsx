@@ -43,6 +43,9 @@ import CallSettings, {IMediaSettings} from "../CallSettings";
 import {clone} from "lodash";
 import {Merge} from "type-fest";
 import MainRepo from "../../repository";
+import SettingsMediaInput, {getDefaultAudio, getDefaultVideo} from "../SettingsMediaInput";
+import SettingsModal from "../SettingsModal";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
 
@@ -65,10 +68,11 @@ interface IState {
     isCaller: boolean;
     localVideoInGrid: boolean;
     minimize: boolean;
-    resetPosition: boolean;
     mode: 'call_init' | 'call_request' | 'call' | 'call_report' | 'call_unavailable';
     open: boolean;
     rate: number | null;
+    resetPosition: boolean;
+    settingsOpen: boolean;
     unavailableMode: 'none' | 'timeout' | 'busy';
     videoSwap: boolean;
 }
@@ -139,6 +143,7 @@ class CallModal extends React.Component<IProps, IState> {
             open: false,
             rate: null,
             resetPosition: false,
+            settingsOpen: false,
             unavailableMode: 'none',
             videoSwap: false,
         };
@@ -151,25 +156,40 @@ class CallModal extends React.Component<IProps, IState> {
         this.callService.setSetTeamFunction(this.setTeam);
     }
 
-    public openDialog = (peer: InputPeer | null) => {
-        if (this.state.open) {
-            return;
-        }
-        this.timeStart = 0;
-        this.timeEnd = 0;
+    public openDialog = (peer: InputPeer | null, force?: boolean) => {
+        window.console.log('fe', peer);
         if (!peer) {
             return;
         }
         this.peer = clone(peer);
-        if (this.peer.getType() === PeerType.PEERUSER) {
-            this.showPreview(true);
-        } else if (this.peer.getType() === PeerType.PEERGROUP) {
-            this.setState({
-                groupId: this.peer.getId() || '0',
-            }, () => {
-                if (this.contactPickerRef) {
-                    this.contactPickerRef.openDialog();
-                }
+        const fn = () => {
+            if (this.state.open) {
+                return;
+            }
+            window.console.log('fe');
+            this.timeStart = 0;
+            this.timeEnd = 0;
+            if (this.peer.getType() === PeerType.PEERUSER) {
+                this.showPreview(true);
+            } else if (this.peer.getType() === PeerType.PEERGROUP) {
+                this.setState({
+                    groupId: this.peer.getId() || '0',
+                }, () => {
+                    if (this.contactPickerRef) {
+                        this.contactPickerRef.openDialog();
+                    }
+                });
+            }
+        };
+        if (force) {
+            fn();
+        } else {
+            this.hasDefaultInputSettings().then(() => {
+                fn();
+            }).catch(() => {
+                this.setState({
+                    settingsOpen: true,
+                });
             });
         }
     }
@@ -199,7 +219,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, fullscreen, mode, cropCover, groupId, minimize} = this.state;
+        const {open, fullscreen, mode, cropCover, groupId, minimize, settingsOpen} = this.state;
         const disableClose = !(mode === 'call_init' || mode === 'call_report');
         const paperProps: IPaperProps | undefined = this.getDraggableProps();
         return (
@@ -224,8 +244,25 @@ class CallModal extends React.Component<IProps, IState> {
                 <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
                                groupId={groupId} teamId={this.teamId} sendIcon={<CheckRounded/>}
                                title={i18n.t('general.choose_recipient')} limit={11} selectAll={true}/>
+                <SettingsModal open={settingsOpen} title={i18n.t('settings.media_input.title')}
+                               icon={<CheckRounded/>} onDone={this.settingsModalDoneHandler}
+                               onClose={this.settingsModalCloseHandler} height="486px" noScrollbar={true}
+                >
+                    <SettingsMediaInput/>
+                </SettingsModal>
             </>
         );
+    }
+
+    private settingsModalCloseHandler = () => {
+        this.setState({
+            settingsOpen: false,
+        });
+    }
+
+    private settingsModalDoneHandler = () => {
+        this.settingsModalCloseHandler();
+        this.openDialog(this.peer, true);
     }
 
     private getDraggableProps(): IPaperProps | undefined {
@@ -307,7 +344,10 @@ class CallModal extends React.Component<IProps, IState> {
             state.callId = callId;
         }
         this.setState(state as any, () => {
-            this.callService.initStream({audio: true, video}).then((stream) => {
+            this.callService.initStream({
+                audio: getDefaultAudio(),
+                video: video ? getDefaultVideo() : false
+            }).then((stream) => {
                 if (this.videoRef) {
                     this.videoRef.srcObject = stream;
                 }
@@ -614,7 +654,10 @@ class CallModal extends React.Component<IProps, IState> {
                 });
             };
             if (!this.callService.getLocalStream()) {
-                this.callService.initStream(this.mediaSettings).then(() => {
+                this.callService.initStream({
+                    audio: this.mediaSettings.audio ? getDefaultAudio() : false,
+                    video: this.mediaSettings.video ? getDefaultVideo() : false
+                }).then(() => {
                     callFn();
                 });
             } else {
@@ -925,6 +968,35 @@ class CallModal extends React.Component<IProps, IState> {
             this.forceUpdate();
         }
         this.mediaSettings = clone(settings);
+    }
+
+    private hasDefaultInputSettings() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+            return Promise.resolve();
+        }
+
+        return navigator.mediaDevices.enumerateDevices().then((res) => {
+            let audio: number = 0;
+            let video: number = 0;
+            res.forEach((item) => {
+                if (item.kind === 'audioinput') {
+                    audio++;
+                } else if (item.kind === 'videoinput') {
+                    video++;
+                }
+            });
+            if (audio <= 1 && video <= 1) {
+                return Promise.resolve();
+            } else {
+                const defaultAudio = localStorage.getItem(C_LOCALSTORAGE.SettingsDefaultAudio);
+                const defaultVideo = localStorage.getItem(C_LOCALSTORAGE.SettingsDefaultVideo);
+                if (defaultAudio && defaultVideo) {
+                    return Promise.resolve();
+                } else {
+                    return Promise.reject();
+                }
+            }
+        });
     }
 }
 

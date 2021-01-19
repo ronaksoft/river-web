@@ -88,6 +88,7 @@ import {Sticker} from "../SVG/sticker";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
+import {getDefaultAudio} from "../SettingsMediaInput";
 
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
@@ -994,19 +995,19 @@ class ChatInput extends React.Component<IProps, IState> {
     private getVoiceIcon() {
         switch (this.state.voiceMode) {
             case 'lock':
-                return (<React.Fragment>
+                return (<>
                     <StopRounded/>
                     <span ref={this.waveRefHandler} className="wave"/>
-                </React.Fragment>);
+                </>);
             case 'play':
-                return (<React.Fragment>
+                return (<>
                     <SendRounded/>
-                </React.Fragment>);
+                </>);
             default:
-                return (<React.Fragment>
+                return (<>
                     <span ref={this.waveRefHandler} className="wave"/>
                     <KeyboardVoiceRounded/>
-                </React.Fragment>);
+                </>);
         }
     }
 
@@ -2310,7 +2311,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             this.microphonePermission = true;
                             return;
                         case 'prompt':
-                            navigator.mediaDevices.getUserMedia({audio: true}).then(() => {
+                            navigator.mediaDevices.getUserMedia({audio: getDefaultAudio()}).then(() => {
                                 resolve(true);
                                 this.microphonePermission = true;
                                 this.setState({

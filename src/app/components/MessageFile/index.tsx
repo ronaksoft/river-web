@@ -296,14 +296,14 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                         </Tooltip>}
                         {Boolean(fileState === 'download') &&
                         <ArrowDownwardRounded onClick={this.downloadFileHandler}/>}
-                        {Boolean(fileState === 'progress') && <React.Fragment>
+                        {Boolean(fileState === 'progress') && <>
                             <div className="progress">
                                 <svg viewBox='0 0 32 32'>
                                     <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
                                 </svg>
                             </div>
                             <CloseRounded className="action" onClick={this.cancelFileHandler}/>
-                        </React.Fragment>}
+                        </>}
                     </div>
                     <div className="file-info">
                         <div className="file-name">{info.name}</div>

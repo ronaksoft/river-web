@@ -85,7 +85,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     public render() {
         const {loading, open, list, selectedDialog, progress} = this.state;
         return (
-            <React.Fragment>
+            <>
                 <SettingsModal open={open} title={i18n.t('settings.storage_usage')}
                                icon={<DataUsageRounded/>}
                                onClose={this.modalCloseHandler}>
@@ -167,7 +167,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                         </div>
                     </div>
                 </SettingsModal>}
-            </React.Fragment>
+            </>
         );
     }
 

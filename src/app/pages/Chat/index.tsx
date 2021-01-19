@@ -170,6 +170,7 @@ import {ModalityService} from "kk-modality";
 import ConnectionStatus from "../../components/ConnectionStatus";
 import {PartialDeep} from "type-fest";
 import CallService from "../../services/callService";
+import {getDefaultAudio} from "../../components/SettingsMediaInput";
 
 import './style.scss';
 
@@ -6136,7 +6137,7 @@ class Chat extends React.Component<IProps, IState> {
                             resolve(true);
                             return;
                         case 'prompt':
-                            navigator.mediaDevices.getUserMedia({audio: true}).then(() => {
+                            navigator.mediaDevices.getUserMedia({audio: getDefaultAudio()}).then(() => {
                                 resolve(true);
                             }).catch((err) => {
                                 resolve(false);

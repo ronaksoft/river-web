@@ -27,6 +27,7 @@ import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
 import APIManager, {currentUserId} from "../sdk";
 import {findIndex, orderBy, difference} from "lodash";
+import {getDefaultAudio, getDefaultVideo} from "../../components/SettingsMediaInput";
 
 const C_RETRY_INTERVAL = 5000;
 const C_RETRY_LIMIT = 2;
@@ -133,11 +134,11 @@ export const getMediaInputs = (): Promise<IMediaDevice> => {
 
     return navigator.mediaDevices.enumerateDevices().then((res) => {
         res.forEach((item) => {
-            if (item.kind === "audioinput") {
+            if (item.kind === 'audioinput') {
                 out.voice = true;
-            } else if (item.kind === "audiooutput") {
+            } else if (item.kind === 'audiooutput') {
                 out.speaker = true;
-            } else if (item.kind === "videoinput") {
+            } else if (item.kind === 'videoinput') {
                 out.video = true;
             }
         });
@@ -393,7 +394,10 @@ export default class CallService {
             };
 
             if (!info.dialed) {
-                return this.initStream({audio: true, video}).then(() => {
+                return this.initStream({
+                    audio: getDefaultAudio(),
+                    video: video ? getDefaultVideo() : false,
+                }).then(() => {
                     return initFn();
                 });
             } else {
@@ -1203,7 +1207,10 @@ export default class CallService {
 
     private modifyMediaStream(video: boolean) {
         this.destroy();
-        this.initStream({audio: true, video}).then((stream) => {
+        this.initStream({
+            audio: getDefaultAudio(),
+            video: video ? getDefaultVideo() : false,
+        }).then((stream) => {
             if (this.activeCallId) {
                 for (const [connId, pc] of Object.entries(this.peerConnections)) {
                     pc.connection.getSenders().forEach((track) => {

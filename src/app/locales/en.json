@@ -350,6 +350,11 @@
       "estimated_hint": "Last seen an hour ago",
       "exact_hint": "Last seen Today at 23:00"
     },
+    "media_input": {
+      "title": "Media Input",
+      "audio": "Audio",
+      "video": "Video"
+    },
     "left_panel": "Show Team Panel"
   },
   "contact": {

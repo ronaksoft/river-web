@@ -272,54 +272,46 @@ class DocumentViewer extends React.Component<IProps, IState> {
             case 'picture':
                 return (<div className="picture-container">
                     {doc.items.map((item, index) => {
-                        return (
-                            <React.Fragment key={index}>
-                                <div ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
+                        return (<div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
                                      style={size ? size : {}}>
-                                    {item.thumbFileLocation && <div className="thumbnail">
-                                        <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
-                                                     blur={10} mimeType="image/jpeg"/>
-                                    </div>}
-                                    {this.getDownloadAction()}
-                                    {Boolean(item.downloaded !== false) &&
-                                    <CachedPhoto className="picture" fileLocation={item.fileLocation}
-                                                 mimeType={item.mimeType || 'image/jpeg'}/>}
-                                </div>
-                            </React.Fragment>
-                        );
+                            {item.thumbFileLocation && <div className="thumbnail">
+                                <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
+                                             blur={10} mimeType="image/jpeg"/>
+                            </div>}
+                            {this.getDownloadAction()}
+                            {Boolean(item.downloaded !== false) &&
+                            <CachedPhoto className="picture" fileLocation={item.fileLocation}
+                                         mimeType={item.mimeType || 'image/jpeg'}/>}
+                        </div>);
                     })}
                 </div>);
             case 'video':
                 return (<div className="video-container">
                     {doc.items.map((item, index) => {
-                        return (
-                            <React.Fragment key={index}>
-                                <div ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
+                        return (<div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
                                      style={size ? size : {}}>
-                                    {item.thumbFileLocation && <div className="thumbnail">
-                                        <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
-                                                     blur={item.downloaded === false ? 10 : 0} mimeType="image/jpeg"/>
-                                    </div>}
-                                    {Boolean(!item.downloaded && item.duration && !doc.stream) &&
-                                    <div className="media-duration-container">
-                                        <PlayArrowRounded/><span>{getDuration(item.duration || 0)}</span>
-                                    </div>}
-                                    {!Boolean(doc.stream) && this.getDownloadAction()}
-                                    {Boolean(item.downloaded !== false && !doc.stream) &&
-                                    <CachedVideo className="video" fileLocation={item.fileLocation}
-                                                 mimeType={item.mimeType} autoPlay={this.firstTimeLoad}
-                                                 timeOut={200} onPlay={this.cachedVideoPlayHandler}/>}
-                                    {Boolean(doc.stream) &&
-                                    <StreamVideo className="video" fileLocation={item.fileLocation}
-                                                 size={item.fileSize || 0} mimeType={item.mimeType}
-                                                 autoPlay={this.firstTimeLoad} msgId={item.id || 0}
-                                                 onPlay={this.cachedVideoPlayHandler}
-                                                 onStartDownload={this.videoStreamStartDownloadHandler}
-                                                 onError={this.videoStreamErrorHandler}
-                                    />}
-                                </div>
-                            </React.Fragment>
-                        );
+                            {item.thumbFileLocation && <div className="thumbnail">
+                                <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
+                                             blur={item.downloaded === false ? 10 : 0} mimeType="image/jpeg"/>
+                            </div>}
+                            {Boolean(!item.downloaded && item.duration && !doc.stream) &&
+                            <div className="media-duration-container">
+                                <PlayArrowRounded/><span>{getDuration(item.duration || 0)}</span>
+                            </div>}
+                            {!Boolean(doc.stream) && this.getDownloadAction()}
+                            {Boolean(item.downloaded !== false && !doc.stream) &&
+                            <CachedVideo className="video" fileLocation={item.fileLocation}
+                                         mimeType={item.mimeType} autoPlay={this.firstTimeLoad}
+                                         timeOut={200} onPlay={this.cachedVideoPlayHandler}/>}
+                            {Boolean(doc.stream) &&
+                            <StreamVideo className="video" fileLocation={item.fileLocation}
+                                         size={item.fileSize || 0} mimeType={item.mimeType}
+                                         autoPlay={this.firstTimeLoad} msgId={item.id || 0}
+                                         onPlay={this.cachedVideoPlayHandler}
+                                         onStartDownload={this.videoStreamStartDownloadHandler}
+                                         onError={this.videoStreamErrorHandler}
+                            />}
+                        </div>);
                     })}
                 </div>);
             case 'location':

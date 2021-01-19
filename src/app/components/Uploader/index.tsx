@@ -260,21 +260,21 @@ class Uploader extends React.Component<IProps, IState> {
                                     <div
                                         className={'slide' + (selected > lastSelected ? ' left' : ' right') + (isFile ? ' file-mode' : '')}
                                         onClick={this.slideClickHandler}>
-                                        {Boolean(!isFile) && <React.Fragment>
-                                            {Boolean(items[selected].mediaType === 'image') && <React.Fragment>
+                                        {Boolean(!isFile) && <>
+                                            {Boolean(items[selected].mediaType === 'image') && <>
                                                 <img ref={this.imageRefHandler} className="front"
                                                      src={items[selected].preview} alt="preview" draggable={false}/>
                                                 <div ref={this.imageActionRefHandler} className="image-actions">
                                                     <BrushRounded
                                                         onClick={this.editImageHandler(items[selected].preview)}/>
                                                 </div>
-                                            </React.Fragment>}
-                                            {Boolean(items[selected].mediaType === 'video') && <React.Fragment>
+                                            </>}
+                                            {Boolean(items[selected].mediaType === 'video') && <>
                                                 <div ref={this.imageActionRefHandler} className="image-actions">
                                                     <CropLandscapeRounded
                                                         onClick={this.chooseFrameHandler(items[selected].preview)}/>
                                                 </div>
-                                            </React.Fragment>}
+                                            </>}
                                             {Boolean(items[selected].mediaType === 'video') &&
                                             <video ref={this.imageRefHandler} className="front" controls={true}>
                                                 <source src={items[selected].preview}/>
@@ -299,7 +299,7 @@ class Uploader extends React.Component<IProps, IState> {
                                                     <MusicNoteRounded/>
                                                 </div>
                                             )}
-                                        </React.Fragment>}
+                                        </>}
                                         {Boolean(isFile && items[selected]) && <div className="file-slide">
                                             <div className="file-container">
                                                 <div className="icon">

@@ -80,7 +80,7 @@ class SettingsModal extends React.Component<IProps, IState> {
                     paper: 'settings-modal-paper'
                 }}
             >
-                <React.Fragment>
+                <>
                     <div className="settings-modal-header">
                         <div className="modal-close">
                             <CloseRounded onClick={this.props.onClose}/>
@@ -105,7 +105,7 @@ class SettingsModal extends React.Component<IProps, IState> {
                     {Boolean(noScrollbar) && <div className="setting-content" style={{height: this.props.height}}>
                         {this.props.children}
                     </div>}
-                </React.Fragment>
+                </>
             </Dialog>
         );
     }

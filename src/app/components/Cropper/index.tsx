@@ -67,7 +67,7 @@ class Cropper extends React.Component<IProps, IState> {
     public render() {
         const {profileCropperOpen, profilePictureFile, profilePictureCrop} = this.state;
         return (
-            <React.Fragment>
+            <>
                 <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                        onChange={this.fileChangeHandler} accept="image/jpg, image/jpeg, image/png"/>
                 <Dialog
@@ -91,7 +91,7 @@ class Cropper extends React.Component<IProps, IState> {
                         </div>
                     </div>
                 </Dialog>
-            </React.Fragment>
+            </>
         );
     }
 

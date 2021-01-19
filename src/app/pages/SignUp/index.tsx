@@ -242,7 +242,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 <div className="qr-link"
                                      onClick={this.qrCodeDialogOpenHandler}>{i18n.t('sign_up.scan_qr_code')}</div>
                             </div>}
-                            {Boolean(step !== 'workspace') && <React.Fragment>
+                            {Boolean(step !== 'workspace') && <>
                                 {step !== 'password' &&
                                 <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
                                               inputClassName="f-phone"
@@ -331,31 +331,31 @@ class SignUp extends React.Component<IProps, IState> {
                                     />
                                     <span className="focus-input"/>
                                 </div>}
-                            </React.Fragment>}
+                            </>}
                             <div className="container-login-form-btn">
                                 {step === 'workspace' &&
                                 <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
                                      onClick={this.submitWorkspaceHandler}>
                                     <ArrowForwardRounded/>
                                 </div>}
-                                {step === 'phone' && <React.Fragment>
+                                {step === 'phone' && <>
                                     <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
                                          onClick={this.sendCodeHandler}>
                                         <ArrowForwardRounded/>
                                     </div>
-                                </React.Fragment>}
-                                {step === 'code' && <React.Fragment>
+                                </>}
+                                {step === 'code' && <>
                                     <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
                                          onClick={this.confirmCodeHandler}>
                                         <ArrowForwardRounded/>
                                     </div>
-                                </React.Fragment>}
-                                {step === 'password' && <React.Fragment>
+                                </>}
+                                {step === 'password' && <>
                                     <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
                                          onClick={this.submitPasswordHandler}>
                                         <ArrowForwardRounded/>
                                     </div>
-                                </React.Fragment>}
+                                </>}
                                 {step === 'register' &&
                                 <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
                                      onClick={this.registerHandler}>

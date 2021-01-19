@@ -13,6 +13,7 @@ import {MicOffRounded, MicRounded, VideocamOffRounded, VideocamRounded} from "@m
 import CallService, {C_CALL_EVENT} from "../../services/callService";
 import i18n from '../../services/i18n';
 import {clone} from "lodash";
+import {getDefaultAudio} from "../SettingsMediaInput";
 
 export interface IMediaSettings {
     video: boolean;
@@ -142,7 +143,7 @@ class CallSettings extends React.Component<IProps, IState> {
         if (!window.AudioContext) {
             return Promise.reject('no AudioContext');
         }
-        return navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
+        return navigator.mediaDevices.getUserMedia({audio: getDefaultAudio()}).then((stream) => {
             this.audioStream = stream;
             const tracks = stream.getAudioTracks();
             if (tracks.length === 0) {
@@ -151,9 +152,9 @@ class CallSettings extends React.Component<IProps, IState> {
             this.audioContext = new AudioContext();
             const source = this.audioContext.createMediaStreamSource(stream);
             const audioAnalyser = this.audioContext.createAnalyser();
-            audioAnalyser.minDecibels = -100;
-            audioAnalyser.fftSize = 256;
-            audioAnalyser.smoothingTimeConstant = 0.1;
+            audioAnalyser.minDecibels = -70;
+            audioAnalyser.fftSize = 128;
+            audioAnalyser.smoothingTimeConstant = 0.3;
             source.connect(audioAnalyser);
             const data = new Uint8Array(audioAnalyser.frequencyBinCount);
             const analyze = () => {

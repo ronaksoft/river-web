@@ -267,14 +267,14 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                     <PauseRounded onClick={this.pauseVoiceHandler}/>}
                     {Boolean(playState === 'download') &&
                     <ArrowDownwardRounded onClick={this.downloadVoiceHandler}/>}
-                    {Boolean(playState === 'progress') && <React.Fragment>
+                    {Boolean(playState === 'progress') && <>
                         <div className="progress">
                             <svg viewBox="0 0 32 32">
                                 <circle ref={this.progressRefHandler} r="12" cx="16" cy="16"/>
                             </svg>
                         </div>
                         <CloseRounded className="action" onClick={this.cancelVoiceHandler}/>
-                    </React.Fragment>}
+                    </>}
                 </div>
                 <div className="play-preview" onMouseDown={this.barMouseDownHandler}
                      onMouseMove={this.barMouseMoveHandler}>

@@ -1090,6 +1090,8 @@ export const C_LOCALSTORAGE = {
     ReactionFrequently: 'river.reaction.frequently',
     ServerKeys: 'river.server_keys',
     ServerMode: 'river.server_mode',
+    SettingsDefaultAudio: 'river.settings.audio',
+    SettingsDefaultVideo: 'river.settings.video',
     SettingsDownload: 'river.settings.download',
     SettingsLeftPanelVisible: 'river.settings.left_panel.visible',
     SettingsNotification: 'river.settings.notification',

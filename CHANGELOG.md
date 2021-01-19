@@ -1,3 +1,6 @@
+## 1.0.36
+* Media input settings added
+
 ## 1.0.35
 * Know chats with no messages remain in dialogs area
 * Minor improvements

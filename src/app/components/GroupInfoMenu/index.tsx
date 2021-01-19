@@ -261,7 +261,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                              draggable={false}/>}
                                         {hasAccess &&
                                         <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
-                                            {!uploadingPhoto && <React.Fragment>
+                                            {!uploadingPhoto && <>
                                                 <PhotoCameraRounded/>
                                                 <div className="text">
                                                     {i18n.t('peer_info.CHANGE')}
@@ -270,7 +270,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                     <br/>
                                                     {i18n.t('peer_info.PHOTO')}
                                                 </div>
-                                            </React.Fragment>}
+                                            </>}
                                             {uploadingPhoto &&
                                             <div className="progress-action">
                                                 <div className="progress">
@@ -330,7 +330,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         />
                                     </div>
                                 </div>}
-                                {group && !disable && <React.Fragment>
+                                {group && !disable && <>
                                     {Boolean(group && group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) &&
                                     <div className="kk-card notify-settings">
                                         <div className="label">{i18n.t('peer_info.all_member_admin')}</div>
@@ -350,7 +350,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                             />
                                         </div>
                                     </div>}
-                                </React.Fragment>}
+                                </>}
                                 {(dialog && peer && !shareMediaEnabled) &&
                                 <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.teamId}
                                            onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}

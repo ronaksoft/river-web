@@ -109,7 +109,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
     public render() {
         const {blurAmount, openBackgroundModal, openCustomizeModal, selectedPic, selectedPattern, openPatternModal, src, blurSrc, uploadedSrc} = this.state;
         return (
-            <React.Fragment>
+            <>
                 <input ref={this.inputRefHandler} type="file" onChange={this.inputChangeHandler}
                        accept="image/jpeg,image/png,image/svg" style={{display: 'none'}}/>
                 <SettingsModal open={openBackgroundModal} title={i18n.t('settings.chat_background')}
@@ -189,7 +189,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                         </GridList>
                     </div>
                 </SettingsModal>
-            </React.Fragment>
+            </>
         );
     }
 

@@ -347,6 +347,11 @@
       "estimated_hint": "آخرین مشاهده یک ساعت پیش",
       "exact_hint": "آخرین مشاهده امروز ۲۳:۰۰"
     },
+    "media_input": {
+      "title": "ورودی رسانه\u200Cها",
+      "audio": "صدا",
+      "video": "ویدئو"
+    },
     "left_panel": "نمایش پنل تیم"
   },
   "contact": {
