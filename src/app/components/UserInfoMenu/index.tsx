@@ -104,7 +104,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             lastname: '',
             notifyValue: '-1',
             page: '1',
-            peer: null,
+            peer: this.props.peer,
             phone: '',
             shareMediaEnabled: false,
             user: null,
@@ -133,8 +133,13 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     }
 
     public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
-        window.console.log(teamId, peer, dialog);
+        const disable = dialog ? dialog.disable || false : false;
         if (this.state.peer === peer && this.teamId === teamId) {
+            if (this.state.disable !== disable) {
+                this.setState({
+                    disable,
+                });
+            }
             return;
         }
         this.teamId = teamId;

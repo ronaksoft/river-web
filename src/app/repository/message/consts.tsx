@@ -28,6 +28,7 @@ export const C_MESSAGE_TYPE = {
 export const C_MESSAGE_ACTION = {
     MessageActionClearHistory: 0x07,
     MessageActionContactRegistered: 0x01,
+    MessageActionEmptyDialog: -0x01,
     MessageActionGroupAddUser: 0x03,
     MessageActionGroupCreated: 0x02,
     MessageActionGroupDeleteUser: 0x05,

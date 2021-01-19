@@ -1404,17 +1404,21 @@ export default class UpdateManager {
                             topmessageid: msg.id,
                         });
                     } else {
-                        // Remove dialog otherwise
+                        // Set empty dialog otherwise
                         const input = lastMessageInput[index];
                         if (input) {
                             const peerName = GetPeerName(input.peerId, input.peerType);
                             if (transaction.removedMessages.hasOwnProperty(peerName)) {
-                                transaction.clearDialogs.push({
-                                    maxId: 1000000000000,
-                                    peerId: input.peerId,
-                                    peerType: input.peerType,
-                                    remove: true,
-                                    teamId: input.teamId,
+                                this.mergeDialog(transaction.dialogs, {
+                                    action_code: C_MESSAGE_ACTION.MessageActionEmptyDialog,
+                                    action_data: null,
+                                    force: true,
+                                    peerid: input.peerId,
+                                    peertype: input.peerType,
+                                    pinnedmessageid: undefined,
+                                    preview: '',
+                                    preview_icon: 0,
+                                    teamid: input.teamId,
                                 });
                             }
                         }

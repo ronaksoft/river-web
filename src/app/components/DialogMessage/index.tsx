@@ -189,7 +189,7 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                                   noDetail={true}/> {i18n.tf('message.changed_the_title_to', dialog.action_data.grouptitle)}</span>);
             }
         case C_MESSAGE_ACTION.MessageActionClearHistory:
-            return (<span className="preview-message system-message">{i18n.t('message.history_cleared')}</span>);
+            return (<span className="preview-message system-message bold">{i18n.t('message.history_cleared')}</span>);
         case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
             if (!dialog.action_data) {
                 return (<span className="preview-message system-message">
@@ -202,6 +202,8 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                                   id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.t('message.changed_the_group_photo')}</span>);
             }
+        case C_MESSAGE_ACTION.MessageActionEmptyDialog:
+            return (<span className="preview-message system-message bold">{i18n.t('message.no_message')}</span>);
         default:
             return (<span className="preview-message">
                 {getMessageIcon(dialog.preview_icon, dialog.tiny_thumb)}

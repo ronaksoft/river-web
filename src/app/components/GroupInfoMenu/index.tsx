@@ -161,7 +161,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             notifyValue: '-1',
             page: '1',
             participants: [],
-            peer: null,
+            peer: this.props.peer,
             shareMediaEnabled: false,
             title: '',
             titleEdit: false,
@@ -194,8 +194,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
-        window.console.log(teamId, peer, dialog);
+        const disable = dialog ? dialog.disable || false : false;
         if (this.state.peer === peer && this.teamId === teamId) {
+            if (this.state.disable !== disable) {
+                this.setState({
+                    dialog,
+                    disable,
+                });
+            }
             return;
         }
         this.teamId = teamId;
@@ -206,7 +212,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }, () => {
             this.getGroup();
         });
-        window.console.log(dialog);
     }
 
     public componentWillUnmount() {

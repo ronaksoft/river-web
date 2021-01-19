@@ -2158,6 +2158,7 @@ class Chat extends React.Component<IProps, IState> {
             if (msg.peerid === '') {
                 return;
             }
+            const disable = yourPeerDisableStatus(msg);
             const dialogs = this.dialogs;
             const messageTitle = getMessageTitle(msg);
             if (this.dialogMap.hasOwnProperty(peerName)) {
@@ -2182,7 +2183,7 @@ class Chat extends React.Component<IProps, IState> {
                     dialogs[index].peerid = msg.peerid || '0';
                     dialogs[index].peertype = msg.peertype || 0;
                     dialogs[index].teamid = msg.teamid || '0';
-                    dialogs[index].disable = yourPeerDisableStatus(msg);
+                    dialogs[index].disable = disable;
                     if (msg.mediadata) {
                         const media = msg.mediadata as MediaDocument.AsObject;
                         if (media.doc && media.doc.tinythumbnail) {
@@ -2201,7 +2202,7 @@ class Chat extends React.Component<IProps, IState> {
                 const dialog: IDialog = {
                     action_code: msg.messageaction,
                     action_data: msg.actiondata,
-                    disable: yourPeerDisableStatus(msg),
+                    disable,
                     last_update: msg.createdon,
                     peerid: msg.peerid || '0',
                     peertype: msg.peertype || 0,
@@ -2226,6 +2227,19 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 dialogs.push(dialog);
                 this.dialogMap[peerName] = dialogs.length - 1;
+            }
+            // Disable if possible
+            if (disable && this.selectedPeerName === peerName) {
+                const d = dialogs[this.dialogMap[peerName]] || null;
+                if (this.infoBarRef) {
+                    this.infoBarRef.setPeer(this.teamId, this.peer, d);
+                }
+                if (this.rightMenuRef) {
+                    this.rightMenuRef.setPeer(this.teamId, this.peer, d);
+                }
+                if (this.messageRef) {
+                    this.messageRef.setPeer(this.peer, d);
+                }
             }
             setTimeout(() => {
                 this.dialogsSortThrottle(dialogs);

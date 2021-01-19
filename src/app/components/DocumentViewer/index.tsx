@@ -145,6 +145,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private isElectron: boolean = ElectronService.isElectron();
     private modalityService: ModalityService;
     private messageRepo: MessageRepo;
+    private isMobileView = (window.innerWidth < 600);
 
     constructor(props: IProps) {
         super(props);
@@ -511,7 +512,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                             </div>
                         </Tooltip>;
                     })}
-                    {Boolean(doc.type !== 'avatar') && <>
+                    {Boolean(!this.isMobileView && doc.type !== 'avatar') && <>
                         <div className="item-divider"/>
                         {messageActions.map((action) => {
                             return <Tooltip key={action.cmd} title={action.title}>

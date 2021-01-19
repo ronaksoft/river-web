@@ -1,3 +1,7 @@
+## 1.0.35
+* Know chats with no messages remain in dialogs area
+* Minor improvements
+
 ## 1.0.34
 * Group info improvements
 * Overall improvements

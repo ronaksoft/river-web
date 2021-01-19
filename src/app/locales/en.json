@@ -44,7 +44,7 @@
     "are_you_sure": "Are you sure?",
     "loading": "Loading...",
     "user_list": "User List",
-    "no_message": "no message",
+    "no_message": "no messages",
     "error": "Error",
     "select": "Select",
     "copy": "Copy",
@@ -480,7 +480,8 @@
     "pinned_message": "Pinned Message",
     "pin_message": "Pin Message",
     "pin_only": "Pin Only",
-    "pin_alert": "Pin this message and notify all members of the group"
+    "pin_alert": "Pin this message and notify all members of the group",
+    "no_message": "No messages"
   },
   "uploader": {
     "converting": "Converting...",
