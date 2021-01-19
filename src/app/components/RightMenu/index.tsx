@@ -11,6 +11,7 @@ import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import GroupInfoMenu from "../GroupInfoMenu";
 import UserInfoMenu from "../UserInfoMenu";
+import {IDialog} from "../../repository/dialog/interface";
 
 import './style.scss';
 
@@ -30,6 +31,9 @@ interface IState {
 class RightMenu extends React.PureComponent<IProps, IState> {
     private teamId: string = '0';
     private ref: any;
+    private dialog: IDialog | null = null;
+    private groupInfoMenuRef: GroupInfoMenu | undefined;
+    private userInfoMenuRef: UserInfoMenu | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -40,10 +44,19 @@ class RightMenu extends React.PureComponent<IProps, IState> {
         };
     }
 
-    public setPeer(teamId: string, peer: InputPeer | null) {
+    public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
+        window.console.log(teamId, peer, dialog, this.groupInfoMenuRef);
         this.teamId = teamId;
+        this.dialog = dialog;
         this.setState({
             peer,
+        }, () => {
+            if (this.userInfoMenuRef) {
+                this.userInfoMenuRef.setPeer(teamId, peer, dialog);
+            }
+            if (this.groupInfoMenuRef) {
+                this.groupInfoMenuRef.setPeer(teamId, peer, dialog);
+            }
         });
     }
 
@@ -101,11 +114,11 @@ class RightMenu extends React.PureComponent<IProps, IState> {
         return (
             <div ref={this.refHandler} className="right-menu">
                 {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
-                <GroupInfoMenu key="group-info" peer={peer} teamId={this.teamId} onClose={this.closeHandler}
-                               onAction={this.props.onMessageAttachmentAction}
+                <GroupInfoMenu key="group-info" ref={this.groupInfoMenuRefHandler} onClose={this.closeHandler}
+                               peer={peer} onAction={this.props.onMessageAttachmentAction}
                                onDeleteAndExitGroup={this.props.onDeleteAndExitGroup} onError={this.props.onError}/>}
                 {Boolean(rightMenu && peer && (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER)) &&
-                <UserInfoMenu key="user-info" peer={peer} teamId={this.teamId} onClose={this.closeHandler}
+                <UserInfoMenu key="user-info" ref={this.userInfoMenuRefHandler} peer={peer} onClose={this.closeHandler}
                               onAction={this.props.onMessageAttachmentAction} onError={this.props.onError}/>}
             </div>
         );
@@ -117,6 +130,20 @@ class RightMenu extends React.PureComponent<IProps, IState> {
 
     private closeHandler = () => {
         this.toggleMenu(false);
+    }
+
+    private groupInfoMenuRefHandler = (ref: any) => {
+        this.groupInfoMenuRef = ref;
+        if (this.groupInfoMenuRef) {
+            this.groupInfoMenuRef.setPeer(this.teamId, this.state.peer, this.dialog);
+        }
+    }
+
+    private userInfoMenuRefHandler = (ref: any) => {
+        this.userInfoMenuRef = ref;
+        if (this.userInfoMenuRef) {
+            this.userInfoMenuRef.setPeer(this.teamId, this.state.peer, this.dialog);
+        }
     }
 }
 

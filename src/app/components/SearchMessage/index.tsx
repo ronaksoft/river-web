@@ -36,6 +36,7 @@ import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
 
 import './style.scss';
+import {IDialog} from "../../repository/dialog/interface";
 
 const searchLimit: number = 10;
 
@@ -145,7 +146,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         }
     }
 
-    public setPeer(teamId: string, peer: InputPeer | null) {
+    public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
         this.teamId = teamId;
         this.peer = peer;
         if (peer && peer.getType() === PeerType.PEERGROUP) {
@@ -156,7 +157,9 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                 userList: [],
             });
             this.userMap = {};
-            this.getGroupMemberList();
+            if (dialog && !dialog.disable) {
+                this.getGroupMemberList();
+            }
         } else {
             this.setState({
                 appliedSelectedLabelIds: [],

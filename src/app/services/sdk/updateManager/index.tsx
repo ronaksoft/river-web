@@ -42,7 +42,7 @@ import {IDialog, IPeer} from "../../../repository/dialog/interface";
 import {IMessage} from "../../../repository/message/interface";
 import {IUser} from "../../../repository/user/interface";
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../../repository/message/consts";
-import {getMessageTitle} from "../../../components/Dialog/utils";
+import {getMessageTitle, yourPeerDisableStatus} from "../../../components/Dialog/utils";
 import {kMerge} from "../../utilities/kDash";
 import APIManager, {currentUserId} from "../index";
 import {ILabel} from "../../../repository/label/interface";
@@ -713,12 +713,15 @@ export default class UpdateManager {
                         this.removeDialog(transaction.dialogs, message.peerid || '');
                     }
                 }
+                // Peer disable
+                const disable = yourPeerDisableStatus(message);
                 // Update dialog
                 const messageTitle = getMessageTitle(message);
                 this.mergeDialog(transaction.dialogs, {
                     accesshash: updateNewMessage.accesshash,
                     action_code: message.messageaction,
                     action_data: message.actiondata,
+                    disable,
                     last_update: message.createdon,
                     peerid: message.peerid || '0',
                     peertype: message.peertype || 0,

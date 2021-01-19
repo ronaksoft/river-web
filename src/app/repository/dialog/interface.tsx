@@ -14,8 +14,12 @@ import {PartialDeep} from "type-fest";
 export interface IDialog extends PartialDeep<Dialog.AsObject> {
     action_code?: number;
     action_data?: any;
+    add_mention_count?: number;
+    add_unread_count?: number;
+    disable?: boolean;
     force?: boolean;
     last_update?: number;
+    only_contact?: boolean;
     pinned?: boolean;
     preview?: string;
     preview_icon?: number;
@@ -24,10 +28,7 @@ export interface IDialog extends PartialDeep<Dialog.AsObject> {
     saved_messages?: boolean;
     scroll_pos?: number;
     sender_id?: string;
-    only_contact?: boolean;
     tiny_thumb?: string;
-    add_unread_count?: number;
-    add_mention_count?: number;
 }
 
 export interface IDialogWithUpdateId {

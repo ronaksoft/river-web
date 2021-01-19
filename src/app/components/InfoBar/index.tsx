@@ -17,6 +17,7 @@ import {isNil, omitBy} from "lodash";
 import UserRepo from "../../repository/user";
 
 import './style.scss';
+import {IDialog} from "../../repository/dialog/interface";
 
 interface IProps {
     onBack: () => void;
@@ -29,6 +30,7 @@ interface IProps {
 
 interface IState {
     callStarted: boolean;
+    disable: boolean;
     peer: InputPeer | null;
     isConnecting: boolean;
     isOnline: boolean;
@@ -46,6 +48,7 @@ class InfoBar extends React.Component<IProps, IState> {
 
         this.state = {
             callStarted: false,
+            disable: false,
             isConnecting: false,
             isOnline: false,
             isUpdating: false,
@@ -57,8 +60,9 @@ class InfoBar extends React.Component<IProps, IState> {
         this.userRepo = UserRepo.getInstance();
     }
 
-    public setPeer(teamId: string, peer: InputPeer | null) {
+    public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
         this.setState({
+            disable: dialog ? dialog.disable || false : false,
             peer,
             teamId,
             withCall: false,
@@ -84,7 +88,7 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted, disable} = this.state;
         const isGroup = (peer && peer.getType() === PeerType.PEERGROUP);
         return (
             <div className={'info-bar' + (withCall ? ' with-call' : '')}>
@@ -103,7 +107,7 @@ class InfoBar extends React.Component<IProps, IState> {
                            peer={peer} teamId={teamId} currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
-                    {withCall && <>{callStarted ?
+                    {withCall && !disable && <>{callStarted ?
                         <div className={'call-indicator ' + (!isGroup ? 'disabled' : '')} onClick={this.callJoinHandler}
                         >{i18n.t(isGroup ? 'call.join_call' : 'call.call_started')}</div> :
                         <Tooltip title={i18n.t('call.call')}><IconButton

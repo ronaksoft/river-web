@@ -57,7 +57,7 @@ import RiverTime from '../../services/utilities/river_time';
 import FileRepo, {GetDbFileName, getFileLocation} from '../../repository/file';
 import ProgressBroadcaster from '../../services/progress';
 import {C_FILE_ERR_CODE} from '../../services/sdk/fileManager/const/const';
-import {getMessageTitle} from '../../components/Dialog/utils';
+import {getMessageTitle, yourPeerDisableStatus} from '../../components/Dialog/utils';
 import {saveAs} from 'file-saver';
 import {getFileExtension, getFileInfo} from '../../components/MessageFile';
 import AudioPlayerShell from '../../components/AudioPlayerShell';
@@ -899,7 +899,7 @@ class Chat extends React.Component<IProps, IState> {
     private searchMessageHandler = (ref: any) => {
         this.searchMessageRef = ref;
         if (this.searchMessageRef && this.peer) {
-            this.searchMessageRef.setPeer(this.teamId, this.peer);
+            this.searchMessageRef.setPeer(this.teamId, this.peer, this.getDialogByPeerName(this.selectedPeerName));
         }
     }
 
@@ -941,7 +941,7 @@ class Chat extends React.Component<IProps, IState> {
     private messageRefHandler = (ref: any) => {
         this.messageRef = ref;
         if (this.messageRef) {
-            this.messageRef.setPeer(this.peer);
+            this.messageRef.setPeer(this.peer, this.getDialogByPeerName(this.selectedPeerName));
         }
     }
 
@@ -2182,6 +2182,7 @@ class Chat extends React.Component<IProps, IState> {
                     dialogs[index].peerid = msg.peerid || '0';
                     dialogs[index].peertype = msg.peertype || 0;
                     dialogs[index].teamid = msg.teamid || '0';
+                    dialogs[index].disable = yourPeerDisableStatus(msg);
                     if (msg.mediadata) {
                         const media = msg.mediadata as MediaDocument.AsObject;
                         if (media.doc && media.doc.tinythumbnail) {
@@ -2200,6 +2201,7 @@ class Chat extends React.Component<IProps, IState> {
                 const dialog: IDialog = {
                     action_code: msg.messageaction,
                     action_data: msg.actiondata,
+                    disable: yourPeerDisableStatus(msg),
                     last_update: msg.createdon,
                     peerid: msg.peerid || '0',
                     peertype: msg.peertype || 0,
@@ -5322,7 +5324,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!inputPeer) {
             return;
         }
-        const id = this.apiManager.getConnInfo().UserID || '';
+        const id = currentUserId || '';
         const user = new InputUser();
         user.setUserid(id);
         user.setAccesshash('');
@@ -5686,10 +5688,6 @@ class Chat extends React.Component<IProps, IState> {
             this.leftMenuRef.setTeam(this.teamId);
         }
 
-        if (this.infoBarRef) {
-            this.infoBarRef.setPeer(this.teamId, this.peer);
-        }
-
         if (this.audioPlayerShellRef) {
             this.audioPlayerShellRef.setTeamId(this.teamId);
         }
@@ -5698,20 +5696,8 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogRef.setSelectedPeerName(this.selectedPeerName);
         }
 
-        if (this.messageRef) {
-            this.messageRef.setPeer(this.peer);
-        }
-
         if (this.chatInputRef) {
             this.chatInputRef.setParams(this.teamId, this.peer, C_MSG_MODE.Normal, undefined);
-        }
-
-        if (this.rightMenuRef) {
-            this.rightMenuRef.setPeer(this.teamId, this.peer);
-        }
-
-        if (this.searchMessageRef) {
-            this.searchMessageRef.setPeer(this.teamId, this.peer);
         }
 
         const dialog = this.getDialogByPeerName(this.selectedPeerName);
@@ -5721,6 +5707,22 @@ class Chat extends React.Component<IProps, IState> {
 
         if (this.infoBarRef && dialog) {
             this.infoBarRef.setCallStarted(dialog.activecallid && dialog.activecallid !== '0');
+        }
+
+        if (this.infoBarRef) {
+            this.infoBarRef.setPeer(this.teamId, this.peer, dialog);
+        }
+
+        if (this.messageRef) {
+            this.messageRef.setPeer(this.peer, dialog);
+        }
+
+        if (this.rightMenuRef) {
+            this.rightMenuRef.setPeer(this.teamId, this.peer, dialog);
+        }
+
+        if (this.searchMessageRef) {
+            this.searchMessageRef.setPeer(this.teamId, this.peer, dialog);
         }
 
         if (selectable !== undefined && selectedIds !== undefined) {

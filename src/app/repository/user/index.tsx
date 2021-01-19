@@ -10,7 +10,7 @@
 import DB from '../../services/db/user';
 import {IContact, IUser} from './interface';
 import {differenceBy, find, uniq, throttle} from 'lodash';
-import APIManager from "../../services/sdk";
+import APIManager, {currentUserId} from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 import {Int64BE} from 'int64-buffer';
 // @ts-ignore
@@ -186,7 +186,7 @@ export default class UserRepo {
         }
         const reg = new RegExp(keyword || '', 'gi');
         const searchFilter = (u: IUser) => {
-            if (u.id === this.apiManager.getConnInfo().UserID && reg.test('Saved Messages')) {
+            if (u.id === currentUserId && reg.test('Saved Messages')) {
                 return true;
             }
             return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(`${u.firstname} ${u.lastname}`));

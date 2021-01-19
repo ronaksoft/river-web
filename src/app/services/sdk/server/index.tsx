@@ -23,6 +23,9 @@ import {Error as RiverError, KeyValue, MessageContainer, MessageEnvelope} from "
 import {getServerKeys} from "../../../components/DevTools";
 import CommandRepo from "../../../repository/command";
 import RiverTime from "../../utilities/river_time";
+import DialogRepo from "../../../repository/dialog";
+import {C_MESSAGE_ACTION} from "../../../repository/message/consts";
+import {currentUserId} from "../index";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;
@@ -644,7 +647,7 @@ export default class Server {
         const v = localStorage.getItem(C_LOCALSTORAGE.Version);
         if (v === null) {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                v: 7,
+                v: 8,
             }));
             return false;
         }
@@ -658,8 +661,9 @@ export default class Server {
             case 4:
             case 5:
             case 6:
-                return pv.v;
             case 7:
+                return pv.v;
+            case 8:
                 return false;
         }
     }
@@ -683,6 +687,9 @@ export default class Server {
                 return;
             case 6:
                 this.migrate6();
+                return;
+            case 7:
+                this.migrate7();
                 return;
         }
     }
@@ -788,6 +795,55 @@ export default class Server {
                 setTimeout(() => {
                     window.location.reload();
                 }, 100);
+            });
+        }, 1000);
+    }
+
+    private migrate7() {
+        if (this.updateManager) {
+            this.updateManager.disableLiveUpdate();
+        }
+        setTimeout(() => {
+            const fn = () => {
+                localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+                    v: 8,
+                }));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+            };
+            DialogRepo.getInstance().getManyCache('all', {limit: 10000, skip: 0}).then((res) => {
+                const inputs: Array<{
+                    id: number,
+                    peerId: string,
+                    peerType: number,
+                    teamId: string,
+                }> = [];
+                res.forEach((dialog) => {
+                    if (dialog.action_code === C_MESSAGE_ACTION.MessageActionGroupDeleteUser) {
+                        const userIds: string[] = dialog.action_data.useridsList;
+                        if (userIds && userIds.length > 0 && userIds.indexOf(currentUserId) > -1) {
+                            inputs.push({
+                                id: dialog.topmessageid,
+                                peerId: dialog.peerid,
+                                peerType: dialog.peertype,
+                                teamId: dialog.teamid,
+                            });
+                        }
+                    }
+                });
+                if (inputs.length > 0) {
+                    DialogRepo.getInstance().importBulk(inputs.map((o) => ({
+                        disable: true,
+                        peerid: o.peerId,
+                        peertype: o.peerType,
+                        teamid: o.teamId,
+                    }))).finally(() => {
+                        fn();
+                    });
+                } else {
+                    fn();
+                }
             });
         }, 1000);
     }

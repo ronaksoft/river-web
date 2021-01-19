@@ -40,7 +40,6 @@ import UserAvatar from '../UserAvatar';
 import {findIndex, trimStart} from 'lodash';
 import {isMuted} from '../UserInfoMenu';
 import {IDialog} from '../../repository/dialog/interface';
-import DialogRepo from '../../repository/dialog';
 import {
     Button,
     Checkbox,
@@ -76,7 +75,6 @@ import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 import './style.scss';
 
 interface IProps {
-    teamId: string;
     peer: InputPeer | null;
     onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onClose?: (e: any) => void;
@@ -88,6 +86,7 @@ interface IState {
     avatarMenuAnchorEl: any;
     currentUser: IParticipant | null;
     dialog: IDialog | null;
+    disable: boolean;
     forwardLimit: number;
     group: IGroup | null;
     moreAnchorEl: any;
@@ -129,8 +128,8 @@ export const NotifyContent = ({value, onChange}: { value: string, onChange: (val
 };
 
 class GroupInfoMenu extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private groupRepo: GroupRepo;
-    private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
     private apiManager: APIManager;
     private loading: boolean = false;
@@ -155,13 +154,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             avatarMenuAnchorEl: null,
             currentUser: null,
             dialog: null,
+            disable: false,
             forwardLimit: 50,
             group: null,
             moreAnchorEl: null,
             notifyValue: '-1',
             page: '1',
             participants: [],
-            peer: props.peer,
+            peer: null,
             shareMediaEnabled: false,
             title: '',
             titleEdit: false,
@@ -171,8 +171,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.riverTime = RiverTime.getInstance();
         // Group Repository singleton
         this.groupRepo = GroupRepo.getInstance();
-        // Dialog Repository singleton
-        this.dialogRepo = DialogRepo.getInstance();
         // User Repository singleton
         this.userRepo = UserRepo.getInstance();
         // SDK singleton
@@ -195,15 +193,20 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.getGroup();
     }
 
-    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
-        if (this.state.peer === newProps.peer) {
+    public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
+        window.console.log(teamId, peer, dialog);
+        if (this.state.peer === peer && this.teamId === teamId) {
             return;
         }
+        this.teamId = teamId;
         this.setState({
-            peer: newProps.peer,
+            dialog,
+            disable: dialog ? dialog.disable || false : false,
+            peer,
         }, () => {
             this.getGroup();
         });
+        window.console.log(dialog);
     }
 
     public componentWillUnmount() {
@@ -217,10 +220,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     public render() {
         const {
             avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl,
-            dialog, uploadingPhoto, shareMediaEnabled
+            dialog, uploadingPhoto, shareMediaEnabled, disable,
         } = this.state;
         const isAdmin = group ? hasAuthority(group, false) : false;
         const hasAccess = group ? hasAuthority(group, true) : false;
+        const allMemberAdmin = group && (group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
         return (
             <div className="group-info-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler}
@@ -310,7 +314,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         {i18n.t('peer_info.created')} {TimeUtility.dynamicDate(group.createdon || 0)}
                                     </div>
                                 </div>}
-                                {dialog && <div className="kk-card notify-settings">
+                                {dialog && !disable && <div className="kk-card notify-settings">
                                     <div className="label">{i18n.t('peer_info.mute')}</div>
                                     <div className="value">
                                         <Checkbox
@@ -321,13 +325,13 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         />
                                     </div>
                                 </div>}
-                                {group && <React.Fragment>
+                                {group && !disable && <React.Fragment>
                                     {Boolean(group && group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) &&
                                     <div className="kk-card notify-settings">
                                         <div className="label">{i18n.t('peer_info.all_member_admin')}</div>
                                         <div className="value switch">
                                             <Switch
-                                                checked={(group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
+                                                checked={allMemberAdmin}
                                                 className="admin-switch"
                                                 color="default"
                                                 onChange={this.toggleAdminsHandler}
@@ -343,19 +347,19 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     </div>}
                                 </React.Fragment>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.props.teamId}
+                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.teamId}
                                            onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
-                                {group && <div className="participant kk-card">
+                                {group && !disable && <div className="participant kk-card">
                                     <label>{i18n.tf('peer_info.participants', String(group.participants))} </label>
                                     {participants.map((participant, index) => {
                                         return (
                                             <div key={index}
-                                                 className={'contact-item' + (participant.type !== ParticipantType.PARTICIPANTTYPEMEMBER ? ' admin' : '')}>
+                                                 className={'contact-item' + (allMemberAdmin || participant.type !== ParticipantType.PARTICIPANTTYPEMEMBER ? ' admin' : '')}>
                                                 <UserAvatar className="avatar" id={participant.userid || ''}/>
-                                                {participant.type === ParticipantType.PARTICIPANTTYPECREATOR &&
-                                                <div className="admin-wrapper"><StarsRounded/></div>}
-                                                {participant.type === ParticipantType.PARTICIPANTTYPEADMIN &&
-                                                <div className="admin-wrapper"><StarRateRounded/></div>}
+                                                {participant.type === ParticipantType.PARTICIPANTTYPECREATOR ?
+                                                    <div className="admin-wrapper"><StarsRounded/></div> :
+                                                    (allMemberAdmin || participant.type === ParticipantType.PARTICIPANTTYPEADMIN) ?
+                                                        <div className="admin-wrapper"><StarRateRounded/></div> : null}
                                                 <span className="name"
                                                       onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{currentUserId === participant.userid ? ' (you)' : ''}</span>
                                                 <span
@@ -368,7 +372,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                             </div>
                                         );
                                     })}
-                                    {hasAccess &&
+                                    {hasAccess && !disable &&
                                     <div className="add-member" onClick={this.addMemberDialogOpenHandler}>
                                         <AddRounded/> {i18n.t('peer_info.add_member')}
                                     </div>}
@@ -393,7 +397,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia className="kk-card" peer={peer} teamId={this.props.teamId} full={true}
+                        <PeerMedia className="kk-card" peer={peer} teamId={this.teamId} full={true}
                                    onAction={this.props.onAction}/>}
                     </div>
                 </div>
@@ -420,22 +424,22 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     {this.avatarContextMenuItem()}
                 </Menu>
                 <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
-                               teamId={this.props.teamId} title={i18n.t('peer_info.add_member')}/>
+                               teamId={this.teamId} title={i18n.t('peer_info.add_member')}/>
             </div>
         );
     }
 
     /* Gets the group from repository and FullGroup from server */
     private getGroup = (data?: any) => {
-        const {peer} = this.state;
+        const {peer, disable} = this.state;
         if (!peer) {
             return;
         }
 
-        if (data && (data.callerId === this.callerId || data.ids.indexOf(`${this.props.teamId}_${peer.getId()}`) === -1)) {
+        if (data && (data.callerId === this.callerId || data.ids.indexOf(`${this.teamId}_${peer.getId()}`) === -1)) {
             return;
         }
-        this.groupRepo.get(this.props.teamId, peer.getId() || '').then((res) => {
+        this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
             if (res) {
                 this.setState({
                     group: res,
@@ -444,42 +448,36 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             }
         });
 
-        this.dialogRepo.get(this.props.teamId, peer.getId() || '', peer.getType() || 0).then((dialog) => {
-            if (dialog) {
-                this.setState({
-                    dialog,
-                });
+        if (!disable) {
+            if (this.loading) {
+                return;
             }
-        });
-
-        if (this.loading) {
-            return;
-        }
-        this.loading = true;
-        this.apiManager.groupGetFull(peer).then((res) => {
-            const group: IGroup = res.group;
-            group.participantList = res.participantsList;
-            group.photogalleryList = res.photogalleryList;
-            this.groupRepo.importBulk([group], this.callerId);
-            const contacts: IUser[] = [];
-            res.participantsList.forEach((list) => {
-                contacts.push({
-                    accesshash: list.accesshash,
-                    firstname: list.firstname,
-                    id: list.userid,
-                    lastname: list.lastname,
-                    username: list.username,
+            this.loading = true;
+            this.apiManager.groupGetFull(peer).then((res) => {
+                const group: IGroup = res.group;
+                group.participantList = res.participantsList;
+                group.photogalleryList = res.photogalleryList;
+                this.groupRepo.importBulk([group], this.callerId);
+                const contacts: IUser[] = [];
+                res.participantsList.forEach((list) => {
+                    contacts.push({
+                        accesshash: list.accesshash,
+                        firstname: list.firstname,
+                        id: list.userid,
+                        lastname: list.lastname,
+                        username: list.username,
+                    });
                 });
+                this.userRepo.importBulk(false, contacts);
+                this.setState({
+                    group: res.group,
+                    participants: res.participantsList,
+                });
+                this.loading = false;
+            }).catch((err) => {
+                this.loading = false;
             });
-            this.userRepo.importBulk(false, contacts);
-            this.setState({
-                group: res.group,
-                participants: res.participantsList,
-            });
-            this.loading = false;
-        }).catch((err) => {
-            this.loading = false;
-        });
+        }
     }
 
     /* On title change will be set on state */

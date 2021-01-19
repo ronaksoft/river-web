@@ -17,7 +17,7 @@ import {
     PeerType,
     PhoneContact
 } from '../../services/sdk/messages/core.types_pb';
-import APIManager from '../../services/sdk';
+import APIManager, {currentUserId} from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
 import UniqueId from '../../services/uniqueId';
@@ -113,7 +113,7 @@ class UserDialog extends React.Component<IProps, IState> {
         if (this.state.peer === peer) {
             return;
         }
-        this.me = Boolean(peer.getId() === this.apiManager.getConnInfo().UserID);
+        this.me = Boolean(peer.getId() === currentUserId);
         this.setState({
             edit: false,
             firstname: '',

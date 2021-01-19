@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import APIManager from '../../services/sdk';
+import APIManager, {currentUserId} from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
@@ -857,7 +857,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     private wsOpenHandler = () => {
         this.apiManager.authRecall().then(() => {
-            if ((this.apiManager.getConnInfo().UserID || 0) > 0 && !this.sessionLimit) {
+            if (currentUserId !== '0' && !this.sessionLimit) {
                 this.props.history.push('/chat/0/null');
             }
         });

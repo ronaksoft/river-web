@@ -23,7 +23,7 @@ import {
     PeerType,
     PhoneContact
 } from '../../services/sdk/messages/core.types_pb';
-import APIManager from '../../services/sdk';
+import APIManager, {currentUserId} from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import UniqueId from '../../services/uniqueId';
@@ -47,12 +47,12 @@ interface IProps {
     onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
     onClose: (e: any) => void;
     peer: InputPeer | null;
-    teamId: string;
     onError: (text: string) => void;
 }
 
 interface IState {
     dialog: IDialog | null;
+    disable: boolean;
     edit: boolean;
     firstname: string;
     isInContact: boolean;
@@ -80,6 +80,7 @@ export const isMuted = (notifySettings?: Partial<PeerNotifySettings.AsObject>) =
 };
 
 class UserInfoMenu extends React.Component<IProps, IState> {
+    private teamId: string = '0';
     private userRepo: UserRepo;
     private dialogRepo: DialogRepo;
     private apiManager: APIManager;
@@ -96,13 +97,14 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
         this.state = {
             dialog: null,
+            disable: false,
             edit: false,
             firstname: '',
             isInContact: false,
             lastname: '',
             notifyValue: '-1',
             page: '1',
-            peer: props.peer,
+            peer: null,
             phone: '',
             shareMediaEnabled: false,
             user: null,
@@ -122,7 +124,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
         this.modalityService = ModalityService.getInstance();
 
-        this.me = Boolean(props.peer && props.peer.getId() === this.apiManager.getConnInfo().UserID);
+        this.me = Boolean(props.peer && props.peer.getId() === currentUserId);
     }
 
     public componentDidMount() {
@@ -130,13 +132,16 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
     }
 
-    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
-        if (this.state.peer === newProps.peer) {
+    public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
+        window.console.log(teamId, peer, dialog);
+        if (this.state.peer === peer && this.teamId === teamId) {
             return;
         }
-        this.me = Boolean(newProps.peer && newProps.peer.getId() === this.apiManager.getConnInfo().UserID);
+        this.teamId = teamId;
+        this.me = Boolean(peer && peer.getId() === currentUserId);
         this.setState({
-            peer: newProps.peer,
+            disable: dialog ? dialog.disable || false : false,
+            peer,
         }, () => {
             this.getUser();
         });
@@ -267,7 +272,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <CheckRounded/>
                                         </div>
                                     </div>}
-                                    {Boolean(this.props.teamId === '0' && !this.me && !isInContact && !edit && user && !user.isbot) &&
+                                    {Boolean(this.teamId === '0' && !this.me && !isInContact && !edit && user && !user.isbot) &&
                                     <div className="add-as-contact" onClick={this.addAsContactHandler}>
                                         <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                                     </div>}
@@ -289,7 +294,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.props.teamId}
+                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.teamId}
                                            onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
                             </div>
                         </Scrollbars>
@@ -306,7 +311,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia className="kk-card" peer={peer} teamId={this.props.teamId} full={true}
+                        <PeerMedia className="kk-card" peer={peer} teamId={this.teamId} full={true}
                                    onAction={this.props.onAction}/>}
                     </div>
                 </div>
@@ -346,7 +351,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             });
         }
 
-        this.dialogRepo.get(this.props.teamId, peer.getId() || '', peer.getType() || 0).then((dialog) => {
+        this.dialogRepo.get(this.teamId, peer.getId() || '', peer.getType() || 0).then((dialog) => {
             if (dialog) {
                 this.setState({
                     dialog,
@@ -395,7 +400,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             inputUser.setAccesshash(user.accesshash || '');
             inputUser.setUserid(user.id || '');
             this.apiManager.contactAdd(inputUser, firstname, lastname, phone).then(() => {
-                this.userRepo.importBulk(true, [user], false, this.callerId, this.props.teamId);
+                this.userRepo.importBulk(true, [user], false, this.callerId, this.teamId);
                 user.lastname = lastname;
                 user.firstname = firstname;
                 this.setState({

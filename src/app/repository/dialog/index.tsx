@@ -9,14 +9,14 @@
 
 import DB from '../../services/db/dialog';
 import {IDialog, IDialogWithUpdateId, IDraft, IPeer} from './interface';
-import {throttle, differenceWith, find, uniqBy, cloneDeep, isEmpty} from 'lodash';
+import {throttle, differenceWith, find, uniqBy, cloneDeep, isEmpty, uniqWith} from 'lodash';
 import APIManager, {currentUserId} from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
 import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
-import {C_MESSAGE_ICON, getMessageTitle} from '../../components/Dialog/utils';
+import {C_MESSAGE_ICON, getMessageTitle, yourPeerDisableStatus} from '../../components/Dialog/utils';
 import {kMerge} from "../../services/utilities/kDash";
 import {PeerType, UserMessage} from "../../services/sdk/messages/core.types_pb";
 import Dexie from "dexie";
@@ -107,13 +107,12 @@ export default class DialogRepo {
         const safeLimit = limit || 50;
         let safeSkip = skip || 0;
         let retries = 0;
-        const getDialogs = ({resolve, reject, dialogs}: any) => {
+        const getDialogs = ({resolve, reject, dialogs}: { resolve: any, reject: any, dialogs?: IDialog[], limit?: number, skip?: number }) => {
             dialogs = dialogs || [];
-            // @ts-ignore
             this.getManyForSnapshot(teamId, {limit: safeLimit, skip: safeSkip}).then((remoteRes) => {
                 // window.console.log('intersectionBy', intersectionBy(cloneDeep(remoteRes.dialogs), dialogs, 'peerid'));
                 dialogs.push.apply(dialogs, remoteRes.dialogs);
-                dialogs = uniqBy(dialogs, 'peerid');
+                dialogs = uniqWith(dialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
                 if (remoteRes.dialogs.length === safeLimit) {
                     safeSkip += safeLimit;
                     return getDialogs({dialogs, limit: safeLimit, reject, resolve, skip: safeSkip});
@@ -437,6 +436,7 @@ export default class DialogRepo {
         dialog.last_update = msg.createdon;
         dialog.sender_id = msg.senderid;
         dialog.saved_messages = (msg.peerid === currentUserId);
+        dialog.disable = yourPeerDisableStatus(msg);
         return dialog;
     }
 }

@@ -61,6 +61,7 @@ import ReactionList from "../ReactionList";
 import GroupSeenBy from "../GroupSeenBy";
 
 import './style.scss';
+import {IDialog} from "../../repository/dialog/interface";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -188,6 +189,7 @@ interface IState {
         width: number,
         height: number,
     };
+    disable: boolean;
     enable: boolean;
     enableDrag: boolean;
     items: IMessage[];
@@ -283,6 +285,7 @@ class Message extends React.Component<IProps, IState> {
                 height,
                 width,
             },
+            disable: false,
             enable: false,
             enableDrag: false,
             items: [],
@@ -384,10 +387,15 @@ class Message extends React.Component<IProps, IState> {
         this.getContainerSize();
     }
 
-    public setPeer(peer: InputPeer | null) {
+    public setPeer(peer: InputPeer | null, dialog: IDialog | null) {
         if (this.inputPeer !== peer) {
             this.inputPeer = peer;
             this.savedMessages = Boolean(peer && this.props.userId === peer.getId());
+        }
+        if (dialog && (dialog.disable || false) !== this.state.disable) {
+            this.setState({
+                disable: (dialog.disable || false),
+            });
         }
     }
 
@@ -740,7 +748,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private contextMenuItem() {
-        const {items, moreIndex} = this.state;
+        const {items, moreIndex, disable} = this.state;
         if (!items[moreIndex]) {
             return null;
         }
@@ -783,8 +791,12 @@ class Message extends React.Component<IProps, IState> {
             });
         } else if (me && id > 0) {
             menuTypes[1].forEach((key) => {
-                if (key === 3) {
-                    if ((this.riverTime.now() - (items[moreIndex].createdon || 0)) < 86400 &&
+                if (key === 1) {
+                    if (!disable) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 3) {
+                    if (!disable && (this.riverTime.now() - (items[moreIndex].createdon || 0)) < 86400 &&
                         (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid) &&
                         (items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal || (items[moreIndex].messagetype || 0) === 0)
                     ) {
@@ -815,11 +827,11 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 15) {
-                    if (isGroup && this.pinnedMessageId !== items[moreIndex].id) {
+                    if (!disable && isGroup && this.pinnedMessageId !== items[moreIndex].id) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 16) {
-                    if (isGroup && this.pinnedMessageId === items[moreIndex].id) {
+                    if (!disable && isGroup && this.pinnedMessageId === items[moreIndex].id) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -828,7 +840,11 @@ class Message extends React.Component<IProps, IState> {
             });
         } else if (!me && id > 0) {
             menuTypes[2].forEach((key) => {
-                if (key === 7) {
+                if (key === 1) {
+                    if (!disable) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 7) {
                     if (!items[moreIndex].downloaded && saveAndDownloadFilter.indexOf(items[moreIndex].messagetype || 0) > -1) {
                         menuItems.push(this.menuItem[key]);
                     }
@@ -849,11 +865,11 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 15) {
-                    if (isGroup && this.pinnedMessageId !== items[moreIndex].id) {
+                    if (!disable && isGroup && this.pinnedMessageId !== items[moreIndex].id) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 16) {
-                    if (isGroup && this.pinnedMessageId === items[moreIndex].id) {
+                    if (!disable && isGroup && this.pinnedMessageId === items[moreIndex].id) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -1079,6 +1095,13 @@ class Message extends React.Component<IProps, IState> {
 
     private moreCmdHandler = (cmd: string, index: number) => (e: any) => {
         e.stopPropagation();
+        if (cmd === 'reply' && this.state.disable) {
+            this.setState({
+                moreAnchorEl: null,
+                moreAnchorPos: null,
+            });
+            return;
+        }
         if (index > -1) {
             this.props.onContextMenu(cmd, this.state.items[index]);
         }

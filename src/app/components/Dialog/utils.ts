@@ -4,6 +4,7 @@ import {DocumentAttributeType, MediaDocument} from '../../services/sdk/messages/
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import i18n from '../../services/i18n';
 import UserRepo from "../../repository/user";
+import {currentUserId} from "../../services/sdk";
 
 export const C_MESSAGE_ICON = {
     Audio: 2,
@@ -157,4 +158,26 @@ export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean, maxC
     }
 
     return messageIcon;
+};
+
+export const yourPeerDisableStatus = (message: IMessage): (boolean | undefined) => {
+    switch (message.messageaction) {
+        case C_MESSAGE_ACTION.MessageActionGroupAddUser:
+            if (message.actiondata) {
+                const userIds: string[] = message.actiondata.useridsList;
+                if (userIds && userIds.length > 0 && userIds.indexOf(currentUserId) > -1) {
+                    return false;
+                }
+            }
+            break;
+        case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
+            if (message.actiondata) {
+                const userIds: string[] = message.actiondata.useridsList;
+                if (userIds && userIds.length > 0 && userIds.indexOf(currentUserId) > -1) {
+                    return true;
+                }
+            }
+            break;
+    }
+    return undefined;
 };
