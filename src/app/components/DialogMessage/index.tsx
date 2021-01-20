@@ -210,7 +210,7 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
         case C_MESSAGE_ACTION.MessageActionCallStarted:
             return (<span className="preview-message system-message">
                         {i18n.t('message.call_from')}
-                <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true}
+                <UserName className="sender postfix" id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true}
                           prefix=" " noDetail={true}/></span>);
         case C_MESSAGE_ACTION.MessageActionCallEnded:
             return (<span className="preview-message system-message">{i18n.t('message.call_ended')}</span>);

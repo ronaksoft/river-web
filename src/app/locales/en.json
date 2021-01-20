@@ -490,7 +490,7 @@
     "call_started": "Call started",
     "call_ended": "Call ended",
     "call_from_user": "Call from {0}",
-    "call_from": "Call from"
+    "call_from": "Call from "
   },
   "uploader": {
     "converting": "Converting...",
