@@ -29,8 +29,8 @@ import APIManager, {currentUserId} from "../sdk";
 import {findIndex, orderBy, difference} from "lodash";
 import {getDefaultAudio, getDefaultVideo} from "../../components/SettingsMediaInput";
 
-const C_RETRY_INTERVAL = 5000;
-const C_RETRY_LIMIT = 2;
+const C_RETRY_INTERVAL = 10000;
+const C_RETRY_LIMIT = 6;
 
 export const C_CALL_EVENT = {
     CallAccepted: 0x02,

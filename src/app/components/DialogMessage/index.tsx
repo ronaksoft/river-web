@@ -202,6 +202,18 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                                   id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.t('message.changed_the_group_photo')}</span>);
             }
+        case C_MESSAGE_ACTION.MessageActionScreenShot:
+            return (<span className="preview-message system-message">
+                        <UserName className="sender"
+                                  id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true} postfix=" "
+                                  noDetail={true}/> {i18n.t('message.took_an_screenshot')}</span>);
+        case C_MESSAGE_ACTION.MessageActionCallStarted:
+            return (<span className="preview-message system-message">
+                        {i18n.t('message.call_from')}
+                <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true}
+                          prefix=" " noDetail={true}/></span>);
+        case C_MESSAGE_ACTION.MessageActionCallEnded:
+            return (<span className="preview-message system-message">{i18n.t('message.call_ended')}</span>);
         case C_MESSAGE_ACTION.MessageActionEmptyDialog:
             return (<span className="preview-message system-message bold">{i18n.t('message.no_message')}</span>);
         default:

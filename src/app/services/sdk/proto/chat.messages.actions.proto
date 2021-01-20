@@ -1,6 +1,7 @@
 syntax = "proto3";
 package msg;
 import "core.types.proto";
+import "chat.phone.proto";
 option go_package = '.;msg';
 
 /*
@@ -58,4 +59,15 @@ message MessageActionScreenShotTaken {
 // MessageActionThreadClosed
 message MessageActionThreadClosed {
     int64 ThreadID = 1;
+}
+
+// MessageActionCallStarted
+message MessageActionCallStarted {
+    int64 CallID = 1;
+}
+
+// MessageActionCallEnded
+message MessageActionCallEnded {
+    int64 CallID = 1;
+    DiscardReason Reason = 2;
 }

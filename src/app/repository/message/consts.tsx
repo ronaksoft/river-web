@@ -26,6 +26,8 @@ export const C_MESSAGE_TYPE = {
 };
 
 export const C_MESSAGE_ACTION = {
+    MessageActionCallEnded: 0x0c,
+    MessageActionCallStarted: 0x0b,
     MessageActionClearHistory: 0x07,
     MessageActionContactRegistered: 0x01,
     MessageActionEmptyDialog: -0x01,
@@ -36,6 +38,7 @@ export const C_MESSAGE_ACTION = {
     MessageActionGroupTitleChanged: 0x06,
     MessageActionNope: 0x00,
     MessageActionScreenShot: 0x09,
+    MessageActionThreadClosed: 0x0a,
 };
 
 export const C_REPLY_ACTION = {

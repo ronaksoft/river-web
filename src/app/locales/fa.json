@@ -483,7 +483,11 @@
     "pin_message": "سنجاق کردن پیام",
     "pin_only": "فقط سنجاق",
     "pin_alert": "این پیام را سنجاق کرده و به همه اعضای گروه اطلاع بده",
-    "no_message": "بدون پیام"
+    "no_message": "بدون پیام",
+    "call_started": "شروع تماس",
+    "call_ended": "پایان تماس",
+    "call_from_user": "تماس از {0}",
+    "call_from": "تماس از"
   },
   "uploader": {
     "converting": "درحال تبدیل کردن...",

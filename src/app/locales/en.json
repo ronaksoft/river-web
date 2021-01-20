@@ -486,7 +486,11 @@
     "pin_message": "Pin Message",
     "pin_only": "Pin Only",
     "pin_alert": "Pin this message and notify all members of the group",
-    "no_message": "No messages"
+    "no_message": "No messages",
+    "call_started": "Call started",
+    "call_ended": "Call ended",
+    "call_from_user": "Call from {0}",
+    "call_from": "Call from"
   },
   "uploader": {
     "converting": "Converting...",

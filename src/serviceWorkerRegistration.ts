@@ -35,7 +35,7 @@ export function register(config?: Config) {
         }
 
         window.addEventListener('load', () => {
-            const swUrl = `${process.env.PUBLIC_URL}/service-worker.js?v2`;
+            const swUrl = `${process.env.PUBLIC_URL}/service-worker.js?v3`;
 
             if (isLocalhost) {
                 // This is running on localhost. Let's check if a service worker still exists or not.
@@ -59,7 +59,7 @@ export function register(config?: Config) {
 
 function registerValidSW(swUrl: string, config?: Config) {
     navigator.serviceWorker
-        .register(swUrl, {updateViaCache: "all"})
+        .register(swUrl)
         .then((registration) => {
             registration.onupdatefound = () => {
                 const installingWorker = registration.installing;

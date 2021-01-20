@@ -4,6 +4,7 @@
 
 import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
+import * as chat_phone_pb from "./chat.phone_pb";
 
 export class MessageActionGroupAddUser extends jspb.Message {
   clearUseridsList(): void;
@@ -198,6 +199,50 @@ export class MessageActionThreadClosed extends jspb.Message {
 export namespace MessageActionThreadClosed {
   export type AsObject = {
     threadid: number,
+  }
+}
+
+export class MessageActionCallStarted extends jspb.Message {
+  getCallid(): number;
+  setCallid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessageActionCallStarted.AsObject;
+  static toObject(includeInstance: boolean, msg: MessageActionCallStarted): MessageActionCallStarted.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessageActionCallStarted, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessageActionCallStarted;
+  static deserializeBinaryFromReader(message: MessageActionCallStarted, reader: jspb.BinaryReader): MessageActionCallStarted;
+}
+
+export namespace MessageActionCallStarted {
+  export type AsObject = {
+    callid: number,
+  }
+}
+
+export class MessageActionCallEnded extends jspb.Message {
+  getCallid(): number;
+  setCallid(value: number): void;
+
+  getReason(): chat_phone_pb.DiscardReason;
+  setReason(value: chat_phone_pb.DiscardReason): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessageActionCallEnded.AsObject;
+  static toObject(includeInstance: boolean, msg: MessageActionCallEnded): MessageActionCallEnded.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessageActionCallEnded, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessageActionCallEnded;
+  static deserializeBinaryFromReader(message: MessageActionCallEnded, reader: jspb.BinaryReader): MessageActionCallEnded;
+}
+
+export namespace MessageActionCallEnded {
+  export type AsObject = {
+    callid: number,
+    reason: chat_phone_pb.DiscardReason,
   }
 }
 

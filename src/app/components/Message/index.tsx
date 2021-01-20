@@ -1297,8 +1297,17 @@ class Message extends React.Component<IProps, IState> {
                     }
                 }
             case C_MESSAGE_ACTION.MessageActionScreenShot:
-                return (<span className="system-message"><UserName className="sender" id={message.senderid || ''}
-                                                                   you={true}/> {i18n.t('message.took_an_screenshot')}</span>);
+                return (<span className="system-message">
+                    <UserName className="sender" id={message.senderid || ''}
+                              you={true}/> {i18n.t('message.took_an_screenshot')}
+                </span>);
+            case C_MESSAGE_ACTION.MessageActionCallStarted:
+                return (<span className="system-message">
+                    <UserName className="sender" id={message.senderid || ''} you={true}
+                              format={i18n.t('message.call_from_user')}/>
+                </span>);
+            case C_MESSAGE_ACTION.MessageActionCallEnded:
+                return (<span className="system-message">{i18n.t('message.call_ended')}</span>);
             default:
                 return (<span className="system-message">{i18n.t('message.unsupported_message')}</span>);
         }

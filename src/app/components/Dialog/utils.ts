@@ -77,6 +77,10 @@ const getSystemMessageTitle = (message: IMessage) => {
             }
         case C_MESSAGE_ACTION.MessageActionScreenShot:
             return `${name} ${i18n.t('message.took_an_screenshot')}`;
+        case C_MESSAGE_ACTION.MessageActionCallStarted:
+            return `${i18n.t('message.call_from')} ${name}`;
+        case C_MESSAGE_ACTION.MessageActionCallEnded:
+            return `${i18n.t('message.call_ended')}`;
         default:
             return i18n.t('message.unsupported_message');
     }
