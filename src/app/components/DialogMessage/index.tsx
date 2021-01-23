@@ -51,7 +51,6 @@ import './style.scss';
 export const getMessageIcon = (icon: number | undefined, tinyThumb?: string) => {
     if (tinyThumb) {
         return <>
-            {icon === C_MESSAGE_ICON.GIF && <GifOutlined className="preview-icon gif"/>}
             <div className="tiny-thumb">
                 <img src={`data:image/jpeg;base64,${tinyThumb}`} alt=""/>
                 {icon === C_MESSAGE_ICON.Video &&
@@ -59,6 +58,7 @@ export const getMessageIcon = (icon: number | undefined, tinyThumb?: string) => 
                 {icon === C_MESSAGE_ICON.Audio &&
                 <div className="inner-cover"><MusicNoteOutlined className="inner-icon"/></div>}
             </div>
+            {icon === C_MESSAGE_ICON.GIF && <GifOutlined className="preview-icon gif"/>}
         </>;
     }
     switch (icon) {
