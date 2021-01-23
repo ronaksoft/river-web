@@ -8,10 +8,9 @@
 */
 
 import * as React from 'react';
-import {useRef} from 'react';
-import {Dialog, Grow, IconButton, Paper, PaperProps} from '@material-ui/core';
+import {Dialog, Grow, IconButton} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
-import Draggable, {ControlPosition, DraggableEventHandler} from 'react-draggable';
+import Draggable, {ControlPosition} from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
 import CallService, {C_CALL_EVENT, ICallParticipant, IUpdatePhoneCall} from "../../services/callService";
 import {
@@ -41,7 +40,6 @@ import APIManager, {currentUserId} from "../../services/sdk";
 import CallVideo from "../CallVideo";
 import CallSettings, {IMediaSettings} from "../CallSettings";
 import {clone} from "lodash";
-import {Merge} from "type-fest";
 import MainRepo from "../../repository";
 import SettingsMediaInput, {getDefaultAudio, getDefaultVideo} from "../SettingsMediaInput";
 import SettingsModal from "../SettingsModal";
@@ -50,7 +48,7 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import './style.scss';
 
 const C_MINIMIZE_WIDTH = 240;
-const C_MINIMIZE_HEIGHT = 135;
+// const C_MINIMIZE_HEIGHT = 135;
 const C_MINIMIZE__PADDING = 16;
 
 interface IProps {
@@ -84,27 +82,22 @@ const TransitionEffect = React.forwardRef(function Transition(
     return <Grow ref={ref} {...props} />;
 });
 
-interface IPaperProps {
-    disabled?: boolean;
-    offset?: ControlPosition;
-}
-
-function PaperComponent(props: Merge<PaperProps, IPaperProps>) {
-    const dragRef = useRef<boolean>(false);
-    if (!props.offset) {
-        dragRef.current = false;
-    }
-    const stopHandler: DraggableEventHandler = (e, data) => {
-        dragRef.current = Boolean(data.x || data.y);
-    };
-    return (
-        <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
-                   key={props.offset && dragRef.current ? 'minimized' : 'normal'} positionOffset={props.offset}
-                   disabled={props.disabled} onStop={stopHandler}>
-            <Paper {...props} />
-        </Draggable>
-    );
-}
+// function PaperComponent(props: Merge<PaperProps, IPaperProps>) {
+//     const dragRef = useRef<boolean>(false);
+//     if (!props.offset) {
+//         dragRef.current = false;
+//     }
+//     const stopHandler: DraggableEventHandler = (e, data) => {
+//         dragRef.current = Boolean(data.x || data.y);
+//     };
+//     return (
+//         <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
+//                    key={props.offset && dragRef.current ? 'minimized' : 'normal'} positionOffset={props.offset}
+//                    disabled={props.disabled} onStop={stopHandler}>
+//             <Paper {...props} />
+//         </Draggable>
+//     );
+// }
 
 class CallModal extends React.Component<IProps, IState> {
     private teamId: string = '0';
@@ -157,7 +150,6 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     public openDialog = (peer: InputPeer | null, force?: boolean) => {
-        window.console.log('fe', peer);
         if (!peer) {
             return;
         }
@@ -166,7 +158,7 @@ class CallModal extends React.Component<IProps, IState> {
             if (this.state.open) {
                 return;
             }
-            window.console.log('fe');
+
             this.timeStart = 0;
             this.timeEnd = 0;
             if (this.peer.getType() === PeerType.PEERUSER) {
@@ -221,26 +213,31 @@ class CallModal extends React.Component<IProps, IState> {
     public render() {
         const {open, fullscreen, mode, cropCover, groupId, minimize, settingsOpen} = this.state;
         const disableClose = !(mode === 'call_init' || mode === 'call_report');
-        const paperProps: IPaperProps | undefined = this.getDraggableProps();
+        const enableDrag = mode === 'call';
+        const dialogRenderer = () => {
+            return <Dialog
+                open={open}
+                onClose={this.closeHandler}
+                className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain') + (minimize ? ' minimize' : '')}
+                classes={{
+                    paper: 'call-modal-paper',
+                }}
+                disableBackdropClick={disableClose}
+                disableEscapeKeyDown={disableClose}
+                disableEnforceFocus={true}
+                fullScreen={mode === 'call_report' ? false : fullscreen}
+                TransitionComponent={TransitionEffect}
+            >
+                {this.getContent()}
+            </Dialog>;
+        };
         return (
             <>
-                <Dialog
-                    open={open}
-                    onClose={this.closeHandler}
-                    className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain') + (minimize ? ' minimize' : '')}
-                    classes={{
-                        paper: 'call-modal-paper',
-                    }}
-                    disableBackdropClick={disableClose}
-                    disableEscapeKeyDown={disableClose}
-                    disableEnforceFocus={true}
-                    PaperComponent={PaperComponent}
-                    PaperProps={paperProps as any}
-                    fullScreen={mode === 'call_report' ? false : fullscreen}
-                    TransitionComponent={TransitionEffect}
-                >
-                    {this.getContent()}
-                </Dialog>
+                {Boolean(enableDrag && !fullscreen) ?
+                    <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
+                               positionOffset={this.getDraggableOffset()}>
+                        {dialogRenderer()}
+                    </Draggable> : dialogRenderer()}
                 <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
                                groupId={groupId} teamId={this.teamId} sendIcon={<CheckRounded/>}
                                title={i18n.t('general.choose_recipient')} limit={11} selectAll={true}/>
@@ -265,18 +262,21 @@ class CallModal extends React.Component<IProps, IState> {
         this.openDialog(this.peer, true);
     }
 
-    private getDraggableProps(): IPaperProps | undefined {
+    private getDraggableOffset(): ControlPosition | undefined {
+        const xo = -320;
+        const yo = -240;
         const {minimize} = this.state;
         if (!minimize) {
-            return undefined;
+            return {
+                x: xo,
+                y: yo,
+            };
         }
         const w = window.innerWidth;
         const h = window.innerHeight;
         return {
-            offset: {
-                x: ((w - C_MINIMIZE_WIDTH) / 2) - C_MINIMIZE__PADDING,
-                y: -(((h - C_MINIMIZE_HEIGHT) / 2) - C_MINIMIZE__PADDING),
-            },
+            x: ((w / 2) - C_MINIMIZE_WIDTH) - C_MINIMIZE__PADDING,
+            y: -((h / 2) - C_MINIMIZE__PADDING),
         };
     }
 
@@ -687,6 +687,7 @@ class CallModal extends React.Component<IProps, IState> {
             if (this.callSettingsRef) {
                 this.callSettingsRef.startAudioAnalyzer();
             }
+            this.forceUpdate();
         }).catch((err) => {
             window.console.log(err);
         });

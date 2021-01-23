@@ -50,13 +50,16 @@ import './style.scss';
 
 export const getMessageIcon = (icon: number | undefined, tinyThumb?: string) => {
     if (tinyThumb) {
-        return <div className="tiny-thumb">
-            <img src={`data:image/jpeg;base64,${tinyThumb}`} alt=""/>
-            {icon === C_MESSAGE_ICON.Video &&
-            <div className="inner-cover"><PlayArrowRounded className="inner-icon"/></div>}
-            {icon === C_MESSAGE_ICON.Audio &&
-            <div className="inner-cover"><MusicNoteOutlined className="inner-icon"/></div>}
-        </div>;
+        return <>
+            {icon === C_MESSAGE_ICON.GIF && <GifOutlined className="preview-icon gif"/>}
+            <div className="tiny-thumb">
+                <img src={`data:image/jpeg;base64,${tinyThumb}`} alt=""/>
+                {icon === C_MESSAGE_ICON.Video &&
+                <div className="inner-cover"><PlayArrowRounded className="inner-icon"/></div>}
+                {icon === C_MESSAGE_ICON.Audio &&
+                <div className="inner-cover"><MusicNoteOutlined className="inner-icon"/></div>}
+            </div>
+        </>;
     }
     switch (icon) {
         case C_MESSAGE_ICON.Location:
@@ -210,7 +213,8 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
         case C_MESSAGE_ACTION.MessageActionCallStarted:
             return (<span className="preview-message system-message">
                         {i18n.t('message.call_from')}
-                <UserName className="sender postfix" id={dialog.sender_id || ''} you={true} onlyFirstName={true} noIcon={true}
+                <UserName className="sender postfix" id={dialog.sender_id || ''} you={true} onlyFirstName={true}
+                          noIcon={true}
                           prefix=" " noDetail={true}/></span>);
         case C_MESSAGE_ACTION.MessageActionCallEnded:
             return (<span className="preview-message system-message">{i18n.t('message.call_ended')}</span>);

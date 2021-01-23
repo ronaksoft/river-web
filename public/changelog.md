@@ -1,3 +1,8 @@
+## 1.0.38
+* Call floating modal bug fixed
+* Removed participant access updated
+* Known bugs fixed
+
 ## 1.0.37
 * Call system message implemented
 

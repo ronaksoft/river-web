@@ -127,6 +127,7 @@ a.dialog-a {
       width: 12px;
       border-radius: 12px;
       background: #fff;
+      z-index: 10;
 
       &:after {
         position: absolute;

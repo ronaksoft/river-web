@@ -228,7 +228,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             dialog, uploadingPhoto, shareMediaEnabled, disable,
         } = this.state;
         const isAdmin = group ? hasAuthority(group, false) : false;
-        const hasAccess = group ? hasAuthority(group, true) : false;
+        const hasAccess = group ? hasAuthority(group, true) && !disable : false;
         const allMemberAdmin = group && (group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
         return (
             <div className="group-info-menu">
