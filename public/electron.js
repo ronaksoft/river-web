@@ -6,6 +6,7 @@ const {download} = require('electron-dl');
 const contextMenu = require('electron-context-menu');
 const unusedFilename = require('unused-filename');
 const lodash = require('lodash');
+const fs = require('fs');
 const Store = require('electron-store');
 const store = new Store();
 
@@ -96,7 +97,7 @@ if (process.platform === 'darwin') {
 contextMenu({});
 
 createWindow = (forceShow) => {
-    let windowIcon;
+    let windowIcon = undefined;
     const OS = process.platform;
     if (OS === 'win32') {
         windowIcon = path.join(__dirname, 'build', 'icons', 'logo.ico');
@@ -233,10 +234,10 @@ createWindow = (forceShow) => {
         const width = mainWindow.getBounds().width;
         if (width < 600 && sizeMode !== 'responsive') {
             sizeMode = 'responsive';
-            callReact('sizeMode', sizeMode)
+            callReact('sizeMode', sizeMode);
         } else if (width >= 600 && sizeMode !== 'desktop') {
             sizeMode = 'desktop';
-            callReact('sizeMode', sizeMode)
+            callReact('sizeMode', sizeMode);
         }
     });
 };
@@ -354,12 +355,15 @@ ipcMain.on('fnCall', (e, arg) => {
                     openFolderWhenDone: true,
                 })
                     .then((dl) => {
-                        callReact('fnCallback', {
-                            cmd: 'download',
-                            reqId: arg.reqId,
-                            data: {
-                                path: dl.getSavePath(),
-                            },
+                        fs.stat(dl.getSavePath(), (err, stat) => {
+                            callReact('fnCallback', {
+                                cmd: 'download',
+                                reqId: arg.reqId,
+                                data: {
+                                    lastModified: stat.mtime.toISOString(),
+                                    path: dl.getSavePath(),
+                                },
+                            });
                         });
                     })
                     .catch((err) => {
@@ -370,23 +374,33 @@ ipcMain.on('fnCall', (e, arg) => {
             }
             break;
         case 'revealFile':
-            shell.showItemInFolder(arg.data.path);
-            callReact('fnCallback', {
-                cmd: 'bool',
-                reqId: arg.reqId,
-                data: {
-                    bool: true,
-                },
+            fs.stat(arg.data.path, (err, stat) => {
+                const ok = err ? false : !(arg.data.lastModified && arg.data.lastModified !== stat.mtime.toISOString());
+                callReact('fnCallback', {
+                    cmd: 'bool',
+                    reqId: arg.reqId,
+                    data: {
+                        bool: ok,
+                    },
+                });
+                if (ok) {
+                    shell.showItemInFolder(arg.data.path);
+                }
             });
             break;
         case 'previewFile':
-            mainWindow.previewFile(arg.data.path);
-            callReact('fnCallback', {
-                cmd: 'bool',
-                reqId: arg.reqId,
-                data: {
-                    bool: true,
-                },
+            fs.stat(arg.data.path, (err, stat) => {
+                const ok = err ? false : !(arg.data.lastModified && arg.data.lastModified !== stat.mtime.toISOString());
+                callReact('fnCallback', {
+                    cmd: 'bool',
+                    reqId: arg.reqId,
+                    data: {
+                        bool: ok,
+                    },
+                });
+                if (ok) {
+                    mainWindow.previewFile(arg.data.path);
+                }
             });
             break;
         case 'setBadgeCounter':

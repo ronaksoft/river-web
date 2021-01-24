@@ -1,3 +1,6 @@
+## 1.0.39
+* File save optimized
+
 ## 1.0.38
 * Call floating modal bug fixed
 * Removed participant access updated

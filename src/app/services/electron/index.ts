@@ -46,7 +46,7 @@ export default class ElectronService {
             return null;
         }
         const arr = window.navigator.userAgent.split(' ').filter(o => /electron/i.test(o));
-        if (arr.length> 0) {
+        if (arr.length > 0) {
             try {
                 return arr[0].split('/')[1];
             } catch (e) {
@@ -125,15 +125,17 @@ export default class ElectronService {
     }
 
     /* Reveal file in folder */
-    public revealFile(path: string) {
+    public revealFile(path: string, lastModified: string) {
         return this.send(C_ELECTRON_CMD.RevealFile, {
+            lastModified,
             path,
         });
     }
 
     /* Preview file */
-    public previewFile(path: string) {
+    public previewFile(path: string, lastModified: string) {
         return this.send(C_ELECTRON_CMD.PreviewFile, {
+            lastModified,
             path,
         });
     }

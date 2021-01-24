@@ -5240,13 +5240,17 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Save file by type */
-    private saveFile(msg: IMessage, noRetry?: boolean) {
+    private saveFile(msg: IMessage, noRetry?: boolean, electronCB?: any) {
         const mediaDocument = getMediaDocument(msg);
         if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
             this.fileRepo.get(GetDbFileName(mediaDocument.doc.id, mediaDocument.doc.clusterid)).then((res) => {
                 if (res) {
                     if (ElectronService.isElectron()) {
-                        this.downloadWithElectron(res.data, msg, this.getFileName(msg));
+                        this.downloadWithElectron(res.data, msg, this.getFileName(msg)).then(() => {
+                            if (electronCB) {
+                                electronCB();
+                            }
+                        });
                     } else {
                         saveAs(res.data, this.getFileName(msg));
                     }
@@ -5277,9 +5281,10 @@ class Chat extends React.Component<IProps, IState> {
         fileInfo.name = fileName;
         const file = new File([blob], fileInfo.name, {type: blob.type});
         const objectUrl = URL.createObjectURL(file);
-        this.electronService.download(objectUrl, fileInfo.name).then((res) => {
+        return this.electronService.download(objectUrl, fileInfo.name).then((res) => {
             message.saved = true;
             message.saved_path = res.path;
+            message.last_modified = res.lastModified;
             this.messageRepo.importBulk([message]);
             const fileLocation = getFileLocation(message);
             if (fileLocation) {
@@ -5297,22 +5302,33 @@ class Chat extends React.Component<IProps, IState> {
 
             // Just to make sure subscribers will update their view
             this.broadcastEvent(EventFileDownloaded, {id: message.id});
-        }).catch((err) => {
-            window.console.log(err);
+            return Promise.resolve();
         });
     }
 
     /* Open file and focus on folder */
     private openFile(message: IMessage) {
         if (message && message.saved_path) {
-            this.electronService.revealFile(message.saved_path);
+            this.electronService.revealFile(message.saved_path, message.last_modified).then((res) => {
+                if (!res.bool) {
+                    this.saveFile(message, false, () => {
+                        this.electronService.revealFile(message.saved_path, message.last_modified);
+                    });
+                }
+            });
         }
     }
 
     /* Preview file */
     private previewFile(message: IMessage) {
         if (message && message.saved_path) {
-            this.electronService.previewFile(message.saved_path);
+            this.electronService.previewFile(message.saved_path, message.last_modified).then((res) => {
+                if (!res.bool) {
+                    this.saveFile(message, false, () => {
+                        this.electronService.previewFile(message.saved_path, message.last_modified);
+                    });
+                }
+            });
         }
     }
 

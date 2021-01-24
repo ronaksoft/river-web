@@ -34,6 +34,7 @@ export interface IMessage extends Partial<UserMessage.AsObject> {
     rtl?: boolean;
     saved?: boolean;
     saved_path?: string;
+    last_modified?: string;
     temp_file?: Blob;
 }
 
