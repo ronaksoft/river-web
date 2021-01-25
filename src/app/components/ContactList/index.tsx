@@ -15,7 +15,7 @@ import TextField from '@material-ui/core/TextField';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
-import {MoreVert, PersonRounded, SearchRounded} from '@material-ui/icons';
+import {MoreVertRounded, PersonRounded, SearchRounded} from '@material-ui/icons';
 import XRegExp from 'xregexp';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
@@ -399,7 +399,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
                             {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                             <div className="more" onClick={this.contextMenuOpenHandler(index)}>
-                                <MoreVert/>
+                                <MoreVertRounded/>
                             </div>}
                         </div>
                     );
@@ -420,7 +420,7 @@ class ContactList extends React.Component<IProps, IState> {
                                     className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
                                 {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                                 <div className="more" onClick={this.contextMenuOpenHandler(index)}>
-                                    <MoreVert/>
+                                    <MoreVertRounded/>
                                 </div>}
                             </Link>
                         </div>
@@ -446,7 +446,7 @@ class ContactList extends React.Component<IProps, IState> {
                             className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
                         {Boolean(this.props.onContextMenuAction && this.props.teamId === '0') &&
                         <div className="more" onClick={this.contextMenuOpenHandler(index)}>
-                            <MoreVert/>
+                            <MoreVertRounded/>
                         </div>}
                     </Link>
                 </div>

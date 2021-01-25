@@ -393,11 +393,11 @@
     "delete_and_exit": "Delete and Exit",
     "group_is_deactivated": "Group is deactivated",
     "edit_message": "Edit message",
-    "type_your_message_here": "Type your message here...",
+    "type_your_message_here": "Message...",
     "close": "Close",
     "remove": "Remove",
     "forward": "Forward",
-    "type": "Type..."
+    "type": "Message..."
   },
   "sign_up": {
     "sign_in_to_river": "Sign In to River",
@@ -556,7 +556,7 @@
     "join_call": "Join Call",
     "user_joined_the_call": "{0} joined the call",
     "user_left_the_call": "{0} left the call",
-    "user_kicked": "{0} kicked form the call",
+    "user_kicked": "{0} were kicked form the call",
     "user_not_answering": "{0} is not answering the call"
   }
 }

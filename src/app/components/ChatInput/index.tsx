@@ -339,7 +339,6 @@ class ChatInput extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.Lang) === 'fa' || false;
-    private readonly isMobileView: boolean = false;
     private preventMessageSend: boolean = false;
     private preventMessageSendTimeout: any = null;
     private emojiMap: { [key: string]: number } = {};
@@ -393,8 +392,6 @@ class ChatInput extends React.Component<IProps, IState> {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
         this.broadcaster = Broadcaster.getInstance();
-
-        this.isMobileView = (window.innerWidth < 600);
 
         emojiList.forEach((emoji, index) => {
             this.emojiMap[emoji.n] = index;
@@ -903,7 +900,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 onKeyUp={this.inputKeyUpHandler}
                                 onKeyDown={this.inputKeyDownHandler}
                                 className="mention"
-                                placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
+                                placeholder={i18n.t('input.type_your_message_here')}
                                 style={mentionInputStyle}
                                 suggestionsPortalHost={this.mentionContainer}
                                 onFocus={this.props.onFocus}

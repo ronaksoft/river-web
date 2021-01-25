@@ -11,7 +11,7 @@ import * as React from 'react';
 import {IconButton, Switch, TextField, MenuItem, Menu} from "@material-ui/core";
 import {
     KeyboardBackspaceRounded,
-    MoreVert,
+    MoreVertRounded,
     PersonRounded,
     StarRateRounded,
     GroupAddRounded,
@@ -392,7 +392,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                   teamId={this.state.team ? this.state.team.id || '0' : '0'}/>
                     </div>
                     <div className="more" onClick={this.contextMenuOpenHandler(index)}>
-                        <MoreVert/>
+                        <MoreVertRounded/>
                     </div>
                 </div>
             );

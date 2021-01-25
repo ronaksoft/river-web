@@ -492,7 +492,7 @@ class CallModal extends React.Component<IProps, IState> {
             </div>
             <div className="call-modal-action">
                 <CallSettings ref={this.callSettingsRefHandler} key="init-settings"
-                              onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
+                              onMediaSettingsChange={this.mediaSettingsChangeHandler} group={true}/>
                 {Boolean(callId === '0') ? <div className="call-buttons">
                     {/*<div className="call-item call-end" onClick={this.closeHandler}>
                         <CallEndRounded/>
@@ -533,6 +533,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private getCallContent() {
         const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize, localVideoInGrid} = this.state;
+        const isGroup = this.peer && this.peer.getType() === PeerType.PEERGROUP;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
             {!localVideoInGrid && <>
@@ -546,7 +547,7 @@ class CallModal extends React.Component<IProps, IState> {
                 </div>}
             </>}
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
-                       onClick={this.videoClickHandler(true)}/>
+                       onClick={this.videoClickHandler(true)} onContextMenu={this.callVideoContextMenuHandler}/>
             <div className="call-modal-header">
                 <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
                     {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
@@ -554,7 +555,7 @@ class CallModal extends React.Component<IProps, IState> {
                 <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                     {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                 </IconButton>
-                {this.peer && this.peer.getType() === PeerType.PEERUSER &&
+                {!isGroup &&
                 <IconButton className="call-action-item" onClick={this.toggleMinimizeHandler}>
                     {minimize ? <WebAssetRounded/> : <DynamicFeedRounded/>}
                 </IconButton>}
@@ -565,7 +566,7 @@ class CallModal extends React.Component<IProps, IState> {
             </audio>}
             <div className="call-modal-action main-call-action">
                 <CallSettings ref={this.callSettingsRefHandler} key="call-settings"
-                              onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
+                              onMediaSettingsChange={this.mediaSettingsChangeHandler} group={isGroup}/>
                 <div className="call-item call-end" onClick={this.hangupCallHandler}>
                     <CallEndRounded/>
                 </div>
@@ -585,6 +586,12 @@ class CallModal extends React.Component<IProps, IState> {
         if (this.callVideoRef && this.state.mode === 'call') {
             this.callVideoRef.addLocalVideo(this.state.localVideoInGrid, this.videoRefHandler);
             this.callVideoRef.initRemoteConnection();
+        }
+    }
+
+    private callVideoContextMenuHandler = (userId: string) => (e: any) => {
+        if (this.callSettingsRef) {
+            this.callSettingsRef.openContextMenu(userId, e);
         }
     }
 

@@ -27,7 +27,7 @@ import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
 import MessagePreview from '../MessagePreview';
 import MessageStatus from '../MessageStatus';
-import {ErrorRounded, MoreVert, TagFacesRounded} from '@material-ui/icons';
+import {ErrorRounded, MoreVertRounded, TagFacesRounded} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
@@ -1035,7 +1035,7 @@ class Message extends React.Component<IProps, IState> {
                                         />
                                     </div>
                                     <div className="more" onClick={bubbleClickHandler}>
-                                        <MoreVert onClick={this.contextMenuHandler(index)}/>
+                                        <MoreVertRounded onClick={this.contextMenuHandler(index)}/>
                                     </div>
                                 </div>
                                 {Boolean(message.replymarkup === C_REPLY_ACTION.ReplyInlineMarkup && message.replydata) &&

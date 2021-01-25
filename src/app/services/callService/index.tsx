@@ -9,7 +9,7 @@
 
 import UpdateManager from "../sdk/updateManager";
 import {C_LOCALSTORAGE, C_MSG} from "../sdk/const";
-import {UpdatePhoneCall} from "../sdk/messages/updates_pb";
+import {UpdatePhoneCall, UpdatePhoneCallEnded} from "../sdk/messages/updates_pb";
 import {
     DiscardReason,
     PhoneActionAccepted,
@@ -195,6 +195,7 @@ export default class CallService {
         this.apiManager = APIManager.getInstance();
 
         this.updateManager.listen(C_MSG.UpdatePhoneCall, this.phoneCallHandler);
+        this.updateManager.listen(C_MSG.UpdatePhoneCallEnded, this.phoneCallEndedHandler);
     }
 
     public setDialogOpenFunction(fn: any) {
@@ -242,6 +243,10 @@ export default class CallService {
 
     public getMediaDevice() {
         return this.mediaDevice;
+    }
+
+    public getActiveCallId() {
+        return this.activeCallId;
     }
 
     public initStream(constraints: MediaStreamConstraints) {
@@ -417,7 +422,7 @@ export default class CallService {
         });
     }
 
-    private callRemoveParticipant(callId: string, userIds: string[], timeout: boolean) {
+    public callRemoveParticipant(callId: string, userIds: string[], timeout: boolean) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
@@ -431,6 +436,17 @@ export default class CallService {
         return this.apiManager.callRemoveParticipant(peer, callId, inputUsers, timeout).then(() => {
             return Promise.resolve();
         });
+    }
+
+    public getParticipantByUserId(callId: string, userId: string): ICallParticipant | undefined {
+        if (!this.callInfo.hasOwnProperty(callId)) {
+            return undefined;
+        }
+        const connId = this.callInfo[callId].participantMap[userId];
+        if (connId === undefined) {
+            return undefined;
+        }
+        return this.callInfo[callId].participants[connId];
     }
 
     public getParticipantList(callId: string, excludeCurrent?: boolean): ICallParticipant[] {
@@ -559,6 +575,12 @@ export default class CallService {
             case PhoneCallAction.PHONECALLPARTICIPANTREMOVED:
                 this.participantRemoved(data);
                 break;
+        }
+    }
+
+    private phoneCallEndedHandler = (data: UpdatePhoneCallEnded.AsObject) => {
+        if (this.peer && this.peer.getId() === data.peer.id && this.peer.getType() === data.peer.type) {
+            this.callHandlers(C_CALL_EVENT.CallRejected, {});
         }
     }
 

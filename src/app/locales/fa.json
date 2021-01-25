@@ -390,11 +390,11 @@
     "delete_and_exit": "حذف و خروج",
     "group_is_deactivated": "گروه غیرفعال شده",
     "edit_message": "ویرایش پیام",
-    "type_your_message_here": "پیام خود را بنویسید...",
+    "type_your_message_here": "پیام...",
     "close": "لغو",
     "remove": "حذف",
     "forward": "هدایت",
-    "type": "بنویسید..."
+    "type": "پیام..."
   },
   "sign_up": {
     "sign_in_to_river": "ورود به ریور",

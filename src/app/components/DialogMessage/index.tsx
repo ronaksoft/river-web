@@ -20,7 +20,7 @@ import {
     GifOutlined,
     InsertDriveFileOutlined,
     LocationOnOutlined,
-    MoreVert,
+    MoreVertRounded,
     MusicNoteOutlined,
     NotificationsOffRounded,
     PeopleOutlined,
@@ -332,7 +332,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                     {hasMention && <span className="mention"><AlternateEmailRounded/></span>}
                     {Boolean(dialog.only_contact !== true) &&
                     <div className="more" onClick={onContextMenuOpen}>
-                        <MoreVert/>
+                        <MoreVertRounded/>
                     </div>}
                 </div>
             </div>

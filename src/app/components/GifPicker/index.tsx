@@ -11,7 +11,7 @@ import * as React from 'react';
 import i18n from '../../services/i18n';
 import Scrollbars from "react-custom-scrollbars";
 import {debounce} from "lodash";
-import {MoreVert} from "@material-ui/icons";
+import {MoreVertRounded} from "@material-ui/icons";
 import GifRepo from "../../repository/gif";
 import {IGif} from "../../repository/gif/interface";
 import CachedPhoto from "../CachedPhoto";
@@ -112,7 +112,7 @@ class GifPicker extends React.Component<IProps, IState> {
                                             onContextMenu={this.gifContextMenuHandler(index)}
                                             onClick={this.gifClickHandler(index)}>
                                     {!item.remote && <div className="more">
-                                        <MoreVert onClick={this.contextMenuHandler(index)}/>
+                                        <MoreVertRounded onClick={this.contextMenuHandler(index)}/>
                                     </div>}
                                     {this.getGifContent(item, index)}
                                 </div>;

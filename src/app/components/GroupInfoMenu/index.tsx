@@ -16,7 +16,7 @@ import {
     EditRounded,
     ExitToAppRounded,
     KeyboardBackspaceRounded,
-    MoreVert,
+    MoreVertRounded,
     PhotoCameraRounded,
     StarRateRounded,
     StarsRounded,
@@ -372,7 +372,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                 {isAdmin && participant.type !== ParticipantType.PARTICIPANTTYPECREATOR &&
                                                 <div className="more"
                                                      onClick={this.moreOpenHandler(participant)}>
-                                                    <MoreVert/>
+                                                    <MoreVertRounded/>
                                                 </div>}
                                             </div>
                                         );

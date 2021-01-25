@@ -26,6 +26,7 @@ export interface IRemoteConnection {
 
 interface IProps {
     onClick?: (e: any) => void;
+    onContextMenu: (userId: string) => (e: any) => void;
     callId: string;
     userId: string;
 }
@@ -170,7 +171,8 @@ class CallVideo extends React.Component<IProps, IState> {
                 }
             };
             return (<div key={item.connId} className="call-user-container"
-                         style={gridHeight ? {height: `${gridHeight}px`} : undefined}>
+                         style={gridHeight ? {height: `${gridHeight}px`} : undefined}
+                         onContextMenu={this.props.onContextMenu(item.userId)}>
                 <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
                                       srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
                                       autoPlay={true} userId={item.userId}/>
