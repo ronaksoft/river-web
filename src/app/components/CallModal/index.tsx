@@ -216,6 +216,7 @@ class CallModal extends React.Component<IProps, IState> {
         const enableDrag = mode === 'call';
         const dialogRenderer = () => {
             return <Dialog
+                key="call-modal"
                 open={open}
                 onClose={this.closeHandler}
                 className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain') + (minimize ? ' minimize' : '')}
@@ -233,9 +234,9 @@ class CallModal extends React.Component<IProps, IState> {
         };
         return (
             <>
-                {Boolean(enableDrag && !fullscreen) ?
+                {Boolean(enableDrag) ?
                     <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
-                               positionOffset={this.getDraggableOffset()}>
+                               positionOffset={this.getDraggableOffset()} disabled={fullscreen}>
                         {dialogRenderer()}
                     </Draggable> : dialogRenderer()}
                 <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
@@ -309,6 +310,10 @@ class CallModal extends React.Component<IProps, IState> {
     private toggleFullscreenHandler = () => {
         this.setState({
             fullscreen: !this.state.fullscreen,
+        }, () => {
+            if (this.callVideoRef) {
+                this.callVideoRef.resize(this.state.fullscreen);
+            }
         });
     }
 
@@ -489,9 +494,9 @@ class CallModal extends React.Component<IProps, IState> {
                 <CallSettings ref={this.callSettingsRefHandler} key="init-settings"
                               onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
                 {Boolean(callId === '0') ? <div className="call-buttons">
-                    <div className="call-item call-end" onClick={this.closeHandler}>
+                    {/*<div className="call-item call-end" onClick={this.closeHandler}>
                         <CallEndRounded/>
-                    </div>
+                    </div>*/}
                     <div className="call-item call-accept" onClick={this.callHandler()}>
                         <CallRounded/>
                     </div>
@@ -567,6 +572,10 @@ class CallModal extends React.Component<IProps, IState> {
                 {callStarted && <div className="call-timer">
                     <CallTimer ref={this.callTimerRef}/>
                 </div>}
+                {/*{this.peer && this.peer.getType() === PeerType.PEERGROUP &&
+                <IconButton>
+                    <PeopleRounded/>
+                </IconButton>}*/}
             </div>
         </div>;
     }
@@ -574,6 +583,7 @@ class CallModal extends React.Component<IProps, IState> {
     private callVideoRefHandler = (ref: any) => {
         this.callVideoRef = ref;
         if (this.callVideoRef && this.state.mode === 'call') {
+            this.callVideoRef.addLocalVideo(this.state.localVideoInGrid, this.videoRefHandler);
             this.callVideoRef.initRemoteConnection();
         }
     }

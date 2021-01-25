@@ -120,18 +120,8 @@
         align-items: center;
         justify-content: center;
 
-        .call-settings-switch {
-          margin: 0 12px;
-
-          .MuiIconButton-root {
-            padding: 9px;
-          }
-
-          .MuiTypography-root {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
+        .call-settings-item {
+          color: var(--white);
         }
       }
 
@@ -157,6 +147,10 @@
         align-items: center;
         justify-content: center;
         box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.3);
+
+        &:hover {
+          filter: brightness(1.1);
+        }
 
         svg {
           color: var(--white);
@@ -202,6 +196,8 @@
   }
 
   &.fullscreen {
+    transform: none !important;
+
     .call-modal-paper {
       transform: none !important;
     }
@@ -297,12 +293,24 @@
 
       .call-modal-action {
         opacity: 1;
-        justify-content: center;
-        flex-direction: column;
-        height: 128px;
+        justify-content: space-between;
+        flex-direction: row;
+        height: 64px;
+        padding: 0 12px 24px;
 
         .call-settings {
-          padding-bottom: 12px;
+          display: flex;
+          justify-content: space-evenly;
+          align-content: center;
+          min-width: 128px;
+
+          .call-settings-item {
+            opacity: 0.5;
+
+            &:hover {
+              opacity: 1;
+            }
+          }
         }
 
         .call-buttons {
@@ -311,8 +319,13 @@
           justify-content: center;
 
           .call-item {
-            margin: 0 24px;
+            margin: 0 12px;
             transform: scale(0.8);
+            opacity: 0.5;
+
+            &:hover {
+              opacity: 1;
+            }
           }
         }
       }
@@ -404,7 +417,7 @@
           position: absolute;
           top: 0;
           bottom: 0;
-          left: 12px;
+          left: 24px;
         }
 
         .call-timer {
@@ -507,7 +520,15 @@
           height: 72px;
 
           .call-settings {
-            display: none !important;
+            left: 12px;
+
+            button {
+              padding: 10px;
+
+              svg {
+                font-size: 18px;
+              }
+            }
           }
 
           .call-item {

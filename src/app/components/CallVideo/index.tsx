@@ -32,6 +32,7 @@ interface IProps {
 
 interface IState {
     callId: string;
+    gridHeight: number | undefined;
     localVideo: boolean;
 }
 
@@ -55,6 +56,7 @@ class CallVideo extends React.Component<IProps, IState> {
 
         this.state = {
             callId: props.callId,
+            gridHeight: undefined,
             localVideo: false,
         };
 
@@ -115,19 +117,30 @@ class CallVideo extends React.Component<IProps, IState> {
     }
 
     public addLocalVideo(enable: boolean, refFn?: (ref: any) => void) {
-        if (refFn) {
+        if (refFn && enable) {
             this.localVideoRefFn = refFn;
         }
-        this.setState({
-            localVideo: enable,
-        });
+        if (this.state.localVideo !== enable) {
+            this.setState({
+                localVideo: enable,
+            }, () => {
+                this.calculateGridHeight();
+            });
+        }
+    }
+
+    public resize(fullscreen?: boolean) {
+        setTimeout(() => {
+            this.calculateGridHeight(fullscreen);
+        }, fullscreen ? 10 : 511);
     }
 
     public render() {
-        const {localVideo} = this.state;
+        const {localVideo, gridHeight} = this.state;
         return (<div className={'call-video cp-' + (this.videoRemoteRefs.length + (localVideo ? 1 : 0))}
                      onClick={this.props.onClick}>
-            {localVideo && <div className="call-user-container">
+            {localVideo &&
+            <div className="call-user-container" style={gridHeight ? {height: `${gridHeight}px`} : undefined}>
                 <div className="video-placeholder">
                     <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true}/>
                 </div>
@@ -145,6 +158,7 @@ class CallVideo extends React.Component<IProps, IState> {
                     >{i18n.t(item.status ? 'call.is_ringing' : 'call.is_calling')}</div>
                 </div>;
             }
+            const {gridHeight} = this.state;
             const videoRemoteRefHandler = (ref: CallVideoPlaceholder) => {
                 item.media = ref;
                 const streams = this.callService.getRemoteStreams(item.connId);
@@ -155,7 +169,8 @@ class CallVideo extends React.Component<IProps, IState> {
                     item.media.setVideo(item.streams[0]);
                 }
             };
-            return (<div className="call-user-container" key={item.connId}>
+            return (<div key={item.connId} className="call-user-container"
+                         style={gridHeight ? {height: `${gridHeight}px`} : undefined}>
                 <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
                                       srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
                                       autoPlay={true} userId={item.userId}/>
@@ -184,6 +199,27 @@ class CallVideo extends React.Component<IProps, IState> {
                 streams: undefined,
                 userId: participant.peer.userid || '0',
             })));
+        }
+        this.calculateGridHeight();
+    }
+
+    private calculateGridHeight(fullscreen?: boolean) {
+        const {gridHeight, localVideo} = this.state;
+        const el = document.querySelector(fullscreen ? 'body' : '.call-modal-content');
+        let gh: number | undefined = undefined;
+        if (el) {
+            const gridCount = (this.videoRemoteRefs.length + (localVideo ? 1 : 0));
+            const height = el.clientHeight;
+            if (gridCount >= 7) {
+                gh = height / 3;
+            } else if (gridCount >= 3) {
+                gh = height / 2;
+            }
+        }
+        if (gridHeight !== gh) {
+            this.setState({
+                gridHeight: gh,
+            });
         }
     }
 }

@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {FormControlLabel, Switch} from "@material-ui/core";
+import {IconButton} from "@material-ui/core";
 import {MicOffRounded, MicRounded, VideocamOffRounded, VideocamRounded} from "@material-ui/icons";
 import CallService, {C_CALL_EVENT} from "../../services/callService";
 import i18n from '../../services/i18n';
@@ -88,45 +88,27 @@ class CallSettings extends React.Component<IProps, IState> {
         const {mediaSettings, muteNotice} = this.state;
         return <>
             <div className="call-settings">
-                <FormControlLabel
-                    className="call-settings-switch"
-                    control={
-                        <Switch
-                            checked={mediaSettings.video}
-                            onChange={this.mediaSettingsChangeHandler('video')}
-                            color="primary"
-                        />
-                    }
-                    label={mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
-                    labelPlacement="start"
-                />
-                <FormControlLabel
-                    className="call-settings-switch"
-                    control={
-                        <Switch
-                            checked={mediaSettings.audio}
-                            onChange={this.mediaSettingsChangeHandler('audio')}
-                            color="primary"
-                        />
-                    }
-                    label={mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
-                    labelPlacement="start"
-                />
+                <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('video')}>
+                    {mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
+                </IconButton>
+                <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('audio')}>
+                    {mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
+                </IconButton>
             </div>
             {muteNotice && <div className="call-settings-notice">{i18n.t('call.audio_muted')}</div>}
         </>;
     }
 
-    private mediaSettingsChangeHandler = (key: string) => (e: any, checked: boolean) => {
+    private mediaSettingsChangeHandler = (key: string) => (e: any) => {
         const {mediaSettings} = this.state;
-        mediaSettings[key] = checked;
+        mediaSettings[key] = !mediaSettings[key];
         this.setState({
             mediaSettings,
         });
         if (key === 'audio') {
-            this.callService.toggleAudio(checked);
+            this.callService.toggleAudio(mediaSettings[key]);
         } else if (key === 'video') {
-            this.callService.toggleVideo(checked);
+            this.callService.toggleVideo(mediaSettings[key]);
         }
         if (this.props.onMediaSettingsChange) {
             this.props.onMediaSettingsChange(clone(mediaSettings));
@@ -183,11 +165,11 @@ class CallSettings extends React.Component<IProps, IState> {
         }
         val = val / 10;
         const {muteNotice} = this.state;
-        if (val > 40 && !muteNotice) {
+        if (val > 15 && !muteNotice) {
             this.setState({
                 muteNotice: true,
             });
-        } else if (val < 35 && muteNotice) {
+        } else if (val < 10 && muteNotice) {
             this.setState({
                 muteNotice: false,
             });

@@ -14,7 +14,7 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 import './index.css';
 
-export const C_VERSION = '1.0.39';
+export const C_VERSION = '1.0.40';
 export const C_ELECTRON_VERSIONS = ['11.1.1', '8.5.2'];
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 

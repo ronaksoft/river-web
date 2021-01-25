@@ -1,3 +1,6 @@
+## 1.0.40
+* Call improvements
+
 ## 1.0.39
 * File save optimized
 
