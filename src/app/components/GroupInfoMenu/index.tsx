@@ -228,7 +228,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             dialog, uploadingPhoto, shareMediaEnabled, disable,
         } = this.state;
         const isAdmin = group ? hasAuthority(group, false) : false;
-        const hasAccess = group ? hasAuthority(group, true) && !disable : false;
+        const hasAccess = disable ? false : group ? hasAuthority(group, true) : false;
         const allMemberAdmin = group && (group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
         return (
             <div className="group-info-menu">
@@ -879,11 +879,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Avatar menu anchor open handler */
     private avatarMenuAnchorOpenHandler = (e: any) => {
-        const {group} = this.state;
+        const {group, disable} = this.state;
         if (!group) {
             return;
         }
-        if (hasAuthority(group, true)) {
+        if (!disable && hasAuthority(group, true)) {
             this.setState({
                 avatarMenuAnchorEl: e.currentTarget,
             });
