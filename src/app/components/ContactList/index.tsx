@@ -244,12 +244,20 @@ class ContactList extends React.Component<IProps, IState> {
             <div className="contact-list">
                 <div className="contact-input-container">
                     {Boolean(this.props.mode === 'chip') && <ChipInput
-                        label={i18n.t('contact.search_contact')}
+                        placeholder={i18n.t('contact.search_contact')}
                         value={selectedContacts}
                         chipRenderer={this.chipRenderer}
                         fullWidth={true}
                         onUpdateInput={this.searchChangeHandler}
                         onDelete={this.removeMemberHandler}
+                        variant="outlined"
+                        margin="dense"
+                        InputProps={{
+                            startAdornment:
+                                <InputAdornment position="start" className="search-adornment">
+                                    <SearchRounded/>
+                                </InputAdornment>
+                        }}
                         // @ts-ignore
                         classes={{}}
                         className="contact-chips-container"

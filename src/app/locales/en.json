@@ -557,6 +557,7 @@
     "user_joined_the_call": "{0} joined the call",
     "user_left_the_call": "{0} left the call",
     "user_kicked": "{0} were kicked form the call",
-    "user_not_answering": "{0} is not answering the call"
+    "user_not_answering": "{0} is not answering the call",
+    "add_participant": "Add participant"
   }
 }

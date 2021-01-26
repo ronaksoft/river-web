@@ -35,7 +35,6 @@ import {CallTimer, timerFormat} from "../CallTimer";
 import Rating from '@material-ui/lab/Rating';
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import ContactPicker from "../ContactPicker";
-import {IUser} from "../../repository/user/interface";
 import APIManager, {currentUserId} from "../../services/sdk";
 import CallVideo from "../CallVideo";
 import CallSettings, {IMediaSettings} from "../CallSettings";
@@ -66,7 +65,7 @@ interface IState {
     isCaller: boolean;
     localVideoInGrid: boolean;
     minimize: boolean;
-    mode: 'call_init' | 'call_request' | 'call' | 'call_report' | 'call_unavailable';
+    mode: 'call_init' | 'call_request' | 'call_join_request' | 'call' | 'call_report' | 'call_unavailable';
     open: boolean;
     rate: number | null;
     resetPosition: boolean;
@@ -81,23 +80,6 @@ const TransitionEffect = React.forwardRef(function Transition(
 ) {
     return <Grow ref={ref} {...props} />;
 });
-
-// function PaperComponent(props: Merge<PaperProps, IPaperProps>) {
-//     const dragRef = useRef<boolean>(false);
-//     if (!props.offset) {
-//         dragRef.current = false;
-//     }
-//     const stopHandler: DraggableEventHandler = (e, data) => {
-//         dragRef.current = Boolean(data.x || data.y);
-//     };
-//     return (
-//         <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
-//                    key={props.offset && dragRef.current ? 'minimized' : 'normal'} positionOffset={props.offset}
-//                    disabled={props.disabled} onStop={stopHandler}>
-//             <Paper {...props} />
-//         </Draggable>
-//     );
-// }
 
 class CallModal extends React.Component<IProps, IState> {
     private teamId: string = '0';
@@ -168,7 +150,17 @@ class CallModal extends React.Component<IProps, IState> {
                     groupId: this.peer.getId() || '0',
                 }, () => {
                     if (this.contactPickerRef) {
-                        this.contactPickerRef.openDialog();
+                        this.contactPickerRef.openDialogPromise().then((res) => {
+                            if (res.ok) {
+                                this.groupParticipant = res.contacts.map((u) => ({
+                                    accesshash: u.accesshash,
+                                    userid: u.id,
+                                }));
+                                this.showPreview(true);
+                            } else {
+                                this.closeHandler();
+                            }
+                        });
                     }
                 });
             }
@@ -188,6 +180,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRequested, this.eventCallRequestedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallJoinRequested, this.eventCallJoinRequestedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallAccepted, this.eventCallAcceptedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallPreview, this.eventCallJoinedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallRejected, this.eventCallRejectedHandler));
@@ -239,9 +232,9 @@ class CallModal extends React.Component<IProps, IState> {
                                positionOffset={this.getDraggableOffset()} disabled={fullscreen}>
                         {dialogRenderer()}
                     </Draggable> : dialogRenderer()}
-                <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
-                               groupId={groupId} teamId={this.teamId} sendIcon={<CheckRounded/>}
-                               title={i18n.t('general.choose_recipient')} limit={11} selectAll={true}/>
+                <ContactPicker ref={this.contactPickerRefHandler} groupId={groupId} teamId={this.teamId}
+                               sendIcon={<CheckRounded/>} title={i18n.t('general.choose_recipient')} limit={11}
+                               selectAll={true}/>
                 <SettingsModal open={settingsOpen} title={i18n.t('settings.media_input.title')}
                                icon={<CheckRounded/>} onDone={this.settingsModalDoneHandler}
                                onClose={this.settingsModalCloseHandler} height="486px" noScrollbar={true}
@@ -364,6 +357,7 @@ class CallModal extends React.Component<IProps, IState> {
         const {mode} = this.state;
         switch (mode) {
             case 'call_request':
+            case 'call_join_request':
                 return this.getRequestedContent();
             case 'call_unavailable':
                 return this.getCallUnavailableContent();
@@ -378,8 +372,9 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getRequestedContent() {
-        const {callUserId} = this.state;
+        const {callUserId, mode} = this.state;
         const mediaDevice = this.callService.getMediaDevice();
+        const join = mode === 'call_join_request';
         return <div className="call-modal-content">
             {callUserId && <UserAvatar className="call-user-bg" id={callUserId} noDetail={true} big={true}/>}
             <div className="call-info">
@@ -392,10 +387,13 @@ class CallModal extends React.Component<IProps, IState> {
                 <div className="call-item call-end" onClick={this.rejectCallHandler}>
                     <CallEndRounded/>
                 </div>
-                <div className="call-item call-accept" onClick={this.callAcceptHandler(false)}>
+                <div className="call-item call-accept"
+                     onClick={join ? this.callJoinHandler(false) : this.callAcceptHandler(false)}>
                     <CallRounded/>
                 </div>
-                {mediaDevice.video && <div className="call-item call-accept" onClick={this.callAcceptHandler(true)}>
+                {mediaDevice.video &&
+                <div className="call-item call-accept"
+                     onClick={join ? this.callJoinHandler(true) : this.callAcceptHandler(true)}>
                     <VideocamRounded/>
                 </div>}
             </div>
@@ -492,7 +490,7 @@ class CallModal extends React.Component<IProps, IState> {
             </div>
             <div className="call-modal-action">
                 <CallSettings ref={this.callSettingsRefHandler} key="init-settings"
-                              onMediaSettingsChange={this.mediaSettingsChangeHandler} group={true}/>
+                              onMediaSettingsChange={this.mediaSettingsChangeHandler}/>
                 {Boolean(callId === '0') ? <div className="call-buttons">
                     {/*<div className="call-item call-end" onClick={this.closeHandler}>
                         <CallEndRounded/>
@@ -504,7 +502,7 @@ class CallModal extends React.Component<IProps, IState> {
                     <div className="call-item call-end" onClick={this.rejectCallHandler}>
                         <CallEndRounded/>
                     </div>
-                    <div className="call-item call-accept" onClick={this.callHandler(true)}>
+                    <div className="call-item call-accept" onClick={this.callHandler(callId)}>
                         <CallRounded/>
                     </div>
                 </div>}
@@ -535,7 +533,7 @@ class CallModal extends React.Component<IProps, IState> {
         const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize, localVideoInGrid} = this.state;
         const isGroup = this.peer && this.peer.getType() === PeerType.PEERGROUP;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
-                    className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '')}>
+                    className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '') + (isGroup ? ' group-call' : '')}>
             {!localVideoInGrid && <>
                 <div className="local-video">
                     <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
@@ -566,7 +564,9 @@ class CallModal extends React.Component<IProps, IState> {
             </audio>}
             <div className="call-modal-action main-call-action">
                 <CallSettings ref={this.callSettingsRefHandler} key="call-settings"
-                              onMediaSettingsChange={this.mediaSettingsChangeHandler} group={isGroup}/>
+                              onMediaSettingsChange={this.mediaSettingsChangeHandler} group={isGroup}
+                              onAddParticipant={this.callSettingsAddParticipantHandler}
+                />
                 <div className="call-item call-end" onClick={this.hangupCallHandler}>
                     <CallEndRounded/>
                 </div>
@@ -590,6 +590,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private callVideoContextMenuHandler = (userId: string) => (e: any) => {
+        e.preventDefault();
         if (this.callSettingsRef) {
             this.callSettingsRef.openContextMenu(userId, e);
         }
@@ -632,7 +633,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private callHandler = (join?: boolean) => () => {
+    private callHandler = (callId?: string) => () => {
         if (this.loading) {
             return;
         }
@@ -652,7 +653,7 @@ class CallModal extends React.Component<IProps, IState> {
         });
         if (this.peer) {
             const callFn = () => {
-                this.callService.callStart(this.peer, this.getRecipients(), join || false).then((callId) => {
+                this.callService.callStart(this.peer, this.getRecipients(), callId).then((callId) => {
                     this.setState({
                         callId,
                     }, () => {
@@ -710,6 +711,15 @@ class CallModal extends React.Component<IProps, IState> {
         });
     }
 
+    private callJoinHandler = (video: boolean) => () => {
+        this.callService.initStream({
+            audio: getDefaultAudio(),
+            video: video ? getDefaultVideo() : false
+        }).then((stream) => {
+            this.callHandler(this.state.callId)();
+        });
+    }
+
     private rejectCallHandler = () => {
         this.callService.callReject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
             window.console.log(err);
@@ -735,7 +745,7 @@ class CallModal extends React.Component<IProps, IState> {
                     this.callService.destroy();
                     this.callService.destroyConnections(this.state.callId);
                 }
-            } else {
+            } else if (this.state.mode !== 'call_report') {
                 this.closeHandler();
             }
         }).finally(() => {
@@ -743,8 +753,8 @@ class CallModal extends React.Component<IProps, IState> {
         });
     }
 
-    private eventCallRequestedHandler = (data: IUpdatePhoneCall) => {
-        if (this.state.mode !== 'call_request' && !window.document.hasFocus()) {
+    private focus() {
+        if (this.state.mode !== 'call_request' && this.state.mode !== 'call_join_request' && !window.document.hasFocus()) {
             const popupWin = window.open('url', 'call_request', 'scrollbars=no,resizable=yes, width=1,height=1,status=no,location=no,toolbar=no');
             if (popupWin) {
                 popupWin.focus();
@@ -752,7 +762,10 @@ class CallModal extends React.Component<IProps, IState> {
             }
             window.focus();
         }
+    }
 
+    private eventCallRequestedHandler = (data: IUpdatePhoneCall) => {
+        this.focus();
         if (this.state.callId === '0') {
             this.mainRepo.getInputPeerBy(data.peerid, data.peertype).then((peer) => {
                 this.peer = peer;
@@ -762,6 +775,17 @@ class CallModal extends React.Component<IProps, IState> {
             callId: data.callid || '0',
             callUserId: data.userid || '0',
             mode: 'call_request',
+            open: true,
+        });
+    }
+
+    private eventCallJoinRequestedHandler = ({callId, calleeId, peer}: { callId: string, calleeId: string, peer: InputPeer }) => {
+        this.focus();
+        this.peer = peer;
+        this.setState({
+            callId: callId,
+            callUserId: calleeId,
+            mode: 'call_join_request',
             open: true,
         });
     }
@@ -777,7 +801,10 @@ class CallModal extends React.Component<IProps, IState> {
         this.showPreview(true, callId);
     }
 
-    private eventCallRejectedHandler = (data: IUpdatePhoneCall) => {
+    private eventCallRejectedHandler = () => {
+        if (this.state.mode === 'call_report') {
+            return;
+        }
         const {callId, isCaller} = this.state;
         this.callService.destroyConnections(callId);
         if (this.timeStart === 0) {
@@ -816,7 +843,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private eventCallCancelledHandler = ({callId}: { callId: string }) => {
-        if (this.state.mode === 'call_request' && this.state.callId === callId) {
+        if ((this.state.mode === 'call_request' || this.state.mode === 'call_join_request') && this.state.callId === callId) {
             this.closeHandler();
         }
     }
@@ -830,6 +857,12 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private eventStreamUpdatedHandler = ({connId, streams}: { connId: number, streams: MediaStream[] }) => {
+        if (!this.state.callStarted) {
+            this.setState({
+                callStarted: true,
+            });
+        }
+
         if (!this.callVideoRef) {
             return;
         }
@@ -839,11 +872,6 @@ class CallModal extends React.Component<IProps, IState> {
         this.callVideoRef.setStream(connId, streams);
         if (!this.timeStart) {
             this.timeStart = Date.now();
-        }
-        if (!this.state.callStarted) {
-            this.setState({
-                callStarted: true,
-            });
         }
     }
 
@@ -964,16 +992,28 @@ class CallModal extends React.Component<IProps, IState> {
         this.contactPickerRef = ref;
     }
 
-    private contactPickerDoneHandler = (contacts: IUser[], caption: string) => {
-        this.groupParticipant = contacts.map((u) => ({
-            accesshash: u.accesshash,
-            userid: u.id,
-        }));
-        this.showPreview(true);
-    }
-
     private callSettingsRefHandler = (ref: any) => {
         this.callSettingsRef = ref;
+    }
+
+    private callSettingsAddParticipantHandler = () => {
+        const {callId} = this.state;
+        if (this.contactPickerRef) {
+            this.contactPickerRef.openDialogPromise(this.groupParticipant.map(o => ({id: o.userid}))).then((res) => {
+                if (res.ok && res.contacts.length > 0) {
+                    const inputUsers: InputUser[] = [];
+                    res.contacts.forEach((contact) => {
+                        const inputUser = new InputUser();
+                        inputUser.setAccesshash(contact.accesshash);
+                        inputUser.setUserid(contact.id);
+                        inputUsers.push(inputUser);
+                    });
+                    this.callService.callAddParticipant(callId, inputUsers).then((res) => {
+                        window.console.log(res);
+                    });
+                }
+            });
+        }
     }
 
     private setTeam = (teamId: string) => {

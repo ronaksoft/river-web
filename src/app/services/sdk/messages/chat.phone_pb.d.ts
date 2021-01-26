@@ -309,6 +309,124 @@ export namespace PhoneRateCall {
   }
 }
 
+export class PhoneGetHistory extends jspb.Message {
+  getLimit(): number;
+  setLimit(value: number): void;
+
+  getAfter(): number;
+  setAfter(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneGetHistory.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneGetHistory): PhoneGetHistory.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneGetHistory, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneGetHistory;
+  static deserializeBinaryFromReader(message: PhoneGetHistory, reader: jspb.BinaryReader): PhoneGetHistory;
+}
+
+export namespace PhoneGetHistory {
+  export type AsObject = {
+    limit: number,
+    after: number,
+  }
+}
+
+export class PhoneCallRecord extends jspb.Message {
+  getUserid(): string;
+  setUserid(value: string): void;
+
+  getTeamid(): string;
+  setTeamid(value: string): void;
+
+  getCallid(): string;
+  setCallid(value: string): void;
+
+  getCreatedon(): number;
+  setCreatedon(value: number): void;
+
+  getEndedon(): number;
+  setEndedon(value: number): void;
+
+  getIncoming(): boolean;
+  setIncoming(value: boolean): void;
+
+  getPeerid(): string;
+  setPeerid(value: string): void;
+
+  getPeertype(): number;
+  setPeertype(value: number): void;
+
+  getStatus(): number;
+  setStatus(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneCallRecord.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneCallRecord): PhoneCallRecord.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneCallRecord, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneCallRecord;
+  static deserializeBinaryFromReader(message: PhoneCallRecord, reader: jspb.BinaryReader): PhoneCallRecord;
+}
+
+export namespace PhoneCallRecord {
+  export type AsObject = {
+    userid: string,
+    teamid: string,
+    callid: string,
+    createdon: number,
+    endedon: number,
+    incoming: boolean,
+    peerid: string,
+    peertype: number,
+    status: number,
+  }
+}
+
+export class PhoneCallsMany extends jspb.Message {
+  clearPhonecallsList(): void;
+  getPhonecallsList(): Array<PhoneCallRecord>;
+  setPhonecallsList(value: Array<PhoneCallRecord>): void;
+  addPhonecalls(value?: PhoneCallRecord, index?: number): PhoneCallRecord;
+
+  clearUsersList(): void;
+  getUsersList(): Array<core_types_pb.User>;
+  setUsersList(value: Array<core_types_pb.User>): void;
+  addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
+
+  clearGroupsList(): void;
+  getGroupsList(): Array<core_types_pb.Group>;
+  setGroupsList(value: Array<core_types_pb.Group>): void;
+  addGroups(value?: core_types_pb.Group, index?: number): core_types_pb.Group;
+
+  getContinuous(): boolean;
+  setContinuous(value: boolean): void;
+
+  getEmpty(): boolean;
+  setEmpty(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneCallsMany.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneCallsMany): PhoneCallsMany.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneCallsMany, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneCallsMany;
+  static deserializeBinaryFromReader(message: PhoneCallsMany, reader: jspb.BinaryReader): PhoneCallsMany;
+}
+
+export namespace PhoneCallsMany {
+  export type AsObject = {
+    phonecallsList: Array<PhoneCallRecord.AsObject>,
+    usersList: Array<core_types_pb.User.AsObject>,
+    groupsList: Array<core_types_pb.Group.AsObject>,
+    continuous: boolean,
+    empty: boolean,
+  }
+}
+
 export class PhoneCall extends jspb.Message {
   getId(): string;
   setId(value: string): void;
@@ -697,6 +815,28 @@ export namespace PhoneActionParticipantRemoved {
   }
 }
 
+export class PhoneActionJoinRequested extends jspb.Message {
+  clearUseridsList(): void;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionJoinRequested.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionJoinRequested): PhoneActionJoinRequested.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionJoinRequested, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionJoinRequested;
+  static deserializeBinaryFromReader(message: PhoneActionJoinRequested, reader: jspb.BinaryReader): PhoneActionJoinRequested;
+}
+
+export namespace PhoneActionJoinRequested {
+  export type AsObject = {
+    useridsList: Array<string>,
+  }
+}
+
 export class PhoneActionMediaSettingsUpdated extends jspb.Message {
   getVideo(): boolean;
   setVideo(value: boolean): void;
@@ -839,7 +979,7 @@ export enum PhoneCallAction {
   PHONECALLACK = 10,
   PHONECALLPARTICIPANTADDED = 11,
   PHONECALLPARTICIPANTREMOVED = 12,
-  PHONECALLRESERVED9 = 13,
+  PHONECALLJOINREQUESTED = 13,
   PHONECALLRESERVED10 = 14,
   PHONECALLRESERVED11 = 15,
   PHONECALLRESERVED12 = 16,

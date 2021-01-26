@@ -69,7 +69,7 @@ message PhoneJoinCall {
 
 // PhoneAddParticipant
 // @Function
-// @Return: PhoneParticipants
+// @Return: Bool
 message PhoneAddParticipant {
     InputPeer Peer = 1;
     int64 CallID = 2 [jstype = JS_STRING];
@@ -108,6 +108,34 @@ message PhoneRateCall {
     bytes ReasonData = 5;
 }
 
+// PhoneGetHistory
+// @Function
+// Returns:     PhoneCallsMany
+message PhoneGetHistory {
+    int32 Limit = 1;
+    int64 After = 2;
+}
+
+message PhoneCallRecord {
+    int64 UserID = 1 [jstype = JS_STRING];
+    int64 TeamID = 2 [jstype = JS_STRING];
+    int64 CallID = 3 [jstype = JS_STRING];
+    int64 CreatedOn = 4;
+    int64 EndedOn = 5;
+    bool Incoming = 6;
+    int64 PeerID = 7 [jstype = JS_STRING];
+    int32 PeerType = 8;
+    int32 Status = 9;
+}
+
+message PhoneCallsMany {
+    repeated PhoneCallRecord PhoneCalls = 1;
+    repeated User Users = 2;
+    repeated Group Groups = 3;
+    bool Continuous = 4;
+    bool Empty = 5;
+}
+
 enum PhoneCallRateReason {
     PhoneCallRateReasonEmpty = 0;
     PhoneCallRateReasonReserved1 = 1;
@@ -141,7 +169,7 @@ enum PhoneCallAction {
     PhoneCallAck = 10;
     PhoneCallParticipantAdded = 11;
     PhoneCallParticipantRemoved = 12;
-    PhoneCallReserved9 = 13;
+    PhoneCallJoinRequested = 13;
     PhoneCallReserved10 = 14;
     PhoneCallReserved11 = 15;
     PhoneCallReserved12 = 16;
@@ -245,6 +273,11 @@ message PhoneActionParticipantAdded {
 message PhoneActionParticipantRemoved {
     repeated int64 UserIDs = 1 [jstype = JS_STRING];
     bool Timeout = 2;
+}
+
+// PhoneActionJoinRequested
+message PhoneActionJoinRequested {
+    repeated int64 UserIDs = 1 [jstype = JS_STRING];
 }
 
 // PhoneActionMediaSettingsUpdated

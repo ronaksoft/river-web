@@ -109,7 +109,7 @@
         opacity: 1;
         background: transparent;
 
-        > div:not(.call-settings-notice):not(.call-settings-drawer) {
+        > div:not(.call-settings-notice):not(.call-settings-drawer), > button {
           transition: opacity 0.3s;
           opacity: 0;
         }
@@ -166,7 +166,7 @@
       .call-modal-action.main-call-action {
         background: linear-gradient(180deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
 
-        > div {
+        > div, > button {
           opacity: 1 !important;
         }
       }
@@ -412,6 +412,14 @@
         }
       }
 
+      &.group-call {
+        .call-modal-action {
+          .call-timer {
+            right: 48px;
+          }
+        }
+      }
+
       &.video-swap {
         .call-video {
           position: absolute;
@@ -518,7 +526,7 @@
     }
   }
 
-  &.call_request, &.call_unavailable {
+  &.call_request, &.call_join_request, &.call_unavailable {
     .call-modal-paper {
       transform: none !important;
     }

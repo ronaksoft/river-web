@@ -554,6 +554,7 @@
     "user_joined_the_call": "{0} به تماس افزوده شد",
     "user_left_the_call": "{0} از تماس خارج شد",
     "user_kicked": "{0} از تماس بیرون شد",
-    "user_not_answering": "{0} پاسخ‌گو نیست"
+    "user_not_answering": "{0} پاسخ‌گو نیست",
+    "add_participant": "افزودن عضو"
   }
 }

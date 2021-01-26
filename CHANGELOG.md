@@ -1,3 +1,8 @@
+## 1.0.41
+* Call add participant implemented
+* Media cell bug fixed
+* Overall improvements
+
 ## 1.0.40
 * Call improvements
 

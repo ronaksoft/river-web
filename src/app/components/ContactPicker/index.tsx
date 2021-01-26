@@ -18,8 +18,14 @@ import i18n from '../../services/i18n';
 import './style.scss';
 import {localize} from "../../services/utilities/localize";
 
+interface IPromiseRes {
+    caption?: string;
+    contacts: IUser[];
+    ok: boolean;
+}
+
 interface IProps {
-    onDone: (contacts: IUser[], caption: string) => void;
+    onDone?: (contacts: IUser[], caption: string) => void;
     teamId: string;
     title?: string;
     groupId?: string;
@@ -32,6 +38,7 @@ interface IState {
     caption: string;
     defaultCount: number;
     hiddenContacts: IUser[];
+    mode: 'call_back' | 'promise';
     open: boolean;
     page: string;
     recipients: IUser[];
@@ -39,6 +46,7 @@ interface IState {
 
 class ContactPicker extends React.Component<IProps, IState> {
     private contactListRef: ContactList | undefined;
+    private resolve: any = undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -47,6 +55,7 @@ class ContactPicker extends React.Component<IProps, IState> {
             caption: '',
             defaultCount: 0,
             hiddenContacts: [],
+            mode: 'call_back',
             open: false,
             page: '1',
             recipients: [],
@@ -56,7 +65,19 @@ class ContactPicker extends React.Component<IProps, IState> {
     public openDialog(selectedUser?: IUser[]) {
         this.setState({
             hiddenContacts: selectedUser || [],
+            mode: 'call_back',
             open: true,
+        });
+    }
+
+    public openDialogPromise(selectedUser?: IUser[]): Promise<IPromiseRes> {
+        return new Promise((resolve) => {
+            this.resolve = resolve;
+            this.setState({
+                hiddenContacts: selectedUser || [],
+                mode: 'promise',
+                open: true,
+            });
         });
     }
 
@@ -64,6 +85,7 @@ class ContactPicker extends React.Component<IProps, IState> {
         const {page, open, recipients, hiddenContacts, defaultCount} = this.state;
         const showSelectAll = Boolean(defaultCount && (this.props.limit || 0) >= defaultCount && recipients.length !== defaultCount);
         const limit = this.props.limit || 0;
+        const count = hiddenContacts.length + recipients.length;
         return (
             <Dialog
                 className="contact-picker"
@@ -93,7 +115,7 @@ class ContactPicker extends React.Component<IProps, IState> {
                                              hiddenContacts={hiddenContacts} hideYou={Boolean(this.props.groupId)}
                                              onDefaultLoad={this.contactListDefaultLoadHandler}
                                              disableCheckSelected={this.props.selectAll}/>
-                                {Boolean(recipients.length > 0 && (!limit || limit >= recipients.length)) &&
+                                {Boolean(recipients.length > 0 && (!limit || limit >= count)) &&
                                 <div className="actions-bar">
                                     <div
                                         className={'add-action send' + (Boolean(this.props.sendIcon) ? ' no-animation' : '')}
@@ -103,7 +125,7 @@ class ContactPicker extends React.Component<IProps, IState> {
                                 </div>}
                                 {Boolean(limit && this.props.selectAll) && <div className="dialog-footer">
                                     <div
-                                        className={'counter' + (recipients.length > limit ? ' exceeded' : '')}>{`${localize(recipients.length)}/${localize(this.props.limit || 0)}`}</div>
+                                        className={'counter' + (recipients.length > limit ? ' exceeded' : '')}>{`${localize(count)}/${localize(this.props.limit || 0)}`}</div>
                                     {showSelectAll && this.props.selectAll &&
                                     <div className="select-all"
                                          onClick={this.selectAllHandler}>{i18n.t('general.select_all')}</div>}
@@ -117,8 +139,16 @@ class ContactPicker extends React.Component<IProps, IState> {
     }
 
     private handleClose = () => {
+        if (this.state.mode === 'promise' && this.resolve) {
+            this.resolve({
+                contacts: [],
+                ok: false,
+            });
+            this.resolve = undefined;
+        }
         this.setState({
             hiddenContacts: [],
+            mode: 'call_back',
             open: false,
             recipients: [],
         });
@@ -131,10 +161,17 @@ class ContactPicker extends React.Component<IProps, IState> {
     }
 
     private doneHandler = () => {
-        if (this.props.onDone) {
+        if (this.state.mode === 'call_back' && this.props.onDone) {
             this.props.onDone(this.state.recipients, this.state.caption);
-            this.handleClose();
+        } else if (this.state.mode === 'promise' && this.resolve) {
+            this.resolve({
+                caption: this.state.caption,
+                contacts: this.state.recipients,
+                ok: true,
+            });
+            this.resolve = undefined;
         }
+        this.handleClose();
     }
 
     private contactListDefaultLoadHandler = (count: number) => {

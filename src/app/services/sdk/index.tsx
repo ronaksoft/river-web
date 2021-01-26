@@ -171,8 +171,8 @@ import {
     PhoneAddParticipant,
     PhoneCall,
     PhoneCallAction,
-    PhoneCallRateReason,
-    PhoneDiscardCall,
+    PhoneCallRateReason, PhoneCallsMany,
+    PhoneDiscardCall, PhoneGetHistory,
     PhoneInit,
     PhoneInitCall, PhoneJoinCall,
     PhoneParticipants,
@@ -1327,6 +1327,14 @@ export default class APIManager {
         }
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRateCall, data.serializeBinary(), true, undefined, undefined, true);
+    }
+
+    public callGetHistory(limit: number, after: number): Promise<PhoneCallsMany.AsObject> {
+        const data = new PhoneGetHistory();
+        data.setLimit(limit);
+        data.setAfter(after);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneGetHistory, data.serializeBinary(), true);
     }
 
     public ping(): Promise<Pong.AsObject> {

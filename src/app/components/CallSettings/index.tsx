@@ -18,10 +18,11 @@ import {
     StarsRounded,
     StarRateRounded,
     MoreVertRounded,
+    PersonAddAlt1Rounded,
 } from "@material-ui/icons";
 import CallService, {C_CALL_EVENT, ICallParticipant} from "../../services/callService";
 import i18n from '../../services/i18n';
-import {clone} from "lodash";
+import {clone, findIndex} from "lodash";
 import {getDefaultAudio} from "../SettingsMediaInput";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -38,6 +39,7 @@ export interface IMediaSettings {
 interface IProps {
     onMediaSettingsChange?: (settings: IMediaSettings) => void;
     group?: boolean;
+    onAddParticipant?: () => void;
 }
 
 interface IState {
@@ -83,9 +85,6 @@ class CallSettings extends React.Component<IProps, IState> {
             muteNotice: false,
         });
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
-        if (this.props.group) {
-            this.getParticipants();
-        }
     }
 
     public componentWillUnmount() {
@@ -147,9 +146,6 @@ class CallSettings extends React.Component<IProps, IState> {
                 </div>
             </ClickAwayListener>}
             <div className="call-settings">
-                {group && <IconButton className="call-settings-item" onClick={this.drawerOpenHandler}>
-                    <PeopleRounded/>
-                </IconButton>}
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('video')}>
                     {mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
                 </IconButton>
@@ -157,6 +153,9 @@ class CallSettings extends React.Component<IProps, IState> {
                     {mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
                 </IconButton>
             </div>
+            {group && <IconButton className="call-settings-participants" onClick={this.drawerOpenHandler}>
+                <PeopleRounded/>
+            </IconButton>}
             {muteNotice && <div className="call-settings-notice">{i18n.t('call.audio_muted')}</div>}
             <Menu
                 anchorPosition={moreAnchorPos}
@@ -270,12 +269,13 @@ class CallSettings extends React.Component<IProps, IState> {
 
     private drawerOpenHandler = () => {
         this.preventClose();
-        if (!this.state.drawerOpen && this.state.participants.length === 0) {
+        if (!this.state.drawerOpen) {
             this.getParticipants();
+        } else {
+            this.setState({
+                drawerOpen: false,
+            });
         }
-        this.setState({
-            drawerOpen: !this.state.drawerOpen,
-        });
     }
 
     private drawerCloseHandler = () => {
@@ -305,6 +305,7 @@ class CallSettings extends React.Component<IProps, IState> {
         const participants = this.callService.getParticipantList(activeCallId, true);
         this.setState({
             currentParticipant,
+            drawerOpen: true,
             participants,
         });
     }
@@ -312,23 +313,31 @@ class CallSettings extends React.Component<IProps, IState> {
     private drawerContent() {
         const {participants, currentParticipant} = this.state;
         const hasAccess = currentParticipant && (currentParticipant.initiator || currentParticipant.admin);
-        return participants.map((item) => {
-            return (<div key={item.peer.userid} className="call-participant-item">
-                <UserAvatar className="user-avatar" id={item.peer.userid} noDetail={true}/>
-                {item.initiator ? <div className="user-badge"><StarsRounded/></div> : item.admin ?
-                    <div className="user-badge"><StarRateRounded/></div> : null}
-                <UserName className="user-name" id={item.peer.userid} noDetail={true} you={true} noIcon={true}/>
-                {hasAccess && <div className="more" onClick={this.openMenuHandler(item.peer.userid)}>
-                    <MoreVertRounded/>
-                </div>}
-            </div>);
-        });
+        return <>
+            {hasAccess && <div className="call-participant-item add-participant" onClick={this.addParticipantHandler}>
+                <div className="action-icon">
+                    <PersonAddAlt1Rounded/>
+                </div>
+                <div className="user-name">{i18n.t('call.add_participant')}</div>
+            </div>}
+            {participants.map((item) => {
+                return (<div key={item.peer.userid} className="call-participant-item">
+                    <UserAvatar className="user-avatar" id={item.peer.userid} noDetail={true}/>
+                    {item.initiator ? <div className="user-badge"><StarsRounded/></div> : item.admin ?
+                        <div className="user-badge"><StarRateRounded/></div> : null}
+                    <UserName className="user-name" id={item.peer.userid} noDetail={true} you={true} noIcon={true}/>
+                    {hasAccess && <div className="more" onClick={this.openMenuHandler(item.peer.userid)}>
+                        <MoreVertRounded/>
+                    </div>}
+                </div>);
+            })}
+        </>;
     }
 
     private openMenuHandler = (userId: string) => (e: any) => {
         this.setState({
             moreAnchorPos: {
-                left: e.pageX - 64,
+                left: e.pageX - 96,
                 top: e.pageY,
             },
             selectedUserId: userId,
@@ -358,7 +367,16 @@ class CallSettings extends React.Component<IProps, IState> {
         const {selectedUserId} = this.state;
         switch (cmd) {
             case 'remove':
-                this.callService.callRemoveParticipant(activeCallId, [selectedUserId], false);
+                this.callService.callRemoveParticipant(activeCallId, [selectedUserId], false).then(() => {
+                    const {participants} = this.state;
+                    const index = findIndex(participants, o => o.peer.userid === selectedUserId);
+                    if (index > -1) {
+                        participants.splice(index, 1);
+                        this.setState({
+                            participants,
+                        });
+                    }
+                });
                 break;
         }
         this.menuCloseHandler();
@@ -370,6 +388,13 @@ class CallSettings extends React.Component<IProps, IState> {
             moreAnchorPos: null,
             selectedUserId: undefined,
         });
+    }
+
+    private addParticipantHandler = () => {
+        if (this.props.onAddParticipant) {
+            this.props.onAddParticipant();
+        }
+        this.drawerCloseHandler();
     }
 }
 

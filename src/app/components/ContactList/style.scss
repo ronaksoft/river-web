@@ -22,6 +22,18 @@
       margin: 0;
     }
 
+    > div {
+      margin: 0;
+    }
+
+    .MuiInputBase-root {
+      padding: 6px 6px 0;
+
+      input {
+        padding: 6px 6px 8px;
+      }
+    }
+
     .contact-chips-container {
       > div {
         max-height: 140px;
@@ -30,8 +42,29 @@
     }
 
     .chip {
-      margin: 0 3px 3px 0;
+      margin: 0 6px 6px 0;
+      border-radius: 4px;
       direction: ltr;
+
+      .MuiChip-label {
+        line-height: 1em;
+      }
+
+      .uac {
+        svg {
+          font-size: 18px;
+        }
+      }
+
+      .group-name {
+        display: inline-flex;
+        align-items: center;
+
+        svg {
+          font-size: 16px;
+          margin-right: 6px;
+        }
+      }
     }
   }
 
