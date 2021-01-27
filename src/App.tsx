@@ -24,6 +24,7 @@ import {SnackbarProvider} from 'notistack';
 // @ts-ignore
 import md from 'markdown-it';
 import {
+    EventAuthError,
     EventBeforeUnload,
     EventBlur,
     EventDragOver,
@@ -141,8 +142,7 @@ class App extends React.Component<{}, IState> {
         window.addEventListener(EventBlur, this.windowBlurHandler);
         window.addEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
         window.addEventListener(EventShowChangelog, this.updateDialog);
-        window.addEventListener('authErrorEvent', this.decryptErrorHandler);
-        window.addEventListener('fnDecryptError', this.decryptErrorHandler);
+        window.addEventListener(EventAuthError, this.decryptErrorHandler);
 
         this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
 
@@ -178,8 +178,7 @@ class App extends React.Component<{}, IState> {
         window.removeEventListener(EventBlur, this.windowBlurHandler);
         window.removeEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
         window.removeEventListener(EventShowChangelog, this.updateDialog);
-        window.removeEventListener('authErrorEvent', this.decryptErrorHandler);
-        window.removeEventListener('fnDecryptError', this.decryptErrorHandler);
+        window.removeEventListener(EventAuthError, this.decryptErrorHandler);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();

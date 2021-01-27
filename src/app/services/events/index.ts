@@ -25,3 +25,4 @@ export const EventAuthProgress = 'authProgress';
 export const EventOnline = 'online';
 export const EventOffline = 'offline';
 export const EventChange = 'change';
+export const EventAuthError = 'authError';

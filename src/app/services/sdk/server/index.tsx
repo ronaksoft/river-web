@@ -16,7 +16,7 @@ import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../index";
-import {EventWebSocketClose, EventSocketReady, EventSocketConnected} from "../../events";
+import {EventWebSocketClose, EventSocketReady, EventSocketConnected, EventAuthError} from "../../events";
 import {SystemConfig, SystemGetServerTime, SystemServerTime} from "../messages/system_pb";
 import {InputPassword, InputTeam} from "../messages/core.types_pb";
 import {Error as RiverError, KeyValue, MessageContainer, MessageEnvelope} from "../messages/rony_pb";
@@ -544,7 +544,7 @@ export default class Server {
             if (constructor === C_MSG.Error) {
                 const resp = res.toObject();
                 if (resp.code === C_ERR.ErrCodeInvalid && resp.items === C_ERR_ITEM.ErrItemAuth) {
-                    const authErrorEvent = new CustomEvent('authErrorEvent', {});
+                    const authErrorEvent = new CustomEvent(EventAuthError, {});
                     window.dispatchEvent(authErrorEvent);
                 } else {
                     window.console.warn(resp);

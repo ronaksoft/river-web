@@ -26,6 +26,7 @@ import {
     DialogTitle,
     Dialog
 } from '@material-ui/core';
+import {EventAuthError} from "../../services/events";
 
 import './style.scss';
 
@@ -254,7 +255,7 @@ class DevTools extends React.Component<IProps, IState> {
     }
 
     private debugModeClearAllDataHandler = () => {
-        const authErrorEvent = new CustomEvent('authErrorEvent', {});
+        const authErrorEvent = new CustomEvent(EventAuthError, {});
         window.dispatchEvent(authErrorEvent);
     }
 
@@ -276,7 +277,7 @@ class DevTools extends React.Component<IProps, IState> {
             this.electronService.setLoadUrl(this.state.electronLoadUrl);
         }
         if (serverKeys !== this.state.debugServerKeys) {
-            const authErrorEvent = new CustomEvent('authErrorEvent', {});
+            const authErrorEvent = new CustomEvent(EventAuthError, {});
             window.dispatchEvent(authErrorEvent);
         } else {
             setTimeout(() => {

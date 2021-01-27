@@ -1,3 +1,6 @@
+## 1.0.42
+* Sentry updated
+
 ## 1.0.41
 * Call add participant implemented
 * Media cell bug fixed
