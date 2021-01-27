@@ -171,7 +171,7 @@ export default class CallService {
     private listeners: { [key: number]: IBroadcastItem } = {};
 
     // Handlers
-    private openDialogFn: ((peer: InputPeer | null) => void) | null = null;
+    private openDialogFn: ((peer: InputPeer | null, video: boolean) => void) | null = null;
     private setTeamFn: ((teamId: string) => void) | null = null;
     private enqueueSnackbarFn: any = undefined;
 
@@ -211,9 +211,9 @@ export default class CallService {
         this.openDialogFn = fn;
     }
 
-    public openCallDialog(peer: InputPeer | null) {
+    public openCallDialog(peer: InputPeer | null, video: boolean) {
         if (this.openDialogFn) {
-            this.openDialogFn(peer);
+            this.openDialogFn(peer, video);
         }
     }
 
@@ -421,8 +421,8 @@ export default class CallService {
         });
     }
 
-    public callReject(id: string, duration: number, reason: DiscardReason) {
-        const peer = this.peer;
+    public callReject(id: string, duration: number, reason: DiscardReason, targetPeer?: InputPeer) {
+        const peer = targetPeer || this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
         }

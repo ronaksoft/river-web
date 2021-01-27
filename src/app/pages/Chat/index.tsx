@@ -133,7 +133,7 @@ import {
     UpdateMessageEdited, UpdateMessagePinned,
     UpdateMessagesDeleted,
     UpdateNewMessage,
-    UpdateNotifySettings, UpdatePhoneCallStarted, UpdateReaction,
+    UpdateNotifySettings, UpdatePhoneCallEnded, UpdatePhoneCallStarted, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateReadMessagesContents, UpdateTeamCreated,
@@ -173,6 +173,7 @@ import CallService from "../../services/callService";
 import {getDefaultAudio} from "../../components/SettingsMediaInput";
 
 import './style.scss';
+import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 
 export let notifyOptions: any[] = [];
 
@@ -338,10 +339,10 @@ class Chat extends React.Component<IProps, IState> {
         if (isProd) {
             Sentry.configureScope((scope) => {
                 scope.setUser({
-                    'app_version': C_VERSION,
-                    'auth_id': this.connInfo.AuthID,
-                    'user_id': currentUserId,
-                    'username': this.connInfo.Username,
+                    'App Version': C_VERSION,
+                    'Auth Id': this.connInfo.AuthID,
+                    'User Id': currentUserId,
+                    'Username': this.connInfo.Username,
                 });
             });
         }
@@ -843,15 +844,32 @@ class Chat extends React.Component<IProps, IState> {
                     this.searchMessageRef.toggleVisible();
                 }
                 break;
-            case 'call':
+            case 'call_audio':
                 if (this.callService) {
-                    this.callService.openCallDialog(this.peer);
+                    this.callService.openCallDialog(this.peer, false);
                 }
                 break;
+            case 'call_video':
+                if (this.callService) {
+                    this.callService.openCallDialog(this.peer, true);
+                }
+                break;
+            case 'call_end':
             case 'join_call':
                 const dialog = this.getDialogByPeerName(this.selectedPeerName);
-                if (dialog && dialog.activecallid && this.callService && this.peer) {
-                    this.callService.joinCall(this.peer, dialog.activecallid);
+                if (dialog && dialog.activecallid && this.peer && this.callService) {
+                    if (cmd === 'call_end') {
+                        this.callService.callReject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
+                            this.updatePhoneCallEndedHandler({
+                                peer: this.peer.toObject(),
+                                teamid: this.teamId,
+                                ucount: 0,
+                                updateid: 0,
+                            });
+                        });
+                    } else {
+                        this.callService.joinCall(this.peer, dialog.activecallid);
+                    }
                 }
                 break;
         }
@@ -2906,7 +2924,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updatePhoneCallEndedHandler = (data: UpdatePhoneCallStarted.AsObject) => {
+    private updatePhoneCallEndedHandler = (data: UpdatePhoneCallEnded.AsObject) => {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         this.updateDialogsCounter(peerName, {activeCallId: '0'});
         if (this.infoBarRef && this.selectedPeerName === peerName) {

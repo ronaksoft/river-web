@@ -485,6 +485,15 @@ html[theme="dark-blue"][bg="15"] {
     padding: 6px 0 !important;
     min-width: 100px;
 
+    .context-icon {
+      min-width: 36px;
+
+      svg {
+        font-size: 20px;
+        margin: 2px 0;
+      }
+    }
+
     .context-item {
       padding: 3px 12px;
       font-size: 13px;

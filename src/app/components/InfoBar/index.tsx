@@ -10,14 +10,29 @@
 import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import i18n from "../../services/i18n";
-import {CallRounded, CancelOutlined, InfoOutlined, KeyboardArrowLeftRounded, SearchRounded} from "@material-ui/icons";
+import {
+    CallRounded,
+    CancelOutlined,
+    InfoOutlined,
+    KeyboardArrowLeftRounded,
+    SearchRounded,
+    VideocamRounded,
+    CallEndRounded,
+} from "@material-ui/icons";
 import StatusBar from "../StatusBar";
-import {IconButton, Tooltip} from "@material-ui/core";
+import {IconButton, Menu, MenuItem, Tooltip, ListItemIcon} from "@material-ui/core";
 import {isNil, omitBy} from "lodash";
 import UserRepo from "../../repository/user";
+import {IDialog} from "../../repository/dialog/interface";
 
 import './style.scss';
-import {IDialog} from "../../repository/dialog/interface";
+
+interface IMenuItem {
+    cmd: string;
+    icon: any;
+    title: string;
+    whenActive: boolean;
+}
 
 interface IProps {
     onBack: () => void;
@@ -29,6 +44,7 @@ interface IProps {
 }
 
 interface IState {
+    callAnchorEl: any;
     callStarted: boolean;
     disable: boolean;
     peer: InputPeer | null;
@@ -42,11 +58,13 @@ interface IState {
 class InfoBar extends React.Component<IProps, IState> {
     private currentUserId: string = UserRepo.getInstance().getCurrentUserId();
     private userRepo: UserRepo;
+    private menuItems: IMenuItem[] = [];
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            callAnchorEl: null,
             callStarted: false,
             disable: false,
             isConnecting: false,
@@ -58,6 +76,23 @@ class InfoBar extends React.Component<IProps, IState> {
         };
 
         this.userRepo = UserRepo.getInstance();
+
+        this.menuItems.push({
+            cmd: 'call_audio',
+            icon: <CallRounded/>,
+            title: i18n.t('call.audio_call'),
+            whenActive: false,
+        }, {
+            cmd: 'call_video',
+            icon: <VideocamRounded/>,
+            title: i18n.t('call.video_call'),
+            whenActive: false,
+        }, {
+            cmd: 'call_end',
+            icon: <CallEndRounded/>,
+            title: i18n.t('call.hangup'),
+            whenActive: true,
+        });
     }
 
     public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
@@ -88,7 +123,7 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted, disable} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted, disable, callAnchorEl} = this.state;
         const isGroup = (peer && peer.getType() === PeerType.PEERGROUP);
         return (
             <div className={'info-bar' + (withCall ? ' with-call' : '')}>
@@ -108,11 +143,11 @@ class InfoBar extends React.Component<IProps, IState> {
                 />
                 <div className="buttons">
                     {withCall && !disable && <>{callStarted ?
-                        <div className={'call-indicator ' + (!isGroup ? 'disabled' : '')} onClick={this.callJoinHandler}
-                        >{i18n.t(isGroup ? 'call.join_call' : 'call.call_started')}</div> :
-                        <Tooltip title={i18n.t('call.call')}><IconButton
-                            onClick={this.props.onAction('call')}
-                        ><CallRounded/></IconButton></Tooltip>}
+                        <div className="call-indicator" onClick={this.indicatorClickHandler}>
+                            {i18n.t(isGroup ? 'call.join_call' : 'call.call_started')}
+                        </div> : <Tooltip title={i18n.t('call.call')}>
+                            <IconButton onClick={this.callMenuOpenHandler}><CallRounded/></IconButton>
+                        </Tooltip>}
                     </>}
                     <Tooltip
                         title={i18n.t('chat.search_messages')}
@@ -129,6 +164,34 @@ class InfoBar extends React.Component<IProps, IState> {
                         ><InfoOutlined/></IconButton>
                     </Tooltip>
                 </div>
+                <Menu
+                    anchorEl={callAnchorEl}
+                    anchorOrigin={{
+                        horizontal: 'right',
+                        vertical: 'center',
+                    }}
+                    transformOrigin={{
+                        horizontal: 'right',
+                        vertical: 'top',
+                    }}
+                    open={Boolean(callAnchorEl)}
+                    onClose={this.callMenuCloseHandler}
+                    className="kk-context-menu"
+                    classes={{
+                        paper: 'kk-context-menu-paper'
+                    }}
+                >
+                    {this.menuItems.map((item, index) => {
+                        if (item.whenActive === callStarted) {
+                            return (<MenuItem key={index} onClick={this.callCmdHandler(item.cmd)}
+                                              className="context-item">
+                                <ListItemIcon className="context-icon">{item.icon}</ListItemIcon>
+                                {item.title}
+                            </MenuItem>);
+                        }
+                        return null;
+                    })}
+                </Menu>
             </div>
         );
     }
@@ -152,9 +215,30 @@ class InfoBar extends React.Component<IProps, IState> {
         }
     }
 
-    private callJoinHandler = (e: any) => {
-        if (this.state.peer && this.state.peer.getType() === PeerType.PEERGROUP) {
-            this.props.onAction('join_call')(e);
+    private callMenuOpenHandler = (e: any) => {
+        this.setState({
+            callAnchorEl: e.currentTarget,
+        });
+    }
+
+    private callMenuCloseHandler = () => {
+        this.setState({
+            callAnchorEl: null,
+        });
+    }
+
+    private callCmdHandler = (cmd: string) => (e: any) => {
+        this.props.onAction(cmd)(e);
+        this.callMenuCloseHandler();
+    }
+
+    private indicatorClickHandler = (e: any) => {
+        if (this.state.peer) {
+            if (this.state.peer.getType() === PeerType.PEERGROUP) {
+                this.props.onAction('join_call')(e);
+            } else if (this.state.peer.getType() === PeerType.PEERUSER) {
+                this.callMenuOpenHandler(e);
+            }
         }
     }
 }

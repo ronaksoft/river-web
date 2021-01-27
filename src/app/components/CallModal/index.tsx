@@ -99,6 +99,7 @@ class CallModal extends React.Component<IProps, IState> {
     private callConnectingTone: string = '/ringingtone/connecting-1.mp3';
     private callRingingTone: string = '/ringingtone/tone-2.mp3';
     private loading: boolean = false;
+    private videoCall: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -131,10 +132,11 @@ class CallModal extends React.Component<IProps, IState> {
         this.callService.setSetTeamFunction(this.setTeam);
     }
 
-    public openDialog = (peer: InputPeer | null, force?: boolean) => {
+    public openDialog = (peer: InputPeer | null, video: boolean, force?: boolean) => {
         if (!peer) {
             return;
         }
+        this.videoCall = video;
         this.peer = clone(peer);
         const fn = () => {
             if (this.state.open) {
@@ -144,7 +146,7 @@ class CallModal extends React.Component<IProps, IState> {
             this.timeStart = 0;
             this.timeEnd = 0;
             if (this.peer.getType() === PeerType.PEERUSER) {
-                this.showPreview(true);
+                this.showPreview(this.videoCall);
             } else if (this.peer.getType() === PeerType.PEERGROUP) {
                 this.setState({
                     groupId: this.peer.getId() || '0',
@@ -156,7 +158,7 @@ class CallModal extends React.Component<IProps, IState> {
                                     accesshash: u.accesshash,
                                     userid: u.id,
                                 }));
-                                this.showPreview(true);
+                                this.showPreview(this.videoCall);
                             } else {
                                 this.closeHandler();
                             }
@@ -253,7 +255,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private settingsModalDoneHandler = () => {
         this.settingsModalCloseHandler();
-        this.openDialog(this.peer, true);
+        this.openDialog(this.peer, this.videoCall, true);
     }
 
     private getDraggableOffset(): ControlPosition | undefined {
@@ -298,6 +300,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.mediaSettings = {audio: true, video: true};
         this.peer = null;
         this.loading = false;
+        this.videoCall = false;
     }
 
     private toggleFullscreenHandler = () => {
@@ -334,20 +337,21 @@ class CallModal extends React.Component<IProps, IState> {
         this.timeEnd = 0;
         const state: Partial<IState> = {
             fullscreen: false,
-            mode: 'call_init',
+            mode: video ? 'call_init' : 'call',
             open: true,
             unavailableMode: 'none',
         };
         if (callId) {
             state.callId = callId;
         }
+        this.mediaSettings.video = video;
         this.setState(state as any, () => {
-            this.callService.initStream({
-                audio: getDefaultAudio(),
-                video: video ? getDefaultVideo() : false
-            }).then((stream) => {
+            this.initMediaStreams(video).then((stream) => {
                 if (this.videoRef) {
                     this.videoRef.srcObject = stream;
+                }
+                if (!video) {
+                    this.callHandler()();
                 }
             });
         });
@@ -712,11 +716,15 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private callJoinHandler = (video: boolean) => () => {
-        this.callService.initStream({
+        this.initMediaStreams(video).then((stream) => {
+            this.callHandler(this.state.callId)();
+        });
+    }
+
+    private initMediaStreams(video: boolean) {
+        return this.callService.initStream({
             audio: getDefaultAudio(),
             video: video ? getDefaultVideo() : false
-        }).then((stream) => {
-            this.callHandler(this.state.callId)();
         });
     }
 

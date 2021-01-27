@@ -558,6 +558,9 @@
     "user_left_the_call": "{0} left the call",
     "user_kicked": "{0} were kicked form the call",
     "user_not_answering": "{0} is not answering the call",
-    "add_participant": "Add participant"
+    "add_participant": "Add participant",
+    "audio_call": "Audio Call",
+    "video_call": "Video Call",
+    "hangup": "Hangup"
   }
 }

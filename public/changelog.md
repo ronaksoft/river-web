@@ -1,3 +1,6 @@
+## 1.0.43
+* Call improvements
+
 ## 1.0.42
 * Sentry updated
 
