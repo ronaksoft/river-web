@@ -340,7 +340,8 @@ class Chat extends React.Component<IProps, IState> {
                 scope.setUser({
                     'app_version': C_VERSION,
                     'auth_id': this.connInfo.AuthID,
-                    'user_id': currentUserId
+                    'user_id': currentUserId,
+                    'username': this.connInfo.Username,
                 });
             });
         }

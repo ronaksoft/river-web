@@ -13,8 +13,9 @@ import Routes from './app/routes';
 import {CircularProgress, DialogContentText} from '@material-ui/core';
 import MainRepo from './app/repository';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
-import {ErrorInfo} from 'react';
-import * as Sentry from '@sentry/browser';
+// import {ErrorInfo} from 'react';
+import * as Sentry from '@sentry/react';
+import {Integrations} from "@sentry/tracing";
 import i18n from "./app/services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from "./app/services/iframe";
 import UniqueId from "./app/services/uniqueId";
@@ -43,10 +44,14 @@ import './App.scss';
 
 if (isProd) {
     Sentry.init({
-        dsn: "https://ec65e55c384f43f2ac2ed7c66e319b1a@sentry.ronaksoftware.com/4",
+        autoSessionTracking: true,
+        dsn: "https://65e6ffeb9e96400c8d8100cd1e6678b5@sentry.ronaksoft.com/5",
         ignoreErrors: [
             /Non-Error/g
-        ]
+        ],
+        integrations: [
+            new Integrations.BrowserTracing(),
+        ],
     });
 }
 
@@ -119,15 +124,15 @@ class App extends React.Component<{}, IState> {
         }
     }
 
-    public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        if (isProd) {
-            Sentry.withScope((scope) => {
-                scope.setExtra("extra", errorInfo);
-                const eventId = Sentry.captureException(error);
-                Sentry.showReportDialog({eventId});
-            });
-        }
-    }
+    // public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    //     if (isProd) {
+    //         Sentry.withScope((scope) => {
+    //             scope.setExtra("extra", errorInfo);
+    //             const eventId = Sentry.captureException(error);
+    //             Sentry.showReportDialog({eventId});
+    //         });
+    //     }
+    // }
 
     public componentDidMount() {
         document.addEventListener(EventDrop, (e) => e.preventDefault(), false);
