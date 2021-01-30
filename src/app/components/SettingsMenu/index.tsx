@@ -1325,11 +1325,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             <div className="menu-content">
                                 <div className="menu-note">{i18n.t('settings.2fa.note')}</div>
                                 <div className="menu-button-wrapper">
-                                    <Button color="secondary" fullWidth={true} disabled={passwordMode === 0}
+                                    <Button color="primary" fullWidth={true} disabled={passwordMode === 0}
                                             onClick={this.twoStepVerificationModalOpenHandler}>
-                                        {Boolean(passwordMode === 0) && i18n.t('general.loading')}
-                                        {Boolean(passwordMode === 1) && i18n.t('general.activate')}
-                                        {Boolean(passwordMode === 2) && i18n.t('general.deactivate_change')}
+                                        {i18n.t(passwordMode === 0 ? 'general.loading' : passwordMode === 1 ? 'general.activate' : passwordMode === 2 ? 'general.deactivate_change' : '')}
                                     </Button>
                                 </div>
                             </div>
