@@ -44,7 +44,8 @@ import {NotifyContent} from "../GroupInfoMenu";
 import './style.scss';
 
 interface IProps {
-    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot' | 'view_in_chat' | 'forward', messageId: number) => void;
+    onBulkAction: (cmd: 'forward', messageId: number[]) => void;
     onClose: (e: any) => void;
     peer: InputPeer | null;
     onError: (text: string) => void;
@@ -300,7 +301,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                 </div>}
                                 {(dialog && peer && !shareMediaEnabled) &&
                                 <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.teamId}
-                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
+                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}
+                                           onBulkAction={this.props.onBulkAction}/>}
                             </div>
                         </Scrollbars>
                     </div>
@@ -317,7 +319,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
                         <PeerMedia className="kk-card" peer={peer} teamId={this.teamId} full={true}
-                                   onAction={this.props.onAction}/>}
+                                   onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                     </div>
                 </div>
             </div>

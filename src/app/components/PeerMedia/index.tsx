@@ -19,9 +19,15 @@ import {
     KeyboardVoiceTwoTone,
     PlayArrowRounded,
     PauseRounded,
+    MoreVertRounded,
+    RadioButtonUncheckedRounded,
+    CheckCircleRounded,
+    CloseRounded,
+    ForwardRounded,
+    ForwardToInboxRounded,
 } from '@material-ui/icons';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import {Tabs, Tab} from '@material-ui/core';
+import {Tabs, Tab, Menu, MenuItem, IconButton, Tooltip} from '@material-ui/core';
 import {C_MEDIA_TYPE} from '../../repository/media/interface';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import Scrollbars from 'react-custom-scrollbars';
@@ -41,6 +47,12 @@ import {EventFileDownloaded, EventMediaDBUpdated} from "../../services/events";
 
 import './style.scss';
 
+interface IMenuItem {
+    cmd: string;
+    icon?: any;
+    title: string;
+}
+
 interface IMedia {
     _modified?: boolean;
     createdon?: number;
@@ -51,6 +63,7 @@ interface IMedia {
     peerType: number;
     playing?: boolean;
     saved: boolean;
+    selected: boolean;
     type: number;
     userId: string;
     teamId: string;
@@ -59,16 +72,20 @@ interface IMedia {
 interface IProps {
     className?: string;
     full: boolean;
-    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'view_in_chat' | 'forward', messageId: number) => void;
+    onBulkAction: (cmd: 'forward', messageIds: number[]) => void;
     onMore?: () => void;
     peer: InputPeer;
     teamId: string;
 }
 
 interface IState {
+    anchorEl: any;
     className: string;
     items: IMedia[];
     loading: boolean;
+    selectable: boolean;
+    selectedIds: number[];
     tab: number;
 }
 
@@ -81,14 +98,19 @@ class PeerMedia extends React.Component<IProps, IState> {
     private itemMap: { [key: number]: number } = {};
     private audioPlayer: AudioPlayer;
     private progressBroadcaster: ProgressBroadcaster;
+    private menuItems: IMenuItem[] = [];
+    private actionsItems: IMenuItem[] = [];
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            anchorEl: null,
             className: props.className || '',
             items: [],
             loading: true,
+            selectable: false,
+            selectedIds: [],
             tab: 0,
         };
 
@@ -100,6 +122,33 @@ class PeerMedia extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
         this.audioPlayer = AudioPlayer.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
+
+        this.menuItems.push({
+            cmd: 'select',
+            title: i18n.t('general.select'),
+        }, {
+            cmd: 'view',
+            title: i18n.t('general.save'),
+        }, {
+            cmd: 'download',
+            title: i18n.t('general.download'),
+        }, {
+            cmd: 'forward',
+            title: i18n.t('general.forward'),
+        }, {
+            cmd: 'view_in_chat',
+            title: i18n.t('general.view_in_chat'),
+        });
+
+        this.actionsItems.push({
+            cmd: 'forward',
+            icon: <ForwardRounded/>,
+            title: i18n.t('general.forward'),
+        }, {
+            cmd: 'view_in_chat',
+            icon: <ForwardToInboxRounded/>,
+            title: i18n.t('general.view_in_chat'),
+        });
     }
 
     public componentDidMount() {
@@ -126,7 +175,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {className, tab, items} = this.state;
+        const {className, tab, items, anchorEl, selectedIds, selectable} = this.state;
         return (
             <div className={`peer-media ${(this.props.full ? ' full' : '')} ${className}`}>
                 {!this.props.full && <div className="peer-media-title">
@@ -135,19 +184,145 @@ class PeerMedia extends React.Component<IProps, IState> {
                     <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>}
                 </div>}
                 {this.props.full && <div className="peer-media-tab">
-                    <Tabs indicatorColor="primary" textColor="primary" variant="scrollable" value={tab}
-                          onChange={this.tabChangeHandler}>
-                        <Tab value={0} label={i18n.t('peer_info.photo_video')} className="peer-media-tab-item"/>
-                        <Tab value={1} label={i18n.t('peer_info.audio')} className="peer-media-tab-item"/>
-                        <Tab value={2} label={i18n.t('peer_info.file')} className="peer-media-tab-item"/>
-                        <Tab value={3} label={i18n.t('peer_info.gif')} className="peer-media-tab-item"/>
-                    </Tabs>
+                    {selectable && selectedIds.length > 0 ?
+                        <div className="peer-media-action">
+                            <IconButton className="item" onClick={this.cancelSelectedHandler}>
+                                <CloseRounded/>
+                            </IconButton>
+                            <div className="action-gap"/>
+                            {this.getActionContent()}
+                        </div> :
+                        <Tabs indicatorColor="primary" textColor="primary" variant="scrollable" value={tab}
+                              onChange={this.tabChangeHandler}>
+                            <Tab value={0} label={i18n.t('peer_info.photo_video')} className="peer-media-tab-item"/>
+                            <Tab value={1} label={i18n.t('peer_info.audio')} className="peer-media-tab-item"/>
+                            <Tab value={2} label={i18n.t('peer_info.file')} className="peer-media-tab-item"/>
+                            <Tab value={3} label={i18n.t('peer_info.gif')} className="peer-media-tab-item"/>
+                        </Tabs>}
                 </div>}
                 <div className="peer-media-container">
                     {this.getContent()}
                 </div>
+                <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={this.menuCloseHandler}
+                    className="kk-context-menu"
+                    anchorOrigin={{
+                        horizontal: 'right',
+                        vertical: 'center',
+                    }}
+                    transformOrigin={{
+                        horizontal: 'right',
+                        vertical: 'top',
+                    }}
+                    classes={{
+                        paper: 'kk-context-menu-paper'
+                    }}
+                >
+                    {this.contextMenuContent()}
+                </Menu>
             </div>
         );
+    }
+
+    private menuCloseHandler = () => {
+        this.setState({
+            anchorEl: null,
+        });
+    }
+
+    private contextMenuContent() {
+        const {selectedIds, items} = this.state;
+        if (selectedIds.length === 0) {
+            return null;
+        }
+        const index = findIndex(items, {id: selectedIds[0]});
+        if (index === -1) {
+            return null;
+        }
+        const actions: IMenuItem[] = [];
+        this.menuItems.forEach((item, i) => {
+            if (i === 1) {
+                if (items[index].download && !items[index].saved) {
+                    actions.push(item);
+                }
+            } else if (i === 2) {
+                if (!items[index].download) {
+                    actions.push(item);
+                }
+            } else {
+                actions.push(item);
+            }
+        });
+        return actions.map((item, index) => {
+            return (<MenuItem key={index} onClick={this.cmdHandler(item.cmd)}
+                              className="context-item">{item.title}</MenuItem>);
+        });
+    }
+
+    private cmdHandler = (cmd: string) => (e: any) => {
+        const {selectedIds, items} = this.state;
+        if (selectedIds.length === 0) {
+            return;
+        }
+        switch (cmd) {
+            case 'select':
+                const index = findIndex(items, {id: selectedIds[0]});
+                items[index].selected = !items[index].selected;
+                this.setState({
+                    items,
+                    selectable: true,
+                });
+                break;
+            case 'view':
+            case 'download':
+            case 'forward':
+            case 'view_in_chat':
+                this.props.onAction(cmd, selectedIds[0]);
+                this.setState({
+                    selectedIds: [],
+                });
+                break;
+        }
+        this.menuCloseHandler();
+    }
+
+    private getActionContent() {
+        const actions: IMenuItem[] = [];
+        const {selectedIds} = this.state;
+        actions.push(this.actionsItems[0]);
+        window.console.log(selectedIds);
+        if (selectedIds.length === 1) {
+            actions.push(this.actionsItems[1]);
+        }
+        return actions.map((action) => {
+            return <Tooltip key={action.cmd} title={action.title}>
+                <IconButton className="item" onClick={this.actionHandler(action.cmd as any)}>{action.icon}</IconButton>
+            </Tooltip>;
+        });
+    }
+
+    private actionHandler = (cmd: 'forward' | 'view_in_chat') => () => {
+        const {selectedIds} = this.state;
+        if (selectedIds.length === 1) {
+            this.props.onAction(cmd as any, selectedIds[0]);
+        } else {
+            this.props.onBulkAction(cmd as any, selectedIds);
+        }
+        this.cancelSelectedHandler();
+    }
+
+    private cancelSelectedHandler = () => {
+        const {items} = this.state;
+        items.forEach((item) => {
+            item.selected = false;
+        });
+        this.setState({
+            items,
+            selectable: false,
+            selectedIds: [],
+        });
     }
 
     /* Get media list content */
@@ -202,9 +377,9 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     /* Get grid view */
     private getGridView() {
-        const {items} = this.state;
+        const {items, selectedIds} = this.state;
         return (
-            <div className="media-grid-view">
+            <div className={'media-grid-view' + (selectedIds.length > 0 ? ' has-selected' : '')}>
                 {items.map((item, i) => {
                     return (
                         <div key={item.id} className={`media-item item_${item.id}`}
@@ -221,6 +396,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                             </div>}
                             {Boolean(item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Audio || item.type === C_MESSAGE_TYPE.Voice) &&
                             <div className="media-duration-container">{getDuration(item.info.duration || 0)}</div>}
+                            {this.getMoreContent(i)}
                         </div>
                     );
                 })}
@@ -230,9 +406,9 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     /* Get list view */
     private getListView() {
-        const {items} = this.state;
+        const {items, selectedIds, selectable} = this.state;
         return (
-            <div className="media-list-view">
+            <div className={'media-list-view' + (selectedIds.length > 0 ? ' has-selected' : '')}>
                 {items.map((item, i) => {
                     return (
                         <div key={item.id} className={`media-item item_${item.id}`}
@@ -246,12 +422,57 @@ class PeerMedia extends React.Component<IProps, IState> {
                                 {(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Audio) &&
                                 <div className="media-size">{getDuration(item.info.duration || 0)}</div>}
                             </div>
-                            {this.getMediaAction(item)}
+                            {this.getMoreContent(i)}
+                            {!selectable ? this.getMediaAction(item) : null}
                         </div>
                     );
                 })}
-            </div>
-        );
+            </div>);
+    }
+
+    private getMoreContent(index: number) {
+        if (!this.props.full) {
+            return null;
+        }
+        const {items, selectable} = this.state;
+        const item = items[index];
+        if (!item) {
+            return null;
+        }
+        return <div className={'media-more' + (selectable ? ' select-mode' : '')}
+                    onClick={this.moreClickHandler(index)}>
+            {selectable ? item.selected ? <CheckCircleRounded/> : <RadioButtonUncheckedRounded/> : <MoreVertRounded/>}
+        </div>;
+    }
+
+    private moreClickHandler = (index: number) => (e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const {items, selectable, selectedIds} = this.state;
+        if (selectable && items[index]) {
+            if (!items[index].selected) {
+                selectedIds.push(items[index].id);
+            } else {
+                const idx = findIndex(items, {id: items[index].id});
+                if (idx > -1) {
+                    selectedIds.splice(idx, 1);
+                }
+            }
+            items[index].selected = !items[index].selected;
+            this.setState({
+                items,
+                selectable: selectedIds.length > 0,
+                selectedIds,
+            });
+        } else {
+            if (items[index]) {
+                selectedIds.push(items[index].id);
+            }
+            this.setState({
+                anchorEl: e.currentTarget,
+                selectedIds,
+            });
+        }
     }
 
     private getName(item: IMedia) {
@@ -328,6 +549,8 @@ class PeerMedia extends React.Component<IProps, IState> {
             this.setState({
                 items: this.modifyMediaList(result.messages),
                 loading: false,
+                selectable: false,
+                selectedIds: [],
             });
         });
     }
@@ -343,8 +566,12 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     /* Show media handler */
     private showMediaHandler = (i: number) => (e: any) => {
+        const {selectedIds, items} = this.state;
+        if (selectedIds.length > 0) {
+            this.moreClickHandler(i)(e);
+            return;
+        }
         try {
-            const {items} = this.state;
             const item = items[i];
             if (!(item.type === C_MESSAGE_TYPE.Picture || item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Gif)) {
                 return;
@@ -549,6 +776,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     peerId: item.peerid || '0',
                     peerType: item.peertype || 0,
                     saved: item.saved || false,
+                    selected: false,
                     teamId: item.teamid || '0',
                     type: item.messagetype || C_MESSAGE_TYPE.Normal,
                     userId: item.senderid || '',

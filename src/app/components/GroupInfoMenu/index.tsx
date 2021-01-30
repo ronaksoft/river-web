@@ -76,7 +76,8 @@ import './style.scss';
 
 interface IProps {
     peer: InputPeer | null;
-    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'view_in_chat' | 'forward', messageIds: number) => void;
+    onBulkAction: (cmd: 'forward', messageIds: number[]) => void;
     onClose?: (e: any) => void;
     onDeleteAndExitGroup?: () => void;
     onError?: (message: string) => void;
@@ -353,7 +354,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 </>}
                                 {(dialog && peer && !shareMediaEnabled) &&
                                 <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.teamId}
-                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
+                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}
+                                           onBulkAction={this.props.onBulkAction}/>}
                                 {group && !disable && <div className="participant kk-card">
                                     <label>{i18n.tf('peer_info.participants', String(group.participants))} </label>
                                     {participants.map((participant, index) => {
@@ -403,7 +405,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
                         <PeerMedia className="kk-card" peer={peer} teamId={this.teamId} full={true}
-                                   onAction={this.props.onAction}/>}
+                                   onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                     </div>
                 </div>
                 <Menu

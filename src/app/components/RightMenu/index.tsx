@@ -18,7 +18,8 @@ import './style.scss';
 interface IProps {
     onChange: (shrink: boolean) => void;
     onDeleteAndExitGroup?: () => void;
-    onMessageAttachmentAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
+    onMessageAttachmentAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot' | 'view_in_chat' | 'forward', messageId: number) => void;
+    onBulkAction: (cmd: 'forward', messageIds: number[]) => void;
     onToggleMenu: (open: boolean) => void;
     onError?: (message: string) => void;
 }
@@ -115,10 +116,12 @@ class RightMenu extends React.PureComponent<IProps, IState> {
                 {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
                 <GroupInfoMenu key="group-info" ref={this.groupInfoMenuRefHandler} onClose={this.closeHandler}
                                peer={peer} onAction={this.props.onMessageAttachmentAction}
-                               onDeleteAndExitGroup={this.props.onDeleteAndExitGroup} onError={this.props.onError}/>}
+                               onDeleteAndExitGroup={this.props.onDeleteAndExitGroup} onError={this.props.onError}
+                               onBulkAction={this.props.onBulkAction}/>}
                 {Boolean(rightMenu && peer && (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER)) &&
                 <UserInfoMenu key="user-info" ref={this.userInfoMenuRefHandler} peer={peer} onClose={this.closeHandler}
-                              onAction={this.props.onMessageAttachmentAction} onError={this.props.onError}/>}
+                              onAction={this.props.onMessageAttachmentAction} onError={this.props.onError}
+                              onBulkAction={this.props.onBulkAction}/>}
             </div>
         );
     }

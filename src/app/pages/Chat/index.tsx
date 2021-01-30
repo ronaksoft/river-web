@@ -739,6 +739,7 @@ class Chat extends React.Component<IProps, IState> {
                         <RightMenu key="right-menu" ref={this.rightMenuRefHandler}
                                    onChange={this.rightMenuChangeHandler}
                                    onMessageAttachmentAction={this.messageAttachmentActionHandler}
+                                   onBulkAction={this.rightMenuBulkActionHandler}
                                    onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}
                                    onToggleMenu={this.rightMenuToggleMenuHandler}
                                    onError={this.textErrorHandler}
@@ -4340,7 +4341,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview' | 'start_bot', message: IMessage | number, fileName?: string) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'download_stream' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview' | 'start_bot' | 'view_in_chat' | 'forward', message: IMessage | number, fileName?: string) => {
         const execute = (msg: IMessage) => {
             switch (cmd) {
                 case 'cancel':
@@ -4380,6 +4381,15 @@ class Chat extends React.Component<IProps, IState> {
                         if (user) {
                             this.startBot(user);
                         }
+                    }
+                    break;
+                case 'view_in_chat':
+                    this.messageJumpToMessageHandler(msg.id);
+                    break;
+                case 'forward':
+                    this.messageSelectedIds[msg.id] = -1;
+                    if (this.forwardDialogRef) {
+                        this.forwardDialogRef.openDialog(true);
                     }
                     break;
             }
@@ -5427,6 +5437,19 @@ class Chat extends React.Component<IProps, IState> {
     private rightMenuToggleMenuHandler = () => {
         if (this.messageRef) {
             this.messageRef.resizeContainer();
+        }
+    }
+
+    private rightMenuBulkActionHandler = (cmd: string, msgIds: number[]) => {
+        switch (cmd) {
+            case 'forward':
+                if (this.forwardDialogRef) {
+                    msgIds.forEach((id) => {
+                        this.messageSelectedIds[id] = -1;
+                    });
+                    this.forwardDialogRef.openDialog(true);
+                }
+                break;
         }
     }
 

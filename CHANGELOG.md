@@ -1,3 +1,7 @@
+## 1.0.44
+* Shared media context menu and bulk action implemented
+* Known bugs fixed
+
 ## 1.0.43
 * Call improvements
 
