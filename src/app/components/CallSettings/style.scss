@@ -50,7 +50,7 @@
     position: absolute;
     width: 168px;
     height: 100%;
-    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.5) 25%, rgba(0, 0, 0, 0.9) 75%, rgba(0, 0, 0, 0.99) 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.6) 40%, rgba(0, 0, 0, 0.8) 75%, rgba(0, 0, 0, 0.9) 100%);
     padding: 36px 0 48px 12px;
 
     .call-participant-item {
@@ -59,19 +59,20 @@
       align-items: center;
       justify-items: start;
       line-height: 1em;
-      margin: 12px 8px 0 8px;
+      margin: 8px 8px 0 4px;
+      padding: 4px 0 4px 4px;
+      border-radius: 6px;
       user-select: none;
 
       &.add-participant {
         position: relative;
         background-color: var(--dark-hover);
-        border-radius: 6px;
         margin-bottom: 16px;
         cursor: pointer;
+      }
 
-        &:hover {
-          background-color: var(--dark-hover-light);
-        }
+      &:hover {
+        background-color: var(--dark-hover-light);
       }
 
       .user-avatar, .action-icon {

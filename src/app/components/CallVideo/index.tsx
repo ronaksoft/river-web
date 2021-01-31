@@ -8,13 +8,14 @@
 */
 
 import * as React from 'react';
-import CallService, {IMediaSettings} from "../../services/callService";
+import CallService, {C_CALL_EVENT, IMediaSettings} from "../../services/callService";
 import CallVideoPlaceholder from "../CallVideoPlaceholder";
 import {findIndex, differenceWith} from "lodash";
 import UserAvatar from "../UserAvatar";
 import i18n from "../../services/i18n";
 
 import './style.scss';
+import {currentUserId} from "../../services/sdk";
 
 export interface IRemoteConnection {
     connId: number;
@@ -48,9 +49,11 @@ class CallVideo extends React.Component<IProps, IState> {
     }
 
     private callService: CallService;
+    private eventReferences: any[] = [];
     private videoRemoteRefs: IRemoteConnection[] = [];
     private initialized: boolean = false;
     private localVideoRefFn: any;
+    private mediaSettings: IMediaSettings = {audio: true, video: true};
 
     constructor(props: IProps) {
         super(props);
@@ -62,15 +65,22 @@ class CallVideo extends React.Component<IProps, IState> {
         };
 
         this.callService = CallService.getInstance();
+        this.mediaSettings = this.callService.getStreamState();
     }
 
     public componentDidMount() {
         this.videoRemoteRefs = [];
         if (this.initialized) {
         }
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
     }
 
     public componentWillUnmount() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
         this.initialized = false;
     }
 
@@ -144,6 +154,8 @@ class CallVideo extends React.Component<IProps, IState> {
             <div className="call-user-container" style={gridHeight ? {height: `${gridHeight}px`} : undefined}>
                 <div className="video-placeholder">
                     <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true}/>
+                    {!this.mediaSettings.video &&
+                    <UserAvatar className="video-user-placeholder" id={currentUserId} noDetail={true}/>}
                 </div>
             </div>}
             {this.getRemoteVideoContent()}
@@ -222,6 +234,18 @@ class CallVideo extends React.Component<IProps, IState> {
             this.setState({
                 gridHeight: gh,
             });
+        }
+    }
+
+    private eventLocalStreamUpdateHandler = () => {
+        const settings = this.callService.getStreamState();
+        let forceUpdate = false;
+        if (settings.video !== this.mediaSettings.video) {
+            forceUpdate = true;
+        }
+        this.mediaSettings = settings;
+        if (forceUpdate) {
+            this.forceUpdate();
         }
     }
 }

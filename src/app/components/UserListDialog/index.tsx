@@ -52,7 +52,7 @@ class UserListDialog extends React.Component<IProps, IState> {
     public render() {
         const {open, selectedIds, userList} = this.state;
         return (
-            <SettingsModal open={open} title={i18n.t('general.user_list')}
+            <SettingsModal open={open} title={i18n.t('general.contacts')}
                            icon={<PersonAddRounded/>}
                            onClose={this.modalCloseHandler}
                            height="500px"

@@ -43,6 +43,7 @@ import MainRepo from "../../repository";
 import SettingsMediaInput, {getDefaultAudio, getDefaultVideo} from "../SettingsMediaInput";
 import SettingsModal from "../SettingsModal";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {IUser} from "../../repository/user/interface";
 
 import './style.scss';
 
@@ -55,6 +56,7 @@ interface IProps {
 }
 
 interface IState {
+    allAudio: boolean;
     animateState: string;
     callId: string;
     callStarted: boolean;
@@ -105,6 +107,7 @@ class CallModal extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            allAudio: false,
             animateState: 'init',
             callId: '0',
             callStarted: false,
@@ -534,7 +537,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallContent() {
-        const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize, localVideoInGrid} = this.state;
+        const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize, localVideoInGrid, allAudio} = this.state;
         const isGroup = this.peer && this.peer.getType() === PeerType.PEERGROUP;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '') + (isGroup ? ' group-call' : '')}>
@@ -551,9 +554,9 @@ class CallModal extends React.Component<IProps, IState> {
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
                        onClick={this.videoClickHandler(true)} onContextMenu={this.callVideoContextMenuHandler}/>
             <div className="call-modal-header">
-                <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
+                {!allAudio && <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
                     {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
-                </IconButton>
+                </IconButton>}
                 <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                     {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                 </IconButton>
@@ -716,7 +719,8 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private callJoinHandler = (video: boolean) => () => {
-        this.initMediaStreams(video).then((stream) => {
+        this.initMediaStreams(video).then(() => {
+            this.mediaSettings.video = video;
             this.callHandler(this.state.callId)();
         });
     }
@@ -889,6 +893,12 @@ class CallModal extends React.Component<IProps, IState> {
         }
 
         this.videoRef.srcObject = stream;
+        const allAudio = this.callService.areAllAudio();
+        if (this.state.allAudio !== allAudio) {
+            this.setState({
+                allAudio,
+            });
+        }
     }
 
     private eventMediaSettingsUpdatedHandler = (data: ICallParticipant) => {
@@ -897,6 +907,13 @@ class CallModal extends React.Component<IProps, IState> {
         }
 
         this.callVideoRef.setMediaSettings(data.connectionid || 0, data.mediaSettings);
+
+        const allAudio = this.callService.areAllAudio();
+        if (this.state.allAudio !== allAudio) {
+            this.setState({
+                allAudio,
+            });
+        }
     }
 
     private eventParticipantLeftHandler = (data: IUpdatePhoneCall) => {
@@ -1004,10 +1021,10 @@ class CallModal extends React.Component<IProps, IState> {
         this.callSettingsRef = ref;
     }
 
-    private callSettingsAddParticipantHandler = () => {
+    private callSettingsAddParticipantHandler = (users: IUser[]) => {
         const {callId} = this.state;
         if (this.contactPickerRef) {
-            this.contactPickerRef.openDialogPromise(this.groupParticipant.map(o => ({id: o.userid}))).then((res) => {
+            this.contactPickerRef.openDialogPromise(users).then((res) => {
                 if (res.ok && res.contacts.length > 0) {
                     const inputUsers: InputUser[] = [];
                     res.contacts.forEach((contact) => {
@@ -1030,10 +1047,14 @@ class CallModal extends React.Component<IProps, IState> {
 
     private mediaSettingsChangeHandler = (settings: IMediaSettings) => {
         const {mode} = this.state;
+        let forceUpdate = false;
         if (mode === 'call' && this.mediaSettings.video !== settings.video) {
-            this.forceUpdate();
+            forceUpdate = true;
         }
         this.mediaSettings = clone(settings);
+        if (forceUpdate) {
+            this.forceUpdate();
+        }
     }
 
     private hasDefaultInputSettings() {

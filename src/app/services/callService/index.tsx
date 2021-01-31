@@ -537,6 +537,15 @@ export default class CallService {
         };
     }
 
+    public areAllAudio() {
+        const currentState = this.getStreamState();
+        if (currentState.video) {
+            return false;
+        }
+        const participants = this.getParticipantList(this.activeCallId, true);
+        return !participants.some(o => o.mediaSettings.video);
+    }
+
     private busyHandler(data: IUpdatePhoneCall) {
         const peer = this.peer;
         if (!peer) {

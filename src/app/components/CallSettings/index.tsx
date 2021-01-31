@@ -28,6 +28,7 @@ import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
 import Scrollbars from "react-custom-scrollbars";
 import {currentUserId} from "../../services/sdk";
+import {IUser} from "../../repository/user/interface";
 
 import './style.scss';
 
@@ -39,7 +40,7 @@ export interface IMediaSettings {
 interface IProps {
     onMediaSettingsChange?: (settings: IMediaSettings) => void;
     group?: boolean;
-    onAddParticipant?: () => void;
+    onAddParticipant?: (users: IUser[]) => void;
 }
 
 interface IState {
@@ -392,7 +393,14 @@ class CallSettings extends React.Component<IProps, IState> {
 
     private addParticipantHandler = () => {
         if (this.props.onAddParticipant) {
-            this.props.onAddParticipant();
+            const {participants} = this.state;
+            const users: IUser[] = participants.map((p) => {
+                return {
+                    accesshash: p.peer.accesshash,
+                    id: p.peer.userid,
+                };
+            });
+            this.props.onAddParticipant(users);
         }
         this.drawerCloseHandler();
     }
