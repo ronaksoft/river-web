@@ -72,7 +72,11 @@
     background-color: var(--dark);
 
     &.no-image {
-      height: 96px;
+      height: 48px;
+
+      video {
+        display: none;
+      }
     }
 
     .video-img {

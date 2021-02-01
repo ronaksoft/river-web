@@ -1,3 +1,6 @@
+## 1.0.47
+* Fixed reported bugs
+
 ## 1.0.46
 * Known bugs fixed
 

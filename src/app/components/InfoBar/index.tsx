@@ -11,19 +11,20 @@ import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import i18n from "../../services/i18n";
 import {
+    CallEndRounded,
     CallRounded,
     CancelOutlined,
     InfoOutlined,
     KeyboardArrowLeftRounded,
     SearchRounded,
     VideocamRounded,
-    CallEndRounded,
 } from "@material-ui/icons";
 import StatusBar from "../StatusBar";
-import {IconButton, Menu, MenuItem, Tooltip, ListItemIcon} from "@material-ui/core";
+import {IconButton, ListItemIcon, Menu, MenuItem, Tooltip} from "@material-ui/core";
 import {isNil, omitBy} from "lodash";
 import UserRepo from "../../repository/user";
 import {IDialog} from "../../repository/dialog/interface";
+import CallService, {C_CALL_EVENT} from "../../services/callService";
 
 import './style.scss';
 
@@ -44,6 +45,7 @@ interface IProps {
 }
 
 interface IState {
+    activeCallId: string | null;
     callAnchorEl: any;
     callStarted: boolean;
     disable: boolean;
@@ -59,11 +61,14 @@ class InfoBar extends React.Component<IProps, IState> {
     private currentUserId: string = UserRepo.getInstance().getCurrentUserId();
     private userRepo: UserRepo;
     private menuItems: IMenuItem[] = [];
+    private callService: CallService;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            activeCallId: null,
             callAnchorEl: null,
             callStarted: false,
             disable: false,
@@ -93,6 +98,8 @@ class InfoBar extends React.Component<IProps, IState> {
             title: i18n.t('call.hangup'),
             whenActive: true,
         });
+
+        this.callService = CallService.getInstance();
     }
 
     public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
@@ -117,13 +124,28 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     public setCallStarted(callStarted: boolean) {
+        const activeCallId = this.callService.getActiveCallId();
         this.setState({
+            activeCallId: activeCallId !== '0' ? activeCallId : null,
             callStarted,
         });
     }
 
+    public componentDidMount() {
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
+    }
+
+    public componentWillUnmount() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
+    }
+
+
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted, disable, callAnchorEl} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted, disable, callAnchorEl, activeCallId} = this.state;
         const isGroup = (peer && peer.getType() === PeerType.PEERGROUP);
         return (
             <div className={'info-bar' + (withCall ? ' with-call' : '')}>
@@ -144,7 +166,7 @@ class InfoBar extends React.Component<IProps, IState> {
                 <div className="buttons">
                     {withCall && !disable && <>{callStarted ?
                         <div className="call-indicator" onClick={this.indicatorClickHandler}>
-                            {i18n.t(isGroup ? 'call.join_call' : 'call.call_started')}
+                            {i18n.t(isGroup && !activeCallId ? 'call.join_call' : 'call.call_started')}
                         </div> : <Tooltip title={i18n.t('call.call')}>
                             <IconButton onClick={this.callMenuOpenHandler}><CallRounded/></IconButton>
                         </Tooltip>}
@@ -204,6 +226,7 @@ class InfoBar extends React.Component<IProps, IState> {
             this.userRepo.get(peer.getId() || '0').then((user) => {
                 if (user) {
                     this.setState({
+                        activeCallId: null,
                         withCall: !Boolean(user.isbot || user.official),
                     });
                 }
@@ -234,11 +257,20 @@ class InfoBar extends React.Component<IProps, IState> {
 
     private indicatorClickHandler = (e: any) => {
         if (this.state.peer) {
-            if (this.state.peer.getType() === PeerType.PEERGROUP) {
+            if (this.state.peer.getType() === PeerType.PEERGROUP && !this.state.activeCallId) {
                 this.props.onAction('join_call')(e);
             } else if (this.state.peer.getType() === PeerType.PEERUSER) {
                 this.callMenuOpenHandler(e);
             }
+        }
+    }
+
+    private eventLocalStreamUpdateHandler = () => {
+        if (this.state.peer && this.state.peer.getType() === PeerType.PEERGROUP) {
+            const activeCallId = this.callService.getActiveCallId();
+            this.setState({
+                activeCallId: activeCallId !== '0' ? activeCallId : null,
+            });
         }
     }
 }

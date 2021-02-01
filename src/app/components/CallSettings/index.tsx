@@ -105,7 +105,7 @@ class CallSettings extends React.Component<IProps, IState> {
             },
         });
         if (this.vad) {
-            this.vad.setActive(audio);
+            this.vad.setActive(!audio);
         }
         this.callService.toggleAudio(audio);
         this.callService.toggleVideo(video);
@@ -184,6 +184,9 @@ class CallSettings extends React.Component<IProps, IState> {
         });
         if (key === 'audio') {
             this.callService.toggleAudio(mediaSettings[key]);
+            if (this.vad) {
+                this.vad.setActive(!mediaSettings[key]);
+            }
         } else if (key === 'video') {
             this.callService.toggleVideo(mediaSettings[key]);
         }
@@ -197,7 +200,7 @@ class CallSettings extends React.Component<IProps, IState> {
             mediaSettings: this.callService.getStreamState(),
         }, () => {
             if (this.vad) {
-                this.vad.setActive(this.state.mediaSettings.audio);
+                this.vad.setActive(!this.state.mediaSettings.audio);
             }
         });
     }
@@ -220,7 +223,7 @@ class CallSettings extends React.Component<IProps, IState> {
             }
         });
         return navigator.mediaDevices.getUserMedia({audio: getDefaultAudio()}).then((stream) => {
-            return this.vad.setStream(stream, this.state.mediaSettings.audio);
+            return this.vad.setStream(stream, !this.state.mediaSettings.audio);
         });
     }
 

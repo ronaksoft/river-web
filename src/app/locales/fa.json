@@ -558,6 +558,12 @@
     "add_participant": "افزودن عضو",
     "audio_call": "تماس صوتی",
     "video_call": "تماس تصویری",
-    "hangup": "قطع"
+    "hangup": "قطع",
+    "crop_fit": "برش کامل",
+    "crop_cover": "برش تمام صفحه",
+    "fullscreen": "تمام صفحه",
+    "exit_fullscreen": "خروج از تمام صفحه",
+    "normal_size": "سایز عادی",
+    "minimize": "سایز کوچک"
   }
 }

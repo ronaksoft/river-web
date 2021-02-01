@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {Dialog, Grow, IconButton} from '@material-ui/core';
+import {Dialog, Grow, IconButton, Tooltip} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
 import Draggable, {ControlPosition} from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
@@ -60,7 +60,7 @@ interface IState {
     animateState: string;
     callId: string;
     callStarted: boolean;
-    callUserId: string | null;
+    callerId: string | null;
     cropCover: boolean;
     fullscreen: boolean;
     groupId: string | undefined;
@@ -111,7 +111,7 @@ class CallModal extends React.Component<IProps, IState> {
             animateState: 'init',
             callId: '0',
             callStarted: false,
-            callUserId: null,
+            callerId: null,
             cropCover: true,
             fullscreen: false,
             groupId: undefined,
@@ -309,6 +309,7 @@ class CallModal extends React.Component<IProps, IState> {
     private toggleFullscreenHandler = () => {
         this.setState({
             fullscreen: !this.state.fullscreen,
+            minimize: false,
         }, () => {
             if (this.callVideoRef) {
                 this.callVideoRef.resize(this.state.fullscreen);
@@ -379,13 +380,17 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getRequestedContent() {
-        const {callUserId, mode} = this.state;
+        const {callerId, mode} = this.state;
         const mediaDevice = this.callService.getMediaDevice();
         const join = mode === 'call_join_request';
         return <div className="call-modal-content">
-            {callUserId && <UserAvatar className="call-user-bg" id={callUserId} noDetail={true} big={true}/>}
+            {callerId && (callerId.indexOf('-') === -1 ?
+                <UserAvatar className="call-user-bg" id={callerId} noDetail={true} big={true}/> :
+                <GroupAvatar className="call-user-bg" id={callerId} teamId={this.teamId} big={true}/>)}
             <div className="call-info">
-                {callUserId && <UserName className="call-user-name" id={callUserId} noDetail={true}/>}
+                {callerId && (callerId.indexOf('-') === -1 ?
+                    <UserName className="call-user-name" id={callerId} noDetail={true} noIcon={true}/> :
+                    <GroupName className="call-user-name" id={callerId} teamId={this.teamId} noIcon={true}/>)}
                 <div className="call-status">
                     {i18n.t('call.is_calling')}
                 </div>
@@ -482,15 +487,21 @@ class CallModal extends React.Component<IProps, IState> {
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined} className="call-modal-content">
             <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}/>
             <div className="call-modal-header">
-                <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
-                    {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
-                </IconButton>
-                <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
-                    {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
-                </IconButton>
-                <IconButton className="call-action-item" onClick={this.closeHandler}>
-                    <CloseRounded/>
-                </IconButton>
+                <Tooltip enterDelay={500} title={i18n.t(cropCover ? 'call.crop_fit' : 'call.crop_cover')}>
+                    <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
+                        {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip enterDelay={500} title={i18n.t(fullscreen ? 'call.exit_fullscreen' : 'call.fullscreen')}>
+                    <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
+                        {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip enterDelay={500} title={i18n.t('general.close')}>
+                    <IconButton className="call-action-item" onClick={this.closeHandler}>
+                        <CloseRounded/>
+                    </IconButton>
+                </Tooltip>
             </div>
             <div className="call-info">
                 {this.getCalleeContent()}
@@ -554,16 +565,22 @@ class CallModal extends React.Component<IProps, IState> {
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
                        onClick={this.videoClickHandler(true)} onContextMenu={this.callVideoContextMenuHandler}/>
             <div className="call-modal-header">
-                {!allAudio && <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
-                    {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
-                </IconButton>}
-                <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
-                    {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
-                </IconButton>
+                {!allAudio && <Tooltip enterDelay={500} title={i18n.t(cropCover ? 'call.crop_fit' : 'call.crop_cover')}>
+                    <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
+                        {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
+                    </IconButton>
+                </Tooltip>}
+                <Tooltip enterDelay={500} title={i18n.t(fullscreen ? 'call.exit_fullscreen' : 'call.fullscreen')}>
+                    <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
+                        {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
+                    </IconButton>
+                </Tooltip>
                 {!isGroup &&
-                <IconButton className="call-action-item" onClick={this.toggleMinimizeHandler}>
-                    {minimize ? <WebAssetRounded/> : <DynamicFeedRounded/>}
-                </IconButton>}
+                <Tooltip enterDelay={500} title={i18n.t(minimize ? 'call.normal_size' : 'call.minimize')}>
+                    <IconButton className="call-action-item" onClick={this.toggleMinimizeHandler}>
+                        {minimize ? <WebAssetRounded/> : <DynamicFeedRounded/>}
+                    </IconButton>
+                </Tooltip>}
             </div>
             {isCaller && !callStarted &&
             <audio autoPlay={true} src={this.callConnectingTone} loop={true} style={{display: 'none'}}>
@@ -647,7 +664,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.loading = true;
         this.setState({
             animateState: 'init',
-            callUserId: this.peer ? this.peer.getId() || '0' : null,
+            callerId: this.peer ? this.peer.getId() || '0' : null,
             cropCover: this.peer ? this.peer.getType() !== PeerType.PEERGROUP : false,
             isCaller: true,
             mode: 'call',
@@ -785,7 +802,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
         this.setState({
             callId: data.callid || '0',
-            callUserId: data.userid || '0',
+            callerId: data.peerid || '0',
             mode: 'call_request',
             open: true,
         });
@@ -796,7 +813,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.peer = peer;
         this.setState({
             callId: callId,
-            callUserId: calleeId,
+            callerId: peer.getId() || '0',
             mode: 'call_join_request',
             open: true,
         });

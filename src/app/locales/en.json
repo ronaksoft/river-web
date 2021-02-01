@@ -561,6 +561,12 @@
     "add_participant": "Add participant",
     "audio_call": "Audio Call",
     "video_call": "Video Call",
-    "hangup": "Hangup"
+    "hangup": "Hangup",
+    "crop_fit": "Crop fit",
+    "crop_cover": "Crop cover",
+    "fullscreen": "Fullscreen",
+    "exit_fullscreen": "Exit fullscreen",
+    "normal_size": "Normal size",
+    "minimize": "Minimize"
   }
 }
