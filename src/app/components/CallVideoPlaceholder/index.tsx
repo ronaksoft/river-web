@@ -78,6 +78,9 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
         if (this.video) {
             this.video.srcObject = src;
         }
+        if (this.callVideoAugmentRef) {
+            this.callVideoAugmentRef.setStream(src);
+        }
     }
 
     public render() {
@@ -94,6 +97,9 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
 
     private callVideoAugmentRefHandler = (ref: any) => {
         this.callVideoAugmentRef = ref;
+        if (this.callVideoAugmentRef && this.props.srcObject) {
+            this.callVideoAugmentRef.setStream(this.props.srcObject);
+        }
     }
 
     private vidRef = (video: HTMLVideoElement | null) => {

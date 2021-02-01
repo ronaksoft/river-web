@@ -11,6 +11,7 @@ import * as React from 'react';
 import UserAvatar from "../UserAvatar";
 import i18n from '../../services/i18n';
 import {MicOffRounded} from '@material-ui/icons';
+import VoiceActivityDetection from "../../services/vad";
 
 interface IProps {
     userId: string;
@@ -24,6 +25,11 @@ interface IState {
 }
 
 class CallVideoAugment extends React.Component<IProps, IState> {
+    private mediaStream: MediaStream | undefined;
+    private vod: VoiceActivityDetection | undefined;
+    private vodWave: HTMLElement | undefined;
+    private vodWaveSmooth: HTMLElement | undefined;
+
     public static getDerivedStateFromProps(props: IProps, state: IState) {
         if (props.userId === state.userId) {
             return null;
@@ -49,6 +55,8 @@ class CallVideoAugment extends React.Component<IProps, IState> {
         }
         this.setState({
             audioMute: mute,
+        }, () => {
+            this.checkVOD();
         });
     }
 
@@ -58,18 +66,78 @@ class CallVideoAugment extends React.Component<IProps, IState> {
         }
         this.setState({
             videoMute: mute,
+        }, () => {
+            this.checkVOD();
         });
+    }
+
+    public setStream(stream: MediaStream) {
+        if (this.vod && this.mediaStream !== stream) {
+            this.vod.destroy(false);
+            this.vod = undefined;
+        }
+        this.mediaStream = stream;
+        window.console.log('setStream');
+        this.checkVOD();
+    }
+
+    public componentWillUnmount() {
+        if (this.vod) {
+            this.vod.destroy(false);
+            this.vod = undefined;
+        }
     }
 
     public render() {
         const {videoMute, audioMute, userId} = this.state;
         return <>
+            {videoMute && userId && <div className="vod-wave">
+                <div ref={this.vodWaveSmoothRefHandler} className="inner-smooth"/>
+                <div ref={this.vodWaveRefHandler} className="inner"/>
+            </div>}
             {videoMute && userId && <UserAvatar className="video-user-placeholder" id={userId} noDetail={true}/>}
             {audioMute && <div className="video-audio-muted">
                 <MicOffRounded/>
                 {i18n.t('call.muted')}
             </div>}
         </>;
+    }
+
+    private checkVOD() {
+        const {videoMute, audioMute, userId} = this.state;
+        if (!window.AudioContext || !videoMute || audioMute || !userId) {
+            if (this.vod) {
+                this.vod.destroy(false);
+                this.vod = undefined;
+            }
+            return;
+        }
+        if (!this.mediaStream || this.vod) {
+            return;
+        }
+        this.vod = new VoiceActivityDetection({
+            intervalTimeout: 96,
+            maxVal: 100,
+            sampleAmount: 6,
+            smoothingTimeConstant: 0.3,
+        });
+        this.vod.onActivity((val) => {
+            if (this.vodWave) {
+                this.vodWave.style.transform = `scale(${1 + (val / 190)})`;
+            }
+            if (this.vodWaveSmooth) {
+                this.vodWaveSmooth.style.transform = `scale(${1 + (val / 250)})`;
+            }
+        });
+        this.vod.setStream(this.mediaStream, true);
+    }
+
+    private vodWaveRefHandler = (ref: any) => {
+        this.vodWave = ref;
+    }
+
+    private vodWaveSmoothRefHandler = (ref: any) => {
+        this.vodWaveSmooth = ref;
     }
 }
 

@@ -12,6 +12,7 @@ import {merge} from "lodash";
 interface IConfig {
     fftSize: number;
     intervalTimeout: number;
+    maxVal?: number;
     minDecibels: number;
     sampleAmount: number;
     smoothingTimeConstant: number;
@@ -45,7 +46,12 @@ export default class VoiceActivityDetection {
             });
         }
         if (this.audioContext) {
-            this.audioContext.close();
+            try {
+                this.audioContext.close();
+                this.audioContext = undefined;
+            } catch (e) {
+                window.console.log(e);
+            }
         }
         this.active = false;
     }
@@ -71,6 +77,9 @@ export default class VoiceActivityDetection {
         const tracks = this.audioStream.getAudioTracks();
         if (tracks.length === 0) {
             return Promise.reject('no audio track');
+        }
+        if (this.audioAnalyserInterval) {
+            clearInterval(this.audioAnalyserInterval);
         }
         this.audioContext = new AudioContext();
         const source = this.audioContext.createMediaStreamSource(this.audioStream);
@@ -101,6 +110,9 @@ export default class VoiceActivityDetection {
             val += data[i * step];
         }
         val = val / t;
+        if (this.config.maxVal) {
+            val = Math.min(val, this.config.maxVal);
+        }
         if (this.activityFn) {
             this.activityFn(val);
         }

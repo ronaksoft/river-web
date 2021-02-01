@@ -1,3 +1,6 @@
+## 1.0.48
+* Voice Activity Detection added in voice calls
+
 ## 1.0.47
 * Fixed reported bugs
 
