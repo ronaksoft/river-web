@@ -14,6 +14,7 @@ import i18n from "../../services/i18n";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
+import VoiceActivityDetection from "../../services/vad";
 
 export const getDefaultAudio = (): (boolean | MediaTrackConstraintSet) => {
     const val = localStorage.getItem(C_LOCALSTORAGE.SettingsDefaultAudio);
@@ -64,12 +65,10 @@ interface IState {
 }
 
 class SettingsMediaInput extends React.Component<IProps, IState> {
-    private mounted: boolean = true;
     private videoRef: HTMLVideoElement | undefined;
     private videoStream: MediaStream | undefined;
-    private audioContext: AudioContext | undefined;
-    private audioAnalyserInterval: any;
     private audioStream: MediaStream | undefined;
+    private vad: VoiceActivityDetection | undefined;
     private barRef: any | undefined;
 
     constructor(props: IProps) {
@@ -89,7 +88,6 @@ class SettingsMediaInput extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         const {selectedAudio, selectedVideo} = this.state;
-        this.mounted = true;
         this.getMediaInput().then((res) => {
             this.setState({
                 audios: res.audios,
@@ -105,7 +103,9 @@ class SettingsMediaInput extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        this.mounted = false;
+        if (this.vad) {
+            this.vad.setActive(false);
+        }
         this.destroyAudioSteam();
         this.destroyVideoSteam();
     }
@@ -311,58 +311,13 @@ class SettingsMediaInput extends React.Component<IProps, IState> {
             return Promise.reject('no AudioContext');
         }
 
-        const tracks = this.audioStream.getAudioTracks();
-        if (tracks.length === 0) {
-            return Promise.reject('no audio track');
-        }
-
-        this.audioContext = new AudioContext();
-        const source = this.audioContext.createMediaStreamSource(this.audioStream);
-        const audioAnalyser = this.audioContext.createAnalyser();
-        audioAnalyser.minDecibels = -70;
-        audioAnalyser.fftSize = 128;
-        audioAnalyser.smoothingTimeConstant = 0.3;
-        source.connect(audioAnalyser);
-        const data = new Uint8Array(audioAnalyser.frequencyBinCount);
-        const analyze = () => {
-            if (!this.mounted) {
-                clearInterval(this.audioAnalyserInterval);
-                return;
+        this.vad = new VoiceActivityDetection({intervalTimeout: 63});
+        this.vad.onActivity((val) => {
+            if (this.barRef) {
+                this.barRef.style.transform = `translateX(-${100 - val}%)`;
             }
-            audioAnalyser.getByteFrequencyData(data);
-            this.normalizeAnalyze(data);
-        };
-        this.audioAnalyserInterval = setInterval(analyze, 64);
-        analyze();
-        return Promise.resolve();
-    }
-
-    private normalizeAnalyze(data: Uint8Array) {
-        const len = data.length;
-        const step = Math.floor(len / 10);
-        let val = 0;
-        for (let i = 0; i < 10; i++) {
-            val += data[i * step];
-        }
-        val = val / 10;
-        val = Math.min(val, 100);
-        if (this.barRef) {
-            this.barRef.style.transform = `translateX(-${100 - val}%)`;
-        }
-    }
-
-    private stopAudioAnalyzer() {
-        clearInterval(this.audioAnalyserInterval);
-        if (this.audioStream) {
-            this.audioStream.getTracks().forEach((track) => {
-                track.stop();
-            });
-        }
-        if (!this.audioContext) {
-            return;
-        }
-        this.audioContext.close();
-        this.audioContext = undefined;
+        });
+        return this.vad.setStream(this.audioStream, true);
     }
 
     private destroyAudioSteam() {
@@ -372,7 +327,9 @@ class SettingsMediaInput extends React.Component<IProps, IState> {
             });
             this.audioStream = undefined;
         }
-        this.stopAudioAnalyzer();
+        if (this.vad) {
+            this.vad.destroy(false);
+        }
     }
 }
 

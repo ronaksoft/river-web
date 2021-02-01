@@ -29,6 +29,7 @@ import UserName from "../UserName";
 import Scrollbars from "react-custom-scrollbars";
 import {currentUserId} from "../../services/sdk";
 import {IUser} from "../../repository/user/interface";
+import VoiceActivityDetection from "../../services/vad";
 
 import './style.scss';
 
@@ -56,10 +57,7 @@ interface IState {
 class CallSettings extends React.Component<IProps, IState> {
     private callService: CallService;
     private eventReferences: any[] = [];
-    private audioContext: AudioContext | undefined;
-    private audioAnalyserInterval: any;
-    private audioStream: MediaStream | undefined;
-    private mounted: boolean = true;
+    private vad: VoiceActivityDetection | undefined;
     private container: HTMLElement | undefined;
     private preventClosing: boolean = false;
 
@@ -89,8 +87,9 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        this.mounted = false;
-        this.stopAudioAnalyzer();
+        if (this.vad) {
+            this.vad.destroy(true);
+        }
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
@@ -105,14 +104,14 @@ class CallSettings extends React.Component<IProps, IState> {
                 video,
             },
         });
+        if (this.vad) {
+            this.vad.setActive(audio);
+        }
         this.callService.toggleAudio(audio);
         this.callService.toggleVideo(video);
     }
 
     public startAudioAnalyzer() {
-        if (this.audioContext || this.audioStream) {
-            return;
-        }
         this.initAudioAnalyzer();
     }
 
@@ -196,6 +195,10 @@ class CallSettings extends React.Component<IProps, IState> {
     private eventLocalStreamUpdateHandler = () => {
         this.setState({
             mediaSettings: this.callService.getStreamState(),
+        }, () => {
+            if (this.vad) {
+                this.vad.setActive(this.state.mediaSettings.audio);
+            }
         });
     }
 
@@ -203,69 +206,22 @@ class CallSettings extends React.Component<IProps, IState> {
         if (!window.AudioContext) {
             return Promise.reject('no AudioContext');
         }
-        return navigator.mediaDevices.getUserMedia({audio: getDefaultAudio()}).then((stream) => {
-            this.audioStream = stream;
-            const tracks = stream.getAudioTracks();
-            if (tracks.length === 0) {
-                return Promise.reject('no audio track');
+        this.vad = new VoiceActivityDetection();
+        this.vad.onActivity((val) => {
+            const {muteNotice} = this.state;
+            if (val > 15 && !muteNotice) {
+                this.setState({
+                    muteNotice: true,
+                });
+            } else if (val < 10 && muteNotice) {
+                this.setState({
+                    muteNotice: false,
+                });
             }
-            this.audioContext = new AudioContext();
-            const source = this.audioContext.createMediaStreamSource(stream);
-            const audioAnalyser = this.audioContext.createAnalyser();
-            audioAnalyser.minDecibels = -70;
-            audioAnalyser.fftSize = 128;
-            audioAnalyser.smoothingTimeConstant = 0.3;
-            source.connect(audioAnalyser);
-            const data = new Uint8Array(audioAnalyser.frequencyBinCount);
-            const analyze = () => {
-                if (!this.mounted) {
-                    clearInterval(this.audioAnalyserInterval);
-                    return;
-                }
-                if (this.state.mediaSettings.audio) {
-                    return;
-                }
-                audioAnalyser.getByteFrequencyData(data);
-                this.normalizeAnalyze(data);
-            };
-            this.audioAnalyserInterval = setInterval(analyze, 767);
-            analyze();
-            return Promise.resolve();
         });
-    }
-
-    private normalizeAnalyze(data: Uint8Array) {
-        const len = data.length;
-        const step = Math.floor(len / 10);
-        let val = 0;
-        for (let i = 0; i < 10; i++) {
-            val += data[i * step];
-        }
-        val = val / 10;
-        const {muteNotice} = this.state;
-        if (val > 15 && !muteNotice) {
-            this.setState({
-                muteNotice: true,
-            });
-        } else if (val < 10 && muteNotice) {
-            this.setState({
-                muteNotice: false,
-            });
-        }
-    }
-
-    private stopAudioAnalyzer() {
-        clearInterval(this.audioAnalyserInterval);
-        if (this.audioStream) {
-            this.audioStream.getTracks().forEach((track) => {
-                track.stop();
-            });
-        }
-        if (!this.audioContext) {
-            return;
-        }
-        this.audioContext.close();
-        this.audioContext = undefined;
+        return navigator.mediaDevices.getUserMedia({audio: getDefaultAudio()}).then((stream) => {
+            return this.vad.setStream(stream, this.state.mediaSettings.audio);
+        });
     }
 
     private drawerOpenHandler = () => {
