@@ -182,7 +182,7 @@ class InfoBar extends React.Component<IProps, IState> {
                     }}
                 >
                     {this.menuItems.map((item, index) => {
-                        if (item.whenActive === callStarted) {
+                        if (item.whenActive === (callStarted || false)) {
                             return (<MenuItem key={index} onClick={this.callCmdHandler(item.cmd)}
                                               className="context-item">
                                 <ListItemIcon className="context-icon">{item.icon}</ListItemIcon>

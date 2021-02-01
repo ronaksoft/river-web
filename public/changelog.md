@@ -1,3 +1,6 @@
+## 1.0.46
+* Known bugs fixed
+
 ## 1.0.45
 * Call improvements
 
