@@ -590,6 +590,7 @@
 
       .call-rate-label {
         padding-bottom: 6px;
+        user-select: none;
       }
 
       .call-rate-value {
@@ -598,10 +599,12 @@
 
       .call-duration-label {
         padding-bottom: 12px;
+        user-select: none;
       }
 
       .call-duration-value {
         font-weight: bold;
+        user-select: none;
       }
     }
   }

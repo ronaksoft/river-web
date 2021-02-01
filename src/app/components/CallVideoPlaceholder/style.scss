@@ -94,10 +94,6 @@
 
     &.no-image {
       height: 96px;
-
-      video {
-        display: none;
-      }
     }
 
     .video-img {
@@ -128,6 +124,9 @@
   }
 }
 
-.call-modal.minimize .video-swap .video-placeholder.no-image {
-  height: 48px;
+.call-modal.call.minimize .call-modal-content.video-swap {
+  .video-placeholder.no-image, .call-video.cp-1 {
+    height: 56px;
+    Width: 56px;
+  }
 }
