@@ -285,6 +285,7 @@ class Chat extends React.Component<IProps, IState> {
     private pinnedMessageRef: PinnedMessage | undefined;
     private modalityService: ModalityService;
     private readonly callService: CallService;
+    private dialogInitialized: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -654,6 +655,7 @@ class Chat extends React.Component<IProps, IState> {
                                   onMediaAction={this.messageAttachmentActionHandler}
                                   onTeamChange={this.leftMenuTeamChangeHandler}
                                   onTeamLoad={this.leftMenuTeamLoadHandler}
+                                  groupLimit={this.apiManager.getInstantSystemConfig().groupmaxsize || 250}
                         />
                         {this.selectedPeerName !== 'null' &&
                         <div
@@ -988,6 +990,13 @@ class Chat extends React.Component<IProps, IState> {
             }).catch((err) => {
                 this.setLoading(false);
                 resolve();
+            }).finally(() => {
+                if (!this.dialogInitialized) {
+                    this.dialogInitialized = true;
+                    if (this.firstTimeLoad) {
+                        this.wsReadyHandler();
+                    }
+                }
             });
         });
     }
@@ -2482,23 +2491,25 @@ class Chat extends React.Component<IProps, IState> {
         this.setAppStatus({
             isConnecting: false,
         });
-        this.apiManager.authRecall().then((res) => {
-            if (res.timestamp) {
-                this.riverTime.setServerTime(res.timestamp);
-            }
-            if (this.firstTimeLoad) {
-                this.firstTimeLoad = false;
-                this.userRepo.getAllContacts(this.teamId);
-                this.apiManager.getSystemConfig();
-                this.startSyncing(res.updateid || 0);
-                this.sendAllPendingMessages();
-            } else {
-                setTimeout(() => {
+        if (this.dialogInitialized) {
+            this.apiManager.authRecall().then((res) => {
+                if (res.timestamp) {
+                    this.riverTime.setServerTime(res.timestamp);
+                }
+                if (this.firstTimeLoad) {
+                    this.firstTimeLoad = false;
+                    this.userRepo.getAllContacts(this.teamId);
+                    this.apiManager.getSystemConfig();
                     this.startSyncing(res.updateid || 0);
-                }, 1000);
-            }
-            this.apiManager.sendAllGuaranteedCommands(!this.firstTimeLoad);
-        });
+                    this.sendAllPendingMessages();
+                } else {
+                    setTimeout(() => {
+                        this.startSyncing(res.updateid || 0);
+                    }, 1000);
+                }
+                this.apiManager.sendAllGuaranteedCommands(!this.firstTimeLoad);
+            });
+        }
     }
 
     private startSyncing(updateId?: number) {

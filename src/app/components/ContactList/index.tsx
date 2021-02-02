@@ -200,9 +200,9 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     public selectAll() {
-        const {selectedContacts} = this.state;
+        const {selectedContacts, hiddenContacts} = this.state;
         this.defaultContact.forEach((contact) => {
-            if (findIndex(selectedContacts, {id: contact.id || ''}) > -1 || contact.id === currentUserId) {
+            if (contact.id === currentUserId || findIndex(selectedContacts, {id: contact.id || ''}) > -1 || (hiddenContacts.length > 0 && findIndex(hiddenContacts, {id: contact.id || ''}) > -1)) {
                 return;
             }
             selectedContacts.push(contact);

@@ -1,3 +1,10 @@
+## 1.0.49
+* Group limit indicator added
+* Call participant bug fixed
+* Block modal added
+* Improvements in app start up
+* Other known bugs fixed
+
 ## 1.0.48
 * Voice Activity Detection added in voice calls
 

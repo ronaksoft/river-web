@@ -40,6 +40,7 @@ import {OfficialIcon} from "../SVG/official";
 import {extractPhoneNumber} from "../../services/utilities/localize";
 import {ModalityService} from "kk-modality";
 import {NotifyContent} from "../GroupInfoMenu";
+import UserName from "../UserName";
 
 import './style.scss';
 
@@ -593,30 +594,46 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         if (!user) {
             return;
         }
-        const inputUser = new InputUser();
-        inputUser.setUserid(user.id || '');
-        inputUser.setAccesshash(user.accesshash || '');
+        const fn = () => {
+            const inputUser = new InputUser();
+            inputUser.setUserid(user.id || '');
+            inputUser.setAccesshash(user.accesshash || '');
+            if (user.blocked) {
+                this.apiManager.accountUnblock(inputUser).then(() => {
+                    this.userRepo.importBulk(false, [{
+                        blocked: false,
+                        id: user.id || '',
+                    }], false, this.callerId);
+                    user.blocked = false;
+                    this.setState({
+                        user,
+                    });
+                });
+            } else {
+                this.apiManager.accountBlock(inputUser).then(() => {
+                    this.userRepo.importBulk(false, [{
+                        blocked: true,
+                        id: user.id || '',
+                    }], false, this.callerId);
+                    user.blocked = true;
+                    this.setState({
+                        user,
+                    });
+                });
+            }
+        };
         if (user.blocked) {
-            this.apiManager.accountUnblock(inputUser).then(() => {
-                this.userRepo.importBulk(false, [{
-                    blocked: false,
-                    id: user.id || '',
-                }], false, this.callerId);
-                user.blocked = false;
-                this.setState({
-                    user,
-                });
-            });
+            fn();
         } else {
-            this.apiManager.accountBlock(inputUser).then(() => {
-                this.userRepo.importBulk(false, [{
-                    blocked: true,
-                    id: user.id || '',
-                }], false, this.callerId);
-                user.blocked = true;
-                this.setState({
-                    user,
-                });
+            this.modalityService.open({
+                cancelText: i18n.t('general.cancel'),
+                confirmText: i18n.t('general.block'),
+                description: i18n.t('chat.block_desc'),
+                title: <UserName id={user.id} noIcon={true} noDetail={true} format={i18n.t('chat.block_title')}/>
+            }).then((modalRes) => {
+                if (modalRes === 'confirm') {
+                    fn();
+                }
             });
         }
     }

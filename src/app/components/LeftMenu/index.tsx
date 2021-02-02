@@ -66,6 +66,7 @@ interface IProps {
     onMediaAction?: (cmd: 'download', message: IMessage) => void;
     onTeamChange?: (team: ITeam) => void;
     onTeamLoad?: (teams: ITeam[]) => void;
+    groupLimit: number;
 }
 
 interface IState {
@@ -463,7 +464,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     <div className="left-overlay">
                         {Boolean(overlayMode === 1) &&
                         <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
-                                      teamId={teamId}/>}
+                                      teamId={teamId} limit={this.props.groupLimit}/>}
                         {Boolean(overlayMode === 2) &&
                         <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
                                    onAction={this.props.onMediaAction} teamId={teamId}/>}

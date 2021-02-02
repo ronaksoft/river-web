@@ -130,7 +130,9 @@
     "seen_by_placeholder": "no one",
     "pin": "Pin",
     "unpin": "Unpin",
-    "last_admin_error": "You cannot leave, no admin left!"
+    "last_admin_error": "You cannot leave, no admin left!",
+    "block_title": "Block {0}",
+    "block_desc": "Do you want to block this user from messaging and calling you on River?"
   },
   "peer_info": {
     "notify_settings": "Notify Settings",

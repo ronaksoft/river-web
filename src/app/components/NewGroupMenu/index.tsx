@@ -32,11 +32,13 @@ import {TextAvatar} from "../UserAvatar";
 import {C_AVATAR_SIZE} from "../SettingsMenu";
 
 import './style.scss';
+import {localize} from "../../services/utilities/localize";
 
 interface IProps {
     onClose?: () => void;
     onCreate: (contacts: IUser[], title: string, fileId: string) => void;
     teamId: string;
+    limit: number;
 }
 
 interface IState {
@@ -75,6 +77,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
 
     public render() {
         const {page, selectedContacts, title, uploadingPhoto, avatarMenuAnchorEl} = this.state;
+        const {limit} = this.props;
         return (
             <div className="new-group-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler}
@@ -94,8 +97,13 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                                          teamId={this.props.teamId} hideYou={true}/>
                         </div>
                         {Boolean(selectedContacts.length > 0) && <div className="actions-bar">
+                            {selectedContacts.length <= limit &&
                             <div className="add-action" onClick={this.onNextHandler}>
                                 <ArrowForwardRounded/>
+                            </div>}
+                            <div className="action-footer">
+                                <div className={'counter' + (selectedContacts.length > limit ? ' exceeded' : '')}
+                                >{`${localize(selectedContacts.length)}/${localize(limit)}`}</div>
                             </div>
                         </div>}
                     </div>

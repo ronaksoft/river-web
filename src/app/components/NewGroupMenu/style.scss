@@ -271,7 +271,7 @@
   }
 
   .actions-bar {
-    height: 86px;
+    height: 104px;
     padding: 18px 0 22px;
     text-align: center;
     background-color: var(--message-chat);
@@ -300,6 +300,28 @@
       &:hover {
         background: var(--river-dark);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+    }
+
+    .action-footer {
+      position: relative;
+      padding: 8px 12px;
+      height: 38px;
+      user-select: none;
+
+      .counter {
+        position: absolute;
+        top: 50%;
+        left: 16px;
+        white-space: nowrap;
+        color: var(--grey);
+        transform: translateY(-50%);
+        font-size: 13px;
+
+        &.exceeded {
+          color: var(--red);
+          font-weight: bold;
+        }
       }
     }
   }
