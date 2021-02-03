@@ -1,3 +1,6 @@
+## 1.0.51
+* Call history implemented
+
 ## 1.0.50
 * Dialog remove bug fixed
 

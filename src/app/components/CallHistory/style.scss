@@ -50,7 +50,6 @@
         width: 100%;
         height: 64px;
         padding: 8px;
-        cursor: pointer;
         direction: ltr;
 
         &:after {
@@ -66,7 +65,6 @@
         }
 
         &:hover {
-          border: 0;
           background-color: var(--color-hover);
         }
 
@@ -214,6 +212,10 @@ html[theme="dark-night"] {
         background-color: var(--dark-low-op50)
       }
 
+      &:hover {
+        background-color: var(--dark-hover);
+      }
+
       .info, .date {
         color: var(--white);
       }
@@ -236,6 +238,10 @@ html[theme="dark-blue"] {
     .calls-container .call-item {
       &:after {
         background-color: var(--dark-blue-low-op50)
+      }
+
+      &:hover {
+        background-color: var(--dark-hover);
       }
 
       .info, .date {

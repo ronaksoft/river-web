@@ -352,7 +352,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             <div className={'left-menu' + ((withPanel && teamList.length !== 1) ? ' with-panel' : '')}>
                 {withPanel && teamList.length > 1 &&
                 <LeftPanel ref={this.leftPanelRefHandler} selectedTeamId={teamId}
-                           onTeamChange={this.leftPanelTeamChangeHandler}/>}
+                           onTeamChange={this.leftPanelTeamChangeHandler} onAction={this.leftPanelActionHandler}/>}
                 <div
                     className={'column-left ' + className}>
                     {!shrunkMenu && <div className="top-bar">
@@ -854,6 +854,14 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
         if (this.settingsMenuRef) {
             this.settingsMenuRef.changeTeam(team);
+        }
+    }
+
+    private leftPanelActionHandler = (cmd: string) => (e: any) => {
+        switch (cmd) {
+            case 'call_history':
+                this.setMenu('call_history');
+                break;
         }
     }
 

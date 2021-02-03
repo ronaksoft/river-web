@@ -31,6 +31,16 @@
     flex: 1 1;
     width: 100%;
 
+    &.bottom {
+      flex: unset;
+      height: 88px;
+      justify-content: flex-end;
+
+      .folder-item {
+        margin: 24px 0 0;
+      }
+    }
+
     .MuiBadge-root {
       .MuiBadge-badge {
         right: 16px;
@@ -120,6 +130,14 @@
     box-shadow: 3px 0 3px rgba(0, 0, 0, 0.3);
 
     .folder-container {
+
+      &.bottom {
+        .folder-item {
+          margin-top: 16px;
+          margin-bottom: 0;
+        }
+      }
+
       .folder-item {
         filter: grayscale(0);
         width: 64px;

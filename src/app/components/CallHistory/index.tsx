@@ -104,7 +104,7 @@ class CallHistory extends React.Component<IProps, IState> {
     private getWrapper() {
         const {list, loading} = this.state;
         if (list.length === 0) {
-            if (loading) {
+            if (!this.firstTimeLoad && loading) {
                 return (<div className="calls-container">
                     <Loading/>
                 </div>);
@@ -266,9 +266,6 @@ class CallHistory extends React.Component<IProps, IState> {
     }
 
     private getCallHistory(after?: number) {
-        if (this.firstTimeLoad) {
-            this.firstTimeLoad = false;
-        }
         if (this.state.loading) {
             return;
         }
@@ -290,6 +287,10 @@ class CallHistory extends React.Component<IProps, IState> {
                 this.setState({
                     list: res.phonecallsList,
                     loading: false,
+                }, () => {
+                    if (this.firstTimeLoad) {
+                        this.firstTimeLoad = false;
+                    }
                 });
             }
         }).catch(() => {

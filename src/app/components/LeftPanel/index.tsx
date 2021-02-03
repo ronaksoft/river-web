@@ -13,12 +13,14 @@ import Badge from "@material-ui/core/Badge";
 import {TextAvatar} from "../UserAvatar";
 import {ITeam} from "../../repository/team/interface";
 import {findIndex} from "lodash";
-import {PersonRounded} from "@material-ui/icons";
+import {PersonRounded, CallRounded} from "@material-ui/icons";
 import Scrollbars from "react-custom-scrollbars";
+import i18n from "../../services/i18n";
 
 import './style.scss';
 
 interface IProps {
+    onAction: (cmd: string) => (e: any) => void;
     onTeamChange: (team: ITeam) => void;
     selectedTeamId: string;
 }
@@ -110,6 +112,14 @@ class LeftPanel extends React.Component<IProps, IState> {
                             </Badge>);
                         })}
                     </Scrollbars>
+                </div>
+                <div className="folder-container bottom">
+                    <div className="folder-item" onClick={this.props.onAction('call_history')}>
+                        <TextAvatar fname={'f'} icon={<CallRounded/>}/>
+                        <div className="folder-name">
+                            <div className="inner">{i18n.t('chat.call_history')}</div>
+                        </div>
+                    </div>
                 </div>
             </div>);
     }
