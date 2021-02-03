@@ -336,24 +336,25 @@ class TimeService {
 
     public duration(from: number, to: number) {
         const diff = to - from;
+        const m = moment.unix(diff);
         if (diff < 10) {
             if (this.lang === 'en') {
-                return moment.unix(diff).format('s [seconds]');
+                return m.format('s [seconds]');
             } else {
-                return moment.unix(diff).format('s [ثانیه]');
+                return m.format('s [ثانیه]');
             }
         } else if (diff < 60) {
             if (this.lang === 'en') {
-                return moment.unix(diff).format('ss [seconds]');
+                return m.format('ss [seconds]');
             } else {
-                return moment.unix(diff).format('ss [ثانیه]');
+                return m.format('ss [ثانیه]');
             }
         } else if (diff < 600) {
-            return moment.unix(diff).format('m:ss');
+            return m.format('m:ss');
         } else if (diff < 3600) {
-            return moment.unix(diff).format('mm:ss');
+            return m.format('mm:ss');
         } else {
-            return moment.unix(diff).format('HH:mm::ss');
+            return m.format('HH:mm::ss');
         }
     }
 }
