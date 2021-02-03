@@ -29,7 +29,7 @@ NProgress.configure({
     barSelector: '[role="loading-bar"]',
     easing: 'linear',
     showSpinner: false,
-    speed: 200,
+    speed: 700,
     template: '<div class="loading-bar" role="loading-bar"></div>',
     trickleSpeed: 100,
 });
