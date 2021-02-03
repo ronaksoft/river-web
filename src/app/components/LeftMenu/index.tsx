@@ -44,8 +44,9 @@ import Broadcaster from "../../services/broadcaster";
 import MessageRepo from "../../repository/message";
 
 import './style.scss';
+import CallHistory from "../CallHistory";
 
-export type menuItems = 'chat' | 'settings' | 'contacts';
+export type menuItems = 'chat' | 'settings' | 'contacts' | 'call_history';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
 
 interface IProps {
@@ -170,6 +171,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }, {
             cmd: 'labels',
             title: i18n.t('chat.labels'),
+        }, {
+            cmd: 'call_history',
+            title: i18n.t('chat.call_history'),
         }, {
             cmd: 'account',
             title: i18n.t('chat.account_info'),
@@ -353,45 +357,45 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     className={'column-left ' + className}>
                     {!shrunkMenu && <div className="top-bar">
                         {iframeActive &&
-                        <span className="close-btn">
-                        <Tooltip
-                            title={i18n.t('general.close')}
-                            placement="bottom"
-                            onClick={this.chatMoreActionHandler('close_iframe')}
-                        >
-                            <IconButton>
-                                <CloseRounded/>
-                            </IconButton>
-                        </Tooltip>
-                    </span>}
+                        <div className="close-btn">
+                            <Tooltip
+                                title={i18n.t('general.close')}
+                                placement="bottom"
+                                onClick={this.chatMoreActionHandler('close_iframe')}
+                            >
+                                <IconButton>
+                                    <CloseRounded/>
+                                </IconButton>
+                            </Tooltip>
+                        </div>}
                         {Boolean(!iframeActive && !this.props.mobileView) &&
-                        <span className="menu-btn">
-                        <Tooltip
-                            title={i18n.t('general.collapse')}
-                            placement="bottom"
-                            onClick={this.toggleMenuHandler}
-                        >
-                            <IconButton>
-                                 <MenuOpenRounded/>
-                            </IconButton>
-                        </Tooltip>
-                    </span>}
-                        <span className="new-message">
-                        <div className="text-logo">
-                            {iframeActive &&
-                            <a href="/" target="_blank">
-                                <RiverTextLogo/>
-                            </a>}
-                            {!iframeActive && <RiverTextLogo/>}
-                            {teamId !== '0' &&
-                            <TeamName id={teamId} className="team-name" prefix="(" postfix=")"
-                                      onClick={this.teamOpenHandler}/>}
-                            {Boolean(!withPanel && teamList.length > 1) &&
-                            <div className="team-select-icon" onClick={this.teamOpenHandler}><ArrowDropDownRounded/>
-                                {hasUpdate && <div className="team-badge"/>}
-                            </div>}
+                        <div className="menu-btn">
+                            <Tooltip
+                                title={i18n.t('general.collapse')}
+                                placement="bottom"
+                                onClick={this.toggleMenuHandler}
+                            >
+                                <IconButton>
+                                    <MenuOpenRounded/>
+                                </IconButton>
+                            </Tooltip>
+                        </div>}
+                        <div className="new-message">
+                            <div className="text-logo">
+                                {iframeActive &&
+                                <a href="/" target="_blank">
+                                    <RiverTextLogo/>
+                                </a>}
+                                {!iframeActive && <RiverTextLogo/>}
+                                {teamId !== '0' &&
+                                <TeamName id={teamId} className="team-name" prefix="(" postfix=")"
+                                          onClick={this.teamOpenHandler}/>}
+                                {Boolean(!withPanel && teamList.length > 1) &&
+                                <div className="team-select-icon" onClick={this.teamOpenHandler}><ArrowDropDownRounded/>
+                                    {hasUpdate && <div className="team-badge"/>}
+                                </div>}
+                            </div>
                         </div>
-                    </span>
                         <div className="actions">
                             {this.chatTopIcons.map((item, key) => {
                                 return (
@@ -514,24 +518,33 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             <Dialog key="dialog-menu" ref={this.dialogRefHandler} cancelIsTyping={this.props.cancelIsTyping}
                     onContextMenu={this.props.onContextMenu} onDrop={this.props.onDrop} teamId={teamId}/>
             <div className="left-content-overlay">
-                {leftMenu === 'settings' &&
-                <SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
-                              onUpdateMessages={this.props.onUpdateMessages}
-                              onClose={this.props.onSettingsClose}
-                              onAction={this.props.onSettingsAction}
-                              onError={this.props.onError}
-                              onReloadDialog={this.props.onReloadDialog}
-                              onSubPlaceChange={this.settingsSubPlaceChangeHandler}
-                              onTeamChange={this.props.onTeamChange}
-                              onTeamUpdate={this.settingsMenuTeamUpdateHandler}
-                              onPanelToggle={this.settingsPanelToggleHandler}
-                              teamId={teamId}
-                />}
-                {leftMenu === 'contacts' &&
-                <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}
-                              onClose={this.contactsCloseHandler} teamId={teamId}/>}
+                {this.getOverlayContent()}
             </div>
         </div>;
+    }
+
+    private getOverlayContent() {
+        const {leftMenu, teamId} = this.state;
+        switch (leftMenu) {
+            case 'settings':
+                return <SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
+                                     onUpdateMessages={this.props.onUpdateMessages}
+                                     onClose={this.props.onSettingsClose}
+                                     onAction={this.props.onSettingsAction}
+                                     onError={this.props.onError}
+                                     onReloadDialog={this.props.onReloadDialog}
+                                     onSubPlaceChange={this.settingsSubPlaceChangeHandler}
+                                     onTeamChange={this.props.onTeamChange}
+                                     onTeamUpdate={this.settingsMenuTeamUpdateHandler}
+                                     onPanelToggle={this.settingsPanelToggleHandler}
+                                     teamId={teamId}/>;
+            case 'contacts':
+                return <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}
+                                     onClose={this.contactsCloseHandler} teamId={teamId}/>;
+            case 'call_history':
+                return <CallHistory key="call-history-menu" teamId={teamId} onClose={this.contactsCloseHandler}/>;
+        }
+        return null;
     }
 
     private dialogRefHandler = (ref: any) => {
@@ -633,6 +646,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 break;
             case 'close_iframe':
                 this.props.onAction('close_iframe');
+                break;
+            case 'call_history':
+                this.setMenu('call_history');
                 break;
         }
     }

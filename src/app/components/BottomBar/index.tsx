@@ -80,7 +80,7 @@ class BottomBar extends React.Component<IProps, IState> {
         );
     }
 
-    private onClickHandler = (item: 'chat' | 'settings' | 'contacts') => (e: any) => {
+    private onClickHandler = (item: menuItems) => (e: any) => {
         if (this.props.onSelect) {
             this.props.onSelect(item);
         }

@@ -78,6 +78,7 @@
     "new_group": "New Group",
     "new_message": "New Message",
     "labels": "Labels",
+    "call_history": "Call History",
     "account_info": "Account Info",
     "settings": "Settings",
     "log_out": "Log Out",
@@ -569,6 +570,8 @@
     "fullscreen": "Fullscreen",
     "exit_fullscreen": "Exit fullscreen",
     "normal_size": "Normal size",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "missed_call": "Missed call",
+    "in_progress": "In progress"
   }
 }

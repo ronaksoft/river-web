@@ -15,7 +15,7 @@ import en from "moment/locale/en-ca";
 import RiverTime from './river_time';
 import {C_LOCALSTORAGE} from "../sdk/const";
 
-class TimeUntiles {
+class TimeService {
     private riverTime: RiverTime;
     private lang: string = localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en';
 
@@ -219,6 +219,48 @@ class TimeUntiles {
         }
     }
 
+    public dateWithTime(timestamp: number | undefined) {
+        if (!timestamp) {
+            return '';
+        }
+
+        const date = moment(timestamp * 1000);
+        const current = this.riverTime.milliNow();
+
+        const today = moment(current).startOf('day');
+        if (date.isSameOrAfter(today)) {
+            if (this.lang === 'en') {
+                return date.format('[Today at], HH:mm');
+            } else {
+                return date.format('HH:mm، [امروز]');
+            }
+        }
+
+        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        if (date.isSameOrAfter(yesterday)) {
+            if (this.lang === 'en') {
+                return date.format('[Yesterday at], HH:mm');
+            } else {
+                return date.format('[دیروز] ،HH:mm');
+            }
+        }
+
+        const thisYear = moment(current).startOf('year');
+        if (date.isSameOrAfter(thisYear)) {
+            if (this.lang === 'en') {
+                return date.format('MMM DD, HH:mm');
+            } else {
+                return date.format('jDD jMMMM، HH:mm');
+            }
+        }
+
+        if (this.lang === 'en') {
+            return date.format('DD[/]MM[/]YYYY, HH:mm');
+        } else {
+            return date.format('jDD[/]jMM[/]jYYYY، HH:mm');
+        }
+    }
+
     public timeAgo(timestamp: number | undefined) {
         if (!timestamp) {
             return '';
@@ -291,6 +333,29 @@ class TimeUntiles {
         const m2 = moment.parseZone(time2 * 1000);
         return m1.isSame(m2, 'day');
     }
+
+    public duration(from: number, to: number) {
+        const diff = to - from;
+        if (diff < 10) {
+            if (this.lang === 'en') {
+                return moment.unix(diff).format('s [seconds]');
+            } else {
+                return moment.unix(diff).format('s [ثانیه]');
+            }
+        } else if (diff < 60) {
+            if (this.lang === 'en') {
+                return moment.unix(diff).format('ss [seconds]');
+            } else {
+                return moment.unix(diff).format('ss [ثانیه]');
+            }
+        } else if (diff < 600) {
+            return moment.unix(diff).format('m:ss');
+        } else if (diff < 3600) {
+            return moment.unix(diff).format('mm:ss');
+        } else {
+            return moment.unix(diff).format('HH:mm::ss');
+        }
+    }
 }
 
-export default new TimeUntiles();
+export default new TimeService();

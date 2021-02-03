@@ -120,7 +120,7 @@ class ContactList extends React.Component<IProps, IState> {
     private searchRepo: SearchRepo;
     private readonly searchDebounce: any;
     private defaultContact: IUser[] = [];
-    private readonly isMobile: boolean = false;
+    private readonly isMobile = IsMobile.isAny();
     private readonly hasScrollbar: boolean = false;
     private readonly rtl: boolean = false;
     private extraHidden: IUser[] = [];
@@ -158,7 +158,6 @@ class ContactList extends React.Component<IProps, IState> {
             title: '',
         };
 
-        this.isMobile = IsMobile.isAny();
         this.hasScrollbar = getScrollbarWidth() > 0;
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
 

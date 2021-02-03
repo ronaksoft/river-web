@@ -1482,7 +1482,7 @@ export default class CallService {
         }
 
         if (this.callInfo[this.activeCallId].acceptedParticipants.length === 0) {
-            this.callReject(this.activeCallId, 0, DiscardReason.DISCARDREASONHANGUP);
+            this.callReject(this.activeCallId, 0, DiscardReason.DISCARDREASONMISSED);
             this.callHandlers(C_CALL_EVENT.CallTimeout, {});
             window.console.log('[webrtc] call timeout, connId:', connId);
         } else if (this.peer.getType() === PeerType.PEERGROUP) {
