@@ -447,6 +447,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     public changeTeam(item: ITeam) {
+        if (this.state.pageContent !== 'none') {
+            this.prevHandler();
+        }
         this.teamSelectHandler(item, true)();
     }
 

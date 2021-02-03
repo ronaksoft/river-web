@@ -448,6 +448,9 @@ export default class UpdateManager {
                             window.console.log(e);
                         }
                     }
+                    setTimeout(() => {
+                        this.callOutOfSync();
+                    }, 5000);
                     // }
                 }
             });
@@ -460,6 +463,9 @@ export default class UpdateManager {
                     window.console.log(e);
                 }
             }
+            setTimeout(() => {
+                this.callOutOfSync();
+            }, 5000);
         });
     }
 
@@ -467,22 +473,26 @@ export default class UpdateManager {
         return new Promise((resolve, reject) => {
             const more = data.more || false;
             const lastUpdateId = more ? (data.maxupdateid || 0) : (data.currentupdateid || data.maxupdateid || 0);
-            this.processContainer({
-                groupsList: data.groupsList,
-                lastOne: !more,
-                maxupdateid: lastUpdateId,
-                minupdateid: data.minupdateid,
-                updatesList: data.updatesList,
-                usersList: data.usersList,
-            }, false, () => {
-                if (more) {
-                    resolve(lastUpdateId + 1);
-                } else {
-                    reject({
-                        code: -1,
-                    });
-                }
-            });
+            try {
+                this.processContainer({
+                    groupsList: data.groupsList,
+                    lastOne: !more,
+                    maxupdateid: lastUpdateId,
+                    minupdateid: data.minupdateid,
+                    updatesList: data.updatesList,
+                    usersList: data.usersList,
+                }, false, () => {
+                    if (more) {
+                        resolve(lastUpdateId + 1);
+                    } else {
+                        reject({
+                            code: -1,
+                        });
+                    }
+                });
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 

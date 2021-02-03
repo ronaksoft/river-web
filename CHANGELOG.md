@@ -1,3 +1,6 @@
+## 1.0.52
+* Minor improvements in update manager and left panel
+
 ## 1.0.51
 * Call history implemented
 
