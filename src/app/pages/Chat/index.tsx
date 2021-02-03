@@ -3792,15 +3792,26 @@ class Chat extends React.Component<IProps, IState> {
         // this.setAppStatus({
         //     isUpdating: true,
         // });
-        if (peerName) {
-            const dialogMap = this.dialogMap;
-            const index = this.dialogMap[peerName];
-            this.dialogs.splice(index, 1);
-            delete dialogMap[peerName];
-            this.dialogsSort(this.dialogs);
-            if (this.selectedPeerName === peerName) {
-                this.props.history.push(`/chat/${this.teamId}/null`);
+        if (!peerName) {
+            return;
+        }
+        const dialogMap = this.dialogMap;
+        const index = this.dialogMap[peerName];
+        if (GetPeerName(this.dialogs[index].peerid, this.dialogs[index].peertype) !== peerName) {
+            return;
+        }
+        this.dialogs.splice(index, 1);
+        delete dialogMap[peerName];
+        const tDialogMap: any = {};
+        this.dialogs.forEach((d, i) => {
+            if (d) {
+                tDialogMap[GetPeerName(d.peerid, d.peertype)] = i;
             }
+        });
+        this.dialogMap = tDialogMap;
+        this.dialogsSort(this.dialogs);
+        if (this.selectedPeerName === peerName) {
+            this.props.history.push(`/chat/${this.teamId}/null`);
         }
     }
 

@@ -1,3 +1,6 @@
+## 1.0.50
+* Dialog remove bug fixed
+
 ## 1.0.49
 * Group limit indicator added
 * Call participant bug fixed
