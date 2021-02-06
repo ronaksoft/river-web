@@ -42,7 +42,7 @@ import {clone} from "lodash";
 import MainRepo from "../../repository";
 import SettingsMediaInput, {getDefaultAudio, getDefaultVideo} from "../SettingsMediaInput";
 import SettingsModal from "../SettingsModal";
-import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE} from "../../services/sdk/const";
 import {IUser} from "../../repository/user/interface";
 
 import './style.scss';
@@ -689,7 +689,11 @@ class CallModal extends React.Component<IProps, IState> {
                         }
                     });
                 }).catch((err) => {
-                    window.console.log(err);
+                    if (err && ((err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemUserID) || (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemAccessHash))) {
+                        this.callService.enqueueSnackbar(i18n.t('call.privacy_error'));
+                    } else {
+                        window.console.log(err);
+                    }
                     this.closeHandler();
                 }).finally(() => {
                     this.loading = false;

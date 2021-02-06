@@ -22,7 +22,7 @@ import {
 } from "@material-ui/icons";
 import CallService, {C_CALL_EVENT, ICallParticipant} from "../../services/callService";
 import i18n from '../../services/i18n';
-import {clone, findIndex} from "lodash";
+import {clone, findIndex, orderBy} from "lodash";
 import {getDefaultAudio} from "../SettingsMediaInput";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -262,7 +262,7 @@ class CallSettings extends React.Component<IProps, IState> {
             return;
         }
         const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
-        const participants = this.callService.getParticipantList(activeCallId, true);
+        const participants = orderBy(this.callService.getParticipantList(activeCallId, true), ['admin'], ['desc']);
         this.setState({
             currentParticipant,
             drawerOpen: true,
@@ -308,7 +308,7 @@ class CallSettings extends React.Component<IProps, IState> {
         const {selectedUserId, participants} = this.state;
         const menuItems = [];
         const index = findIndex(participants, o => o.peer.userid === selectedUserId);
-        if (index > -1) {
+        if (index > -1 && !participants[index].initiator) {
             if (participants[index].admin) {
                 menuItems.push({
                     cmd: 'demote',

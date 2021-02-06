@@ -706,7 +706,7 @@ class ContactList extends React.Component<IProps, IState> {
         const menuItems = [{
             cmd: 'remove',
             color: '#cc0000',
-            title: i18n.t('contact.remove'),
+            title: i18n.t('contact.delete'),
         }];
         return menuItems.map((item, index) => {
             let style = {};

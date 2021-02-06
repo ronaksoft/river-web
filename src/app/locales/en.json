@@ -367,7 +367,8 @@
     "placeholder": "add a contact : )",
     "search": "Search...",
     "search_contact": "Search Contact",
-    "remove": "Delete Contact",
+    "delete": "Delete Contact",
+    "remove": "Remove",
     "no_result": "no result!",
     "no_phone": "no phone",
     "create_a_new_group": "Create a New Group",
@@ -573,6 +574,7 @@
     "normal_size": "Normal size",
     "minimize": "Minimize",
     "missed_call": "Missed call",
-    "in_progress": "In progress"
+    "in_progress": "In progress",
+    "privacy_error": "You cannot call this user because of their privacy settings."
   }
 }

@@ -77,7 +77,6 @@ class CallVideoAugment extends React.Component<IProps, IState> {
             this.vod = undefined;
         }
         this.mediaStream = stream;
-        window.console.log('setStream');
         this.checkVOD();
     }
 

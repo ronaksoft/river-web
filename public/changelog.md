@@ -1,3 +1,6 @@
+## 1.0.54
+* Overall improvements
+
 ## 1.0.53
 * Call participant promote/demote implemented
 * Minor improvements in Team Panel
