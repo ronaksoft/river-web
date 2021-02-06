@@ -20,6 +20,7 @@ import {cloneDeep, trimStart} from 'lodash';
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
 import './style.scss';
+import {localize} from "../../services/utilities/localize";
 
 interface IProps {
     onClose?: () => void;
@@ -44,6 +45,7 @@ const emptyLabel: ILabel = {
 class LabelCreate extends React.Component<IProps, IState> {
     private labelRepo: LabelRepo;
     private apiManager: APIManager;
+    private maxLabelCount: number = 20;
 
     constructor(props: IProps) {
         super(props);
@@ -56,6 +58,7 @@ class LabelCreate extends React.Component<IProps, IState> {
 
         this.labelRepo = LabelRepo.getInstance();
         this.apiManager = APIManager.getInstance();
+        this.maxLabelCount = this.apiManager.getInstantSystemConfig().maxlabels || 20;
     }
 
     public openDialog(label?: ILabel) {
@@ -156,7 +159,7 @@ class LabelCreate extends React.Component<IProps, IState> {
                 this.modalCloseHandler();
             }).catch((err) => {
                 if (this.props.onError && err.code === C_ERR.ErrCodeTooMany && err.items === C_ERR_ITEM.ErrItemLabel) {
-                    this.props.onError(i18n.t('label.max_label_warning'));
+                    this.props.onError(i18n.tf('label.max_label_warning', String(localize(this.maxLabelCount))));
                 }
                 this.modalCloseHandler();
             });

@@ -179,7 +179,7 @@ import {
     PhoneParticipantSDP,
     PhoneRateCall,
     PhoneRemoveParticipant,
-    PhoneRequestCall,
+    PhoneRequestCall, PhoneUpdateAdmin,
     PhoneUpdateCall
 } from "./messages/chat.phone_pb";
 import {debounce} from "lodash";
@@ -1303,6 +1303,16 @@ export default class APIManager {
         data.setTimeout(timeout);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRemoveParticipant, data.serializeBinary(), true);
+    }
+
+    public callUpdateAdmin(inputPeer: InputPeer, id: string, inputUser: InputUser, admin: boolean): Promise<Bool.AsObject> {
+        const data = new PhoneUpdateAdmin();
+        data.setPeer(inputPeer);
+        data.setCallid(id);
+        data.setUser(inputUser);
+        data.setAdmin(admin);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneUpdateAdmin, data.serializeBinary(), true);
     }
 
     public callUpdate(inputPeer: InputPeer, id: string, participants: InputUser[], action: PhoneCallAction, actionData: Uint8Array): Promise<Bool.AsObject> {

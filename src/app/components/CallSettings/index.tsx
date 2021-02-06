@@ -305,7 +305,22 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private contextMenuContent() {
+        const {selectedUserId, participants} = this.state;
         const menuItems = [];
+        const index = findIndex(participants, o => o.peer.userid === selectedUserId);
+        if (index > -1) {
+            if (participants[index].admin) {
+                menuItems.push({
+                    cmd: 'demote',
+                    title: i18n.t('contact.demote'),
+                });
+            } else {
+                menuItems.push({
+                    cmd: 'promote',
+                    title: i18n.t('contact.promote'),
+                });
+            }
+        }
         menuItems.push({
             cmd: 'remove',
             title: i18n.t('contact.remove'),
@@ -326,6 +341,20 @@ class CallSettings extends React.Component<IProps, IState> {
 
         const {selectedUserId} = this.state;
         switch (cmd) {
+            case 'promote':
+            case 'demote':
+                const admin = cmd === 'promote';
+                this.callService.callUpdateAdmin(activeCallId, selectedUserId, admin).then(() => {
+                    const {participants} = this.state;
+                    const index = findIndex(participants, o => o.peer.userid === selectedUserId);
+                    if (index > -1) {
+                        participants[index].admin = admin;
+                        this.setState({
+                            participants,
+                        });
+                    }
+                });
+                break;
             case 'remove':
                 this.callService.callRemoveParticipant(activeCallId, [selectedUserId], false).then(() => {
                     const {participants} = this.state;

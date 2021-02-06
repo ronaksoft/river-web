@@ -6054,6 +6054,7 @@ class Chat extends React.Component<IProps, IState> {
                 messagetype: message.messagetype,
                 ttlinseconds: mediaDoc.ttlinseconds,
             }]);
+            this.props.enqueueSnackbar(i18n.t('general.gif_saved'));
         });
     }
 

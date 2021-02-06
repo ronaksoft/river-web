@@ -13,7 +13,7 @@ import {UpdatePhoneCall, UpdatePhoneCallEnded} from "../sdk/messages/updates_pb"
 import {
     DiscardReason,
     PhoneActionAccepted,
-    PhoneActionAck,
+    PhoneActionAck, PhoneActionAdminUpdated,
     PhoneActionCallEmpty,
     PhoneActionCallWaiting,
     PhoneActionDiscarded,
@@ -50,6 +50,7 @@ export const C_CALL_EVENT = {
     LocalStreamUpdated: 0x06,
     MediaSettingsUpdated: 0x05,
     ParticipantAdded: 0x0b,
+    ParticipantAdminUpdated: 0x10,
     ParticipantJoined: 0x09,
     ParticipantLeft: 0x0a,
     ParticipantRemoved: 0x0c,
@@ -121,6 +122,8 @@ const parseData = (constructor: number, data: any) => {
             return PhoneActionParticipantRemoved.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLJOINREQUESTED:
             return PhoneActionJoinRequested.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLADMINUPDATED:
+            return PhoneActionAdminUpdated.deserializeBinary(data).toObject();
     }
     return undefined;
 };
@@ -463,6 +466,24 @@ export default class CallService {
         });
     }
 
+    public callUpdateAdmin(callId: string, userId: string, admin: boolean) {
+        const peer = this.peer;
+        if (!peer) {
+            return Promise.reject('invalid peer');
+        }
+
+        const inputUsers = this.getInputUserByUserIds(callId, [userId]);
+        if (inputUsers === null || inputUsers.length === 0) {
+            return Promise.reject('invalid callId');
+        }
+
+        return this.apiManager.callUpdateAdmin(peer, callId, inputUsers[0], admin).then(() => {
+            this.updateAdmin(userId, admin);
+            this.callHandlers(C_CALL_EVENT.ParticipantAdminUpdated, {admin, userId});
+            return Promise.resolve();
+        });
+    }
+
     public getParticipantByUserId(callId: string, userId: string): ICallParticipant | undefined {
         if (!this.callInfo.hasOwnProperty(callId)) {
             return undefined;
@@ -609,6 +630,9 @@ export default class CallService {
             case PhoneCallAction.PHONECALLPARTICIPANTREMOVED:
                 this.participantRemoved(data);
                 break;
+            case PhoneCallAction.PHONECALLADMINUPDATED:
+                this.adminUpdated(data);
+                break;
             case PhoneCallAction.PHONECALLJOINREQUESTED:
                 this.joinRequested(data);
                 break;
@@ -738,6 +762,17 @@ export default class CallService {
         delete this.callInfo[this.activeCallId].participants[connId];
         delete this.callInfo[this.activeCallId].participantMap[userId];
         return Object.keys(this.callInfo[this.activeCallId].participants).length <= 1;
+    }
+
+    private updateAdmin(userId: string, admin: boolean) {
+        if (!this.activeCallId) {
+            return;
+        }
+        if (!this.callInfo[this.activeCallId]) {
+            return;
+        }
+        const connId = this.callInfo[this.activeCallId].participantMap[userId];
+        this.callInfo[this.activeCallId].participants[connId].admin = admin;
     }
 
     private iceExchange(data: IUpdatePhoneCall) {
@@ -1367,6 +1402,19 @@ export default class CallService {
         if (isCurrentRemoved) {
             this.callHandlers(C_CALL_EVENT.CallRejected, {callId: this.activeCallId});
         }
+    }
+
+    private adminUpdated(data: IUpdatePhoneCall) {
+        if (this.activeCallId !== data.callid) {
+            return;
+        }
+
+        const adminUpdatedDate = data.data as PhoneActionAdminUpdated.AsObject;
+        this.updateAdmin(adminUpdatedDate.userid, adminUpdatedDate.admin);
+        this.callHandlers(C_CALL_EVENT.ParticipantAdminUpdated, {
+            admin: adminUpdatedDate.admin,
+            userid: adminUpdatedDate.userid
+        });
     }
 
     private joinRequested(data: IUpdatePhoneCall) {

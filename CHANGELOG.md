@@ -1,3 +1,8 @@
+## 1.0.53
+* Call participant promote/demote implemented
+* Translations updated
+* Minor improvements in Team Panel 
+
 ## 1.0.52
 * Minor improvements in update manager and left panel
 

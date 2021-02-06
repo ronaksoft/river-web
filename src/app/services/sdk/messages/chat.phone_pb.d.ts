@@ -427,6 +427,42 @@ export namespace PhoneCallsMany {
   }
 }
 
+export class PhoneUpdateAdmin extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getCallid(): string;
+  setCallid(value: string): void;
+
+  hasUser(): boolean;
+  clearUser(): void;
+  getUser(): core_types_pb.InputUser | undefined;
+  setUser(value?: core_types_pb.InputUser): void;
+
+  getAdmin(): boolean;
+  setAdmin(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneUpdateAdmin.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneUpdateAdmin): PhoneUpdateAdmin.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneUpdateAdmin, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneUpdateAdmin;
+  static deserializeBinaryFromReader(message: PhoneUpdateAdmin, reader: jspb.BinaryReader): PhoneUpdateAdmin;
+}
+
+export namespace PhoneUpdateAdmin {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
+    user?: core_types_pb.InputUser.AsObject,
+    admin: boolean,
+  }
+}
+
 export class PhoneCall extends jspb.Message {
   getId(): string;
   setId(value: string): void;
@@ -837,6 +873,30 @@ export namespace PhoneActionJoinRequested {
   }
 }
 
+export class PhoneActionAdminUpdated extends jspb.Message {
+  getUserid(): string;
+  setUserid(value: string): void;
+
+  getAdmin(): boolean;
+  setAdmin(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionAdminUpdated.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionAdminUpdated): PhoneActionAdminUpdated.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionAdminUpdated, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionAdminUpdated;
+  static deserializeBinaryFromReader(message: PhoneActionAdminUpdated, reader: jspb.BinaryReader): PhoneActionAdminUpdated;
+}
+
+export namespace PhoneActionAdminUpdated {
+  export type AsObject = {
+    userid: string,
+    admin: boolean,
+  }
+}
+
 export class PhoneActionMediaSettingsUpdated extends jspb.Message {
   getVideo(): boolean;
   setVideo(value: boolean): void;
@@ -980,7 +1040,7 @@ export enum PhoneCallAction {
   PHONECALLPARTICIPANTADDED = 11,
   PHONECALLPARTICIPANTREMOVED = 12,
   PHONECALLJOINREQUESTED = 13,
-  PHONECALLRESERVED10 = 14,
+  PHONECALLADMINUPDATED = 14,
   PHONECALLRESERVED11 = 15,
   PHONECALLRESERVED12 = 16,
   PHONECALLRESERVED13 = 17,

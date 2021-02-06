@@ -136,6 +136,16 @@ message PhoneCallsMany {
     bool Empty = 5;
 }
 
+// PhoneUpdateAdmin
+// @Function
+// @Return: Bool
+message PhoneUpdateAdmin {
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
+    InputUser User = 3;
+    bool Admin = 4;
+}
+
 enum PhoneCallRateReason {
     PhoneCallRateReasonEmpty = 0;
     PhoneCallRateReasonReserved1 = 1;
@@ -170,7 +180,7 @@ enum PhoneCallAction {
     PhoneCallParticipantAdded = 11;
     PhoneCallParticipantRemoved = 12;
     PhoneCallJoinRequested = 13;
-    PhoneCallReserved10 = 14;
+    PhoneCallAdminUpdated = 14;
     PhoneCallReserved11 = 15;
     PhoneCallReserved12 = 16;
     PhoneCallReserved13 = 17;
@@ -278,6 +288,12 @@ message PhoneActionParticipantRemoved {
 // PhoneActionJoinRequested
 message PhoneActionJoinRequested {
     repeated int64 UserIDs = 1 [jstype = JS_STRING];
+}
+
+// PhoneActionAdminUpdated
+message PhoneActionAdminUpdated {
+    int64 UserID = 1 [jstype = JS_STRING];
+    bool Admin = 2;
 }
 
 // PhoneActionMediaSettingsUpdated

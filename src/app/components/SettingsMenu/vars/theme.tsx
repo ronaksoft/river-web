@@ -41,12 +41,12 @@ import lriverbg from '../../../../asset/image/bgl/pattern.png';
 import driverbg from '../../../../asset/image/pattern.png';
 
 import {
-    /*CallRounded,*/
     GroupRounded,
     ForwardRounded,
     VisibilityRounded,
     SimCardRounded,
-    PersonRounded
+    PersonRounded,
+    CallRounded,
 } from '@material-ui/icons';
 
 export const C_CUSTOM_BG = '21';
@@ -317,13 +317,7 @@ export const storageItems = [{
     type: 'item',
 }];
 
-export const privacyItems = [/*{
-    color: '#27AE60',
-    hint: 'settings.privacy_call_hint',
-    icon: <CallRounded/>,
-    id: 'privacy_call',
-    title: 'settings.privacy_call',
-}, */{
+export const privacyItems = [{
     color: '#3AB4EB',
     hint: 'settings.privacy_chat_invite_hint',
     icon: <GroupRounded/>,
@@ -353,6 +347,12 @@ export const privacyItems = [/*{
     icon: <PersonRounded/>,
     id: 'privacy_profile_photo',
     title: 'settings.privacy_profile_photo',
+}, {
+    color: '#27AE60',
+    hint: 'settings.privacy_call_hint',
+    icon: <CallRounded/>,
+    id: 'privacy_call',
+    title: 'settings.privacy_call',
 }];
 
 export const privacyRuleItems = [{

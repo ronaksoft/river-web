@@ -855,6 +855,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         if (this.settingsMenuRef) {
             this.settingsMenuRef.changeTeam(team);
         }
+        if (this.state.leftMenu === 'call_history') {
+            this.setState({
+                leftMenu: 'chat',
+            });
+        }
     }
 
     private leftPanelActionHandler = (cmd: string) => (e: any) => {
