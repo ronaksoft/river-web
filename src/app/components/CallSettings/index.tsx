@@ -286,7 +286,8 @@ class CallSettings extends React.Component<IProps, IState> {
                     {item.initiator ? <div className="user-badge"><StarsRounded/></div> : item.admin ?
                         <div className="user-badge"><StarRateRounded/></div> : null}
                     <UserName className="user-name" id={item.peer.userid} noDetail={true} you={true} noIcon={true}/>
-                    {hasAccess && <div className="more" onClick={this.openMenuHandler(item.peer.userid)}>
+                    {hasAccess && !item.initiator &&
+                    <div className="more" onClick={this.openMenuHandler(item.peer.userid)}>
                         <MoreVertRounded/>
                     </div>}
                 </div>);
@@ -308,7 +309,7 @@ class CallSettings extends React.Component<IProps, IState> {
         const {selectedUserId, participants} = this.state;
         const menuItems = [];
         const index = findIndex(participants, o => o.peer.userid === selectedUserId);
-        if (index > -1 && !participants[index].initiator) {
+        if (index > -1) {
             if (participants[index].admin) {
                 menuItems.push({
                     cmd: 'demote',
