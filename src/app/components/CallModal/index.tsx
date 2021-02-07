@@ -671,6 +671,7 @@ class CallModal extends React.Component<IProps, IState> {
             animateState: 'init',
             callerId: this.peer ? this.peer.getId() || '0' : null,
             cropCover: this.peer ? this.peer.getType() !== PeerType.PEERGROUP : false,
+            groupId: this.peer && this.peer.getType() === PeerType.PEERGROUP ? this.peer.getId() || '0' : undefined,
             isCaller: true,
             mode: 'call',
         }, () => {
@@ -721,6 +722,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.setState({
             animateState: 'end',
             cropCover: this.peer ? this.peer.getType() !== PeerType.PEERGROUP : false,
+            groupId: this.peer && this.peer.getType() === PeerType.PEERGROUP ? this.peer.getId() || '0' : undefined,
             mode: 'call',
         });
         this.callService.callAccept(this.state.callId, video).then(() => {

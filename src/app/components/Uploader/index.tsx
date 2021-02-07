@@ -970,6 +970,7 @@ class Uploader extends React.Component<IProps, IState> {
         items[selected].width = dimension.width;
         items[selected].height = dimension.height;
         items[selected].caption = hold.caption;
+        items[selected].textarea = hold.textarea;
         items[selected].mediaType = hold.mediaType;
         items[selected].ready = hold.ready;
         items[selected].preview = preview;

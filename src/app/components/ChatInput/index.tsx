@@ -721,6 +721,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     inputMode: 'default',
                     previewMessage: null,
                     previewMessageMode: C_MSG_MODE.Normal,
+                    textareaValue: this.state.previewMessageMode === C_MSG_MODE.Edit ? '' : this.state.textareaValue,
                     voiceMode: 'up',
                 }, () => {
                     this.voiceStateChange();

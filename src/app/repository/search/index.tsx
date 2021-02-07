@@ -16,7 +16,7 @@ import MessageRepo from "../message";
 import {differenceBy, find, uniqBy} from "lodash";
 import {ITopPeerItem} from "../topPeer/interface";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../topPeer";
-import {PeerType} from "../../services/sdk/messages/core.types_pb";
+import {GroupFlags, PeerType} from "../../services/sdk/messages/core.types_pb";
 
 export default class SearchRepo {
     public static getInstance() {
@@ -78,7 +78,9 @@ export default class SearchRepo {
                         if (!ids.hasOwnProperty(item.id)) {
                             ids[item.id] = true;
                             if (item.title) {
-                                peers.push([item.id, PeerType.PEERGROUP]);
+                                if (!item.flagsList || item.flagsList.indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) === -1) {
+                                    peers.push([item.id, PeerType.PEERGROUP]);
+                                }
                             } else {
                                 peers.push([item.id, PeerType.PEERUSER]);
                                 peers.push([item.id, PeerType.PEEREXTERNALUSER]);
