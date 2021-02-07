@@ -34,12 +34,12 @@ import SearchRepo from "../../repository/search";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {InputAdornment} from "@material-ui/core";
 import {PeerType} from "../../services/sdk/messages/core.types_pb";
-
-import './style.scss';
 import GroupRepo from "../../repository/group";
 import {IGroup} from "../../repository/group/interface";
 import {OfficialIcon} from "../SVG/official";
 import {currentUserId} from "../../services/sdk";
+
+import './style.scss';
 
 interface IProps {
     className?: string;
@@ -265,6 +265,7 @@ class ContactList extends React.Component<IProps, IState> {
                     <TextField
                         placeholder={i18n.t('dialog.search')}
                         fullWidth={true}
+                        className="contact-text-field"
                         inputProps={{
                             maxLength: 32,
                         }}

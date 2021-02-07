@@ -270,7 +270,7 @@ class TimeService {
         const today = moment(current).startOf('day');
         const date = moment(timestamp * 1000);
 
-        const justNow = date.subtract(15, 'seconds');
+        const justNow = today.subtract(15, 'seconds');
         if (date.isSameOrAfter(justNow)) {
             if (this.lang === 'en') {
                 return 'Just Now';
