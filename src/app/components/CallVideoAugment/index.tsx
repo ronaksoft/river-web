@@ -128,7 +128,9 @@ class CallVideoAugment extends React.Component<IProps, IState> {
                 this.vodWaveSmooth.style.transform = `scale(${1 + (val / 250)})`;
             }
         });
-        this.vod.setStream(this.mediaStream, true);
+        this.vod.setStream(this.mediaStream, true).catch(() => {
+            //
+        });
     }
 
     private vodWaveRefHandler = (ref: any) => {

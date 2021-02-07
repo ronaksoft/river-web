@@ -1,3 +1,7 @@
+## 1.0.55
+* Screen share WIP
+* Known bugs fixed
+
 ## 1.0.54
 * Overall improvements
 

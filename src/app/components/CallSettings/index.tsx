@@ -19,8 +19,16 @@ import {
     StarRateRounded,
     MoreVertRounded,
     PersonAddAlt1Rounded,
+    ScreenShareRounded,
+    StopScreenShareRounded,
 } from "@material-ui/icons";
-import CallService, {C_CALL_EVENT, ICallParticipant} from "../../services/callService";
+import CallService, {
+    C_CALL_EVENT,
+    getMediaInputs,
+    ICallParticipant,
+    IMediaDevice,
+    IMediaSettings
+} from "../../services/callService";
 import i18n from '../../services/i18n';
 import {clone, findIndex, orderBy} from "lodash";
 import {getDefaultAudio} from "../SettingsMediaInput";
@@ -33,11 +41,6 @@ import VoiceActivityDetection from "../../services/vad";
 
 import './style.scss';
 
-export interface IMediaSettings {
-    video: boolean;
-    audio: boolean;
-}
-
 interface IProps {
     onMediaSettingsChange?: (settings: IMediaSettings) => void;
     group?: boolean;
@@ -47,6 +50,7 @@ interface IProps {
 interface IState {
     currentParticipant: ICallParticipant | undefined;
     drawerOpen: boolean;
+    mediaDevice: IMediaDevice;
     mediaSettings: IMediaSettings;
     moreAnchorPos: any;
     muteNotice?: boolean;
@@ -69,6 +73,12 @@ class CallSettings extends React.Component<IProps, IState> {
         this.state = {
             currentParticipant: undefined,
             drawerOpen: false,
+            mediaDevice: {
+                screenShare: false,
+                speaker: true,
+                video: true,
+                voice: true,
+            },
             mediaSettings: this.callService.getStreamState(),
             moreAnchorPos: null,
             muteNotice: false,
@@ -84,6 +94,11 @@ class CallSettings extends React.Component<IProps, IState> {
             muteNotice: false,
         });
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
+        getMediaInputs().then((mediaDevice) => {
+            this.setState({
+                mediaDevice,
+            });
+        });
     }
 
     public componentWillUnmount() {
@@ -97,10 +112,11 @@ class CallSettings extends React.Component<IProps, IState> {
         });
     }
 
-    public setMediaSettings({audio, video}: { audio: boolean, video: boolean }) {
+    public setMediaSettings({audio, screenShare, video}: { audio: boolean, screenShare: boolean, video: boolean }) {
         this.setState({
             mediaSettings: {
                 audio,
+                screenShare,
                 video,
             },
         });
@@ -108,6 +124,7 @@ class CallSettings extends React.Component<IProps, IState> {
             this.vad.setActive(!audio);
         }
         this.callService.toggleAudio(audio);
+        this.callService.toggleVideo(video);
         this.callService.toggleVideo(video);
     }
 
@@ -128,7 +145,7 @@ class CallSettings extends React.Component<IProps, IState> {
 
     public render() {
         const {group} = this.props;
-        const {mediaSettings, muteNotice, drawerOpen, moreAnchorPos} = this.state;
+        const {mediaSettings, muteNotice, drawerOpen, moreAnchorPos, mediaDevice} = this.state;
         return <>
             {group && <ClickAwayListener onClickAway={this.drawerCloseHandler}>
                 <div className={'call-settings-drawer' + (drawerOpen ? ' drawer-open' : '')}
@@ -146,12 +163,18 @@ class CallSettings extends React.Component<IProps, IState> {
                 </div>
             </ClickAwayListener>}
             <div className="call-settings">
+                {mediaDevice.video &&
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('video')}>
                     {mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
-                </IconButton>
+                </IconButton>}
+                {mediaDevice.video &&
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('audio')}>
                     {mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
-                </IconButton>
+                </IconButton>}
+                {mediaDevice.screenShare &&
+                <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('screenShare')}>
+                    {mediaSettings.screenShare ? <StopScreenShareRounded/> : <ScreenShareRounded/>}
+                </IconButton>}
             </div>
             {group && <IconButton className="call-settings-participants" onClick={this.drawerOpenHandler}>
                 <PeopleRounded/>
@@ -176,7 +199,7 @@ class CallSettings extends React.Component<IProps, IState> {
         </>;
     }
 
-    private mediaSettingsChangeHandler = (key: string) => (e: any) => {
+    private mediaSettingsChangeHandler = (key: 'audio' | 'video' | 'screenShare') => (e: any) => {
         const {mediaSettings} = this.state;
         mediaSettings[key] = !mediaSettings[key];
         this.setState({
@@ -189,6 +212,8 @@ class CallSettings extends React.Component<IProps, IState> {
             }
         } else if (key === 'video') {
             this.callService.toggleVideo(mediaSettings[key]);
+        } else if (key === 'screenShare') {
+            this.callService.toggleScreenShare(mediaSettings[key]);
         }
         if (this.props.onMediaSettingsChange) {
             this.props.onMediaSettingsChange(clone(mediaSettings));

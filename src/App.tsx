@@ -419,7 +419,7 @@ class App extends React.Component<{}, IState> {
                 props: {
                     color: 'secondary'
                 },
-                text: i18n.tf('chat.update_dialog.download_desktop_version', '0.29.0'),
+                text: i18n.tf('chat.update_dialog.download_desktop_version', '0.30.0'),
             }] : undefined,
             cancelText: i18n.t('general.cancel'),
             confirmProps: {

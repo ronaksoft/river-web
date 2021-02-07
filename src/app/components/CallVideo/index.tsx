@@ -13,9 +13,9 @@ import CallVideoPlaceholder from "../CallVideoPlaceholder";
 import {findIndex, differenceWith} from "lodash";
 import UserAvatar from "../UserAvatar";
 import i18n from "../../services/i18n";
+import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
-import {currentUserId} from "../../services/sdk";
 
 export interface IRemoteConnection {
     connId: number;
@@ -53,7 +53,7 @@ class CallVideo extends React.Component<IProps, IState> {
     private videoRemoteRefs: IRemoteConnection[] = [];
     private initialized: boolean = false;
     private localVideoRefFn: any;
-    private mediaSettings: IMediaSettings = {audio: true, video: true};
+    private mediaSettings: IMediaSettings = {audio: true, screenShare: false, video: true};
 
     constructor(props: IProps) {
         super(props);

@@ -336,7 +336,7 @@ class TimeService {
 
     public duration(from: number, to: number) {
         const diff = to - from;
-        const m = moment.unix(diff);
+        const m = moment.unix(diff).utc(false);
         if (diff < 10) {
             if (this.lang === 'en') {
                 return m.format('s [seconds]');
@@ -354,7 +354,7 @@ class TimeService {
         } else if (diff < 3600) {
             return m.format('mm:ss');
         } else {
-            return m.format('HH:mm::ss');
+            return m.format('HH:mm:ss');
         }
     }
 }

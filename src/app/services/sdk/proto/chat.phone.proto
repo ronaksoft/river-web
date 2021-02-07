@@ -181,7 +181,7 @@ enum PhoneCallAction {
     PhoneCallParticipantRemoved = 12;
     PhoneCallJoinRequested = 13;
     PhoneCallAdminUpdated = 14;
-    PhoneCallReserved11 = 15;
+    PhoneCallScreenShare = 15;
     PhoneCallReserved12 = 16;
     PhoneCallReserved13 = 17;
     PhoneCallReserved14 = 18;
@@ -296,10 +296,16 @@ message PhoneActionAdminUpdated {
     bool Admin = 2;
 }
 
+// PhoneActionScreenShare
+message PhoneActionScreenShare {
+    bool Enable = 1;
+}
+
 // PhoneActionMediaSettingsUpdated
 message PhoneActionMediaSettingsUpdated {
     bool Video = 1;
     bool Audio = 2;
+    bool ScreenShare = 3;
 }
 
 // PhoneActionReactionSet

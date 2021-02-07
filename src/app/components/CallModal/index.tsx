@@ -12,7 +12,12 @@ import {Dialog, Grow, IconButton, Tooltip} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
 import Draggable, {ControlPosition} from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
-import CallService, {C_CALL_EVENT, ICallParticipant, IUpdatePhoneCall} from "../../services/callService";
+import CallService, {
+    C_CALL_EVENT,
+    ICallParticipant,
+    IMediaSettings,
+    IUpdatePhoneCall
+} from "../../services/callService";
 import {
     CallEndRounded,
     CallRounded,
@@ -37,7 +42,7 @@ import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import ContactPicker from "../ContactPicker";
 import APIManager, {currentUserId} from "../../services/sdk";
 import CallVideo from "../CallVideo";
-import CallSettings, {IMediaSettings} from "../CallSettings";
+import CallSettings from "../CallSettings";
 import {clone} from "lodash";
 import MainRepo from "../../repository";
 import SettingsMediaInput, {getDefaultAudio, getDefaultVideo} from "../SettingsMediaInput";
@@ -97,7 +102,7 @@ class CallModal extends React.Component<IProps, IState> {
     private contactPickerRef: ContactPicker | undefined;
     private groupParticipant: InputUser.AsObject[] = [];
     private callSettingsRef: CallSettings | undefined;
-    private mediaSettings: IMediaSettings = {audio: true, video: true};
+    private mediaSettings: IMediaSettings = {audio: true, screenShare: false, video: true};
     private callConnectingTone: string = '/ringingtone/connecting-1.mp3';
     private callRingingTone: string = '/ringingtone/tone-2.mp3';
     private loading: boolean = false;
@@ -300,7 +305,7 @@ class CallModal extends React.Component<IProps, IState> {
             this.timeEnd = 0;
         }, 300);
         this.groupParticipant = [];
-        this.mediaSettings = {audio: true, video: true};
+        this.mediaSettings = {audio: true, screenShare: false, video: true};
         this.peer = null;
         this.loading = false;
         this.videoCall = false;
@@ -899,6 +904,8 @@ class CallModal extends React.Component<IProps, IState> {
         if (!this.callVideoRef) {
             return;
         }
+
+        window.console.log(streams);
 
         this.callVideoRef.initRemoteConnection(true);
         this.callVideoRef.setStatus(connId, 2);

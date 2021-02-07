@@ -897,12 +897,35 @@ export namespace PhoneActionAdminUpdated {
   }
 }
 
+export class PhoneActionScreenShare extends jspb.Message {
+  getEnable(): boolean;
+  setEnable(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionScreenShare.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionScreenShare): PhoneActionScreenShare.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionScreenShare, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionScreenShare;
+  static deserializeBinaryFromReader(message: PhoneActionScreenShare, reader: jspb.BinaryReader): PhoneActionScreenShare;
+}
+
+export namespace PhoneActionScreenShare {
+  export type AsObject = {
+    enable: boolean,
+  }
+}
+
 export class PhoneActionMediaSettingsUpdated extends jspb.Message {
   getVideo(): boolean;
   setVideo(value: boolean): void;
 
   getAudio(): boolean;
   setAudio(value: boolean): void;
+
+  getScreenshare(): boolean;
+  setScreenshare(value: boolean): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionMediaSettingsUpdated.AsObject;
@@ -918,6 +941,7 @@ export namespace PhoneActionMediaSettingsUpdated {
   export type AsObject = {
     video: boolean,
     audio: boolean,
+    screenshare: boolean,
   }
 }
 
@@ -1041,7 +1065,7 @@ export enum PhoneCallAction {
   PHONECALLPARTICIPANTREMOVED = 12,
   PHONECALLJOINREQUESTED = 13,
   PHONECALLADMINUPDATED = 14,
-  PHONECALLRESERVED11 = 15,
+  PHONECALLSCREENSHARE = 15,
   PHONECALLRESERVED12 = 16,
   PHONECALLRESERVED13 = 17,
   PHONECALLRESERVED14 = 18,
