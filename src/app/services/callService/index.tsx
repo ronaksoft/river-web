@@ -39,6 +39,7 @@ const C_RETRY_INTERVAL = 10000;
 const C_RETRY_LIMIT = 6;
 
 export const C_CALL_EVENT = {
+    AllConnected: 0x12,
     CallAccepted: 0x02,
     CallAck: 0x08,
     CallCancelled: 0x0e,
@@ -394,13 +395,14 @@ export default class CallService {
         }
     }
 
-    public getRemoteScreenShareStream(): MediaStream | undefined {
+    public getRemoteScreenShareStream(): { stream: MediaStream, userId: string } | undefined {
         const connId = this.activeScreenShareConnId;
-        if (!connId || !this.peerConnections.hasOwnProperty(connId)) {
+        if (!connId || !this.activeCallId || !this.peerConnections.hasOwnProperty(connId)) {
             return undefined;
         }
         if (this.peerConnections[connId].streams.length === 2) {
-            return this.peerConnections[connId].streams[1];
+            const userId = this.getUserIdByCallId(this.activeCallId, connId) || '';
+            return {stream: this.peerConnections[connId].streams[1], userId};
         } else {
             return undefined;
         }
@@ -1132,6 +1134,12 @@ export default class CallService {
                     }
                 });
 
+                pc.addEventListener('connectionstatechange', () => {
+                    if (pc.connectionState === 'connected') {
+                        this.checkAllConnected();
+                    }
+                });
+
                 const conn: IConnection = {
                     accepted: remote,
                     connection: pc,
@@ -1163,7 +1171,7 @@ export default class CallService {
                         }
                         conn.streams.push(...e.streams);
                         window.console.log(conn.streams);
-                        window.console.log('[webrtc] stream, connId:', connId, ' streams', e.streams.map((o) => `${o.getVideoTracks().length > 0 ? 'video' : ' '} ${o.getAudioTracks().length > 0 ? 'audio' : ''}`).join(', '));
+                        window.console.log('[webrtc] stream, connId:', connId, ' streams', e.streams.map((o) => `${o.getVideoTracks().length > 0 ? `video (${o.getVideoTracks().length})` : ' '} ${o.getAudioTracks().length > 0 ? `audio (${o.getAudioTracks().length})` : ''}`).join(', '));
                         if (conn.streams.length === 1) {
                             this.callHandlers(C_CALL_EVENT.StreamUpdated, {connId, stream: conn.streams[0]});
                         } else if (conn.streams.length === 2) {
@@ -1174,6 +1182,7 @@ export default class CallService {
                             });
                         }
                     }
+
                 });
 
                 stream.getTracks().forEach((track) => {
@@ -1206,6 +1215,15 @@ export default class CallService {
                 reject(e);
             }
         });
+    }
+
+    private checkAllConnected() {
+        for (const [_, pc] of Object.entries(this.peerConnections)) {
+            if (pc.connection.connectionState !== 'connected') {
+                return;
+            }
+        }
+        this.callHandlers(C_CALL_EVENT.AllConnected, null);
     }
 
     private getInputUsers(id: string) {
@@ -1448,17 +1466,19 @@ export default class CallService {
         }).then((stream) => {
             if (this.activeCallId) {
                 for (const [connId, pc] of Object.entries(this.peerConnections)) {
-                    pc.connection.getSenders().forEach((track) => {
-                        pc.connection.removeTrack(track);
-                    });
-                    stream.getTracks().forEach((track) => {
-                        pc.connection.addTrack(track, stream);
-                    });
-                    pc.connection.createOffer(this.offerOptions).then((res) => {
-                        return pc.connection.setLocalDescription(res).then(() => {
-                            return this.sendSDPOffer(this.parseNumberValue(connId), res);
+                    if (pc.connection.connectionState === 'connected') {
+                        pc.connection.getSenders().forEach((track) => {
+                            pc.connection.removeTrack(track);
                         });
-                    });
+                        stream.getTracks().forEach((track) => {
+                            pc.connection.addTrack(track, stream);
+                        });
+                        pc.connection.createOffer(this.offerOptions).then((res) => {
+                            return pc.connection.setLocalDescription(res).then(() => {
+                                return this.sendSDPOffer(this.parseNumberValue(connId), res);
+                            });
+                        });
+                    }
                 }
             }
             this.propagateMediaSettings({video});
@@ -1480,20 +1500,22 @@ export default class CallService {
                     });
                 }
                 for (const [connId, pc] of Object.entries(this.peerConnections)) {
-                    pc.connection.getSenders().forEach((track) => {
-                        pc.connection.removeTrack(track);
-                    });
-                    streams.getTracks().forEach((track) => {
-                        pc.connection.addTrack(track, streams);
-                    });
-                    pc.connection.createOffer(this.offerOptions).then((res) => {
-                        return pc.connection.setLocalDescription(res).then(() => {
-                            return this.sendSDPOffer(this.parseNumberValue(connId), res);
+                    if (pc.connection.connectionState === 'connected') {
+                        pc.connection.getSenders().forEach((track) => {
+                            pc.connection.removeTrack(track);
                         });
-                    });
+                        streams.getTracks().forEach((track) => {
+                            pc.connection.addTrack(track, streams);
+                        });
+                        pc.connection.createOffer(this.offerOptions).then((res) => {
+                            return pc.connection.setLocalDescription(res).then(() => {
+                                return this.sendSDPOffer(this.parseNumberValue(connId), res);
+                            });
+                        });
+                    }
                 }
+                this.propagateMediaSettings({screenShare});
             }
-            this.propagateMediaSettings({screenShare});
             return Promise.resolve(stream);
         };
         if (screenShare) {

@@ -8,15 +8,15 @@
 */
 
 import * as React from 'react';
-import CallService, {C_CALL_EVENT, IMediaSettings} from "../../services/callService";
+import CallService, {C_CALL_EVENT, ICallParticipant, IMediaSettings} from "../../services/callService";
 import CallVideoPlaceholder from "../CallVideoPlaceholder";
 import {findIndex, differenceWith} from "lodash";
 import UserAvatar from "../UserAvatar";
 import i18n from "../../services/i18n";
 import {currentUserId} from "../../services/sdk";
+import UserName from "../UserName";
 
 import './style.scss';
-import UserName from "../UserName";
 
 export interface IRemoteConnection {
     connId: number;
@@ -79,6 +79,7 @@ class CallVideo extends React.Component<IProps, IState> {
         }
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventShareMediaStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
     }
 
     public componentWillUnmount() {
@@ -283,6 +284,20 @@ class CallVideo extends React.Component<IProps, IState> {
                 screenShareStream: undefined,
                 screenShareUserId: undefined,
             });
+        }
+    }
+
+    private eventMediaSettingsUpdatedHandler = (data: ICallParticipant) => {
+        window.console.log(data);
+        if (data.mediaSettings.screenShare && !this.state.screenShareStream) {
+            const streamData = this.callService.getRemoteScreenShareStream();
+            window.console.log(streamData);
+            if (streamData) {
+                this.setState({
+                    screenShareStream: streamData.stream,
+                    screenShareUserId: streamData.userId,
+                });
+            }
         }
     }
 
