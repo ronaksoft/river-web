@@ -1,3 +1,7 @@
+## 1.0.56
+* Screen share implemented
+* Group call bugs fixed
+
 ## 1.0.55
 * Known bugs fixed
 

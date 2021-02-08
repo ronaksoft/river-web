@@ -799,7 +799,7 @@ export default class CallService {
         if (data.peertype === PeerType.PEERUSER || actionData.terminate) {
             this.callHandlers(C_CALL_EVENT.CallRejected, {callId: data.callid});
         } else {
-            if (this.removeParticipant(data.userid)) {
+            if (this.removeParticipant(data.userid, data.callid)) {
                 this.callHandlers(C_CALL_EVENT.CallRejected, {callId: data.callid});
             } else {
                 this.callHandlers(C_CALL_EVENT.ParticipantLeft, data);
@@ -807,32 +807,33 @@ export default class CallService {
         }
     }
 
-    private removeParticipant(userId: string) {
-        if (!this.activeCallId) {
+    private removeParticipant(userId: string, activeCallId?: string) {
+        activeCallId = activeCallId || this.activeCallId;
+        if (!activeCallId) {
             return false;
         }
-        if (!this.callInfo[this.activeCallId]) {
+        if (!this.callInfo[activeCallId]) {
             return false;
         }
-        const connId = this.callInfo[this.activeCallId].participantMap[userId];
+        const connId = this.callInfo[activeCallId].participantMap[userId];
         if (this.peerConnections.hasOwnProperty(connId)) {
             this.peerConnections[connId].connection.close();
         }
-        let index = this.callInfo[this.activeCallId].acceptedParticipantIds.indexOf(userId);
+        let index = this.callInfo[activeCallId].acceptedParticipantIds.indexOf(userId);
         if (index > -1) {
-            this.callInfo[this.activeCallId].acceptedParticipantIds.splice(index, 1);
+            this.callInfo[activeCallId].acceptedParticipantIds.splice(index, 1);
         }
-        index = this.callInfo[this.activeCallId].requestParticipantIds.indexOf(userId);
+        index = this.callInfo[activeCallId].requestParticipantIds.indexOf(userId);
         if (index > -1) {
-            this.callInfo[this.activeCallId].requestParticipantIds.splice(index, 1);
+            this.callInfo[activeCallId].requestParticipantIds.splice(index, 1);
         }
-        index = findIndex(this.callInfo[this.activeCallId].requests, {userid: userId});
+        index = findIndex(this.callInfo[activeCallId].requests, {userid: userId});
         if (index > -1) {
-            this.callInfo[this.activeCallId].requests.splice(index, 1);
+            this.callInfo[activeCallId].requests.splice(index, 1);
         }
-        delete this.callInfo[this.activeCallId].participants[connId];
-        delete this.callInfo[this.activeCallId].participantMap[userId];
-        return Object.keys(this.callInfo[this.activeCallId].participants).length <= 1;
+        delete this.callInfo[activeCallId].participants[connId];
+        delete this.callInfo[activeCallId].participantMap[userId];
+        return Object.keys(this.callInfo[activeCallId].participants).length <= 1;
     }
 
     private updateAdmin(userId: string, admin: boolean) {
@@ -1561,14 +1562,19 @@ export default class CallService {
     }
 
     private participantRemoved(data: IUpdatePhoneCall) {
-        this.callHandlers(C_CALL_EVENT.CallCancelled, {callId: data.callid});
+        const participantRemovedData = data.data as PhoneActionParticipantRemoved.AsObject;
+        if (participantRemovedData.useridsList.indexOf(currentUserId) > -1) {
+            this.callHandlers(C_CALL_EVENT.CallCancelled, {callId: data.callid});
+        }
 
         if (this.activeCallId !== data.callid) {
+            participantRemovedData.useridsList.forEach((userId) => {
+                this.removeParticipant(userId, data.callid);
+            });
             return;
         }
 
         let isCurrentRemoved: boolean = false;
-        const participantRemovedData = data.data as PhoneActionParticipantRemoved.AsObject;
         participantRemovedData.useridsList.forEach((userId) => {
             this.removeParticipant(userId);
             if (userId === currentUserId) {
