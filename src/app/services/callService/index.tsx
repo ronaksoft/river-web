@@ -1218,12 +1218,14 @@ export default class CallService {
     }
 
     private checkAllConnected() {
-        for (const [_, pc] of Object.entries(this.peerConnections)) {
+        for (const pc of Object.values(this.peerConnections)) {
             if (pc.connection.connectionState !== 'connected') {
                 return;
             }
         }
-        this.callHandlers(C_CALL_EVENT.AllConnected, null);
+        setTimeout(() => {
+            this.callHandlers(C_CALL_EVENT.AllConnected, null);
+        }, 255);
     }
 
     private getInputUsers(id: string) {
