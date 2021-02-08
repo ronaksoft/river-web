@@ -31,6 +31,7 @@ import {
     VideocamOutlined,
     PlayArrowRounded,
     CallRounded,
+    CallEndRounded,
 } from '@material-ui/icons';
 import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -143,12 +144,9 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                         <UserName className="sender" id={dialog.sender_id || ''}
                                   you={true} onlyFirstName={true} noIcon={true} postfix=" "
                                   noDetail={true}/> {i18n.t('message.added')} {dialog.action_data.useridsList.map((id: string, index: number) => {
-                    return (
-                        <span key={index}>
-                                {index !== 0 ? ', ' : ''}
-                            <UserName className="target-user" id={id} you={true} noDetail={true} postfix=" "
-                                      noIcon={true}/></span>
-                    );
+                    return (<span key={index}>{index !== 0 ? ', ' : ''}
+                        <UserName className="target-user" id={id} you={true} noDetail={true} postfix=" " noIcon={true}/>
+                    </span>);
                 })}</span>);
             }
         case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
@@ -212,12 +210,14 @@ const RenderPreviewMessage = ({dialog}: { dialog: IDialog }) => {
                                   noDetail={true}/> {i18n.t('message.took_an_screenshot')}</span>);
         case C_MESSAGE_ACTION.MessageActionCallStarted:
             return (<span className="preview-message system-message">
-                        {i18n.t('message.call_from')}
+                <CallRounded className="preview-icon"/>{i18n.t('message.call_from')}
                 <UserName className="sender postfix" id={dialog.sender_id || ''} you={true} onlyFirstName={true}
-                          noIcon={true}
-                          prefix=" " noDetail={true}/></span>);
+                          noIcon={true} prefix=" " noDetail={true}/>
+            </span>);
         case C_MESSAGE_ACTION.MessageActionCallEnded:
-            return (<span className="preview-message system-message">{i18n.t('message.call_ended')}</span>);
+            return (<span className="preview-message system-message">
+                <CallEndRounded className="preview-icon"/>{i18n.t('message.call_ended')}
+            </span>);
         case C_MESSAGE_ACTION.MessageActionEmptyDialog:
             return (<span className="preview-message system-message bold">{i18n.t('message.no_message')}</span>);
         default:
@@ -298,8 +298,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
             <div
                 className={'dialog' + (peerName === selectedPeerName ? ' active' : '') + (dialog.pinned ? ' pinned' : '') + (muted ? ' muted' : '') + ((dialog.unreadcount || 0) > 0 ? ' has-unread' : '') + ((dialog.unreadcount || 0) > 99 ? ' has-many-unread' : '') + (hasMention ? ' has-mention' : '')}
             >
-                <div
-                    className="dialog-wrapper">
+                <div className="dialog-wrapper">
                     {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF || dialog.peertype === PeerType.PEEREXTERNALUSER) &&
                     <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true} peerType={dialog.peertype}
                                 savedMessages={dialog.saved_messages} onlineIndicator={selectedPeerName !== ''}/>}
@@ -316,20 +315,21 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                                   youPlaceholder={i18n.t('general.saved_messages')}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                         <GroupName className="name" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
-                        {dialog.preview_me && <span
-                            className="status"><GetStatus id={dialog.topmessageid || 0} isBot={isBot}
-                                                          readId={dialog.readoutboxmaxid || 0} userId={currentUserId}
-                                                          peerId={dialog.peerid || ''}/></span>}
+                        {dialog.preview_me && <div className="status">
+                            <GetStatus id={dialog.topmessageid || 0} isBot={isBot} readId={dialog.readoutboxmaxid || 0}
+                                       userId={currentUserId} peerId={dialog.peerid || ''}/>
+                        </div>}
                         {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
                     </div>
-                    {Boolean(ids.length === 0) && <span
-                        className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}><RenderPreviewMessage
-                        dialog={dialog}/></span>}
+                    {Boolean(ids.length === 0) && <div className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>
+                        <RenderPreviewMessage dialog={dialog}/>
+                    </div>}
                     {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
-                    {hasCounter && <span
-                        className="unread">{(dialog.unreadcount || 0) > 99 ? localize('+99') : localize(dialog.unreadcount || 0)}</span>}
+                    {hasCounter && <div className="unread">
+                        {(dialog.unreadcount || 0) > 99 ? localize('+99') : localize(dialog.unreadcount || 0)}
+                    </div>}
                     {Boolean(!hasCounter && dialog.pinned) && <PinIcon/>}
-                    {hasMention && <span className="mention"><AlternateEmailRounded/></span>}
+                    {hasMention && <div className="mention"><AlternateEmailRounded/></div>}
                     {Boolean(dialog.only_contact !== true) &&
                     <div className="more" onClick={onContextMenuOpen}>
                         <MoreVertRounded/>

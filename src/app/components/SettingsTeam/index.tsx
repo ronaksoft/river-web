@@ -44,6 +44,7 @@ import {ModalityService} from "kk-modality";
 
 import './style.scss';
 import {PartialDeep} from "type-fest";
+import {TeamFlags} from "../../services/sdk/messages/core.types_pb";
 
 interface IMember {
     admin: boolean;
@@ -128,6 +129,7 @@ class SettingsTeam extends React.Component<IProps, IState> {
         if (!team) {
             return null;
         }
+        const teamAdmin = team && ((team.flagsList || []).indexOf(TeamFlags.TEAMFLAGSADMIN) > -1 || (team.flagsList || []).indexOf(TeamFlags.TEAMFLAGSCREATOR) > -1);
         return (
             <div className={`page-container page-${page}`}>
                 <div className="page page-1">
@@ -140,22 +142,32 @@ class SettingsTeam extends React.Component<IProps, IState> {
                         <label>{i18n.t('settings.team.teams')}</label>
                     </div>
                     <div className="menu-content team-settings-section">
-                        <div className="sub-page-header-alt">{i18n.t('settings.team.info')}</div>
-                        <div className="team-info">
-                            <div className="line">
-                                <TextField
-                                    label={i18n.t('general.title')}
-                                    fullWidth={true}
-                                    value={team.name || ''}
-                                    onChange={this.nameChangeHandler}
-                                    variant="outlined"
-                                    className="input-edit"
-                                    inputProps={{
-                                        maxLength: 20,
-                                    }}
-                                />
+                        {teamAdmin ? <>
+                            <div className="sub-page-header-alt">{i18n.t('settings.team.info')}</div>
+                            <div className="team-info">
+                                <div className="line">
+                                    <TextField
+                                        label={i18n.t('general.title')}
+                                        fullWidth={true}
+                                        value={team.name || ''}
+                                        onChange={this.nameChangeHandler}
+                                        variant="outlined"
+                                        className="input-edit"
+                                        inputProps={{
+                                            maxLength: 20,
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        </> : <div className="sub-page-header-alt">{team.name}</div>}
+                        {Boolean(teamAdmin) &&
+                        <div className="page-anchor anchor-padding-side" onClick={this.nextPageHandler}>
+                            <div className="icon color-session">
+                                <GroupRounded/>
+                            </div>
+                            <div
+                                className="anchor-label">{i18n.tf('settings.team.members', String(localize(count)))}</div>
+                        </div>}
                         <div className="sub-page-header-alt">{i18n.t('settings.team.background_service')}</div>
                         <div className="switch-item with-border">
                             <div
@@ -182,13 +194,6 @@ class SettingsTeam extends React.Component<IProps, IState> {
                                     className={team.count_unread ? 'root-settings-switch-checked' : ''}
                                 />
                             </div>
-                        </div>
-                        <div className="page-anchor anchor-padding-side" onClick={this.nextPageHandler}>
-                            <div className="icon color-session">
-                                <GroupRounded/>
-                            </div>
-                            <div
-                                className="anchor-label">{i18n.tf('settings.team.members', String(localize(count)))}</div>
                         </div>
                     </div>
                 </div>

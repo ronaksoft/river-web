@@ -16,12 +16,13 @@ import i18n from "../../services/i18n";
 import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
+import UserName from "../UserName";
 
 export interface IRemoteConnection {
     connId: number;
     media?: CallVideoPlaceholder;
     status: number;
-    streams: MediaStream[] | undefined;
+    stream: MediaStream | undefined;
     userId: string;
 }
 
@@ -36,6 +37,8 @@ interface IState {
     callId: string;
     gridHeight: number | undefined;
     localVideo: boolean;
+    screenShareStream: MediaStream | undefined;
+    screenShareUserId: string | undefined;
 }
 
 class CallVideo extends React.Component<IProps, IState> {
@@ -62,6 +65,8 @@ class CallVideo extends React.Component<IProps, IState> {
             callId: props.callId,
             gridHeight: undefined,
             localVideo: false,
+            screenShareStream: undefined,
+            screenShareUserId: undefined,
         };
 
         this.callService = CallService.getInstance();
@@ -73,6 +78,7 @@ class CallVideo extends React.Component<IProps, IState> {
         if (this.initialized) {
         }
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventShareMediaStreamUpdateHandler));
     }
 
     public componentWillUnmount() {
@@ -95,13 +101,13 @@ class CallVideo extends React.Component<IProps, IState> {
         }
     }
 
-    public setStream(connId: number, streams: MediaStream[]) {
+    public setStream(connId: number, stream: MediaStream) {
         const index = findIndex(this.videoRemoteRefs, {connId});
-        if (index > -1 && streams) {
+        if (index > -1 && stream) {
             const remote = this.videoRemoteRefs[index];
-            remote.streams = streams;
+            remote.stream = stream;
             if (remote.media) {
-                remote.media.setVideo(streams[0]);
+                remote.media.setVideo(stream);
             }
         }
     }
@@ -147,7 +153,7 @@ class CallVideo extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {localVideo, gridHeight} = this.state;
+        const {localVideo, gridHeight, screenShareStream, screenShareUserId} = this.state;
         return (<div className={'call-video cp-' + (this.videoRemoteRefs.length + (localVideo ? 1 : 0))}
                      onClick={this.props.onClick}>
             {localVideo &&
@@ -159,6 +165,13 @@ class CallVideo extends React.Component<IProps, IState> {
                 </div>
             </div>}
             {this.getRemoteVideoContent()}
+            {Boolean(screenShareStream) && <div className="screen-share-container">
+                <div className="screen-share-user">
+                    <div className="screen-share-label">{i18n.t('call.streaming_from')}</div>
+                    {screenShareUserId && <UserName className="user" id={screenShareUserId} noIcon={true} you={true}/>}
+                </div>
+                <video ref={this.shareScreenRefHandler} playsInline={true} autoPlay={true}/>
+            </div>}
         </div>);
     }
 
@@ -174,19 +187,19 @@ class CallVideo extends React.Component<IProps, IState> {
             const {gridHeight} = this.state;
             const videoRemoteRefHandler = (ref: CallVideoPlaceholder) => {
                 item.media = ref;
-                const streams = this.callService.getRemoteStreams(item.connId);
-                if (streams && item.media) {
-                    item.streams = streams;
+                const stream = this.callService.getRemoteStream(item.connId);
+                if (stream && item.media) {
+                    item.stream = stream;
                 }
-                if (item.streams && item.media) {
-                    item.media.setVideo(item.streams[0]);
+                if (item.stream && item.media) {
+                    item.media.setVideo(item.stream);
                 }
             };
             return (<div key={item.connId} className="call-user-container"
                          style={gridHeight ? {height: `${gridHeight}px`} : undefined}
                          onContextMenu={this.props.onContextMenu(item.userId)}>
                 <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
-                                      srcObject={item.streams ? item.streams[0] : undefined} playsInline={true}
+                                      srcObject={item.stream} playsInline={true}
                                       autoPlay={true} userId={item.userId}/>
             </div>);
         });
@@ -210,7 +223,7 @@ class CallVideo extends React.Component<IProps, IState> {
                 connId: participant.connectionid || 0,
                 media: undefined,
                 status: participant.started ? 2 : 0,
-                streams: undefined,
+                stream: undefined,
                 userId: participant.peer.userid || '0',
             })));
         }
@@ -246,6 +259,36 @@ class CallVideo extends React.Component<IProps, IState> {
         this.mediaSettings = settings;
         if (forceUpdate) {
             this.forceUpdate();
+        }
+    }
+
+    private eventShareMediaStreamUpdateHandler = ({connId, stream, userId}: { connId: number, stream: MediaStream | undefined, userId: string }) => {
+        this.videoRemoteRefs.forEach((video) => {
+            if (video.media) {
+                if (stream) {
+                    video.media.setVODEnable(false);
+                    video.media.destroyVOD();
+                } else {
+                    video.media.setVODEnable(true);
+                }
+            }
+        });
+        if (stream) {
+            this.setState({
+                screenShareStream: stream,
+                screenShareUserId: userId,
+            });
+        } else {
+            this.setState({
+                screenShareStream: undefined,
+                screenShareUserId: undefined,
+            });
+        }
+    }
+
+    private shareScreenRefHandler = (ref: HTMLVideoElement) => {
+        if (ref && this.state.screenShareStream) {
+            ref.srcObject = this.state.screenShareStream;
         }
     }
 }

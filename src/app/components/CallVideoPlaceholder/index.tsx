@@ -83,6 +83,18 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
         }
     }
 
+    public destroyVOD() {
+        if (this.callVideoAugmentRef) {
+            this.callVideoAugmentRef.destroyVOD();
+        }
+    }
+
+    public setVODEnable(enable: boolean) {
+        if (this.callVideoAugmentRef) {
+            this.callVideoAugmentRef.setVODEnable(enable);
+        }
+    }
+
     public render() {
         const {className, muted, playsInline, autoPlay} = this.props;
         const {videoMute, img, userId} = this.state;

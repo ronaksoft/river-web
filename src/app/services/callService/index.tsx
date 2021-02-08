@@ -54,6 +54,7 @@ export const C_CALL_EVENT = {
     ParticipantJoined: 0x09,
     ParticipantLeft: 0x0a,
     ParticipantRemoved: 0x0c,
+    ShareMediaStreamUpdated: 0x11,
     StreamUpdated: 0x03,
 };
 
@@ -199,6 +200,7 @@ export default class CallService {
         audio: true,
         video: true,
     };
+    private activeScreenShareConnId: number | undefined;
 
     // Call variables
     private localStream: MediaStream | undefined;
@@ -316,7 +318,13 @@ export default class CallService {
     }
 
     public toggleScreenShare(enable: boolean) {
-        this.modifyScreenShareMediaStream(enable).then(() => {
+        this.modifyScreenShareMediaStream(enable).then((stream) => {
+            if (!this.activeCallId) {
+                return;
+            }
+            const connId = this.getConnId(this.activeCallId, currentUserId);
+            this.activeScreenShareConnId = connId;
+            this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {connId, stream, userId: currentUserId});
             const localVideos = this.localStream.getVideoTracks();
             if (localVideos.length > 0) {
                 localVideos.forEach((track) => {
@@ -339,7 +347,7 @@ export default class CallService {
         const audioTracks = this.localStream.getAudioTracks();
         return {
             audio: audioTracks.length > 0 ? audioTracks[0].enabled : false,
-            screenShare: false,
+            screenShare: Boolean(this.screenShareStream),
             video: videoTracks.length > 0 ? videoTracks[0].enabled : false,
         };
     }
@@ -371,11 +379,31 @@ export default class CallService {
         return this.localStream;
     }
 
-    public getRemoteStreams(connId: number): MediaStream[] | undefined {
+    public getLocalScreamShareStream(): MediaStream | undefined {
+        return this.screenShareStream;
+    }
+
+    public getRemoteStream(connId: number): MediaStream | undefined {
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return undefined;
         }
-        return this.peerConnections[connId].streams;
+        if (this.peerConnections[connId].streams.length === 1) {
+            return this.peerConnections[connId].streams[0];
+        } else {
+            return undefined;
+        }
+    }
+
+    public getRemoteScreenShareStream(): MediaStream | undefined {
+        const connId = this.activeScreenShareConnId;
+        if (!connId || !this.peerConnections.hasOwnProperty(connId)) {
+            return undefined;
+        }
+        if (this.peerConnections[connId].streams.length === 2) {
+            return this.peerConnections[connId].streams[1];
+        } else {
+            return undefined;
+        }
     }
 
     public callStart(peer: InputPeer, participants: InputUser.AsObject[], callId?: string) {
@@ -1069,9 +1097,15 @@ export default class CallService {
     private initConnection(remote: boolean, connId: number, sdp?: RTCSessionDescriptionInit): Promise<RTCSessionDescriptionInit> {
         window.console.log('[webrtc] init connection, connId:', connId);
 
-        const stream = this.localStream;
-        if (!stream) {
+        if (!this.localStream) {
             return Promise.reject('no available stream');
+        }
+
+        const stream = new MediaStream(this.localStream.getTracks());
+        if (this.screenShareStream) {
+            this.screenShareStream.getTracks().forEach((track) => {
+                stream.addTrack(track);
+            });
         }
 
         return new Promise((resolve, reject) => {
@@ -1109,9 +1143,17 @@ export default class CallService {
 
                 pc.addEventListener('track', (e) => {
                     if (e.streams.length > 0) {
-                        if (e.streams.length === 1) {
+                        const userId = this.getUserIdByCallId(this.activeCallId, connId);
+                        if (conn.streams.length >= 1) {
                             const id = e.streams[0].id;
                             if (conn.streamId !== id) {
+                                if (conn.streams.length === 2) {
+                                    this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+                                        connId,
+                                        stream: undefined,
+                                        userId,
+                                    });
+                                }
                                 conn.streams = [];
                                 conn.streamId = id;
                             }
@@ -1119,8 +1161,17 @@ export default class CallService {
                             conn.streams = [];
                         }
                         conn.streams.push(...e.streams);
+                        window.console.log(conn.streams);
                         window.console.log('[webrtc] stream, connId:', connId, ' streams', e.streams.map((o) => `${o.getVideoTracks().length > 0 ? 'video' : ' '} ${o.getAudioTracks().length > 0 ? 'audio' : ''}`).join(', '));
-                        this.callHandlers(C_CALL_EVENT.StreamUpdated, {connId, streams: conn.streams});
+                        if (conn.streams.length === 1) {
+                            this.callHandlers(C_CALL_EVENT.StreamUpdated, {connId, stream: conn.streams[0]});
+                        } else if (conn.streams.length === 2) {
+                            this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+                                connId,
+                                stream: conn.streams[1],
+                                userId
+                            });
+                        }
                     }
                 });
 
@@ -1186,6 +1237,19 @@ export default class CallService {
         }
 
         return info.participantMap[userId || '0'];
+    }
+
+    private getUserIdByCallId(callId: string | undefined, connId: number): string | undefined {
+        const info = this.getCallInfo(callId || '0');
+        if (!info) {
+            return null;
+        }
+
+        if (info.participants[connId]) {
+            return info.participants[connId].peer.userid;
+        } else {
+            return undefined;
+        }
     }
 
     private getInputUserByConnId(callId: string, connId: number) {
@@ -1339,10 +1403,12 @@ export default class CallService {
         }
         this.callInfo[callId].participants[connId].mediaSettings.audio = mediaSettings.audio || false;
         this.callInfo[callId].participants[connId].mediaSettings.video = mediaSettings.video || false;
+        this.callInfo[callId].participants[connId].mediaSettings.screenShare = mediaSettings.screenshare || false;
+        this.screenShareUpdate(data.userid, connId, mediaSettings.screenshare);
         this.callHandlers(C_CALL_EVENT.MediaSettingsUpdated, this.callInfo[callId].participants[connId]);
     }
 
-    private mediaSettingsInit({video, audio}: { video?: boolean, audio?: boolean }) {
+    private mediaSettingsInit({video, audio, screenShare}: { video?: boolean, audio?: boolean, screenShare?: boolean }) {
         const callId = this.activeCallId;
         if (!callId) {
             return;
@@ -1353,7 +1419,24 @@ export default class CallService {
         }
         this.callInfo[callId].participants[connId].mediaSettings.audio = audio || false;
         this.callInfo[callId].participants[connId].mediaSettings.video = video || false;
+        this.callInfo[callId].participants[connId].mediaSettings.screenShare = screenShare || false;
         this.callHandlers(C_CALL_EVENT.MediaSettingsUpdated, this.callInfo[callId].participants[connId]);
+    }
+
+    private screenShareUpdate(userId: string, connId: number, enable: boolean) {
+        if (!this.activeCallId) {
+            return;
+        }
+        const currentConnId = this.getConnId(this.activeCallId, currentUserId);
+        if (enable) {
+            if (this.activeScreenShareConnId === currentConnId) {
+                window.console.log('here');
+                this.toggleScreenShare(false);
+            }
+            this.activeScreenShareConnId = connId;
+        } else if (!enable && this.activeScreenShareConnId === connId) {
+            this.activeScreenShareConnId = undefined;
+        }
     }
 
     private modifyMediaStream(video: boolean) {
@@ -1381,7 +1464,7 @@ export default class CallService {
         });
     }
 
-    private modifyScreenShareMediaStream(screenShare: boolean) {
+    private modifyScreenShareMediaStream(screenShare: boolean): Promise<MediaStream | undefined> {
         if (!this.localStream) {
             return Promise.reject('no localStream');
         }
@@ -1410,7 +1493,7 @@ export default class CallService {
                 }
             }
             this.propagateMediaSettings({screenShare});
-            return Promise.resolve();
+            return Promise.resolve(stream);
         };
         if (screenShare) {
             return mediaDevices.getDisplayMedia(this.screenShareConfig).then((stream: MediaStream) => {

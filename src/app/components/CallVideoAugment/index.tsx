@@ -29,6 +29,7 @@ class CallVideoAugment extends React.Component<IProps, IState> {
     private vod: VoiceActivityDetection | undefined;
     private vodWave: HTMLElement | undefined;
     private vodWaveSmooth: HTMLElement | undefined;
+    private vodEnable: boolean = true;
 
     public static getDerivedStateFromProps(props: IProps, state: IState) {
         if (props.userId === state.userId) {
@@ -73,18 +74,25 @@ class CallVideoAugment extends React.Component<IProps, IState> {
 
     public setStream(stream: MediaStream) {
         if (this.vod && this.mediaStream !== stream) {
-            this.vod.destroy(false);
-            this.vod = undefined;
+            this.destroyVOD();
         }
         this.mediaStream = stream;
         this.checkVOD();
     }
 
-    public componentWillUnmount() {
+    public destroyVOD() {
         if (this.vod) {
             this.vod.destroy(false);
             this.vod = undefined;
         }
+    }
+
+    public setVODEnable(enable: boolean) {
+        this.vodEnable = enable;
+    }
+
+    public componentWillUnmount() {
+        this.destroyVOD();
     }
 
     public render() {
@@ -103,12 +111,12 @@ class CallVideoAugment extends React.Component<IProps, IState> {
     }
 
     private checkVOD() {
+        if (!this.vodEnable) {
+            return;
+        }
         const {videoMute, audioMute, userId} = this.state;
         if (!window.AudioContext || !videoMute || audioMute || !userId) {
-            if (this.vod) {
-                this.vod.destroy(false);
-                this.vod = undefined;
-            }
+            this.destroyVOD();
             return;
         }
         if (!this.mediaStream || this.vod) {

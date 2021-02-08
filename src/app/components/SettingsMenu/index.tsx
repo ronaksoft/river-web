@@ -70,7 +70,7 @@ import {
     PeerType,
     PrivacyKey,
     PrivacyRule,
-    PrivacyType, TeamFlags
+    PrivacyType,
 } from '../../services/sdk/messages/core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import AvatarCropper from '../AvatarCropper';
@@ -459,7 +459,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, customBackgroundSrc, privacy,
             passwordMode, teamMoreAnchorEl, teamList, teamSelectedId, teamLoading, teamSelectedName, selectedLastSeenFormat,
         } = this.state;
-        const team = teamList.find(o => o.id === teamSelectedId && ((o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSADMIN) > -1 || (o.flagsList || []).indexOf(TeamFlags.TEAMFLAGSCREATOR) > -1));
+        const team = teamList.find(o => o.id === teamSelectedId);
         return (
             <div className="settings-menu">
                 <DevTools ref={this.devToolsRefHandler}/>

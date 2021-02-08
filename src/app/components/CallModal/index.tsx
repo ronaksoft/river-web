@@ -896,7 +896,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private eventStreamUpdatedHandler = ({connId, streams}: { connId: number, streams: MediaStream[] }) => {
+    private eventStreamUpdatedHandler = ({connId, stream}: { connId: number, stream: MediaStream }) => {
         if (!this.state.callStarted) {
             this.setState({
                 callStarted: true,
@@ -907,11 +907,9 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
 
-        window.console.log(streams);
-
         this.callVideoRef.initRemoteConnection(true);
         this.callVideoRef.setStatus(connId, 2);
-        this.callVideoRef.setStream(connId, streams);
+        this.callVideoRef.setStream(connId, stream);
         if (!this.timeStart) {
             this.timeStart = Date.now();
         }

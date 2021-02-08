@@ -232,7 +232,7 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
                 <>
                     <div className={'uac' + (className ? ` ${className}` : '')}
                          onClick={this.clickHandler}>{(user && photo) ?
-                        <img className="avatar-image" src={photo} alt="avatar" draggable={false}
+                        <img className="avatar-image" src={photo} alt={user.firstname || ''} draggable={false}
                              onError={this.imgErrorHandler}/> :
                         <TextAvatar fname={user.firstname} lname={user.lastname}/>}
                         {Boolean(bigFileLocation) &&
