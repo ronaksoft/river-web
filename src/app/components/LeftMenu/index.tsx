@@ -45,6 +45,7 @@ import MessageRepo from "../../repository/message";
 
 import './style.scss';
 import CallHistory from "../CallHistory";
+import IsMobile from "../../services/isMobile";
 
 export type menuItems = 'chat' | 'settings' | 'contacts' | 'call_history';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -123,6 +124,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private messageRepo: MessageRepo;
     private toCheckTeamIds: string[] = [];
     private readonly checkUpdateFlagThrottle: any;
+    private readonly isMobile = IsMobile.isAny();
 
     constructor(props: IProps) {
         super(props);
@@ -145,7 +147,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             teamList: [],
             teamLoading: false,
             teamMoreAnchorEl: null,
-            withPanel: localStorage.getItem(C_LOCALSTORAGE.SettingsLeftPanelVisible) === 'true',
+            withPanel: !this.isMobile && localStorage.getItem(C_LOCALSTORAGE.SettingsLeftPanelVisible) === 'true',
         };
 
         this.chatTopIcons = [{

@@ -1533,9 +1533,9 @@ html[gradient="5"]:not([bubble="5"]) {
 }
 
 .mobile-view {
-  .chat {
-    padding-left: 7px;
-  }
+  //.chat {
+  //  padding-left: 7px;
+  //}
 
   .bubble-wrapper .bubble {
     transition: margin-left 0.1s;

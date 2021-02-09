@@ -394,6 +394,14 @@
       }
     }
   }
+
+  .left-menu.with-panel {
+    padding-left: 0;
+  }
+
+  .top-bar .new-message .text-logo {
+    transform: translateX(48px);
+  }
 }
 
 .kk-context-menu.top-bar-team {
@@ -538,6 +546,12 @@ html[direction="rtl"] {
         left: auto;
         right: 0;
       }
+    }
+  }
+
+  .container.mobile-view {
+    .left-menu.with-panel {
+      padding-right: 0;
     }
   }
 }

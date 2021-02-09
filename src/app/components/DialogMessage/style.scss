@@ -56,7 +56,8 @@ a.dialog-a {
 
     .dialog-wrapper {
       .preview {
-        width: 73%;
+        width: calc(100% - 80px);
+        max-width: calc(100% - 80px);
       }
     }
   }
@@ -84,7 +85,8 @@ a.dialog-a {
   &.has-unread {
     .dialog-wrapper {
       .preview {
-        width: 73%;
+        width: calc(100% - 80px);
+        max-width: calc(100% - 80px);
       }
     }
   }
@@ -92,14 +94,16 @@ a.dialog-a {
   &.has-mention {
     .dialog-wrapper {
       .preview {
-        width: 67%;
+        width: calc(100% - 100px);
+        max-width: calc(100% - 100px);
       }
     }
 
     &.has-many-unread {
       .dialog-wrapper {
         .preview {
-          width: 65%;
+          width: calc(100% - 106px);
+          max-width: calc(100% - 106px);
         }
       }
     }
@@ -217,7 +221,7 @@ a.dialog-a {
       line-height: 17px;
       display: inline-block;
       overflow: hidden !important;
-      width: 80%;
+      width: calc(100% - 60px);
       white-space: nowrap;
       text-overflow: ellipsis;
       color: var(--grey);
@@ -348,7 +352,7 @@ a.dialog-a {
     .unread {
       font-size: 11px;
       position: absolute;
-      top: 25px;
+      top: 26px;
       right: -1px;
       height: 16px;
       min-width: 16px;
@@ -366,14 +370,14 @@ a.dialog-a {
     .pin {
       font-size: 20px;
       position: absolute;
-      top: 25px;
+      top: 26px;
       right: -2px;
       color: #C6C6C6;
     }
 
     .mention {
       position: absolute;
-      top: 25px;
+      top: 26px;
       right: 21px;
       background-color: var(--river);
       height: 16px;
@@ -414,6 +418,7 @@ a.dialog-a {
 
       .dialog-top-bar {
         width: calc(100% - 76px);
+        max-width: calc(100% - 76px);
       }
     }
   }

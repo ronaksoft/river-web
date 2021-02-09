@@ -291,7 +291,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private blockUserListRef: FixedSizeList | undefined;
     private readonly rtl: boolean = false;
     private readonly hasScrollbar: boolean = false;
-    private readonly isMobile: boolean = false;
+    private readonly isMobile = IsMobile.isAny();
     private contactHasMore: boolean = false;
     private avatarService: AvatarService;
     private modalityService: ModalityService;
@@ -381,7 +381,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.electronService = ElectronService.getInstance();
         this.hasScrollbar = getScrollbarWidth() > 0;
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
-        this.isMobile = this.isMobile = IsMobile.isAny();
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
 
@@ -604,7 +603,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.language')}</div>
                                     </div>
-                                    {Boolean(teamList.length > 1) && <div className="page-anchor">
+                                    {Boolean(teamList.length > 1 && !this.isMobile) && <div className="page-anchor">
                                         <div className="icon color-left-panel">
                                             <GroupRounded/>
                                         </div>

@@ -168,6 +168,13 @@
   }
 }
 
+.container.mobile-view {
+  .left-panel {
+    padding: 0;
+    margin: 48px 0 52px 0;
+  }
+}
+
 html[direction="rtl"] {
   .left-panel {
     right: 0;
