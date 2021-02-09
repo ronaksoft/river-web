@@ -28,6 +28,7 @@ import CallService, {C_CALL_EVENT} from "../../services/callService";
 
 import './style.scss';
 import {currentUserId} from "../../services/sdk";
+import {EventNetworkStatus, EventOffline, EventOnline} from "../../services/events";
 
 interface IMenuItem {
     cmd: string;
@@ -50,6 +51,7 @@ interface IState {
     callAnchorEl: any;
     callStarted: boolean;
     disable: boolean;
+    online: boolean;
     peer: InputPeer | null;
     isConnecting: boolean;
     isOnline: boolean;
@@ -76,6 +78,7 @@ class InfoBar extends React.Component<IProps, IState> {
             isConnecting: false,
             isOnline: false,
             isUpdating: false,
+            online: navigator.onLine === undefined ? true : navigator.onLine,
             peer: null,
             teamId: props.teamId,
             withCall: true,
@@ -134,6 +137,21 @@ class InfoBar extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
+        window.addEventListener(EventOnline, () => {
+            if (!this.state.online) {
+                this.setState({
+                    online: true,
+                });
+            }
+        });
+
+        window.addEventListener(EventOffline, () => {
+            if (this.state.online) {
+                this.setState({
+                    online: false,
+                });
+            }
+        });
     }
 
     public componentWillUnmount() {
@@ -146,7 +164,7 @@ class InfoBar extends React.Component<IProps, IState> {
 
 
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted, disable, callAnchorEl, activeCallId} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted, disable, callAnchorEl, activeCallId, online} = this.state;
         const isGroup = (peer && peer.getType() === PeerType.PEERGROUP);
         return (
             <div className={'info-bar' + (withCall ? ' with-call' : '')}>
@@ -169,7 +187,7 @@ class InfoBar extends React.Component<IProps, IState> {
                         <div className="call-indicator" onClick={this.indicatorClickHandler}>
                             {i18n.t(isGroup && !activeCallId ? 'call.join_call' : 'call.call_started')}
                         </div> : <Tooltip title={i18n.t('call.call')}>
-                            <IconButton onClick={this.callMenuOpenHandler}><CallRounded/></IconButton>
+                            <IconButton onClick={this.callMenuOpenHandler} disabled={online}><CallRounded/></IconButton>
                         </Tooltip>}
                     </>}
                     <Tooltip
@@ -264,7 +282,7 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     private indicatorClickHandler = (e: any) => {
-        if (this.state.peer) {
+        if (this.state.peer && this.state.online) {
             if (this.state.peer.getType() === PeerType.PEERGROUP && !this.state.activeCallId) {
                 this.props.onAction('join_call')(e);
             } else if (this.state.peer.getType() === PeerType.PEERUSER) {

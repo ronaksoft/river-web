@@ -938,6 +938,7 @@ class Chat extends React.Component<IProps, IState> {
             });
             const dialog = this.getDialogByPeerName(this.selectedPeerName);
             if (dialog) {
+                this.infoBarRef.setPeer(this.teamId, this.peer, dialog);
                 this.infoBarRef.setCallStarted(dialog.activecallid && dialog.activecallid !== '0');
             }
         }
