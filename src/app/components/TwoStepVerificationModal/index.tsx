@@ -85,10 +85,8 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
         return (
             <>
                 <SettingsModal open={open} title={i18n.t('settings.two_step_verification')}
-                               icon={<VerifiedUserRounded/>}
-                               onClose={this.modalCloseHandler}
-                               height="370px"
-                               noScrollbar={true}
+                               icon={<VerifiedUserRounded/>} onClose={this.modalCloseHandler}
+                               height="380px" noScrollbar={true}
                 >
                     {Boolean(step === 1) && <div className="tsv-dialog">
                         <div className="tsv-header">
@@ -166,6 +164,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
                                 <Button color="primary" fullWidth={true}
                                         onClick={this.enableRecoveryHandler}>{i18n.t(securityQuestions.length === 3 ? 'settings.2fa.disable_recovery' : 'settings.2fa.enable_recovery')}</Button>
                             </div>
+                            <div className="tsv-text tsv-note">{i18n.t('settings.2fa.has_password_note_2')}</div>
                         </>}
                         <div className="tsv-gap"/>
                         <DialogActions>

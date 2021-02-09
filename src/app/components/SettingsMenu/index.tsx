@@ -116,10 +116,10 @@ import SettingsTeam from "../SettingsTeam";
 import SettingsSession from "../SettingsSession";
 import {EventShowChangelog} from "../../services/events";
 import {ModalityService} from "kk-modality";
+import SettingsMediaInput from "../SettingsMediaInput";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
-import SettingsMediaInput from "../SettingsMediaInput";
 
 export const ThemeChanged = 'Theme_Changed';
 export const LastSeenFormatChange = 'Last_Seen_Format_Changed';
@@ -554,7 +554,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
                                         </Link>
                                     </div>
-                                    {Boolean(team) &&
+                                    {Boolean(team && team.id !== '0') &&
                                     <div className="page-anchor" onClick={this.selectPageHandler('teams')}>
                                         <div className="icon color-teams">
                                             <GroupRounded/>

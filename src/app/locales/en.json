@@ -304,6 +304,7 @@
       "confirm_password": "Re-enter Your Password",
       "hint": "Hint",
       "has_password_note": "Two-Step Verification is activated on your account, You can change or deactivate it anytime.",
+      "has_password_note_2": "If you forget your two-step verification password, you will lose access to your River account. There will be no way to restore it.",
       "pass_is_incorrect": "Incorrect password",
       "password_successfully_activated": "Password successfully activated",
       "password_successfully_changed": "Password successfully changed",

@@ -1,3 +1,6 @@
+## 1.0.58
+* Overall improvements
+
 ## 1.0.57
 * Prevent establishing a call with your self
 

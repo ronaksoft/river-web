@@ -620,7 +620,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private callVideoContextMenuHandler = (userId: string) => (e: any) => {
         e.preventDefault();
-        if (this.callSettingsRef) {
+        if (this.callSettingsRef && this.peer && this.peer.getType() === PeerType.PEERGROUP) {
             this.callSettingsRef.openContextMenu(userId, e);
         }
     }

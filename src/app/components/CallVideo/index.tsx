@@ -288,10 +288,8 @@ class CallVideo extends React.Component<IProps, IState> {
     }
 
     private eventMediaSettingsUpdatedHandler = (data: ICallParticipant) => {
-        window.console.log(data);
         if (data.mediaSettings.screenShare && !this.state.screenShareStream) {
             const streamData = this.callService.getRemoteScreenShareStream();
-            window.console.log(streamData);
             if (streamData) {
                 this.setState({
                     screenShareStream: streamData.stream,
