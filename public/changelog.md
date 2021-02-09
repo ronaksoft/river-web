@@ -1,5 +1,6 @@
 ## 1.0.58
 * Overall improvements
+* Known bugs fixed
 
 ## 1.0.57
 * Bug fixes
