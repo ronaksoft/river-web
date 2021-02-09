@@ -3797,7 +3797,10 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const dialogMap = this.dialogMap;
-        const index = this.dialogMap[peerName];
+        let index = this.dialogMap[peerName];
+        if (!this.dialogs[index]) {
+            return;
+        }
         if (GetPeerName(this.dialogs[index].peerid, this.dialogs[index].peertype) !== peerName) {
             return;
         }
