@@ -67,6 +67,7 @@ class MessageVoice extends React.Component<IProps, IState> {
             const info = getVoiceInfo(message);
             this.lastId = newProps.message.id || 0;
             this.dbFileName = info.fileName || '';
+
             this.setState({
                 message: newProps.message,
             }, () => {
@@ -116,7 +117,7 @@ class MessageVoice extends React.Component<IProps, IState> {
     /* Get voice state for player */
     private getVoiceState(message: IMessage) {
         const id = message.id || 0;
-        if (id <= 0) {
+        if (id < 0) {
             return 'progress';
         } else if (id > 0 && !message.downloaded) {
             return 'download';

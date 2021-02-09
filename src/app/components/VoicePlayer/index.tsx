@@ -120,7 +120,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
         this.state = {
             className: props.className || '',
-            playState: props.message.id < 0 ? 'progress' : 'download',
+            playState: props.message && props.message.id > 0 ? 'download' : 'progress',
         };
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
@@ -143,15 +143,13 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     }
 
     // public UNSAFE_componentWillReceiveProps(newProps: IProps) {
-    //     window.console.log(newProps);
-    //     if (newProps.message) {
-    //         if (this.lastId !== newProps.message.id && this.lastId < 0) {
-    //             this.audioPlayer.removeFromPlaylist(this.lastId);
-    //             this.removeAllListeners();
-    //             if (newProps.message && (newProps.message.id || 0) > 0) {
-    //                 this.eventReferences.push(this.audioPlayer.listen(newProps.message.id || 0, this.audioPlayerHandler));
-    //             }
-    //         }
+    //     if (newProps.message && (newProps.message.id || 0) < 0 && this.progressBroadcaster.isActive(newProps.message.id || 0)) {
+    //         this.removeAllListeners();
+    //         this.setState({
+    //             playState: 'progress',
+    //         }, () => {
+    //             this.eventReferences.push(this.progressBroadcaster.listen(newProps.message.id || 0, this.uploadProgressHandler));
+    //         });
     //     }
     // }
 
@@ -192,7 +190,9 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                 }, this.voiceFileName, message.senderid || '', message.downloaded || false);
                 this.removeAllListeners();
                 this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
-                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+                if (message && !message.downloaded) {
+                    this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+                }
             }
         }
     }
@@ -204,25 +204,43 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             return;
         }
 
-        this.setState({
-            playState: state,
-        });
+        if (this.state.playState !== state) {
+            this.setState({
+                playState: state,
+            });
+        }
 
         const {message} = this.props;
         if (!message) {
             return;
         }
 
+        if (state === 'pause') {
+            this.removeAllListeners();
+            this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
+            if (this.voiceFileName) {
+                this.audioPlayer.addToPlaylist(message.id || 0, {
+                    id: message.peerid || '',
+                    peerType: message.peertype || 0,
+                }, this.voiceFileName, message.senderid || '', message.downloaded || false);
+            }
+            return;
+        }
+
         if (state === 'progress') {
             this.removeAllListeners();
-            this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+            if (message && !message.downloaded) {
+                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+            }
         } else {
             if (this.progressBroadcaster.isActive(message.id || 0)) {
                 this.setState({
                     playState: 'progress',
                 }, () => {
                     this.removeAllListeners();
-                    this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+                    if (message && !message.downloaded) {
+                        this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+                    }
                 });
             } else {
                 if (message && !message.downloaded) {
@@ -240,18 +258,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                             }
                             break;
                     }
-
                 }
-            }
-        }
-        if (state === 'pause') {
-            this.removeAllListeners();
-            this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
-            if (this.voiceFileName) {
-                this.audioPlayer.addToPlaylist(message.id || 0, {
-                    id: message.peerid || '',
-                    peerType: message.peertype || 0,
-                }, this.voiceFileName, message.senderid || '', message.downloaded || false);
             }
         }
     }
@@ -595,6 +602,9 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
     /* Audio player event handler */
     private audioPlayerHandler = (event: IAudioEvent) => {
+        if (this.props.message && this.props.message.id < 0) {
+            return;
+        }
         this.playVoiceBarRef.style.width = `${event.progress * 100}%`;
         this.displayTimer(event.currentTime);
         if (this.state.playState !== event.state) {

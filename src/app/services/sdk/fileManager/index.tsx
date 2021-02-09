@@ -572,15 +572,18 @@ export default class FileManager {
     /* Start download for selected queue */
     private startDownloading(name: string) {
         if (this.fileDownloadQueue.hasOwnProperty(name)) {
-            if (this.fileDownloadQueue[name].retry > C_MAX_RETRIES) {
+            const chunkInfo = this.fileDownloadQueue[name];
+            if (chunkInfo.retry > C_MAX_RETRIES) {
                 this.clearDownloadQueueById(name);
-                this.fileUploadQueue[name].promises.forEach((promise) => {
-                    promise.reject({
-                        code: C_FILE_ERR_CODE.MAX_TRY,
-                        message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
+                if (chunkInfo.promises) {
+                    chunkInfo.promises.forEach((promise) => {
+                        promise.reject({
+                            code: C_FILE_ERR_CODE.MAX_TRY,
+                            message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
+                        });
                     });
-                });
-                if (this.fileDownloadQueue[name].size === 0) {
+                }
+                if (chunkInfo.size === 0) {
                     this.startInstanceDownloadQueue();
                 } else {
                     this.startDownloadQueue();
@@ -588,7 +591,6 @@ export default class FileManager {
                 this.cancel(name);
                 return;
             }
-            const chunkInfo = this.fileDownloadQueue[name];
             if (chunkInfo.receiveChunks.length > 0) {
                 const chunk = chunkInfo.receiveChunks.shift();
                 if (chunk) {

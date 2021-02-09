@@ -25,10 +25,10 @@ import {isNil, omitBy} from "lodash";
 import UserRepo from "../../repository/user";
 import {IDialog} from "../../repository/dialog/interface";
 import CallService, {C_CALL_EVENT} from "../../services/callService";
+import {currentUserId} from "../../services/sdk";
+import {EventOffline, EventOnline} from "../../services/events";
 
 import './style.scss';
-import {currentUserId} from "../../services/sdk";
-import {EventNetworkStatus, EventOffline, EventOnline} from "../../services/events";
 
 interface IMenuItem {
     cmd: string;

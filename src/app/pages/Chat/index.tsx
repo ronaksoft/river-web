@@ -4779,6 +4779,15 @@ class Chat extends React.Component<IProps, IState> {
             mediaDocument.setEntitiesList(mediaItem.entities);
         }
 
+        this.progressBroadcaster.publish(id, {
+            download: 1,
+            progress: 1,
+            state: 'loading',
+            totalDownload: 10,
+            totalUpload: 10,
+            upload: 1,
+        });
+
         if (peerName === this.selectedPeerName) {
             this.pushMessage(message);
         }

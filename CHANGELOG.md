@@ -1,3 +1,6 @@
+## 1.0.59
+* Voice message bug fixed
+
 ## 1.0.58
 * Overall improvements
 * Known bugs fixed

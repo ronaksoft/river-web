@@ -85,7 +85,7 @@ export default class ProgressBroadcaster {
         if (!this.listeners.hasOwnProperty(id)) {
             return false;
         } else {
-            if (this.listeners[id].progress.active) {
+            if (this.listeners[id].progress.active && this.listeners[id].progress.state !== 'complete') {
                 return true;
             } else {
                 return false;
