@@ -3796,7 +3796,6 @@ class Chat extends React.Component<IProps, IState> {
         if (!peerName) {
             return;
         }
-        const dialogMap = this.dialogMap;
         let index = this.dialogMap[peerName];
         if (!this.dialogs[index]) {
             return;
@@ -3805,7 +3804,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         this.dialogs.splice(index, 1);
-        delete dialogMap[peerName];
+        delete this.dialogMap[peerName];
         const tDialogMap: any = {};
         this.dialogs.forEach((d, i) => {
             if (d) {
