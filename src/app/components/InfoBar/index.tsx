@@ -27,6 +27,7 @@ import {IDialog} from "../../repository/dialog/interface";
 import CallService, {C_CALL_EVENT} from "../../services/callService";
 
 import './style.scss';
+import {currentUserId} from "../../services/sdk";
 
 interface IMenuItem {
     cmd: string;
@@ -223,14 +224,21 @@ class InfoBar extends React.Component<IProps, IState> {
             return;
         }
         if (peer.getType() === PeerType.PEERUSER) {
-            this.userRepo.get(peer.getId() || '0').then((user) => {
-                if (user) {
-                    this.setState({
-                        activeCallId: null,
-                        withCall: !Boolean(user.isbot || user.official),
-                    });
-                }
-            });
+            if (peer.getId() === currentUserId) {
+                this.setState({
+                    activeCallId: null,
+                    withCall: false,
+                });
+            } else {
+                this.userRepo.get(peer.getId() || '0').then((user) => {
+                    if (user) {
+                        this.setState({
+                            activeCallId: null,
+                            withCall: !Boolean(user.isbot || user.official),
+                        });
+                    }
+                });
+            }
         } else if (peer.getType() === PeerType.PEERGROUP) {
             this.setState({
                 withCall: true,

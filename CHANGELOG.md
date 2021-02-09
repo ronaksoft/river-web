@@ -1,3 +1,6 @@
+## 1.0.57
+* Prevent establishing a call with your self
+
 ## 1.0.56
 * Screen share implemented
 * Group call bugs fixed
