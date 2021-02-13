@@ -137,21 +137,8 @@ class InfoBar extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
-        window.addEventListener(EventOnline, () => {
-            if (!this.state.online) {
-                this.setState({
-                    online: true,
-                });
-            }
-        });
-
-        window.addEventListener(EventOffline, () => {
-            if (this.state.online) {
-                this.setState({
-                    online: false,
-                });
-            }
-        });
+        window.addEventListener(EventOnline, this.eventOnlineHandler);
+        window.addEventListener(EventOffline, this.eventOfflineHandler);
     }
 
     public componentWillUnmount() {
@@ -160,6 +147,8 @@ class InfoBar extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+        window.removeEventListener(EventOnline, this.eventOnlineHandler);
+        window.removeEventListener(EventOffline, this.eventOfflineHandler);
     }
 
 
@@ -187,7 +176,8 @@ class InfoBar extends React.Component<IProps, IState> {
                         <div className="call-indicator" onClick={this.indicatorClickHandler}>
                             {i18n.t(isGroup && !activeCallId ? 'call.join_call' : 'call.call_started')}
                         </div> : <Tooltip title={i18n.t('call.call')}>
-                            <IconButton onClick={this.callMenuOpenHandler} disabled={online}><CallRounded/></IconButton>
+                            <IconButton onClick={this.callMenuOpenHandler}
+                                        disabled={!online}><CallRounded/></IconButton>
                         </Tooltip>}
                     </>}
                     <Tooltip
@@ -296,6 +286,22 @@ class InfoBar extends React.Component<IProps, IState> {
             const activeCallId = this.callService.getActiveCallId();
             this.setState({
                 activeCallId: activeCallId !== '0' ? activeCallId : null,
+            });
+        }
+    }
+
+    private eventOnlineHandler = () => {
+        if (!this.state.online) {
+            this.setState({
+                online: true,
+            });
+        }
+    }
+
+    private eventOfflineHandler = () => {
+        if (!this.state.online) {
+            this.setState({
+                online: true,
             });
         }
     }

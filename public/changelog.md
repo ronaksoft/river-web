@@ -1,3 +1,6 @@
+## 1.0.60
+* Known bugs fixed
+
 ## 1.0.59
 * Voice message bug fixed
 * UI bugs fixed
