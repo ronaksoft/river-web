@@ -1,3 +1,6 @@
+## 1.0.61
+* Screen share updated
+
 ## 1.0.60
 * Known bugs fixed
 

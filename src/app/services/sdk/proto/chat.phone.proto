@@ -21,6 +21,7 @@ message PhoneRequestCall {
     bool Initiator = 3;
     repeated PhoneParticipantSDP Participants = 4;
     int64 CallID = 5 [jstype = JS_STRING];
+    CallDeviceType DeviceType = 6;
 }
 
 // PhoneAcceptCall
@@ -30,6 +31,7 @@ message PhoneAcceptCall {
     InputPeer Peer = 1;
     int64 CallID = 2 [jstype = JS_STRING];
     repeated PhoneParticipantSDP Participants = 3;
+    CallDeviceType DeviceType = 4;
 }
 
 enum DiscardReason {
@@ -47,6 +49,20 @@ enum DiscardReason {
     DiscardReasonReserved7 = 11;
     DiscardReasonReserved8 = 12;
     DiscardReasonReserved9 = 13;
+}
+
+enum CallDeviceType {
+    CallDeviceUnknown = 0;
+    CallDeviceDesktop = 1;
+    CallDeviceWeb = 2;
+    CallDeviceIOS = 3;
+    CallDeviceAndroid = 4;
+    CallDeviceReserved1 = 5;
+    CallDeviceReserved2 = 6;
+    CallDeviceReserved3 = 7;
+    CallDeviceReserved4 = 8;
+    CallDeviceReserved5 = 9;
+    CallDeviceReserved6 = 10;
 }
 
 // PhoneDiscardCall
@@ -240,6 +256,7 @@ message PhoneActionCallEmpty {
 message PhoneActionAccepted {
     string SDP = 1;
     string Type = 2;
+    CallDeviceType DeviceType = 3;
 }
 
 // PhoneActionRequested
@@ -247,6 +264,7 @@ message PhoneActionRequested {
     string SDP = 1;
     string Type = 2;
     repeated PhoneParticipant Participants = 3;
+    CallDeviceType DeviceType = 4;
 }
 
 // PhoneActionCallWaiting
@@ -299,6 +317,7 @@ message PhoneActionAdminUpdated {
 // PhoneActionScreenShare
 message PhoneActionScreenShare {
     bool Enable = 1;
+    repeated string TrackIDs = 2;
 }
 
 // PhoneActionMediaSettingsUpdated

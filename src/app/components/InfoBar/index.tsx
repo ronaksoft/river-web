@@ -18,6 +18,7 @@ import {
     KeyboardArrowLeftRounded,
     SearchRounded,
     VideocamRounded,
+    AddIcCallRounded,
 } from "@material-ui/icons";
 import StatusBar from "../StatusBar";
 import {IconButton, ListItemIcon, Menu, MenuItem, Tooltip} from "@material-ui/core";
@@ -97,6 +98,11 @@ class InfoBar extends React.Component<IProps, IState> {
             title: i18n.t('call.video_call'),
             whenActive: false,
         }, {
+            cmd: 'call_join',
+            icon: <AddIcCallRounded/>,
+            title: i18n.t('call.join_call'),
+            whenActive: true,
+        }, {
             cmd: 'call_end',
             icon: <CallEndRounded/>,
             title: i18n.t('call.hangup'),
@@ -174,7 +180,7 @@ class InfoBar extends React.Component<IProps, IState> {
                 <div className="buttons">
                     {withCall && !disable && <>{callStarted ?
                         <div className="call-indicator" onClick={this.indicatorClickHandler}>
-                            {i18n.t(isGroup && !activeCallId ? 'call.join_call' : 'call.call_started')}
+                            {i18n.t('call.call_started')}
                         </div> : <Tooltip title={i18n.t('call.call')}>
                             <IconButton onClick={this.callMenuOpenHandler}
                                         disabled={!online}><CallRounded/></IconButton>
@@ -213,7 +219,7 @@ class InfoBar extends React.Component<IProps, IState> {
                     }}
                 >
                     {this.menuItems.map((item, index) => {
-                        if (item.whenActive === (callStarted || false)) {
+                        if (item.whenActive === (callStarted || false) || (item.cmd === 'call_join' && isGroup && !activeCallId && callStarted)) {
                             return (<MenuItem key={index} onClick={this.callCmdHandler(item.cmd)}
                                               className="context-item">
                                 <ListItemIcon className="context-icon">{item.icon}</ListItemIcon>
@@ -274,7 +280,7 @@ class InfoBar extends React.Component<IProps, IState> {
     private indicatorClickHandler = (e: any) => {
         if (this.state.peer && this.state.online) {
             if (this.state.peer.getType() === PeerType.PEERGROUP && !this.state.activeCallId) {
-                this.props.onAction('join_call')(e);
+                this.callMenuOpenHandler(e);
             } else if (this.state.peer.getType() === PeerType.PEERUSER) {
                 this.callMenuOpenHandler(e);
             }

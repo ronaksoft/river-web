@@ -48,9 +48,11 @@ interface IProps {
 }
 
 interface IState {
+    activeScreenShare: boolean;
     allConnected: boolean;
     currentParticipant: ICallParticipant | undefined;
     drawerOpen: boolean;
+    loading: boolean;
     mediaDevice: IMediaDevice;
     mediaSettings: IMediaSettings;
     moreAnchorPos: any;
@@ -72,9 +74,11 @@ class CallSettings extends React.Component<IProps, IState> {
         this.callService = CallService.getInstance();
 
         this.state = {
+            activeScreenShare: false,
             allConnected: false,
             currentParticipant: undefined,
             drawerOpen: false,
+            loading: false,
             mediaDevice: {
                 screenShare: false,
                 speaker: true,
@@ -97,6 +101,7 @@ class CallSettings extends React.Component<IProps, IState> {
         });
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.AllConnected, this.eventAllConnectedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventShareMediaStreamUpdateHandler));
         getMediaInputs().then((mediaDevice) => {
             this.setState({
                 mediaDevice,
@@ -113,22 +118,6 @@ class CallSettings extends React.Component<IProps, IState> {
                 canceller();
             }
         });
-    }
-
-    public setMediaSettings({audio, screenShare, video}: { audio: boolean, screenShare: boolean, video: boolean }) {
-        this.setState({
-            mediaSettings: {
-                audio,
-                screenShare,
-                video,
-            },
-        });
-        if (this.vad) {
-            this.vad.setActive(!audio);
-        }
-        this.callService.toggleAudio(audio);
-        this.callService.toggleVideo(video);
-        this.callService.toggleVideo(video);
     }
 
     public startAudioAnalyzer() {
@@ -148,7 +137,7 @@ class CallSettings extends React.Component<IProps, IState> {
 
     public render() {
         const {group} = this.props;
-        const {mediaSettings, muteNotice, drawerOpen, moreAnchorPos, mediaDevice, allConnected} = this.state;
+        const {mediaSettings, muteNotice, drawerOpen, moreAnchorPos, mediaDevice, allConnected, activeScreenShare} = this.state;
         return <>
             {group && <ClickAwayListener onClickAway={this.drawerCloseHandler}>
                 <div className={'call-settings-drawer' + (drawerOpen ? ' drawer-open' : '')}
@@ -167,14 +156,15 @@ class CallSettings extends React.Component<IProps, IState> {
             </ClickAwayListener>}
             <div className="call-settings">
                 {mediaDevice.video &&
-                <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('video')}>
+                <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('video')}
+                            disabled={mediaSettings.screenShare || activeScreenShare}>
                     {mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
                 </IconButton>}
                 {mediaDevice.video &&
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('audio')}>
                     {mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
                 </IconButton>}
-                {allConnected && mediaDevice.screenShare  &&
+                {allConnected && mediaDevice.screenShare &&
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('screenShare')}>
                     {mediaSettings.screenShare ? <StopScreenShareRounded/> : <ScreenShareRounded/>}
                 </IconButton>}
@@ -203,24 +193,43 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private mediaSettingsChangeHandler = (key: 'audio' | 'video' | 'screenShare') => (e: any) => {
-        const {mediaSettings} = this.state;
-        mediaSettings[key] = !mediaSettings[key];
+        const {mediaSettings, loading} = this.state;
+        if (loading) {
+            return;
+        }
         this.setState({
-            mediaSettings,
+            loading: true,
         });
-        if (key === 'audio') {
-            this.callService.toggleAudio(mediaSettings[key]);
-            if (this.vad) {
-                this.vad.setActive(!mediaSettings[key]);
+        const enable = !mediaSettings[key];
+        const promise = new Promise((resolve, reject) => {
+            if (key === 'audio') {
+                this.callService.toggleAudio(enable);
+                if (this.vad) {
+                    this.vad.setActive(!enable);
+                }
+                resolve();
+            } else if (key === 'video') {
+                this.callService.toggleVideo(enable).then(resolve).catch(reject);
+            } else if (key === 'screenShare') {
+                this.callService.toggleScreenShare(enable).then(resolve).catch(reject);
+            } else {
+                resolve();
             }
-        } else if (key === 'video') {
-            this.callService.toggleVideo(mediaSettings[key]);
-        } else if (key === 'screenShare') {
-            this.callService.toggleScreenShare(mediaSettings[key]);
-        }
-        if (this.props.onMediaSettingsChange) {
-            this.props.onMediaSettingsChange(clone(mediaSettings));
-        }
+        });
+        promise.then(() => {
+            mediaSettings[key] = !mediaSettings[key];
+            this.setState({
+                loading: false,
+                mediaSettings,
+            });
+            if (this.props.onMediaSettingsChange) {
+                this.props.onMediaSettingsChange(clone(mediaSettings));
+            }
+        }).catch(() => {
+            this.setState({
+                loading: false,
+            });
+        });
     }
 
     private eventLocalStreamUpdatedHandler = () => {
@@ -237,6 +246,18 @@ class CallSettings extends React.Component<IProps, IState> {
         if (!this.state.allConnected) {
             this.setState({
                 allConnected: true,
+            });
+        }
+    }
+
+    private eventShareMediaStreamUpdateHandler = ({stream}: { connId: number, stream: MediaStream | undefined, userId: string }) => {
+        if (stream && !this.state.activeScreenShare) {
+            this.setState({
+                activeScreenShare: true,
+            });
+        } else if (!stream && this.state.activeScreenShare) {
+            this.setState({
+                activeScreenShare: false,
             });
         }
     }

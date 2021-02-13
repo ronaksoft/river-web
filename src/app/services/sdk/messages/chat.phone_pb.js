@@ -17,6 +17,7 @@ var global = Function('return this')();
 
 var core_types_pb = require('./core.types_pb.js');
 goog.object.extend(proto, core_types_pb);
+goog.exportSymbol('proto.msg.CallDeviceType', null, global);
 goog.exportSymbol('proto.msg.DiscardReason', null, global);
 goog.exportSymbol('proto.msg.IceServer', null, global);
 goog.exportSymbol('proto.msg.PhoneAcceptCall', null, global);
@@ -696,7 +697,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.PhoneActionScreenShare = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.PhoneActionScreenShare.repeatedFields_, null);
 };
 goog.inherits(proto.msg.PhoneActionScreenShare, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -985,7 +986,8 @@ proto.msg.PhoneRequestCall.toObject = function(includeInstance, msg) {
     initiator: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     proto.msg.PhoneParticipantSDP.toObject, includeInstance),
-    callid: jspb.Message.getFieldWithDefault(msg, 5, "0")
+    callid: jspb.Message.getFieldWithDefault(msg, 5, "0"),
+    devicetype: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -1043,6 +1045,10 @@ proto.msg.PhoneRequestCall.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setCallid(value);
+      break;
+    case 6:
+      var value = /** @type {!proto.msg.CallDeviceType} */ (reader.readEnum());
+      msg.setDevicetype(value);
       break;
     default:
       reader.skipField();
@@ -1107,6 +1113,13 @@ proto.msg.PhoneRequestCall.serializeBinaryToWriter = function(message, writer) {
   if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       5,
+      f
+    );
+  }
+  f = message.getDevicetype();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      6,
       f
     );
   }
@@ -1242,6 +1255,24 @@ proto.msg.PhoneRequestCall.prototype.setCallid = function(value) {
 };
 
 
+/**
+ * optional CallDeviceType DeviceType = 6;
+ * @return {!proto.msg.CallDeviceType}
+ */
+proto.msg.PhoneRequestCall.prototype.getDevicetype = function() {
+  return /** @type {!proto.msg.CallDeviceType} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {!proto.msg.CallDeviceType} value
+ * @return {!proto.msg.PhoneRequestCall} returns this
+ */
+proto.msg.PhoneRequestCall.prototype.setDevicetype = function(value) {
+  return jspb.Message.setProto3EnumField(this, 6, value);
+};
+
+
 
 /**
  * List of repeated fields within this message type.
@@ -1284,7 +1315,8 @@ proto.msg.PhoneAcceptCall.toObject = function(includeInstance, msg) {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
     callid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
-    proto.msg.PhoneParticipantSDP.toObject, includeInstance)
+    proto.msg.PhoneParticipantSDP.toObject, includeInstance),
+    devicetype: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -1334,6 +1366,10 @@ proto.msg.PhoneAcceptCall.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.PhoneParticipantSDP;
       reader.readMessage(value,proto.msg.PhoneParticipantSDP.deserializeBinaryFromReader);
       msg.addParticipants(value);
+      break;
+    case 4:
+      var value = /** @type {!proto.msg.CallDeviceType} */ (reader.readEnum());
+      msg.setDevicetype(value);
       break;
     default:
       reader.skipField();
@@ -1385,6 +1421,13 @@ proto.msg.PhoneAcceptCall.serializeBinaryToWriter = function(message, writer) {
       3,
       f,
       proto.msg.PhoneParticipantSDP.serializeBinaryToWriter
+    );
+  }
+  f = message.getDevicetype();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      4,
+      f
     );
   }
 };
@@ -1480,6 +1523,24 @@ proto.msg.PhoneAcceptCall.prototype.addParticipants = function(opt_value, opt_in
  */
 proto.msg.PhoneAcceptCall.prototype.clearParticipantsList = function() {
   return this.setParticipantsList([]);
+};
+
+
+/**
+ * optional CallDeviceType DeviceType = 4;
+ * @return {!proto.msg.CallDeviceType}
+ */
+proto.msg.PhoneAcceptCall.prototype.getDevicetype = function() {
+  return /** @type {!proto.msg.CallDeviceType} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {!proto.msg.CallDeviceType} value
+ * @return {!proto.msg.PhoneAcceptCall} returns this
+ */
+proto.msg.PhoneAcceptCall.prototype.setDevicetype = function(value) {
+  return jspb.Message.setProto3EnumField(this, 4, value);
 };
 
 
@@ -5496,7 +5557,8 @@ proto.msg.PhoneActionAccepted.prototype.toObject = function(opt_includeInstance)
 proto.msg.PhoneActionAccepted.toObject = function(includeInstance, msg) {
   var f, obj = {
     sdp: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 2, "")
+    type: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    devicetype: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -5541,6 +5603,10 @@ proto.msg.PhoneActionAccepted.deserializeBinaryFromReader = function(msg, reader
       var value = /** @type {string} */ (reader.readString());
       msg.setType(value);
       break;
+    case 3:
+      var value = /** @type {!proto.msg.CallDeviceType} */ (reader.readEnum());
+      msg.setDevicetype(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -5584,6 +5650,13 @@ proto.msg.PhoneActionAccepted.serializeBinaryToWriter = function(message, writer
       f
     );
   }
+  f = message.getDevicetype();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -5620,6 +5693,24 @@ proto.msg.PhoneActionAccepted.prototype.getType = function() {
  */
 proto.msg.PhoneActionAccepted.prototype.setType = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional CallDeviceType DeviceType = 3;
+ * @return {!proto.msg.CallDeviceType}
+ */
+proto.msg.PhoneActionAccepted.prototype.getDevicetype = function() {
+  return /** @type {!proto.msg.CallDeviceType} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {!proto.msg.CallDeviceType} value
+ * @return {!proto.msg.PhoneActionAccepted} returns this
+ */
+proto.msg.PhoneActionAccepted.prototype.setDevicetype = function(value) {
+  return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
 
@@ -5665,7 +5756,8 @@ proto.msg.PhoneActionRequested.toObject = function(includeInstance, msg) {
     sdp: jspb.Message.getFieldWithDefault(msg, 1, ""),
     type: jspb.Message.getFieldWithDefault(msg, 2, ""),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
-    proto.msg.PhoneParticipant.toObject, includeInstance)
+    proto.msg.PhoneParticipant.toObject, includeInstance),
+    devicetype: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -5714,6 +5806,10 @@ proto.msg.PhoneActionRequested.deserializeBinaryFromReader = function(msg, reade
       var value = new proto.msg.PhoneParticipant;
       reader.readMessage(value,proto.msg.PhoneParticipant.deserializeBinaryFromReader);
       msg.addParticipants(value);
+      break;
+    case 4:
+      var value = /** @type {!proto.msg.CallDeviceType} */ (reader.readEnum());
+      msg.setDevicetype(value);
       break;
     default:
       reader.skipField();
@@ -5764,6 +5860,13 @@ proto.msg.PhoneActionRequested.serializeBinaryToWriter = function(message, write
       3,
       f,
       proto.msg.PhoneParticipant.serializeBinaryToWriter
+    );
+  }
+  f = message.getDevicetype();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      4,
+      f
     );
   }
 };
@@ -5840,6 +5943,24 @@ proto.msg.PhoneActionRequested.prototype.addParticipants = function(opt_value, o
  */
 proto.msg.PhoneActionRequested.prototype.clearParticipantsList = function() {
   return this.setParticipantsList([]);
+};
+
+
+/**
+ * optional CallDeviceType DeviceType = 4;
+ * @return {!proto.msg.CallDeviceType}
+ */
+proto.msg.PhoneActionRequested.prototype.getDevicetype = function() {
+  return /** @type {!proto.msg.CallDeviceType} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {!proto.msg.CallDeviceType} value
+ * @return {!proto.msg.PhoneActionRequested} returns this
+ */
+proto.msg.PhoneActionRequested.prototype.setDevicetype = function(value) {
+  return jspb.Message.setProto3EnumField(this, 4, value);
 };
 
 
@@ -7181,6 +7302,13 @@ proto.msg.PhoneActionAdminUpdated.prototype.setAdmin = function(value) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.PhoneActionScreenShare.repeatedFields_ = [2];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -7212,7 +7340,8 @@ proto.msg.PhoneActionScreenShare.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.PhoneActionScreenShare.toObject = function(includeInstance, msg) {
   var f, obj = {
-    enable: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
+    enable: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    trackidsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7253,6 +7382,10 @@ proto.msg.PhoneActionScreenShare.deserializeBinaryFromReader = function(msg, rea
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setEnable(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addTrackids(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7289,6 +7422,13 @@ proto.msg.PhoneActionScreenShare.serializeBinaryToWriter = function(message, wri
       f
     );
   }
+  f = message.getTrackidsList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -7307,6 +7447,43 @@ proto.msg.PhoneActionScreenShare.prototype.getEnable = function() {
  */
 proto.msg.PhoneActionScreenShare.prototype.setEnable = function(value) {
   return jspb.Message.setProto3BooleanField(this, 1, value);
+};
+
+
+/**
+ * repeated string TrackIDs = 2;
+ * @return {!Array<string>}
+ */
+proto.msg.PhoneActionScreenShare.prototype.getTrackidsList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.msg.PhoneActionScreenShare} returns this
+ */
+proto.msg.PhoneActionScreenShare.prototype.setTrackidsList = function(value) {
+  return jspb.Message.setField(this, 2, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.msg.PhoneActionScreenShare} returns this
+ */
+proto.msg.PhoneActionScreenShare.prototype.addTrackids = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.PhoneActionScreenShare} returns this
+ */
+proto.msg.PhoneActionScreenShare.prototype.clearTrackidsList = function() {
+  return this.setTrackidsList([]);
 };
 
 
@@ -7968,6 +8145,23 @@ proto.msg.DiscardReason = {
   DISCARDREASONRESERVED7: 11,
   DISCARDREASONRESERVED8: 12,
   DISCARDREASONRESERVED9: 13
+};
+
+/**
+ * @enum {number}
+ */
+proto.msg.CallDeviceType = {
+  CALLDEVICEUNKNOWN: 0,
+  CALLDEVICEDESKTOP: 1,
+  CALLDEVICEWEB: 2,
+  CALLDEVICEIOS: 3,
+  CALLDEVICEANDROID: 4,
+  CALLDEVICERESERVED1: 5,
+  CALLDEVICERESERVED2: 6,
+  CALLDEVICERESERVED3: 7,
+  CALLDEVICERESERVED4: 8,
+  CALLDEVICERESERVED5: 9,
+  CALLDEVICERESERVED6: 10
 };
 
 /**

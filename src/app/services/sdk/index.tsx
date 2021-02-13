@@ -1315,7 +1315,7 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneUpdateAdmin, data.serializeBinary(), true);
     }
 
-    public callUpdate(inputPeer: InputPeer, id: string, participants: InputUser[], action: PhoneCallAction, actionData: Uint8Array): Promise<Bool.AsObject> {
+    public callUpdate(inputPeer: InputPeer, id: string, participants: InputUser[], action: PhoneCallAction, actionData: Uint8Array, instant?: boolean): Promise<Bool.AsObject> {
         const data = new PhoneUpdateCall();
         data.setPeer(inputPeer);
         data.setCallid(id);
@@ -1323,7 +1323,7 @@ export default class APIManager {
         data.setAction(action);
         data.setActiondata(actionData);
         this.logVerbose(data);
-        return this.server.send(C_MSG.PhoneUpdateCall, data.serializeBinary(), false);
+        return this.server.send(C_MSG.PhoneUpdateCall, data.serializeBinary(), instant || false);
     }
 
     public callRate(inputPeer: InputPeer, id: string, rate: number, reasonType?: PhoneCallRateReason, reasonData?: Uint8Array): Promise<Bool.AsObject> {

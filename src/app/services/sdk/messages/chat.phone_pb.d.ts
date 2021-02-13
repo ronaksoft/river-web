@@ -47,6 +47,9 @@ export class PhoneRequestCall extends jspb.Message {
   getCallid(): string;
   setCallid(value: string): void;
 
+  getDevicetype(): CallDeviceType;
+  setDevicetype(value: CallDeviceType): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneRequestCall.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneRequestCall): PhoneRequestCall.AsObject;
@@ -64,6 +67,7 @@ export namespace PhoneRequestCall {
     initiator: boolean,
     participantsList: Array<PhoneParticipantSDP.AsObject>,
     callid: string,
+    devicetype: CallDeviceType,
   }
 }
 
@@ -81,6 +85,9 @@ export class PhoneAcceptCall extends jspb.Message {
   setParticipantsList(value: Array<PhoneParticipantSDP>): void;
   addParticipants(value?: PhoneParticipantSDP, index?: number): PhoneParticipantSDP;
 
+  getDevicetype(): CallDeviceType;
+  setDevicetype(value: CallDeviceType): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneAcceptCall.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneAcceptCall): PhoneAcceptCall.AsObject;
@@ -96,6 +103,7 @@ export namespace PhoneAcceptCall {
     peer?: core_types_pb.InputPeer.AsObject,
     callid: string,
     participantsList: Array<PhoneParticipantSDP.AsObject>,
+    devicetype: CallDeviceType,
   }
 }
 
@@ -656,6 +664,9 @@ export class PhoneActionAccepted extends jspb.Message {
   getType(): string;
   setType(value: string): void;
 
+  getDevicetype(): CallDeviceType;
+  setDevicetype(value: CallDeviceType): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionAccepted.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneActionAccepted): PhoneActionAccepted.AsObject;
@@ -670,6 +681,7 @@ export namespace PhoneActionAccepted {
   export type AsObject = {
     sdp: string,
     type: string,
+    devicetype: CallDeviceType,
   }
 }
 
@@ -684,6 +696,9 @@ export class PhoneActionRequested extends jspb.Message {
   getParticipantsList(): Array<PhoneParticipant>;
   setParticipantsList(value: Array<PhoneParticipant>): void;
   addParticipants(value?: PhoneParticipant, index?: number): PhoneParticipant;
+
+  getDevicetype(): CallDeviceType;
+  setDevicetype(value: CallDeviceType): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionRequested.AsObject;
@@ -700,6 +715,7 @@ export namespace PhoneActionRequested {
     sdp: string,
     type: string,
     participantsList: Array<PhoneParticipant.AsObject>,
+    devicetype: CallDeviceType,
   }
 }
 
@@ -901,6 +917,11 @@ export class PhoneActionScreenShare extends jspb.Message {
   getEnable(): boolean;
   setEnable(value: boolean): void;
 
+  clearTrackidsList(): void;
+  getTrackidsList(): Array<string>;
+  setTrackidsList(value: Array<string>): void;
+  addTrackids(value: string, index?: number): string;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionScreenShare.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneActionScreenShare): PhoneActionScreenShare.AsObject;
@@ -914,6 +935,7 @@ export class PhoneActionScreenShare extends jspb.Message {
 export namespace PhoneActionScreenShare {
   export type AsObject = {
     enable: boolean,
+    trackidsList: Array<string>,
   }
 }
 
@@ -1028,6 +1050,20 @@ export enum DiscardReason {
   DISCARDREASONRESERVED7 = 11,
   DISCARDREASONRESERVED8 = 12,
   DISCARDREASONRESERVED9 = 13,
+}
+
+export enum CallDeviceType {
+  CALLDEVICEUNKNOWN = 0,
+  CALLDEVICEDESKTOP = 1,
+  CALLDEVICEWEB = 2,
+  CALLDEVICEIOS = 3,
+  CALLDEVICEANDROID = 4,
+  CALLDEVICERESERVED1 = 5,
+  CALLDEVICERESERVED2 = 6,
+  CALLDEVICERESERVED3 = 7,
+  CALLDEVICERESERVED4 = 8,
+  CALLDEVICERESERVED5 = 9,
+  CALLDEVICERESERVED6 = 10,
 }
 
 export enum PhoneCallRateReason {

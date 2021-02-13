@@ -858,7 +858,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 break;
             case 'call_end':
-            case 'join_call':
+            case 'call_join':
                 const dialog = this.getDialogByPeerName(this.selectedPeerName);
                 if (dialog && dialog.activecallid && this.peer && this.callService) {
                     if (cmd === 'call_end') {
