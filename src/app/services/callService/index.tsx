@@ -48,6 +48,7 @@ export const C_CALL_EVENT = {
     CallRejected: 0x04,
     CallRequested: 0x01,
     CallTimeout: 0x07,
+    ConnectionStateChanged: 0x13,
     LocalStreamUpdated: 0x06,
     MediaSettingsUpdated: 0x05,
     ParticipantAdded: 0x0b,
@@ -92,6 +93,7 @@ interface IBroadcastItem {
 interface ICallInfo {
     acceptedParticipantIds: string[]
     acceptedParticipants: number[];
+    allConnected: boolean;
     dialed: boolean;
     mediaSettings: IMediaSettings;
     participantMap: { [key: string]: number };
@@ -208,6 +210,7 @@ export default class CallService {
     private screenShareStream: MediaStream | undefined;
     private peerConnections: { [key: number]: IConnection } = {};
     private offerOptions: RTCOfferOptions = {
+        iceRestart: true,
         offerToReceiveAudio: true,
         offerToReceiveVideo: true,
         voiceActivityDetection: true,
@@ -904,6 +907,7 @@ export default class CallService {
         this.callInfo[callId] = {
             acceptedParticipantIds: [],
             acceptedParticipants: [],
+            allConnected: false,
             dialed: false,
             mediaSettings: mediaState ? mediaState : {audio: true, screenShare: false, video: true},
             participantMap: callParticipantMap,
@@ -934,6 +938,7 @@ export default class CallService {
                 this.callInfo[callId] = {
                     acceptedParticipantIds: [],
                     acceptedParticipants: [],
+                    allConnected: false,
                     dialed: false,
                     mediaSettings: mediaState ? mediaState : {audio: true, screenShare: false, video: true},
                     participantMap: res.participantMap,
@@ -977,6 +982,7 @@ export default class CallService {
         this.callInfo[data.callid || '0'] = {
             acceptedParticipantIds: [],
             acceptedParticipants: [],
+            allConnected: false,
             dialed: false,
             mediaSettings: mediaState ? mediaState : {audio: true, screenShare: false, video: true},
             participantMap: callParticipantMap,
@@ -1121,7 +1127,10 @@ export default class CallService {
                 });
 
                 pc.addEventListener('iceconnectionstatechange', () => {
-                    window.console.log('[webrtc] iceconnectionstatechange, connId:', connId, pc.iceConnectionState, pc.connectionState);
+                    window.console.log('[webrtc] iceconnectionstatechange, connId:', connId, pc.iceConnectionState);
+                    this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: pc.iceConnectionState});
+                    this.checkAllConnected();
+                    this.checkDisconnection(connId, pc.iceConnectionState);
                 });
 
                 pc.addEventListener('icecandidateerror', (e) => {
@@ -1131,12 +1140,6 @@ export default class CallService {
                 pc.addEventListener('signalingstatechange', () => {
                     if (pc.signalingState === 'closed') {
                         window.console.log('[webrtc] signalingstatechange, connId:', connId, pc.signalingState);
-                    }
-                });
-
-                pc.addEventListener('connectionstatechange', () => {
-                    if (pc.connectionState === 'connected') {
-                        this.checkAllConnected();
                     }
                 });
 
@@ -1169,9 +1172,13 @@ export default class CallService {
                         } else {
                             conn.streams = [];
                         }
-                        conn.streams.push(...e.streams);
-                        window.console.log(conn.streams);
-                        window.console.log('[webrtc] stream, connId:', connId, ' streams', e.streams.map((o) => `${o.getVideoTracks().length > 0 ? `video (${o.getVideoTracks().length})` : ' '} ${o.getAudioTracks().length > 0 ? `audio (${o.getAudioTracks().length})` : ''}`).join(', '));
+                        window.console.log('streams', e.streams.length);
+                        if (conn.streams.length === 0 || (e.streams.length > 0 && conn.streams.length > 0 && !conn.streams[0].getTracks().some(o => o.id === e.streams[0].getTracks()[0].id))) {
+                            window.console.log('added');
+                            conn.streams.push(...e.streams);
+                        }
+                        window.console.log('[webrtc] event stream, connId:', connId, e.streams.map(o => o.getTracks()));
+                        window.console.log('[webrtc] stream, connId:', connId, ' streams', conn.streams.map((o) => `${o.getVideoTracks().length > 0 ? `video (${o.getVideoTracks().length})` : ' '} ${o.getAudioTracks().length > 0 ? `audio (${o.getAudioTracks().length})` : ''}`).join(', '));
                         if (conn.streams.length === 1) {
                             this.callHandlers(C_CALL_EVENT.StreamUpdated, {connId, stream: conn.streams[0]});
                         } else if (conn.streams.length === 2) {
@@ -1218,14 +1225,28 @@ export default class CallService {
     }
 
     private checkAllConnected() {
+        if (!this.activeCallId || !this.callInfo.hasOwnProperty(this.activeCallId)) {
+            return;
+        }
+        if (this.callInfo[this.activeCallId].allConnected) {
+            return;
+        }
         for (const pc of Object.values(this.peerConnections)) {
-            if (pc.connection.connectionState !== 'connected') {
+            window.console.log('[webrtc] allConnected', pc.connection.iceConnectionState);
+            if (pc.connection.iceConnectionState !== 'connected') {
                 return;
             }
         }
+        this.callInfo[this.activeCallId].allConnected = true;
         setTimeout(() => {
             this.callHandlers(C_CALL_EVENT.AllConnected, null);
         }, 255);
+    }
+
+    private checkDisconnection(connId: number, state: RTCIceConnectionState) {
+        if (state === 'disconnected') {
+
+        }
     }
 
     private getInputUsers(id: string) {
