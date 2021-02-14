@@ -19,11 +19,15 @@ export const C_ELECTRON_SUBJECT = {
 };
 
 export const C_ELECTRON_CMD = {
+    AskForMediaAccess: 'askForMediaAccess',
     Download: 'download',
     Error: 'error',
     GetLoadUrl: 'getLoadUrl',
+    GetScreenCaptureList: 'getScreenCaptureList',
+    GetVersion: 'getVersion',
     PreviewFile: 'previewFile',
     RevealFile: 'revealFile',
+    ScreenCapturePermission: 'screenCapturePermission',
     SetBadgeCounter: 'setBadgeCounter',
     SetLoadUrl: 'setLoadUrl',
     ToggleMenuBar: 'toggleMenuBar',
@@ -39,6 +43,11 @@ export default class ElectronService {
     public static isElectron() {
         // @ts-ignore
         return window.isElectron || false;
+    }
+
+    public static isNewElectron() {
+        // @ts-ignore
+        return window.isNewElectron || false;
     }
 
     public static electronVersion() {
@@ -162,6 +171,28 @@ export default class ElectronService {
         return this.send(C_ELECTRON_CMD.SetLoadUrl, {
             url,
         });
+    }
+
+    /* Ask for media permission */
+    public askForMediaAccess(deviceType: 'microphone' | 'camera' | 'screen') {
+        return this.send(C_ELECTRON_CMD.AskForMediaAccess, {
+            deviceType,
+        });
+    }
+
+    /* Screen Capture Permission */
+    public screenCapturePermission() {
+        return this.send(C_ELECTRON_CMD.ScreenCapturePermission, {});
+    }
+
+    /* Get Screen Capture List */
+    public getScreenCaptureList() {
+        return this.send(C_ELECTRON_CMD.GetScreenCaptureList, {});
+    }
+
+    /* Get Version */
+    public getVersion() {
+        return this.send(C_ELECTRON_CMD.GetVersion, {});
     }
 
     /* Call queue handler */

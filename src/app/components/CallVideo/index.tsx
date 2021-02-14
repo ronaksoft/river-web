@@ -15,11 +15,13 @@ import UserAvatar from "../UserAvatar";
 import i18n from "../../services/i18n";
 import {currentUserId} from "../../services/sdk";
 import UserName from "../UserName";
+import {CallDeviceType} from "../../services/sdk/messages/chat.phone_pb";
 
 import './style.scss';
 
 export interface IRemoteConnection {
     connId: number;
+    deviceType: CallDeviceType;
     media?: CallVideoPlaceholder;
     status: number;
     stream: MediaStream | undefined;
@@ -123,12 +125,15 @@ class CallVideo extends React.Component<IProps, IState> {
         }
     }
 
-    public setStatus(connId: number, status: number) {
+    public setStatus(connId: number, status: number, deviceType?: CallDeviceType) {
         const index = findIndex(this.videoRemoteRefs, {connId});
         if (index > -1) {
             const remote = this.videoRemoteRefs[index];
-            if (remote.status !== status) {
+            if (remote.status !== status || (deviceType !== undefined && remote.deviceType !== deviceType)) {
                 remote.status = status;
+                if (deviceType !== undefined) {
+                    remote.deviceType = deviceType;
+                }
                 this.forceUpdate();
             }
         }
@@ -201,7 +206,7 @@ class CallVideo extends React.Component<IProps, IState> {
                          onContextMenu={this.props.onContextMenu(item.userId)}>
                 <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
                                       srcObject={item.stream} playsInline={true}
-                                      autoPlay={true} userId={item.userId}/>
+                                      autoPlay={true} userId={item.userId} deviceType={item.deviceType}/>
             </div>);
         });
     }
@@ -222,6 +227,7 @@ class CallVideo extends React.Component<IProps, IState> {
         if (addedVideos.length > 0) {
             this.videoRemoteRefs.push(...addedVideos.map(participant => ({
                 connId: participant.connectionid || 0,
+                deviceType: participant.deviceType,
                 media: undefined,
                 status: participant.started ? 2 : 0,
                 stream: undefined,

@@ -35,8 +35,10 @@ import {
     ContactsGetTopPeers,
     ContactsImport,
     ContactsImported,
-    ContactsMany, ContactsResetTopPeer,
-    ContactsSearch, ContactsTopPeers,
+    ContactsMany,
+    ContactsResetTopPeer,
+    ContactsSearch,
+    ContactsTopPeers,
     ContactsUnblock,
     TopPeerCategory
 } from './messages/contacts_pb';
@@ -46,17 +48,21 @@ import {
     FileLocation,
     Group,
     GroupFull,
-    GroupPhoto, InputDocument,
+    GroupPhoto,
+    InputDocument,
     InputFile,
     InputMediaType,
     InputPassword,
-    InputPeer, InputTeam,
+    InputPeer,
+    InputTeam,
     InputUser,
     Label,
     LabelsMany,
     MessageEntity,
     PeerNotifySettings,
-    PhoneContact, Ping, Pong,
+    PhoneContact,
+    Ping,
+    Pong,
     PrivacyKey,
     PrivacyRule,
     PushTokenProvider,
@@ -67,23 +73,28 @@ import {
 import {
     MessagesClearDraft,
     MessagesClearHistory,
-    MessagesDelete, MessagesDeleteReaction,
+    MessagesDelete,
+    MessagesDeleteReaction,
     MessagesDialogs,
     MessagesEdit,
     MessagesForward,
     MessagesGet,
     MessagesGetDialogs,
     MessagesGetHistory,
-    MessagesGetPinnedDialogs, MessagesGetReactionList,
-    MessagesMany, MessagesReactionList,
+    MessagesGetPinnedDialogs,
+    MessagesGetReactionList,
+    MessagesMany,
+    MessagesReactionList,
     MessagesReadContents,
     MessagesReadHistory,
     MessagesSaveDraft,
     MessagesSend,
-    MessagesSendMedia, MessagesSendReaction,
+    MessagesSendMedia,
+    MessagesSendReaction,
     MessagesSent,
     MessagesSetTyping,
-    MessagesToggleDialogPin, MessagesTogglePin
+    MessagesToggleDialogPin,
+    MessagesTogglePin
 } from './messages/chat.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/updates_pb';
 import {
@@ -93,7 +104,8 @@ import {
     AccountGetAuthorizations,
     AccountGetNotifySettings,
     AccountGetPassword,
-    AccountGetPrivacy, AccountGetTeams,
+    AccountGetPrivacy,
+    AccountGetTeams,
     AccountPassword,
     AccountPrivacyRules,
     AccountRecoverPassword,
@@ -106,7 +118,8 @@ import {
     AccountSetPrivacy,
     AccountUpdatePasswordSettings,
     AccountUpdatePhoto,
-    AccountUpdateProfile, AccountUpdateStatus,
+    AccountUpdateProfile,
+    AccountUpdateStatus,
     AccountUpdateUsername,
     AccountUploadPhoto,
     SecurityAnswer,
@@ -117,7 +130,9 @@ import {
     GroupsCreate,
     GroupsDeleteUser,
     GroupsEditTitle,
-    GroupsGetFull, GroupsGetReadHistoryStats, GroupsHistoryStats,
+    GroupsGetFull,
+    GroupsGetReadHistoryStats,
+    GroupsHistoryStats,
     GroupsRemovePhoto,
     GroupsToggleAdmins,
     GroupsUpdateAdmin,
@@ -149,7 +164,8 @@ import {
     BotCallbackAnswer,
     BotGetCallbackAnswer,
     BotGetInlineResults,
-    BotResults, BotSendInlineResults,
+    BotResults,
+    BotSendInlineResults,
     BotStart
 } from "./messages/chat.bot_pb";
 import {FileGetBySha256} from "./messages/files_pb";
@@ -158,7 +174,8 @@ import {DocumentAttribute} from "./messages/chat.messages.medias_pb";
 import FileManager from "./fileManager";
 import {
     TeamAddMember,
-    TeamDemote, TeamEdit,
+    TeamDemote,
+    TeamEdit,
     TeamListMembers,
     TeamMembers,
     TeamPromote,
@@ -166,23 +183,29 @@ import {
     TeamsMany
 } from "./messages/team_pb";
 import {
+    CallDeviceType,
     DiscardReason,
     PhoneAcceptCall,
     PhoneAddParticipant,
     PhoneCall,
     PhoneCallAction,
-    PhoneCallRateReason, PhoneCallsMany,
-    PhoneDiscardCall, PhoneGetHistory,
+    PhoneCallRateReason,
+    PhoneCallsMany,
+    PhoneDiscardCall,
+    PhoneGetHistory,
     PhoneInit,
-    PhoneInitCall, PhoneJoinCall,
+    PhoneInitCall,
+    PhoneJoinCall,
     PhoneParticipants,
     PhoneParticipantSDP,
     PhoneRateCall,
     PhoneRemoveParticipant,
-    PhoneRequestCall, PhoneUpdateAdmin,
+    PhoneRequestCall,
+    PhoneUpdateAdmin,
     PhoneUpdateCall
 } from "./messages/chat.phone_pb";
 import {debounce} from "lodash";
+import ElectronService from "../electron";
 
 export let currentUserId: string = '0';
 
@@ -1255,6 +1278,7 @@ export default class APIManager {
         if (callId) {
             data.setCallid(callId);
         }
+        data.setDevicetype(ElectronService.isElectron() ? CallDeviceType.CALLDEVICEDESKTOP : CallDeviceType.CALLDEVICEWEB);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), !batch);
     }
@@ -1264,6 +1288,7 @@ export default class APIManager {
         data.setPeer(inputPeer);
         data.setCallid(id);
         data.setParticipantsList(participants);
+        data.setDevicetype(ElectronService.isElectron() ? CallDeviceType.CALLDEVICEDESKTOP : CallDeviceType.CALLDEVICEWEB);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneAcceptCall, data.serializeBinary(), true);
     }

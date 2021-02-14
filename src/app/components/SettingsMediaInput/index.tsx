@@ -12,9 +12,10 @@ import {IconButton, MenuItem, Select} from "@material-ui/core";
 import {KeyboardBackspaceRounded} from "@material-ui/icons";
 import i18n from "../../services/i18n";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import VoiceActivityDetection from "../../services/vad";
+import ElectronService from "../../services/electron";
 
 import './style.scss';
-import VoiceActivityDetection from "../../services/vad";
 
 export const getDefaultAudio = (): (boolean | MediaTrackConstraintSet) => {
     const val = localStorage.getItem(C_LOCALSTORAGE.SettingsDefaultAudio);
@@ -36,6 +37,19 @@ export const getDefaultVideo = (): (boolean | MediaTrackConstraintSet) => {
     } else {
         return true;
     }
+};
+
+export const getElectronMediaAccess = (deviceType: 'microphone' | 'camera' | 'screen', err: Error) => {
+    if (!ElectronService.isElectron()) {
+        return;
+    }
+
+    if (err.message.indexOf('Could not start') === -1) {
+        return;
+    }
+
+    ElectronService.getInstance().askForMediaAccess(deviceType)
+    return;
 };
 
 interface IDevice {
@@ -261,6 +275,8 @@ class SettingsMediaInput extends React.Component<IProps, IState> {
                         showAudio: true,
                     });
                 });
+            }).catch((err) => {
+                getElectronMediaAccess('microphone', err);
             });
         } else if (name === 'selectedVideo') {
             const {selectedVideo} = this.state;
@@ -285,6 +301,8 @@ class SettingsMediaInput extends React.Component<IProps, IState> {
                 if (this.videoRef) {
                     this.videoRef.srcObject = stream;
                 }
+            }).catch((err) => {
+                getElectronMediaAccess('camera', err);
             });
         }
     }

@@ -1,14 +1,21 @@
 /* eslint-disable */
 const path = require('path');
-const {app, BrowserWindow, shell, ipcMain, Menu, systemPreferences, nativeTheme, screen} = require('electron');
+const {app, BrowserWindow, shell, ipcMain, Menu, systemPreferences, nativeTheme, screen, desktopCapturer} = require('electron');
 const isDev = require('electron-is-dev');
 const {download} = require('electron-dl');
 const contextMenu = require('electron-context-menu');
 const unusedFilename = require('unused-filename');
 const lodash = require('lodash');
 const fs = require('fs');
+const {
+    hasScreenCapturePermission,
+    hasPromptedForPermission,
+    openSystemPreferences,
+} = require('mac-screen-capture-permissions');
 const Store = require('electron-store');
 const store = new Store();
+
+const C_APP_VERSION = '0.31.0';
 
 const C_LOAD_URL = 'https://web.river.im';
 const C_LOAD_URL_KEY = 'load_url';
@@ -444,6 +451,80 @@ ipcMain.on('fnCall', (e, arg) => {
             setTimeout(() => {
                 app.relaunch();
             }, 500);
+            break;
+        case 'askForMediaAccess':
+            systemPreferences.askForMediaAccess(arg.data.deviceType).then((res) => {
+                callReact('fnCallback', {
+                    cmd: 'bool',
+                    reqId: arg.reqId,
+                    data: {
+                        bool: res,
+                    },
+                });
+            }).catch((err) => {
+                callReact('fnCallback', {
+                    cmd: 'error',
+                    reqId: arg.reqId,
+                    data: {
+                        error: err,
+                    },
+                });
+            });
+            break;
+        case 'screenCapturePermission':
+            if (hasPromptedForPermission()) {
+                if (systemPreferences.getMediaAccessStatus('screen') !== 'granted') {
+                    openSystemPreferences();
+                }
+            } else {
+                hasScreenCapturePermission();
+            }
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: true,
+                },
+            });
+            break;
+        case 'getScreenCaptureList':
+            desktopCapturer.getSources({
+                types: ['window', 'screen'],
+                thumbnailSize: {height: 320, width: 568},
+            }).then((list) => {
+                callReact('fnCallback', {
+                    cmd: 'screenCaptureList',
+                    reqId: arg.reqId,
+                    data: {
+                        list: list.map((item) => {
+                            return {
+                                appIcon: item.appIcon ? item.appIcon.toDataURL() : undefined,
+                                displayId: item.display_id,
+                                id: item.id,
+                                name: item.name,
+                                thumbnail: item.thumbnail ? item.thumbnail.toDataURL() : undefined,
+                            };
+                        }),
+                    },
+                });
+            }).catch((err) => {
+                callReact('fnCallback', {
+                    cmd: 'error',
+                    reqId: arg.reqId,
+                    data: {
+                        error: err,
+                    },
+                });
+            });
+            break;
+        case 'getVersion':
+            callReact('fnCallback', {
+                cmd: 'version',
+                reqId: arg.reqId,
+                data: {
+                    version: C_APP_VERSION,
+                },
+            });
             break;
     }
 });

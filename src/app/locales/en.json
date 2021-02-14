@@ -578,6 +578,7 @@
     "missed_call": "Missed call",
     "in_progress": "In progress",
     "privacy_error": "You cannot call this user because of their privacy settings.",
-    "streaming_from": "Streaming from "
+    "streaming_from": "Streaming from ",
+    "screen_list": "Screen List"
   }
 }

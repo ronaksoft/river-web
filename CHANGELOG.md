@@ -1,3 +1,9 @@
+## 1.0.62
+* Electron screen capture fully customized
+* Call UI/UX improvements
+* Many other improvements
+* Minor bugs fixed
+
 ## 1.0.61
 * Screen share updated
 

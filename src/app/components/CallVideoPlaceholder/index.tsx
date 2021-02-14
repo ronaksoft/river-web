@@ -11,12 +11,22 @@ import * as React from 'react';
 // @ts-ignore
 import glur from 'glur';
 import CallVideoAugment from "../CallVideoAugment";
+import {CallDeviceType} from "../../services/sdk/messages/chat.phone_pb";
+import UserName from "../UserName";
+import {
+    DesktopMacRounded,
+    LaptopRounded,
+    PhoneIphoneRounded,
+    PhoneAndroidRounded,
+    DevicesOtherRounded
+} from "@material-ui/icons";
 
 import './style.scss';
 
 interface IProps {
     srcObject?: any;
     userId?: string | null;
+    deviceType: CallDeviceType;
     className?: string;
     playsInline?: boolean;
     autoPlay?: boolean;
@@ -25,6 +35,7 @@ interface IProps {
 }
 
 interface IState {
+    deviceType: CallDeviceType;
     img: any;
     userId: string;
     videoMute: boolean;
@@ -32,10 +43,11 @@ interface IState {
 
 class CallVideoPlaceholder extends React.Component<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
-        if (props.userId === state.userId) {
+        if (props.userId === state.userId && props.deviceType === state.deviceType) {
             return null;
         }
         return {
+            deviceType: props.deviceType,
             userId: props.userId,
         };
     }
@@ -48,6 +60,7 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            deviceType: props.deviceType,
             img: undefined,
             userId: props.userId,
             videoMute: false,
@@ -103,8 +116,36 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
             {img && <img className={'video-img' + (videoMute ? ' upper' : '')} alt="" src={img}/>}
             <video key="video" ref={this.vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}
                    style={{visibility: userId && videoMute ? 'hidden' : 'visible'}}/>
+            {this.getUserContent()}
             <CallVideoAugment ref={this.callVideoAugmentRefHandler} videoMute={videoMute} userId={userId}/>
         </div>);
+    }
+
+    private getUserContent() {
+        const {deviceType, userId} = this.state;
+        if (!userId) {
+            return null;
+        }
+        return <div className="video-placeholder-user">
+            <div className="device-type">{this.getDeviceType(deviceType)}</div>
+            <UserName className="user" id={userId} noIcon={true} you={true} noDetail={true}/>
+        </div>;
+    }
+
+    private getDeviceType(deviceType: CallDeviceType) {
+        switch (deviceType) {
+            case CallDeviceType.CALLDEVICEDESKTOP:
+                return <DesktopMacRounded/>;
+            case CallDeviceType.CALLDEVICEWEB:
+                return <LaptopRounded/>;
+            case CallDeviceType.CALLDEVICEIOS:
+                return <PhoneIphoneRounded/>;
+            case CallDeviceType.CALLDEVICEANDROID:
+                return <PhoneAndroidRounded/>;
+            case CallDeviceType.CALLDEVICEUNKNOWN:
+                return <DevicesOtherRounded/>;
+        }
+        return null;
     }
 
     private callVideoAugmentRefHandler = (ref: any) => {

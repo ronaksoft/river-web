@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -52,6 +52,7 @@
     "kk-modality": "^1.0.7",
     "libphonenumber-js": "^1.9.6",
     "lodash": "^4.17.20",
+    "mac-screen-capture-permissions": "^1.1.0",
     "markdown-it": "^12.0.2",
     "material-ui-chip-input": "^1.1.0",
     "md5-webworker": "^0.0.5",
@@ -166,6 +167,10 @@
       "darkModeSupport": true,
       "hardenedRuntime": true,
       "entitlements": "./build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSCameraUsageDescription": "This app requires camera access to record video.",
+        "NSMicrophoneUsageDescription": "This app requires microphone access to record audio."
+      },
       "cscLink": "./build/certificates-river-mac.p12",
       "cscKeyPassword": "k1 is not internet",
       "target": [

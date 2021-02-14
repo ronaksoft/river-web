@@ -43,12 +43,14 @@ import ContactPicker from "../ContactPicker";
 import APIManager, {currentUserId} from "../../services/sdk";
 import CallVideo from "../CallVideo";
 import CallSettings from "../CallSettings";
-import {clone} from "lodash";
+import {clone, debounce} from "lodash";
 import MainRepo from "../../repository";
 import SettingsMediaInput, {getDefaultAudio, getDefaultVideo} from "../SettingsMediaInput";
 import SettingsModal from "../SettingsModal";
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE} from "../../services/sdk/const";
 import {IUser} from "../../repository/user/interface";
+import ScreenCaptureModal from "../ScreenCaptureModal";
+import {EventResize} from "../../services/events";
 
 import './style.scss';
 
@@ -107,6 +109,7 @@ class CallModal extends React.Component<IProps, IState> {
     private callRingingTone: string = '/ringingtone/tone-2.mp3';
     private loading: boolean = false;
     private videoCall: boolean = false;
+    private readonly windowResizeDebounce: any = undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -138,6 +141,8 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callService.setDialogOpenFunction(this.openDialog);
         this.callService.setSetTeamFunction(this.setTeam);
+
+        this.windowResizeDebounce = debounce(this.windowResizeDebounceHandler, 511);
     }
 
     public openDialog = (peer: InputPeer | null, video: boolean, force?: boolean) => {
@@ -203,6 +208,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantLeft, this.eventParticipantLeftHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantJoined, this.eventParticipantJoinedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantRemoved, this.eventParticipantRemovedHandler));
+        window.addEventListener(EventResize, this.windowResizeHandler);
     }
 
     public componentWillUnmount() {
@@ -211,6 +217,7 @@ class CallModal extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+        window.removeEventListener(EventResize, this.windowResizeHandler);
     }
 
     public render() {
@@ -251,6 +258,7 @@ class CallModal extends React.Component<IProps, IState> {
                 >
                     <SettingsMediaInput/>
                 </SettingsModal>
+                <ScreenCaptureModal ref={this.screenCaptureModalRef}/>
             </>
         );
     }
@@ -908,7 +916,8 @@ class CallModal extends React.Component<IProps, IState> {
         }
 
         this.callVideoRef.initRemoteConnection(true);
-        this.callVideoRef.setStatus(connId, 2);
+        const participant = this.callService.getParticipantByConnId(connId);
+        this.callVideoRef.setStatus(connId, 2, participant ? participant.deviceType : undefined);
         this.callVideoRef.setStream(connId, stream);
         if (!this.timeStart) {
             this.timeStart = Date.now();
@@ -1049,6 +1058,12 @@ class CallModal extends React.Component<IProps, IState> {
         this.callSettingsRef = ref;
     }
 
+    private screenCaptureModalRef = (ref: any) => {
+        if (ref) {
+            this.callService.setGetScreenCapture(ref.open);
+        }
+    }
+
     private callSettingsAddParticipantHandler = (users: IUser[]) => {
         const {callId} = this.state;
         if (this.contactPickerRef) {
@@ -1112,6 +1127,16 @@ class CallModal extends React.Component<IProps, IState> {
                 }
             }
         });
+    }
+
+    private windowResizeHandler = () => {
+        if (this.state.minimize) {
+            this.windowResizeDebounce();
+        }
+    }
+
+    private windowResizeDebounceHandler = () => {
+        this.forceUpdate();
     }
 }
 

@@ -39,7 +39,7 @@ import {ThemeChanged} from "./app/components/SettingsMenu";
 import Broadcaster from "./app/services/broadcaster";
 import {Modality, ModalityService} from "kk-modality";
 import CallModal from "./app/components/CallModal";
-import {C_ELECTRON_VERSIONS, C_VERSION, isProd} from "./index";
+import {C_APP_VERSION, C_ELECTRON_VERSIONS, C_VERSION, isProd} from "./index";
 
 import './App.scss';
 
@@ -56,7 +56,7 @@ if (isProd) {
     });
 }
 
-const getTheme = () => {
+const getTheme = (forceDark?: boolean) => {
     return createMuiTheme({
         direction: localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl' ? 'rtl' : 'ltr',
         palette: {
@@ -66,7 +66,7 @@ const getTheme = () => {
                 light: '#29c16d',
                 main: '#27AE60',
             },
-            type: (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') === 'light' ? 'light' : 'dark',
+            type: forceDark ? 'dark' : (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') === 'light' ? 'light' : 'dark',
         },
         typography: {
             fontFamily: `'YekanBakh', 'OpenSans'`,
@@ -195,8 +195,8 @@ class App extends React.Component<{}, IState> {
         fetch(`/changelog.md?${Date.now()}`).then((res) => {
             return res.text();
         }).then((text) => {
+            this.getDesktopLink();
             this.setState({
-                desktopDownloadLink: this.getDesktopLink(),
                 updateContent: md().render(text),
                 updateMode: 'notif',
             }, () => {
@@ -219,8 +219,8 @@ class App extends React.Component<{}, IState> {
                 this.showUpdateDialog();
             });
         }).catch(() => {
+            this.getDesktopLink();
             this.setState({
-                desktopDownloadLink: this.getDesktopLink(),
                 updateContent: '',
                 updateMode: 'notif',
             }, () => {
@@ -245,9 +245,11 @@ class App extends React.Component<{}, IState> {
                         <SnackbarProvider maxSnack={5}>
                             {Routes}
                         </SnackbarProvider>
-                        <CallModal/>
                         <Modality queueSize={5}
                                   dialogClasses={{paper: 'confirm-dialog-paper', root: 'confirm-dialog'}}/>
+                    </MuiThemeProvider>
+                    <MuiThemeProvider theme={getTheme(true)}>
+                        <CallModal/>
                     </MuiThemeProvider>
                 </div>
             </HashRouter>
@@ -350,39 +352,53 @@ class App extends React.Component<{}, IState> {
 
     private getDesktopLink() {
         if (!this.isElectron) {
-            return '';
-        }
-        if (C_ELECTRON_VERSIONS.indexOf(ElectronService.electronVersion() || '') > -1) {
-            return '';
-        }
-        const userAgent = window.navigator.userAgent;
-        const platform = window.navigator.platform;
-        const macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'];
-        const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
-        const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
-        let os = null;
-
-        if (macosPlatforms.indexOf(platform) !== -1) {
-            os = 'mac';
-        } else if (iosPlatforms.indexOf(platform) !== -1) {
-            os = 'ios';
-        } else if (windowsPlatforms.indexOf(platform) !== -1) {
-            os = 'windows';
-        } else if (/Android/.test(userAgent)) {
-            os = 'android';
-        } else if (!os && /Linux/.test(platform)) {
-            os = 'linux';
+            return;
         }
 
-        switch (os) {
-            case 'mac':
-                return 'https://drive.ronaksoft.com/latest_direct/River/MacOS';
-            case 'windows':
-                return 'https://drive.ronaksoft.com/latest_direct/River/Windows';
-            case 'linux':
-                return 'https://drive.ronaksoft.com/latest_direct/River/Linux';
+        const fn = () => {
+            const userAgent = window.navigator.userAgent;
+            const platform = window.navigator.platform;
+            const macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'];
+            const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
+            const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+            let os = null;
+
+            if (macosPlatforms.indexOf(platform) !== -1) {
+                os = 'mac';
+            } else if (iosPlatforms.indexOf(platform) !== -1) {
+                os = 'ios';
+            } else if (windowsPlatforms.indexOf(platform) !== -1) {
+                os = 'windows';
+            } else if (/Android/.test(userAgent)) {
+                os = 'android';
+            } else if (!os && /Linux/.test(platform)) {
+                os = 'linux';
+            }
+
+            switch (os) {
+                case 'mac':
+                    return 'https://drive.ronaksoft.com/latest_direct/River/MacOS';
+                case 'windows':
+                    return 'https://drive.ronaksoft.com/latest_direct/River/Windows';
+                case 'linux':
+                    return 'https://drive.ronaksoft.com/latest_direct/River/Linux';
+            }
+            return '';
+        };
+
+        if (!ElectronService.isNewElectron() && C_ELECTRON_VERSIONS.indexOf(ElectronService.electronVersion() || '') === -1) {
+            this.setState({
+                desktopDownloadLink: fn(),
+            });
+        } else {
+            ElectronService.getInstance().getVersion().then((res) => {
+                if (res.version !== C_APP_VERSION) {
+                    this.setState({
+                        desktopDownloadLink: fn(),
+                    });
+                }
+            });
         }
-        return '';
     }
 
     private downloadDesktopHandler = (link: string) => () => {
@@ -419,7 +435,7 @@ class App extends React.Component<{}, IState> {
                 props: {
                     color: 'secondary'
                 },
-                text: i18n.tf('chat.update_dialog.download_desktop_version', '0.30.0'),
+                text: i18n.tf('chat.update_dialog.download_desktop_version', '0.31.0'),
             }] : undefined,
             cancelText: i18n.t('general.cancel'),
             confirmProps: {

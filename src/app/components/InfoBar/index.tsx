@@ -35,7 +35,7 @@ interface IMenuItem {
     cmd: string;
     icon: any;
     title: string;
-    whenActive: boolean;
+    whenActive: boolean | undefined;
 }
 
 interface IProps {
@@ -101,7 +101,7 @@ class InfoBar extends React.Component<IProps, IState> {
             cmd: 'call_join',
             icon: <AddIcCallRounded/>,
             title: i18n.t('call.join_call'),
-            whenActive: true,
+            whenActive: undefined,
         }, {
             cmd: 'call_end',
             icon: <CallEndRounded/>,

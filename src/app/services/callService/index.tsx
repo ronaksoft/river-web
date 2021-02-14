@@ -11,9 +11,11 @@ import UpdateManager from "../sdk/updateManager";
 import {C_LOCALSTORAGE, C_MSG} from "../sdk/const";
 import {UpdatePhoneCall, UpdatePhoneCallEnded} from "../sdk/messages/updates_pb";
 import {
+    CallDeviceType,
     DiscardReason,
     PhoneActionAccepted,
-    PhoneActionAck, PhoneActionAdminUpdated,
+    PhoneActionAck,
+    PhoneActionAdminUpdated,
     PhoneActionCallEmpty,
     PhoneActionCallWaiting,
     PhoneActionDiscarded,
@@ -22,7 +24,8 @@ import {
     PhoneActionMediaSettingsUpdated,
     PhoneActionParticipantAdded,
     PhoneActionParticipantRemoved,
-    PhoneActionRequested, PhoneActionScreenShare,
+    PhoneActionRequested,
+    PhoneActionScreenShare,
     PhoneActionSDPAnswer,
     PhoneActionSDPOffer,
     PhoneCallAction,
@@ -32,7 +35,7 @@ import {
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
 import APIManager, {currentUserId} from "../sdk";
-import {findIndex, orderBy, difference, cloneDeep} from "lodash";
+import {cloneDeep, difference, findIndex, orderBy} from "lodash";
 import {getDefaultAudio, getDefaultVideo} from "../../components/SettingsMediaInput";
 
 const C_RETRY_INTERVAL = 10000;
@@ -71,6 +74,7 @@ export interface IMediaSettings {
 }
 
 export interface ICallParticipant extends PhoneParticipant.AsObject {
+    deviceType: CallDeviceType;
     mediaSettings: IMediaSettings;
     started?: boolean;
 }
@@ -176,8 +180,6 @@ export const getMediaInputs = (): Promise<IMediaDevice> => {
     });
 };
 
-const mediaDevices = navigator.mediaDevices as any;
-
 export default class CallService {
     public static getInstance() {
         if (!this.instance) {
@@ -197,6 +199,7 @@ export default class CallService {
     private openDialogFn: ((peer: InputPeer | null, video: boolean) => void) | null = null;
     private setTeamFn: ((teamId: string) => void) | null = null;
     private enqueueSnackbarFn: any = undefined;
+    private getScreenCaptureFn?: () => Promise<MediaStream> = undefined;
 
     // Devices
     private mediaDevice: IMediaDevice = localStorage.getItem(C_LOCALSTORAGE.MediaDevice) ? JSON.parse(localStorage.getItem(C_LOCALSTORAGE.MediaDevice)) : {
@@ -206,10 +209,6 @@ export default class CallService {
     };
 
     // Screen Share
-    private screenShareConfig: any = {
-        audio: true,
-        video: true,
-    };
     private activeScreenShare: IScreenShare | undefined;
 
     // Call variables
@@ -266,6 +265,10 @@ export default class CallService {
         if (this.enqueueSnackbarFn) {
             this.enqueueSnackbarFn(message);
         }
+    }
+
+    public setGetScreenCapture(fn: any) {
+        this.getScreenCaptureFn = fn;
     }
 
     public initMediaDevice() {
@@ -582,6 +585,16 @@ export default class CallService {
         return this.callInfo[callId].participants[connId];
     }
 
+    public getParticipantByConnId(connId: number): ICallParticipant | undefined {
+        if (!this.activeCallId) {
+            return undefined;
+        }
+        if (!this.callInfo.hasOwnProperty(this.activeCallId)) {
+            return undefined;
+        }
+        return this.callInfo[this.activeCallId].participants[connId];
+    }
+
     public getParticipantList(callId: string, excludeCurrent?: boolean): ICallParticipant[] {
         if (!this.callInfo.hasOwnProperty(callId)) {
             return [];
@@ -601,9 +614,11 @@ export default class CallService {
     public destroyConnections(id: string, connId?: number) {
         const close = (conn: IConnection) => {
             conn.connection.close();
-            conn.stream.getTracks().forEach((track) => {
-                track.stop();
-            });
+            if (conn.stream) {
+                conn.stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
+            }
             clearInterval(conn.interval);
         };
 
@@ -700,9 +715,13 @@ export default class CallService {
     }
 
     private busyHandler(data: IUpdatePhoneCall) {
-        const peer = this.peer;
-        if (!peer) {
-            return Promise.reject('invalid peer');
+        const peer = new InputPeer();
+        peer.setType(data.peertype);
+        peer.setId(data.peerid);
+        if (data.peertype === PeerType.PEERGROUP) {
+            peer.setAccesshash('0');
+        } else if (data.peertype === PeerType.PEERUSER) {
+            peer.setAccesshash(data.accesshash);
         }
 
         return this.apiManager.callReject(peer, data.callid || '0', DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
@@ -788,6 +807,10 @@ export default class CallService {
         }
 
         const sdpData = (data.data as PhoneActionAccepted.AsObject);
+
+        if (this.activeCallId && this.callInfo.hasOwnProperty(this.activeCallId)) {
+            this.callInfo[this.activeCallId].participants[connId].deviceType = sdpData.devicetype;
+        }
 
         this.peerConnections[connId].connection.setRemoteDescription({
             sdp: sdpData.sdp,
@@ -909,6 +932,7 @@ export default class CallService {
             callParticipants[index] = {
                 admin: index === 0,
                 connectionid: index,
+                deviceType: CallDeviceType.CALLDEVICEUNKNOWN,
                 initiator: index === 0,
                 mediaSettings: {audio: true, screenShare: false, video: true},
                 peer: participant,
@@ -935,6 +959,7 @@ export default class CallService {
                 callParticipants[participant.connectionid] = {
                     admin: participant.admin,
                     connectionid: participant.connectionid,
+                    deviceType: CallDeviceType.CALLDEVICEUNKNOWN,
                     initiator: participant.initiator,
                     mediaSettings: {audio: true, screenShare: false, video: true},
                     peer: participant.peer,
@@ -984,6 +1009,7 @@ export default class CallService {
             callParticipants[participant.connectionid || 0] = {
                 admin: participant.admin,
                 connectionid: participant.connectionid,
+                deviceType: data.userid === participant.peer.userid ? sdpData.devicetype : CallDeviceType.CALLDEVICEUNKNOWN,
                 initiator: participant.initiator,
                 mediaSettings: {audio: true, screenShare: false, video: true},
                 peer: participant.peer,
@@ -1461,19 +1487,30 @@ export default class CallService {
         const connId = this.getConnId(data.callid, data.userid);
         if (screenShareData.enable) {
             const currentConnId = this.getConnId(data.callid, currentUserId);
-            if (this.activeScreenShare && this.activeScreenShare.connId === currentConnId) {
-                window.console.log('here#rwfe');
-                const settings = cloneDeep(this.callInfo[data.callid].participants[currentConnId]);
-                settings.mediaSettings.screenShare = false;
-                this.callHandlers(C_CALL_EVENT.MediaSettingsUpdated, settings);
-                this.destroyScreenShareStream();
+            if (this.activeScreenShare) {
+                // Deactivate screen share if current user is streaming
+                if (this.activeScreenShare.connId === currentConnId) {
+                    const settings = cloneDeep(this.callInfo[data.callid].participants[currentConnId]);
+                    settings.mediaSettings.screenShare = false;
+                    this.callHandlers(C_CALL_EVENT.MediaSettingsUpdated, settings);
+                    this.destroyScreenShareStream();
+                } else {
+                    // Deactivate previous screen share stream
+                    this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+                        connId,
+                        stream: undefined,
+                        userId: data.userid,
+                    });
+                }
             }
+            // Set active screen share
             this.activeScreenShare = {
                 connId,
                 trackIds: screenShareData.trackidsList,
             };
         } else if (!screenShareData.enable && this.activeScreenShare && this.activeScreenShare.connId === connId) {
             this.activeScreenShare = undefined;
+            // Deactivate screen share stream
             this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
                 connId,
                 stream: undefined,
@@ -1526,7 +1563,7 @@ export default class CallService {
     }
 
     private modifyScreenShareMediaStream(enable: boolean): Promise<MediaStream | undefined> {
-        if (!this.activeCallId) {
+        if (!this.activeCallId || !this.getScreenCaptureFn) {
             return Promise.reject('no active call');
         }
         if (!this.localStream) {
@@ -1566,7 +1603,7 @@ export default class CallService {
         };
         const connId = this.getConnId(this.activeCallId, currentUserId);
         if (enable) {
-            return mediaDevices.getDisplayMedia(this.screenShareConfig).then((stream: MediaStream) => {
+            return this.getScreenCaptureFn().then((stream) => {
                 const trackIds = stream.getTracks().map(o => o.id);
                 this.activeScreenShare = {
                     connId,

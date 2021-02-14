@@ -102,6 +102,7 @@ class CallSettings extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.AllConnected, this.eventAllConnectedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventShareMediaStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
         getMediaInputs().then((mediaDevice) => {
             this.setState({
                 mediaDevice,
@@ -258,6 +259,14 @@ class CallSettings extends React.Component<IProps, IState> {
         } else if (!stream && this.state.activeScreenShare) {
             this.setState({
                 activeScreenShare: false,
+            });
+        }
+    }
+
+    private eventMediaSettingsUpdatedHandler = (data: ICallParticipant) => {
+        if (data.peer.userid === currentUserId) {
+            this.setState({
+                mediaSettings: data.mediaSettings,
             });
         }
     }

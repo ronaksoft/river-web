@@ -13,6 +13,42 @@
   width: 100%;
   overflow: hidden;
 
+  .video-placeholder-user {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 24px;
+    left: 50%;
+    transform: translate(-50%, -200px);
+    white-space: nowrap;
+    line-height: 1.1em;
+    z-index: 20;
+    font-size: 13px;
+    background-color: rgba(255, 255, 255, 0.7);
+    color: var(--dark);
+    border-radius: 5px;
+    padding: 4px 10px 4px 10px;
+    text-align: center;
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+    transition: 0.2s transform;
+
+    .device-type {
+      padding-right: 6px;
+      font-size: 16px;
+    }
+
+    .user {
+      font-weight: bold;
+    }
+  }
+
+  &:hover {
+    .video-placeholder-user {
+      transform: translate(-50%, 0);
+    }
+  }
+
   .video-img {
     position: relative;
     width: 100%;

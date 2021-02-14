@@ -1,0 +1,79 @@
+/*
+    Creation Time: 2021 - Feb - 14
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2021
+*/
+
+.screen-capture-modal {
+  height: 100%;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+
+  .select-input {
+    padding: 4px 8px 8px;
+  }
+
+  .screen-preview {
+    padding: 0 8px 8px;
+
+    img {
+      width: 100%;
+      max-height: 200px;
+      object-position: center center;
+      object-fit: cover;
+    }
+  }
+
+  .screen-gap {
+    flex: 1 1;
+  }
+
+  .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    background-color: var(--dark-medium);
+
+    .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+
+      svg {
+        font-size: 40px;
+      }
+
+      &:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .screen-capture-modal {
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"],
+html[theme="dark-blue"] {
+  .screen-capture-modal {
+    .actions-bar {
+      background-color: var(--dark-medium);
+    }
+  }
+}
