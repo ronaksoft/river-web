@@ -48,7 +48,7 @@ export const getElectronMediaAccess = (deviceType: 'microphone' | 'camera' | 'sc
         return;
     }
 
-    ElectronService.getInstance().askForMediaAccess(deviceType)
+    ElectronService.getInstance().askForMediaAccess(deviceType);
     return;
 };
 
