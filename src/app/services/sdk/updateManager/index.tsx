@@ -401,7 +401,11 @@ export default class UpdateManager {
             return;
         }
         this.apiManager.getUpdateDifference(lastId, limit).then((res) => {
+            const executionTimeout = setTimeout(() => {
+                this.callOutOfSync();
+            }, 10000);
             this.applyDiffUpdate(res.toObject()).then((id) => {
+                clearTimeout(executionTimeout);
                 this.startSyncing(id, limit);
             }).catch((err2) => {
                 this.enableLiveUpdate();
@@ -410,6 +414,7 @@ export default class UpdateManager {
                     isUpdating: false,
                 });
                 if (err2.code === -1) {
+                    clearTimeout(executionTimeout);
                     this.canSync().then(() => {
                         this.disableLiveUpdate();
                         this.isDiffUpdating = true;
@@ -448,9 +453,6 @@ export default class UpdateManager {
                             window.console.log(e);
                         }
                     }
-                    setTimeout(() => {
-                        this.callOutOfSync();
-                    }, 5000);
                     // }
                 }
             });
@@ -463,9 +465,6 @@ export default class UpdateManager {
                     window.console.log(e);
                 }
             }
-            setTimeout(() => {
-                this.callOutOfSync();
-            }, 5000);
         });
     }
 

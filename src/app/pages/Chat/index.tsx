@@ -1084,7 +1084,7 @@ class Chat extends React.Component<IProps, IState> {
             // 1. Current Dialog is different from message peerid
             // 2. Is not at the end of conversations
             // 3. Is not focused on the River app
-        if (!message.me && (peerName !== this.selectedPeerName || force || !this.endOfMessage || !this.isInChat)) {
+        if (!message.me && (peerName !== this.selectedPeerName || force || !this.endOfMessage || !this.isInChat || !this.messageRef)) {
             this.messageRepo.exists(message.id || 0).then((exists) => {
                 if (!exists) {
                     this.updateDialogsCounter(peerName, {

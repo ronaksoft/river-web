@@ -245,11 +245,9 @@ class App extends React.Component<{}, IState> {
                         <SnackbarProvider maxSnack={5}>
                             {Routes}
                         </SnackbarProvider>
+                        <CallModal/>
                         <Modality queueSize={5}
                                   dialogClasses={{paper: 'confirm-dialog-paper', root: 'confirm-dialog'}}/>
-                    </MuiThemeProvider>
-                    <MuiThemeProvider theme={getTheme(true)}>
-                        <CallModal/>
                     </MuiThemeProvider>
                 </div>
             </HashRouter>

@@ -5,6 +5,10 @@
 
   .call-settings-item {
     color: var(--white);
+
+    &[disabled] {
+      color: var(--grey);
+    }
   }
 }
 

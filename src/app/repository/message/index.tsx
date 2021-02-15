@@ -553,7 +553,7 @@ export default class MessageRepo {
         }
         // filter pending messages
         pipe2 = pipe2.filter((item: IMessage) => {
-            return (item.id || 0) > 0;
+            return (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Date && item.messagetype !== C_MESSAGE_TYPE.NewMessage;
         });
         return pipe2.limit(safeLimit).toArray().then((res) => {
             const earlyMessages: IMessage[] = [];

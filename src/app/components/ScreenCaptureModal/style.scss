@@ -22,7 +22,7 @@
 
     img {
       width: 100%;
-      max-height: 200px;
+      max-height: 180px;
       object-position: center center;
       object-fit: cover;
     }
@@ -36,7 +36,7 @@
     height: 86px;
     padding: 18px 0 22px;
     text-align: center;
-    background-color: var(--dark-medium);
+    background-color: var(--message-chat);
 
     .add-action {
       display: inline-flex;
@@ -69,11 +69,18 @@ html[direction="rtl"] {
 }
 
 html[theme="dark"],
-html[theme="dark-night"],
-html[theme="dark-blue"] {
+html[theme="dark-night"] {
   .screen-capture-modal {
     .actions-bar {
       background-color: var(--dark-medium);
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .screen-capture-modal {
+    .actions-bar {
+      background-color: var(--dark-blue-medium);
     }
   }
 }
