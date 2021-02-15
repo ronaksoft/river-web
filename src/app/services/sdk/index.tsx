@@ -208,6 +208,7 @@ import {debounce} from "lodash";
 import ElectronService from "../electron";
 
 export let currentUserId: string = '0';
+export let currentAuthId: string = '0';
 
 export default class APIManager {
     public static getInstance() {
@@ -272,6 +273,7 @@ export default class APIManager {
         const s = JSON.stringify(info);
         localStorage.setItem(C_LOCALSTORAGE.ConnInfo, s);
         currentUserId = info.UserID || '0';
+        currentAuthId = info.AuthID || '0';
     }
 
     public resetConnInfo() {
@@ -283,6 +285,7 @@ export default class APIManager {
         info.Phone = '';
         info.Username = '';
         currentUserId = info.UserID;
+        currentAuthId = info.AuthID;
         this.setConnInfo(info);
         localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
         localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
@@ -301,6 +304,7 @@ export default class APIManager {
             this.connInfo = this.connInfo = JSON.parse(s);
         }
         currentUserId = this.connInfo.UserID || '0';
+        currentAuthId = this.connInfo.AuthID;
         return this.connInfo;
     }
 

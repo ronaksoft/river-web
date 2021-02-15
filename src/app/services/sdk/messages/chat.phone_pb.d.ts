@@ -939,6 +939,26 @@ export namespace PhoneActionScreenShare {
   }
 }
 
+export class PhoneActionPicked extends jspb.Message {
+  getAuthid(): string;
+  setAuthid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionPicked.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionPicked): PhoneActionPicked.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionPicked, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionPicked;
+  static deserializeBinaryFromReader(message: PhoneActionPicked, reader: jspb.BinaryReader): PhoneActionPicked;
+}
+
+export namespace PhoneActionPicked {
+  export type AsObject = {
+    authid: string,
+  }
+}
+
 export class PhoneActionMediaSettingsUpdated extends jspb.Message {
   getVideo(): boolean;
   setVideo(value: boolean): void;
@@ -1102,7 +1122,7 @@ export enum PhoneCallAction {
   PHONECALLJOINREQUESTED = 13,
   PHONECALLADMINUPDATED = 14,
   PHONECALLSCREENSHARE = 15,
-  PHONECALLRESERVED12 = 16,
+  PHONECALLPICKED = 16,
   PHONECALLRESERVED13 = 17,
   PHONECALLRESERVED14 = 18,
   PHONECALLRESERVED15 = 19,

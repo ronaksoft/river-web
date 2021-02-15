@@ -23,7 +23,7 @@ import {
     PhoneActionJoinRequested,
     PhoneActionMediaSettingsUpdated,
     PhoneActionParticipantAdded,
-    PhoneActionParticipantRemoved,
+    PhoneActionParticipantRemoved, PhoneActionPicked,
     PhoneActionRequested,
     PhoneActionScreenShare,
     PhoneActionSDPAnswer,
@@ -34,7 +34,7 @@ import {
 } from "../sdk/messages/chat.phone_pb";
 import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
-import APIManager, {currentUserId} from "../sdk";
+import APIManager, {currentAuthId, currentUserId} from "../sdk";
 import {cloneDeep, difference, findIndex, orderBy} from "lodash";
 import {getDefaultAudio, getDefaultVideo} from "../../components/SettingsMediaInput";
 
@@ -144,6 +144,8 @@ const parseData = (constructor: number, data: any) => {
             return PhoneActionAdminUpdated.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLSCREENSHARE:
             return PhoneActionScreenShare.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLPICKED:
+            return PhoneActionPicked.deserializeBinary(data).toObject();
     }
     return undefined;
 };
@@ -692,6 +694,9 @@ export default class CallService {
                 break;
             case PhoneCallAction.PHONECALLSCREENSHARE:
                 this.screenShareUpdated(data);
+                break;
+            case PhoneCallAction.PHONECALLPICKED:
+                this.callPicked(data);
                 break;
         }
     }
@@ -1289,6 +1294,14 @@ export default class CallService {
     private checkDisconnection(connId: number, state: RTCIceConnectionState) {
         if (state === 'disconnected' && this.peerConnections.hasOwnProperty(connId)) {
             this.peerConnections[connId].connection.close();
+            if (this.activeCallId) {
+                const currentConnId = this.getConnId(this.activeCallId, currentUserId);
+                if (currentConnId < connId) {
+                    this.initConnection(false, connId);
+                } else {
+                    this.initConnection(true, connId);
+                }
+            }
         }
     }
 
@@ -1620,9 +1633,6 @@ export default class CallService {
             }
             return this.propagateScreenShareUpdate(false, []).then(() => {
                 return fn(undefined);
-            }).catch((err) => {
-                window.console.log('[webrtc]', err);
-                return err;
             });
         }
     }
@@ -1661,10 +1671,7 @@ export default class CallService {
                 videoTracks.forEach((track) => {
                     pc.connection.addTrack(track, stream);
                 });
-                pc.connection.createOffer({
-                    offerToReceiveAudio: true,
-                    offerToReceiveVideo: true,
-                }).then((res) => {
+                pc.connection.createOffer(this.getOfferFromStream(stream)).then((res) => {
                     return pc.connection.setLocalDescription(res).then(() => {
                         return this.sendSDPOffer(this.parseNumberValue(connId), res);
                     });
@@ -1720,6 +1727,13 @@ export default class CallService {
         }
         this.clearRetryInterval(connId, true);
         this.callHandlers(C_CALL_EVENT.CallAck, connId);
+    }
+
+    private callPicked(data: IUpdatePhoneCall) {
+        const callPickedData = data.data as PhoneActionPicked.AsObject;
+        if (callPickedData.authid !== currentAuthId) {
+            this.callHandlers(C_CALL_EVENT.CallCancelled, {callId: data.callid});
+        }
     }
 
     private participantAdded(data: IUpdatePhoneCall) {

@@ -195,36 +195,38 @@ class App extends React.Component<{}, IState> {
         fetch(`/changelog.md?${Date.now()}`).then((res) => {
             return res.text();
         }).then((text) => {
-            this.getDesktopLink();
-            this.setState({
-                updateContent: md().render(text),
-                updateMode: 'notif',
-            }, () => {
-                setTimeout(() => {
-                    const el = document.querySelector('.confirm-dialog .markdown-body h2:first-child');
-                    if (el && C_VERSION === el.textContent) {
-                        const elTitle = document.querySelector('.confirm-dialog .update-title');
-                        if (elTitle) {
-                            elTitle.remove();
+            this.getDesktopLink().then(() => {
+                this.setState({
+                    updateContent: md().render(text),
+                    updateMode: 'notif',
+                }, () => {
+                    setTimeout(() => {
+                        const el = document.querySelector('.confirm-dialog .markdown-body h2:first-child');
+                        if (el && C_VERSION === el.textContent) {
+                            const elTitle = document.querySelector('.confirm-dialog .update-title');
+                            if (elTitle) {
+                                elTitle.remove();
+                            }
+                            const updateButtonEl = document.getElementById('update-button');
+                            if (updateButtonEl) {
+                                updateButtonEl.remove();
+                            }
+                            this.setState({
+                                updateMode: 'changelog',
+                            });
                         }
-                        const updateButtonEl = document.getElementById('update-button');
-                        if (updateButtonEl) {
-                            updateButtonEl.remove();
-                        }
-                        this.setState({
-                            updateMode: 'changelog',
-                        });
-                    }
-                }, 10);
-                this.showUpdateDialog();
+                    }, 10);
+                    this.showUpdateDialog();
+                });
             });
         }).catch(() => {
-            this.getDesktopLink();
-            this.setState({
-                updateContent: '',
-                updateMode: 'notif',
-            }, () => {
-                this.showUpdateDialog();
+            this.getDesktopLink().then(() => {
+                this.setState({
+                    updateContent: '',
+                    updateMode: 'notif',
+                }, () => {
+                    this.showUpdateDialog();
+                });
             });
         });
     }
@@ -350,7 +352,7 @@ class App extends React.Component<{}, IState> {
 
     private getDesktopLink() {
         if (!this.isElectron) {
-            return;
+            return Promise.resolve();
         }
 
         const fn = () => {
@@ -388,13 +390,15 @@ class App extends React.Component<{}, IState> {
             this.setState({
                 desktopDownloadLink: fn(),
             });
+            return Promise.resolve();
         } else {
-            ElectronService.getInstance().getVersion().then((res) => {
+            return ElectronService.getInstance().getVersion().then((res) => {
                 if (res.version !== C_APP_VERSION) {
                     this.setState({
                         desktopDownloadLink: fn(),
                     });
                 }
+                return Promise.resolve();
             });
         }
     }
@@ -433,7 +437,7 @@ class App extends React.Component<{}, IState> {
                 props: {
                     color: 'secondary'
                 },
-                text: i18n.tf('chat.update_dialog.download_desktop_version', '0.31.0'),
+                text: i18n.t('chat.update_dialog.download_desktop_version'),
             }] : undefined,
             cancelText: i18n.t('general.cancel'),
             confirmProps: {
@@ -456,7 +460,7 @@ class App extends React.Component<{}, IState> {
                     this.updateDialogAcceptHandler();
                 }
             } else if (modalRes === 'download_electron') {
-                this.downloadDesktopHandler(desktopDownloadLink);
+                this.downloadDesktopHandler(desktopDownloadLink)();
             }
         });
     }
