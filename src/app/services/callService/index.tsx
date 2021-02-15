@@ -1270,7 +1270,7 @@ export default class CallService {
         return {
             offerToReceiveAudio: stream.getAudioTracks().length > 0,
             offerToReceiveVideo: stream.getVideoTracks().length > 0,
-        }
+        };
     }
 
     private checkAllConnected() {
