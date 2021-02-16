@@ -80,7 +80,7 @@ interface IState {
     rate: number | null;
     resetPosition: boolean;
     settingsOpen: boolean;
-    unavailableMode: 'none' | 'timeout' | 'busy';
+    unavailableMode: 'none' | 'timeout' | 'unavailable' | 'busy';
     videoSwap: boolean;
 }
 
@@ -478,6 +478,8 @@ class CallModal extends React.Component<IProps, IState> {
             case 'timeout':
                 return i18n.t('call.call_timeout');
             case 'busy':
+                return i18n.t('call.is_busy');
+            case 'unavailable':
                 return i18n.t('call.is_not_available');
         }
         return null;
@@ -488,6 +490,7 @@ class CallModal extends React.Component<IProps, IState> {
         switch (unavailableMode) {
             case 'timeout':
             case 'busy':
+            case 'unavailable':
                 return (<div className="call-modal-action">
                     <div className="call-item call-normal" onClick={this.closeHandler}>
                         <CloseRounded/>
@@ -857,7 +860,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.showPreview(true, callId);
     }
 
-    private eventCallRejectedHandler = () => {
+    private eventCallRejectedHandler = ({reason}: { reason: DiscardReason }) => {
         if (this.state.mode === 'call_report') {
             return;
         }
@@ -867,7 +870,7 @@ class CallModal extends React.Component<IProps, IState> {
             if (isCaller) {
                 this.setState({
                     mode: 'call_unavailable',
-                    unavailableMode: 'busy',
+                    unavailableMode: reason === DiscardReason.DISCARDREASONBUSY ? 'busy' : 'unavailable',
                 });
             } else {
                 this.closeHandler();

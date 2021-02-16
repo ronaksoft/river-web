@@ -393,6 +393,7 @@ export default class CallService {
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => {
                 track.stop();
+                this.localStream.removeTrack(track);
             });
         }
         this.localStream = undefined;
@@ -403,6 +404,7 @@ export default class CallService {
         if (this.screenShareStream) {
             this.screenShareStream.getTracks().forEach(track => {
                 track.stop();
+                this.screenShareStream.removeTrack(track);
             });
         }
         this.screenShareStream = undefined;
@@ -743,7 +745,7 @@ export default class CallService {
             peer.setAccesshash(data.accesshash);
         }
 
-        return this.apiManager.callReject(peer, data.callid || '0', DiscardReason.DISCARDREASONHANGUP, 0).then(() => {
+        return this.apiManager.callReject(peer, data.callid || '0', DiscardReason.DISCARDREASONBUSY, 0).then(() => {
             //
         });
     }
@@ -767,7 +769,10 @@ export default class CallService {
 
     private phoneCallEndedHandler = (data: UpdatePhoneCallEnded.AsObject) => {
         if (this.activeCallId && this.peer && this.peer.getId() === data.peer.id && this.peer.getType() === data.peer.type) {
-            this.callHandlers(C_CALL_EVENT.CallRejected, {callId: this.activeCallId});
+            this.callHandlers(C_CALL_EVENT.CallRejected, {
+                callId: this.activeCallId,
+                reason: DiscardReason.DISCARDREASONHANGUP,
+            });
         }
     }
 
@@ -856,10 +861,10 @@ export default class CallService {
         }
         const actionData = (data.data as PhoneActionDiscarded.AsObject);
         if (data.peertype === PeerType.PEERUSER || actionData.terminate) {
-            this.callHandlers(C_CALL_EVENT.CallRejected, {callId: data.callid});
+            this.callHandlers(C_CALL_EVENT.CallRejected, {callId: data.callid, reason: actionData.reason});
         } else {
             if (this.removeParticipant(data.userid, data.callid)) {
-                this.callHandlers(C_CALL_EVENT.CallRejected, {callId: data.callid});
+                this.callHandlers(C_CALL_EVENT.CallRejected, {callId: data.callid, reason: actionData.reason});
             } else {
                 this.checkAllConnected();
                 this.callHandlers(C_CALL_EVENT.ParticipantLeft, data);
@@ -1821,7 +1826,10 @@ export default class CallService {
             userIds: participantRemovedData.useridsList
         });
         if (isCurrentRemoved) {
-            this.callHandlers(C_CALL_EVENT.CallRejected, {callId: this.activeCallId});
+            this.callHandlers(C_CALL_EVENT.CallRejected, {
+                callId: this.activeCallId,
+                reason: DiscardReason.DISCARDREASONHANGUP,
+            });
         }
         this.checkAllConnected();
     }

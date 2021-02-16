@@ -35,4 +35,4 @@ export default class IsMobile {
 
 export const IsMobileView = () => {
     return (window.innerWidth < 600);
-}
+};

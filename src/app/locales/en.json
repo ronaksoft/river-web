@@ -558,6 +558,7 @@
     "call_back": "Call Back",
     "call_timeout": "no answer",
     "is_not_available": "is not available",
+    "is_busy": "is busy",
     "audio_muted": "Microphone is muted",
     "call_started": "Call Started",
     "join_call": "Join Call",
