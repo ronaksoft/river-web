@@ -16,6 +16,7 @@ import i18n from "../../services/i18n";
 import {currentUserId} from "../../services/sdk";
 import UserName from "../UserName";
 import {CallDeviceType} from "../../services/sdk/messages/chat.phone_pb";
+import IsMobile from "../../services/isMobile";
 
 import './style.scss';
 
@@ -37,7 +38,7 @@ interface IProps {
 
 interface IState {
     callId: string;
-    gridHeight: number | undefined;
+    gridSize: number | undefined;
     localVideo: boolean;
     screenShareStream: MediaStream | undefined;
     screenShareUserId: string | undefined;
@@ -59,13 +60,14 @@ class CallVideo extends React.Component<IProps, IState> {
     private initialized: boolean = false;
     private localVideoRefFn: any;
     private mediaSettings: IMediaSettings = {audio: true, screenShare: false, video: true};
+    private readonly isMobile = IsMobile.isAny();
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             callId: props.callId,
-            gridHeight: undefined,
+            gridSize: undefined,
             localVideo: false,
             screenShareStream: undefined,
             screenShareUserId: undefined,
@@ -159,11 +161,12 @@ class CallVideo extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {localVideo, gridHeight, screenShareStream, screenShareUserId} = this.state;
+        const {localVideo, gridSize, screenShareStream, screenShareUserId} = this.state;
         return (<div className={'call-video cp-' + (this.videoRemoteRefs.length + (localVideo ? 1 : 0))}
                      onClick={this.props.onClick}>
             {localVideo &&
-            <div className="call-user-container" style={gridHeight ? {height: `${gridHeight}px`} : undefined}>
+            <div className="call-user-container"
+                 style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}>
                 <div className="video-placeholder">
                     <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true}/>
                     {!this.mediaSettings.video &&
@@ -190,7 +193,7 @@ class CallVideo extends React.Component<IProps, IState> {
                     >{i18n.t(item.status ? 'call.is_ringing' : 'call.is_calling')}</div>
                 </div>;
             }
-            const {gridHeight} = this.state;
+            const {gridSize} = this.state;
             const videoRemoteRefHandler = (ref: CallVideoPlaceholder) => {
                 item.media = ref;
                 const stream = this.callService.getRemoteStream(item.connId);
@@ -202,7 +205,7 @@ class CallVideo extends React.Component<IProps, IState> {
                 }
             };
             return (<div key={item.connId} className="call-user-container"
-                         style={gridHeight ? {height: `${gridHeight}px`} : undefined}
+                         style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}
                          onContextMenu={this.props.onContextMenu(item.userId)}>
                 <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
                                       srcObject={item.stream} playsInline={true}
@@ -238,21 +241,30 @@ class CallVideo extends React.Component<IProps, IState> {
     }
 
     private calculateGridHeight(fullscreen?: boolean) {
-        const {gridHeight, localVideo} = this.state;
+        const {gridSize, localVideo} = this.state;
         const el = document.querySelector(fullscreen ? 'body' : '.call-modal-content');
         let gh: number | undefined = undefined;
         if (el) {
             const gridCount = (this.videoRemoteRefs.length + (localVideo ? 1 : 0));
-            const height = el.clientHeight;
-            if (gridCount >= 7) {
-                gh = height / 3;
-            } else if (gridCount >= 3) {
-                gh = height / 2;
+            if (this.isMobile) {
+                const width = el.clientWidth;
+                if (gridCount >= 7) {
+                    gh = width / 3;
+                } else if (gridCount >= 3) {
+                    gh = width / 2;
+                }
+            } else {
+                const height = el.clientHeight;
+                if (gridCount >= 7) {
+                    gh = height / 3;
+                } else if (gridCount >= 3) {
+                    gh = height / 2;
+                }
             }
         }
-        if (gridHeight !== gh) {
+        if (gridSize !== gh) {
             this.setState({
-                gridHeight: gh,
+                gridSize: gh,
             });
         }
     }

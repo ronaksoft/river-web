@@ -45,12 +45,13 @@ import CallVideo from "../CallVideo";
 import CallSettings from "../CallSettings";
 import {clone, debounce} from "lodash";
 import MainRepo from "../../repository";
-import SettingsMediaInput, {getDefaultAudio, getDefaultVideo} from "../SettingsMediaInput";
+import SettingsMediaInput from "../SettingsMediaInput";
 import SettingsModal from "../SettingsModal";
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE} from "../../services/sdk/const";
 import {IUser} from "../../repository/user/interface";
 import ScreenCaptureModal from "../ScreenCaptureModal";
 import {EventResize} from "../../services/events";
+import IsMobile from "../../services/isMobile";
 
 import './style.scss';
 
@@ -110,6 +111,7 @@ class CallModal extends React.Component<IProps, IState> {
     private loading: boolean = false;
     private videoCall: boolean = false;
     private readonly windowResizeDebounce: any = undefined;
+    private readonly isMobile = IsMobile.isAny();
 
     constructor(props: IProps) {
         super(props);
@@ -120,7 +122,7 @@ class CallModal extends React.Component<IProps, IState> {
             callId: '0',
             callStarted: false,
             callerId: null,
-            cropCover: true,
+            cropCover: !this.isMobile,
             fullscreen: false,
             groupId: undefined,
             isCaller: false,
@@ -221,15 +223,19 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, fullscreen, mode, cropCover, groupId, minimize, settingsOpen} = this.state;
+        const {open, mode, cropCover, groupId, minimize, settingsOpen} = this.state;
+        let {fullscreen} = this.state;
         const disableClose = !(mode === 'call_init' || mode === 'call_report');
-        const enableDrag = mode === 'call';
+        const enableDrag = !this.isMobile && mode === 'call';
+        if (this.isMobile && (mode === 'call' || mode === 'call_init')) {
+            fullscreen = true;
+        }
         const dialogRenderer = () => {
             return <Dialog
                 key="call-modal"
                 open={open}
                 onClose={this.closeHandler}
-                className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain') + (minimize ? ' minimize' : '')}
+                className={'call-modal ' + mode + (fullscreen ? ' fullscreen' : '') + (cropCover ? ' crop-cover' : ' crop-contain') + (minimize ? ' minimize' : '') + (this.isMobile ? ' mobile-vew' : '')}
                 classes={{
                     paper: 'call-modal-paper',
                 }}
@@ -298,7 +304,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.setState({
             callId: '0',
             callStarted: false,
-            cropCover: true,
+            cropCover: !this.isMobile,
             fullscreen: false,
             groupId: undefined,
             isCaller: false,
@@ -505,11 +511,12 @@ class CallModal extends React.Component<IProps, IState> {
                         {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
                     </IconButton>
                 </Tooltip>
+                {!this.isMobile &&
                 <Tooltip enterDelay={500} title={i18n.t(fullscreen ? 'call.exit_fullscreen' : 'call.fullscreen')}>
                     <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                         {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                     </IconButton>
-                </Tooltip>
+                </Tooltip>}
                 <Tooltip enterDelay={500} title={i18n.t('general.close')}>
                     <IconButton className="call-action-item" onClick={this.closeHandler}>
                         <CloseRounded/>
@@ -583,12 +590,13 @@ class CallModal extends React.Component<IProps, IState> {
                         {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
                     </IconButton>
                 </Tooltip>}
+                {!this.isMobile &&
                 <Tooltip enterDelay={500} title={i18n.t(fullscreen ? 'call.exit_fullscreen' : 'call.fullscreen')}>
                     <IconButton className="call-action-item" onClick={this.toggleFullscreenHandler}>
                         {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                     </IconButton>
-                </Tooltip>
-                {!isGroup &&
+                </Tooltip>}
+                {!this.isMobile && !isGroup &&
                 <Tooltip enterDelay={500} title={i18n.t(minimize ? 'call.normal_size' : 'call.minimize')}>
                     <IconButton className="call-action-item" onClick={this.toggleMinimizeHandler}>
                         {minimize ? <WebAssetRounded/> : <DynamicFeedRounded/>}
@@ -715,8 +723,8 @@ class CallModal extends React.Component<IProps, IState> {
             };
             if (!this.callService.getLocalStream()) {
                 this.callService.initStream({
-                    audio: this.mediaSettings.audio ? getDefaultAudio() : false,
-                    video: this.mediaSettings.video ? getDefaultVideo() : false
+                    audio: this.mediaSettings.audio,
+                    video: this.mediaSettings.video,
                 }).then(() => {
                     callFn();
                 });
@@ -763,8 +771,8 @@ class CallModal extends React.Component<IProps, IState> {
 
     private initMediaStreams(video: boolean) {
         return this.callService.initStream({
-            audio: getDefaultAudio(),
-            video: video ? getDefaultVideo() : false
+            audio: true,
+            video: video,
         });
     }
 

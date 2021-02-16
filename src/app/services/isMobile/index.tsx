@@ -32,3 +32,7 @@ export default class IsMobile {
         return Boolean(IsMobile.isAndroid() || IsMobile.isBlackBerry() || IsMobile.isIOS() || IsMobile.isOpera() || IsMobile.isWindowsPhone());
     }
 }
+
+export const IsMobileView = () => {
+    return (window.innerWidth < 600);
+}

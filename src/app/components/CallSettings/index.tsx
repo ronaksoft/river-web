@@ -38,6 +38,7 @@ import Scrollbars from "react-custom-scrollbars";
 import {currentUserId} from "../../services/sdk";
 import {IUser} from "../../repository/user/interface";
 import VoiceActivityDetection from "../../services/vad";
+import IsMobile from "../../services/isMobile";
 
 import './style.scss';
 
@@ -67,6 +68,7 @@ class CallSettings extends React.Component<IProps, IState> {
     private vad: VoiceActivityDetection | undefined;
     private container: HTMLElement | undefined;
     private preventClosing: boolean = false;
+    private readonly isMobile = IsMobile.isAny();
 
     constructor(props: IProps) {
         super(props);
@@ -165,7 +167,7 @@ class CallSettings extends React.Component<IProps, IState> {
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('audio')}>
                     {mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
                 </IconButton>}
-                {allConnected && mediaDevice.screenShare &&
+                {!this.isMobile && allConnected && mediaDevice.screenShare &&
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('screenShare')}>
                     {mediaSettings.screenShare ? <StopScreenShareRounded/> : <ScreenShareRounded/>}
                 </IconButton>}

@@ -171,9 +171,10 @@ import ConnectionStatus from "../../components/ConnectionStatus";
 import {PartialDeep} from "type-fest";
 import CallService from "../../services/callService";
 import {getDefaultAudio} from "../../components/SettingsMediaInput";
+import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
+import {IsMobileView} from "../../services/isMobile";
 
 import './style.scss';
-import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 
 export let notifyOptions: any[] = [];
 
@@ -318,7 +319,7 @@ class Chat extends React.Component<IProps, IState> {
         this.updateManager = UpdateManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 256);
         this.isInChat = (document.visibilityState === 'visible');
-        this.isMobileView = (window.innerWidth < 600);
+        this.isMobileView = IsMobileView();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.bufferProgressBroadcaster = BufferProgressBroadcaster.getInstance();
         this.electronService = ElectronService.getInstance();

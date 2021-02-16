@@ -215,6 +215,7 @@ export default class CallService {
 
     // Screen Share
     private activeScreenShare: IScreenShare | undefined;
+    private lastVideoState: boolean = false;
 
     // Call variables
     private localStream: MediaStream | undefined;
@@ -286,12 +287,38 @@ export default class CallService {
         return this.activeCallId;
     }
 
-    public initStream(constraints: MediaStreamConstraints) {
-        return navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-            this.localStream = stream;
-            this.callHandlers(C_CALL_EVENT.LocalStreamUpdated, stream);
-            return stream;
-        });
+    public initStream(settings: { audio: boolean, video: boolean }) {
+        const constraints: MediaStreamConstraints = {
+            audio: settings.audio ? getDefaultAudio() : false,
+            video: settings.video ? getDefaultVideo() : false,
+        };
+        this.lastVideoState = settings.video;
+        if (!this.localStream) {
+            return navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+                this.localStream = stream;
+                this.callHandlers(C_CALL_EVENT.LocalStreamUpdated, stream);
+                return stream;
+            });
+        } else {
+            if (constraints.video) {
+                if (this.localStream.getVideoTracks().length > 0) {
+                    return Promise.resolve(this.localStream);
+                } else {
+                    return navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
+                        stream.getVideoTracks().forEach((track) => {
+                            this.localStream.addTrack(track);
+                        });
+                        return this.localStream;
+                    });
+                }
+            } else {
+                this.localStream.getVideoTracks().forEach((track) => {
+                    track.stop();
+                    this.localStream.removeTrack(track);
+                });
+                return Promise.resolve(this.localStream);
+            }
+        }
     }
 
     public toggleVideo(enable: boolean) {
@@ -330,7 +357,11 @@ export default class CallService {
             }
             const connId = this.getConnId(this.activeCallId, currentUserId);
             window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', Boolean(stream));
-            this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {connId, stream, userId: currentUserId});
+            this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+                connId,
+                stream: enable ? stream : undefined,
+                userId: currentUserId,
+            });
             return stream;
         });
     }
@@ -487,8 +518,8 @@ export default class CallService {
 
             if (!info.dialed) {
                 return this.initStream({
-                    audio: getDefaultAudio(),
-                    video: video ? getDefaultVideo() : false,
+                    audio: true,
+                    video: video,
                 }).then(() => {
                     return initFn();
                 });
@@ -602,6 +633,7 @@ export default class CallService {
                 conn.stream.getTracks().forEach((track) => {
                     track.stop();
                 });
+                conn.stream = undefined;
             }
             clearInterval(conn.interval);
         };
@@ -1197,11 +1229,13 @@ export default class CallService {
                                 if (conn.stream) {
                                     conn.stream.getTracks().forEach((track) => {
                                         track.stop();
+                                        conn.stream.removeTrack(track);
                                     });
                                 }
                                 if (conn.screenShareStream) {
                                     conn.screenShareStream.getTracks().forEach((track) => {
                                         track.stop();
+                                        conn.stream.removeTrack(track);
                                     });
                                 }
                             }
@@ -1579,10 +1613,9 @@ export default class CallService {
         if (!this.activeCallId) {
             return Promise.reject('no active call');
         }
-        this.destroyLocalStream();
         return this.initStream({
-            audio: getDefaultAudio(),
-            video: video ? getDefaultVideo() : false,
+            audio: true,
+            video: video,
         }).then((stream) => {
             this.upgradeConnection(stream);
             this.propagateMediaSettings({video});
@@ -1602,16 +1635,8 @@ export default class CallService {
             }
         }
         this.destroyScreenShareStream();
-        const fn = (stream: MediaStream | undefined) => {
-            this.screenShareStream = stream;
-            const streams = stream ? new MediaStream(this.localStream.getAudioTracks()) : this.localStream;
-            if (stream) {
-                stream.getVideoTracks().forEach((track) => {
-                    streams.addTrack(track);
-                });
-            }
-            window.console.log(`[webrtc] screen share video: (${streams.getVideoTracks().length}), audio: (${streams.getAudioTracks().length})`);
-            this.upgradeConnection(streams);
+        const fn = (stream: MediaStream) => {
+            this.upgradeConnection(stream, true);
             this.propagateMediaSettings({screenShare: enable});
             return Promise.resolve(stream);
         };
@@ -1623,60 +1648,84 @@ export default class CallService {
                     connId,
                     trackIds,
                 };
+                this.localStream.getVideoTracks().forEach((track) => {
+                    track.stop();
+                    this.localStream.removeTrack(track);
+                });
+                stream.getVideoTracks().forEach((track) => {
+                    this.localStream.addTrack(track);
+                });
                 return this.propagateScreenShareUpdate(true, trackIds).then(() => {
-                    return fn(stream);
+                    return fn(this.localStream);
                 });
             });
         } else {
             if (this.activeScreenShare && this.activeScreenShare.connId === connId) {
                 this.activeScreenShare = undefined;
             }
-            return this.propagateScreenShareUpdate(false, []).then(() => {
-                return fn(undefined);
+            this.localStream.getVideoTracks().forEach((track) => {
+                track.stop();
+                this.localStream.removeTrack(track);
+            });
+            return this.initStream({
+                audio: true,
+                video: this.lastVideoState,
+            }).then((stream) => {
+                return this.propagateScreenShareUpdate(false, []).then(() => {
+                    return fn(stream);
+                });
             });
         }
     }
 
-    private upgradeConnection(stream: MediaStream) {
-        const audioTracks = stream.getAudioTracks();
-        const videoTracks = stream.getVideoTracks();
-        for (const [connId, pc] of Object.entries(this.peerConnections)) {
-            if (pc.connection.iceConnectionState === 'connected') {
-                const senders = pc.connection.getSenders();
-                senders.forEach((sender, index) => {
-                    // if (pc.audioIndex === -1 && sender.track && sender.track.kind === 'audio') {
-                    //     pc.audioIndex = index;
-                    // } else if (pc.videoIndex === -1 && sender.track && sender.track.kind === 'video') {
-                    //     pc.videoIndex = index;
-                    // }
-                    pc.connection.removeTrack(sender);
-                });
-                // audioTracks.forEach((track) => {
-                //     if (pc.audioIndex > -1 && senders[pc.audioIndex]) {
-                //         senders[pc.audioIndex].setStreams(new MediaStream(audioTracks));
-                //     } else {
-                //         pc.connection.addTrack(track, stream);
-                //     }
-                // });
-                // videoTracks.forEach((track) => {
-                //     if (pc.videoIndex > -1 && senders[pc.videoIndex]) {
-                //         senders[pc.videoIndex].setStreams(new MediaStream(videoTracks));
-                //     } else {
-                //         pc.connection.addTrack(track, stream);
-                //     }
-                // });
-                audioTracks.forEach((track) => {
-                    pc.connection.addTrack(track, stream);
-                });
-                videoTracks.forEach((track) => {
-                    pc.connection.addTrack(track, stream);
-                });
-                pc.connection.createOffer(this.getOfferFromStream(stream)).then((res) => {
-                    return pc.connection.setLocalDescription(res).then(() => {
-                        return this.sendSDPOffer(this.parseNumberValue(connId), res);
+    private upgradeConnection(stream: MediaStream, forceRemoveVideo?: boolean) {
+        const videoTracks = stream.getVideoTracks().filter(o => o.readyState === 'live');
+        try {
+            for (const [connId, pc] of Object.entries(this.peerConnections)) {
+                if (pc.connection.iceConnectionState === 'connected') {
+                    const senders = pc.connection.getSenders();
+                    senders.forEach((sender, index) => {
+                        // if (pc.audioIndex === -1 && sender.track && sender.track.kind === 'audio') {
+                        //     pc.audioIndex = index;
+                        // } else if (pc.videoIndex === -1 && sender.track && sender.track.kind === 'video') {
+                        //     pc.videoIndex = index;
+                        // }
+                        if ((forceRemoveVideo || videoTracks.length === 0) && sender.track && sender.track.kind === 'video') {
+                            window.console.log('[webrtc] remove track', sender);
+                            pc.videoIndex = index;
+                            pc.connection.removeTrack(sender);
+                        }
                     });
-                });
+                    videoTracks.forEach((track) => {
+                        window.console.log('[webrtc] track', track);
+                        pc.connection.addTrack(track, stream);
+                    });
+                    // audioTracks.forEach((track) => {
+                    //     if (pc.audioIndex > -1 && senders[pc.audioIndex]) {
+                    //         senders[pc.audioIndex].setStreams(new MediaStream(audioTracks));
+                    //     } else {
+                    //         pc.connection.addTrack(track, stream);
+                    //     }
+                    // });
+                    // videoTracks.forEach((track) => {
+                    //     if (pc.videoIndex > -1 && senders[pc.videoIndex]) {
+                    //         senders[pc.videoIndex].setStreams(new MediaStream(videoTracks));
+                    //     } else {
+                    //         pc.connection.addTrack(track, stream);
+                    //     }
+                    // });
+                    // audioTracks.forEach((track) => {
+                    //     pc.connection.addTrack(track, stream);
+                    // });
+                    pc.connection.createOffer().then((res) => {
+                        return pc.connection.setLocalDescription(res).then(() => {
+                            return this.sendSDPOffer(this.parseNumberValue(connId), res);
+                        });
+                    });
+                }
             }
+        } catch (e) {
+            window.console.log(e, videoTracks);
         }
     }
 
@@ -1697,7 +1746,7 @@ export default class CallService {
             sdp: sdpOfferData.sdp,
             type: sdpOfferData.type as any,
         }).then(() => {
-            return pc.createAnswer(this.getOfferFromStream(this.localStream)).then((res) => {
+            return pc.createAnswer().then((res) => {
                 return pc.setLocalDescription(res).then(() => {
                     return this.sendSDPAnswer(connId, res);
                 });

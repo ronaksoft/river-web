@@ -50,6 +50,7 @@ import {ModalityService} from "kk-modality";
 import UserAvatar from "../UserAvatar";
 import MessageRepo from "../../repository/message";
 import Broadcaster from "../../services/broadcaster";
+import {IsMobileView} from "../../services/isMobile";
 
 import './style.scss';
 
@@ -145,7 +146,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private isElectron: boolean = ElectronService.isElectron();
     private modalityService: ModalityService;
     private messageRepo: MessageRepo;
-    private isMobileView = (window.innerWidth < 600);
+    private isMobileView = IsMobileView();
 
     constructor(props: IProps) {
         super(props);
