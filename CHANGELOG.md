@@ -1,3 +1,7 @@
+## 1.0.66
+* Message edit media implemented
+* Overall improvements
+
 ## 1.0.65
 * Call mobile view implemented
 * Call improvements

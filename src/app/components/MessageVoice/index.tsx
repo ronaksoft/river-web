@@ -10,19 +10,24 @@
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {InputPeer} from '../../services/sdk/messages/core.types_pb';
-import VoicePlayer, {getVoiceInfo} from '../VoicePlayer';
+import VoicePlayer, {getVoiceInfo, IVoicePlayerData} from '../VoicePlayer';
 import {MediaDocument} from '../../services/sdk/messages/chat.messages.medias_pb';
 import {GetDbFileName} from "../../repository/file";
+import {renderBody} from "../Message";
 
 import './style.scss';
+import ElectronService from "../../services/electron";
 
 interface IProps {
+    measureFn: any;
     message: IMessage;
     peer: InputPeer | null;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'open' | 'read', message: IMessage) => void;
+    onBodyAction: (cmd: string, text: string) => void;
 }
 
 interface IState {
+    mediaInfo: IVoicePlayerData;
     message: IMessage;
 }
 
@@ -32,11 +37,13 @@ class MessageVoice extends React.Component<IProps, IState> {
     private dbFileName: string = '';
     private downloaded: boolean = false;
     private contentRead: boolean = false;
+    private isElectron: boolean = ElectronService.isElectron();
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            mediaInfo: getVoiceInfo(props.message),
             message: props.message,
         };
 
@@ -48,13 +55,12 @@ class MessageVoice extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        const {message} = this.state;
-        const info = getVoiceInfo(message);
+        const {message, mediaInfo} = this.state;
         if (this.voicePlayerRef) {
             this.voicePlayerRef.setData({
-                bars: info.bars,
-                duration: info.duration,
-                fileName: info.fileName,
+                bars: mediaInfo.bars,
+                duration: mediaInfo.duration,
+                fileName: mediaInfo.fileName,
                 state: this.getVoiceState(message),
             });
         }
@@ -69,6 +75,7 @@ class MessageVoice extends React.Component<IProps, IState> {
             this.dbFileName = info.fileName || '';
 
             this.setState({
+                mediaInfo: info,
                 message: newProps.message,
             }, () => {
                 if (this.voicePlayerRef) {
@@ -96,12 +103,17 @@ class MessageVoice extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {message} = this.state;
+        const {message, mediaInfo} = this.state;
         return (
             <div className="message-voice">
-                <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
-                             max={16.0} message={this.state.message} onAction={this.actionHandler}/>
-                {!message.contentread && <span className="unread-bullet"/>}
+                <div className="message-voice-container">
+                    <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
+                                 max={16.0} message={this.state.message} onAction={this.actionHandler}/>
+                    {!message.contentread && <span className="unread-bullet"/>}
+                </div>
+                {Boolean(mediaInfo.caption && mediaInfo.caption.length > 0) &&
+                <div className={'voice-caption ' + (message.rtl ? 'rtl' : 'ltr')}
+                >{renderBody(mediaInfo.caption || '', mediaInfo.entityList, this.isElectron, this.props.onBodyAction, this.props.measureFn)}</div>}
             </div>
         );
     }

@@ -1154,9 +1154,12 @@ class Chat extends React.Component<IProps, IState> {
                 return o.id === data.message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
             });
             if (index > -1) {
-                const avatar = messages[index].avatar;
-                messages[index] = data.message;
-                messages[index].avatar = avatar;
+                const m: IMessage = data.message;
+                m.avatar = messages[index].avatar;
+                m.downloaded = messages[index].downloaded;
+                m.saved = messages[index].saved;
+                m.saved_path = messages[index].saved_path;
+                messages[index] = m;
                 this.updateVisibleRows([index], true);
             }
         }
@@ -1848,37 +1851,62 @@ class Chat extends React.Component<IProps, IState> {
             const randomId = UniqueId.getRandomId();
             const messages = this.messages;
             const message: IMessage = param.message;
-            message.body = text;
             message.editedon = this.riverTime.now();
             message.rtl = this.rtlDetector.direction(text || '');
-            message.messagetype = C_MESSAGE_TYPE.Normal;
 
-            let entities;
-            if (param && param.entities) {
-                message.entitiesList = param.entities.map((entity: MessageEntity) => {
-                    return entity.toObject();
-                });
-                entities = param.entities;
-            }
-
-            this.apiManager.editMessage(randomId, message.id || 0, text, peer, entities).then(() => {
+            const fnSuccess = (msg: IMessage, withClear?: boolean) => () => {
                 if (this.messageRef) {
                     this.messageRef.setScrollMode('stay');
                 }
                 const index = findIndex(messages, (o) => {
-                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    return o.id === msg.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
                 });
                 if (index > -1) {
-                    messages[index] = message;
-                    this.updateVisibleRows([index]);
+                    msg.avatar = messages[index].avatar;
+                    messages[index] = msg;
+                    this.updateVisibleRows([index], withClear, withClear);
                     if (this.chatInputRef && index + 1 === this.messages.length) {
                         this.chatInputRef.updateLastMessage();
                     }
                 }
-                this.messageRepo.importBulk([message]);
-            }).catch((err) => {
-                window.console.debug(err);
-            });
+                this.messageRepo.importBulk([msg]);
+            };
+            let entities;
+            switch (message.messagetype) {
+                default:
+                case C_MESSAGE_TYPE.Normal:
+                    message.body = text;
+                    message.messagetype = C_MESSAGE_TYPE.Normal;
+                    if (param && param.entities) {
+                        message.entitiesList = param.entities.map((entity: MessageEntity) => {
+                            return entity.toObject();
+                        });
+                        entities = param.entities;
+                    }
+
+                    this.apiManager.editMessage(peer, message.id || 0, randomId, text, entities).then(fnSuccess(message)).catch((err) => {
+                        window.console.debug(err);
+                    });
+                    break;
+                case C_MESSAGE_TYPE.Audio:
+                case C_MESSAGE_TYPE.File:
+                case C_MESSAGE_TYPE.Gif:
+                case C_MESSAGE_TYPE.Picture:
+                case C_MESSAGE_TYPE.Video:
+                case C_MESSAGE_TYPE.Voice:
+                    (message.mediadata as MediaDocument.AsObject).caption = text || '';
+                    if (param && param.entities) {
+                        (message.mediadata as MediaDocument.AsObject).entitiesList = param.entities.map((entity: MessageEntity) => {
+                            return entity.toObject();
+                        });
+                        entities = param.entities;
+                    }
+
+                    this.apiManager.editMediaMessage(peer, message.id || 0, randomId, text, entities).then(fnSuccess(message, true)).catch((err) => {
+                        window.console.debug(err);
+                    });
+                    break;
+            }
         } else {
             const randomId = UniqueId.getRandomId();
             const id = -this.riverTime.milliNow();

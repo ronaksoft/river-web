@@ -78,17 +78,18 @@ import {EventKeyUp, EventMouseUp, EventPaste, EventResize} from "../../services/
 import MentionInput, {IMention, mentionize} from "../MentionInput";
 import {getMessageIcon} from "../DialogMessage";
 import {getMapLocation} from "../MessageLocation";
-import {MediaContact} from "../../services/sdk/messages/chat.messages.medias_pb";
+import {MediaContact, MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
 import {getHumanReadableSize} from "../MessageFile";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@material-ui/core';
 import GifPicker from "../GifPicker";
 import {IGif} from "../../repository/gif/interface";
 import {Sticker} from "../SVG/sticker";
+import {getDefaultAudio} from "../SettingsMediaInput";
+import {canEditMessage, isEditableMessageType} from "../Message";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
-import {getDefaultAudio} from "../SettingsMediaInput";
 
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
@@ -350,6 +351,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private microphonePermission: boolean = false;
     private startPosHold: number = 0;
     private recordingVoice: boolean = false;
+    private loading: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -469,7 +471,12 @@ class ChatInput extends React.Component<IProps, IState> {
             });
         }
         if (previewMessageMode === C_MSG_MODE.Edit && previewMessage) {
-            const text = this.modifyBody(previewMessage.body || '', previewMessage.entitiesList);
+            let text: string = '';
+            if (!previewMessage.messagetype || previewMessage.messagetype === C_MESSAGE_TYPE.Normal) {
+                text = this.modifyBody(previewMessage.body || '', previewMessage.entitiesList);
+            } else if (isEditableMessageType(previewMessage.messagetype)) {
+                text = this.modifyBody((previewMessage.mediadata as MediaDocument.AsObject).caption, (previewMessage.mediadata as MediaDocument.AsObject).entitiesList);
+            }
             this.setState({
                 textareaValue: text,
             }, () => {
@@ -729,7 +736,10 @@ class ChatInput extends React.Component<IProps, IState> {
                 if (this.props.onPreviewMessageChange) {
                     this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
                 }
+                this.loading = false;
             }, 102);
+        } else {
+            this.loading = false;
         }
         this.removeDraft(removeDraft).finally(() => {
             if (cb) {
@@ -1171,9 +1181,7 @@ class ChatInput extends React.Component<IProps, IState> {
         } else if (e.keyCode === 38 && this.state.peer && this.state.previewMessageMode !== C_MSG_MODE.Edit && this.textarea.value === '') {
             const peerObj = this.state.peer.toObject();
             this.messageRepo.getLastMessage(this.teamId, peerObj.id || '', peerObj.type || 0, 'out').then((message) => {
-                if (message && ((this.riverTime.now() - (message.createdon || 0)) < 86400 &&
-                    (message.fwdsenderid === '0' || !message.fwdsenderid) &&
-                    (message.messagetype === C_MESSAGE_TYPE.Normal || (message.messagetype || 0) === 0))) {
+                if (message && canEditMessage(message, this.riverTime.now())) {
                     e.preventDefault();
                     if (this.props.onAction) {
                         this.props.onAction('edit', message)();
@@ -1633,7 +1641,8 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Send voice */
     private sendVoice() {
-        if (this.timerDuration >= 1 && this.voice) {
+        if (!this.loading && this.timerDuration >= 1 && this.voice) {
+            this.loading = true;
             const {previewMessage, previewMessageMode} = this.state;
             const message = cloneDeep(previewMessage);
             const item: IMediaItem = {

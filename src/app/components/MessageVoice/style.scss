@@ -8,23 +8,45 @@
 */
 
 .message-voice {
-  position: relative;
-  background-color: var(--glass-dark-low);
   border-radius: 5px;
-  .voice-player .play-timer {
-    width: 46px;
-    padding-top: 2px;
-    color: var(--grey-low);
+
+  .message-voice-container {
+    position: relative;
+    background-color: var(--glass-dark-low);
+    border-radius: 5px;
+
+    .voice-player .play-timer {
+      width: 46px;
+      padding-top: 2px;
+      color: var(--grey-low);
+    }
+
+    .unread-bullet {
+      position: absolute;
+      top: 50%;
+      right: 6px;
+      height: 5px;
+      width: 5px;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
   }
-  .unread-bullet {
-    position: absolute;
-    top: 50%;
-    right: 6px;
-    height: 5px;
-    width: 5px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 50%;
-    transform: translateY(-50%);
+
+  .voice-caption {
+    padding: 6px 6px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+
+    &.rtl {
+      direction: rtl;
+      text-align: right;
+    }
+
+    &.ltr {
+      direction: ltr;
+      text-align: left;
+    }
   }
 }
 
@@ -32,12 +54,16 @@ html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
   .message-voice {
-    background-color: var(--glass-dark-high);
-    .voice-player .play-timer {
-      color: var(--light);
-    }
-    .unread-bullet {
-      background-color: rgba(255, 255, 255, 0.3);
+    .message-voice-container {
+      background-color: var(--glass-dark-high);
+
+      .voice-player .play-timer {
+        color: var(--light);
+      }
+
+      .unread-bullet {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
     }
   }
 }
@@ -45,12 +71,18 @@ html[theme="dark-blue"] {
 html[bubble="2"] {
   .message-voice {
     border-radius: 16px;
-    .voice-player .play-timer {
-      padding-right: 6px;
-      width: 46px;
-    }
-    .unread-bullet {
-      right: 8px;
+
+    .message-voice-container {
+      border-radius: 16px;
+
+      .voice-player .play-timer {
+        padding-right: 6px;
+        width: 46px;
+      }
+
+      .unread-bullet {
+        right: 8px;
+      }
     }
   }
 }

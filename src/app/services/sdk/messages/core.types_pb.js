@@ -45,6 +45,7 @@ goog.exportSymbol('proto.msg.InputUser', null, global);
 goog.exportSymbol('proto.msg.InputWebLocation', null, global);
 goog.exportSymbol('proto.msg.Label', null, global);
 goog.exportSymbol('proto.msg.LabelsMany', null, global);
+goog.exportSymbol('proto.msg.MediaCategory', null, global);
 goog.exportSymbol('proto.msg.MediaType', null, global);
 goog.exportSymbol('proto.msg.MessageEntity', null, global);
 goog.exportSymbol('proto.msg.MessageEntityType', null, global);
@@ -12941,6 +12942,28 @@ proto.msg.MediaType = {
   MEDIATYPERESERVED4: 11,
   MEDIATYPERESERVED5: 12,
   MEDIATYPERESERVED6: 13
+};
+
+/**
+ * @enum {number}
+ */
+proto.msg.MediaCategory = {
+  MEDIACATEGORYNONE: 0,
+  MEDIACATEGORYAUDIO: 1,
+  MEDIACATEGORYVOICE: 2,
+  MEDIACATEGORYVIDEO: 3,
+  MEDIACATEGORYPHOTO: 4,
+  MEDIACATEGORYFILE: 5,
+  MEDIACATEGORYGIF: 6,
+  MEDIACATEGORYWEB: 7,
+  MEDIACATEGORYCONTACT: 8,
+  MEDIACATEGORYLOCATION: 9,
+  MEDIACATEGORYPOLL: 10,
+  MEDIACATEGORYRESERVED1: 11,
+  MEDIACATEGORYRESERVED2: 12,
+  MEDIACATEGORYRESERVED3: 13,
+  MEDIACATEGORYRESERVED4: 14,
+  MEDIACATEGORYRESERVED5: 15
 };
 
 /**

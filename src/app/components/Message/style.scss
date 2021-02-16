@@ -192,6 +192,14 @@
     }
   }
 
+  &.voice_caption {
+    .bubble {
+      .bubble-body {
+        padding: 3px !important;
+      }
+    }
+  }
+
   &.media, &.media_caption {
     .bubble {
       .bubble-body {

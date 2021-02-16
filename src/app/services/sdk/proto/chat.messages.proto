@@ -4,7 +4,6 @@ import "core.types.proto";
 
 option go_package = '.;msg';
 
-
 // MessageSend
 // @Function
 // @Return: MessagesSent
@@ -40,6 +39,17 @@ message MessagesEdit {
     repeated MessageEntity Entities = 5;
 }
 
+// MessagesEditMedia
+// @Function
+// @Return: Bool
+message MessagesEditMedia {
+    int64 RandomID = 1;
+    InputPeer Peer = 2;
+    int64 MessageID = 3;
+    string Caption = 4;
+    repeated MessageEntity Entities = 5;
+}
+
 // MessageReadHistory
 // @Function
 // Returns:
@@ -64,6 +74,16 @@ message MessagesGetHistory {
     int32 Limit = 3;
     int64 MaxID = 4;
     int64 MinID = 5;
+}
+
+// MessagesGetMediaHistory
+// @Function
+// Returns:     MessagesMany
+message MessagesGetMediaHistory {
+    InputPeer Peer = 2;
+    int32 Limit = 3;
+    int64 MaxID = 4;
+    MediaCategory Cat = 5;
 }
 
 // MessagesGetDialogs

@@ -160,6 +160,27 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
     }
 };
 
+export const isEditableMessageType = (type?: number) => {
+    if (!type) {
+        return true;
+    }
+    switch (type) {
+        case C_MESSAGE_TYPE.Normal:
+        case C_MESSAGE_TYPE.Audio:
+        case C_MESSAGE_TYPE.File:
+        case C_MESSAGE_TYPE.Gif:
+        case C_MESSAGE_TYPE.Picture:
+        case C_MESSAGE_TYPE.Video:
+        case C_MESSAGE_TYPE.Voice:
+            return true;
+    }
+    return false;
+};
+
+export const canEditMessage = (message: IMessage, time: number) => {
+    return ((time - message.createdon || 0)) < 86400 && (message.fwdsenderid === '0' || !message.fwdsenderid) && !message.fwd && isEditableMessageType(message.messagetype);
+};
+
 interface IProps {
     onContextMenu: (cmd: string, id: IMessage) => void;
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'download_stream' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
@@ -796,10 +817,7 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 3) {
-                    if (!disable && (this.riverTime.now() - (items[moreIndex].createdon || 0)) < 86400 &&
-                        (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid) &&
-                        (items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal || (items[moreIndex].messagetype || 0) === 0)
-                    ) {
+                    if (!disable && canEditMessage(items[moreIndex], this.riverTime.now())) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 7) {
@@ -1025,7 +1043,8 @@ class Message extends React.Component<IProps, IState> {
                                     {Boolean((message.fwdsenderid && message.fwdsenderid !== '0') || message.fwd) &&
                                     <MessageForwarded message={message} peer={peer}
                                                       onDoubleClick={this.moreCmdHandler('reply', index)}/>}
-                                    <div className="bubble-body" onClick={bubbleClickHandler}>
+                                    <div className="bubble-body" onClick={bubbleClickHandler}
+                                         key={message.editedon || 'static'}>
                                         {this.renderMessageBody(message, peer, messageMedia, parentEl, measureFn)}
                                         <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                        time={message.createdon || 0} editedTime={message.editedon || 0}
@@ -1359,7 +1378,8 @@ class Message extends React.Component<IProps, IState> {
             switch (message.messagetype) {
                 case C_MESSAGE_TYPE.Voice:
                     return (<MessageVoice key={message.id} message={message} peer={peer}
-                                          onAction={this.props.onAttachmentAction}/>);
+                                          onAction={this.props.onAttachmentAction} measureFn={measureFn}
+                                          onBodyAction={this.bodyActionHandler}/>);
                 case C_MESSAGE_TYPE.Audio:
                     return (<MessageAudio key={message.id} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction} measureFn={measureFn}
@@ -1414,16 +1434,10 @@ class Message extends React.Component<IProps, IState> {
                 type = 'audio';
                 break;
         }
-        if (type === 'media') {
+        if (type === 'media' || type === 'audio' || type === 'voice') {
             const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
             if ((messageMediaDocument.caption || '').length > 0) {
-                type = 'media_caption';
-            }
-        }
-        if (type === 'audio') {
-            const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-            if ((messageMediaDocument.caption || '').length > 0) {
-                type = 'audio_caption';
+                type = `${type}_caption`;
             }
         }
         let related = '';

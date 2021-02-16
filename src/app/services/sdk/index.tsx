@@ -57,7 +57,7 @@ import {
     InputTeam,
     InputUser,
     Label,
-    LabelsMany,
+    LabelsMany, MediaCategory,
     MessageEntity,
     PeerNotifySettings,
     PhoneContact,
@@ -76,11 +76,11 @@ import {
     MessagesDelete,
     MessagesDeleteReaction,
     MessagesDialogs,
-    MessagesEdit,
+    MessagesEdit, MessagesEditMedia,
     MessagesForward,
     MessagesGet,
     MessagesGetDialogs,
-    MessagesGetHistory,
+    MessagesGetHistory, MessagesGetMediaHistory,
     MessagesGetPinnedDialogs,
     MessagesGetReactionList,
     MessagesMany,
@@ -485,7 +485,7 @@ export default class APIManager {
         }
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary(), false, {
-            retry: 1,
+            retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
                 items: C_ERR_ITEM.ErrItemTimeout
@@ -494,7 +494,7 @@ export default class APIManager {
         }, reqIdFn);
     }
 
-    public editMessage(randomId: number, id: number, body: string, peer: InputPeer, entities?: MessageEntity[]): Promise<MessagesSent.AsObject> {
+    public editMessage(peer: InputPeer, id: number, randomId: number, body: string, entities?: MessageEntity[]): Promise<Bool.AsObject> {
         const data = new MessagesEdit();
         data.setRandomid(randomId);
         data.setBody(body);
@@ -505,7 +505,7 @@ export default class APIManager {
         }
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesEdit, data.serializeBinary(), true, {
-            retry: 1,
+            retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
                 items: C_ERR_ITEM.ErrItemTimeout
@@ -537,6 +537,25 @@ export default class APIManager {
         });
     }
 
+    public editMediaMessage(peer: InputPeer, id: number, randomId: number, caption: string, entities?: MessageEntity[]): Promise<Bool.AsObject> {
+        const data = new MessagesEditMedia();
+        data.setRandomid(randomId);
+        data.setPeer(peer);
+        data.setMessageid(id);
+        data.setCaption(caption);
+        if (entities) {
+            data.setEntitiesList(entities);
+        }
+        this.logVerbose(data);
+        return this.server.send(C_MSG.MessagesEditMedia, data.serializeBinary(), true, {
+            retry: 3,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+        }, undefined, true);
+    }
+
     public readMessageContent(ids: number[], peer: InputPeer): Promise<MessagesSent.AsObject> {
         const data = new MessagesReadContents();
         data.setPeer(peer);
@@ -553,6 +572,22 @@ export default class APIManager {
         data.setMaxid(Math.floor(maxId || 0));
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true, {
+            retry: 7,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemServer,
+            }],
+        });
+    }
+
+    public getMessageMediaHistory(peer: InputPeer, category: MediaCategory, {limit, maxId}: { limit: number, maxId: number }): Promise<MessagesMany.AsObject> {
+        const data = new MessagesGetMediaHistory();
+        data.setPeer(peer);
+        data.setCat(category);
+        data.setLimit(limit || 0);
+        data.setMaxid(Math.floor(maxId || 0));
+        this.logVerbose(data);
+        return this.server.send(C_MSG.MessagesGetMediaHistory, data.serializeBinary(), true, {
             retry: 7,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,

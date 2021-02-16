@@ -133,6 +133,46 @@ export namespace MessagesEdit {
   }
 }
 
+export class MessagesEditMedia extends jspb.Message {
+  getRandomid(): number;
+  setRandomid(value: number): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getMessageid(): number;
+  setMessageid(value: number): void;
+
+  getCaption(): string;
+  setCaption(value: string): void;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
+  addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesEditMedia.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesEditMedia): MessagesEditMedia.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesEditMedia, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesEditMedia;
+  static deserializeBinaryFromReader(message: MessagesEditMedia, reader: jspb.BinaryReader): MessagesEditMedia;
+}
+
+export namespace MessagesEditMedia {
+  export type AsObject = {
+    randomid: number,
+    peer?: core_types_pb.InputPeer.AsObject,
+    messageid: number,
+    caption: string,
+    entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
+  }
+}
+
 export class MessagesReadHistory extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
@@ -218,6 +258,40 @@ export namespace MessagesGetHistory {
     limit: number,
     maxid: number,
     minid: number,
+  }
+}
+
+export class MessagesGetMediaHistory extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getLimit(): number;
+  setLimit(value: number): void;
+
+  getMaxid(): number;
+  setMaxid(value: number): void;
+
+  getCat(): core_types_pb.MediaCategory;
+  setCat(value: core_types_pb.MediaCategory): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesGetMediaHistory.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesGetMediaHistory): MessagesGetMediaHistory.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesGetMediaHistory, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesGetMediaHistory;
+  static deserializeBinaryFromReader(message: MessagesGetMediaHistory, reader: jspb.BinaryReader): MessagesGetMediaHistory;
+}
+
+export namespace MessagesGetMediaHistory {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    limit: number,
+    maxid: number,
+    cat: core_types_pb.MediaCategory,
   }
 }
 

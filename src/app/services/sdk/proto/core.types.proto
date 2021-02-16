@@ -1,6 +1,5 @@
 syntax = "proto3";
 package msg;
-
 import "rony.proto";
 option go_package = '.;msg';
 
@@ -315,6 +314,26 @@ enum MediaType {
     MediaTypeReserved4 = 11;
     MediaTypeReserved5 = 12;
     MediaTypeReserved6 = 13;
+}
+
+// MediaCategory
+enum MediaCategory {
+    MediaCategoryNone = 0;
+    MediaCategoryAudio = 1;
+    MediaCategoryVoice = 2;
+    MediaCategoryVideo = 3;
+    MediaCategoryPhoto = 4;
+    MediaCategoryFile = 5;
+    MediaCategoryGif = 6;
+    MediaCategoryWeb = 7;
+    MediaCategoryContact = 8;
+    MediaCategoryLocation = 9;
+    MediaCategoryPoll = 10;
+    MediaCategoryReserved1 = 11;
+    MediaCategoryReserved2 = 12;
+    MediaCategoryReserved3 = 13;
+    MediaCategoryReserved4 = 14;
+    MediaCategoryReserved5 = 15;
 }
 
 // UserMessage

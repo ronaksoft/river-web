@@ -14,7 +14,7 @@ import {IMessage} from '../../repository/message/interface';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import AudioPlayer, {C_INSTANT_AUDIO, IAudioEvent} from '../../services/audioPlayer';
 import Broadcaster from '../../services/broadcaster';
-import {PeerType} from '../../services/sdk/messages/core.types_pb';
+import {MessageEntity, PeerType} from '../../services/sdk/messages/core.types_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import SettingsConfigManager from '../../services/settingsConfigManager';
 import {ThemeChanged} from "../SettingsMenu";
@@ -45,15 +45,18 @@ interface IState {
 
 export interface IVoicePlayerData {
     bars: number[];
+    caption?: string;
     duration: number;
+    fileName?: string;
+    entityList?: MessageEntity.AsObject[];
     state: 'pause' | 'progress' | 'download';
     voice?: Blob;
-    fileName?: string;
 }
 
 export const getVoiceInfo = (message: IMessage): IVoicePlayerData => {
     const info: IVoicePlayerData = {
         bars: [],
+        caption: '',
         duration: 0,
         fileName: '',
         state: 'download',
@@ -61,6 +64,10 @@ export const getVoiceInfo = (message: IMessage): IVoicePlayerData => {
     const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
     if (!messageMediaDocument) {
         return info;
+    }
+    info.caption = messageMediaDocument.caption || '';
+    if (messageMediaDocument.entitiesList) {
+        info.entityList = messageMediaDocument.entitiesList;
     }
     info.fileName = GetDbFileName(messageMediaDocument.doc.id, messageMediaDocument.doc.clusterid);
     if (!message.attributes) {
