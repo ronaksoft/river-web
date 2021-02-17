@@ -1,3 +1,6 @@
+## 1.0.67
+* Remove caption implemented
+
 ## 1.0.66
 * Message edit media implemented
 * Overall improvements

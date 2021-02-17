@@ -14,7 +14,12 @@ import Message, {highlightMessage, highlightMessageText} from '../../components/
 import MessageRepo, {getMediaDocument, modifyReactions} from '../../repository/message/index';
 import DialogRepo, {GetPeerName, GetPeerNameByPeer} from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
-import ChatInput, {C_TYPING_INTERVAL, C_TYPING_INTERVAL_OFFSET, IMessageParam} from '../../components/ChatInput/index';
+import ChatInput, {
+    C_TYPING_INTERVAL,
+    C_TYPING_INTERVAL_OFFSET,
+    canSendMessage,
+    IMessageParam
+} from '../../components/ChatInput/index';
 import {
     clone,
     cloneDeep,
@@ -25,7 +30,6 @@ import {
     findLastIndex,
     intersectionWith,
     throttle,
-    trimStart,
     uniq,
 } from 'lodash';
 import APIManager, {currentUserId} from '../../services/sdk/index';
@@ -1835,7 +1839,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private chatInputTextSendHandler = (text: string, param: IMessageParam) => {
-        if (trimStart(text).length === 0) {
+        if (!canSendMessage(text, param.mode, param.message)) {
             return;
         }
 

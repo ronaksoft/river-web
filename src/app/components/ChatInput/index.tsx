@@ -10,7 +10,7 @@
 /* eslint import/no-webpack-loader-syntax: off */
 import * as React from 'react';
 import {Picker as EmojiPicker} from 'emoji-mart';
-import {cloneDeep, range, throttle} from 'lodash';
+import {cloneDeep, range, throttle, trimStart} from 'lodash';
 import {
     AttachFileRounded,
     ClearRounded,
@@ -214,6 +214,11 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
     // fn(10, 5, MessageEntityType.MESSAGEENTITYTYPEEMAIL);
     //  text = "hi this is kk and nice to meet you";
     return {entities, text};
+};
+
+export const canSendMessage = (text: string, mode: number, message: IMessage) => {
+    return !(trimStart(text).length === 0 && (mode !== C_MSG_MODE.Edit ||
+        (mode === C_MSG_MODE.Edit && message && (!message.messagetype || message.messagetype === C_MESSAGE_TYPE.Normal))));
 };
 
 export interface IMessageParam {
@@ -1378,7 +1383,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.textarea.classList.add(`_${lines}-line`);
             this.lastLines = lines;
         }
-        if (!Boolean(droppedMessage) && this.textarea.value.length === 0) {
+        if (!Boolean(droppedMessage) && !canSendMessage(this.textarea.value, this.state.previewMessageMode, this.state.previewMessage)) {
             if (inputMode !== 'default') {
                 this.setInputMode('default');
             }
