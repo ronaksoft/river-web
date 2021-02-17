@@ -19,6 +19,7 @@ interface IProps {
     editedTime: number;
     id?: number;
     labelIds?: number[];
+    onClick?: (e: any) => void;
     onDoubleClick?: (e: any) => void;
     markAsSent?: boolean;
     readId?: number;
@@ -66,7 +67,7 @@ const onClickHandler = (e: any) => {
     e.stopPropagation();
 };
 
-const MessageStatus = ({onDoubleClick, time, editedTime, forceDoubleTick, id, labelIds, markAsSent, readId, status}: IProps) => {
+const MessageStatus = ({onClick, onDoubleClick, time, editedTime, forceDoubleTick, id, labelIds, markAsSent, readId, status}: IProps) => {
     return (
         <div className={'message-status'} onClick={onClickHandler} onDoubleClick={onDoubleClick}>
             {labelIds && <GetLabels labelIds={labelIds}/>}
