@@ -1,3 +1,6 @@
+## 1.0.68
+* Label long name render bug fixed
+
 ## 1.0.67
 * Remove caption implemented
 

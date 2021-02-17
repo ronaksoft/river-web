@@ -109,6 +109,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        max-width: calc(100% - 12px);
       }
 
       .label-counter {
@@ -189,7 +190,7 @@
       display: flex;
       height: 56px;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       padding: 8px 6px;
 
       .label-icon,
@@ -202,6 +203,7 @@
       .label-icon {
         position: relative;
         padding: 6px 0;
+        height: 40px;
 
         .label-circle {
           position: absolute;
@@ -243,9 +245,10 @@
         align-items: flex-start;
         justify-content: space-evenly;
         flex-direction: column;
-        flex: 1;
+        flex: 1 1;
         height: 100%;
         cursor: pointer;
+        max-width: calc(100% - 104px);
 
         .label-name {
           font-size: 14px;
@@ -253,6 +256,7 @@
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          max-width: 100%;
         }
 
         .label-counter {
