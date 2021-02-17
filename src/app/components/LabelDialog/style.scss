@@ -30,7 +30,7 @@
   }
 
   .label-container {
-    flex: 1;
+    flex: 1 1;
     line-height: 1.2em;
 
     &.label-placeholder {
@@ -89,7 +89,7 @@
         align-items: flex-start;
         justify-content: space-evenly;
         flex-direction: column;
-        flex: 1;
+        flex: 1 1;
         height: 100%;
         max-width: calc(100% - 104px);
 

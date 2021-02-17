@@ -37,7 +37,7 @@ input {
     }
 
     .link-container {
-      flex: 1;
+      flex: 1 1;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -338,7 +338,7 @@ input {
         position: static;
         background-color: #fff;
         border: 1px solid #cacaca;
-        flex: 1;
+        flex: 1 1;
         border-right: 1px solid #ddd;
         border-radius: 5px 0 0 5px;
 
@@ -481,7 +481,7 @@ input {
     cursor: pointer;
 
     .language-label {
-      flex: 1;
+      flex: 1 1;
       text-align: left;
       padding: 0 12px;
     }

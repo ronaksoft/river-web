@@ -62,7 +62,7 @@
     }
 
     label {
-      flex: 1;
+      flex: 1 1;
       padding: 10px 10px 10px 0;
     }
 
@@ -99,7 +99,7 @@
       align-items: flex-start;
       justify-content: space-evenly;
       flex-direction: column;
-      flex: 1;
+      flex: 1 1;
       height: 100%;
       padding: 2px 0;
 
@@ -154,7 +154,7 @@
   }
 
   .label-container {
-    flex: 1;
+    flex: 1 1;
 
     &.fill-list {
       display: flex;

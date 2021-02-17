@@ -16,7 +16,7 @@
     flex-direction: column;
 
     .peer-media-container {
-      flex: 1;
+      flex: 1 1;
     }
   }
 
@@ -26,7 +26,7 @@
     align-items: center;
 
     .peer-label {
-      flex: 1;
+      flex: 1 1;
       text-align: left;
     }
 
@@ -350,7 +350,7 @@
         }
 
         .media-item-info {
-          flex: 1;
+          flex: 1 1;
           display: flex;
           flex-direction: column;
           justify-content: space-evenly;

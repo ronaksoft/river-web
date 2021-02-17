@@ -90,7 +90,7 @@
             }
 
             .info {
-              flex: 1;
+              flex: 1 1;
               display: flex;
               justify-content: center;
               align-items: flex-start;
@@ -145,7 +145,7 @@
 
     .input {
       position: relative;
-      flex: 1;
+      flex: 1 1;
       margin: 8px 0;
       z-index: 2;
       display: flex;
@@ -254,7 +254,7 @@
 
     .voice-recorder {
       display: none;
-      flex: 1;
+      flex: 1 1;
       margin: 8px 0;
       z-index: 2;
       align-items: center;
@@ -288,7 +288,7 @@
       }
 
       .preview {
-        flex: 1;
+        flex: 1 1;
 
         canvas {
           width: 100%;
@@ -321,7 +321,7 @@
       }
 
       .play-frame {
-        flex: 1;
+        flex: 1 1;
         border-radius: 16px;
         background-color: var(--white);
         border: 1px solid rgba(50, 61, 71, 0.16);
@@ -466,12 +466,12 @@
       .keyboard-bot-row {
         display: flex;
         flex-direction: row;
-        flex: 1;
+        flex: 1 1;
 
         .keyboard-bot-col {
           display: flex;
           flex-direction: column;
-          flex: 1;
+          flex: 1 1;
           overflow: hidden;
 
           .bot-button {
@@ -513,7 +513,7 @@
     }
 
     .right-action {
-      flex: 1;
+      flex: 1 1;
       text-align: right;
     }
   }
@@ -527,7 +527,7 @@
       margin: 8px 0 0 48px;
       transition: height 0.1s;
       overflow: hidden;
-      flex: 1;
+      flex: 1 1;
 
       .preview-message-wrapper {
         display: flex;

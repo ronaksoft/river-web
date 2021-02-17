@@ -291,7 +291,7 @@
 
     .anchor-label {
       font-size: 16px;
-      flex: 1;
+      flex: 1 1;
 
       &.color-red {
         color: var(--red);
@@ -304,7 +304,7 @@
       }
 
       .anchor-label-title {
-        flex: 1;
+        flex: 1 1;
         text-align: left;
       }
 
@@ -390,7 +390,7 @@
         padding: 6px 24px 4px 8px;
 
         .select-label {
-          flex: 1;
+          flex: 1 1;
           color: var(--grey);
           user-select: none;
         }
@@ -422,7 +422,7 @@
       cursor: pointer;
 
       .language-label {
-        flex: 1;
+        flex: 1 1;
         text-align: left;
         padding: 0 12px;
       }
@@ -473,7 +473,7 @@
     }
 
     .header-label {
-      flex: 1;
+      flex: 1 1;
       text-align: left;
       cursor: pointer;
     }
@@ -513,7 +513,7 @@
     }
 
     .switch-label {
-      flex: 1;
+      flex: 1 1;
       text-align: left;
       padding: 16px 0 16px 16px;
       font-weight: 300;
@@ -607,7 +607,7 @@
     flex-direction: row-reverse;
 
     .slider {
-      flex: 1;
+      flex: 1 1;
       margin: 0 6px;
     }
 
@@ -800,7 +800,7 @@
     }
 
     .inner {
-      flex: 1;
+      flex: 1 1;
       display: flex;
       align-items: center;
       overflow: hidden;
@@ -825,7 +825,7 @@
       }
 
       .radio-label {
-        flex: 1;
+        flex: 1 1;
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -1201,7 +1201,7 @@
         font-weight: bold;
 
         .inner {
-          flex: 1;
+          flex: 1 1;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;

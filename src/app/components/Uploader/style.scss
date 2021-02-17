@@ -112,7 +112,7 @@
 
       .header-title {
         padding: 0 12px;
-        flex: 1;
+        flex: 1 1;
       }
 
       .header-icon {
@@ -358,7 +358,7 @@
                   word-break: break-word;
                   text-align: left;
                   font-weight: bold;
-                  flex: 1;
+                  flex: 1 1;
 
                   .size {
                     font-size: 12px;
@@ -380,7 +380,7 @@
         justify-content: center;
 
         .caption-container {
-          flex: 1;
+          flex: 1 1;
           padding: 0;
 
           .suggestion-list-container-zero {
@@ -443,7 +443,7 @@
                       }
 
                       .info {
-                        flex: 1;
+                        flex: 1 1;
                         display: flex;
                         justify-content: center;
                         align-items: flex-start;

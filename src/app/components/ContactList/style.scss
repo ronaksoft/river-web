@@ -75,7 +75,7 @@
   }
 
   .contact-list-container {
-    flex: 1;
+    flex: 1 1;
 
     .contact-container {
       height: 100%;
@@ -144,7 +144,7 @@
           font-weight: bold;
 
           .inner {
-            flex: 1;
+            flex: 1 1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;

@@ -50,7 +50,7 @@
       flex-direction: column;
 
       .map-picker-canvas {
-        flex: 1;
+        flex: 1 1;
 
         .map-marker {
           svg {
@@ -70,7 +70,7 @@
         justify-content: center;
 
         .caption-container {
-          flex: 1;
+          flex: 1 1;
           padding: 0;
 
           .suggestion-list-container-zero {
@@ -133,7 +133,7 @@
                       }
 
                       .info {
-                        flex: 1;
+                        flex: 1 1;
                         display: flex;
                         justify-content: center;
                         align-items: flex-start;

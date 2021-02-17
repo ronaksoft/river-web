@@ -38,7 +38,7 @@
     }
 
     .session-info {
-      flex: 1;
+      flex: 1 1;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -52,7 +52,7 @@
         margin: 0 0 3px;
 
         .session-col {
-          flex: 1;
+          flex: 1 1;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;

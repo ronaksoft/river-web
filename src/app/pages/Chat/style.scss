@@ -58,7 +58,7 @@
     .conversation {
       position: relative;
       width: 100%;
-      flex: 1;
+      flex: 1 1;
       background-color: var(--light-bg);
       background-repeat: repeat;
       background-size: 100px;
@@ -73,7 +73,7 @@
 
     .attachments {
       width: 100%;
-      flex: 1;
+      flex: 1 1;
       //height: calc(100% - 48px);
     }
 

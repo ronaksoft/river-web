@@ -45,7 +45,7 @@
     }
 
     .audio-player-content {
-      flex: 1;
+      flex: 1 1;
       align-items: center;
       justify-content: flex-start;
       display: flex;
@@ -113,7 +113,7 @@
 
           .song-info {
             padding: 0 0 0 12px;
-            flex: 1;
+            flex: 1 1;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -159,7 +159,7 @@
             }
 
             .seek {
-              flex: 1;
+              flex: 1 1;
             }
           }
 

@@ -55,7 +55,7 @@
         flex-direction: row-reverse;
         border-radius: 3px;
         border: 1px solid #c4c4c4;
-        flex: 1;
+        flex: 1 1;
         padding: 10px 6px;
 
         .flag-container {
@@ -73,7 +73,7 @@
         }
 
         input {
-          flex: 1;
+          flex: 1 1;
           direction: ltr;
           font-size: 14px;
         }
@@ -95,7 +95,7 @@
   }
 
   .change-phone-gap {
-    flex: 1;
+    flex: 1 1;
   }
 }
 

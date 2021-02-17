@@ -17,12 +17,12 @@
   .message-bot-row {
     display: flex;
     flex-direction: row;
-    flex: 1;
+    flex: 1 1;
 
     .message-bot-col {
       display: flex;
       flex-direction: column;
-      flex: 1;
+      flex: 1 1;
       overflow: hidden;
 
       .bot-button {
