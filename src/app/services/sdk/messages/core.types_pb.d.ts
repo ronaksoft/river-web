@@ -1266,8 +1266,8 @@ export namespace RSAPublicKey {
 }
 
 export class DHGroup extends jspb.Message {
-  getFingerprint(): number;
-  setFingerprint(value: number): void;
+  getFingerprint(): string;
+  setFingerprint(value: string): void;
 
   getPrime(): string;
   setPrime(value: string): void;
@@ -1287,7 +1287,7 @@ export class DHGroup extends jspb.Message {
 
 export namespace DHGroup {
   export type AsObject = {
-    fingerprint: number,
+    fingerprint: string,
     prime: string,
     gen: number,
   }
@@ -1727,14 +1727,14 @@ export enum MediaCategory {
   MEDIACATEGORYNONE = 0,
   MEDIACATEGORYAUDIO = 1,
   MEDIACATEGORYVOICE = 2,
-  MEDIACATEGORYVIDEO = 3,
-  MEDIACATEGORYPHOTO = 4,
-  MEDIACATEGORYFILE = 5,
-  MEDIACATEGORYGIF = 6,
-  MEDIACATEGORYWEB = 7,
-  MEDIACATEGORYCONTACT = 8,
-  MEDIACATEGORYLOCATION = 9,
-  MEDIACATEGORYPOLL = 10,
+  MEDIACATEGORYMEDIA = 3,
+  MEDIACATEGORYFILE = 4,
+  MEDIACATEGORYGIF = 5,
+  MEDIACATEGORYWEB = 6,
+  MEDIACATEGORYCONTACT = 7,
+  MEDIACATEGORYLOCATION = 8,
+  MEDIACATEGORYPOLL = 9,
+  MEDIACATEGORYRESERVED0 = 10,
   MEDIACATEGORYRESERVED1 = 11,
   MEDIACATEGORYRESERVED2 = 12,
   MEDIACATEGORYRESERVED3 = 13,

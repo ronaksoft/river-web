@@ -22,6 +22,7 @@ import {getWsServerUrl} from "../../../../components/DevTools";
 
 //@ts-ignore
 import RiverWorker from 'worker-loader?filename=river.js!../../worker';
+import {RiverConnection} from "../../messages/conn_pb";
 
 export const defaultGateway = 'edge.river.im';
 
@@ -264,13 +265,19 @@ export default class Socket {
         }
     }
 
+    private convertConnInfoProtoToJson(str: string) {
+        const data = base64ToU8a(str);
+        const connInfo = RiverConnection.deserializeBinary(data).toObject();
+        return JSON.stringify(connInfo);
+    }
+
     private messageHandler(cmd: string, data: any) {
         switch (cmd) {
             case C_JS_MSG.WASMLoaded:
                 this.wasmLoaded();
                 break;
             case C_JS_MSG.Save:
-                localStorage.setItem(C_LOCALSTORAGE.ConnInfo, data);
+                localStorage.setItem(C_LOCALSTORAGE.ConnInfo, this.convertConnInfoProtoToJson(data));
                 break;
             case C_JS_MSG.CreateAuthKey:
                 if (this.fnCreateAuthKey) {
@@ -429,9 +436,26 @@ export default class Socket {
         }, 12000);
     }
 
+    private convertConnInfoJsonToProto(str: string) {
+        if (!str || str === '') {
+            return '';
+        }
+        const data: RiverConnection.AsObject = JSON.parse(str);
+        const riverConn = new RiverConnection();
+        riverConn.setAuthid(data.authid);
+        riverConn.setAuthkey(data.authkey);
+        riverConn.setUserid(data.userid);
+        riverConn.setUsername(data.username);
+        riverConn.setPhone(data.phone);
+        riverConn.setFirstname(data.firstname);
+        riverConn.setLastname(data.lastname);
+        riverConn.setDifftime(data.difftime);
+        return uint8ToBase64(riverConn.serializeBinary());
+    }
+
     private wasmLoaded() {
         this.workerMessage(C_WASM_MSG.Load, {
-            connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo),
+            connInfo: this.convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
             serverKeys
         });
         this.initWebSocket();

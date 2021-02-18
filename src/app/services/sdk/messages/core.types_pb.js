@@ -10202,7 +10202,7 @@ proto.msg.DHGroup.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.DHGroup.toObject = function(includeInstance, msg) {
   var f, obj = {
-    fingerprint: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    fingerprint: jspb.Message.getFieldWithDefault(msg, 1, "0"),
     prime: jspb.Message.getFieldWithDefault(msg, 2, ""),
     gen: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
@@ -10242,7 +10242,7 @@ proto.msg.DHGroup.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setFingerprint(value);
       break;
     case 2:
@@ -10283,8 +10283,8 @@ proto.msg.DHGroup.prototype.serializeBinary = function() {
 proto.msg.DHGroup.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getFingerprint();
-  if (f !== 0) {
-    writer.writeInt64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeInt64String(
       1,
       f
     );
@@ -10308,19 +10308,19 @@ proto.msg.DHGroup.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * optional int64 FingerPrint = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.DHGroup.prototype.getFingerprint = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.DHGroup} returns this
  */
 proto.msg.DHGroup.prototype.setFingerprint = function(value) {
-  return jspb.Message.setProto3IntField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
@@ -12951,14 +12951,14 @@ proto.msg.MediaCategory = {
   MEDIACATEGORYNONE: 0,
   MEDIACATEGORYAUDIO: 1,
   MEDIACATEGORYVOICE: 2,
-  MEDIACATEGORYVIDEO: 3,
-  MEDIACATEGORYPHOTO: 4,
-  MEDIACATEGORYFILE: 5,
-  MEDIACATEGORYGIF: 6,
-  MEDIACATEGORYWEB: 7,
-  MEDIACATEGORYCONTACT: 8,
-  MEDIACATEGORYLOCATION: 9,
-  MEDIACATEGORYPOLL: 10,
+  MEDIACATEGORYMEDIA: 3,
+  MEDIACATEGORYFILE: 4,
+  MEDIACATEGORYGIF: 5,
+  MEDIACATEGORYWEB: 6,
+  MEDIACATEGORYCONTACT: 7,
+  MEDIACATEGORYLOCATION: 8,
+  MEDIACATEGORYPOLL: 9,
+  MEDIACATEGORYRESERVED0: 10,
   MEDIACATEGORYRESERVED1: 11,
   MEDIACATEGORYRESERVED2: 12,
   MEDIACATEGORYRESERVED3: 13,

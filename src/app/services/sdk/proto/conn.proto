@@ -1,0 +1,26 @@
+syntax = "proto3";
+package msg;
+
+import "core.types.proto";
+
+message PublicKey {
+    string N = 1;
+    int64 FingerPrint = 2 [jstype = JS_STRING];
+    uint32 E = 3;
+}
+
+message ServerKeys {
+    repeated PublicKey PublicKeys = 1;
+    repeated DHGroup DHGroups = 2;
+}
+
+message RiverConnection {
+    int64 AuthID = 1 [jstype = JS_STRING];
+    bytes AuthKey = 2;
+    int64 UserID = 3 [jstype = JS_STRING];
+    string Username = 4;
+    string Phone = 5;
+    string FirstName = 6;
+    string LastName = 7;
+    int64 DiffTime = 8;
+}
