@@ -1,3 +1,6 @@
+## 1.0.69
+* Screen share audio loop fixed
+
 ## 1.0.68
 * Label long name render bug fixed
 

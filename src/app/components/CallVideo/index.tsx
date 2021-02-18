@@ -179,7 +179,8 @@ class CallVideo extends React.Component<IProps, IState> {
                     <div className="screen-share-label">{i18n.t('call.streaming_from')}</div>
                     {screenShareUserId && <UserName className="user" id={screenShareUserId} noIcon={true} you={true}/>}
                 </div>
-                <video ref={this.shareScreenRefHandler} playsInline={true} autoPlay={true}/>
+                <video ref={this.shareScreenRefHandler} playsInline={true} autoPlay={true}
+                       muted={screenShareUserId === currentUserId}/>
             </div>}
         </div>);
     }
