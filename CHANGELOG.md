@@ -1,5 +1,5 @@
 ## 1.0.70
-* Known fixed
+* Known bugs fixed
 
 ## 1.0.69
 * Screen share audio loop fixed
