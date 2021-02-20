@@ -17,6 +17,9 @@ import {kMerge} from "../../services/utilities/kDash";
 import {IMessage} from "../message/interface";
 import {IPeer} from "../dialog/interface";
 import {EventMediaDBUpdated} from "../../services/events";
+import {C_MESSAGE_TYPE} from "../message/consts";
+import {InputPeer, MediaCategory, UserMessage} from "../../services/sdk/messages/core.types_pb";
+import APIManager, {currentUserId} from "../../services/sdk";
 
 interface IMediaWithCount {
     count: number;
@@ -41,12 +44,14 @@ export default class MediaRepo {
     private mediaList: IMedia[] = [];
     private readonly updateThrottle: any = null;
     private messageRepo: MessageRepo;
+    private apiManager: APIManager;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.updateThrottle = throttle(this.insertToDb, 300);
         this.messageRepo = MessageRepo.getInstance();
+        this.apiManager = APIManager.getInstance();
     }
 
     public create(media: IMedia) {
@@ -156,7 +161,7 @@ export default class MediaRepo {
         this.updateThrottle();
     }
 
-    public importBulk(medias: IMedia[]): Promise<any> {
+    public importBulk(medias: IMedia[], continues: boolean): Promise<any> {
         const tempGroup = uniqBy(medias, 'id');
         return this.upsert(tempGroup);
     }
@@ -214,6 +219,64 @@ export default class MediaRepo {
             }
         }
         execute(tempMedias);
+    }
+
+    private getHoleMessage(teamId: string, peerId: string, peerType: number, type: MediaCategory,id: number): IMedia {
+        return {
+            hole: true,
+            id: id + -0.5,
+            peerid: peerId,
+            peertype: peerType,
+            teamid: teamId,
+            type,
+        };
+    }
+
+    private checkHoles(teamId: string, peer: InputPeer, type: MediaCategory, id: number, limit: number) {
+        limit += 1;
+        const query = {
+            limit,
+            maxId: id,
+        };
+        return this.apiManager.getMessageMediaHistory(peer, type, query).then((remoteRes) => {
+            return this.modifyHoles(teamId, peer.getId() || '', peer.getType() || 0, type, remoteRes.messagesList, limit - 1).then(() => {
+                return remoteRes;
+            });
+        });
+    }
+
+    private modifyHoles(teamId: string, peerId: string, peerType: number, type: MediaCategory, res: UserMessage.AsObject[], limit: number) {
+        let max = 0;
+        let min = Infinity;
+        res.forEach((item) => {
+            if (item.id && item.id > max) {
+                max = item.id;
+            }
+            if (item.id && item.id < min) {
+                min = item.id;
+            }
+        });
+        let edgeMessage: IMessage | undefined;
+        if (res.length === limit + 1) {
+            edgeMessage = res.pop();
+        }
+        return this.db.medias.where('[teamid+peerid+peertype+type+id]').between([teamId, peerId, peerType, type, min - 1], [teamId, peerId, peerType, type, max + 1], true, true).filter((item) => {
+            return item.hole;
+        }).delete().then((dres) => {
+            if (edgeMessage) {
+                const medias: IMedia[] = [];
+                return this.db.medias.where('[teamid+peerid+peertype+type+id]').equals([teamId, peerId, peerType, edgeMessage.id || 0]).first().then((edgeRes) => {
+                    if (!edgeRes && edgeMessage) {
+                        medias.push(this.getHoleMessage(teamId, peerId, peerType, type, edgeMessage.id || 0));
+                        // window.console.log('insert hole at', edgeMessage.id);
+                    }
+                    medias.push(...MessageRepo.parseMessageMany(res, currentUserId));
+                    return this.upsert(messages);
+                });
+            } else {
+                return this.upsert(MessageRepo.parseMessageMany(res, currentUserId));
+            }
+        });
     }
 
     private broadcastEvent(name: string, data: any) {

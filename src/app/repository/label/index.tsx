@@ -137,9 +137,10 @@ export default class LabelRepo {
                     }
                     if (lim !== 0) {
                         this.getRemoteMessageByItem(teamId, id, {limit: lim, max: max || 0}).then((remoteRes) => {
+                            const messageWithMedia = MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId());
                             resolve({
                                 labelCount: cacheRes.labelCount + remoteRes.length,
-                                messageList: [...cacheRes.messageList, ...MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId())],
+                                messageList: [...cacheRes.messageList, ...messageWithMedia.messages],
                             });
                         }).catch((remoteErr) => {
                             reject(remoteErr);
@@ -190,7 +191,8 @@ export default class LabelRepo {
 
     public getRemoteMessageByItem(teamId: string, id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
         return this.apiManager.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId()) as Array<UserMessage.AsObject>;
+            const messageWithMediaMany = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
+            remoteRes.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
             const labelGroup = groupBy(remoteRes.messagesList, (o => o.teamid));
             for (const [team, messages] of Object.entries(labelGroup)) {
                 this.insertManyLabelItem(team || '0', id, messages);

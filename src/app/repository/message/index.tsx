@@ -8,13 +8,19 @@
 */
 
 import MessageDB from '../../services/db/message';
-import {IMessage, IPendingMessage, IReactionInfo} from './interface';
+import {
+    IMessage,
+    IMessageWithMedia,
+    IMessageWithMediaMany,
+    IPendingMessage,
+    IReactionInfo
+} from './interface';
 import {cloneDeep, differenceBy, find, throttle, uniq, difference, groupBy} from 'lodash';
 import APIManager, {currentUserId} from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import {
-    InputPeer,
+    InputPeer, MediaCategory,
     MediaType,
     MessageEntityType, ReactionCounter,
     UserMessage
@@ -40,7 +46,6 @@ import {
     MessageActionGroupDeleteUser, MessageActionGroupPhotoChanged, MessageActionGroupTitleChanged,
 } from '../../services/sdk/messages/chat.messages.actions_pb';
 import MediaRepo from '../media';
-import {C_MEDIA_TYPE} from '../media/interface';
 import {kMerge} from "../../services/utilities/kDash";
 import {emojiLevel} from "../../services/utilities/emoji";
 import FileRepo from "../file";
@@ -56,6 +61,7 @@ import {
     ReplyKeyboardMarkup
 } from "../../services/sdk/messages/chat.messages.markups_pb";
 import DialogRepo from "../dialog";
+import {IMedia} from "../media/interface";
 
 interface IClearHistory {
     teamId: string;
@@ -191,7 +197,7 @@ export default class MessageRepo {
         return attrOut;
     }
 
-    public static parseMessage(msg: Partial<UserMessage.AsObject>, userId: string): IMessage {
+    public static parseMessage(msg: Partial<UserMessage.AsObject>, userId: string): IMessageWithMedia {
         const out: IMessage = msg;
         if (msg.entitiesList && msg.entitiesList.length > 0) {
             out.mention_me = msg.entitiesList.some((entity) => {
@@ -300,39 +306,39 @@ export default class MessageRepo {
             }
             delete out.replymarkupdata;
         }
-        let msgType: number = 0;
+        let mediaType: MediaCategory = 0;
         switch (out.messagetype) {
             case C_MESSAGE_TYPE.Picture:
-                msgType = C_MEDIA_TYPE.PHOTO;
+                mediaType = MediaCategory.MEDIACATEGORYMEDIA;
                 break;
             case C_MESSAGE_TYPE.Video:
-                msgType = C_MEDIA_TYPE.VIDEO;
+                mediaType = MediaCategory.MEDIACATEGORYMEDIA;
                 break;
             case C_MESSAGE_TYPE.File:
-                msgType = C_MEDIA_TYPE.FILE;
+                mediaType = MediaCategory.MEDIACATEGORYFILE;
                 break;
             case C_MESSAGE_TYPE.Audio:
-                msgType = C_MEDIA_TYPE.AUDIO;
+                mediaType = MediaCategory.MEDIACATEGORYAUDIO;
                 break;
             case C_MESSAGE_TYPE.Voice:
-                msgType = C_MEDIA_TYPE.VOICE;
+                mediaType = MediaCategory.MEDIACATEGORYVOICE;
                 break;
             case C_MESSAGE_TYPE.Location:
-                msgType = C_MEDIA_TYPE.LOCATION;
+                mediaType = MediaCategory.MEDIACATEGORYLOCATION;
                 break;
             case C_MESSAGE_TYPE.Gif:
-                msgType = C_MEDIA_TYPE.GIF;
+                mediaType = MediaCategory.MEDIACATEGORYGIF;
                 break;
         }
-        if (msgType && out.id && (out.id || 0) > 0) {
-            MediaRepo.getInstance().importBulk([{
-                id: out.id,
-                peerid: out.peerid || '',
-                peertype: out.peertype || 0,
-                teamid: out.teamid || '0',
-                type: msgType,
-            }]);
-        }
+        // if (msgType && out.id && (out.id || 0) > 0) {
+        //     MediaRepo.getInstance().importBulk([{
+        //         id: out.id,
+        //         peerid: out.peerid || '',
+        //         peertype: out.peertype || 0,
+        //         teamid: out.teamid || '0',
+        //         type: msgType,
+        //     }]);
+        // }
         if (out.body && out.body.length > 0) {
             out.rtl = RTLDetector.getInstance().direction(out.body);
         }
@@ -348,13 +354,37 @@ export default class MessageRepo {
             out.reactionsList = modifyReactions(out.reactionsList || []);
             out.reaction_updated = true;
         }
-        return out;
+        const d: IMessageWithMedia = {
+            message: out,
+        };
+        if (mediaType) {
+            d.media = {
+                hole: false,
+                id: out.id,
+                peerid: out.peerid,
+                peertype: out.peertype,
+                teamid: out.teamid,
+                timestamp: out.createdon,
+                type: mediaType,
+            };
+        }
+        return d;
     }
 
-    public static parseMessageMany(msg: Partial<UserMessage.AsObject>[], userId: string): IMessage[] {
-        return msg.map((m) => {
-            return this.parseMessage(m, userId);
+    public static parseMessageMany(msg: Partial<UserMessage.AsObject>[], userId: string): IMessageWithMediaMany {
+        const messages: IMessage[] = [];
+        const medias: IMedia[] = [];
+        msg.forEach((m) => {
+            const d = this.parseMessage(m, userId);
+            messages.push(d.message);
+            if (d.media && d.media.type) {
+                medias.push(d.media);
+            }
         });
+        return {
+            medias,
+            messages,
+        };
     }
 
     public static getInstance() {
@@ -372,6 +402,7 @@ export default class MessageRepo {
     private apiManager: APIManager;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
+    private mediaRepo: MediaRepo;
     private messageBundle: { [key: string]: IMessageBundle } = {};
     private readonly getBundleMessageThrottle: any = null;
     private actionList: IMessageAction[] = [];
@@ -384,6 +415,7 @@ export default class MessageRepo {
         this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
+        this.mediaRepo = MediaRepo.getInstance();
         this.getBundleMessageThrottle = throttle(this.getMessageForBundle, 300);
     }
 
@@ -956,16 +988,6 @@ export default class MessageRepo {
         return this.db.messages.put(this.getHoleMessage(teamId, peerId, peerType, id, after));
     }
 
-    public getHoleMessage(teamId: string, peerId: string, peerType: number, id: number, after: boolean): IMessage {
-        return {
-            id: id + (after ? 0.5 : -0.5),
-            messagetype: C_MESSAGE_TYPE.Hole,
-            peerid: peerId,
-            peertype: peerType,
-            teamid: teamId,
-        };
-    }
-
     public insertEnd(teamId: string, peerId: string, peerType: number, id: number) {
         return this.db.messages.put({
             id: id - 0.5,
@@ -1054,7 +1076,11 @@ export default class MessageRepo {
         return this.checkHoles(teamId, peer, id, asc, limit).then((remoteMessages) => {
             this.userRepo.importBulk(false, remoteMessages.usersList);
             this.groupRepo.importBulk(remoteMessages.groupsList);
-            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId) as Array<UserMessage.AsObject>;
+            const messageWithMediaMany = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId);
+            remoteMessages.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
+            if (messageWithMediaMany.medias.length > 0) {
+                this.mediaRepo.importBulk(messageWithMediaMany.medias, true);
+            }
             return this.importBulk(remoteMessages.messagesList).then(() => {
                 if (asc) {
                     return [...messages, ...remoteMessages.messagesList];
@@ -1134,11 +1160,14 @@ export default class MessageRepo {
                 const dataIds = Object.keys(data.reqs);
                 res.messagesList.forEach((msg) => {
                     const idStr = String(msg.id || 0);
-                    const message = MessageRepo.parseMessage(msg, currentUserId);
-                    messages.push(message);
+                    const messageWithMedia = MessageRepo.parseMessage(msg, currentUserId);
+                    if (messageWithMedia.media) {
+                        this.mediaRepo.importBulk([messageWithMedia.media], false);
+                    }
+                    messages.push(messageWithMedia.message);
                     if (data.reqs[idStr]) {
                         data.reqs[idStr].promises.forEach((promise) => {
-                            promise.resolve(message);
+                            promise.resolve(messageWithMedia.message);
                         });
                         const index = dataIds.indexOf(idStr);
                         if (index > -1) {
@@ -1164,6 +1193,16 @@ export default class MessageRepo {
                 }
             });
         });
+    }
+
+    private getHoleMessage(teamId: string, peerId: string, peerType: number, id: number, after: boolean): IMessage {
+        return {
+            id: id + (after ? 0.5 : -0.5),
+            messagetype: C_MESSAGE_TYPE.Hole,
+            peerid: peerId,
+            peertype: peerType,
+            teamid: teamId,
+        };
     }
 
     private checkHoles(teamId: string, peer: InputPeer, id: number, asc: boolean, limit: number) {
@@ -1205,6 +1244,10 @@ export default class MessageRepo {
         return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, min - 1], [teamId, peerId, peerType, max + 1], true, true).filter((item) => {
             return (item.messagetype === C_MESSAGE_TYPE.Hole);
         }).delete().then((dres) => {
+            const messageWithMedia = MessageRepo.parseMessageMany(res, currentUserId);
+            if (messageWithMedia.medias.length > 0) {
+                this.mediaRepo.importBulk(messageWithMedia.medias, true);
+            }
             if (edgeMessage) {
                 const messages: IMessage[] = [];
                 return this.db.messages.where('[teamid+peerid+peertype+id]').equals([teamId, peerId, peerType, edgeMessage.id || 0]).first().then((edgeRes) => {
@@ -1212,11 +1255,11 @@ export default class MessageRepo {
                         messages.push(this.getHoleMessage(teamId, peerId, peerType, edgeMessage.id || 0, !asc));
                         // window.console.log('insert hole at', edgeMessage.id);
                     }
-                    messages.push(...MessageRepo.parseMessageMany(res, currentUserId));
+                    messages.push(...messageWithMedia.messages);
                     return this.upsert(messages);
                 });
             } else {
-                return this.upsert(MessageRepo.parseMessageMany(res, currentUserId));
+                return this.upsert(messageWithMedia.messages);
             }
         });
     }
