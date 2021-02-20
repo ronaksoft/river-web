@@ -62,6 +62,7 @@ import GroupSeenBy from "../GroupSeenBy";
 
 import './style.scss';
 import {IDialog} from "../../repository/dialog/interface";
+import {MessageActionContactRegistered} from "../../services/sdk/messages/chat.messages.actions_pb";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -1235,7 +1236,7 @@ class Message extends React.Component<IProps, IState> {
         switch (message.messageaction) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> {i18n.t('message.joined_river')}</span>);
+                    <UserName className="user" id={message.peerid || ''}/> {i18n.t('message.joined_river')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 return (<span className="system-message"><UserName className="sender" id={message.senderid || ''}
                                                                    you={true}/> {i18n.t('message.created_the_group')}</span>);

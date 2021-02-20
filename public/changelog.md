@@ -1,3 +1,6 @@
+## 1.0.72
+* Known bug fixed
+
 ## 1.0.71
 * Improvements in load more
 
