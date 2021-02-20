@@ -54,6 +54,7 @@ class RightMenu extends React.PureComponent<IProps, IState> {
             if (this.userInfoMenuRef) {
                 this.userInfoMenuRef.setPeer(teamId, peer, dialog);
             }
+            window.console.log(dialog);
             if (this.groupInfoMenuRef) {
                 this.groupInfoMenuRef.setPeer(teamId, peer, dialog);
             }
