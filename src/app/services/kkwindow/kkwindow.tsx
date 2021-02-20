@@ -75,7 +75,7 @@ const scrollbarThumbStyle: any = {
     transformOrigin: 'center center',
 };
 
-const C_TRY_SCROLL_TOP = 20;
+const C_TRY_SCROLL = 20;
 
 // TODO: measure width as well for better reaction render
 class KKWindow extends React.Component<IProps, IState> {
@@ -118,7 +118,7 @@ class KKWindow extends React.Component<IProps, IState> {
     private readonly loadBeforeLimit: number = 5;
     private loadAfterTriggered: boolean = false;
     private readonly loadAfterLimit: number = 5;
-    private loadBeforeTimeout: any = null;
+    private loadMoreTimeout: any = null;
     private paddingTop: string = '0';
     private smallerThanContainer: boolean = false;
 
@@ -268,8 +268,8 @@ class KKWindow extends React.Component<IProps, IState> {
         this.loadMoreReady = false;
         this.loadBeforeTriggered = 0;
         this.loadAfterTriggered = false;
-        clearTimeout(this.loadBeforeTimeout);
-        this.loadBeforeTimeout = null;
+        clearTimeout(this.loadMoreTimeout);
+        this.loadMoreTimeout = null;
         if (this.cellMeasurer) {
             this.cellMeasurer.clearAll();
         }
@@ -354,15 +354,15 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     private scrollHandler = (e: any) => {
-        if (this.scrollbar.noScroll) {
+        if (this.scrollbar.noScroll || !this.containerRef) {
             return;
         }
         const scrollTop = e.target.scrollTop;
-        this.cellMeasurer.scrollHandler(this.getHeight(), scrollTop);
-        if (this.loadMoreReady && this.loadBeforeTriggered >= 1 && this.loadBeforeTriggered <= 3 && scrollTop < C_TRY_SCROLL_TOP) {
-            this.loadBeforeTimeout = setTimeout(() => {
-                this.tryLoadBefore();
-            }, 500);
+        const height = this.getHeight();
+        const containerHeight = this.containerRef.scrollHeight;
+        this.cellMeasurer.scrollHandler(height, scrollTop);
+        if (scrollTop < C_TRY_SCROLL || scrollTop > (containerHeight - (height + C_TRY_SCROLL))) {
+            this.tryLoadMore();
         }
     }
 
@@ -560,9 +560,9 @@ class KKWindow extends React.Component<IProps, IState> {
         if (this.loadMoreReady) {
             if (start <= this.loadBeforeLimit && this.loadBeforeTriggered < 15) {
                 if (this.props.onLoadBefore) {
-                    if (this.loadBeforeTimeout) {
-                        clearTimeout(this.loadBeforeTimeout);
-                        this.loadBeforeTimeout = null;
+                    if (this.loadMoreTimeout) {
+                        clearTimeout(this.loadMoreTimeout);
+                        this.loadMoreTimeout = null;
                     }
                     this.props.onLoadBefore(start, end);
                 }
@@ -573,6 +573,10 @@ class KKWindow extends React.Component<IProps, IState> {
             const toEnd = this.props.count - (end + 1);
             if (toEnd <= this.loadAfterLimit && !this.loadAfterTriggered) {
                 if (this.props.onLoadAfter) {
+                    if (this.loadMoreTimeout) {
+                        clearTimeout(this.loadMoreTimeout);
+                        this.loadMoreTimeout = null;
+                    }
                     this.props.onLoadAfter(start, end);
                 }
                 this.loadAfterTriggered = true;
@@ -582,20 +586,30 @@ class KKWindow extends React.Component<IProps, IState> {
         }
     }
 
-    private tryLoadBefore() {
-        if (this.containerRef && this.loadMoreReady && this.containerRef.scrollTop < C_TRY_SCROLL_TOP) {
-            if (this.props.onLoadBefore) {
-                this.props.onLoadBefore(0, 10);
-            }
-            this.loadBeforeTriggered++;
-            if (this.loadMoreReady && this.loadBeforeTriggered >= 1 && this.loadBeforeTriggered <= 3) {
-                this.loadBeforeTimeout = setTimeout(() => {
-                    if (this.containerRef && this.containerRef.scrollTop < C_TRY_SCROLL_TOP) {
-                        this.tryLoadBefore();
-                    }
-                }, 500);
-            }
+    private tryLoadMore() {
+        if (this.loadMoreTimeout) {
+            return;
         }
+        this.loadMoreTimeout = setTimeout(() => {
+            this.loadMoreTimeout = null;
+            if (!this.loadMoreReady || !this.containerRef) {
+                return;
+            }
+            const height = this.getHeight();
+            const containerHeight = this.containerRef.scrollHeight;
+            const scrollTop = this.containerRef.scrollTop;
+            if (scrollTop < C_TRY_SCROLL && this.loadBeforeTriggered < 2) {
+                this.loadBeforeTriggered++;
+                if (this.props.onLoadBefore) {
+                    this.props.onLoadBefore(0, 10);
+                }
+            } else if (scrollTop > (containerHeight - (height + C_TRY_SCROLL)) && !this.loadAfterTriggered) {
+                this.loadAfterTriggered = true;
+                if (this.props.onLoadAfter) {
+                    this.props.onLoadAfter(0, this.props.count);
+                }
+            }
+        }, 767);
     }
 
     private getHeight() {

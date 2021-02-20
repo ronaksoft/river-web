@@ -409,6 +409,9 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public setPeer(peer: InputPeer | null, dialog: IDialog | null) {
+        if (this.scrollDownTimeout) {
+            clearTimeout(this.scrollDownTimeout);
+        }
         if (this.inputPeer !== peer) {
             this.inputPeer = peer;
             this.savedMessages = Boolean(peer && this.props.userId === peer.getId());
