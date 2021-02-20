@@ -263,6 +263,8 @@ export default class MediaRepo {
         return this.db.medias.where('[teamid+peerid+peertype+type+id]').between([teamId, peerId, peerType, type, min - 1], [teamId, peerId, peerType, type, max + 1], true, true).filter((item) => {
             return item.hole;
         }).delete().then((dres) => {
+            const messageWithMediaMany =  MessageRepo.parseMessageMany(res, currentUserId);
+            this.messageRepo.importBulk(messageWithMediaMany.messages);
             if (edgeMessage) {
                 const medias: IMedia[] = [];
                 return this.db.medias.where('[teamid+peerid+peertype+type+id]').equals([teamId, peerId, peerType, edgeMessage.id || 0]).first().then((edgeRes) => {
@@ -270,11 +272,11 @@ export default class MediaRepo {
                         medias.push(this.getHoleMessage(teamId, peerId, peerType, type, edgeMessage.id || 0));
                         // window.console.log('insert hole at', edgeMessage.id);
                     }
-                    medias.push(...MessageRepo.parseMessageMany(res, currentUserId));
-                    return this.upsert(messages);
+                    medias.push(...messageWithMediaMany.medias);
+                    return this.upsert(messageWithMediaMany.medias);
                 });
             } else {
-                return this.upsert(MessageRepo.parseMessageMany(res, currentUserId));
+                return this.upsert(messageWithMediaMany.medias);
             }
         });
     }

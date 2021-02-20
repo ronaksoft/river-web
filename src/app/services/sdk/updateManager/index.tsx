@@ -60,6 +60,8 @@ import GifRepo from "../../../repository/gif";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../index";
 import RiverTime from "../../utilities/river_time";
+import {IMedia} from "../../../repository/media/interface";
+import MediaRepo from "../../../repository/media";
 
 const C_MAX_UPDATE_DIFF = 5000;
 const C_DIFF_AMOUNT = 100;
@@ -142,6 +144,7 @@ interface ITransactionPayload {
     labels: { [key: number]: ILabel };
     lastOne?: boolean;
     live: boolean;
+    medias: { [key: number]: IMedia };
     messages: { [key: number]: IMessage };
     randomMessageIds: number[];
     reloadLabels: boolean;
@@ -196,6 +199,7 @@ export default class UpdateManager {
     // Repositories
     private dialogRepo: DialogRepo | undefined;
     private messageRepo: MessageRepo | undefined;
+    private mediaRepo: MediaRepo | undefined;
     private userRepo: UserRepo | undefined;
     private groupRepo: GroupRepo | undefined;
     private labelRepo: LabelRepo | undefined;
@@ -223,6 +227,7 @@ export default class UpdateManager {
             this.groupRepo = GroupRepo.getInstance();
             this.dialogRepo = DialogRepo.getInstance();
             this.messageRepo = MessageRepo.getInstance();
+            this.mediaRepo = MediaRepo.getInstance();
             this.labelRepo = LabelRepo.getInstance();
             this.fileRepo = FileRepo.getInstance();
             this.topPeerRepo = TopPeerRepo.getInstance();
@@ -609,6 +614,7 @@ export default class UpdateManager {
             labels: {},
             lastOne: data.lastOne || false,
             live,
+            medias: {},
             messages: {},
             randomMessageIds: [],
             reloadLabels: false,
@@ -691,13 +697,18 @@ export default class UpdateManager {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateNewMessage);
-                const message = MessageRepo.parseMessage(updateNewMessage.message, currentUserId);
+                const messageWithMedia = MessageRepo.parseMessage(updateNewMessage.message, currentUserId);
+                const message = messageWithMedia.message;
                 updateNewMessage.message = message as UserMessage.AsObject;
                 if (!this.callUpdateHandler(message.teamid || '0', update.constructor, updateNewMessage)) {
                     this.callHandlers('all', C_MSG.UpdateNewMessageOther, updateNewMessage);
                 }
                 // Add message
                 this.mergeMessage(transaction.messages, transaction.incomingIds, message);
+                // Add media
+                if (messageWithMedia.media) {
+                    this.mergeMedia(transaction.medias, messageWithMedia.media);
+                }
                 // Add random message
                 if (message.senderid === currentUserId) {
                     transaction.randomMessageIds.push(updateNewMessage.senderrefid || 0);
@@ -782,7 +793,7 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateMessageEdited);
-                updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, currentUserId) as UserMessage.AsObject;
+                updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, currentUserId).message as UserMessage.AsObject;
                 this.callUpdateHandler(updateMessageEdited.message.teamid || '0', update.constructor, updateMessageEdited);
                 // Update message
                 this.mergeMessage(transaction.messages, undefined, updateMessageEdited.message);
@@ -1187,6 +1198,15 @@ export default class UpdateManager {
         }
     }
 
+    private mergeMedia(medias: { [key: number]: IMedia }, media: IMedia) {
+        const m = medias[media.id];
+        if (m) {
+            medias[m.id] = kMerge(m, media);
+        } else {
+            medias[m.id] = media;
+        }
+    }
+
     private removeMessage(messages: { [key: number]: IMessage }, id: number) {
         delete messages[id];
     }
@@ -1322,6 +1342,10 @@ export default class UpdateManager {
                     }
                     return res;
                 }));
+            }
+            // Media list
+            if (Object.keys(transaction.medias).length > 0) {
+                promises.push(this.applyMedias(transaction.medias));
             }
             // Removed message list
             if (Object.keys(transaction.removedMessages).length > 0) {
@@ -1608,6 +1632,18 @@ export default class UpdateManager {
                 peers,
                 randomIds: randomMessageIds,
             });
+        }
+    }
+
+    private applyMedias(medias: { [key: number]: IMedia }) {
+        const mediaList: IMedia[] = [];
+        Object.values(medias).forEach((media) => {
+            mediaList.push(media);
+        });
+        if (mediaList.length > 0 && this.messageRepo) {
+            return this.mediaRepo.importBulk(mediaList, true);
+        } else {
+            return Promise.resolve();
         }
     }
 

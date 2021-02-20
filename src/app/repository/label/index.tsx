@@ -20,6 +20,7 @@ import {IMessage} from "../message/interface";
 import UserRepo from "../user";
 import GroupRepo from "../group";
 import {UserMessage} from "../../services/sdk/messages/core.types_pb";
+import MediaRepo from "../media";
 
 export default class LabelRepo {
     public static labelColors: { [key: number]: string } = {};
@@ -39,6 +40,7 @@ export default class LabelRepo {
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
+    private mediaRepo: MediaRepo;
     private broadcaster: Broadcaster;
     private apiManager: APIManager;
 
@@ -48,6 +50,7 @@ export default class LabelRepo {
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
+        this.mediaRepo = MediaRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.apiManager = APIManager.getInstance();
         this.db.labels.toArray().then((items) => {
@@ -137,10 +140,9 @@ export default class LabelRepo {
                     }
                     if (lim !== 0) {
                         this.getRemoteMessageByItem(teamId, id, {limit: lim, max: max || 0}).then((remoteRes) => {
-                            const messageWithMedia = MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId());
                             resolve({
                                 labelCount: cacheRes.labelCount + remoteRes.length,
-                                messageList: [...cacheRes.messageList, ...messageWithMedia.messages],
+                                messageList: [...cacheRes.messageList, ...remoteRes],
                             });
                         }).catch((remoteErr) => {
                             reject(remoteErr);
@@ -193,10 +195,16 @@ export default class LabelRepo {
         return this.apiManager.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
             const messageWithMediaMany = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
             remoteRes.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
-            const labelGroup = groupBy(remoteRes.messagesList, (o => o.teamid));
+            const labelGroup = groupBy(messageWithMediaMany.messages, (o => o.teamid));
             for (const [team, messages] of Object.entries(labelGroup)) {
                 this.insertManyLabelItem(team || '0', id, messages);
                 this.messageRepo.insertDiscrete(teamId, messages);
+            }
+            if (messageWithMediaMany.medias.length > 0) {
+                const labelMediasGroup = groupBy(messageWithMediaMany.medias, (o => o.teamid));
+                for (const media of Object.values(labelMediasGroup)) {
+                    this.mediaRepo.importBulk(media, false);
+                }
             }
             this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);

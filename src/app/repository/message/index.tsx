@@ -1244,9 +1244,9 @@ export default class MessageRepo {
         return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, min - 1], [teamId, peerId, peerType, max + 1], true, true).filter((item) => {
             return (item.messagetype === C_MESSAGE_TYPE.Hole);
         }).delete().then((dres) => {
-            const messageWithMedia = MessageRepo.parseMessageMany(res, currentUserId);
-            if (messageWithMedia.medias.length > 0) {
-                this.mediaRepo.importBulk(messageWithMedia.medias, true);
+            const messageWithMediaMany = MessageRepo.parseMessageMany(res, currentUserId);
+            if (messageWithMediaMany.medias.length > 0) {
+                this.mediaRepo.importBulk(messageWithMediaMany.medias, true);
             }
             if (edgeMessage) {
                 const messages: IMessage[] = [];
@@ -1255,11 +1255,11 @@ export default class MessageRepo {
                         messages.push(this.getHoleMessage(teamId, peerId, peerType, edgeMessage.id || 0, !asc));
                         // window.console.log('insert hole at', edgeMessage.id);
                     }
-                    messages.push(...messageWithMedia.messages);
+                    messages.push(...messageWithMediaMany.messages);
                     return this.upsert(messages);
                 });
             } else {
-                return this.upsert(messageWithMedia.messages);
+                return this.upsert(messageWithMediaMany.messages);
             }
         });
     }
