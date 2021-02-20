@@ -59,10 +59,9 @@ import Reaction from "../Reaction";
 import ReactionPicker from "../ReactionPicker";
 import ReactionList from "../ReactionList";
 import GroupSeenBy from "../GroupSeenBy";
+import {IDialog} from "../../repository/dialog/interface";
 
 import './style.scss';
-import {IDialog} from "../../repository/dialog/interface";
-import {MessageActionContactRegistered} from "../../services/sdk/messages/chat.messages.actions_pb";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
