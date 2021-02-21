@@ -1,3 +1,6 @@
+## 1.0.73
+* Improvements in sending container message 
+
 ## 1.0.72
 * Joined river bug fixed
 
