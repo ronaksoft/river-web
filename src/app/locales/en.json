@@ -581,5 +581,13 @@
     "privacy_error": "You cannot call this user because of their privacy settings.",
     "streaming_from": "Streaming from ",
     "screen_list": "Screen List"
+  },
+  "notification": {
+    "new_messages": "{0} new messages",
+    "mention": "{0} mentioned you in {1}",
+    "group_title": "{0} in {1}",
+    "reaction_group_title": "{0} reacted in {1}",
+    "reaction_title": "{0} reacted",
+    "reaction": "{0} on \"{1}\""
   }
 }

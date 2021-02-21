@@ -1,3 +1,6 @@
+## 1.0.75
+* Notifications updated
+
 ## 1.0.74
 * Improvements in group get full
 
