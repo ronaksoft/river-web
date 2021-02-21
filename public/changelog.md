@@ -1,3 +1,6 @@
+## 1.0.74
+* Improvements in group get ful
+
 ## 1.0.73
 * Improvements in sending container message
 
