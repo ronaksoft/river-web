@@ -1267,7 +1267,7 @@ export default class MessageRepo {
             }
             if (edgeMessage) {
                 const messages: IMessage[] = [];
-                return this.db.messages.where('[teamid+peerid+peertype+id]').equals([teamId, peerId, peerType, edgeMessage.id || 0]).first().then((edgeRes) => {
+                return this.db.messages.where('id').equals(edgeMessage.id || 0).first().then((edgeRes) => {
                     if (!edgeRes && edgeMessage) {
                         messages.push(this.getHoleMessage(teamId, peerId, peerType, edgeMessage.id || 0, !asc));
                         // window.console.log('insert hole at', edgeMessage.id);

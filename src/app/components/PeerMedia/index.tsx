@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import MediaRepo from '../../repository/media';
-import {InputPeer} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer, MediaCategory} from '../../services/sdk/messages/core.types_pb';
 import {getDuration, getMediaInfo, IMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
 import {
@@ -28,7 +28,6 @@ import {
 } from '@material-ui/icons';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import {Tabs, Tab, Menu, MenuItem, IconButton, Tooltip} from '@material-ui/core';
-import {C_MEDIA_TYPE} from '../../repository/media/interface';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import Scrollbars from 'react-custom-scrollbars';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
@@ -196,8 +195,9 @@ class PeerMedia extends React.Component<IProps, IState> {
                               onChange={this.tabChangeHandler}>
                             <Tab value={0} label={i18n.t('peer_info.photo_video')} className="peer-media-tab-item"/>
                             <Tab value={1} label={i18n.t('peer_info.audio')} className="peer-media-tab-item"/>
-                            <Tab value={2} label={i18n.t('peer_info.file')} className="peer-media-tab-item"/>
-                            <Tab value={3} label={i18n.t('peer_info.gif')} className="peer-media-tab-item"/>
+                            <Tab value={2} label={i18n.t('peer_info.voice')} className="peer-media-tab-item"/>
+                            <Tab value={3} label={i18n.t('peer_info.file')} className="peer-media-tab-item"/>
+                            <Tab value={4} label={i18n.t('peer_info.gif')} className="peer-media-tab-item"/>
                         </Tabs>}
                 </div>}
                 <div className="peer-media-container">
@@ -292,7 +292,6 @@ class PeerMedia extends React.Component<IProps, IState> {
         const actions: IMenuItem[] = [];
         const {selectedIds} = this.state;
         actions.push(this.actionsItems[0]);
-        window.console.log(selectedIds);
         if (selectedIds.length === 1) {
             actions.push(this.actionsItems[1]);
         }
@@ -341,6 +340,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             switch (tab) {
                 default:
                 case 0:
+                case 4:
                     if (items.length > 0) {
                         return (
                             <Scrollbars
@@ -354,6 +354,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     }
                 case 1:
                 case 2:
+                case 3:
                     if (items.length > 0) {
                         return (
                             <Scrollbars
@@ -363,9 +364,9 @@ class PeerMedia extends React.Component<IProps, IState> {
                             </Scrollbars>
                         );
                     } else {
-                        if (tab === 1) {
+                        if (tab === 1 || tab === 2) {
                             return (<div className="media-placeholder"><span className="img audio"/></div>);
-                        } else if (tab === 2) {
+                        } else if (tab === 3) {
                             return (<div className="media-placeholder"><span className="img file"/></div>);
                         } else {
                             return (<div className="media-placeholder"><span className="img media"/></div>);
@@ -523,23 +524,26 @@ class PeerMedia extends React.Component<IProps, IState> {
             loading: true,
         });
 
-        let mediaType = C_MEDIA_TYPE.MEDIA;
+        let mediaType: MediaCategory | undefined;
         switch (this.state.tab) {
             case 0:
-                mediaType = C_MEDIA_TYPE.PHOTOVIDEO;
+                mediaType = MediaCategory.MEDIACATEGORYMEDIA;
                 break;
             case 1:
-                mediaType = C_MEDIA_TYPE.MUSIC;
+                mediaType = MediaCategory.MEDIACATEGORYAUDIO;
                 break;
             case 2:
-                mediaType = C_MEDIA_TYPE.FILE;
+                mediaType = MediaCategory.MEDIACATEGORYVOICE;
                 break;
             case 3:
-                mediaType = C_MEDIA_TYPE.GIF;
+                mediaType = MediaCategory.MEDIACATEGORYFILE;
+                break;
+            case 4:
+                mediaType = MediaCategory.MEDIACATEGORYGIF;
                 break;
         }
 
-        this.mediaRepo.getMany(this.props.teamId, this.peer, {
+        this.mediaRepo.list(this.props.teamId, this.peer, {
             limit: this.props.full ? 128 : 8,
             type: this.props.full ? mediaType : undefined,
         }).then((result) => {
@@ -709,24 +713,27 @@ class PeerMedia extends React.Component<IProps, IState> {
                 breakPoint = items[0].id + 1;
             }
         }
-        let mediaType;
+        let mediaType: MediaCategory | undefined;
         if (this.props.full) {
             switch (this.state.tab) {
                 case 0:
-                    mediaType = C_MEDIA_TYPE.MEDIA;
+                    mediaType = MediaCategory.MEDIACATEGORYMEDIA;
                     break;
                 case 1:
-                    mediaType = C_MEDIA_TYPE.MUSIC;
+                    mediaType = MediaCategory.MEDIACATEGORYAUDIO;
                     break;
                 case 2:
-                    mediaType = C_MEDIA_TYPE.FILE;
+                    mediaType = MediaCategory.MEDIACATEGORYVOICE;
                     break;
                 case 3:
-                    mediaType = C_MEDIA_TYPE.GIF;
+                    mediaType = MediaCategory.MEDIACATEGORYFILE;
+                    break;
+                case 4:
+                    mediaType = MediaCategory.MEDIACATEGORYGIF;
                     break;
             }
         }
-        this.mediaRepo.getMany(this.props.teamId, this.peer, {
+        this.mediaRepo.list(this.props.teamId, this.peer, {
             after: !append ? breakPoint : undefined,
             before: append ? breakPoint : undefined,
             limit,

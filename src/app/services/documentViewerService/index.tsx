@@ -7,9 +7,8 @@
     Copyright Ronak Software Group 2019
 */
 
-import {InputFileLocation, InputPeer, MessageEntity} from '../sdk/messages/core.types_pb';
+import {InputFileLocation, InputPeer, MediaCategory, MessageEntity} from '../sdk/messages/core.types_pb';
 import MediaRepo from '../../repository/media';
-import {C_MEDIA_TYPE} from '../../repository/media/interface';
 import {IPeer} from "../../repository/dialog/interface";
 import {SetOptional} from "type-fest";
 
@@ -107,10 +106,10 @@ export default class DocumentViewerService {
         if ((doc.type !== 'video' && doc.type !== 'picture') || !doc.peer) {
             return;
         }
-        this.mediaRepo.getMany(doc.teamId, doc.peer, {
+        this.mediaRepo.list(doc.teamId, doc.peer, {
             before: (doc.items[0].id || 0) - 1,
             limit: 1,
-            type: C_MEDIA_TYPE.MEDIA
+            type: MediaCategory.MEDIACATEGORYMEDIA,
         }).then((res) => {
             if (this.onDocumentPrev && res.messages.length > 0) {
                 this.onDocumentPrev(res.messages[0]);
@@ -118,10 +117,10 @@ export default class DocumentViewerService {
                 this.onDocumentPrev(null);
             }
         });
-        this.mediaRepo.getMany(doc.teamId, doc.peer, {
+        this.mediaRepo.list(doc.teamId, doc.peer, {
             after: (doc.items[0].id || 0) + 1,
             limit: 1,
-            type: C_MEDIA_TYPE.MEDIA
+            type: MediaCategory.MEDIACATEGORYMEDIA,
         }).then((res) => {
             if (this.onDocumentNext && res.messages.length > 0) {
                 this.onDocumentNext(res.messages[0]);

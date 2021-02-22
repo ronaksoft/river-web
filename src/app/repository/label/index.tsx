@@ -201,14 +201,11 @@ export default class LabelRepo {
                 this.messageRepo.insertDiscrete(teamId, messages);
             }
             if (messageWithMediaMany.medias.length > 0) {
-                const labelMediasGroup = groupBy(messageWithMediaMany.medias, (o => o.teamid));
-                for (const media of Object.values(labelMediasGroup)) {
-                    this.mediaRepo.importBulk(media, false);
-                }
+                this.mediaRepo.importBulk(messageWithMediaMany.medias, false);
             }
             this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);
-            return remoteRes.messagesList.filter(o => o.teamid === teamId);
+            return remoteRes.messagesList;
         });
     }
 

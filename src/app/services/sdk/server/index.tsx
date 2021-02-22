@@ -647,7 +647,7 @@ export default class Server {
         const v = localStorage.getItem(C_LOCALSTORAGE.Version);
         if (v === null) {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                v: 8,
+                v: 9,
             }));
             return false;
         }
@@ -662,8 +662,9 @@ export default class Server {
             case 5:
             case 6:
             case 7:
-                return pv.v;
             case 8:
+                return pv.v;
+            case 9:
                 return false;
         }
     }
@@ -690,6 +691,9 @@ export default class Server {
                 return;
             case 7:
                 this.migrate7();
+                return;
+            case 8:
+                this.migrate8();
                 return;
         }
     }
@@ -844,6 +848,22 @@ export default class Server {
                 } else {
                     fn();
                 }
+            });
+        }, 1000);
+    }
+
+    private migrate8() {
+        if (this.updateManager) {
+            this.updateManager.disableLiveUpdate();
+        }
+        setTimeout(() => {
+            MainRepo.getInstance().destroyMediaRelatedDBs().then(() => {
+                localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+                    v: 9,
+                }));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
             });
         }, 1000);
     }
