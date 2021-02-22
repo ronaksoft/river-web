@@ -1,3 +1,6 @@
+## 1.0.77
+* Left panel better text visibility
+
 ## 1.0.76
 * Minor improvements
 
