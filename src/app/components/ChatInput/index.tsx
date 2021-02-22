@@ -2334,6 +2334,16 @@ class ChatInput extends React.Component<IProps, IState> {
                             });
                             return;
                     }
+                }).catch(() => {
+                    navigator.mediaDevices.getUserMedia({audio: getDefaultAudio()}).then(() => {
+                        resolve(true);
+                        this.microphonePermission = true;
+                        this.setState({
+                            inputMode: 'voice',
+                        });
+                    }).catch((err) => {
+                        resolve(false);
+                    });
                 });
             } catch (e) {
                 resolve(false);

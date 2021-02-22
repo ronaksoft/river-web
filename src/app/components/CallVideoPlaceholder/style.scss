@@ -35,7 +35,11 @@
 
     .device-type {
       padding-right: 6px;
-      font-size: 16px;
+      font-size: 24px;
+
+      svg {
+        font-size: inherit;
+      }
     }
 
     .user {
@@ -128,6 +132,17 @@
   .video-placeholder {
     background-color: var(--dark);
 
+    .video-placeholder-user {
+      font-size: 11px;
+      border-radius: 3px;
+      padding: 2px 5px 2px 5px;
+
+      .device-type {
+        padding-right: 3px;
+        font-size: 16px;
+      }
+    }
+
     &.no-image {
       height: 96px;
     }
@@ -161,8 +176,14 @@
 }
 
 .call-modal.call.minimize .call-modal-content.video-swap {
-  .video-placeholder.no-image, .call-video.cp-1 {
-    height: 56px;
-    Width: 56px;
+  .video-placeholder {
+    .video-placeholder-user {
+      transform: translate(-50%, -200px);
+    }
+
+    &.no-image, .call-video.cp-1 {
+      height: 56px;
+      Width: 56px;
+    }
   }
 }

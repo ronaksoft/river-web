@@ -108,7 +108,7 @@ export default class GroupRepo {
                         g.participantList = res.participantsList;
                         g.photogalleryList = res.photogalleryList;
                         if (g) {
-                            g = kMerge(group, g);
+                            g = this.mergeCheck(group, g);
                             g.last_updated = this.riverTime.now();
                             this.importBulk([g]);
                             resolve(g);

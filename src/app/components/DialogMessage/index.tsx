@@ -315,7 +315,8 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                                   youPlaceholder={i18n.t('general.saved_messages')}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                         <GroupName className="name" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
-                        {dialog.preview_me && <div className="status">
+                        {dialog.preview_me && dialog.action_code === C_MESSAGE_ACTION.MessageActionNope &&
+                        <div className="status">
                             <GetStatus id={dialog.topmessageid || 0} isBot={isBot} readId={dialog.readoutboxmaxid || 0}
                                        userId={currentUserId} peerId={dialog.peerid || ''}/>
                         </div>}

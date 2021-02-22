@@ -88,7 +88,7 @@ class LabelCreate extends React.Component<IProps, IState> {
                             fullWidth={true}
                             value={label.name}
                             inputProps={{
-                                maxLength: 32,
+                                maxLength: 18,
                             }}
                             onChange={this.titleChangeHandler}
                         />

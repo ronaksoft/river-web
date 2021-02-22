@@ -36,8 +36,16 @@ import {
     MediaGeoLocation,
 } from '../../services/sdk/messages/chat.messages.medias_pb';
 import {
-    MessageActionClearHistory, MessageActionContactRegistered, MessageActionGroupAddUser, MessageActionGroupCreated,
-    MessageActionGroupDeleteUser, MessageActionGroupPhotoChanged, MessageActionGroupTitleChanged,
+    MessageActionCallEnded,
+    MessageActionCallStarted,
+    MessageActionClearHistory,
+    MessageActionContactRegistered,
+    MessageActionGroupAddUser,
+    MessageActionGroupCreated,
+    MessageActionGroupDeleteUser,
+    MessageActionGroupPhotoChanged,
+    MessageActionGroupTitleChanged,
+    MessageActionScreenShotTaken,
 } from '../../services/sdk/messages/chat.messages.actions_pb';
 import MediaRepo from '../media';
 import {C_MEDIA_TYPE} from '../media/interface';
@@ -276,6 +284,15 @@ export default class MessageRepo {
                     break;
                 case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
                     out.actiondata = MessageActionGroupPhotoChanged.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionScreenShot:
+                    out.actiondata = MessageActionScreenShotTaken.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionCallStarted:
+                    out.actiondata = MessageActionCallStarted.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionCallEnded:
+                    out.actiondata = MessageActionCallEnded.deserializeBinary(actionData).toObject();
                     break;
             }
             out.messagetype = C_MESSAGE_TYPE.System;
@@ -881,8 +898,10 @@ export default class MessageRepo {
                 });
             } else {
                 let count: number = 0;
-                dialogs.forEach((dialog) => {
-                    count += (dialog.unreadcount || 0);
+                dialogs.forEach((d) => {
+                    if (d && d.unreadcount && d.unreadcount > 0 && d.readinboxmaxid !== d.topmessageid && !d.preview_me) {
+                        count += d.unreadcount;
+                    }
                 });
                 return count;
             }

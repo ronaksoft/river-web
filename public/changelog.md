@@ -1,3 +1,28 @@
+## 1.0.77
+* UI improvements
+* Known bugs fixed
+
+## 1.0.76
+* Minor improvements
+
+## 1.0.75
+* Notifications updated
+
+## 1.0.74
+* Improvements in group get full
+
+## 1.0.73
+* Improvements in sending container message
+
+## 1.0.72
+* Known bug fixed
+
+## 1.0.71
+* Improvements in load more
+
+## 1.0.70
+* Known bugs fixed
+
 ## 1.0.69
 * Screen share audio loop fixed
 

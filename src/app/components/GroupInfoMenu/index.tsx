@@ -202,6 +202,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     dialog,
                     disable,
                 });
+            } else {
+                this.setState({
+                    dialog,
+                });
             }
             return;
         }

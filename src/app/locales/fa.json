@@ -577,5 +577,13 @@
     "privacy_error": "به دلیل تنظیمات حریم خصوصی نمی توانید با این کاربر تماس بگیرید.",
     "streaming_from": "جریان از ",
     "screen_list": "لیست صفحه نمایش"
+  },
+  "notification": {
+    "new_messages": "{0} پیام جدید",
+    "mention": "{0} در {1} به شما اشاره کرد",
+    "group_title": "{0} در {1}",
+    "reaction_group_title": "{0} واکتش داد در {1}",
+    "reaction_title": "{0} واکنش داد",
+    "reaction": "{0} روی \"{1}\""
   }
 }

@@ -14,6 +14,7 @@
     position: relative;
     background-color: var(--glass-dark-low);
     border-radius: 5px;
+    min-width: 340px;
 
     .voice-player .play-timer {
       width: 46px;
@@ -46,6 +47,14 @@
     &.ltr {
       direction: ltr;
       text-align: left;
+    }
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .message-voice {
+    .message-voice-container {
+      min-width: 200px;
     }
   }
 }

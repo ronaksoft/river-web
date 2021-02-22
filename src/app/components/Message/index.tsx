@@ -59,9 +59,9 @@ import Reaction from "../Reaction";
 import ReactionPicker from "../ReactionPicker";
 import ReactionList from "../ReactionList";
 import GroupSeenBy from "../GroupSeenBy";
+import {IDialog} from "../../repository/dialog/interface";
 
 import './style.scss';
-import {IDialog} from "../../repository/dialog/interface";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -409,6 +409,9 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public setPeer(peer: InputPeer | null, dialog: IDialog | null) {
+        if (this.scrollDownTimeout) {
+            clearTimeout(this.scrollDownTimeout);
+        }
         if (this.inputPeer !== peer) {
             this.inputPeer = peer;
             this.savedMessages = Boolean(peer && this.props.userId === peer.getId());
@@ -1232,7 +1235,7 @@ class Message extends React.Component<IProps, IState> {
         switch (message.messageaction) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> {i18n.t('message.joined_river')}</span>);
+                    <UserName className="user" id={message.peerid || ''}/> {i18n.t('message.joined_river')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 return (<span className="system-message"><UserName className="sender" id={message.senderid || ''}
                                                                    you={true}/> {i18n.t('message.created_the_group')}</span>);

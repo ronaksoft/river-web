@@ -76,9 +76,9 @@ class PopUpDate extends React.PureComponent<IProps, IState> {
         return (
             <div className="pop-up-date" ref={this.refHandler}>
                 <div className="pop-up-date-container">
-                <span className={'pop-up-date ' + className + (timestamp ? ' down' : '')}>
-                    {timestamp ? TimeUtility.dynamicDate(timestamp) : TimeUtility.dynamicDate(this.lastTimestamp || 0)}
-                </span>
+                    <div className={'pop-up-date ' + className + (timestamp ? ' down' : '')}>
+                        {timestamp ? TimeUtility.dynamicDate(timestamp) : TimeUtility.dynamicDate(this.lastTimestamp || 0)}
+                    </div>
                 </div>
             </div>
         );
