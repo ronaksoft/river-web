@@ -1,3 +1,6 @@
+## 1.0.76
+* Minor improvements
+
 ## 1.0.75
 * Notifications updated
 
