@@ -930,8 +930,10 @@ export default class MessageRepo {
                 });
             } else {
                 let count: number = 0;
-                dialogs.forEach((dialog) => {
-                    count += (dialog.unreadcount || 0);
+                dialogs.forEach((d) => {
+                    if (d && d.unreadcount && d.unreadcount > 0 && d.readinboxmaxid !== d.topmessageid && !d.preview_me) {
+                        count += d.unreadcount;
+                    }
                 });
                 return count;
             }

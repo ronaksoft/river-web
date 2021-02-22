@@ -1,3 +1,7 @@
+## 1.0.77
+* UI improvements
+* Known bugs fixed
+
 ## 1.0.76
 * Minor improvements
 

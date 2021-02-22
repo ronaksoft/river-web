@@ -53,6 +53,20 @@ const SecondaryColors = [
     '#FDDC98',
 ];
 
+const TextDarkColors = [
+    false,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    true,
+];
+
 const TextColors = [
     '#ca5650',
     '#d87b29',
@@ -107,6 +121,10 @@ const GetUniqueColor = (str: string, list: string[]) => {
     return list[sumChars(str) % list.length];
 };
 
+const GetUniqueColorIndex = (index: number, list: string[]) => {
+    return list[index % list.length];
+};
+
 const TextAvatar = ({fname, lname, icon}: { fname?: string, lname?: string, icon?: any }) => {
     const str = fname || '' + lname || '';
     let name = 'NA';
@@ -118,13 +136,16 @@ const TextAvatar = ({fname, lname, icon}: { fname?: string, lname?: string, icon
         name = lname.substr(0, 2);
     }
     name = name.toLocaleUpperCase();
-    const background = GetUniqueColor(str, defaultGradients);
+    const index = sumChars(str);
+    const background = GetUniqueColorIndex(index, defaultGradients);
+    const isTextDark = TextDarkColors[index % TextDarkColors.length] || false;
     const color = contrast(background.split(',')[2].substr(0, 6));
     const style = {
         background,
         color,
     };
-    return (<span className="text-avatar" style={style}><span className="inner">{icon ? icon : name}</span></span>);
+    return (<span className={'text-avatar' + (isTextDark ? ' dark-text' : '')} style={style}><span
+        className="inner">{icon ? icon : name}</span></span>);
 };
 
 interface IProps {
