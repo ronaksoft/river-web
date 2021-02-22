@@ -1,5 +1,7 @@
 ## 1.0.77
 * Left panel better text visibility
+* Call UI improvements
+* Counter improvements
 
 ## 1.0.76
 * Minor improvements
