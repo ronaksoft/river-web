@@ -425,7 +425,7 @@ export default class Server {
     }
 
     private executeSendThrottledRequest = () => {
-        if (!this.isReady) {
+        if (!this.isReady || !this.isConnected) {
             return;
         }
         const execute = (envs: MessageEnvelope[]) => {

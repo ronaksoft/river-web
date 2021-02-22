@@ -1192,7 +1192,7 @@ class Chat extends React.Component<IProps, IState> {
                     return;
                 }
                 const message: IMessage = {
-                    body: `reacted to your message with ${data.reaction}`,
+                    body: i18n.tf('notification.reaction', [data.reaction, msg ? msg.body || '' : '']),
                     id: msgId,
                     me: false,
                     peerid: data.peer.id,
@@ -2734,12 +2734,12 @@ class Chat extends React.Component<IProps, IState> {
                     if (message) {
                         const messageTitle = getMessageTitle(message);
                         this.notify(
-                            `New message from ${user.firstname} ${user.lastname}`,
+                            `${user.firstname} ${user.lastname}`,
                             messageTitle.text, GetPeerName(message.peerid, message.peertype));
                     }
                 });
             } else {
-                this.notify(`${ids.length} new messages from ${user.firstname} ${user.lastname}`, '', GetPeerName(peerId, peerType));
+                this.notify(`${user.firstname} ${user.lastname}`, i18n.tf('notification.new_messages', `${ids.length}`), GetPeerName(peerId, peerType));
             }
         }
     }
@@ -2755,19 +2755,16 @@ class Chat extends React.Component<IProps, IState> {
                             if (user) {
                                 const messageTitle = getMessageTitle(message);
                                 if (message.mention_me) {
-                                    this.notify(
-                                        `${user.firstname} ${user.lastname} mentioned you in ${group.title}`,
-                                        messageTitle.text, peerName);
+                                    this.notify(i18n.tf('notification.mention', [`${user.firstname} ${user.lastname}`, group.title]), messageTitle.text, peerName);
                                 } else {
-                                    this.notify(
-                                        `New message from ${user.firstname} ${user.lastname} in ${group.title}`,
+                                    this.notify(i18n.tf('notification.group_title', [`${user.firstname} ${user.lastname}`, group.title]),
                                         messageTitle.text, peerName);
                                 }
                             }
                         }
                     });
                 } else {
-                    this.notify(`${ids.length} new messages in ${group.title}`, '', peerName);
+                    this.notify(group.title, i18n.tf('notification.new_messages', `${ids.length}`), peerName);
                 }
             }
         });
@@ -3002,18 +2999,16 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 const messageTitle = getMessageTitle(message);
                 if (message.mention_me === true) {
-                    this.notify(
-                        `${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle}`,
+                    this.notify(i18n.tf('notification.mention', [`${data.sender.firstname} ${data.sender.lastname}`, groupTitle]),
                         messageTitle.text, GetPeerName(message.peerid, message.peertype));
                 } else if (!message.me) {
-                    const text = message.reacted ? `${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}` : `New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`;
-                    this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype));
+                    this.notify(i18n.tf(message.reacted ? 'notification.reaction_group_title' : 'notification.group_title', [`${data.sender.firstname} ${data.sender.lastname}`, groupTitle]), messageTitle.text, GetPeerName(message.peerid, message.peertype));
                 }
             });
         } else {
             if (!message.me) {
                 const messageTitle = getMessageTitle(message);
-                const text = message.reacted ? `${data.sender.firstname} ${data.sender.lastname}` : `New message from ${data.sender.firstname} ${data.sender.lastname}`;
+                const text = message.reacted ? i18n.tf('notification.reaction_title', `${data.sender.firstname} ${data.sender.lastname}`) : `${data.sender.firstname} ${data.sender.lastname}`;
                 this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype));
             }
         }
@@ -3029,7 +3024,7 @@ class Chat extends React.Component<IProps, IState> {
         this.canNotifyOtherTeam(message).then((ok) => {
             if (ok) {
                 if (message.peertype === PeerType.PEERGROUP) {
-                    this.groupRepo.get(this.teamId, message.peerid || '').then((group) => {
+                    this.groupRepo.get(message.teamid, message.peerid || '').then((group) => {
                         let groupTitle = 'Group';
                         if (group) {
                             groupTitle = group.title || 'Group';
@@ -3037,18 +3032,17 @@ class Chat extends React.Component<IProps, IState> {
                         const messageTitle = getMessageTitle(message);
                         if (message.mention_me === true) {
                             this.notify(
-                                `${teamName} | ${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle}`,
+                                `${teamName} | ${i18n.tf('notification.mention', [`${data.sender.firstname} ${data.sender.lastname}`, groupTitle])}`,
                                 messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                         } else if (!message.me) {
-                            const text = message.reacted ? `${teamName} | ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}` : `${teamName} | New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`;
-                            this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
+                            this.notify(`${teamName} | ${i18n.tf(message.reacted ? 'notification.reaction_group_title' : 'notification.group_title', [`${data.sender.firstname} ${data.sender.lastname}`, groupTitle])}`, messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                         }
                     });
                 } else {
                     if (!message.me) {
                         const messageTitle = getMessageTitle(message);
-                        const text = message.reacted ? `${teamName} | ${data.sender.firstname} ${data.sender.lastname}` : `${teamName} | New message from ${data.sender.firstname} ${data.sender.lastname}`;
-                        this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
+                        const text = message.reacted ? i18n.tf('notification.reaction_title', `${data.sender.firstname} ${data.sender.lastname}`) : `${data.sender.firstname} ${data.sender.lastname}`;
+                        this.notify(`${teamName} | ${text}`, messageTitle.text, GetPeerName(message.peerid, message.peertype), message.teamid);
                     }
                 }
             }
