@@ -1,5 +1,5 @@
 // @ts-ignore
-importScripts('/bin/wasm_exec.js?v7');
+importScripts('/bin/wasm_exec.js?v8');
 
 // @ts-ignore
 interface IWorker extends Worker {
@@ -53,7 +53,6 @@ const messageHandler = (cmd: string, data: any) => {
         case 'init':
             console.time('wasm init');
             fetch('/bin/river-tiny.wasm?v1').then((response) => {
-                console.log(response);
                 const alternativeFn = () => {
                     response.arrayBuffer().then((data) => {
                         WebAssembly.instantiate(data, go.importObject).then((res) => {
