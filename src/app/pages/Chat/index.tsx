@@ -3024,7 +3024,7 @@ class Chat extends React.Component<IProps, IState> {
         this.canNotifyOtherTeam(message).then((ok) => {
             if (ok) {
                 if (message.peertype === PeerType.PEERGROUP) {
-                    this.groupRepo.get(this.teamId, message.peerid || '').then((group) => {
+                    this.groupRepo.get(message.teamid, message.peerid || '').then((group) => {
                         let groupTitle = 'Group';
                         if (group) {
                             groupTitle = group.title || 'Group';
