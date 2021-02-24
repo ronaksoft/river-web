@@ -1,3 +1,7 @@
+## 1.0.78
+* Improvements in group info
+* Improvements in call UI
+
 ## 1.0.77
 * Left panel better text visibility
 * Call UI improvements

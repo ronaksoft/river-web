@@ -180,10 +180,10 @@
     .video-placeholder-user {
       transform: translate(-50%, -200px);
     }
+  }
 
-    &.no-image, .call-video.cp-1 {
-      height: 56px;
-      Width: 56px;
-    }
+  .video-placeholder.no-image, .call-video.cp-1 {
+    height: 56px;
+    Width: 56px;
   }
 }

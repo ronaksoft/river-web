@@ -575,16 +575,18 @@ class CallModal extends React.Component<IProps, IState> {
         const isGroup = this.peer && this.peer.getType() === PeerType.PEERGROUP;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '') + (isGroup ? ' group-call' : '')}>
-            {!localVideoInGrid && <>
-                <div className="local-video">
+            {!localVideoInGrid &&
+            <Draggable handle="#draggable-call-local-video" cancel={'[class*="MuiDialogContent-root"]'}
+                       disabled={!fullscreen} position={!fullscreen || videoSwap ? {y: 0, x: 0} : undefined}>
+                <div className="local-video" id="draggable-call-local-video">
                     <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
                            onClick={this.videoClickHandler(false)} hidden={!this.mediaSettings.video}/>
+                    {!this.mediaSettings.video &&
+                    <div className="local-video-placeholder" onClick={this.videoClickHandler(false)}>
+                        <UserAvatar className="local-video-user" id={currentUserId} noDetail={true}/>
+                    </div>}
                 </div>
-                {!this.mediaSettings.video &&
-                <div className="local-video-placeholder" onClick={this.videoClickHandler(false)}>
-                    <UserAvatar className="local-video-user" id={currentUserId} noDetail={true}/>
-                </div>}
-            </>}
+            </Draggable>}
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
                        onClick={this.videoClickHandler(true)} onContextMenu={this.callVideoContextMenuHandler}/>
             <div className="call-modal-header">
