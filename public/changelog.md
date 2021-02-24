@@ -1,3 +1,6 @@
+## 1.0.79
+* Duplicate message bug fixed
+
 ## 1.0.78
 * Improvements in group info
 * Improvements in call UI

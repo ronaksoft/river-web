@@ -2841,7 +2841,10 @@ class Chat extends React.Component<IProps, IState> {
                     this.setScrollMode('none');
                 }
                 this.updateManager.getLastUpdateId();
-                const mRes = res.filter(m => !this.messageMapExist(m, true));
+                const mRes = res.map((o) => {
+                    o.random_id = data.randomIdMap[o.id] || 0;
+                    return o;
+                });
                 if (mRes.length > 0) {
                     const modifiedMsgs = this.modifyMessages(this.messages, mRes, true);
                     if (modifiedMsgs.msgs.length > 0) {
@@ -6031,7 +6034,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messageMap[(message.id * 100) + (message.messagetype || 0) + 32]) {
             return true;
         }
-        if (message.random_id && this.messageRandomIdMap[message.random_id]) {
+        if (message.random_id && this.messageRandomIdMap.hasOwnProperty(message.random_id)) {
             return true;
         }
         if (noAppend !== true) {
