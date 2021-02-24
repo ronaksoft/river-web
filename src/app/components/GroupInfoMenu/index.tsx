@@ -375,7 +375,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                       onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{currentUserId === participant.userid ? ' (you)' : ''}</span>
                                                 <span
                                                     className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
-                                                {isAdmin && participant.type !== ParticipantType.PARTICIPANTTYPECREATOR &&
+                                                {isAdmin && participant.type !== ParticipantType.PARTICIPANTTYPECREATOR && (participant.userid !== currentUserId || (participant.userid === currentUserId && participant.type !== ParticipantType.PARTICIPANTTYPEADMIN)) &&
                                                 <div className="more"
                                                      onClick={this.moreOpenHandler(participant)}>
                                                     <MoreVertRounded/>
