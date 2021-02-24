@@ -577,7 +577,7 @@ class CallModal extends React.Component<IProps, IState> {
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '') + (isGroup ? ' group-call' : '')}>
             {!localVideoInGrid &&
             <Draggable handle="#draggable-call-local-video" cancel={'[class*="MuiDialogContent-root"]'}
-                       disabled={!fullscreen} position={!fullscreen || videoSwap ? {y: 0, x: 0} : undefined}>
+                       disabled={!fullscreen} position={!fullscreen || videoSwap ? {x: 0, y: 0} : undefined}>
                 <div className="local-video" id="draggable-call-local-video">
                     <video ref={this.videoRefHandler} playsInline={true} autoPlay={true} muted={true}
                            onClick={this.videoClickHandler(false)} hidden={!this.mediaSettings.video}/>
