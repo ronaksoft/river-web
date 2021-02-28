@@ -593,7 +593,7 @@ class CallModal extends React.Component<IProps, IState> {
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
                        onClick={this.videoClickHandler(true)} onContextMenu={this.callVideoContextMenuHandler}/>
             <div className="call-modal-header">
-                {!allAudio || activeScreenShare &&
+                {(!allAudio || activeScreenShare) &&
                 <Tooltip enterDelay={500} title={i18n.t(cropCover ? 'call.crop_fit' : 'call.crop_cover')}>
                     <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
                         {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
