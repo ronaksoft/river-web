@@ -1,3 +1,6 @@
+## 1.0.80
+* Call improvements
+
 ## 1.0.79
 * Duplicate message bug fixed
 

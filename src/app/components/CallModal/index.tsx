@@ -64,6 +64,7 @@ interface IProps {
 }
 
 interface IState {
+    activeScreenShare: boolean;
     allAudio: boolean;
     animateState: string;
     callId: string;
@@ -117,6 +118,7 @@ class CallModal extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            activeScreenShare: false,
             allAudio: false,
             animateState: 'init',
             callId: '0',
@@ -210,6 +212,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantLeft, this.eventParticipantLeftHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantJoined, this.eventParticipantJoinedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantRemoved, this.eventParticipantRemovedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventScreenShareSteamUpdatedHandler));
         window.addEventListener(EventResize, this.windowResizeHandler);
     }
 
@@ -571,7 +574,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private getCallContent() {
-        const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize, localVideoInGrid, allAudio} = this.state;
+        const {fullscreen, animateState, callStarted, isCaller, cropCover, videoSwap, callId, minimize, localVideoInGrid, allAudio, activeScreenShare} = this.state;
         const isGroup = this.peer && this.peer.getType() === PeerType.PEERGROUP;
         return <div id={!fullscreen ? 'draggable-call-modal' : undefined}
                     className={'call-modal-content animate-' + animateState + (videoSwap ? ' video-swap' : '') + (isGroup ? ' group-call' : '')}>
@@ -590,7 +593,8 @@ class CallModal extends React.Component<IProps, IState> {
             <CallVideo ref={this.callVideoRefHandler} callId={callId} userId={currentUserId}
                        onClick={this.videoClickHandler(true)} onContextMenu={this.callVideoContextMenuHandler}/>
             <div className="call-modal-header">
-                {!allAudio && <Tooltip enterDelay={500} title={i18n.t(cropCover ? 'call.crop_fit' : 'call.crop_cover')}>
+                {!allAudio || activeScreenShare &&
+                <Tooltip enterDelay={500} title={i18n.t(cropCover ? 'call.crop_fit' : 'call.crop_cover')}>
                     <IconButton className="call-action-item" onClick={this.toggleCropHandler}>
                         {cropCover ? <CropLandscapeRounded/> : <CropSquareRounded/>}
                     </IconButton>
@@ -1150,6 +1154,13 @@ class CallModal extends React.Component<IProps, IState> {
 
     private windowResizeDebounceHandler = () => {
         this.forceUpdate();
+    }
+
+    private eventScreenShareSteamUpdatedHandler = ({stream}: { connId: number, stream: MediaStream | undefined, userId: string }) => {
+        this.setState({
+            activeScreenShare: Boolean(stream),
+            cropCover: !(this.state.cropCover && Boolean(stream)),
+        });
     }
 }
 
