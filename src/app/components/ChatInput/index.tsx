@@ -1230,9 +1230,11 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         const rtl = this.rtlDetector.direction(text);
-        this.setState({
-            rtl,
-        });
+        if (rtl !== this.state.rtl) {
+            this.setState({
+                rtl,
+            });
+        }
     }
 
     private removeDraft(removeDraft?: boolean) {
