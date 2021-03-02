@@ -605,7 +605,7 @@ class CallModal extends React.Component<IProps, IState> {
                         {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
                     </IconButton>
                 </Tooltip>}
-                {!this.isMobile && !isGroup &&
+                {!this.isMobile && (!isGroup || allAudio) &&
                 <Tooltip enterDelay={500} title={i18n.t(minimize ? 'call.normal_size' : 'call.minimize')}>
                     <IconButton className="call-action-item" onClick={this.toggleMinimizeHandler}>
                         {minimize ? <WebAssetRounded/> : <DynamicFeedRounded/>}
