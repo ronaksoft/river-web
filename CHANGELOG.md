@@ -1,3 +1,6 @@
+## 1.0.83
+* Change team bug fixed
+
 ## 1.0.82
 * Call improvements
 

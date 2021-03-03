@@ -976,22 +976,25 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Init dialogs */
     private initDialogs = () => {
+        const teamId = this.teamId;
         return new Promise((resolve) => {
             this.dialogRepo.getManyCache(this.teamId, {}).then((res) => {
-                const selectedPeerName = this.props.match.params.id;
-                const selectedMessageId = this.props.match.params.mid;
-                this.dialogsSort(res, () => {
-                    resolve();
-                    if (selectedPeerName !== 'null') {
-                        this.setLeftMenu('chat');
-                        const peer = this.getPeerByName(selectedPeerName);
-                        this.isBot = peer.user ? (peer.user.isbot || false) : false;
-                        this.setChatParams(this.teamId, selectedPeerName, peer.peer);
-                        requestAnimationFrame(() => {
-                            this.getMessagesByPeerName(selectedPeerName, true, selectedMessageId);
-                        });
-                    }
-                });
+                if (teamId === this.teamId) {
+                    const selectedPeerName = this.props.match.params.id;
+                    const selectedMessageId = this.props.match.params.mid;
+                    this.dialogsSort(res, () => {
+                        resolve();
+                        if (selectedPeerName !== 'null') {
+                            this.setLeftMenu('chat');
+                            const peer = this.getPeerByName(selectedPeerName);
+                            this.isBot = peer.user ? (peer.user.isbot || false) : false;
+                            this.setChatParams(this.teamId, selectedPeerName, peer.peer);
+                            requestAnimationFrame(() => {
+                                this.getMessagesByPeerName(selectedPeerName, true, selectedMessageId);
+                            });
+                        }
+                    });
+                }
                 this.setLoading(false);
             }).catch((err) => {
                 this.setLoading(false);
