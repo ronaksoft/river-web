@@ -305,6 +305,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.callService.destroyConnections(this.state.callId);
         this.callService.destroy();
         this.setState({
+            allAudio: false,
             callId: '0',
             callStarted: false,
             cropCover: !this.isMobile,
@@ -627,10 +628,6 @@ class CallModal extends React.Component<IProps, IState> {
                 {callStarted && <div className="call-timer">
                     <CallTimer ref={this.callTimerRef}/>
                 </div>}
-                {/*{this.peer && this.peer.getType() === PeerType.PEERGROUP &&
-                <IconButton>
-                    <PeopleRounded/>
-                </IconButton>}*/}
             </div>
         </div>;
     }
@@ -951,6 +948,21 @@ class CallModal extends React.Component<IProps, IState> {
         if (this.state.allAudio !== allAudio) {
             this.setState({
                 allAudio,
+            }, this.checkMinimize);
+        }
+    }
+
+    private checkMinimize = () => {
+        const isGroup = this.peer && this.peer.getType() === PeerType.PEERGROUP;
+        const {allAudio, activeScreenShare} = this.state;
+        if (!isGroup && allAudio && !activeScreenShare) {
+            this.setState({
+                fullscreen: false,
+                minimize: true,
+            });
+        } else {
+            this.setState({
+                minimize: false,
             });
         }
     }
@@ -966,7 +978,7 @@ class CallModal extends React.Component<IProps, IState> {
         if (this.state.allAudio !== allAudio) {
             this.setState({
                 allAudio,
-            });
+            }, this.checkMinimize);
         }
     }
 
@@ -1160,7 +1172,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.setState({
             activeScreenShare: Boolean(stream),
             cropCover: !(this.state.cropCover && Boolean(stream)),
-        });
+        }, this.checkMinimize);
     }
 }
 

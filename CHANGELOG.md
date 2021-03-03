@@ -1,3 +1,6 @@
+## 1.0.82
+* Call improvements
+
 ## 1.0.81
 * Call improvements
 

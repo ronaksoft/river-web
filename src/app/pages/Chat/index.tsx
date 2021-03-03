@@ -2152,7 +2152,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        this.apiManager.typing(peer, typing).catch((err) => {
+        this.apiManager.setTyping(peer, typing).catch((err) => {
             window.console.debug(err);
         });
     }
