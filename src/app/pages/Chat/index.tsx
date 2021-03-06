@@ -1531,7 +1531,7 @@ class Chat extends React.Component<IProps, IState> {
                         before = tBefore;
                     }
                 } else if ((dialog.scroll_pos || -1) !== -1) {
-                    before = dialog.scroll_pos || 1000000000;
+                    before = dialog.scroll_pos || 10000000000;
                 }
             }
         }

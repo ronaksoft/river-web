@@ -1,3 +1,6 @@
+## 1.0.85
+* Minor improvements in SDK
+
 ## 1.0.84
 * UI improvements
 * Voice improvements
