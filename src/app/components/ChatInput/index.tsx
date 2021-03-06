@@ -1527,6 +1527,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.recorder || !this.recorder.start) {
             return;
         }
+        this.voiceCanceled = false;
         this.setInputMode('voice');
         this.bars = [];
         this.maxBarVal = 0;
@@ -1716,7 +1717,9 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Voice record cancel handler */
     private voiceCancelHandler = () => {
         this.voiceCanceled = true;
+        this.recordingVoice = false;
         this.voiceRecordEnd();
+        this.stopTimer();
         this.setState({
             inputMode: 'default',
             voiceMode: 'up',
@@ -1764,7 +1767,7 @@ class ChatInput extends React.Component<IProps, IState> {
             recordingGain: 1,
             wavBitDepth: 16,
         });
-
+        this.voiceCanceled = false;
         this.recorder.ondataavailable = (buff: ArrayBuffer) => {
             if (this.voiceCanceled) {
                 this.voiceCanceled = false;
