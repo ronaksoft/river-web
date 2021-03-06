@@ -1,6 +1,7 @@
 ## 1.0.84
 * UI improvements
 * Voice improvements
+* Pending message resend improvements
 
 ## 1.0.83
 * Change team bug fixed

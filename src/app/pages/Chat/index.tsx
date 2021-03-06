@@ -4282,7 +4282,7 @@ class Chat extends React.Component<IProps, IState> {
     private resendTextMessage(randomId: number, message: IMessage) {
         const peerInfo = this.getPeerByName(GetPeerName(message.peerid, message.peertype));
         if (!peerInfo || !peerInfo.peer) {
-            return;
+            return Promise.resolve();
         }
 
         const messageEntities: MessageEntity[] = [];
@@ -4299,7 +4299,7 @@ class Chat extends React.Component<IProps, IState> {
 
         // For double checking update message id
         this.updateManager.setRandomId(randomId);
-        this.apiManager.sendMessage(randomId, message.body || '', peerInfo.peer, message.replyto, messageEntities).then((res) => {
+        return this.apiManager.sendMessage(randomId, message.body || '', peerInfo.peer, message.replyto, messageEntities).then((res) => {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
@@ -4310,6 +4310,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messageRef) {
                 this.messageRef.updateList();
             }
+            return Promise.resolve();
         });
     }
 
@@ -4317,16 +4318,16 @@ class Chat extends React.Component<IProps, IState> {
     private resendMediaMessage(randomId: number, message: IMessage, fileNames: string[], data: any, inputMediaType?: InputMediaType) {
         const peerInfo = this.getPeerByName(GetPeerName(message.peerid, message.peertype));
         if (!peerInfo || !peerInfo.peer) {
-            return;
+            return Promise.resolve();
         }
 
         const fn = () => {
             if (!peerInfo || !peerInfo.peer) {
-                return;
+                return Promise.resolve();
             }
             // For double checking update message id
             this.updateManager.setRandomId(randomId);
-            this.apiManager.sendMediaMessage(randomId, peerInfo.peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+            return this.apiManager.sendMediaMessage(randomId, peerInfo.peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 message.id = res.messageid;
                 this.messageMapAppend(message);
                 message.downloaded = true;
@@ -4338,6 +4339,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (this.messageRef) {
                     this.messageRef.updateList();
                 }
+                return Promise.resolve();
             });
         };
 
@@ -4351,14 +4353,14 @@ class Chat extends React.Component<IProps, IState> {
                 promises.push(this.fileManager.retry(name));
             }
         });
-        Promise.all(promises).then(() => {
+        return Promise.all(promises).then(() => {
             this.progressBroadcaster.remove(message.id || 0);
-            fn();
+            return fn();
         }).catch((errs) => {
             const err = errs.length ? errs[0] : errs;
             this.progressBroadcaster.remove(message.id || 0);
             if (err.code === C_FILE_ERR_CODE.NO_TEMP_FILES) {
-                fn();
+                return fn();
             } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
@@ -4370,6 +4372,7 @@ class Chat extends React.Component<IProps, IState> {
                     this.updateVisibleRows([index]);
                 }
             }
+            return Promise.resolve();
         });
     }
 
@@ -4385,10 +4388,18 @@ class Chat extends React.Component<IProps, IState> {
                     messages[index].error = false;
                     this.updateVisibleRows([index]);
                 }
+                let promise: Promise<any> | undefined;
                 if (res.file_ids && res.file_ids.length > 0 && message.mediatype !== MediaType.MEDIATYPEEMPTY && message.messagetype !== 0 && message.messagetype !== C_MESSAGE_TYPE.Normal) {
-                    this.resendMediaMessage(res.id, message, res.file_ids, res.data, res.type);
+                    promise = this.resendMediaMessage(res.id, message, res.file_ids, res.data, res.type);
                 } else if (message.messagetype === 0 || message.messagetype === C_MESSAGE_TYPE.Normal) {
-                    this.resendTextMessage(res.id, message);
+                    promise = this.resendTextMessage(res.id, message);
+                }
+                if (promise) {
+                    promise.catch((err) => {
+                        if (err && err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemBot) {
+                            this.messageRepo.removePending(message.random_id || 0);
+                        }
+                    });
                 }
             } else {
                 if ((message.id || 0) < 0) {
