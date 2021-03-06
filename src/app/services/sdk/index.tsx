@@ -604,7 +604,7 @@ export default class APIManager {
         return this.server.send(C_MSG.MessagesGet, data.serializeBinary(), true);
     }
 
-    public typing(peer: InputPeer, type: TypingAction): Promise<Bool.AsObject> {
+    public setTyping(peer: InputPeer, type: TypingAction): Promise<Bool.AsObject> {
         const key = `${peer.getId()}_${peer.getType()}_${type}`;
         if (this.typingList.hasOwnProperty(key)) {
             return Promise.resolve({result: true});

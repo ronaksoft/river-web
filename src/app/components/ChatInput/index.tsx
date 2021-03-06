@@ -424,6 +424,9 @@ class ChatInput extends React.Component<IProps, IState> {
             this.firstLoad = true;
             this.botKeyboard = undefined;
             this.preventMessageSend = false;
+            if (this.typingThrottle) {
+                this.typingThrottle.cancel();
+            }
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
@@ -506,6 +509,9 @@ class ChatInput extends React.Component<IProps, IState> {
             this.firstLoad = true;
             this.botKeyboard = undefined;
             this.preventMessageSend = false;
+            if (this.typingThrottle) {
+                this.typingThrottle.cancel();
+            }
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
@@ -568,6 +574,9 @@ class ChatInput extends React.Component<IProps, IState> {
         clearTimeout(this.preventMessageSendTimeout);
         if (this.recorder) {
             this.recorder.close();
+        }
+        if (this.typingThrottle) {
+            this.typingThrottle.cancel();
         }
     }
 
