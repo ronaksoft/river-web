@@ -1,3 +1,6 @@
+## 1.0.84
+* UI improvements
+
 ## 1.0.83
 * Change team bug fixed
 
