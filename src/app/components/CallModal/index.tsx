@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import {Dialog, Grow, IconButton, Tooltip} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
 import Draggable, {ControlPosition} from 'react-draggable';

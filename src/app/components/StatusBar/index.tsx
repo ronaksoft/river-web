@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import {InputPeer, PeerType, TypingAction} from "../../services/sdk/messages/core.types_pb";
 import UserName from "../UserName";
 import GroupName from "../GroupName";

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import {IGroup} from '../../repository/group/interface';
 import {TextAvatar} from '../UserAvatar';

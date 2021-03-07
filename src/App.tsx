@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {HashRouter} from 'react-router-dom';
 import Routes from './app/routes';
 import {CircularProgress, DialogContentText} from '@material-ui/core';
@@ -414,7 +414,7 @@ class App extends React.Component<{}, IState> {
 
     private decryptErrorHandler = () => {
         ModalityService.getInstance().open({
-            cancelText: i18n.t('general.disagree'),
+            cancelText: i18n.t('general.cancel'),
             confirmText: i18n.t('general.agree'),
             description: <>{this.state.clearingSiteData ? <CircularProgress/> : <DialogContentText>
                 {`You are receiving "Auth Error", do you like to clear all site data?`}<br/>

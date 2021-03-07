@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {PlayArrowRounded, PauseRounded, CloseRounded, ArrowDownwardRounded} from '@material-ui/icons';
 import ProgressBroadcaster from '../../services/progress';
 import {IMessage} from '../../repository/message/interface';

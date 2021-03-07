@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import SearchRepo from "../../repository/search";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
 import {ITopPeerItem} from "../../repository/topPeer/interface";

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import SettingsModal from '../SettingsModal';
 import {ClearAllRounded} from '@material-ui/icons';
 import SettingsSession from "../SettingsSession";

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import {ArrowForwardRounded, KeyboardBackspaceRounded, CloseRounded, SendRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';

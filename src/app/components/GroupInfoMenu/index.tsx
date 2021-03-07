@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {useState} from 'react';
 import {
     AddRounded,
@@ -79,7 +79,7 @@ interface IProps {
     onAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'view_in_chat' | 'forward', messageIds: number) => void;
     onBulkAction: (cmd: 'forward', messageIds: number[]) => void;
     onClose?: (e: any) => void;
-    onDeleteAndExitGroup?: () => void;
+    onExitGroup?: () => void;
     onError?: (message: string) => void;
 }
 
@@ -235,6 +235,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         const isAdmin = group ? hasAuthority(group, false) : false;
         const hasAccess = disable ? false : group ? hasAuthority(group, true) : false;
         const allMemberAdmin = group && (group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
+        const isMember = group && (group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) === -1;
         return (
             <div className="group-info-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler}
@@ -388,11 +389,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         <AddRounded/> {i18n.t('peer_info.add_member')}
                                     </div>}
                                 </div>}
-                                <div className="leave-group kk-card">
+                                {isMember && <div className="leave-group kk-card">
                                     <Button color="secondary" fullWidth={true} onClick={this.leaveGroupHandler}>
                                         <ExitToAppRounded/> {i18n.t('peer_info.leave_the')} '{group ? group.title : ''}'
                                     </Button>
-                                </div>
+                                </div>}
                             </div>
                         </Scrollbars>
                     </div>
@@ -655,8 +656,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Exits the group */
     private leaveGroupHandler = () => {
-        if (this.props.onDeleteAndExitGroup) {
-            this.props.onDeleteAndExitGroup();
+        if (this.props.onExitGroup) {
+            this.props.onExitGroup();
         }
     }
 

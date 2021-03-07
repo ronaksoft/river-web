@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 // @ts-ignore
 import ToastImageEditor from '@toast-ui/react-image-editor';

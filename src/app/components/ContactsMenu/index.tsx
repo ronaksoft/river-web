@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import UserRepo from '../../repository/user';
 import TextField from '@material-ui/core/TextField/TextField';
 import {CheckRounded, KeyboardBackspaceRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';

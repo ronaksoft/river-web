@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import {GridList, Slider, GridListTile} from '@material-ui/core';
 import {backgrounds, bgPics, C_CUSTOM_BG} from '../SettingsMenu/vars/theme';
 import SettingsModal from '../SettingsModal';

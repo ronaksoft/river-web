@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
@@ -747,7 +747,7 @@ class Chat extends React.Component<IProps, IState> {
                                    onChange={this.rightMenuChangeHandler}
                                    onMessageAttachmentAction={this.messageAttachmentActionHandler}
                                    onBulkAction={this.rightMenuBulkActionHandler}
-                                   onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}
+                                   onExitGroup={this.groupInfoExitHandler}
                                    onToggleMenu={this.rightMenuToggleMenuHandler}
                                    onError={this.textErrorHandler}
                         />
@@ -1194,8 +1194,15 @@ class Chat extends React.Component<IProps, IState> {
                 if (!data.peer || !data.sender || !msg || !msg.me || data.reaction === '') {
                     return;
                 }
+                const messageTitle = getMessageTitle(msg);
+                let body: string = '';
+                if (msg.body === '') {
+                    body = i18n.tf('notification.reaction', [data.reaction, messageTitle.text]);
+                } else {
+                    body = i18n.tf('notification.reaction_quote', [data.reaction, messageTitle.text]);
+                }
                 const message: IMessage = {
-                    body: i18n.tf('notification.reaction', [data.reaction, msg ? msg.body || '' : '']),
+                    body,
                     id: msgId,
                     me: false,
                     peerid: data.peer.id,
@@ -3074,7 +3081,7 @@ class Chat extends React.Component<IProps, IState> {
         switch (item) {
             case 'logout':
                 this.modalityService.open({
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('general.agree'),
                     description: <>{i18n.t('chat.logout_dialog.p1')}<br/>
                         {i18n.t('chat.logout_dialog.p2')}<br/>
@@ -3350,7 +3357,7 @@ class Chat extends React.Component<IProps, IState> {
                                           peerName={true}
                                 /></> : i18n.t('chat.remove_message_dialog.remove_for_all'),
                     }] : undefined,
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('chat.remove_message_dialog.remove'),
                     description: i18n.tf('chat.remove_message_dialog.content', String(Object.keys(this.messageSelectedIds).length)),
                     title: i18n.t('chat.remove_message_dialog.title'),
@@ -3406,7 +3413,7 @@ class Chat extends React.Component<IProps, IState> {
                         },
                         text: i18n.t('general.yes'),
                     }],
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('message.pin_only'),
                     description: i18n.t('message.pin_alert'),
                     title: i18n.t('message.pin_message'),
@@ -3912,7 +3919,7 @@ class Chat extends React.Component<IProps, IState> {
                         },
                         text: i18n.t('chat.remove_message_dialog.remove_all_pending'),
                     }] : undefined,
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('chat.remove_message_dialog.remove'),
                     description: i18n.tf('chat.remove_message_dialog.content', String(Object.keys(this.messageSelectedIds).length)),
                     title: i18n.t('chat.remove_message_dialog.title'),
@@ -4201,10 +4208,25 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'block':
                 break;
+            case 'exit':
+                this.modalityService.open({
+                    cancelText: i18n.t('general.cancel'),
+                    confirmText: i18n.t('general.agree'),
+                    description: <>{i18n.t('chat.exit_group_dialog.p3')}
+                        <GroupName className="group-name" id={dialog.peerid || '0'}
+                                   teamId={this.teamId}/> ?
+                    </>,
+                    title: i18n.t('chat.exit_group_dialog.title_exit'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        this.deleteAndExitGroupHandler(GetPeerName(dialog.peerid, dialog.peertype), true);
+                    }
+                });
+                break;
             case 'remove':
                 const isGroup = (dialog.peertype === PeerType.PEERGROUP);
                 this.modalityService.open({
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('general.agree'),
                     description: isGroup ? <>{i18n.t('chat.exit_group_dialog.p1')}
                         <GroupName className="group-name" id={dialog.peerid || '0'}
@@ -5456,7 +5478,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Delete and exit group handler */
-    private deleteAndExitGroupHandler = (peerName: string) => {
+    private deleteAndExitGroupHandler = (peerName: string, dontClear?: boolean) => {
         const peer = this.getPeerByName(peerName);
         const inputPeer = peer.peer;
         if (!inputPeer) {
@@ -5468,13 +5490,13 @@ class Chat extends React.Component<IProps, IState> {
         user.setAccesshash('');
         this.apiManager.groupRemoveMember(inputPeer, user).then(() => {
             const dialog = this.getDialogByPeerName(peerName);
-            if (dialog && dialog.topmessageid) {
+            if (dialog && dialog.topmessageid && dontClear !== true) {
                 this.apiManager.clearMessage(inputPeer, dialog.topmessageid, true);
             }
         }).catch((err) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMember) {
                 const dialog = this.getDialogByPeerName(peerName);
-                if (dialog) {
+                if (dialog && dontClear !== true) {
                     this.dialogRepo.remove(this.teamId, dialog.peerid || '', dialog.peertype || 0);
                     this.messageRepo.clearHistory(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid || 0);
                 }
@@ -5503,11 +5525,11 @@ class Chat extends React.Component<IProps, IState> {
         this.props.history.push(`/chat/${this.teamId}/${hold}`);
     }
 
-    /* GroupInfo delete and exit handler */
-    private groupInfoDeleteAndExitHandler = () => {
+    /* GroupInfo exit handler */
+    private groupInfoExitHandler = () => {
         const dialog = this.getDialogByPeerName(this.selectedPeerName);
         if (dialog) {
-            this.dialogContextMenuHandler('remove', dialog);
+            this.dialogContextMenuHandler('exit', dialog);
         }
     }
 
@@ -5609,7 +5631,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateMessagePinnedHandler = (data: UpdateMessagePinned.AsObject) => {
-        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0);
+        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0, undefined, data.userid);
         // TODO modify server for silent pin
         // const peerName = GetPeerName(data.peer.id, data.peer.type);
         // if (this.selectedPeerName === peerName) {
@@ -5649,14 +5671,16 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private pinMessageDialog(peerId: string, peerType: number, msgId: number, store?: boolean) {
+    private pinMessageDialog(peerId: string, peerType: number, msgId: number, store?: boolean, senderId?: string) {
         const dialogs = this.dialogs;
         const index = findIndex(dialogs, {peerid: peerId, peertype: peerType});
+        let msgIdNotif: number = 0;
         if (index > -1) {
             if (dialogs[index].pinnedmessageid === msgId) {
                 dialogs[index].pinnedmessageid = 0;
             } else {
                 dialogs[index].pinnedmessageid = msgId;
+                msgIdNotif = msgId;
             }
             if (store) {
                 this.dialogRepo.lazyUpsert([dialogs[index]]);
@@ -5667,6 +5691,27 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messageRef) {
                 this.messageRef.setPinnedMessageId(msgId);
             }
+        }
+        if (senderId && msgIdNotif !== 0) {
+            this.messageRepo.get(msgIdNotif).then((msg) => {
+                if (!senderId || !msg || !msg.me) {
+                    return;
+                }
+                const messageTitle = getMessageTitle(msg);
+                const body = i18n.tf('notification.pinned', messageTitle.text);
+                const message: IMessage = {
+                    body,
+                    id: msgId,
+                    me: false,
+                    peerid: peerId,
+                    peertype: peerType,
+                    reacted: true,
+                };
+                this.notifyMessage({
+                    message,
+                    sender: this.userRepo.getInstant(senderId),
+                });
+            });
         }
     }
 

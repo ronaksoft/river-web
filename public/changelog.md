@@ -1,3 +1,6 @@
+## 1.0.86
+* Known bugs fixed
+
 ## 1.0.85
 * Minor improvements in SDK
 

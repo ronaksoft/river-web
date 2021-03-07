@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import MessageRepo from '../../repository/message';

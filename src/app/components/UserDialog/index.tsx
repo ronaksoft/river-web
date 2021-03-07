@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IUser} from '../../repository/user/interface';
 import {AddRounded, CheckRounded, EditRounded, SendRounded} from '@material-ui/icons';
 import {
@@ -442,7 +442,7 @@ class UserDialog extends React.Component<IProps, IState> {
                 notifyValue,
             }, () => {
                 this.modalityService.open({
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('general.apply'),
                     description: <NotifyContent value={this.state.notifyValue}
                                                 onChange={this.notifyValueChangeHandler}/>,

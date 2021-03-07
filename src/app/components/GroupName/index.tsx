@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IGroup} from '../../repository/group/interface';
 import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import {GroupRounded} from '@material-ui/icons';

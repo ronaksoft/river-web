@@ -8,7 +8,7 @@
 */
 
 /* eslint import/no-webpack-loader-syntax: off */
-import * as React from 'react';
+import React from 'react';
 import {Picker as EmojiPicker} from 'emoji-mart';
 import {cloneDeep, range, throttle, trimStart} from 'lodash';
 import {

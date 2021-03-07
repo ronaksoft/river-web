@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import bg1 from '../../../../asset/image/bgpic/bg1.jpg';
 import bg2 from '../../../../asset/image/bgpic/bg2.jpg';

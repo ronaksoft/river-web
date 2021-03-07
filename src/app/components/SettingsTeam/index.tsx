@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IconButton, Switch, TextField, MenuItem, Menu} from "@material-ui/core";
 import {
     KeyboardBackspaceRounded,

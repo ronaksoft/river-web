@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import TimeUtility from '../../services/utilities/time';
 import RiverTime from '../../services/utilities/river_time';
 import UserRepo, {UserDBUpdated} from '../../repository/user';

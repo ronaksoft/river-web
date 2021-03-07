@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import {localize} from "../../services/utilities/localize";
 import Badge from "@material-ui/core/Badge";
 import {TextAvatar} from "../UserAvatar";

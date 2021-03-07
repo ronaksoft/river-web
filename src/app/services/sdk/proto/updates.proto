@@ -103,7 +103,7 @@ message UpdateMessagePinned {
     int64 UpdateID = 101;
     int64 TeamID = 102 [jstype = JS_STRING];
     Peer Peer = 1;
-    int64 UserID = 2;
+    int64 UserID = 2 [jstype = JS_STRING];
     int64 MsgID = 3;
     int64 Version = 5;
 }

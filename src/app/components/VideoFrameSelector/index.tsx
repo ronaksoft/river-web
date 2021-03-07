@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import {Dialog, Slider, CircularProgress} from '@material-ui/core';
 import {CheckRounded, CloseRounded} from "@material-ui/icons";
 import i18n from "../../services/i18n";

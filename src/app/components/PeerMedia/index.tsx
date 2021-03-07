@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import MediaRepo from '../../repository/media';
 import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 import {getDuration, getMediaInfo, IMediaInfo} from '../MessageMedia';
