@@ -1,3 +1,6 @@
+## 1.0.87
+* Voice overall improvements
+
 ## 1.0.86
 * Known bugs fixed
 

@@ -26,9 +26,9 @@ import {
 } from "../../services/sdk/messages/chat.messages.medias_pb";
 import {from4bitResolution} from "../ChatInput/utils";
 import {base64ToU8a} from "../../services/sdk/fileManager/http/utils";
+import {GetDbFileName} from "../../repository/file";
 
 import './style.scss';
-import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     className?: string;
@@ -168,6 +168,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         }
         window.removeEventListener(EventMouseUp, this.windowMouseUpHandler);
         window.removeEventListener(EventRightMenuToggled, this.themeChangedHandler);
+        this.audioPlayer.remove(C_INSTANT_AUDIO);
     }
 
     /* Set voice metadata and file */
@@ -368,8 +369,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         if (!this.timerRef) {
             return;
         }
-        duration = duration || this.duration;
-        duration = Math.floor(duration);
+        duration = Math.floor(duration || this.duration);
         let sec: string | number = duration % 60;
         let min: string | number = Math.floor(duration / 60);
         if (sec < 10) {
