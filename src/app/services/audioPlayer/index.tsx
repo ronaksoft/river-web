@@ -544,7 +544,7 @@ export default class AudioPlayer {
                         resolve();
                     };
                     this.audio.onerror = (err: any) => {
-                        if (this.errFn) {
+                        if (this.errFn && !this.audio.paused) {
                             this.errFn({
                                 fast: false,
                                 messageId,

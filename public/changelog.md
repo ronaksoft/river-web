@@ -1,3 +1,6 @@
+## 1.0.88
+* Voice player improvements
+
 ## 1.0.87
 * Voice overall improvements
 

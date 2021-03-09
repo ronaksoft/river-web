@@ -5437,7 +5437,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Open file and focus on folder */
     private openFile(message: IMessage) {
-        if (message && message.saved_path) {
+        if (message && message.saved_path && message.saved_path !== '') {
             this.electronService.revealFile(message.saved_path, message.last_modified).then((res) => {
                 if (!res.bool) {
                     this.saveFile(message, false, () => {
@@ -5450,7 +5450,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Preview file */
     private previewFile(message: IMessage) {
-        if (message && message.saved_path) {
+        if (message && message.saved_path && message.saved_path !== '') {
             this.electronService.previewFile(message.saved_path, message.last_modified).then((res) => {
                 if (!res.bool) {
                     this.saveFile(message, false, () => {
