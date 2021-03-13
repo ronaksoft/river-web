@@ -860,6 +860,12 @@ class SignUp extends React.Component<IProps, IState> {
             if (currentUserId !== '0' && !this.sessionLimit) {
                 this.props.history.push('/chat/0/null');
             }
+        }).catch((err) => {
+            if (err && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemSkip) {
+                window.console.info("Skipped this request");
+            } else {
+                throw err;
+            }
         });
         if (this.state.step === 'phone') {
             this.apiManager.systemGetInfo().then((res) => {

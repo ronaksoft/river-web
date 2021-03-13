@@ -433,6 +433,9 @@ export default class UserRepo {
             if (u2.photogalleryList) {
                 u1.photogalleryList = u2.photogalleryList;
             }
+            if (u1.accesshash !== '0' && u2.accesshash === '0') {
+                u2.accesshash = u1.accesshash;
+            }
             return kMerge(u1, u2);
         };
         if (t && user.is_contact === 1) {

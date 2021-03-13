@@ -2552,6 +2552,12 @@ class Chat extends React.Component<IProps, IState> {
                     }, 1000);
                 }
                 this.apiManager.sendAllGuaranteedCommands(!this.firstTimeLoad);
+            }).catch((err) => {
+                if (err && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemSkip) {
+                    window.console.info("Skipped this request");
+                } else {
+                    throw err;
+                }
             });
         }
     }
