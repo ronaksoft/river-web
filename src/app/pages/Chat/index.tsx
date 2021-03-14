@@ -1721,7 +1721,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setLoading(true);
         this.messageRepo.list(this.teamId, {
             before,
-            limit: 30,
+            limit: 100,
             peer,
         }).then((data) => {
             // Checks peerid on transition
