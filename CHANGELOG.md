@@ -1,5 +1,6 @@
 ## 1.0.90
 * Uploader improvements
+* Left panel rtl layout bug fixed
 
 ## 1.0.89
 * Overall improvements
