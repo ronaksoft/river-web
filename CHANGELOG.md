@@ -1,3 +1,6 @@
+## 1.0.90
+* Uploader improvements
+
 ## 1.0.89
 * Overall improvements
 
