@@ -1,3 +1,6 @@
+## 1.0.91
+* Electron updated
+
 ## 1.0.90
 * Uploader improvements
 * Team panel rtl layout bug fixed

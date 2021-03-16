@@ -273,6 +273,7 @@ interface IState {
     uploadPreviewOpen: boolean;
     user: IUser | null;
     voiceMode: 'lock' | 'down' | 'up' | 'play';
+    showInput: boolean;
 }
 
 const mentionInputStyle = {
@@ -380,6 +381,7 @@ class ChatInput extends React.Component<IProps, IState> {
             selectable: false,
             selectableDisable: false,
             selectableHasPending: false,
+            showInput: props.peer ? props.peer.getId() !== '2374' : true,
             textareaValue: '',
             uploadPreviewOpen: false,
             user: props.peer && (props.peer.getType() === PeerType.PEERUSER && props.peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(props.peer.getId() || '') : null,
@@ -434,6 +436,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.setState({
                 disableAuthority: 0x0,
                 peer,
+                showInput: peer ? peer.getId() !== '2374' : true,
                 user,
             }, () => {
                 this.checkAuthority()();
@@ -518,6 +521,7 @@ class ChatInput extends React.Component<IProps, IState> {
             const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 peer,
+                showInput: peer ? peer.getId() !== '2374' : true,
                 user,
             }, () => {
                 this.checkAuthority()();
@@ -767,7 +771,6 @@ class ChatInput extends React.Component<IProps, IState> {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
             disableAuthority, user, botKeyboard, droppedMessage, inputMode,
         } = this.state;
-
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {
                 return (<div className="input-placeholder">
@@ -791,7 +794,7 @@ class ChatInput extends React.Component<IProps, IState> {
         } else {
             const isBot = Boolean(this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data));
             const hasPreviewMessage = Boolean(previewMessage || (droppedMessage && droppedMessage.messagetype && droppedMessage.messagetype !== C_MESSAGE_TYPE.Normal));
-            const {selectableHasPending} = this.state;
+            const {selectableHasPending, showInput} = this.state;
             return (
                 <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
@@ -799,7 +802,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}
                                    teamId={this.teamId}/>
                     <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
-                    {(!selectable && hasPreviewMessage) &&
+                    {(!selectable && hasPreviewMessage && showInput) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
                             <div
@@ -830,7 +833,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
-                    {Boolean(!selectable) && <>
+                    {Boolean(!selectable && showInput) && <>
                         <div className={`inputs mode-${inputMode}`}>
                             <div className="user">
                                 <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
