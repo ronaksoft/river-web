@@ -9,7 +9,7 @@
   "main": "public/electron.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "PUBLIC_URL=/ GENERATE_SOURCEMAP=false NODE_OPTIONS=--max_old_space_size=4096 react-scripts build",
+    "build": "PUBLIC_URL=/ GENERATE_SOURCEMAP=false NODE_OPTIONS=--max_old_space_size=2048 react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "elec2": "electron --inspect=5858 .",
