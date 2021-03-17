@@ -76,7 +76,7 @@ class TimeService {
     }
 
     public TimeParse(timestamp: number) {
-        return moment(timestamp * 1000).format('hh:mm a');
+        return moment.unix(timestamp).format('hh:mm a');
     }
 
     public dynamic(timestamp: number | undefined) {
@@ -84,10 +84,10 @@ class TimeService {
             return '';
         }
 
-        const date = moment(timestamp * 1000);
-        const current = this.riverTime.milliNow();
+        const date = moment.unix(timestamp);
+        const current = moment.unix(this.riverTime.now());
 
-        const justNow = moment().startOf('minute');
+        const justNow = current.startOf('minute');
         if (date.isSameOrAfter(justNow)) {
             if (this.lang === 'en') {
                 return 'Just Now';
@@ -96,12 +96,12 @@ class TimeService {
             }
         }
 
-        const today = moment(current).startOf('day');
+        const today = current.startOf('day');
         if (date.isSameOrAfter(today)) {
             return date.format('HH:mm');
         }
 
-        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        const yesterday = current.startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
             if (this.lang === 'en') {
                 return date.format('[Yesterday] HH:mm');
@@ -110,7 +110,7 @@ class TimeService {
             }
         }
 
-        const thisYear = moment(current).startOf('year');
+        const thisYear = current.startOf('year');
         if (date.isSameOrAfter(thisYear)) {
             if (this.lang === 'en') {
                 return date.format('MMM DD');
@@ -131,10 +131,10 @@ class TimeService {
             return '';
         }
 
-        const date = moment(timestamp * 1000);
-        const current = this.riverTime.milliNow();
+        const date = moment.unix(timestamp);
+        const current = moment.unix(this.riverTime.now());
 
-        const today = moment(current).startOf('day');
+        const today = current.startOf('day');
         if (date.isSameOrAfter(today)) {
             if (this.lang === 'en') {
                 return date.format('[Today]');
@@ -143,7 +143,7 @@ class TimeService {
             }
         }
 
-        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        const yesterday = current.startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
             if (this.lang === 'en') {
                 return date.format('[Yesterday]');
@@ -152,7 +152,7 @@ class TimeService {
             }
         }
 
-        const thisYear = moment(current).startOf('year');
+        const thisYear = current.startOf('year');
         if (date.isSameOrAfter(thisYear)) {
             if (this.lang === 'en') {
                 return date.format('MMM DD');
@@ -173,10 +173,10 @@ class TimeService {
             return '';
         }
 
-        const date = moment(timestamp * 1000);
-        const current = this.riverTime.milliNow();
+        const date = moment.unix(timestamp);
+        const current = moment.unix(this.riverTime.now());
 
-        const minute = moment(current).subtract(1, 'minutes');
+        const minute = current.subtract(1, 'minutes');
         if (date.isSameOrAfter(minute)) {
             if (this.lang === 'en') {
                 return 'Just now';
@@ -185,7 +185,7 @@ class TimeService {
             }
         }
 
-        const today = moment(current).startOf('day');
+        const today = current.startOf('day');
         if (date.isSameOrAfter(today)) {
             if (this.lang === 'en') {
                 return date.format('[Today at] HH:mm');
@@ -194,7 +194,7 @@ class TimeService {
             }
         }
 
-        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        const yesterday = current.startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
             if (this.lang === 'en') {
                 return date.format('[Yesterday at] HH:mm');
@@ -203,7 +203,7 @@ class TimeService {
             }
         }
 
-        const thisYear = moment(current).startOf('year');
+        const thisYear = current.startOf('year');
         if (date.isSameOrAfter(thisYear)) {
             if (this.lang === 'en') {
                 return date.format('MMM DD');
@@ -224,10 +224,10 @@ class TimeService {
             return '';
         }
 
-        const date = moment(timestamp * 1000);
-        const current = this.riverTime.milliNow();
+        const date = moment.unix(timestamp);
+        const current = moment.unix(this.riverTime.now());
 
-        const today = moment(current).startOf('day');
+        const today = current.startOf('day');
         if (date.isSameOrAfter(today)) {
             if (this.lang === 'en') {
                 return date.format('[Today at], HH:mm');
@@ -236,7 +236,7 @@ class TimeService {
             }
         }
 
-        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        const yesterday = current.startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
             if (this.lang === 'en') {
                 return date.format('[Yesterday at], HH:mm');
@@ -245,7 +245,7 @@ class TimeService {
             }
         }
 
-        const thisYear = moment(current).startOf('year');
+        const thisYear = current.startOf('year');
         if (date.isSameOrAfter(thisYear)) {
             if (this.lang === 'en') {
                 return date.format('MMM DD, HH:mm');
@@ -266,11 +266,11 @@ class TimeService {
             return '';
         }
 
-        const current = this.riverTime.milliNow();
-        const today = moment(current).startOf('day');
-        const date = moment(timestamp * 1000);
+        const today = moment.unix(this.riverTime.now()).startOf('day');
+        const now = moment.unix(this.riverTime.now());
+        const date = moment.unix(timestamp);
 
-        const justNow = today.subtract(15, 'seconds');
+        const justNow = now.subtract(15, 'seconds');
         if (date.isSameOrAfter(justNow)) {
             if (this.lang === 'en') {
                 return 'Just Now';
@@ -281,9 +281,9 @@ class TimeService {
 
         if (date.isSameOrAfter(today)) {
             if (this.lang === 'en') {
-                return `${date.from(current, true)} ago`;
+                return `${date.from(today, true)} ago`;
             } else {
-                return `${date.from(current, true)} پیش `;
+                return `${date.from(today, true)} پیش `;
             }
         }
 
@@ -291,16 +291,16 @@ class TimeService {
             return date.format('HH:mm');
         }
 
-        const yesterday = moment(current).startOf('day').subtract(7, 'days');
+        const yesterday = now.startOf('day').subtract(7, 'days');
         if (date.isSameOrAfter(yesterday)) {
             if (this.lang === 'en') {
-                return `${date.from(current, true)} ago`;
+                return `${date.from(today, true)} ago`;
             } else {
-                return `${date.from(current, true)} پیش `;
+                return `${date.from(today, true)} پیش `;
             }
         }
 
-        const week = moment(current).startOf('day').subtract(14, 'days');
+        const week = now.startOf('day').subtract(14, 'days');
         if (date.isSameOrAfter(week)) {
             if (this.lang === 'en') {
                 return 'Within a week';
@@ -309,7 +309,7 @@ class TimeService {
             }
         }
 
-        const month = moment(current).startOf('day').subtract(1, 'months');
+        const month = now.startOf('day').subtract(1, 'months');
         if (date.isSameOrAfter(month)) {
             if (this.lang === 'en') {
                 return 'Within a month';
@@ -329,8 +329,8 @@ class TimeService {
         if (!time1 || !time2) {
             return false;
         }
-        const m1 = moment.parseZone(time1 * 1000);
-        const m2 = moment.parseZone(time2 * 1000);
+        const m1 = moment.unix(time1).parseZone();
+        const m2 = moment.unix(time2).parseZone();
         return m1.isSame(m2, 'day');
     }
 
