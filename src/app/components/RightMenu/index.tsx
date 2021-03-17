@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import GroupInfoMenu from "../GroupInfoMenu";
 import UserInfoMenu from "../UserInfoMenu";
@@ -17,7 +17,7 @@ import './style.scss';
 
 interface IProps {
     onChange: (shrink: boolean) => void;
-    onDeleteAndExitGroup?: () => void;
+    onExitGroup?: () => void;
     onMessageAttachmentAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot' | 'view_in_chat' | 'forward', messageId: number) => void;
     onBulkAction: (cmd: 'forward', messageIds: number[]) => void;
     onToggleMenu: (open: boolean) => void;
@@ -116,7 +116,7 @@ class RightMenu extends React.PureComponent<IProps, IState> {
                 {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
                 <GroupInfoMenu key="group-info" ref={this.groupInfoMenuRefHandler} onClose={this.closeHandler}
                                peer={peer} onAction={this.props.onMessageAttachmentAction}
-                               onDeleteAndExitGroup={this.props.onDeleteAndExitGroup} onError={this.props.onError}
+                               onExitGroup={this.props.onExitGroup} onError={this.props.onError}
                                onBulkAction={this.props.onBulkAction}/>}
                 {Boolean(rightMenu && peer && (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER)) &&
                 <UserInfoMenu key="user-info" ref={this.userInfoMenuRefHandler} peer={peer} onClose={this.closeHandler}

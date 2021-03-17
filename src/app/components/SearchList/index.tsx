@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import AutoSizer from "react-virtualized-auto-sizer";
 import {IUser} from '../../repository/user/interface';
 import {clone, debounce, differenceBy, differenceWith, findIndex} from 'lodash';

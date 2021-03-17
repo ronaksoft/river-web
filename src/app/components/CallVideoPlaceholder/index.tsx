@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 // @ts-ignore
 import glur from 'glur';
 import CallVideoAugment from "../CallVideoAugment";

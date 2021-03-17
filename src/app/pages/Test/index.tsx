@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import {random, range} from 'lodash';
 import AutoSizer from "react-virtualized-auto-sizer";
 // @ts-ignore

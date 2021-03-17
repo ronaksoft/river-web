@@ -16,6 +16,14 @@
   height: 100%;
   user-select: none;
 
+  .last-seen {
+    text-transform: lowercase;
+
+    &:first-letter {
+      text-transform: uppercase;
+    }
+  }
+
   .doing-svg {
     display: inline-block;
     height: 6px !important;

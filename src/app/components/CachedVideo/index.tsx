@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import CachedFileService from '../../services/cachedFileService';
 import {InputFileLocation} from '../../services/sdk/messages/core.types_pb';
 import {GetDbFileName} from "../../repository/file";

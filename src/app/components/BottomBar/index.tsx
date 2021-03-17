@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {PersonRounded, QuestionAnswerRounded, SettingsRounded} from "@material-ui/icons";
 import Badge from '@material-ui/core/Badge';
 import i18n from '../../services/i18n';

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import SearchRepo from "../../repository/search";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
 import {ITopPeerItem} from "../../repository/topPeer/interface";
@@ -86,7 +86,7 @@ class TopPeer extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {noTitle, hideIds} = this.props;
+        const {noTitle, hideIds, type} = this.props;
         const {list, visible, clear} = this.state;
         const filteredList = list.filter(item => !hideIds || (hideIds && hideIds.indexOf(item.item.id || '') === -1));
         if (filteredList.length === 0) {
@@ -95,7 +95,8 @@ class TopPeer extends React.Component<IProps, IState> {
         return (<div
             className={'top-peer' + ((!visible && !clear) ? ' hidden' : '') + (noTitle ? ' no-title' : '') + (clear ? ' clear-mode' : '')}>
             {noTitle !== true && <div className="top-peer-title">
-                <div className="text">{I18n.t('general.frequently_contacted')}</div>
+                <div className="text"
+                >{I18n.t(type === TopPeerType.Forward ? 'general.frequently_forwarded_to' : 'general.frequently_contacted')}</div>
                 <div className="clear" onClick={this.toggleClearHandler}
                 >{I18n.t(clear ? 'general.cancel' : 'general.clear')}</div>
             </div>}
@@ -103,7 +104,8 @@ class TopPeer extends React.Component<IProps, IState> {
                 <div className="scroll-bar" style={{width: `${list.length * 64}px`}}>
                     {filteredList.map((item, index) => {
                         return (
-                            <Link key={index} to={`/chat/${this.props.teamId}/${item.item.id}_${item.type}`} onClick={this.clickHandler(item)}>
+                            <Link key={index} to={`/chat/${this.props.teamId}/${item.item.id}_${item.type}`}
+                                  onClick={this.clickHandler(item)}>
                                 <div className="top-peer-item">
                                     <div className="remove" onClick={this.removeHandler(item)}><CloseRounded/></div>
                                     {this.getItem(item)}

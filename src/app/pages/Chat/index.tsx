@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
@@ -747,7 +747,7 @@ class Chat extends React.Component<IProps, IState> {
                                    onChange={this.rightMenuChangeHandler}
                                    onMessageAttachmentAction={this.messageAttachmentActionHandler}
                                    onBulkAction={this.rightMenuBulkActionHandler}
-                                   onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}
+                                   onExitGroup={this.groupInfoExitHandler}
                                    onToggleMenu={this.rightMenuToggleMenuHandler}
                                    onError={this.textErrorHandler}
                         />
@@ -1194,8 +1194,15 @@ class Chat extends React.Component<IProps, IState> {
                 if (!data.peer || !data.sender || !msg || !msg.me || data.reaction === '') {
                     return;
                 }
+                const messageTitle = getMessageTitle(msg);
+                let body: string = '';
+                if (msg.body === '') {
+                    body = i18n.tf('notification.reaction', [data.reaction, messageTitle.text]);
+                } else {
+                    body = i18n.tf('notification.reaction_quote', [data.reaction, messageTitle.text]);
+                }
                 const message: IMessage = {
-                    body: i18n.tf('notification.reaction', [data.reaction, msg ? msg.body || '' : '']),
+                    body,
                     id: msgId,
                     me: false,
                     peerid: data.peer.id,
@@ -1531,7 +1538,7 @@ class Chat extends React.Component<IProps, IState> {
                         before = tBefore;
                     }
                 } else if ((dialog.scroll_pos || -1) !== -1) {
-                    before = dialog.scroll_pos || 1000000000;
+                    before = dialog.scroll_pos || 10000000000;
                 }
             }
         }
@@ -1714,7 +1721,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setLoading(true);
         this.messageRepo.list(this.teamId, {
             before,
-            limit: 30,
+            limit: 100,
             peer,
         }).then((data) => {
             // Checks peerid on transition
@@ -2545,6 +2552,12 @@ class Chat extends React.Component<IProps, IState> {
                     }, 1000);
                 }
                 this.apiManager.sendAllGuaranteedCommands(!this.firstTimeLoad);
+            }).catch((err) => {
+                if (err && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemSkip) {
+                    window.console.info("Skipped this request");
+                } else {
+                    throw err;
+                }
             });
         }
     }
@@ -3074,7 +3087,7 @@ class Chat extends React.Component<IProps, IState> {
         switch (item) {
             case 'logout':
                 this.modalityService.open({
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('general.agree'),
                     description: <>{i18n.t('chat.logout_dialog.p1')}<br/>
                         {i18n.t('chat.logout_dialog.p2')}<br/>
@@ -3350,7 +3363,7 @@ class Chat extends React.Component<IProps, IState> {
                                           peerName={true}
                                 /></> : i18n.t('chat.remove_message_dialog.remove_for_all'),
                     }] : undefined,
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('chat.remove_message_dialog.remove'),
                     description: i18n.tf('chat.remove_message_dialog.content', String(Object.keys(this.messageSelectedIds).length)),
                     title: i18n.t('chat.remove_message_dialog.title'),
@@ -3406,7 +3419,7 @@ class Chat extends React.Component<IProps, IState> {
                         },
                         text: i18n.t('general.yes'),
                     }],
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('message.pin_only'),
                     description: i18n.t('message.pin_alert'),
                     title: i18n.t('message.pin_message'),
@@ -3912,7 +3925,7 @@ class Chat extends React.Component<IProps, IState> {
                         },
                         text: i18n.t('chat.remove_message_dialog.remove_all_pending'),
                     }] : undefined,
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('chat.remove_message_dialog.remove'),
                     description: i18n.tf('chat.remove_message_dialog.content', String(Object.keys(this.messageSelectedIds).length)),
                     title: i18n.t('chat.remove_message_dialog.title'),
@@ -4201,10 +4214,25 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'block':
                 break;
+            case 'exit':
+                this.modalityService.open({
+                    cancelText: i18n.t('general.cancel'),
+                    confirmText: i18n.t('general.agree'),
+                    description: <>{i18n.t('chat.exit_group_dialog.p3')}
+                        <GroupName className="group-name" id={dialog.peerid || '0'}
+                                   teamId={this.teamId}/> ?
+                    </>,
+                    title: i18n.t('chat.exit_group_dialog.title_exit'),
+                }).then((modalRes) => {
+                    if (modalRes === 'confirm') {
+                        this.deleteAndExitGroupHandler(GetPeerName(dialog.peerid, dialog.peertype), true);
+                    }
+                });
+                break;
             case 'remove':
                 const isGroup = (dialog.peertype === PeerType.PEERGROUP);
                 this.modalityService.open({
-                    cancelText: i18n.t('general.disagree'),
+                    cancelText: i18n.t('general.cancel'),
                     confirmText: i18n.t('general.agree'),
                     description: isGroup ? <>{i18n.t('chat.exit_group_dialog.p1')}
                         <GroupName className="group-name" id={dialog.peerid || '0'}
@@ -4282,7 +4310,7 @@ class Chat extends React.Component<IProps, IState> {
     private resendTextMessage(randomId: number, message: IMessage) {
         const peerInfo = this.getPeerByName(GetPeerName(message.peerid, message.peertype));
         if (!peerInfo || !peerInfo.peer) {
-            return;
+            return Promise.resolve();
         }
 
         const messageEntities: MessageEntity[] = [];
@@ -4299,7 +4327,7 @@ class Chat extends React.Component<IProps, IState> {
 
         // For double checking update message id
         this.updateManager.setRandomId(randomId);
-        this.apiManager.sendMessage(randomId, message.body || '', peerInfo.peer, message.replyto, messageEntities).then((res) => {
+        return this.apiManager.sendMessage(randomId, message.body || '', peerInfo.peer, message.replyto, messageEntities).then((res) => {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
@@ -4310,6 +4338,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messageRef) {
                 this.messageRef.updateList();
             }
+            return Promise.resolve();
         });
     }
 
@@ -4317,16 +4346,16 @@ class Chat extends React.Component<IProps, IState> {
     private resendMediaMessage(randomId: number, message: IMessage, fileNames: string[], data: any, inputMediaType?: InputMediaType) {
         const peerInfo = this.getPeerByName(GetPeerName(message.peerid, message.peertype));
         if (!peerInfo || !peerInfo.peer) {
-            return;
+            return Promise.resolve();
         }
 
         const fn = () => {
             if (!peerInfo || !peerInfo.peer) {
-                return;
+                return Promise.resolve();
             }
             // For double checking update message id
             this.updateManager.setRandomId(randomId);
-            this.apiManager.sendMediaMessage(randomId, peerInfo.peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+            return this.apiManager.sendMediaMessage(randomId, peerInfo.peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 message.id = res.messageid;
                 this.messageMapAppend(message);
                 message.downloaded = true;
@@ -4338,6 +4367,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (this.messageRef) {
                     this.messageRef.updateList();
                 }
+                return Promise.resolve();
             });
         };
 
@@ -4351,14 +4381,14 @@ class Chat extends React.Component<IProps, IState> {
                 promises.push(this.fileManager.retry(name));
             }
         });
-        Promise.all(promises).then(() => {
+        return Promise.all(promises).then(() => {
             this.progressBroadcaster.remove(message.id || 0);
-            fn();
+            return fn();
         }).catch((errs) => {
             const err = errs.length ? errs[0] : errs;
             this.progressBroadcaster.remove(message.id || 0);
             if (err.code === C_FILE_ERR_CODE.NO_TEMP_FILES) {
-                fn();
+                return fn();
             } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
@@ -4370,6 +4400,7 @@ class Chat extends React.Component<IProps, IState> {
                     this.updateVisibleRows([index]);
                 }
             }
+            return Promise.resolve();
         });
     }
 
@@ -4385,10 +4416,18 @@ class Chat extends React.Component<IProps, IState> {
                     messages[index].error = false;
                     this.updateVisibleRows([index]);
                 }
+                let promise: Promise<any> | undefined;
                 if (res.file_ids && res.file_ids.length > 0 && message.mediatype !== MediaType.MEDIATYPEEMPTY && message.messagetype !== 0 && message.messagetype !== C_MESSAGE_TYPE.Normal) {
-                    this.resendMediaMessage(res.id, message, res.file_ids, res.data, res.type);
+                    promise = this.resendMediaMessage(res.id, message, res.file_ids, res.data, res.type);
                 } else if (message.messagetype === 0 || message.messagetype === C_MESSAGE_TYPE.Normal) {
-                    this.resendTextMessage(res.id, message);
+                    promise = this.resendTextMessage(res.id, message);
+                }
+                if (promise) {
+                    promise.catch((err) => {
+                        if (err && err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemBot) {
+                            this.messageRepo.removePending(message.random_id || 0);
+                        }
+                    });
                 }
             } else {
                 if ((message.id || 0) < 0) {
@@ -5404,7 +5443,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Open file and focus on folder */
     private openFile(message: IMessage) {
-        if (message && message.saved_path) {
+        if (message && message.saved_path && message.saved_path !== '') {
             this.electronService.revealFile(message.saved_path, message.last_modified).then((res) => {
                 if (!res.bool) {
                     this.saveFile(message, false, () => {
@@ -5417,7 +5456,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Preview file */
     private previewFile(message: IMessage) {
-        if (message && message.saved_path) {
+        if (message && message.saved_path && message.saved_path !== '') {
             this.electronService.previewFile(message.saved_path, message.last_modified).then((res) => {
                 if (!res.bool) {
                     this.saveFile(message, false, () => {
@@ -5445,7 +5484,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Delete and exit group handler */
-    private deleteAndExitGroupHandler = (peerName: string) => {
+    private deleteAndExitGroupHandler = (peerName: string, dontClear?: boolean) => {
         const peer = this.getPeerByName(peerName);
         const inputPeer = peer.peer;
         if (!inputPeer) {
@@ -5457,13 +5496,13 @@ class Chat extends React.Component<IProps, IState> {
         user.setAccesshash('');
         this.apiManager.groupRemoveMember(inputPeer, user).then(() => {
             const dialog = this.getDialogByPeerName(peerName);
-            if (dialog && dialog.topmessageid) {
+            if (dialog && dialog.topmessageid && dontClear !== true) {
                 this.apiManager.clearMessage(inputPeer, dialog.topmessageid, true);
             }
         }).catch((err) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMember) {
                 const dialog = this.getDialogByPeerName(peerName);
-                if (dialog) {
+                if (dialog && dontClear !== true) {
                     this.dialogRepo.remove(this.teamId, dialog.peerid || '', dialog.peertype || 0);
                     this.messageRepo.clearHistory(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid || 0);
                 }
@@ -5492,11 +5531,11 @@ class Chat extends React.Component<IProps, IState> {
         this.props.history.push(`/chat/${this.teamId}/${hold}`);
     }
 
-    /* GroupInfo delete and exit handler */
-    private groupInfoDeleteAndExitHandler = () => {
+    /* GroupInfo exit handler */
+    private groupInfoExitHandler = () => {
         const dialog = this.getDialogByPeerName(this.selectedPeerName);
         if (dialog) {
-            this.dialogContextMenuHandler('remove', dialog);
+            this.dialogContextMenuHandler('exit', dialog);
         }
     }
 
@@ -5598,7 +5637,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateMessagePinnedHandler = (data: UpdateMessagePinned.AsObject) => {
-        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0);
+        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0, undefined, data.userid);
         // TODO modify server for silent pin
         // const peerName = GetPeerName(data.peer.id, data.peer.type);
         // if (this.selectedPeerName === peerName) {
@@ -5638,14 +5677,16 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private pinMessageDialog(peerId: string, peerType: number, msgId: number, store?: boolean) {
+    private pinMessageDialog(peerId: string, peerType: number, msgId: number, store?: boolean, senderId?: string) {
         const dialogs = this.dialogs;
         const index = findIndex(dialogs, {peerid: peerId, peertype: peerType});
+        let msgIdNotif: number = 0;
         if (index > -1) {
             if (dialogs[index].pinnedmessageid === msgId) {
                 dialogs[index].pinnedmessageid = 0;
             } else {
                 dialogs[index].pinnedmessageid = msgId;
+                msgIdNotif = msgId;
             }
             if (store) {
                 this.dialogRepo.lazyUpsert([dialogs[index]]);
@@ -5656,6 +5697,27 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messageRef) {
                 this.messageRef.setPinnedMessageId(msgId);
             }
+        }
+        if (senderId && msgIdNotif !== 0) {
+            this.messageRepo.get(msgIdNotif).then((msg) => {
+                if (!senderId || !msg || !msg.me) {
+                    return;
+                }
+                const messageTitle = getMessageTitle(msg);
+                const body = i18n.tf('notification.pinned', messageTitle.text);
+                const message: IMessage = {
+                    body,
+                    id: msgId,
+                    me: false,
+                    peerid: peerId,
+                    peertype: peerType,
+                    reacted: true,
+                };
+                this.notifyMessage({
+                    message,
+                    sender: this.userRepo.getInstant(senderId),
+                });
+            });
         }
     }
 

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import AudioPlayer, {IAudioEvent, IAudioInfo, IPlaylistItem} from '../../services/audioPlayer';
 import {
     CloseRounded,
@@ -322,9 +322,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
 
     private cancelHandler = () => {
         this.openPlayer(false);
-        if (this.state.playState === 'play') {
-            this.audioPlayer.pause(this.messageId);
-        }
+        this.audioPlayer.stop(this.messageId);
         this.setState({
             openPlaylist: false,
         });

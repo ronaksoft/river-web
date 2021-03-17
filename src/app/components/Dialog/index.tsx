@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import AutoSizer from "react-virtualized-auto-sizer";
 import {Link} from 'react-router-dom';
 import {clone, debounce, differenceBy, findIndex, intersectionWith, uniqWith, uniqBy} from 'lodash';

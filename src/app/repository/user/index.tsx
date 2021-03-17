@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/user';
 import {IContact, IUser} from './interface';
-import {differenceBy, find, uniq, throttle} from 'lodash';
+import {differenceBy, find, throttle, uniq} from 'lodash';
 import APIManager, {currentUserId} from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 import {Int64BE} from 'int64-buffer';
@@ -282,6 +282,9 @@ export default class UserRepo {
                     user.status_last_modified = RiverTime.getInstance().now();
                 } else if (user.lastseen) {
                     user.status_last_modified = user.lastseen;
+                } else if (user.status === UserStatus.USERSTATUSRECENTLY) {
+                    user.status_last_modified = 0;
+                    user.lastseen = 0;
                 }
                 if (user.remove_photo) {
                     delete user.remove_photo;
@@ -432,6 +435,9 @@ export default class UserRepo {
             }
             if (u2.photogalleryList) {
                 u1.photogalleryList = u2.photogalleryList;
+            }
+            if (u1.accesshash !== '0' && u2.accesshash === '0') {
+                u2.accesshash = u1.accesshash;
             }
             return kMerge(u1, u2);
         };

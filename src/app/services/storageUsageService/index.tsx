@@ -144,7 +144,9 @@ export default class StorageUsageService {
                 return {
                     downloaded: false,
                     id: item.id,
+                    last_modified: '',
                     saved: false,
+                    saved_path: '',
                 };
             }));
         });
@@ -153,7 +155,7 @@ export default class StorageUsageService {
     private getMediaFiles(teamId: string, peer: IPeer, before?: number) {
         const limit = 50;
         return this.mediaRepo.getMany(teamId, peer, {before, limit}).then((res) => {
-            const fileMap: {[key: string]: {id: number, mediaType: number}} = {};
+            const fileMap: { [key: string]: { id: number, mediaType: number } } = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;
             const names: string[] = [];

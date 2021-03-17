@@ -64,7 +64,11 @@
 /* eslint-disable */
 /* eslint-disable */
 /* eslint-disable */
+<<<<<<< HEAD
 /* eslint-disable */
+/* eslint-disable */
+=======
+>>>>>>> 53e072464021aa8ae4253a304fc38d52515e35a6
 // source: chat.seal.proto
 /**
  * @fileoverview

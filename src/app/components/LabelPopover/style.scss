@@ -65,6 +65,21 @@
           font-size: 13px;
         }
       }
+
+      .label-placeholder {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--grey);
+        font-size: 14px;
+
+        svg {
+          font-size: 24px;
+          color: inherit;
+          margin: 0 8px 0 0;
+        }
+      }
     }
 
     .search-label {
@@ -84,6 +99,12 @@ html[direction="rtl"] {
 
           .label-name {
             justify-content: flex-start;
+          }
+        }
+
+        .label-placeholder {
+          svg {
+            margin: 0 0 0 8px;
           }
         }
       }

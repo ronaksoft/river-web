@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import {localize} from "../../services/utilities/localize";
 import Badge from "@material-ui/core/Badge";
 import {TextAvatar} from "../UserAvatar";
@@ -18,6 +18,7 @@ import Scrollbars from "react-custom-scrollbars";
 import i18n from "../../services/i18n";
 
 import './style.scss';
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 interface IProps {
     onAction: (cmd: string) => (e: any) => void;
@@ -41,6 +42,8 @@ class LeftPanel extends React.Component<IProps, IState> {
         };
     }
 
+    private rtl: boolean = false;
+
     constructor(props: IProps) {
         super(props);
 
@@ -49,6 +52,8 @@ class LeftPanel extends React.Component<IProps, IState> {
             selectedTeamId: props.selectedTeamId,
             teamList: [],
         };
+
+        this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
     }
 
     public setTeamList(list: ITeam[]) {
@@ -90,6 +95,7 @@ class LeftPanel extends React.Component<IProps, IState> {
                 <div className="folder-container">
                     <Scrollbars
                         universal={true}
+                        rtl={this.rtl}
                         style={{
                             height: '100%',
                             width: '100%',

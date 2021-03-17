@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import {ExpandMoreRounded} from "@material-ui/icons";
 import Badge from "@material-ui/core/Badge";
 import {IDialog} from "../../repository/dialog/interface";

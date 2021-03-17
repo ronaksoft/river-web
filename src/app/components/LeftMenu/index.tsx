@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from "../Dialog";
 import SettingsMenu from "../SettingsMenu";
 import ContactsMenu from "../ContactsMenu";
@@ -167,10 +167,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.chatMoreMenuItem = [{
             cmd: 'new_group',
             title: i18n.t('chat.new_group'),
-        }, {
+        },/* {
             cmd: 'new_message',
             title: i18n.t('chat.new_message'),
-        }, {
+        },*/ {
             cmd: 'labels',
             title: i18n.t('chat.labels'),
         }, {

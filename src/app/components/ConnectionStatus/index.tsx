@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import i18n from "../../services/i18n";
 import Smoother from "../../services/utilities/smoother";
 import {isNil, omitBy} from "lodash";

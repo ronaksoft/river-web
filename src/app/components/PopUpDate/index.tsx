@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import TimeUtility from '../../services/utilities/time';
 
 import './style.scss';

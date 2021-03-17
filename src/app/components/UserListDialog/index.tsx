@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import SettingsModal from '../SettingsModal';
 import {PersonAddRounded, CheckRounded} from '@material-ui/icons';
 import SearchList, {IInputPeer} from '../SearchList';

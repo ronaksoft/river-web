@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import APIManager, {currentUserId} from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
@@ -859,6 +859,12 @@ class SignUp extends React.Component<IProps, IState> {
         this.apiManager.authRecall().then(() => {
             if (currentUserId !== '0' && !this.sessionLimit) {
                 this.props.history.push('/chat/0/null');
+            }
+        }).catch((err) => {
+            if (err && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemSkip) {
+                window.console.info("Skipped this request");
+            } else {
+                throw err;
             }
         });
         if (this.state.step === 'phone') {

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import CallService, {C_CALL_EVENT, ICallParticipant, IMediaSettings} from "../../services/callService";
 import CallVideoPlaceholder from "../CallVideoPlaceholder";
 import {findIndex, differenceWith} from "lodash";

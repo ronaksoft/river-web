@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 export const Doing = () => {
     return (<svg className="doing-svg" viewBox="0 0 128 35">

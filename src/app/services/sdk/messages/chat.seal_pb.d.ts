@@ -51,7 +51,11 @@
 /* tslint:disable */
 /* tslint:disable */
 /* tslint:disable */
+<<<<<<< HEAD
 /* tslint:disable */
+/* tslint:disable */
+=======
+>>>>>>> 53e072464021aa8ae4253a304fc38d52515e35a6
 // package: msg
 // file: chat.seal.proto
 

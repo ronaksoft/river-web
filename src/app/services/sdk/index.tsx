@@ -569,7 +569,11 @@ export default class APIManager {
         data.setPeer(peer);
         data.setLimit(limit || 0);
         data.setMinid(Math.floor(minId || 0));
-        data.setMaxid(Math.floor(maxId || 0));
+        if (maxId === 10000000000) {
+            data.setMaxid(0);
+        } else {
+            data.setMaxid(Math.floor(maxId || 0));
+        }
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true, {
             retry: 7,

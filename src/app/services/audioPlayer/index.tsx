@@ -274,7 +274,7 @@ export default class AudioPlayer {
     /* Play audio */
     public play(messageId: number, force?: boolean) {
         // TODO: fix bad instant bug
-        if (this.currentTrack !== messageId && messageId !== C_INSTANT_AUDIO) {
+        if ((this.currentTrack !== messageId || this.audio.src === `${window.location.origin}/`) && messageId !== C_INSTANT_AUDIO) {
             URL.revokeObjectURL(this.lastObjectUrl);
             this.stop(this.currentTrack);
             return this.prepareTrack(messageId).then(() => {
@@ -544,7 +544,7 @@ export default class AudioPlayer {
                         resolve();
                     };
                     this.audio.onerror = (err: any) => {
-                        if (this.errFn) {
+                        if (this.errFn && !this.audio.paused) {
                             this.errFn({
                                 fast: false,
                                 messageId,
