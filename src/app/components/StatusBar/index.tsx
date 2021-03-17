@@ -121,7 +121,7 @@ class StatusBar extends React.Component<IProps, IState> {
         } else if (ids > 0) {
             return (isTypingRender(typingList, peer.getType() || PeerType.PEERUSER, true));
         } else if (!hideStatus) {
-            return (<LastSeen id={selectedId} teamId={this.props.teamId} withLastSeen={true}/>);
+            return (<LastSeen className="last-seen" id={selectedId} teamId={this.props.teamId} withLastSeen={true}/>);
         } else {
             return null;
         }
