@@ -281,9 +281,9 @@ class TimeService {
 
         if (date.isSameOrAfter(today)) {
             if (this.lang === 'en') {
-                return `${date.from(today, true)} ago`;
+                return `${date.from(now, true)} ago`;
             } else {
-                return `${date.from(today, true)} پیش `;
+                return `${date.from(now, true)} پیش `;
             }
         }
 
@@ -294,9 +294,9 @@ class TimeService {
         const yesterday = now.startOf('day').subtract(7, 'days');
         if (date.isSameOrAfter(yesterday)) {
             if (this.lang === 'en') {
-                return `${date.from(today, true)} ago`;
+                return `${date.from(now, true)} ago`;
             } else {
-                return `${date.from(today, true)} پیش `;
+                return `${date.from(now, true)} پیش `;
             }
         }
 
