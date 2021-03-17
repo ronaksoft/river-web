@@ -89,7 +89,7 @@
     "search_messages": "Search Messages",
     "chat_placeholder": "Select a chat to start messaging!",
     "logout_dialog": {
-      "title": "Log Out?",
+      "title": "Are you sure you want to log out?",
       "p1": "We are about to log out of River.",
       "p2": "All your data will be removed!",
       "p3": "Are you sure you want to log out?"

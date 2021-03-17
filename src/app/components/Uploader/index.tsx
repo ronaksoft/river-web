@@ -155,7 +155,7 @@ class Uploader extends React.Component<IProps, IState> {
     private previewRefs: string[][] = [];
     private imageEditorRef: ImageEditor | undefined;
     private videoFrameSelectorRef: VideoFrameSelector | undefined;
-    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.Lang) === 'fa' || false;
+    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
     private rtlDetector: RTLDetector;
     private readonly rtlDetectorThrottle: any;
     private mentionContainer: any = null;
@@ -275,8 +275,10 @@ class Uploader extends React.Component<IProps, IState> {
                                                         onClick={this.chooseFrameHandler(items[selected].preview)}/>
                                                 </div>
                                             </>}
-                                            {Boolean(items[selected].mediaType === 'video') &&
-                                            <video ref={this.imageRefHandler} className="front" controls={true}>
+                                            {Boolean(items[selected].mediaType === 'video') && // @ts-ignore
+                                            <video ref={this.imageRefHandler} className="front" controls={true}
+                                                   controlsList="nofullscreen nodownload noremoteplayback"
+                                                   disablePictureInPicture={true}>
                                                 <source src={items[selected].preview}/>
                                             </video>}
                                             {Boolean(items[selected].mediaType === 'audio' && items[selected].preview) &&

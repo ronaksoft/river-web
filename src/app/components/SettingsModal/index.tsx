@@ -18,6 +18,7 @@ import ResizeObserver from "resize-observer-polyfill";
 import {isProd} from "../../../index";
 
 import './style.scss';
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 interface IProps {
     fit?: boolean;
@@ -49,6 +50,7 @@ class SettingsModal extends React.Component<IProps, IState> {
     private autoHeight: number = 0;
     private ref: any;
     private resizeTries: number = 0;
+    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
 
     constructor(props: IProps) {
         super(props);
@@ -98,6 +100,7 @@ class SettingsModal extends React.Component<IProps, IState> {
                                 height: '100%',
                                 width: '100%',
                             }}
+                            rtl={this.rtl}
                         >
                             {this.props.children}
                         </Scrollbars>

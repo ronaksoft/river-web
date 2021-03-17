@@ -345,7 +345,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
-    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.Lang) === 'fa' || false;
+    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
     private preventMessageSend: boolean = false;
     private preventMessageSendTimeout: any = null;
     private emojiMap: { [key: string]: number } = {};
@@ -1378,7 +1378,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.textarea) {
             return;
         }
-        const {droppedMessage, inputMode} = this.state;
+        const {droppedMessage, inputMode, previewMessageMode} = this.state;
         let lines = 1;
         const nodeInfo = measureNodeHeight(this.textarea, 12312, false, 1, 12);
         if (nodeInfo) {
@@ -1397,7 +1397,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.textarea.classList.add(`_${lines}-line`);
             this.lastLines = lines;
         }
-        if (!Boolean(droppedMessage) && !canSendMessage(this.textarea.value, this.state.previewMessageMode, this.state.previewMessage)) {
+        if (!Boolean(droppedMessage) && previewMessageMode !== C_MSG_MODE.Edit && !canSendMessage(this.textarea.value, this.state.previewMessageMode, this.state.previewMessage)) {
             if (inputMode !== 'default') {
                 this.setInputMode('default');
             }

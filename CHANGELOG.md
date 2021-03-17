@@ -1,5 +1,7 @@
 ## 1.0.91
 * Electron updated
+* RTL UI improvements
+* Known bugs fixed
 
 ## 1.0.90
 * Uploader improvements
