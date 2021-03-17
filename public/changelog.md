@@ -1,3 +1,6 @@
+## 1.0.92
+* Last seen bug fixed
+
 ## 1.0.91
 * Electron updated
 * RTL UI improvements
