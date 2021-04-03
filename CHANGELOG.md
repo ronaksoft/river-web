@@ -1,3 +1,6 @@
+## 1.0.95
+* Re-create new auth key
+
 ## 1.0.94
 * Known bugs fixed
 

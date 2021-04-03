@@ -2600,19 +2600,32 @@ class Chat extends React.Component<IProps, IState> {
                     // Insert holes on snapshot if it has difference
                     const sameItems: IDialog[] = intersectionWith(cloneDeep(oldDialogs), res.dialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
                     const newItems: IDialog[] = differenceWith(cloneDeep(res.dialogs), oldDialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
+                    const additionalHoles: Array<{ peedId: string, peerType: PeerType, id: number }> = [];
                     const promises: any[] = [];
                     sameItems.forEach((dialog) => {
                         const d = find(res.dialogs, o => o.peerid === dialog.peerid && o.peertype === dialog.peertype);
-                        if (d) {
-                            promises.push(this.messageRepo.clearHistory(this.teamId, d.peerid || '', d.peertype || 0, d.topmessageid || 0));
+                        if (d && d.topmessageid !== dialog.topmessageid) {
+                            promises.push(this.messageRepo.clearHistory(this.teamId, d.peerid || '0', d.peertype || 0, d.topmessageid || 0));
+                            additionalHoles.push({
+                                id: d.topmessageid || 0,
+                                peedId: d.peerid,
+                                peerType: d.peertype || 0,
+                            });
                         }
                     });
                     const insertHoleFn = () => {
-                        newItems.forEach((dialog) => {
-                            if (dialog.topmessageid) {
-                                this.messageRepo.insertHole(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid, false);
-                            }
-                        });
+                        this.messageRepo.insertMayHole(newItems.map(o => ({
+                            id: o.topmessageid,
+                            peerId: o.peerid || '0',
+                            peerType: o.peertype || 0,
+                            teamId: this.teamId,
+                        })), false);
+                        this.messageRepo.insertMayHole(additionalHoles.map(o => ({
+                            id: o.id,
+                            peerId: o.peedId,
+                            peerType: o.peerType,
+                            teamId: this.teamId,
+                        })), true);
                     };
                     if (promises.length > 0) {
                         Promise.all(promises).then(() => {

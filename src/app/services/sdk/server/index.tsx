@@ -545,7 +545,7 @@ export default class Server {
                 const resp = res.toObject();
                 if ((resp.code === C_ERR.ErrCodeInvalid && resp.items === C_ERR_ITEM.ErrItemAuth) ||
                     (resp.code === C_ERR.ErrCodeAlreadyExists && resp.items === C_ERR_ITEM.ErrItemBindUser)) {
-                    const authErrorEvent = new CustomEvent(EventAuthError, {});
+                    const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: false}});
                     window.dispatchEvent(authErrorEvent);
                 } else {
                     window.console.warn(resp);

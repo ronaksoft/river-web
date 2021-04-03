@@ -975,6 +975,10 @@ export default class MessageRepo {
         return this.db.messages.put(this.getHoleMessage(teamId, peerId, peerType, id, after));
     }
 
+    public insertMayHole(data: Array<{ teamId: string, peerId: string, peerType: number, id: number }>, after: boolean) {
+        return this.db.messages.bulkPut(data.map(o => this.getHoleMessage(o.teamId, o.peerId, o.peerType, o.id, after)));
+    }
+
     public getHoleMessage(teamId: string, peerId: string, peerType: number, id: number, after: boolean): IMessage {
         return {
             id: id + (after ? 0.5 : -0.5),

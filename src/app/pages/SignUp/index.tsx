@@ -45,6 +45,7 @@ import SessionDialog from "../../components/SessionDialog";
 
 import './tel-input.css';
 import './style.scss';
+import MainRepo from "../../repository";
 
 let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const electronVersion = ElectronService.electronVersion();
@@ -637,7 +638,9 @@ class SignUp extends React.Component<IProps, IState> {
             // this.notification.initToken().then((token) => {
             //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             // }).catch(() => {
-            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
+                this.checkLastPhone(info.Phone);
+            });
             // });
         };
         const maxSessions = this.apiManager.getInstantSystemConfig().maxactivesessions || 7;
@@ -799,7 +802,9 @@ class SignUp extends React.Component<IProps, IState> {
             // this.notification.initToken().then((token) => {
             //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             // }).catch(() => {
-            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
+                this.checkLastPhone(info.Phone);
+            });
             // });
         }).catch((err) => {
             this.setState({
@@ -816,6 +821,19 @@ class SignUp extends React.Component<IProps, IState> {
                 this.props.enqueueSnackbar(`Error! Code:${err.code} Items${err.items}`);
             }
         });
+    }
+
+    private checkLastPhone(currentPhone: string) {
+        const lastPhone = localStorage.getItem(C_LOCALSTORAGE.LastPhone);
+        if (!lastPhone) {
+            return;
+        }
+        localStorage.removeItem(C_LOCALSTORAGE.LastPhone);
+        if (currentPhone !== lastPhone) {
+            MainRepo.getInstance().destroyDB().then(() => {
+                window.location.reload();
+            });
+        }
     }
 
     private registerKeyDownHandler = (e: any) => {
