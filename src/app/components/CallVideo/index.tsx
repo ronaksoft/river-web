@@ -82,7 +82,7 @@ class CallVideo extends React.Component<IProps, IState> {
         if (this.initialized) {
         }
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventShareMediaStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventShareMediaStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
     }
 

@@ -1,5 +1,5 @@
 // create a ref to get the `div` element the `VariableSizeList` uses
-import React, {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef} from "react";
 
 export default function HasViewPort({children, key, height}: any) {
     const [visible, setVisible] = useState<boolean>(true);

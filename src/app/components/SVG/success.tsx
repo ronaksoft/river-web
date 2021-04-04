@@ -1,5 +1,3 @@
-import React from 'react';
-
 import './success.scss';
 
 export default function Success() {

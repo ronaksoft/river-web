@@ -1,3 +1,6 @@
+## 1.0.96
+* React updated
+
 ## 1.0.95
 * Re-create new auth key
 

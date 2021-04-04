@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import React, {useState} from 'react';
+import {useState} from 'react';
 import UserAvatar from '../UserAvatar';
 import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';

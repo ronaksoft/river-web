@@ -103,7 +103,7 @@ class CallSettings extends React.Component<IProps, IState> {
         });
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.AllConnected, this.eventAllConnectedHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventShareMediaStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventShareMediaStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
         getMediaInputs().then((mediaDevice) => {
             this.setState({
@@ -210,13 +210,13 @@ class CallSettings extends React.Component<IProps, IState> {
                 if (this.vad) {
                     this.vad.setActive(!enable);
                 }
-                resolve();
+                resolve(null);
             } else if (key === 'video') {
                 this.callService.toggleVideo(enable).then(resolve).catch(reject);
             } else if (key === 'screenShare') {
                 this.callService.toggleScreenShare(enable).then(resolve).catch(reject);
             } else {
-                resolve();
+                resolve(null);
             }
         });
         promise.then(() => {

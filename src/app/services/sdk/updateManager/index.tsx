@@ -1644,9 +1644,9 @@ export default class UpdateManager {
                     if (toModifyTempList.length > 0) {
                         this.modifyTempFiles(toModifyTempList);
                     }
-                    resolve();
+                    resolve(null);
                 } else {
-                    resolve();
+                    resolve(null);
                 }
             });
         });

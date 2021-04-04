@@ -212,7 +212,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantLeft, this.eventParticipantLeftHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantJoined, this.eventParticipantJoinedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantRemoved, this.eventParticipantRemovedHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventScreenShareSteamUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventScreenShareSteamUpdatedHandler));
         window.addEventListener(EventResize, this.windowResizeHandler);
     }
 

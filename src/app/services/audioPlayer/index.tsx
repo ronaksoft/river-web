@@ -541,7 +541,7 @@ export default class AudioPlayer {
                     this.audio.onloadeddata = (e) => {
                         this.currentTrack = messageId;
                         this.play(messageId, true);
-                        resolve();
+                        resolve(null);
                     };
                     this.audio.onerror = (err: any) => {
                         if (this.errFn && !this.audio.paused) {

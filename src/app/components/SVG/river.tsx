@@ -1,4 +1,3 @@
-import React from 'react';
 import {useEffect, useState} from "react";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import Broadcaster from "../../services/broadcaster";

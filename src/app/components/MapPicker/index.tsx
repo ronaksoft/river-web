@@ -17,9 +17,9 @@ import MentionInput, {IMention} from "../MentionInput";
 import RTLDetector from "../../services/utilities/rtl_detector";
 import {throttle} from "lodash";
 import {measureNodeHeight} from "../ChatInput/measureHeight";
+import {generateEntities} from "../ChatInput";
 
 import './style.scss';
-import {generateEntities} from "../ChatInput";
 
 export const C_GOOGLE_MAP_KEY = 'AIzaSyC5e9DrKC2gHS9UD1sbHGI-H0wfzCgK58U';
 

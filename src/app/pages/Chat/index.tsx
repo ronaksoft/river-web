@@ -983,7 +983,7 @@ class Chat extends React.Component<IProps, IState> {
                     const selectedPeerName = this.props.match.params.id;
                     const selectedMessageId = this.props.match.params.mid;
                     this.dialogsSort(res, () => {
-                        resolve();
+                        resolve(null);
                         if (selectedPeerName !== 'null') {
                             this.setLeftMenu('chat');
                             const peer = this.getPeerByName(selectedPeerName);
@@ -998,7 +998,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setLoading(false);
             }).catch((err) => {
                 this.setLoading(false);
-                resolve();
+                resolve(null);
             }).finally(() => {
                 if (!this.dialogInitialized) {
                     this.dialogInitialized = true;
@@ -2318,7 +2318,7 @@ class Chat extends React.Component<IProps, IState> {
             setTimeout(() => {
                 this.dialogsSortThrottle(dialogs);
             }, 256);
-            resolve();
+            resolve(null);
         });
         // if (toUpdateDialog) {
         //     this.dialogRepo.lazyUpsert([toUpdateDialog]);
@@ -2657,7 +2657,7 @@ class Chat extends React.Component<IProps, IState> {
                             this.startSyncing();
                         }
                         this.addSnapshotRecord(this.teamId);
-                        resolve();
+                        resolve(null);
                     });
                 }).catch((err) => {
                     window.console.log('snapshot', err);

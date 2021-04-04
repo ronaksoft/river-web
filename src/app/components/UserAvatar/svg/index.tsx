@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const DeletedUserLight = () => {
     return (
         <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
