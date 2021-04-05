@@ -133,9 +133,7 @@ class UserDialog extends React.Component<IProps, IState> {
 
     public render() {
         const {user, edit, firstname, lastname, phone, isInContact, notifySetting, userDialogOpen, sendMessageEnable} = this.state;
-        // if (!dialog) {
-        //     return '';
-        // }
+        const isOfficial = user && user.official;
         return (
             <Dialog
                 open={userDialogOpen}
@@ -161,7 +159,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <label>{i18n.t('general.first_name')}</label>
                                 <div className="inner">{user.firstname}{user && user.official &&
                                 <OfficialIcon/>}</div>
-                                {isInContact && <div className="action">
+                                {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
                                     <IconButton
                                         onClick={this.editHandler}
                                     >
@@ -187,7 +185,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             <div className="form-control">
                                 <label>{i18n.t('general.last_name')}</label>
                                 <div className="inner">{user.lastname}</div>
-                                {isInContact && <div className="action">
+                                {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
                                     <IconButton
                                         onClick={this.editHandler}
                                     >

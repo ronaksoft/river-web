@@ -10,7 +10,7 @@
 import DB from '../../services/db/media';
 import Dexie from 'dexie';
 import {IMedia} from './interface';
-import {clone, differenceBy, find, throttle, uniqBy} from 'lodash';
+import {differenceBy, find, groupBy, uniqBy} from 'lodash';
 import {DexieMediaDB} from '../../services/db/dexie/media';
 import MessageRepo from '../message';
 import {kMerge} from "../../services/utilities/kDash";
@@ -41,8 +41,6 @@ export default class MediaRepo {
 
     private dbService: DB;
     private db: DexieMediaDB;
-    private mediaList: IMedia[] = [];
-    private readonly updateThrottle: any = null;
     private messageRepo: MessageRepo | undefined;
     private userRepo: UserRepo | undefined;
     private groupRepo: GroupRepo | undefined;
@@ -51,7 +49,6 @@ export default class MediaRepo {
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
-        this.updateThrottle = throttle(this.insertToDb, 300);
         this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
@@ -78,16 +75,16 @@ export default class MediaRepo {
         });
     }
 
-    public list(teamId: string, peer: InputPeer, type: MediaCategory, options: { limit?: number, before?: number, after?: number, localOnly?: boolean }): Promise<IMediaWithCount> {
+    public list(teamId: string, peer: InputPeer, type: MediaCategory, options: { limit?: number, before?: number, after?: number, localOnly?: boolean }, earlyCallback?: (list: IMediaWithCount) => void): Promise<IMediaWithCount> {
         const mode = this.getMode(options.before, options.after);
-        return this.getMany(teamId, peer, type, options).then((list) => {
+        const getMessage = (list: IMedia[]) => {
             if (list.length === 0) {
-                return {
+                return Promise.resolve({
                     count: 0,
                     maxId: 0,
                     messages: [],
                     minId: 0,
-                };
+                });
             } else {
                 const ids = list.map((media) => {
                     return media.id;
@@ -105,17 +102,27 @@ export default class MediaRepo {
                     return Promise.reject('no ready');
                 }
             }
+        };
+        let fnEarlyCallback: any = undefined;
+        if (earlyCallback) {
+            fnEarlyCallback = (list: IMedia[]) => {
+                window.console.log(list);
+                getMessage(list).then((res) => {
+                    earlyCallback(res);
+                });
+            };
+        }
+        return this.getMany(teamId, peer, type, options, fnEarlyCallback).then((list) => {
+            return getMessage(list);
         });
     }
 
-    public lazyUpsert(medias: IMedia[]) {
-        this.mediaList.push.apply(this.mediaList, clone(medias));
-        this.updateThrottle();
-    }
-
     public importBulk(medias: IMedia[], continues: boolean): Promise<any> {
+        if (medias.length === 0) {
+            return Promise.resolve();
+        }
         const tempGroup = uniqBy(medias, 'id');
-        return this.upsert(tempGroup);
+        return this.insertDiscrete(tempGroup[0].teamid, tempGroup, continues);
     }
 
     public upsert(medias: IMedia[], callerId?: number): Promise<any> {
@@ -148,15 +155,51 @@ export default class MediaRepo {
         });
     }
 
-    private completeMediasLimitFromRemote(teamId: string, peer: InputPeer, type: MediaCategory, messages: IMessage[], id: number, limit: number, localOnly?: boolean): Promise<IMessage[]> {
+    public insertDiscrete(teamId: string, items: IMedia[], ignoreItemsGap: boolean) {
+        const peerGroups = groupBy(items, (o => `${o.peerid || ''}_${o.peertype || 0}_${o.type}`));
+        const edgeIds: any[] = [];
+        const holeIds: { [key: number]: { lower: boolean, peerId: string, peerType: number, type: MediaCategory } } = {};
+        for (const [peerId, medias] of Object.entries(peerGroups)) {
+            medias.sort((a, b) => (a.id || 0) - (b.id || 0)).forEach((media, index) => {
+                const id = media.id || 0;
+                const d = peerId.split('_');
+                const peerid: string = d[0];
+                const peertype: number = parseInt(d[1], 10);
+                const type: MediaCategory = parseInt(d[2], 10);
+                if (id > 1 && (index === 0 || (index > 0 && !ignoreItemsGap && ((medias[index - 1].id || 0) + 1) !== media.id))) {
+                    edgeIds.push([teamId, peerid, peertype, id - 1]);
+                    holeIds[id - 1] = {lower: true, peerId: peerid, peerType: peertype, type};
+                }
+                if ((medias.length - 1 === index) || (medias.length - 1 > index && !ignoreItemsGap && ((medias[index + 1].id || 0) - 1) !== media.id)) {
+                    edgeIds.push([teamId, peerid, peertype, id + 1]);
+                    holeIds[id + 1] = {lower: false, peerId: peerid, peerType: peertype, type};
+                }
+            });
+        }
+        return this.db.medias.where('[teamid+peerid+peertype+type+id]').anyOf(edgeIds).toArray().then((medias) => {
+            const holes: IMedia[] = [];
+            medias.forEach((media) => {
+                const id = media.id || 0;
+                if (holeIds.hasOwnProperty(id)) {
+                    delete holeIds[id];
+                }
+            });
+            for (const [id, data] of Object.entries(holeIds)) {
+                holes.push(this.getHoleMessage(teamId, data.peerId, data.peerType, data.type, parseInt(id, 10), data.lower));
+            }
+            return this.db.medias.bulkPut([...items, ...holes]);
+        });
+    }
+
+    private completeMediasLimitFromRemote(teamId: string, peer: InputPeer, type: MediaCategory, medias: IMedia[], id: number, limit: number, localOnly?: boolean): Promise<IMedia[]> {
         if (id === -1) {
             return Promise.reject('bad message id');
         }
         if (limit === 0) {
-            return Promise.resolve(messages);
+            return Promise.resolve(medias);
         }
         if (localOnly) {
-            return Promise.resolve(messages);
+            return Promise.resolve(medias);
         }
 
         return this.checkHoles(teamId, peer, type, id, limit).then((remoteMessages) => {
@@ -164,40 +207,20 @@ export default class MediaRepo {
             this.groupRepo.importBulk(remoteMessages.groupsList);
             const messageWithMediaMany = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId);
             remoteMessages.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
-            this.messageRepo.importBulk(messageWithMediaMany.messages);
-            if (messageWithMediaMany.medias.length > 0) {
-                return this.importBulk(messageWithMediaMany.medias, true).then(() => {
-                    return [...messages, ...remoteMessages.messagesList];
-                });
-            } else {
-                return messages;
-            }
+            return this.messageRepo.importBulk(messageWithMediaMany.messages).then(() => {
+                if (messageWithMediaMany.medias.length > 0) {
+                    return this.importBulk(messageWithMediaMany.medias, true).then(() => {
+                        return [...medias, ...messageWithMediaMany.medias];
+                    });
+                } else {
+                    return medias;
+                }
+            });
         });
     }
 
     private mergeCheck(media: IMedia, newMedia: IMedia): IMedia {
         return kMerge(media, newMedia);
-    }
-
-    private insertToDb = () => {
-        const execute = (medias: IMedia[]) => {
-            if (medias.length === 0) {
-                return;
-            }
-            this.upsert(medias);
-        };
-        let tempMedias: IMedia[] = [];
-        while (this.mediaList.length > 0) {
-            const media = this.mediaList.shift();
-            if (media) {
-                tempMedias.push(media);
-            }
-            if (tempMedias.length >= 50) {
-                execute(tempMedias);
-                tempMedias = [];
-            }
-        }
-        execute(tempMedias);
     }
 
     private getMode(before: number | undefined, after: number | undefined) {
@@ -241,19 +264,11 @@ export default class MediaRepo {
         if (mode !== 0x2) {
             pipe2 = pipe2.reverse();
         }
-        if (!type) {
-            pipe2 = pipe2.filter((item: IMedia) => {
-                return !item.hole;
-            });
-        } else {
-            pipe2 = pipe2.filter((item: IMedia) => {
-                return item.hole;
-            });
-        }
         return pipe2.limit(safeLimit).toArray().then((list: IMedia[]) => {
             const earlyMessages: IMessage[] = [];
+            window.console.log(list, earlyMessages);
             const hasHole = list.some((item) => {
-                if (earlyCallback && mode === 0x1) {
+                if (earlyCallback && (mode === 0x1 || mode === 0x00)) {
                     if (item.hole) {
                         earlyCallback(earlyMessages);
                         return true;
@@ -267,24 +282,39 @@ export default class MediaRepo {
             if (localOnly && hasHole) {
                 localOnly = false;
             }
-            if (list.length > 0) {
-                lastId = (list[list.length - 1].id || -1);
-                if (lastId !== -1) {
-                    if (asc) {
-                        lastId += 1;
-                    } else {
-                        lastId -= 1;
+            if (!hasHole) {
+                if (list.length > 0) {
+                    lastId = (list[list.length - 1].id || -1);
+                    if (lastId !== -1) {
+                        if (asc) {
+                            lastId += 1;
+                        } else {
+                            lastId -= 1;
+                        }
                     }
                 }
+                if (earlyCallback && list.length > 0) {
+                    earlyCallback(list);
+                    return this.completeMediasLimitFromRemote(teamId, peer, type, [], lastId, safeLimit - list.length, localOnly);
+                } else {
+                    if (earlyCallback) {
+                        earlyCallback([]);
+                    }
+                    return this.completeMediasLimitFromRemote(teamId, peer, type, list, lastId, safeLimit - list.length, localOnly);
+                }
+            } else {
+                if (earlyCallback) {
+                    earlyCallback([]);
+                }
+                return this.completeMediasLimitFromRemote(teamId, peer, type, [], lastId, safeLimit, localOnly);
             }
-            return this.completeMediasLimitFromRemote(teamId, peer, type, list, lastId, safeLimit - list.length, localOnly) as any;
         });
     }
 
-    private getHoleMessage(teamId: string, peerId: string, peerType: number, type: MediaCategory, id: number): IMedia {
+    private getHoleMessage(teamId: string, peerId: string, peerType: number, type: MediaCategory, id: number, after: boolean): IMedia {
         return {
             hole: true,
-            id: id + -0.5,
+            id: id + (after ? 0.5 : -0.5),
             peerid: peerId,
             peertype: peerType,
             teamid: teamId,
@@ -321,7 +351,6 @@ export default class MediaRepo {
         if (res.length === limit + 1) {
             edgeMessage = res.pop();
         }
-        window.console.log([teamId, peerId, peerType, type, min - 1], [teamId, peerId, peerType, type, max + 1]);
         return this.db.medias.where('[teamid+peerid+peertype+type+id]').between([teamId, peerId, peerType, type, min - 1], [teamId, peerId, peerType, type, max + 1], true, true).filter((item) => {
             return item.hole;
         }).delete().then((dres) => {
@@ -333,11 +362,11 @@ export default class MediaRepo {
                 const medias: IMedia[] = [];
                 return this.db.medias.where('id').equals(edgeMessage.id || 0).first().then((edgeRes) => {
                     if (!edgeRes && edgeMessage) {
-                        medias.push(this.getHoleMessage(teamId, peerId, peerType, type, edgeMessage.id || 0));
-                        // window.console.log('insert hole at', edgeMessage.id);
+                        medias.push(this.getHoleMessage(teamId, peerId, peerType, type, edgeMessage.id || 0, true));
+                        window.console.log('insert hole at', edgeMessage.id);
                     }
                     medias.push(...messageWithMediaMany.medias);
-                    return this.upsert(messageWithMediaMany.medias);
+                    return this.upsert(medias);
                 });
             } else {
                 return this.upsert(messageWithMediaMany.medias);

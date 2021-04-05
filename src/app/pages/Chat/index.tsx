@@ -1668,7 +1668,6 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        window.console.log('messageLoadMoreAfterHandler');
         this.setLoading(true);
         this.messageRepo.list(this.teamId, {
             after,
@@ -1776,7 +1775,7 @@ class Chat extends React.Component<IProps, IState> {
 
             // date breakpoint
             if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
-                || (key === 0 && !push) || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
+                 || ((key > 0 || (key === 0 && !push)) && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
                 const t: IMessage = {
                     createdon: msg.createdon,
                     id: msg.id,

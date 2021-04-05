@@ -41,7 +41,7 @@ import {GetDbFileName} from "../../repository/file";
 import ElectronService from "../../services/electron";
 import {findIndex} from "lodash";
 import SettingsConfigManager from "../../services/settingsConfigManager";
-import {EventFileDownloaded, EventMediaDBUpdated} from "../../services/events";
+import {EventFileDownloaded} from "../../services/events";
 import {IPeer} from "../../repository/dialog/interface";
 
 import './style.scss';
@@ -150,7 +150,6 @@ class PeerMedia extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.getMedias();
         window.addEventListener(EventFileDownloaded, this.fileDownloadedHandler);
-        window.addEventListener(EventMediaDBUpdated, this.mediaDBUpdatedHandler);
         this.eventReferences.push(this.audioPlayer.globalListen(this.audioPlayerHandler));
     }
 
@@ -163,7 +162,6 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     public componentWillUnmount() {
         window.removeEventListener(EventFileDownloaded, this.fileDownloadedHandler);
-        window.removeEventListener(EventMediaDBUpdated, this.mediaDBUpdatedHandler);
         this.removeAllListeners();
     }
 
@@ -517,7 +515,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             loading: true,
         });
 
-        let mediaType: MediaCategory | undefined;
+        let mediaType: MediaCategory | MediaCategory.MEDIACATEGORYMEDIA;
         switch (this.state.tab) {
             case 0:
                 mediaType = MediaCategory.MEDIACATEGORYMEDIA;
@@ -535,11 +533,12 @@ class PeerMedia extends React.Component<IProps, IState> {
                 mediaType = MediaCategory.MEDIACATEGORYGIF;
                 break;
         }
-
         this.mediaRepo.list(this.props.teamId, this.peer, this.props.full ? mediaType : MediaCategory.MEDIACATEGORYMEDIA, {
             limit: this.props.full ? 128 : 8,
+            localOnly: !this.props.full,
+        }, (earlyItems) => {
+            window.console.log(earlyItems);
         }).then((result) => {
-            window.console.log(result, mediaType);
             if (!this.props.full) {
                 result.messages = result.messages.slice(0, 4);
             }
@@ -682,17 +681,8 @@ class PeerMedia extends React.Component<IProps, IState> {
         }
     }
 
-    /* Media repo updated handler */
-    private mediaDBUpdatedHandler = (event: any) => {
-        const data = event.detail;
-        if (data.peerids && data.peerids.indexOf(this.props.peer.getId() || '') > -1) {
-            setTimeout(() => {
-                this.loadMediaList(false, 32);
-            }, 600);
-        }
-    }
-
     /* Update media list */
+    // @ts-ignore
     private loadMediaList(append: boolean, limit: number) {
         this.setState({
             loading: true,

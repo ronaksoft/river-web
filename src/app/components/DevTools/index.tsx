@@ -255,7 +255,7 @@ class DevTools extends React.Component<IProps, IState> {
     }
 
     private debugModeClearAllDataHandler = () => {
-        const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: false}});
+        const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: true}});
         window.dispatchEvent(authErrorEvent);
     }
 

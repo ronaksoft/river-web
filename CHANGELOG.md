@@ -1,3 +1,7 @@
+## 1.1.0
+* Web Documents added
+* Lazy load shared media
+
 ## 1.0.96
 * React updated
 

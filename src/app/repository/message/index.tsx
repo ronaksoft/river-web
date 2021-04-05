@@ -270,6 +270,7 @@ export default class MessageRepo {
                     break;
             }
             delete out.media;
+            delete msg.media;
         }
         if (msg.messageactiondata) {
             // @ts-ignore
@@ -352,6 +353,9 @@ export default class MessageRepo {
                 break;
             case C_MESSAGE_TYPE.Gif:
                 mediaType = MediaCategory.MEDIACATEGORYGIF;
+                break;
+            case C_MESSAGE_TYPE.Contact:
+                mediaType = MediaCategory.MEDIACATEGORYCONTACT;
                 break;
             case C_MESSAGE_TYPE.WebDocument:
                 mediaType = MediaCategory.MEDIACATEGORYWEB;

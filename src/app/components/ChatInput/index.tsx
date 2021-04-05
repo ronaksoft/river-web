@@ -795,14 +795,21 @@ class ChatInput extends React.Component<IProps, IState> {
             const isBot = Boolean(this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data));
             const hasPreviewMessage = Boolean(previewMessage || (droppedMessage && droppedMessage.messagetype && droppedMessage.messagetype !== C_MESSAGE_TYPE.Normal));
             const {selectableHasPending, showInput} = this.state;
+            if (!showInput && !selectable) {
+                return <div className="input-placeholder">
+                    <span className="notice">{i18n.t('general.sending_message_is_not_allowed')}</span>
+                </div>;
+            }
             return (
                 <div className="chat-input">
-                    <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
-                           onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
-                    <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}
-                                   teamId={this.teamId}/>
-                    <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
-                    {(!selectable && hasPreviewMessage && showInput) &&
+                    {showInput && <>
+                        <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
+                               onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
+                        <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}
+                                       teamId={this.teamId}/>
+                        <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
+                    </>}
+                    {(!selectable && hasPreviewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
                             <div
@@ -833,7 +840,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
-                    {Boolean(!selectable && showInput) && <>
+                    {Boolean(!selectable) && <>
                         <div className={`inputs mode-${inputMode}`}>
                             <div className="user">
                                 <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
