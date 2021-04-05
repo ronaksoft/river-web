@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {PlayArrowRounded, PauseRounded, CloseRounded, ArrowDownwardRounded} from '@material-ui/icons';
 import ProgressBroadcaster from '../../services/progress';
 import {IMessage} from '../../repository/message/interface';
@@ -26,9 +26,9 @@ import {
 } from "../../services/sdk/messages/chat.messages.medias_pb";
 import {from4bitResolution} from "../ChatInput/utils";
 import {base64ToU8a} from "../../services/sdk/fileManager/http/utils";
+import {GetDbFileName} from "../../repository/file";
 
 import './style.scss';
-import {GetDbFileName} from "../../repository/file";
 
 interface IProps {
     className?: string;
@@ -127,7 +127,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
         this.state = {
             className: props.className || '',
-            playState: props.message && props.message.id > 0 ? 'download' : 'progress',
+            playState: props.message && props.message.id > 0 ? (props.message.downloaded ? 'pause' : 'download') : 'progress',
         };
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
@@ -168,6 +168,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         }
         window.removeEventListener(EventMouseUp, this.windowMouseUpHandler);
         window.removeEventListener(EventRightMenuToggled, this.themeChangedHandler);
+        this.audioPlayer.remove(C_INSTANT_AUDIO);
     }
 
     /* Set voice metadata and file */
@@ -368,8 +369,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         if (!this.timerRef) {
             return;
         }
-        duration = duration || this.duration;
-        duration = Math.floor(duration);
+        duration = Math.floor(duration || this.duration);
         let sec: string | number = duration % 60;
         let min: string | number = Math.floor(duration / 60);
         if (sec < 10) {

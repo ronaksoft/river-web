@@ -75,6 +75,7 @@ export interface IDialogDBUpdated {
 export interface IMessageDBUpdated {
     editedIds: number[];
     ids: number[];
+    randomIdMap: { [key: number]: number };
     randomIds: number[];
     minIds: { [key: string]: number };
     peers: IPeer[];
@@ -146,6 +147,7 @@ interface ITransactionPayload {
     live: boolean;
     medias: { [key: number]: IMedia };
     messages: { [key: number]: IMessage };
+    randomMessageIdMap: { [key: number]: number };
     randomMessageIds: number[];
     reloadLabels: boolean;
     removedLabels: number[];
@@ -616,6 +618,7 @@ export default class UpdateManager {
             live,
             medias: {},
             messages: {},
+            randomMessageIdMap: {},
             randomMessageIds: [],
             reloadLabels: false,
             removedLabels: [],
@@ -712,6 +715,7 @@ export default class UpdateManager {
                 // Add random message
                 if (message.senderid === currentUserId) {
                     transaction.randomMessageIds.push(updateNewMessage.senderrefid || 0);
+                    transaction.randomMessageIdMap[message.id] = updateNewMessage.senderrefid;
                 }
                 // Check [deleted dialog]/[clear history]
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
@@ -1203,7 +1207,7 @@ export default class UpdateManager {
         if (m) {
             medias[m.id] = kMerge(m, media);
         } else {
-            medias[m.id] = media;
+            medias[media.id] = media;
         }
     }
 
@@ -1336,7 +1340,7 @@ export default class UpdateManager {
             }
             // Message list
             if (Object.keys(transaction.messages).length > 0) {
-                promises.push(this.applyMessages(transaction.messages, transaction.editedMessageIds, transaction.randomMessageIds).then((res) => {
+                promises.push(this.applyMessages(transaction.messages, transaction.editedMessageIds, transaction.randomMessageIds, transaction.randomMessageIdMap).then((res) => {
                     if (!transaction.live) {
                         this.callHandlers('all', C_MSG.UpdateMessageDB, res);
                     }
@@ -1573,7 +1577,7 @@ export default class UpdateManager {
         }
     }
 
-    private applyMessages(messages: { [key: number]: IMessage }, editedMessageIds: number[], randomMessageIds: number[]): Promise<IMessageDBUpdated> {
+    private applyMessages(messages: { [key: number]: IMessage }, editedMessageIds: number[], randomMessageIds: number[], randomMessageIdMap: { [key: number]: number }): Promise<IMessageDBUpdated> {
         const messageList: IMessage[] = [];
         const keys: number[] = [];
         const peerNames: string[] = [];
@@ -1620,6 +1624,7 @@ export default class UpdateManager {
                     minIds: minIdPerPeer,
                     peerNames,
                     peers,
+                    randomIdMap: randomMessageIdMap,
                     randomIds: randomMessageIds,
                 };
             });
@@ -1630,6 +1635,7 @@ export default class UpdateManager {
                 minIds: minIdPerPeer,
                 peerNames,
                 peers,
+                randomIdMap: randomMessageIdMap,
                 randomIds: randomMessageIds,
             });
         }
@@ -1674,9 +1680,9 @@ export default class UpdateManager {
                     if (toModifyTempList.length > 0) {
                         this.modifyTempFiles(toModifyTempList);
                     }
-                    resolve();
+                    resolve(null);
                 } else {
-                    resolve();
+                    resolve(null);
                 }
             });
         });

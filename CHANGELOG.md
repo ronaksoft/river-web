@@ -1,3 +1,62 @@
+## 1.0.96
+* React updated
+
+## 1.0.95
+* Re-create new auth key
+
+## 1.0.94
+* Known bugs fixed
+
+## 1.0.93
+* Last seen bug fixed
+
+## 1.0.92
+* Last seen bug fixed
+
+## 1.0.91
+* Electron updated
+* RTL UI improvements
+* Known bugs fixed
+
+## 1.0.90
+* Uploader improvements
+* Left panel rtl layout bug fixed
+
+## 1.0.89
+* Overall improvements
+
+## 1.0.88
+* Voice player improvements
+
+## 1.0.87
+* Voice overall improvements
+
+## 1.0.86
+* Known bugs fixed
+
+## 1.0.85
+* Minor improvements in SDK
+
+## 1.0.84
+* UI improvements
+* Voice improvements
+* Pending message resend improvements
+
+## 1.0.83
+* Change team bug fixed
+
+## 1.0.82
+* Call improvements
+
+## 1.0.81
+* Call improvements
+
+## 1.0.80
+* Call improvements
+
+## 1.0.79
+* Duplicate message bug fixed
+
 ## 1.0.78
 * Improvements in group info
 * Improvements in call UI

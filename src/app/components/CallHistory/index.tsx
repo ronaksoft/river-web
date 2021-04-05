@@ -290,6 +290,9 @@ class CallHistory extends React.Component<IProps, IState> {
                 }, () => {
                     if (this.firstTimeLoad) {
                         this.firstTimeLoad = false;
+                        if (this.state.list.length === 0) {
+                            this.forceUpdate();
+                        }
                     }
                 });
             }

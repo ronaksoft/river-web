@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import {GroupParticipant, InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';

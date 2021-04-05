@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import i18n from "../../services/i18n";
 import ElectronService from "../../services/electron";
 import {serverKeys} from "../../services/sdk/server";
@@ -255,7 +255,7 @@ class DevTools extends React.Component<IProps, IState> {
     }
 
     private debugModeClearAllDataHandler = () => {
-        const authErrorEvent = new CustomEvent(EventAuthError, {});
+        const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: false}});
         window.dispatchEvent(authErrorEvent);
     }
 
@@ -277,7 +277,7 @@ class DevTools extends React.Component<IProps, IState> {
             this.electronService.setLoadUrl(this.state.electronLoadUrl);
         }
         if (serverKeys !== this.state.debugServerKeys) {
-            const authErrorEvent = new CustomEvent(EventAuthError, {});
+            const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: true}});
             window.dispatchEvent(authErrorEvent);
         } else {
             setTimeout(() => {

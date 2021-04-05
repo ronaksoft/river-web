@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import SettingsModal from '../SettingsModal';
 import {DeleteForeverRounded, DataUsageRounded} from '@material-ui/icons';
 import StorageUsageService, {IDialogInfo, IFileWithId, IStorageProgress} from '../../services/storageUsageService';
@@ -355,7 +355,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
 
     private clearCacheHandler = () => {
         this.modalityService.open({
-            cancelText: i18n.t('general.disagree'),
+            cancelText: i18n.t('general.cancel'),
             confirmText: i18n.t('general.agree'),
             description: <>{!this.state.loadingProgress && <DialogContentText>
                 {i18n.t('settings.clear_cache_confirm_text')}<br/>{i18n.t('settings.clear_cache_confirm_text2')}

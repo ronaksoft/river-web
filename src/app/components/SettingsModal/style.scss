@@ -245,6 +245,16 @@ html[direction="rtl"] {
         }
       }
     }
+
+    .settings-modal-header {
+      direction: rtl;
+
+      .modal-title {
+        text-align: right;
+        padding-left: 0;
+        padding-right: 16px;
+      }
+    }
   }
 }
 

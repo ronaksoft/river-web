@@ -65,13 +65,15 @@
     "send": "Send",
     "create": "Create",
     "frequently_contacted": "Frequently Contacted",
+    "frequently_forwarded_to": "Frequently Forwarded to",
     "dialogs": "Dialogs",
     "clear": "Clear",
     "open": "Open",
     "via_gif": " via @",
     "all": "All",
     "select_all": "Select All",
-    "view_in_chat": "View in chat"
+    "view_in_chat": "View in chat",
+    "unsupported_document": "Unsupported document"
   },
   "chat": {
     "search": "Search",
@@ -88,7 +90,7 @@
     "search_messages": "Search Messages",
     "chat_placeholder": "Select a chat to start messaging!",
     "logout_dialog": {
-      "title": "Log Out?",
+      "title": "Are you sure you want to log out?",
       "p1": "We are about to log out of River.",
       "p2": "All your data will be removed!",
       "p3": "Are you sure you want to log out?"
@@ -103,8 +105,10 @@
     },
     "exit_group_dialog": {
       "title": "Are you sure you want to delete all message history and leave?",
+      "title_exit": "Are you sure you want to leave?",
       "p1": "Delete and leave ",
-      "p2": "This action cannot be undone!"
+      "p2": "This action cannot be undone!",
+      "p3": "Leave "
     },
     "delete_dialog": {
       "title": "Are you sure you want to delete this chat?",
@@ -533,7 +537,8 @@
     "create_label": "Create Label",
     "edit_label": "Edit Label",
     "show_more": "show more",
-    "show_less": "show less"
+    "show_less": "show less",
+    "there_is_no_label_yet": "There is not label yet"
   },
   "bot": {
     "start_bot": "Start Bot",
@@ -589,6 +594,8 @@
     "group_title": "{0} in {1}",
     "reaction_group_title": "{0} reacted in {1}",
     "reaction_title": "{0} reacted",
-    "reaction": "{0} on \"{1}\""
+    "reaction_quote": "{0} on \"{1}\"",
+    "reaction": "{0} on your {1}",
+    "pinned": "Pinned \"{0}\""
   }
 }

@@ -371,8 +371,8 @@ export class UpdateMessagePinned extends jspb.Message {
   getPeer(): core_types_pb.Peer | undefined;
   setPeer(value?: core_types_pb.Peer): void;
 
-  getUserid(): number;
-  setUserid(value: number): void;
+  getUserid(): string;
+  setUserid(value: string): void;
 
   getMsgid(): number;
   setMsgid(value: number): void;
@@ -396,7 +396,7 @@ export namespace UpdateMessagePinned {
     updateid: number,
     teamid: string,
     peer?: core_types_pb.Peer.AsObject,
-    userid: number,
+    userid: string,
     msgid: number,
     version: number,
   }

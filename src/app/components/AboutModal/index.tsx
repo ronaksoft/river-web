@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import riverLogo from '../../../asset/image/about/river.png';
 import ronakLogo from '../../../asset/image/about/ronak.png';

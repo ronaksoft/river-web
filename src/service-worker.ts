@@ -26,7 +26,7 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
 precache([{
-    revision: '34',
+    revision: '35',
     url: '/bin/river.wasm',
 }, {
     revision: '2',

@@ -59,7 +59,7 @@ export const C_CALL_EVENT = {
     ParticipantJoined: 0x09,
     ParticipantLeft: 0x0a,
     ParticipantRemoved: 0x0c,
-    ShareMediaStreamUpdated: 0x11,
+    ShareScreenStreamUpdated: 0x11,
     StreamUpdated: 0x03,
 };
 
@@ -357,7 +357,7 @@ export default class CallService {
             }
             const connId = this.getConnId(this.activeCallId, currentUserId);
             window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', Boolean(stream));
-            this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+            this.callHandlers(C_CALL_EVENT.ShareScreenStreamUpdated, {
                 connId,
                 stream: enable ? stream : undefined,
                 userId: currentUserId,
@@ -1251,7 +1251,7 @@ export default class CallService {
                                     conn.screenShareStream = new MediaStream(stream.getTracks());
                                     const userId = this.getUserIdByCallId(this.activeCallId, connId);
                                     window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', Boolean(conn.screenShareStream));
-                                    this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+                                    this.callHandlers(C_CALL_EVENT.ShareScreenStreamUpdated, {
                                         connId,
                                         stream: conn.screenShareStream,
                                         userId
@@ -1574,7 +1574,7 @@ export default class CallService {
                 } else {
                     // Deactivate previous screen share stream
                     window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', false);
-                    this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+                    this.callHandlers(C_CALL_EVENT.ShareScreenStreamUpdated, {
                         connId,
                         stream: undefined,
                         userId: data.userid,
@@ -1590,7 +1590,7 @@ export default class CallService {
             this.activeScreenShare = undefined;
             // Deactivate screen share stream
             window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', false);
-            this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+            this.callHandlers(C_CALL_EVENT.ShareScreenStreamUpdated, {
                 connId,
                 stream: undefined,
                 userId: data.userid,
@@ -1994,7 +1994,7 @@ export default class CallService {
                         fn(data);
                     }
                 });
-                resolve();
+                resolve(null);
             } catch (e) {
                 reject(e);
             }

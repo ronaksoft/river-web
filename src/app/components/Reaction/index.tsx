@@ -7,7 +7,6 @@
     Copyright Ronak Software Group 2020
 */
 
-import React from 'react';
 import {IMessage} from "../../repository/message/interface";
 import {localize} from "../../services/utilities/localize";
 import {MoreHorizRounded} from "@material-ui/icons";

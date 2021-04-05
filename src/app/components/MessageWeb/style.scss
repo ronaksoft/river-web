@@ -1,0 +1,48 @@
+/*
+    Creation Time: 2021 - April - 05
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2021
+*/
+
+.message-web {
+  padding: 0;
+
+  .web-image {
+    border-radius: 4px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+    }
+  }
+}
+
+html[bubble="2"] {
+  .message-web .web-image {
+    border-radius: 19px;
+  }
+}
+
+html[bubble="4"] {
+  .message-web .web-image {
+    border-radius: 9px;
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"],
+html[theme="dark-blue"] {
+  .message-location {
+  }
+}
+
+html[theme="dark-blue"] {
+  .message-location {
+  }
+}

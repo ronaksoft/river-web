@@ -106,9 +106,13 @@ export default class DocumentViewerService {
         if ((doc.type !== 'video' && doc.type !== 'picture') || !doc.peer) {
             return;
         }
-        this.mediaRepo.list(doc.teamId, doc.peer, {
+        const inputPeer = new InputPeer();
+        inputPeer.setId(doc.peer.id);
+        inputPeer.setType(doc.peer.peerType);
+        this.mediaRepo.list(doc.teamId, inputPeer, {
             before: (doc.items[0].id || 0) - 1,
             limit: 1,
+            localOnly: true,
             type: MediaCategory.MEDIACATEGORYMEDIA,
         }).then((res) => {
             if (this.onDocumentPrev && res.messages.length > 0) {
@@ -117,9 +121,10 @@ export default class DocumentViewerService {
                 this.onDocumentPrev(null);
             }
         });
-        this.mediaRepo.list(doc.teamId, doc.peer, {
+        this.mediaRepo.list(doc.teamId, inputPeer, {
             after: (doc.items[0].id || 0) + 1,
             limit: 1,
+            localOnly: true,
             type: MediaCategory.MEDIACATEGORYMEDIA,
         }).then((res) => {
             if (this.onDocumentNext && res.messages.length > 0) {

@@ -7,8 +7,6 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
-
 import './style.scss';
 
 export default function RiverLogo({height, width}: { height: number, width: number }) {

@@ -569,7 +569,11 @@ export default class APIManager {
         data.setPeer(peer);
         data.setLimit(limit || 0);
         data.setMinid(Math.floor(minId || 0));
-        data.setMaxid(Math.floor(maxId || 0));
+        if (maxId === 10000000000) {
+            data.setMaxid(0);
+        } else {
+            data.setMaxid(Math.floor(maxId || 0));
+        }
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true, {
             retry: 7,
@@ -604,7 +608,7 @@ export default class APIManager {
         return this.server.send(C_MSG.MessagesGet, data.serializeBinary(), true);
     }
 
-    public typing(peer: InputPeer, type: TypingAction): Promise<Bool.AsObject> {
+    public setTyping(peer: InputPeer, type: TypingAction): Promise<Bool.AsObject> {
         const key = `${peer.getId()}_${peer.getType()}_${type}`;
         if (this.typingList.hasOwnProperty(key)) {
             return Promise.resolve({result: true});

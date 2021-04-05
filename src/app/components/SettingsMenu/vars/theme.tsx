@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import bg1 from '../../../../asset/image/bgpic/bg1.jpg';
 import bg2 from '../../../../asset/image/bgpic/bg2.jpg';
 import bg3 from '../../../../asset/image/bgpic/bg3.jpg';

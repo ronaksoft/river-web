@@ -7,14 +7,15 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/core.types_pb';
 import {
+    DocumentAttribute,
     DocumentAttributeAudio, DocumentAttributeFile,
     DocumentAttributePhoto,
     DocumentAttributeType, DocumentAttributeVideo,
-    MediaDocument
+    MediaDocument, MediaWebDocument
 } from '../../services/sdk/messages/chat.messages.medias_pb';
 import {CloseRounded, ArrowDownwardRounded, PlayArrowRounded, GifRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
@@ -32,9 +33,9 @@ import {GetDbFileName} from "../../repository/file";
 import UserName from "../UserName";
 import i18n from "../../services/i18n";
 import Broadcaster from "../../services/broadcaster";
+import {MESSAGE_ORIENTATION_UPDATED} from "../DocumentViewer";
 
 import './style.scss';
-import {MESSAGE_ORIENTATION_UPDATED} from "../DocumentViewer";
 
 export const C_MEDIA_BREAKPOINT = 1116;
 const C_MIN_HEIGHT_TINY = 102;
@@ -184,11 +185,21 @@ export const getContentSize = (message: IMessage): null | { height: number, widt
         height: 0,
         width: 0,
     };
-    const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-    if (!messageMediaDocument) {
-        return null;
+    let attributesList: DocumentAttribute.AsObject[] = [];
+    if (message.messagetype === C_MESSAGE_TYPE.WebDocument) {
+        const messageMediaWebDocument: MediaWebDocument.AsObject = message.mediadata;
+        if (!messageMediaWebDocument) {
+            return null;
+        }
+        attributesList = messageMediaWebDocument.attributesList || [];
+    } else {
+        const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+        if (!messageMediaDocument || messageMediaDocument.doc) {
+            return null;
+        }
+        attributesList = messageMediaDocument.doc.attributesList || [];
     }
-    messageMediaDocument.doc.attributesList.forEach((attr, index) => {
+    attributesList.forEach((attr, index) => {
         if (attr.type === DocumentAttributeType.ATTRIBUTETYPEPHOTO && message.attributes) {
             const docAttr: DocumentAttributePhoto.AsObject = message.attributes[index];
             if (docAttr) {

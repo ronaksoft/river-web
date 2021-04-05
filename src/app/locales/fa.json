@@ -65,13 +65,15 @@
     "send": "ارسال",
     "create": "ساختن",
     "frequently_contacted": "مخاطبین متداول",
+    "frequently_forwarded_to": "مخاطبین با بیشترین پیام هدایت شده",
     "dialogs": "گفتگو",
     "clear": "حذف",
     "open": "بگشا",
     "via_gif": " با @",
     "all": "همه",
     "select_all": "انتخاب همه",
-    "view_in_chat": "مشاده در گفتگو"
+    "view_in_chat": "مشاده در گفتگو",
+    "unsupported_document": "سند قابل پشتیبانی نیست"
   },
   "chat": {
     "search": "جستجو",
@@ -103,8 +105,10 @@
     },
     "exit_group_dialog": {
       "title": "آیا مطمئن هستید که می خواهید همه تاریخچه پیام را حذف کرده و خارج شوید؟",
+      "title_exit": "آیا مطمئن هستید که می خواهید از گروه خارج شوید؟",
       "p1": "حذف و خروج از ",
-      "p2": "این عمل قابل بازگشت نیست!"
+      "p2": "این عمل قابل بازگشت نیست!",
+      "p3": "خروج از "
     },
     "delete_dialog": {
       "title": "حذف مکالمه",
@@ -529,7 +533,8 @@
     "create_label": "برچسب جدید",
     "edit_label": "ویرایش برچسب",
     "show_more": "بیشتر",
-    "show_less": "کمتر"
+    "show_less": "کمتر",
+    "there_is_no_label_yet": "هنوز برچسبی وجود ندارد"
   },
   "bot": {
     "start_bot": "فعال کردن Bot",
@@ -585,6 +590,8 @@
     "group_title": "{0} در {1}",
     "reaction_group_title": "{0} واکتش داد در {1}",
     "reaction_title": "{0} واکنش داد",
-    "reaction": "{0} روی \"{1}\""
+    "reaction_quote": "{0} روی \"{1}\"",
+    "reaction": "{0} روی {1} شما",
+    "pinned": "\"{0}\" را سنجاق کرد"
   }
 }

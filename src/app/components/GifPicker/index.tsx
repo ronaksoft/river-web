@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import i18n from '../../services/i18n';
 import Scrollbars from "react-custom-scrollbars";
 import {debounce} from "lodash";

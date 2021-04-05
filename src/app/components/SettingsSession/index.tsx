@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import {Button, IconButton} from "@material-ui/core";
 import {KeyboardBackspaceRounded} from "@material-ui/icons";
 import i18n from "../../services/i18n";
@@ -192,7 +192,7 @@ class SettingsSession extends React.Component<IProps, IState> {
             return;
         }
         this.modalityService.open({
-            cancelText: i18n.t('general.disagree'),
+            cancelText: i18n.t('general.cancel'),
             confirmText: i18n.t('general.agree'),
             title: id === '0' ? i18n.t('settings.terminate_all_other_sessions') : i18n.t('settings.terminate_session'),
         }).then((modalRes) => {

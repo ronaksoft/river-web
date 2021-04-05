@@ -10,7 +10,7 @@
 import FileRepo, {GetDbFileName} from '../../repository/file/index';
 import DialogRepo from '../../repository/dialog/index';
 import MediaRepo from '../../repository/media/index';
-import {PeerType} from '../sdk/messages/core.types_pb';
+import {InputPeer, PeerType} from '../sdk/messages/core.types_pb';
 import MessageRepo from '../../repository/message';
 import {IPeer} from "../../repository/dialog/interface";
 import {C_MESSAGE_TYPE} from "../../repository/message/consts";
@@ -144,7 +144,9 @@ export default class StorageUsageService {
                 return {
                     downloaded: false,
                     id: item.id,
+                    last_modified: '',
                     saved: false,
+                    saved_path: '',
                 };
             }));
         });
@@ -152,8 +154,11 @@ export default class StorageUsageService {
 
     private getMediaFiles(teamId: string, peer: IPeer, before?: number) {
         const limit = 50;
-        return this.mediaRepo.list(teamId, peer, {before, limit}).then((res) => {
-            const fileMap: {[key: string]: {id: number, mediaType: number}} = {};
+        const inputPeer = new InputPeer();
+        inputPeer.setId(peer.id);
+        inputPeer.setType(peer.peerType);
+        return this.mediaRepo.list(teamId, inputPeer, {before, limit, localOnly: true}).then((res) => {
+            const fileMap: { [key: string]: { id: number, mediaType: number } } = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;
             const names: string[] = [];

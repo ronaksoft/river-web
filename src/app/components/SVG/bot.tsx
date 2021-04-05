@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 export const BotIcon = () => {
     return (<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
                  style={{fill: 'currentColor', height: '0.9em', transform: 'translateY(-0.1em)', width: '0.9em'}}>

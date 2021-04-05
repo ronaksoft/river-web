@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2021
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IconButton, MenuItem, Select} from "@material-ui/core";
 import {KeyboardBackspaceRounded} from "@material-ui/icons";
 import i18n from "../../services/i18n";

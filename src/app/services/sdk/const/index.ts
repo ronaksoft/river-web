@@ -1106,6 +1106,7 @@ export const C_LOCALSTORAGE = {
     GifHash: 'river.gif.hash',
     Lang: 'river.lang',
     LangDir: 'river.lang.dir',
+    LastPhone: 'river.last_phone',
     LastSeenFormat: 'river.last_seen_format',
     LastUpdateId: 'river.last_update_id',
     MediaDevice: 'river.media_device',

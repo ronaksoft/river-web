@@ -39,7 +39,7 @@ import {
     DocumentAttributeVideo,
     MediaContact,
     MediaDocument,
-    MediaGeoLocation,
+    MediaGeoLocation, MediaWebDocument,
 } from '../../services/sdk/messages/chat.messages.medias_pb';
 import {
     MessageActionCallEnded,
@@ -261,6 +261,14 @@ export default class MessageRepo {
                     out.mediadata = MediaGeoLocation.deserializeBinary(mediaData).toObject();
                     out.messagetype = C_MESSAGE_TYPE.Location;
                     break;
+                case MediaType.MEDIATYPEWEBDOCUMENT:
+                    out.mediadata = MediaWebDocument.deserializeBinary(mediaData).toObject();
+                    window.console.log(out.mediadata);
+                    if (out.mediadata && out.mediadata.attributesList) {
+                        out.attributes = this.parseAttributes(out.mediadata.attributesList, {type: C_MESSAGE_TYPE.Normal});
+                    }
+                    out.messagetype = C_MESSAGE_TYPE.WebDocument;
+                    break;
             }
             delete out.media;
         }
@@ -345,6 +353,9 @@ export default class MessageRepo {
                 break;
             case C_MESSAGE_TYPE.Gif:
                 mediaType = MediaCategory.MEDIACATEGORYGIF;
+                break;
+            case C_MESSAGE_TYPE.WebDocument:
+                mediaType = MediaCategory.MEDIACATEGORYWEB;
                 break;
         }
         // if (msgType && out.id && (out.id || 0) > 0) {
@@ -617,8 +628,8 @@ export default class MessageRepo {
                 return (item.messagetype === C_MESSAGE_TYPE.Hole);
             });
             window.console.debug('has hole:', hasHole);
-            let lastId: number = (mode === 0x2 ? safeAfter : safeBefore);
             const asc = (mode === 0x2);
+            let lastId: number = (asc ? safeAfter : safeBefore);
             if (localOnly && hasHole) {
                 localOnly = false;
             }
@@ -1005,6 +1016,10 @@ export default class MessageRepo {
 
     public insertHole(teamId: string, peerId: string, peerType: number, id: number, after: boolean) {
         return this.db.messages.put(this.getHoleMessage(teamId, peerId, peerType, id, after));
+    }
+
+    public insertMayHole(data: Array<{ teamId: string, peerId: string, peerType: number, id: number }>, after: boolean) {
+        return this.db.messages.bulkPut(data.map(o => this.getHoleMessage(o.teamId, o.peerId, o.peerType, o.id, after)));
     }
 
     public insertEnd(teamId: string, peerId: string, peerType: number, id: number) {

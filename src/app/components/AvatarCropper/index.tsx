@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {CheckRounded, RotateLeftRounded, RotateRightRounded, ZoomInRounded, ZoomOutRounded} from '@material-ui/icons';
 import AvatarEditor from 'react-avatar-editor';

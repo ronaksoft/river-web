@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import TimeUtility from '../../services/utilities/time';
 import RiverTime from '../../services/utilities/river_time';
 

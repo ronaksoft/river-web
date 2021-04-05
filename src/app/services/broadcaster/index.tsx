@@ -73,7 +73,7 @@ export default class Broadcaster {
                         fn(data);
                     }
                 });
-                resolve();
+                resolve(null);
             } catch (e) {
                 reject(e);
             }

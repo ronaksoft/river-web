@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import {GetUniqueColor, TextColors} from '../UserAvatar';

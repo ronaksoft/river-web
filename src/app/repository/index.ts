@@ -51,7 +51,7 @@ export default class MainRepo {
     private gifDB: DexieGifDB;
     private teamDB: DexieTeamDB;
     private commandDB: DexieCommandDB;
-    private userRepo: UserRepo;
+    private userRepo: UserRepo | undefined;
 
     private constructor() {
         this.userDB = UserDB.getInstance().getDB();
@@ -66,7 +66,9 @@ export default class MainRepo {
         this.commandDB = CommandDB.getInstance().getDB();
 
         // Repo
-        this.userRepo = UserRepo.getInstance();
+        setTimeout(() => {
+            this.userRepo = UserRepo.getInstance();
+        }, 127);
     }
 
     public destroyDB(): Promise<any> {
@@ -111,10 +113,14 @@ export default class MainRepo {
     }
 
     public getInputPeerBy(id: string, type: PeerType): Promise<InputPeer> {
+        const userRepo = this.userRepo;
+        if (!userRepo) {
+            return Promise.reject('user repo is not initialized');
+        }
         return new Promise((resolve, reject) => {
             const inputPeer = new InputPeer();
             if (type === PeerType.PEERUSER) {
-                this.userRepo.get(id).then((res) => {
+                userRepo.get(id).then((res) => {
                     if (res) {
                         inputPeer.setId(res.id);
                         inputPeer.setAccesshash(res.accesshash);

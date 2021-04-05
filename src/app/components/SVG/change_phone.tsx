@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function ChangePhone() {
 
     return (<svg width="267" height="98" viewBox="0 0 267 98" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import AutoSizer from "react-virtualized-auto-sizer";
 import {debounce, findIndex, differenceBy, clone, uniqBy} from 'lodash';
 import UserAvatar from '../UserAvatar';

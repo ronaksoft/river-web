@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -62,6 +62,7 @@ import GroupSeenBy from "../GroupSeenBy";
 import {IDialog} from "../../repository/dialog/interface";
 
 import './style.scss';
+import MessageWeb from "../MessageWeb";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -726,6 +727,7 @@ class Message extends React.Component<IProps, IState> {
                 return 33;
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
+            case C_MESSAGE_TYPE.WebDocument:
                 const info = getContentSize(message);
                 if (info) {
                     height = info.height + 10;
@@ -1399,6 +1401,8 @@ class Message extends React.Component<IProps, IState> {
                     return (<MessageMedia key={message.id} ref={refBindHandler} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction} onBodyAction={this.bodyActionHandler}
                                           parentEl={parentEl} measureFn={measureFn}/>);
+                case C_MESSAGE_TYPE.WebDocument:
+                    return (<MessageWeb measureFn={measureFn} message={message} peer={peer}/>);
                 case C_MESSAGE_TYPE.Location:
                     return (<MessageLocation message={message} peer={peer} onBodyAction={this.bodyActionHandler}
                                              measureFn={measureFn}/>);
@@ -1425,6 +1429,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Video:
             case C_MESSAGE_TYPE.Location:
             case C_MESSAGE_TYPE.Gif:
+            case C_MESSAGE_TYPE.WebDocument:
                 type = 'media';
                 break;
             case C_MESSAGE_TYPE.File:

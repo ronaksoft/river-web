@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 // @ts-ignore
 import ToastImageEditor from '@toast-ui/react-image-editor';
@@ -155,18 +155,26 @@ class ImageEditor extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        const url = this.imageEditorRef.toDataURL();
-        fetch(url)
-            .then(res => res.blob())
-            .then(blob => {
-                const size = this.imageEditorRef.getCanvasSize();
-                this.props.onImageReady(blob, {
-                    height: size.height,
-                    width: size.width,
+        let timeout: number = 0;
+        const el: any = document.querySelector('.tui-image-editor-button.apply.active');
+        if (el) {
+            el.click();
+            timeout = 32;
+        }
+        setTimeout(() => {
+            const url = this.imageEditorRef.toDataURL();
+            fetch(url)
+                .then(res => res.blob())
+                .then(blob => {
+                    const size = this.imageEditorRef.getCanvasSize();
+                    this.props.onImageReady(blob, {
+                        height: size.height,
+                        width: size.width,
+                    });
+                    URL.revokeObjectURL(url);
+                    this.dialogCloseHandler();
                 });
-                URL.revokeObjectURL(url);
-                this.dialogCloseHandler();
-            });
+        }, timeout);
     }
 
     private fullscreenToggleHandler = () => {

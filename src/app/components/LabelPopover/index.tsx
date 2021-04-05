@@ -7,12 +7,13 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import Scrollbars from "react-custom-scrollbars";
-import {LabelRounded} from "@material-ui/icons";
+import {LabelRounded, SearchRounded} from "@material-ui/icons";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import {ILabel} from "../../repository/label/interface";
 import {PopoverPosition} from "@material-ui/core/Popover/Popover";
+import i18n from '../../services/i18n';
 
 import './style.scss';
 
@@ -63,7 +64,10 @@ class LabelPopover extends React.Component<IProps, IState> {
                 >
                     <div className="search-label-container">
                         <div className="search-label-list" style={{height}}>
-                            <Scrollbars
+                            {labelList.length === 0 ? <div className="label-placeholder">
+                                <SearchRounded/>
+                                {i18n.t('label.there_is_no_label_yet')}
+                            </div> : <Scrollbars
                                 autoHide={true}
                                 hideTracksWhenNotNeeded={true}
                                 universal={true}
@@ -83,7 +87,7 @@ class LabelPopover extends React.Component<IProps, IState> {
                                         return null;
                                     }
                                 })}
-                            </Scrollbars>
+                            </Scrollbars>}
                         </div>
                     </div>
                 </ClickAwayListener>}
@@ -101,6 +105,9 @@ class LabelPopover extends React.Component<IProps, IState> {
     }
 
     private getLabelListHeight() {
+        if (this.state.labelList.length === 0) {
+            return '40px';
+        }
         let height = (this.state.labelList.length - this.state.selectedLabelIds.length) * 28;
         if (height > 100) {
             height = 100;

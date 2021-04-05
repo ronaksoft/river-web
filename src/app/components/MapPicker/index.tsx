@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {CheckRounded} from '@material-ui/icons';
 import {MapComponent} from './map';
@@ -17,9 +17,9 @@ import MentionInput, {IMention} from "../MentionInput";
 import RTLDetector from "../../services/utilities/rtl_detector";
 import {throttle} from "lodash";
 import {measureNodeHeight} from "../ChatInput/measureHeight";
+import {generateEntities} from "../ChatInput";
 
 import './style.scss';
-import {generateEntities} from "../ChatInput";
 
 export const C_GOOGLE_MAP_KEY = 'AIzaSyC5e9DrKC2gHS9UD1sbHGI-H0wfzCgK58U';
 

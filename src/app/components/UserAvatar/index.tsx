@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import {BookmarkBorderRounded} from '@material-ui/icons';
@@ -20,10 +20,10 @@ import RiverTime from "../../services/utilities/river_time";
 import {DeletedUserLight} from "./svg";
 import {GetDbFileName} from "../../repository/file";
 import {FaceRounded} from '@material-ui/icons';
-
-import './style.scss';
 import CachedPhoto from "../CachedPhoto";
 import {SetOptional} from "type-fest";
+
+import './style.scss';
 
 const DefaultColors = [
     '#30496B',

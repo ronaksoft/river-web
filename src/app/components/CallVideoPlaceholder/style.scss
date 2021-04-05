@@ -174,16 +174,18 @@
     }
   }
 }
-
-.call-modal.call.minimize .call-modal-content.video-swap {
-  .video-placeholder {
-    .video-placeholder-user {
-      transform: translate(-50%, -200px);
+.call-modal.call_init.minimize,
+.call-modal.call.minimize {
+  .call-modal-content.video-swap {
+    .video-placeholder {
+      .video-placeholder-user {
+        transform: translate(-50%, -200px);
+      }
     }
-  }
 
-  .video-placeholder.no-image, .call-video.cp-1 {
-    height: 56px;
-    Width: 56px;
+    .video-placeholder.no-image, .call-video.cp-1 {
+      height: 56px;
+      Width: 56px;
+    }
   }
 }

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import {InputPeer, PeerType} from '../../services/sdk/messages/core.types_pb';
 import {
     CloseRounded,
@@ -34,9 +34,9 @@ import {IUser} from "../../repository/user/interface";
 import UserPopover from "../UserPopover";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
+import {IDialog} from "../../repository/dialog/interface";
 
 import './style.scss';
-import {IDialog} from "../../repository/dialog/interface";
 
 const searchLimit: number = 10;
 

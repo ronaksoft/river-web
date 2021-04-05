@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as React from 'react';
+import React from 'react';
 import {HashRouter} from 'react-router-dom';
 import Routes from './app/routes';
 import {CircularProgress, DialogContentText} from '@material-ui/core';
@@ -40,6 +40,7 @@ import Broadcaster from "./app/services/broadcaster";
 import {Modality, ModalityService} from "kk-modality";
 import CallModal from "./app/components/CallModal";
 import {C_APP_VERSION, C_ELECTRON_VERSIONS, C_VERSION, isProd} from "./index";
+import APIManager from "./app/services/sdk";
 
 import './App.scss';
 
@@ -256,11 +257,11 @@ class App extends React.Component<{}, IState> {
         );
     }
 
-    private clearSiteDataHandler = () => {
+    private clearSiteDataHandler = (clear: boolean) => {
         this.setState({
             clearingSiteData: true,
         });
-        this.mainRepo.destroyDB().then(() => {
+        const fnClear = () => {
             const serverMode = localStorage.getItem(C_LOCALSTORAGE.ServerMode) || 'prod';
             const testUrl = localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || '';
             const serverKeys = localStorage.getItem(C_LOCALSTORAGE.ServerKeys) || '';
@@ -272,8 +273,20 @@ class App extends React.Component<{}, IState> {
                 localStorage.setItem(C_LOCALSTORAGE.ServerKeys, serverKeys);
             }
             localStorage.setItem(C_LOCALSTORAGE.DebugVerboseAPI, verboseMode);
+        };
+        if (clear) {
+            this.mainRepo.destroyDB().then(() => {
+                fnClear();
+                window.location.reload();
+            });
+        } else {
+            const connInfo = APIManager.getInstance().getConnInfo();
+            fnClear();
+            if (connInfo) {
+                localStorage.setItem(C_LOCALSTORAGE.LastPhone, connInfo.Phone);
+            }
             window.location.reload();
-        });
+        }
     }
 
     private channelMessageHandler = (e: any) => {
@@ -412,18 +425,19 @@ class App extends React.Component<{}, IState> {
         this.forceUpdate();
     }
 
-    private decryptErrorHandler = () => {
+    private decryptErrorHandler = (e: any) => {
+        const clear = e.detail.clear;
         ModalityService.getInstance().open({
-            cancelText: i18n.t('general.disagree'),
+            cancelText: i18n.t('general.cancel'),
             confirmText: i18n.t('general.agree'),
             description: <>{this.state.clearingSiteData ? <CircularProgress/> : <DialogContentText>
-                {`You are receiving "Auth Error", do you like to clear all site data?`}<br/>
+                {`You are receiving "Auth Error", ${clear ? 'do you like to clear all site data' : 'do you want to logout'}?`}<br/>
                 <i>This probably fix your problem!</i>
             </DialogContentText>}</>,
             title: 'Critical Error',
         }).then((modalRes) => {
             if (modalRes === 'confirm') {
-                this.clearSiteDataHandler();
+                this.clearSiteDataHandler(clear);
             }
         });
     }

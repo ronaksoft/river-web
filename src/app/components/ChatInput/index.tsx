@@ -8,7 +8,7 @@
 */
 
 /* eslint import/no-webpack-loader-syntax: off */
-import * as React from 'react';
+import React from 'react';
 import {Picker as EmojiPicker} from 'emoji-mart';
 import {cloneDeep, range, throttle, trimStart} from 'lodash';
 import {
@@ -273,6 +273,7 @@ interface IState {
     uploadPreviewOpen: boolean;
     user: IUser | null;
     voiceMode: 'lock' | 'down' | 'up' | 'play';
+    showInput: boolean;
 }
 
 const mentionInputStyle = {
@@ -344,7 +345,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
-    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.Lang) === 'fa' || false;
+    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
     private preventMessageSend: boolean = false;
     private preventMessageSendTimeout: any = null;
     private emojiMap: { [key: string]: number } = {};
@@ -380,6 +381,7 @@ class ChatInput extends React.Component<IProps, IState> {
             selectable: false,
             selectableDisable: false,
             selectableHasPending: false,
+            showInput: props.peer ? props.peer.getId() !== '2374' : true,
             textareaValue: '',
             uploadPreviewOpen: false,
             user: props.peer && (props.peer.getType() === PeerType.PEERUSER && props.peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(props.peer.getId() || '') : null,
@@ -424,6 +426,9 @@ class ChatInput extends React.Component<IProps, IState> {
             this.firstLoad = true;
             this.botKeyboard = undefined;
             this.preventMessageSend = false;
+            if (this.typingThrottle) {
+                this.typingThrottle.cancel();
+            }
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
@@ -431,6 +436,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.setState({
                 disableAuthority: 0x0,
                 peer,
+                showInput: peer ? peer.getId() !== '2374' : true,
                 user,
             }, () => {
                 this.checkAuthority()();
@@ -506,12 +512,16 @@ class ChatInput extends React.Component<IProps, IState> {
             this.firstLoad = true;
             this.botKeyboard = undefined;
             this.preventMessageSend = false;
+            if (this.typingThrottle) {
+                this.typingThrottle.cancel();
+            }
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
             const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 peer,
+                showInput: peer ? peer.getId() !== '2374' : true,
                 user,
             }, () => {
                 this.checkAuthority()();
@@ -568,6 +578,9 @@ class ChatInput extends React.Component<IProps, IState> {
         clearTimeout(this.preventMessageSendTimeout);
         if (this.recorder) {
             this.recorder.close();
+        }
+        if (this.typingThrottle) {
+            this.typingThrottle.cancel();
         }
     }
 
@@ -758,7 +771,6 @@ class ChatInput extends React.Component<IProps, IState> {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
             disableAuthority, user, botKeyboard, droppedMessage, inputMode,
         } = this.state;
-
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {
                 return (<div className="input-placeholder">
@@ -782,7 +794,7 @@ class ChatInput extends React.Component<IProps, IState> {
         } else {
             const isBot = Boolean(this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data));
             const hasPreviewMessage = Boolean(previewMessage || (droppedMessage && droppedMessage.messagetype && droppedMessage.messagetype !== C_MESSAGE_TYPE.Normal));
-            const {selectableHasPending} = this.state;
+            const {selectableHasPending, showInput} = this.state;
             return (
                 <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
@@ -790,7 +802,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}
                                    teamId={this.teamId}/>
                     <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
-                    {(!selectable && hasPreviewMessage) &&
+                    {(!selectable && hasPreviewMessage && showInput) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
                             <div
@@ -821,7 +833,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
-                    {Boolean(!selectable) && <>
+                    {Boolean(!selectable && showInput) && <>
                         <div className={`inputs mode-${inputMode}`}>
                             <div className="user">
                                 <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
@@ -1230,9 +1242,11 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         const rtl = this.rtlDetector.direction(text);
-        this.setState({
-            rtl,
-        });
+        if (rtl !== this.state.rtl) {
+            this.setState({
+                rtl,
+            });
+        }
     }
 
     private removeDraft(removeDraft?: boolean) {
@@ -1364,7 +1378,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.textarea) {
             return;
         }
-        const {droppedMessage, inputMode} = this.state;
+        const {droppedMessage, inputMode, previewMessageMode} = this.state;
         let lines = 1;
         const nodeInfo = measureNodeHeight(this.textarea, 12312, false, 1, 12);
         if (nodeInfo) {
@@ -1383,7 +1397,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.textarea.classList.add(`_${lines}-line`);
             this.lastLines = lines;
         }
-        if (!Boolean(droppedMessage) && !canSendMessage(this.textarea.value, this.state.previewMessageMode, this.state.previewMessage)) {
+        if (!Boolean(droppedMessage) && previewMessageMode !== C_MSG_MODE.Edit && !canSendMessage(this.textarea.value, this.state.previewMessageMode, this.state.previewMessage)) {
             if (inputMode !== 'default') {
                 this.setInputMode('default');
             }
@@ -1516,6 +1530,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.recorder || !this.recorder.start) {
             return;
         }
+        this.voiceCanceled = false;
         this.setInputMode('voice');
         this.bars = [];
         this.maxBarVal = 0;
@@ -1705,7 +1720,9 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Voice record cancel handler */
     private voiceCancelHandler = () => {
         this.voiceCanceled = true;
+        this.recordingVoice = false;
         this.voiceRecordEnd();
+        this.stopTimer();
         this.setState({
             inputMode: 'default',
             voiceMode: 'up',
@@ -1753,7 +1770,7 @@ class ChatInput extends React.Component<IProps, IState> {
             recordingGain: 1,
             wavBitDepth: 16,
         });
-
+        this.voiceCanceled = false;
         this.recorder.ondataavailable = (buff: ArrayBuffer) => {
             if (this.voiceCanceled) {
                 this.voiceCanceled = false;

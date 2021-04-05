@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import MediaRepo from '../../repository/media';
 import {InputPeer, MediaCategory} from '../../services/sdk/messages/core.types_pb';
 import {getDuration, getMediaInfo, IMediaInfo} from '../MessageMedia';
@@ -37,12 +37,12 @@ import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
 import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import i18n from '../../services/i18n';
-import {IPeer} from "../../repository/dialog/interface";
 import {GetDbFileName} from "../../repository/file";
 import ElectronService from "../../services/electron";
 import {findIndex} from "lodash";
 import SettingsConfigManager from "../../services/settingsConfigManager";
 import {EventFileDownloaded, EventMediaDBUpdated} from "../../services/events";
+import {IPeer} from "../../repository/dialog/interface";
 
 import './style.scss';
 
@@ -91,7 +91,7 @@ interface IState {
 class PeerMedia extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private downloadEventReferences: any[] = [];
-    private peer: IPeer = {id: '', peerType: 0};
+    private peer: InputPeer;
     private mediaRepo: MediaRepo;
     private documentViewerService: DocumentViewerService;
     private itemMap: { [key: number]: number } = {};
@@ -113,10 +113,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             tab: 0,
         };
 
-        this.peer = {
-            id: props.peer.getId() || '',
-            peerType: props.peer.getType() || 0,
-        };
+        this.peer = this.props.peer;
         this.mediaRepo = MediaRepo.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
         this.audioPlayer = AudioPlayer.getInstance();
@@ -158,11 +155,8 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     public UNSAFE_componentWillReceiveProps(newProps: IProps) {
-        if (this.peer.id !== (newProps.peer.getId() || '') || this.peer.peerType !== (newProps.peer.getType() || 0)) {
-            this.peer = {
-                id: newProps.peer.getId() || '',
-                peerType: newProps.peer.getType() || 0,
-            };
+        if (this.peer.getId() !== (newProps.peer.getId() || '') || this.peer.getType() !== (newProps.peer.getType() || 0)) {
+            this.peer = newProps.peer;
             this.getMedias();
         }
     }
@@ -800,7 +794,7 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     /* Audio player handler */
     private audioPlayerHandler = (info: IAudioInfo, e: IAudioEvent) => {
-        if (info.peer.id !== this.peer.id || !this.itemMap.hasOwnProperty(info.messageId)) {
+        if (info.peer.id !== this.peer.getId() || !this.itemMap.hasOwnProperty(info.messageId)) {
             return;
         }
         const index = this.itemMap[info.messageId];
@@ -827,7 +821,11 @@ class PeerMedia extends React.Component<IProps, IState> {
         const {items} = this.state;
         const item = items[index];
         if (!item.playing) {
-            this.audioPlayer.addToPlaylist(id, this.peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
+            const peer: IPeer = {
+                id: this.peer.getId(),
+                peerType: this.peer.getType(),
+            };
+            this.audioPlayer.addToPlaylist(id, peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
             this.audioPlayer.play(id);
         } else {
             this.audioPlayer.pause(id);

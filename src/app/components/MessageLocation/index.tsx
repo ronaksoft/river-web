@@ -7,7 +7,6 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {InputPeer, MediaType, MessageEntity} from '../../services/sdk/messages/core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';

@@ -543,8 +543,9 @@ export default class Server {
         if (res) {
             if (constructor === C_MSG.Error) {
                 const resp = res.toObject();
-                if (resp.code === C_ERR.ErrCodeInvalid && resp.items === C_ERR_ITEM.ErrItemAuth) {
-                    const authErrorEvent = new CustomEvent(EventAuthError, {});
+                if ((resp.code === C_ERR.ErrCodeInvalid && resp.items === C_ERR_ITEM.ErrItemAuth) ||
+                    (resp.code === C_ERR.ErrCodeAlreadyExists && resp.items === C_ERR_ITEM.ErrItemBindUser)) {
+                    const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: false}});
                     window.dispatchEvent(authErrorEvent);
                 } else {
                     window.console.warn(resp);
@@ -973,6 +974,7 @@ export default class Server {
         }
     }
 
+    // This functions is being used to skip redundant API call in a bad network condition
     private getSkippableRequestIds() {
         const containList: number[] = [];
         const reqIds: number[] = [];

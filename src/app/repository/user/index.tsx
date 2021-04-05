@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/user';
 import {IContact, IUser} from './interface';
-import {differenceBy, find, uniq, throttle} from 'lodash';
+import {differenceBy, find, throttle, uniq} from 'lodash';
 import APIManager, {currentUserId} from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 import {Int64BE} from 'int64-buffer';
@@ -412,9 +412,9 @@ export default class UserRepo {
             if (u1.status !== undefined && u2.status === undefined) {
                 u2.status = u1.status;
             }
-            if (u1.status_last_modified !== undefined && u2.status_last_modified === undefined) {
-                u2.status_last_modified = u1.status_last_modified;
-            }
+            // if (u1.status_last_modified !== undefined && u2.status_last_modified === undefined) {
+            //     u2.status_last_modified = u1.status_last_modified;
+            // }
             if (!force && u1.username && u1.username.length > 0 && (!u2.username || (u2.username && u2.username.length === 0))) {
                 u2.username = u1.username;
             }
@@ -429,9 +429,13 @@ export default class UserRepo {
             }
             if (u2.status === UserStatus.USERSTATUSOFFLINE) {
                 u2.status_last_modified = 0;
+                u2.lastseen = 0;
             }
             if (u2.photogalleryList) {
                 u1.photogalleryList = u2.photogalleryList;
+            }
+            if (u1.accesshash !== '0' && u2.accesshash === '0') {
+                u2.accesshash = u1.accesshash;
             }
             return kMerge(u1, u2);
         };

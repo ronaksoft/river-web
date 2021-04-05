@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import * as React from 'react';
+import React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {
@@ -82,7 +82,7 @@ export interface IUploaderFile extends FileWithPreview {
     caption?: string;
     duration?: number;
     height?: number;
-    mediaType?: 'image' | 'video' | 'audio' | 'none';
+    mediaType?: mimeDocType;
     mentionList?: IMention[];
     mimeType?: string;
     performer?: string;
@@ -135,6 +135,32 @@ export const getUploaderInput = (mimeType: string) => {
     }
 };
 
+export type mimeDocType = 'image' | 'video' | 'audio' | 'none';
+export const getTypeByMime = (mime: string): mimeDocType => {
+    const a = mime.split(';');
+    if (a.length > 0) {
+        mime = a[0];
+    }
+    switch (mime) {
+        case 'image/png':
+        case 'image/jpeg':
+        case 'image/jpg':
+        case 'image/webp':
+        case 'image/gif':
+            return 'image';
+        case 'video/webm':
+        case 'video/mp4':
+            return 'video';
+        case 'audio/mp4':
+        case 'audio/mp3':
+        case 'audio/ogg':
+        case 'audio/mpeg':
+            return 'audio';
+        default:
+            return 'none';
+    }
+};
+
 const mentionInputStyle = {
     input: {
         border: 'none',
@@ -155,7 +181,7 @@ class Uploader extends React.Component<IProps, IState> {
     private previewRefs: string[][] = [];
     private imageEditorRef: ImageEditor | undefined;
     private videoFrameSelectorRef: VideoFrameSelector | undefined;
-    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.Lang) === 'fa' || false;
+    private rtl: boolean = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
     private rtlDetector: RTLDetector;
     private readonly rtlDetectorThrottle: any;
     private mentionContainer: any = null;
@@ -275,8 +301,10 @@ class Uploader extends React.Component<IProps, IState> {
                                                         onClick={this.chooseFrameHandler(items[selected].preview)}/>
                                                 </div>
                                             </>}
-                                            {Boolean(items[selected].mediaType === 'video') &&
-                                            <video ref={this.imageRefHandler} className="front" controls={true}>
+                                            {Boolean(items[selected].mediaType === 'video') && // @ts-ignore
+                                            <video ref={this.imageRefHandler} className="front" controls={true}
+                                                   controlsList="nofullscreen nodownload noremoteplayback"
+                                                   disablePictureInPicture={true}>
                                                 <source src={items[selected].preview}/>
                                             </video>}
                                             {Boolean(items[selected].mediaType === 'audio' && items[selected].preview) &&
@@ -532,7 +560,7 @@ class Uploader extends React.Component<IProps, IState> {
         const {items} = this.state;
         let hasFile = false;
         items.map((item, index) => {
-            item.mediaType = this.getTypeByMime(item.type);
+            item.mediaType = getTypeByMime(item.type);
             if (checkFormat) {
                 if (thumbnailReadyMIMEs.indexOf(item.type) === -1) {
                     hasFile = true;
@@ -783,32 +811,6 @@ class Uploader extends React.Component<IProps, IState> {
                 this.imageActionRef.style.marginTop = `${isVideo ? -48 : 0}px`;
             }
         }, isVideo ? 1000 : 50);
-    }
-
-    /* Get type by mime */
-    private getTypeByMime(mime: string) {
-        const a = mime.split(';');
-        if (a.length > 0) {
-            mime = a[0];
-        }
-        switch (mime) {
-            case 'image/png':
-            case 'image/jpeg':
-            case 'image/jpg':
-            case 'image/webp':
-            case 'image/gif':
-                return 'image';
-            case 'video/webm':
-            case 'video/mp4':
-                return 'video';
-            case 'audio/mp4':
-            case 'audio/mp3':
-            case 'audio/ogg':
-            case 'audio/mpeg':
-                return 'audio';
-            default:
-                return 'none';
-        }
     }
 
     /* Convert file to blob */

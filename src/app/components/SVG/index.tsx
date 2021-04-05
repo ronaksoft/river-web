@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Broadcaster from "../../services/broadcaster";
 import {ThemeChanged} from "../SettingsMenu";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";

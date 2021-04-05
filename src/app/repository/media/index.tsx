@@ -15,10 +15,11 @@ import {DexieMediaDB} from '../../services/db/dexie/media';
 import MessageRepo from '../message';
 import {kMerge} from "../../services/utilities/kDash";
 import {IMessage} from "../message/interface";
-import {IPeer} from "../dialog/interface";
 import {EventMediaDBUpdated} from "../../services/events";
 import {InputPeer, MediaCategory, UserMessage} from "../../services/sdk/messages/core.types_pb";
 import APIManager, {currentUserId} from "../../services/sdk";
+import UserRepo from "../user";
+import GroupRepo from "../group";
 
 interface IMediaWithCount {
     count: number;
@@ -43,6 +44,8 @@ export default class MediaRepo {
     private mediaList: IMedia[] = [];
     private readonly updateThrottle: any = null;
     private messageRepo: MessageRepo | undefined;
+    private userRepo: UserRepo | undefined;
+    private groupRepo: GroupRepo | undefined;
     private apiManager: APIManager;
 
     private constructor() {
@@ -50,6 +53,8 @@ export default class MediaRepo {
         this.db = this.dbService.getDB();
         this.updateThrottle = throttle(this.insertToDb, 300);
         this.apiManager = APIManager.getInstance();
+        this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
         setTimeout(() => {
             this.messageRepo = MessageRepo.getInstance();
         }, 100);
@@ -73,7 +78,7 @@ export default class MediaRepo {
         });
     }
 
-    public list(teamId: string, peer: IPeer, options: { limit?: number, before?: number, after?: number, type?: MediaCategory }): Promise<IMediaWithCount> {
+    public list(teamId: string, peer: InputPeer, options: { limit?: number, before?: number, after?: number, type?: MediaCategory, localOnly?: boolean }): Promise<IMediaWithCount> {
         const mode = this.getMode(options.before, options.after);
         return this.getMany(teamId, peer, options).then((list) => {
             if (list.length === 0) {
@@ -143,6 +148,33 @@ export default class MediaRepo {
         });
     }
 
+    private completeMediasLimitFromRemote(teamId: string, peer: InputPeer, type: MediaCategory, messages: IMessage[], id: number, limit: number, localOnly?: boolean): Promise<IMessage[]> {
+        if (id === -1) {
+            return Promise.reject('bad message id');
+        }
+        if (limit === 0) {
+            return Promise.resolve(messages);
+        }
+        if (localOnly) {
+            return Promise.resolve(messages);
+        }
+
+        return this.checkHoles(teamId, peer, type, id, limit).then((remoteMessages) => {
+            this.userRepo.importBulk(false, remoteMessages.usersList);
+            this.groupRepo.importBulk(remoteMessages.groupsList);
+            const messageWithMediaMany = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId);
+            remoteMessages.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
+            this.messageRepo.importBulk(messageWithMediaMany.messages);
+            if (messageWithMediaMany.medias.length > 0) {
+                return this.importBulk(messageWithMediaMany.medias, true).then(() => {
+                    return [...messages, ...remoteMessages.messagesList];
+                });
+            } else {
+                return messages;
+            }
+        });
+    }
+
     private mergeCheck(media: IMedia, newMedia: IMedia): IMedia {
         return kMerge(media, newMedia);
     }
@@ -179,30 +211,33 @@ export default class MediaRepo {
         return mode;
     }
 
-    private getMany(teamId: string, peer: IPeer, {limit, before, after, type}: { limit?: number, before?: number, after?: number, type?: MediaCategory }): Promise<IMedia[]> {
+    private getMany(teamId: string, peer: InputPeer, {limit, before, after, type, localOnly}: { limit?: number, before?: number, after?: number, type?: MediaCategory, localOnly?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMedia[]> {
         return new Promise<IMedia[]>((resolve, reject) => {
             let pipe2: Dexie.Collection<IMedia, number>;
             const mode = this.getMode(before, after);
-            limit = limit || 30;
+            const safeLimit = limit || 30;
+            const safeBefore = before || 0;
+            const safeAfter = after || 0;
+            const peerObj = peer.toObject();
             if (!type) {
-                const pipe = this.db.medias.where('id');
+                const pipe = this.db.medias.where('[teamid+peerid+peertype+id]');
                 switch (mode) {
                     // none
                     default:
                     case 0x0:
-                        pipe2 = pipe.between([teamId, peer.id, peer.peerType, type, Dexie.minKey], [teamId, peer.id, peer.peerType, type, Dexie.maxKey], true, true);
+                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, Dexie.maxKey], true, true);
                         break;
                     // before
                     case 0x1:
-                        pipe2 = pipe.between([teamId, peer.id, peer.peerType, type, Dexie.minKey], [teamId, peer.id, peer.peerType, type, before], true, true);
+                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, before], true, true);
                         break;
                     // after
                     case 0x2:
-                        pipe2 = pipe.between([teamId, peer.id, peer.peerType, type, after], [teamId, peer.id, peer.peerType, type, Dexie.maxKey], true, true);
+                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, after], [teamId, peerObj.id, peerObj.type, Dexie.maxKey], true, true);
                         break;
                     // between
                     case 0x3:
-                        pipe2 = pipe.between([teamId, peer.id, peer.peerType, type, after], [teamId, peer.id, peer.peerType, type, before], true, true);
+                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, after], [teamId, peerObj.id, peerObj.type, before], true, true);
                         break;
                 }
             } else {
@@ -211,19 +246,19 @@ export default class MediaRepo {
                     // none
                     default:
                     case 0x0:
-                        pipe2 = pipe.between([teamId, peer.id, peer.peerType, type, Dexie.minKey], [teamId, peer.id, peer.peerType, type, Dexie.maxKey], true, true);
+                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, type, Dexie.maxKey], true, true);
                         break;
                     // before
                     case 0x1:
-                        pipe2 = pipe.between([teamId, peer.id, peer.peerType, type, Dexie.minKey], [teamId, peer.id, peer.peerType, type, before], true, true);
+                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, type, before], true, true);
                         break;
                     // after
                     case 0x2:
-                        pipe2 = pipe.between([teamId, peer.id, peer.peerType, type, after], [teamId, peer.id, peer.peerType, type, Dexie.maxKey], true, true);
+                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, after], [teamId, peerObj.id, peerObj.type, type, Dexie.maxKey], true, true);
                         break;
                     // between
                     case 0x3:
-                        pipe2 = pipe.between([teamId, peer.id, peer.peerType, type, after], [teamId, peer.id, peer.peerType, type, before], true, true);
+                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, after], [teamId, peerObj.id, peerObj.type, type, before], true, true);
                         break;
                 }
             }
@@ -239,8 +274,35 @@ export default class MediaRepo {
                     return item.hole;
                 });
             }
-            pipe2.limit(limit).toArray().then((list: IMedia[]) => {
+            pipe2.limit(safeLimit).toArray().then((list: IMedia[]) => {
+                const earlyMessages: IMessage[] = [];
+                const hasHole = list.some((item) => {
+                    if (earlyCallback && mode === 0x1) {
+                        if (item.hole) {
+                            earlyCallback(earlyMessages);
+                            return true;
+                        }
+                        earlyMessages.push(item);
+                    }
+                    return item.hole;
+                });
+                const asc = (mode === 0x2);
+                let lastId: number = (asc ? safeAfter : safeBefore);
+                if (localOnly && hasHole) {
+                    localOnly = false;
+                }
+                if (list.length > 0) {
+                    lastId = (list[list.length - 1].id || -1);
+                    if (lastId !== -1) {
+                        if (asc) {
+                            lastId += 1;
+                        } else {
+                            lastId -= 1;
+                        }
+                    }
+                }
                 resolve(list);
+                return this.completeMediasLimitFromRemote(teamId, peer, type, list, lastId, safeLimit - list.length, localOnly);
             }).catch((err: any) => {
                 reject(err);
             });

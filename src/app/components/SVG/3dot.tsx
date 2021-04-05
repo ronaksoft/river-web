@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 export const ThreeDot = (props: any) => {
     return (<svg viewBox="0 0 38 10" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}
                  style={{height: '1em', width: '1em'}}>

@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2020
 */
 
-import React, {useState} from "react";
+import {useState} from "react";
 import {IMessage} from "../../repository/message/interface";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";

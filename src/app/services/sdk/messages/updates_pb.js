@@ -3764,7 +3764,7 @@ proto.msg.UpdateMessagePinned.toObject = function(includeInstance, msg) {
     updateid: jspb.Message.getFieldWithDefault(msg, 101, 0),
     teamid: jspb.Message.getFieldWithDefault(msg, 102, "0"),
     peer: (f = msg.getPeer()) && core_types_pb.Peer.toObject(includeInstance, f),
-    userid: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    userid: jspb.Message.getFieldWithDefault(msg, 2, "0"),
     msgid: jspb.Message.getFieldWithDefault(msg, 3, 0),
     version: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
@@ -3821,7 +3821,7 @@ proto.msg.UpdateMessagePinned.deserializeBinaryFromReader = function(msg, reader
       msg.setPeer(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setUserid(value);
       break;
     case 3:
@@ -3891,8 +3891,8 @@ proto.msg.UpdateMessagePinned.serializeBinaryToWriter = function(message, writer
     );
   }
   f = message.getUserid();
-  if (f !== 0) {
-    writer.writeInt64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeInt64String(
       2,
       f
     );
@@ -4007,19 +4007,19 @@ proto.msg.UpdateMessagePinned.prototype.hasPeer = function() {
 
 /**
  * optional int64 UserID = 2;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateMessagePinned.prototype.getUserid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.UpdateMessagePinned} returns this
  */
 proto.msg.UpdateMessagePinned.prototype.setUserid = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
