@@ -78,9 +78,9 @@ export default class MediaRepo {
         });
     }
 
-    public list(teamId: string, peer: InputPeer, options: { limit?: number, before?: number, after?: number, type?: MediaCategory, localOnly?: boolean }): Promise<IMediaWithCount> {
+    public list(teamId: string, peer: InputPeer, type: MediaCategory, options: { limit?: number, before?: number, after?: number, localOnly?: boolean }): Promise<IMediaWithCount> {
         const mode = this.getMode(options.before, options.after);
-        return this.getMany(teamId, peer, options).then((list) => {
+        return this.getMany(teamId, peer, type, options).then((list) => {
             if (list.length === 0) {
                 return {
                     count: 0,
@@ -211,101 +211,73 @@ export default class MediaRepo {
         return mode;
     }
 
-    private getMany(teamId: string, peer: InputPeer, {limit, before, after, type, localOnly}: { limit?: number, before?: number, after?: number, type?: MediaCategory, localOnly?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMedia[]> {
-        return new Promise<IMedia[]>((resolve, reject) => {
-            let pipe2: Dexie.Collection<IMedia, number>;
-            const mode = this.getMode(before, after);
-            const safeLimit = limit || 30;
-            const safeBefore = before || 0;
-            const safeAfter = after || 0;
-            const peerObj = peer.toObject();
-            if (!type) {
-                const pipe = this.db.medias.where('[teamid+peerid+peertype+id]');
-                switch (mode) {
-                    // none
-                    default:
-                    case 0x0:
-                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, Dexie.maxKey], true, true);
-                        break;
-                    // before
-                    case 0x1:
-                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, before], true, true);
-                        break;
-                    // after
-                    case 0x2:
-                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, after], [teamId, peerObj.id, peerObj.type, Dexie.maxKey], true, true);
-                        break;
-                    // between
-                    case 0x3:
-                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, after], [teamId, peerObj.id, peerObj.type, before], true, true);
-                        break;
-                }
-            } else {
-                const pipe = this.db.medias.where('[teamid+peerid+peertype+type+id]');
-                switch (mode) {
-                    // none
-                    default:
-                    case 0x0:
-                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, type, Dexie.maxKey], true, true);
-                        break;
-                    // before
-                    case 0x1:
-                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, type, before], true, true);
-                        break;
-                    // after
-                    case 0x2:
-                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, after], [teamId, peerObj.id, peerObj.type, type, Dexie.maxKey], true, true);
-                        break;
-                    // between
-                    case 0x3:
-                        pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, after], [teamId, peerObj.id, peerObj.type, type, before], true, true);
-                        break;
-                }
-            }
-            if (mode !== 0x2) {
-                pipe2 = pipe2.reverse();
-            }
-            if (!type) {
-                pipe2 = pipe2.filter((item: IMedia) => {
-                    return !item.hole;
-                });
-            } else {
-                pipe2 = pipe2.filter((item: IMedia) => {
-                    return item.hole;
-                });
-            }
-            pipe2.limit(safeLimit).toArray().then((list: IMedia[]) => {
-                const earlyMessages: IMessage[] = [];
-                const hasHole = list.some((item) => {
-                    if (earlyCallback && mode === 0x1) {
-                        if (item.hole) {
-                            earlyCallback(earlyMessages);
-                            return true;
-                        }
-                        earlyMessages.push(item);
-                    }
-                    return item.hole;
-                });
-                const asc = (mode === 0x2);
-                let lastId: number = (asc ? safeAfter : safeBefore);
-                if (localOnly && hasHole) {
-                    localOnly = false;
-                }
-                if (list.length > 0) {
-                    lastId = (list[list.length - 1].id || -1);
-                    if (lastId !== -1) {
-                        if (asc) {
-                            lastId += 1;
-                        } else {
-                            lastId -= 1;
-                        }
-                    }
-                }
-                resolve(list);
-                return this.completeMediasLimitFromRemote(teamId, peer, type, list, lastId, safeLimit - list.length, localOnly);
-            }).catch((err: any) => {
-                reject(err);
+    private getMany(teamId: string, peer: InputPeer, type: MediaCategory, {limit, before, after, localOnly}: { limit?: number, before?: number, after?: number, localOnly?: boolean }, earlyCallback?: (list: IMessage[]) => void): Promise<IMedia[]> {
+        let pipe2: Dexie.Collection<IMedia, number>;
+        const mode = this.getMode(before, after);
+        const safeLimit = limit || 30;
+        const safeBefore = before || 0;
+        const safeAfter = after || 0;
+        const peerObj = peer.toObject();
+        const pipe = this.db.medias.where('[teamid+peerid+peertype+type+id]');
+        switch (mode) {
+            // none
+            default:
+            case 0x0:
+                pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, type, Dexie.maxKey], true, true);
+                break;
+            // before
+            case 0x1:
+                pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, Dexie.minKey], [teamId, peerObj.id, peerObj.type, type, before], true, true);
+                break;
+            // after
+            case 0x2:
+                pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, after], [teamId, peerObj.id, peerObj.type, type, Dexie.maxKey], true, true);
+                break;
+            // between
+            case 0x3:
+                pipe2 = pipe.between([teamId, peerObj.id, peerObj.type, type, after], [teamId, peerObj.id, peerObj.type, type, before], true, true);
+                break;
+        }
+        if (mode !== 0x2) {
+            pipe2 = pipe2.reverse();
+        }
+        if (!type) {
+            pipe2 = pipe2.filter((item: IMedia) => {
+                return !item.hole;
             });
+        } else {
+            pipe2 = pipe2.filter((item: IMedia) => {
+                return item.hole;
+            });
+        }
+        return pipe2.limit(safeLimit).toArray().then((list: IMedia[]) => {
+            const earlyMessages: IMessage[] = [];
+            const hasHole = list.some((item) => {
+                if (earlyCallback && mode === 0x1) {
+                    if (item.hole) {
+                        earlyCallback(earlyMessages);
+                        return true;
+                    }
+                    earlyMessages.push(item);
+                }
+                return item.hole;
+            });
+            const asc = (mode === 0x2);
+            let lastId: number = (asc ? safeAfter : safeBefore);
+            if (localOnly && hasHole) {
+                localOnly = false;
+            }
+            if (list.length > 0) {
+                lastId = (list[list.length - 1].id || -1);
+                if (lastId !== -1) {
+                    if (asc) {
+                        lastId += 1;
+                    } else {
+                        lastId -= 1;
+                    }
+                }
+            }
+            return this.completeMediasLimitFromRemote(teamId, peer, type, list, lastId, safeLimit - list.length, localOnly) as any;
         });
     }
 
@@ -349,6 +321,7 @@ export default class MediaRepo {
         if (res.length === limit + 1) {
             edgeMessage = res.pop();
         }
+        window.console.log([teamId, peerId, peerType, type, min - 1], [teamId, peerId, peerType, type, max + 1]);
         return this.db.medias.where('[teamid+peerid+peertype+type+id]').between([teamId, peerId, peerType, type, min - 1], [teamId, peerId, peerType, type, max + 1], true, true).filter((item) => {
             return item.hole;
         }).delete().then((dres) => {

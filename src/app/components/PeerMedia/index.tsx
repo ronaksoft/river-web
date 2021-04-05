@@ -13,21 +13,21 @@ import {InputPeer, MediaCategory} from '../../services/sdk/messages/core.types_p
 import {getDuration, getMediaInfo, IMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
 import {
-    PlayCircleFilledRounded,
-    InsertDriveFileTwoTone,
-    HeadsetTwoTone,
-    KeyboardVoiceTwoTone,
-    PlayArrowRounded,
-    PauseRounded,
-    MoreVertRounded,
-    RadioButtonUncheckedRounded,
     CheckCircleRounded,
     CloseRounded,
     ForwardRounded,
     ForwardToInboxRounded,
+    HeadsetTwoTone,
+    InsertDriveFileTwoTone,
+    KeyboardVoiceTwoTone,
+    MoreVertRounded,
+    PauseRounded,
+    PlayArrowRounded,
+    PlayCircleFilledRounded,
+    RadioButtonUncheckedRounded,
 } from '@material-ui/icons';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import {Tabs, Tab, Menu, MenuItem, IconButton, Tooltip} from '@material-ui/core';
+import {IconButton, Menu, MenuItem, Tab, Tabs, Tooltip} from '@material-ui/core';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import Scrollbars from 'react-custom-scrollbars';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
@@ -168,13 +168,12 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {className, tab, items, anchorEl, selectedIds, selectable} = this.state;
+        const {className, tab, anchorEl, selectedIds, selectable} = this.state;
         return (
             <div className={`peer-media ${(this.props.full ? ' full' : '')} ${className}`}>
                 {!this.props.full && <div className="peer-media-title">
                     <span className="peer-label">{i18n.t('peer_info.shared_media')}</span>
-                    {Boolean(items.length > 0) &&
-                    <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>}
+                    <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>
                 </div>}
                 {this.props.full && <div className="peer-media-tab">
                     {selectable && selectedIds.length > 0 ?
@@ -537,10 +536,10 @@ class PeerMedia extends React.Component<IProps, IState> {
                 break;
         }
 
-        this.mediaRepo.list(this.props.teamId, this.peer, {
+        this.mediaRepo.list(this.props.teamId, this.peer, this.props.full ? mediaType : MediaCategory.MEDIACATEGORYMEDIA, {
             limit: this.props.full ? 128 : 8,
-            type: this.props.full ? mediaType : undefined,
         }).then((result) => {
+            window.console.log(result, mediaType);
             if (!this.props.full) {
                 result.messages = result.messages.slice(0, 4);
             }
@@ -707,7 +706,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 breakPoint = items[0].id + 1;
             }
         }
-        let mediaType: MediaCategory | undefined;
+        let mediaType: MediaCategory | undefined = MediaCategory.MEDIACATEGORYMEDIA;
         if (this.props.full) {
             switch (this.state.tab) {
                 case 0:
@@ -727,11 +726,10 @@ class PeerMedia extends React.Component<IProps, IState> {
                     break;
             }
         }
-        this.mediaRepo.list(this.props.teamId, this.peer, {
+        this.mediaRepo.list(this.props.teamId, this.peer, mediaType, {
             after: !append ? breakPoint : undefined,
             before: append ? breakPoint : undefined,
             limit,
-            type: mediaType,
         }).then((result) => {
             if (result.messages.length === 0) {
                 this.setState({

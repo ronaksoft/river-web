@@ -31,12 +31,12 @@
     }
 
     .more {
-      width: 64px;
       color: var(--river);
       font-size: 12px;
       font-weight: bold;
       text-transform: uppercase;
       cursor: pointer;
+      white-space: nowrap;
     }
   }
 

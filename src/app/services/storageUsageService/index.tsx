@@ -10,7 +10,7 @@
 import FileRepo, {GetDbFileName} from '../../repository/file/index';
 import DialogRepo from '../../repository/dialog/index';
 import MediaRepo from '../../repository/media/index';
-import {InputPeer, PeerType} from '../sdk/messages/core.types_pb';
+import {InputPeer, MediaCategory, PeerType} from '../sdk/messages/core.types_pb';
 import MessageRepo from '../../repository/message';
 import {IPeer} from "../../repository/dialog/interface";
 import {C_MESSAGE_TYPE} from "../../repository/message/consts";
@@ -157,7 +157,12 @@ export default class StorageUsageService {
         const inputPeer = new InputPeer();
         inputPeer.setId(peer.id);
         inputPeer.setType(peer.peerType);
-        return this.mediaRepo.list(teamId, inputPeer, {before, limit, localOnly: true}).then((res) => {
+        // TODO: add all types
+        return this.mediaRepo.list(teamId, inputPeer, MediaCategory.MEDIACATEGORYMEDIA, {
+            before,
+            limit,
+            localOnly: true
+        }).then((res) => {
             const fileMap: { [key: string]: { id: number, mediaType: number } } = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;

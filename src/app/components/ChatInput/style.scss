@@ -584,6 +584,9 @@
             justify-content: left;
             width: 100%;
             font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
 
             svg {
               font-size: 13px;

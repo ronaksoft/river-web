@@ -468,6 +468,7 @@
     "photo_message": "Photo Message",
     "file": "File",
     "gif": "GIF",
+    "web_document": "Web Document",
     "contact": "Contact",
     "location": "Location",
     "forwarded_message_from": "Forwarded message from ",

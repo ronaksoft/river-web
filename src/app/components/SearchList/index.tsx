@@ -24,6 +24,7 @@ import {
     RecordVoiceOverOutlined,
     SearchRounded,
     VideocamOutlined,
+    WebAssetRounded,
 } from '@material-ui/icons';
 import {IDialog} from '../../repository/dialog/interface';
 import SearchRepo from '../../repository/search';
@@ -542,6 +543,8 @@ class SearchList extends React.Component<IProps, IState> {
                 return (<RecordVoiceOverOutlined className="preview-icon"/>);
             case C_MESSAGE_ICON.Photo:
                 return (<PhotoOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.WebDocument:
+                return (<WebAssetRounded className="preview-icon"/>);
             default:
                 return null;
         }

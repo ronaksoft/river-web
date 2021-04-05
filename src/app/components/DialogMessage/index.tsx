@@ -32,6 +32,7 @@ import {
     PlayArrowRounded,
     CallRounded,
     CallEndRounded,
+    WebAssetRounded,
 } from '@material-ui/icons';
 import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -79,6 +80,8 @@ export const getMessageIcon = (icon: number | undefined, tinyThumb?: string) => 
             return (<MusicNoteOutlined className="preview-icon"/>);
         case C_MESSAGE_ICON.GIF:
             return (<GifOutlined className="preview-icon gif"/>);
+        case C_MESSAGE_ICON.WebDocument:
+            return (<WebAssetRounded className="preview-icon"/>);
         case C_MESSAGE_ICON.Forwarded:
             return (<ForwardOutlined className="preview-icon"/>);
         case C_MESSAGE_ICON.Reply:

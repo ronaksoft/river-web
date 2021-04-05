@@ -263,7 +263,6 @@ export default class MessageRepo {
                     break;
                 case MediaType.MEDIATYPEWEBDOCUMENT:
                     out.mediadata = MediaWebDocument.deserializeBinary(mediaData).toObject();
-                    window.console.log(out.mediadata);
                     if (out.mediadata && out.mediadata.attributesList) {
                         out.attributes = this.parseAttributes(out.mediadata.attributesList, {type: C_MESSAGE_TYPE.Normal});
                     }

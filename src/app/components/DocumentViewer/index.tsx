@@ -241,7 +241,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                 <div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
                                      style={size ? size : {}}>
                                     <div className="picture">
-                                        <img src={item.url || ''} alt="web-image"/>
+                                        <img src={item.url || ''} alt="web-document"/>
                                     </div>
                                 </div>);
                         })}

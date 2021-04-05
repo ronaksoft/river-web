@@ -1,10 +1,15 @@
 import {IMessage} from '../../repository/message/interface';
 import {MediaType} from '../../services/sdk/messages/core.types_pb';
-import {DocumentAttributeType, MediaDocument} from '../../services/sdk/messages/chat.messages.medias_pb';
+import {
+    DocumentAttributeType,
+    MediaDocument,
+    MediaWebDocument
+} from '../../services/sdk/messages/chat.messages.medias_pb';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import i18n from '../../services/i18n';
 import UserRepo from "../../repository/user";
 import {currentUserId} from "../../services/sdk";
+import {getTypeByMime} from "../Uploader";
 
 export const C_MESSAGE_ICON = {
     Audio: 2,
@@ -19,6 +24,7 @@ export const C_MESSAGE_ICON = {
     Sticker: 8,
     Video: 1,
     Voice: 3,
+    WebDocument: 10,
 };
 
 const getSystemMessageTitle = (message: IMessage) => {
@@ -112,12 +118,28 @@ export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean, maxC
                 } else if (message.messagetype === C_MESSAGE_TYPE.Video) {
                     messageIcon.icon = C_MESSAGE_ICON.Video;
                     messageIcon.text = i18n.t('message.video_message');
+                } else if (message.messagetype === C_MESSAGE_TYPE.Picture) {
+                    messageIcon.icon = C_MESSAGE_ICON.Photo;
+                    messageIcon.text = i18n.t('message.photo_message');
                 } else if (message.messagetype === C_MESSAGE_TYPE.File) {
                     messageIcon.icon = C_MESSAGE_ICON.File;
                     messageIcon.text = i18n.t('message.file');
                 } else if (message.messagetype === C_MESSAGE_TYPE.Gif) {
                     messageIcon.icon = C_MESSAGE_ICON.GIF;
                     messageIcon.text = i18n.t('message.gif');
+                } else if (message.messagetype === C_MESSAGE_TYPE.WebDocument) {
+                    const messageMediaWebDocument: MediaWebDocument.AsObject = message.mediadata;
+                    const docType = getTypeByMime(messageMediaWebDocument.mimetype);
+                    if (docType === 'image') {
+                        messageIcon.icon = C_MESSAGE_ICON.Photo;
+                        messageIcon.text = i18n.t('message.photo_message');
+                    } else if (docType === 'video') {
+                        messageIcon.icon = C_MESSAGE_ICON.Video;
+                        messageIcon.text = i18n.t('message.video_message');
+                    } else {
+                        messageIcon.icon = C_MESSAGE_ICON.WebDocument;
+                        messageIcon.text = i18n.t('message.web_document');
+                    }
                 } else {
                     if (messageMediaDocument.doc && messageMediaDocument.doc.attributesList) {
                         for (let i = 0; i < messageMediaDocument.doc.attributesList.length; i++) {
@@ -157,6 +179,20 @@ export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean, maxC
             case MediaType.MEDIATYPEGEOLOCATION:
                 messageIcon.icon = C_MESSAGE_ICON.Location;
                 messageIcon.text = i18n.t('message.location');
+                break;
+            case MediaType.MEDIATYPEWEBDOCUMENT:
+                const messageMediaWebDocument: MediaWebDocument.AsObject = message.mediadata;
+                const docType = getTypeByMime(messageMediaWebDocument.mimetype);
+                if (docType === 'image') {
+                    messageIcon.icon = C_MESSAGE_ICON.Photo;
+                    messageIcon.text = i18n.t('message.photo_message');
+                } else if (docType === 'video') {
+                    messageIcon.icon = C_MESSAGE_ICON.Video;
+                    messageIcon.text = i18n.t('message.video_message');
+                } else {
+                    messageIcon.icon = C_MESSAGE_ICON.WebDocument;
+                    messageIcon.text = i18n.t('message.web_document');
+                }
                 break;
         }
     }
