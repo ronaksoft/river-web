@@ -29,6 +29,7 @@ interface IDocumentItem {
     rtl?: boolean;
     snippet?: string;
     thumbFileLocation?: SetOptional<InputFileLocation.AsObject, 'version'>;
+    url?: string;
     userId?: string;
     width?: number;
 }
@@ -44,6 +45,7 @@ export interface IDocument {
     type: 'avatar' | 'picture' | 'video' | 'location' | 'code';
     stream?: boolean;
     teamId: string;
+    web?: boolean;
 }
 
 export default class DocumentViewerService {

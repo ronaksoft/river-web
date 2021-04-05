@@ -14,6 +14,8 @@ import {MediaWebDocument} from "../../services/sdk/messages/chat.messages.medias
 import {getContentSize} from "../MessageMedia";
 import {getTypeByMime, mimeDocType} from "../Uploader";
 import i18n from "../../services/i18n";
+import DocumentViewerService, {IDocument} from "../../services/documentViewerService";
+import {C_MESSAGE_TYPE} from "../../repository/message/consts";
 
 import './style.scss';
 
@@ -68,6 +70,8 @@ interface IState {
 }
 
 class MessageWeb extends React.PureComponent<IProps, IState> {
+    private documentViewerService: DocumentViewerService;
+
     constructor(props: IProps) {
         super(props);
 
@@ -76,11 +80,13 @@ class MessageWeb extends React.PureComponent<IProps, IState> {
             docType: getTypeByMime(info.mimetype),
             info,
         };
+
+        this.documentViewerService = DocumentViewerService.getInstance();
     }
 
     public render() {
         return (
-            <div className="message-web">
+            <div className="message-web" onClick={this.showMediaHandler}>
                 {this.getContent()}
             </div>
         );
@@ -94,18 +100,66 @@ class MessageWeb extends React.PureComponent<IProps, IState> {
                     height: `${info.size.height}px`,
                     width: `${info.size.width}px`,
                 } : undefined}>
-                    <img src={info.url} alt="web-doc" onLoad={this.props.measureFn}/>
+                    <img src={info.url} alt="web-doc" onLoad={this.props.measureFn} className="document"/>
                 </div>;
             case 'video':
                 return <div className="web-image" style={info.size.width > 0 ? {
                     height: `${info.size.height}px`,
                     width: `${info.size.width}px`,
                 } : undefined}>
-                    <video src={info.url} onLoad={this.props.measureFn} controls={true}/>
+                    <video src={info.url} onLoad={this.props.measureFn} controls={false} className="document"/>
                 </div>;
         }
 
         return <div className="web-unsupported">{i18n.t('general.unsupported_document')}</div>;
+    }
+
+    private showMediaHandler = (e: any) => {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+        const {message} = this.props;
+        const {info, docType} = this.state;
+        if (!info) {
+            return;
+        }
+
+        if (!(docType === 'video' || docType === 'image')) {
+            return;
+        }
+
+        let el = (e.currentTarget || e);
+        const picEl = el.querySelector('.picture');
+        if (picEl) {
+            el = picEl;
+        }
+        const doc: IDocument = {
+            anchor: 'message',
+            items: [{
+                caption: '',
+                createdon: message.createdon,
+                downloaded: true,
+                fileLocation: {
+                    accesshash: '0',
+                    clusterid: 1,
+                    fileid: '0',
+                    version: 0,
+                },
+                height: info.size.height,
+                id: message.id || 0,
+                mimeType: info.mimetype,
+                rtl: message.rtl,
+                url: info.url,
+                userId: message.senderid || '',
+                width: info.size.width,
+            }],
+            peer: {id: message.peerid || '', peerType: message.peertype || 0},
+            rect: el.getBoundingClientRect(),
+            teamId: message.teamid || '0',
+            type: message.messagetype === C_MESSAGE_TYPE.Video ? 'video' : 'picture',
+            web: true,
+        };
+        this.documentViewerService.loadDocument(doc);
     }
 }
 
