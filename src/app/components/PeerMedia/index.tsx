@@ -8,7 +8,7 @@
 */
 
 import React from 'react';
-import MediaRepo from '../../repository/media';
+import MediaRepo, {IMediaWithCount} from '../../repository/media';
 import {InputPeer, MediaCategory} from '../../services/sdk/messages/core.types_pb';
 import {getDuration, getMediaInfo, IMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
@@ -43,6 +43,7 @@ import {findIndex} from "lodash";
 import SettingsConfigManager from "../../services/settingsConfigManager";
 import {EventFileDownloaded} from "../../services/events";
 import {IPeer} from "../../repository/dialog/interface";
+import {C_INFINITY} from "../../repository";
 
 import './style.scss';
 
@@ -107,7 +108,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             anchorEl: null,
             className: props.className || '',
             items: [],
-            loading: true,
+            loading: false,
             selectable: false,
             selectedIds: [],
             tab: 0,
@@ -374,7 +375,8 @@ class PeerMedia extends React.Component<IProps, IState> {
             <div className={'media-grid-view' + (selectedIds.length > 0 ? ' has-selected' : '')}>
                 {items.map((item, i) => {
                     return (
-                        <div key={item.id} className={`media-item item_${item.id}`}
+                        <div key={`${item.id}_${item.download ? 'd' : 'u'}`}
+                             className={`media-item item_${item.id}`}
                              onClick={this.showMediaHandler(i)}>
                             {this.getFileIcon(item)}
                             {Boolean(item.type === C_MESSAGE_TYPE.Video) &&
@@ -509,44 +511,118 @@ class PeerMedia extends React.Component<IProps, IState> {
         }
     }
 
+    private getMediaCategory(): MediaCategory {
+        if (this.props.full) {
+            return MediaCategory.MEDIACATEGORYMEDIA;
+        }
+        switch (this.state.tab) {
+            case 0:
+                return MediaCategory.MEDIACATEGORYMEDIA;
+            case 1:
+                return MediaCategory.MEDIACATEGORYAUDIO;
+            case 2:
+                return MediaCategory.MEDIACATEGORYVOICE;
+            case 3:
+                return MediaCategory.MEDIACATEGORYFILE;
+            case 4:
+                return MediaCategory.MEDIACATEGORYGIF;
+        }
+        return MediaCategory.MEDIACATEGORYMEDIA;
+    }
+
     /* Get media from repository */
-    private getMedias() {
+    private getMedias(before?: number) {
+        if (this.state.loading) {
+            return;
+        }
+
         this.setState({
             loading: true,
         });
 
-        let mediaType: MediaCategory | MediaCategory.MEDIACATEGORYMEDIA;
-        switch (this.state.tab) {
-            case 0:
-                mediaType = MediaCategory.MEDIACATEGORYMEDIA;
-                break;
-            case 1:
-                mediaType = MediaCategory.MEDIACATEGORYAUDIO;
-                break;
-            case 2:
-                mediaType = MediaCategory.MEDIACATEGORYVOICE;
-                break;
-            case 3:
-                mediaType = MediaCategory.MEDIACATEGORYFILE;
-                break;
-            case 4:
-                mediaType = MediaCategory.MEDIACATEGORYGIF;
-                break;
-        }
-        this.mediaRepo.list(this.props.teamId, this.peer, this.props.full ? mediaType : MediaCategory.MEDIACATEGORYMEDIA, {
+        const earlyFn = before ? undefined : (earlyItems: IMediaWithCount) => {
+            if (!this.props.full) {
+                earlyItems.messages = earlyItems.messages.slice(0, 4);
+            }
+            this.setState({
+                items: this.modifyMediaList(earlyItems.messages),
+            });
+        };
+        const mediaCategory = this.getMediaCategory();
+        this.mediaRepo.list(this.props.teamId, this.peer, mediaCategory, {
+            before: before || C_INFINITY,
             limit: this.props.full ? 128 : 8,
             localOnly: !this.props.full,
-        }, (earlyItems) => {
-            window.console.log(earlyItems);
-        }).then((result) => {
+        }, earlyFn).then((result) => {
+            let {items} = this.state;
+            // @ts-ignore
+            items.push.apply(items, result.messages);
             if (!this.props.full) {
                 result.messages = result.messages.slice(0, 4);
             }
+            if (before) {
+                this.setState({
+                    items: this.modifyMediaList(items),
+                    loading: false,
+                });
+            } else {
+                this.setState({
+                    items: this.modifyMediaList(result.messages),
+                    loading: false,
+                    selectable: false,
+                    selectedIds: [],
+                });
+            }
+        }).catch(() => {
             this.setState({
-                items: this.modifyMediaList(result.messages),
                 loading: false,
-                selectable: false,
-                selectedIds: [],
+            });
+        });
+    }
+
+    /* Update media list */
+
+    // @ts-ignore
+    private loadMediaList(append: boolean, limit: number) {
+        this.setState({
+            loading: true,
+        });
+        let {items} = this.state;
+        let breakPoint = 0;
+        if (items.length > 0) {
+            if (append) {
+                breakPoint = items[items.length - 1].id - 1;
+            } else {
+                breakPoint = items[0].id + 1;
+            }
+        }
+
+        const mediaCategory = this.getMediaCategory();
+
+        this.mediaRepo.list(this.props.teamId, this.peer, mediaCategory, {
+            after: !append ? breakPoint : undefined,
+            before: append ? breakPoint : undefined,
+            limit,
+        }).then((result) => {
+            if (result.messages.length === 0) {
+                this.setState({
+                    loading: false,
+                });
+                return;
+            }
+            if (append) {
+                // @ts-ignore
+                items.push.apply(items, result.messages);
+            } else {
+                // @ts-ignore
+                items.unshift.apply(items, result.messages);
+            }
+            if (!this.props.full) {
+                items = items.slice(0, 4);
+            }
+            this.setState({
+                items: this.modifyMediaList(items),
+                loading: false,
             });
         });
     }
@@ -679,69 +755,6 @@ class PeerMedia extends React.Component<IProps, IState> {
                 items,
             });
         }
-    }
-
-    /* Update media list */
-    // @ts-ignore
-    private loadMediaList(append: boolean, limit: number) {
-        this.setState({
-            loading: true,
-        });
-        let {items} = this.state;
-        let breakPoint = 0;
-        if (items.length > 0) {
-            if (append) {
-                breakPoint = items[items.length - 1].id - 1;
-            } else {
-                breakPoint = items[0].id + 1;
-            }
-        }
-        let mediaType: MediaCategory | undefined = MediaCategory.MEDIACATEGORYMEDIA;
-        if (this.props.full) {
-            switch (this.state.tab) {
-                case 0:
-                    mediaType = MediaCategory.MEDIACATEGORYMEDIA;
-                    break;
-                case 1:
-                    mediaType = MediaCategory.MEDIACATEGORYAUDIO;
-                    break;
-                case 2:
-                    mediaType = MediaCategory.MEDIACATEGORYVOICE;
-                    break;
-                case 3:
-                    mediaType = MediaCategory.MEDIACATEGORYFILE;
-                    break;
-                case 4:
-                    mediaType = MediaCategory.MEDIACATEGORYGIF;
-                    break;
-            }
-        }
-        this.mediaRepo.list(this.props.teamId, this.peer, mediaType, {
-            after: !append ? breakPoint : undefined,
-            before: append ? breakPoint : undefined,
-            limit,
-        }).then((result) => {
-            if (result.messages.length === 0) {
-                this.setState({
-                    loading: false,
-                });
-                return;
-            }
-            if (append) {
-                // @ts-ignore
-                items.push.apply(items, result.messages);
-            } else {
-                // @ts-ignore
-                items.unshift.apply(items, result.messages);
-            }
-            if (!this.props.full) {
-                items = items.slice(0, 4);
-            }
-            this.setState({
-                items: this.modifyMediaList(items),
-                loading: false,
-            });
-        });
     }
 
     /* Modify media list */

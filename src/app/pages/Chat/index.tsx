@@ -45,7 +45,7 @@ import UpdateManager, {
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from '../../services/sdk/const';
 import UserName from '../../components/UserName';
 import UserRepo from '../../repository/user';
-import MainRepo from '../../repository';
+import MainRepo, {C_INFINITY} from '../../repository';
 import {C_MSG_MODE} from '../../components/ChatInput/consts';
 import TimeUtility from '../../services/utilities/time';
 import {C_BUTTON_ACTION, C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
@@ -1526,7 +1526,7 @@ class Chat extends React.Component<IProps, IState> {
 
         const dialog = this.getDialogByPeerName(dialogPeerName);
 
-        let before = 10000000000;
+        let before = C_INFINITY;
         // Scroll pos check
         if (beforeMsg !== undefined) {
             before = beforeMsg;
@@ -1539,7 +1539,7 @@ class Chat extends React.Component<IProps, IState> {
                         before = tBefore;
                     }
                 } else if ((dialog.scroll_pos || -1) !== -1) {
-                    before = dialog.scroll_pos || 10000000000;
+                    before = dialog.scroll_pos || C_INFINITY;
                 }
             }
         }

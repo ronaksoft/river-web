@@ -20,8 +20,9 @@ import {InputPeer, MediaCategory, UserMessage} from "../../services/sdk/messages
 import APIManager, {currentUserId} from "../../services/sdk";
 import UserRepo from "../user";
 import GroupRepo from "../group";
+import {C_INFINITY} from "../index";
 
-interface IMediaWithCount {
+export interface IMediaWithCount {
     count: number;
     maxId: number;
     messages: IMessage[];
@@ -106,7 +107,6 @@ export default class MediaRepo {
         let fnEarlyCallback: any = undefined;
         if (earlyCallback) {
             fnEarlyCallback = (list: IMedia[]) => {
-                window.console.log(list);
                 getMessage(list).then((res) => {
                     earlyCallback(res);
                 });
@@ -207,7 +207,7 @@ export default class MediaRepo {
             this.groupRepo.importBulk(remoteMessages.groupsList);
             const messageWithMediaMany = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId);
             remoteMessages.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
-            return this.messageRepo.importBulk(messageWithMediaMany.messages).then(() => {
+            return this.messageRepo.insertDiscrete(teamId, messageWithMediaMany.messages).then(() => {
                 if (messageWithMediaMany.medias.length > 0) {
                     return this.importBulk(messageWithMediaMany.medias, true).then(() => {
                         return [...medias, ...messageWithMediaMany.medias];
@@ -266,16 +266,16 @@ export default class MediaRepo {
         }
         return pipe2.limit(safeLimit).toArray().then((list: IMedia[]) => {
             const earlyMessages: IMessage[] = [];
-            window.console.log(list, earlyMessages);
-            const hasHole = list.some((item) => {
-                if (earlyCallback && (mode === 0x1 || mode === 0x00)) {
-                    if (item.hole) {
+            const hasHole = list.some((item, index) => {
+                const cond = ((safeBefore === C_INFINITY && index > 0) || safeBefore !== C_INFINITY) && item.hole;
+                if (earlyCallback && (mode === 0x1)) {
+                    if (cond) {
                         earlyCallback(earlyMessages);
                         return true;
                     }
                     earlyMessages.push(item);
                 }
-                return item.hole;
+                return cond;
             });
             const asc = (mode === 0x2);
             let lastId: number = (asc ? safeAfter : safeBefore);

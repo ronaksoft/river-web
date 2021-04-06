@@ -983,37 +983,21 @@ export default class MessageRepo {
     }
 
     public insertDiscrete(teamId: string, messages: IMessage[]) {
-        const peerGroups = groupBy(messages, (o => `${o.peerid || ''}_${o.peertype || 0}`));
-        const edgeIds: any[] = [];
-        const holeIds: { [key: number]: { lower: boolean, peerId: string, peerType: number } } = {};
-        for (const [peerId, msgs] of Object.entries(peerGroups)) {
-            msgs.sort((a, b) => (a.id || 0) - (b.id || 0)).forEach((msg, index) => {
-                const id = msg.id || 0;
-                const d = peerId.split('_');
-                const peerid: string = d[0];
-                const peertype: number = parseInt(d[1], 10);
-                if (id > 1 && (index === 0 || (index > 0 && ((msgs[index - 1].id || 0) + 1) !== msg.id))) {
-                    edgeIds.push([teamId, peerid, peertype, id - 1]);
-                    holeIds[id - 1] = {lower: true, peerId: peerid, peerType: peertype};
-                }
-                if ((msgs.length - 1 === index) || (msgs.length - 1 > index && ((msgs[index + 1].id || 0) - 1) !== msg.id)) {
-                    edgeIds.push([teamId, peerid, peertype, id + 1]);
-                    holeIds[id + 1] = {lower: false, peerId: peerid, peerType: peertype};
-                }
-            });
+        if (messages.length === 0) {
+            return Promise.resolve();
         }
-        return this.db.messages.where('[teamid+peerid+peertype+id]').anyOf(edgeIds).toArray().then((msgs) => {
-            const holes: IMessage[] = [];
-            msgs.forEach((msg) => {
-                const id = msg.id || 0;
-                if (holeIds.hasOwnProperty(id)) {
-                    delete holeIds[id];
-                }
-            });
-            for (const [id, data] of Object.entries(holeIds)) {
-                holes.push(this.getHoleMessage(teamId, data.peerId, data.peerType, parseInt(id, 10), data.lower));
+        const ids = messages.map(o => o.id);
+        return this.db.messages.where('id').anyOf(ids).toArray().then((res) => {
+            if (res.length === 0) {
+                return this.insertTrimmedDiscrete(teamId, messages) as any;
             }
-            return this.db.messages.bulkPut([...messages, ...holes]);
+            const listIds = res.map(o => o.id);
+            const list = messages.filter((o) => listIds.indexOf(o.id) === -1);
+            if (list.length > 0) {
+                return this.insertTrimmedDiscrete(teamId, list) as any;
+            } else {
+                return Promise.resolve();
+            }
         });
     }
 
@@ -1305,6 +1289,41 @@ export default class MessageRepo {
         return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, Dexie.minKey], [teamId, peerId, peerType, id], true, true).toArray((res) => {
             const ids = res.map(o => o.id || 0);
             return this.db.messages.bulkDelete(ids);
+        });
+    }
+
+    private insertTrimmedDiscrete(teamId: string, messages: IMessage[]) {
+        const peerGroups = groupBy(messages, (o => `${o.peerid || ''}_${o.peertype || 0}`));
+        const edgeIds: any[] = [];
+        const holeIds: { [key: number]: { lower: boolean, peerId: string, peerType: number } } = {};
+        for (const [peerId, msgs] of Object.entries(peerGroups)) {
+            msgs.sort((a, b) => (a.id || 0) - (b.id || 0)).forEach((msg, index) => {
+                const id = msg.id || 0;
+                const d = peerId.split('_');
+                const peerid: string = d[0];
+                const peertype: number = parseInt(d[1], 10);
+                if (id > 1 && (index === 0 || (index > 0 && ((msgs[index - 1].id || 0) + 1) !== msg.id))) {
+                    edgeIds.push([teamId, peerid, peertype, id - 1]);
+                    holeIds[id - 1] = {lower: true, peerId: peerid, peerType: peertype};
+                }
+                if ((msgs.length - 1 === index) || (msgs.length - 1 > index && ((msgs[index + 1].id || 0) - 1) !== msg.id)) {
+                    edgeIds.push([teamId, peerid, peertype, id + 1]);
+                    holeIds[id + 1] = {lower: false, peerId: peerid, peerType: peertype};
+                }
+            });
+        }
+        return this.db.messages.where('[teamid+peerid+peertype+id]').anyOf(edgeIds).toArray().then((msgs) => {
+            const holes: IMessage[] = [];
+            msgs.forEach((msg) => {
+                const id = msg.id || 0;
+                if (holeIds.hasOwnProperty(id)) {
+                    delete holeIds[id];
+                }
+            });
+            for (const [id, data] of Object.entries(holeIds)) {
+                holes.push(this.getHoleMessage(teamId, data.peerId, data.peerType, parseInt(id, 10), data.lower));
+            }
+            return this.db.messages.bulkPut([...messages, ...holes]);
         });
     }
 

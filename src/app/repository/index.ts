@@ -30,6 +30,8 @@ import CommandDB from "../services/db/command";
 import {InputPeer, PeerType} from "../services/sdk/messages/core.types_pb";
 import UserRepo from "./user";
 
+export const C_INFINITY = 10000000000;
+
 export default class MainRepo {
     public static getInstance() {
         if (!this.instance) {
