@@ -130,6 +130,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        background-color: var(--bg);
 
         .file-extension {
           position: absolute;
@@ -181,6 +182,7 @@
         float: left;
         overflow: hidden;
         border-radius: 3px;
+        background-color: var(--bg);
 
         .media-more {
           position: absolute;
@@ -459,7 +461,17 @@ html[theme="dark-blue"] {
       }
     }
 
+    .media-grid-view {
+      .media-item {
+        background-color: var(--dark-low);
+      }
+    }
+
     .media-list-view {
+      .file-icon {
+        background-color: var(--dark-low);
+      }
+
       .media-item {
         .file-icon {
           .file-extension {
@@ -484,6 +496,22 @@ html[theme="dark-blue"] {
             color: var(--white);
           }
         }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .peer-media {
+    .media-grid-view {
+      .media-item {
+        background-color: var(--dark-blue-low);
+      }
+    }
+
+    .media-list-view {
+      .file-icon {
+        background-color: var(--dark-blue-low);
       }
     }
   }

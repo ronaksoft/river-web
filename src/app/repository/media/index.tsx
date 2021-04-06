@@ -266,18 +266,26 @@ export default class MediaRepo {
         }
         return pipe2.limit(safeLimit).toArray().then((list: IMedia[]) => {
             const earlyMessages: IMessage[] = [];
+            let earlyFnCalled = false;
             const hasHole = list.some((item, index) => {
                 const cond = ((safeBefore === C_INFINITY && index > 0) || safeBefore !== C_INFINITY) && item.hole;
                 if (earlyCallback && (mode === 0x1)) {
                     if (cond) {
                         earlyCallback(earlyMessages);
+                        earlyFnCalled = true;
                         return true;
                     }
-                    earlyMessages.push(item);
+                    if (!item.hole) {
+                        earlyMessages.push(item);
+                    }
                 }
                 return cond;
             });
+            window.console.debug('media: has hole:', hasHole);
             const asc = (mode === 0x2);
+            if (asc) {
+                return Promise.resolve(list.filter(o => !o.hole));
+            }
             let lastId: number = (asc ? safeAfter : safeBefore);
             if (localOnly && hasHole) {
                 localOnly = false;
@@ -293,6 +301,7 @@ export default class MediaRepo {
                         }
                     }
                 }
+                list = list.filter(o => !o.hole);
                 if (earlyCallback && list.length > 0) {
                     earlyCallback(list);
                     return this.completeMediasLimitFromRemote(teamId, peer, type, [], lastId, safeLimit - list.length, localOnly);
@@ -303,10 +312,17 @@ export default class MediaRepo {
                     return this.completeMediasLimitFromRemote(teamId, peer, type, list, lastId, safeLimit - list.length, localOnly);
                 }
             } else {
-                if (earlyCallback) {
+                if (!earlyFnCalled && earlyCallback) {
                     earlyCallback([]);
                 }
-                return this.completeMediasLimitFromRemote(teamId, peer, type, [], lastId, safeLimit, localOnly);
+                return this.completeMediasLimitFromRemote(teamId, peer, type, [], lastId, safeLimit, localOnly).then((res) => {
+                    if (earlyFnCalled && earlyMessages.length > 0) {
+                        const ids = earlyMessages.map(o => o.id);
+                        return res.filter(o => ids.indexOf(o.id) === -1 && !o.hole);
+                    } else {
+                        return res;
+                    }
+                });
             }
         });
     }
@@ -363,7 +379,7 @@ export default class MediaRepo {
                 return this.db.medias.where('id').equals(edgeMessage.id || 0).first().then((edgeRes) => {
                     if (!edgeRes && edgeMessage) {
                         medias.push(this.getHoleMessage(teamId, peerId, peerType, type, edgeMessage.id || 0, true));
-                        window.console.log('insert hole at', edgeMessage.id);
+                        // window.console.log('insert hole at', edgeMessage.id);
                     }
                     medias.push(...messageWithMediaMany.medias);
                     return this.upsert(medias);

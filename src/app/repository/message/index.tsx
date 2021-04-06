@@ -618,27 +618,29 @@ export default class MessageRepo {
         pipe2 = pipe2.filter((item: IMessage) => {
             return (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Date && item.messagetype !== C_MESSAGE_TYPE.NewMessage;
         });
-        return pipe2.limit(safeLimit).toArray().then((res) => {
+        return pipe2.limit(safeLimit).toArray().then((list) => {
             const earlyMessages: IMessage[] = [];
-            const hasHole = res.some((item) => {
+            let earlyFnCalled = false;
+            const hasHole = list.some((item) => {
                 if (fnEarlyCallback && mode === 0x1) {
                     if (item.messagetype === C_MESSAGE_TYPE.Hole) {
                         fnEarlyCallback(earlyMessages);
+                        earlyFnCalled = true;
                         return true;
                     }
                     earlyMessages.push(item);
                 }
                 return (item.messagetype === C_MESSAGE_TYPE.Hole);
             });
-            window.console.debug('has hole:', hasHole);
+            window.console.debug('message: has hole:', hasHole);
             const asc = (mode === 0x2);
             let lastId: number = (asc ? safeAfter : safeBefore);
             if (localOnly && hasHole) {
                 localOnly = false;
             }
             if (!hasHole) {
-                if (res.length > 0) {
-                    lastId = (res[res.length - 1].id || -1);
+                if (list.length > 0) {
+                    lastId = (list[list.length - 1].id || -1);
                     if (lastId !== -1) {
                         if (asc) {
                             lastId += 1;
@@ -647,20 +649,27 @@ export default class MessageRepo {
                         }
                     }
                 }
-                if (fnEarlyCallback && res.length > 0) {
-                    fnEarlyCallback(res);
-                    return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit - res.length, localOnly);
+                if (fnEarlyCallback && list.length > 0) {
+                    fnEarlyCallback(list);
+                    return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit - list.length, localOnly);
                 } else {
                     if (fnEarlyCallback) {
                         fnEarlyCallback([]);
                     }
-                    return this.completeMessagesLimitFromRemote(teamId, peer, res, lastId, asc, safeLimit - res.length, localOnly);
+                    return this.completeMessagesLimitFromRemote(teamId, peer, list, lastId, asc, safeLimit - list.length, localOnly);
                 }
             } else {
-                if (fnEarlyCallback) {
+                if (!earlyFnCalled && fnEarlyCallback) {
                     fnEarlyCallback([]);
                 }
-                return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit, localOnly);
+                return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit, localOnly).then((res) => {
+                    if (earlyFnCalled && earlyMessages.length > 0) {
+                        const ids = earlyMessages.map(o => o.id);
+                        return res.filter(o => ids.indexOf(o.id) === -1);
+                    } else {
+                        return res;
+                    }
+                });
             }
         });
     }
