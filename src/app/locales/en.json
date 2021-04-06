@@ -74,7 +74,7 @@
     "select_all": "Select All",
     "view_in_chat": "View in chat",
     "unsupported_document": "Unsupported document",
-    "sending_message_is_not_allowed": "Sending message in not allowed"
+    "sending_message_is_not_allowed": "Sending message is not allowed"
   },
   "chat": {
     "search": "Search",

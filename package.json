@@ -26,7 +26,7 @@
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/styles": "^4.10.0",
     "@sentry/react": "^6.2.5",
-    "@sentry/tracing": "^6.0.2",
+    "@sentry/tracing": "^6.2.5",
     "@toast-ui/react-image-editor": "^1.3.0",
     "add": "^2.0.6",
     "animated-scroll-to": "1.3.1",
