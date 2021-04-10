@@ -2696,6 +2696,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setAppStatus({
             isConnecting: true,
         });
+        this.started = false;
     }
 
     private fnStartedHandler = () => {
