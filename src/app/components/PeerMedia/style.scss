@@ -75,7 +75,22 @@
   }
 
   .peer-media-container {
+    position: relative;
     padding: 0 0 0 12px;
+
+    .media-load-more {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      padding: 4px 12px;
+      border-radius: 12px;
+      transform: translateX(-50%);
+      background-color: var(--river-light);
+      color: var(--light);
+      font-size: 12px;
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+    }
 
     .media-loading {
       text-align: center;

@@ -104,6 +104,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     private actionsItems: IMenuItem[] = [];
     private scrollbarRef: Scrollbars | undefined;
     private hasMore: boolean = false;
+    private atEnd: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -171,7 +172,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {className, tab, anchorEl, selectedIds, selectable} = this.state;
+        const {className, tab, anchorEl, selectedIds, selectable, loading, items} = this.state;
         return (
             <div className={`peer-media ${(this.props.full ? ' full' : '')} ${className}`}>
                 {!this.props.full && <div className="peer-media-title">
@@ -197,6 +198,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                         </Tabs>}
                 </div>}
                 <div className="peer-media-container">
+                    {loading && items.length > 0 && <div className="media-load-more">{i18n.t('general.loading')}</div>}
                     {this.getContent()}
                 </div>
                 <Menu
@@ -385,8 +387,11 @@ class PeerMedia extends React.Component<IProps, IState> {
             const {scrollTop} = e.target;
             const {items} = this.state;
             const pos = (this.scrollbarRef.getScrollHeight() - this.scrollbarRef.getClientHeight() - 64);
-            if (pos < scrollTop && items.length > 0) {
+            if (pos < scrollTop && items.length > 0 && !this.atEnd) {
+                this.atEnd = true;
                 this.getMedias(items[items.length - 1].id - 1);
+            } else if (pos - 24 > scrollTop && this.atEnd) {
+                this.atEnd = false;
             }
         }
     }
@@ -625,6 +630,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             loading: false,
             tab,
         }, () => {
+            this.atEnd = false;
             this.getMedias();
         });
     }
