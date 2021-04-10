@@ -1,3 +1,6 @@
+## 1.1.3
+* Overall improvements
+
 ## 1.1.2
 * Shared media improvements
 
