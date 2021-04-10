@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -35,6 +35,7 @@
     "detect-browser": "^5.0.0",
     "dexie": "3.1.0-alpha.9",
     "dom-css": "^2.1.0",
+    "elecron": "^0.0.1-security",
     "electron-context-menu": "^2.4.0",
     "electron-debug": "^3.2.0",
     "electron-dl": "^3.0.2",

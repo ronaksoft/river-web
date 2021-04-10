@@ -1,3 +1,6 @@
+## 1.1.2
+* Shared media improvements
+
 ## 1.1.1
 * Update Manager bug fixed
 * Group repository bug fixed

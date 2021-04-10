@@ -567,6 +567,9 @@ class PeerMedia extends React.Component<IProps, IState> {
         const currentTab = this.state.tab;
 
         const earlyFn = before ? undefined : (earlyItems: IMediaWithCount) => {
+            if (currentTab !== this.state.tab) {
+                return;
+            }
             if (!this.props.full) {
                 earlyItems.messages = earlyItems.messages.slice(0, 4);
             }
@@ -701,13 +704,14 @@ class PeerMedia extends React.Component<IProps, IState> {
         } else {
             switch (tab) {
                 case 1:
+                case 2:
                     return (<div className="media-item-action">
                         <div className="audio-action" onClick={this.audioActionClickHandler(item.id)}>
                             {!item.playing && <PlayArrowRounded/>}
                             {item.playing && <PauseRounded/>}
                         </div>
                     </div>);
-                case 2:
+                case 3:
                 default:
                     if (!item.saved) {
                         return (<div className="media-file-action">

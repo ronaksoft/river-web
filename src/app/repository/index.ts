@@ -108,10 +108,7 @@ export default class MainRepo {
     }
 
     public destroyMediaRelatedDBs(): Promise<any> {
-        const promises = [];
-        // @ts-ignore
-        promises.push(this.mediaDB.delete());
-        return Promise.all(promises);
+        return this.mediaDB.delete();
     }
 
     public getInputPeerBy(id: string, type: PeerType): Promise<InputPeer> {
