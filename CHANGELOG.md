@@ -1,3 +1,7 @@
+## 1.1.1
+* Update Manager bug fixed
+* Group repository bug fixed
+
 ## 1.1.0
 * Web Documents added
 * Lazy load shared media

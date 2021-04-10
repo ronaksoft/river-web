@@ -2679,7 +2679,7 @@ class Chat extends React.Component<IProps, IState> {
     private getRemoteTopPeers() {
         this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, C_TOP_PEER_LEN).then((res) => {
             this.userRepo.importBulk(false, res.usersList);
-            this.userRepo.importBulk(false, res.groupsList);
+            this.groupRepo.importBulk(res.groupsList);
             this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Forward, res.peersList);
         });
         this.apiManager.getTopPeer(TopPeerCategory.USERS, 0, C_TOP_PEER_LEN).then((res) => {
@@ -2687,7 +2687,7 @@ class Chat extends React.Component<IProps, IState> {
             this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Search, res.peersList);
         });
         this.apiManager.getTopPeer(TopPeerCategory.GROUPS, 0, C_TOP_PEER_LEN).then((res) => {
-            this.userRepo.importBulk(false, res.groupsList);
+            this.groupRepo.importBulk(res.groupsList);
             this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Search, res.peersList);
         });
     }

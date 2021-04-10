@@ -670,6 +670,12 @@ export default class UpdateManager {
                     break;
             }
         });
+        if (this.userRepo && data.usersList.length > 0) {
+            this.userRepo.importBulk(false, data.usersList);
+        }
+        if (this.groupRepo && data.groupsList.length > 0) {
+            this.groupRepo.importBulk(data.groupsList);
+        }
     }
 
     private process(transaction: ITransactionPayload, update: UpdateEnvelope.AsObject) {
