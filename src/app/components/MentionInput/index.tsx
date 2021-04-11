@@ -168,7 +168,7 @@ class MentionInput extends React.Component<IProps, IState> {
                     (reg.test(`${participant.firstname} ${participant.lastname}`) ||
                         (participant.username && reg.test(participant.username)))) {
                     users.push({
-                        display: participant.username ? `@${participant.username}` : `${participant.firstname} ${participant.lastname}`,
+                        display: participant.username ? `@${participant.username} ` : `${participant.firstname} ${participant.lastname} `,
                         id: participant.userid,
                         index: i,
                         username: participant.username,
