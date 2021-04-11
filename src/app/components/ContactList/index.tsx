@@ -501,6 +501,9 @@ class ContactList extends React.Component<IProps, IState> {
             })), 'id');
             this.defaultContact = us;
             this.contactsRes = clone(us);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             if (this.props.onDefaultLoad) {
                 this.props.onDefaultLoad(us.length);
             }

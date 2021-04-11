@@ -10,7 +10,7 @@
 import React from 'react';
 import {Dialog, Grow, IconButton, Tooltip} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
-import Draggable, {ControlPosition} from 'react-draggable';
+import Draggable, {ControlPosition, DraggableData} from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
 import CallService, {
     C_CALL_EVENT,
@@ -113,6 +113,15 @@ class CallModal extends React.Component<IProps, IState> {
     private videoCall: boolean = false;
     private readonly windowResizeDebounce: any = undefined;
     private readonly isMobile = IsMobile.isAny();
+    private draggablePos: DraggableData = {
+        deltaX: 0,
+        deltaY: 0,
+        lastX: 0,
+        lastY: 0,
+        node: window.document as any,
+        x: 0,
+        y: 0,
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -255,7 +264,8 @@ class CallModal extends React.Component<IProps, IState> {
             <>
                 {Boolean(enableDrag) ?
                     <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
-                               positionOffset={this.getDraggableOffset()} disabled={fullscreen}>
+                               positionOffset={this.getDraggableOffset()} disabled={fullscreen}
+                               onStop={this.draggableStopHandler}>
                         {dialogRenderer()}
                     </Draggable> : dialogRenderer()}
                 <ContactPicker ref={this.contactPickerRefHandler} groupId={groupId} teamId={this.teamId}
@@ -283,6 +293,10 @@ class CallModal extends React.Component<IProps, IState> {
         this.openDialog(this.peer, this.videoCall, true);
     }
 
+    private draggableStopHandler = (e: any, data: DraggableData) => {
+        this.draggablePos = data;
+    }
+
     private getDraggableOffset(): ControlPosition | undefined {
         const xo = -320;
         const yo = -240;
@@ -296,8 +310,8 @@ class CallModal extends React.Component<IProps, IState> {
         const w = window.innerWidth;
         const h = window.innerHeight;
         return {
-            x: ((w / 2) - C_MINIMIZE_WIDTH) - C_MINIMIZE__PADDING,
-            y: -((h / 2) - C_MINIMIZE__PADDING),
+            x: (((w / 2) - C_MINIMIZE_WIDTH) - C_MINIMIZE__PADDING) - this.draggablePos.x,
+            y: -((h / 2) - C_MINIMIZE__PADDING) - this.draggablePos.y,
         };
     }
 
@@ -327,6 +341,8 @@ class CallModal extends React.Component<IProps, IState> {
         this.peer = null;
         this.loading = false;
         this.videoCall = false;
+        this.draggablePos.x = 0;
+        this.draggablePos.y = 0;
     }
 
     private toggleFullscreenHandler = () => {

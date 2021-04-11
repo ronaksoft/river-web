@@ -464,6 +464,14 @@
         top: 12px !important;
         left: 12px !important;
       }
+
+      &.group-call {
+        .call-modal-action {
+          .call-timer {
+            right: 8px;
+          }
+        }
+      }
     }
   }
 

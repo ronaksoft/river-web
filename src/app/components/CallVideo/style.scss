@@ -274,3 +274,36 @@
     }
   }
 }
+
+.call-modal.minimize {
+  .call-modal-content.group-call {
+    .call-video {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .call-user-container {
+        height: 72px !important;
+        width: 72px !important;
+        margin: 0 -12px;
+
+        .video-placeholder-user {
+          display: none;
+        }
+
+        .video-placeholder {
+          .video-user-placeholder, .vod-wave {
+            height: 56px;
+            width: 56px;
+          }
+        }
+      }
+
+      &.cp-7, &.cp-8, &.cp-9, &.cp-10, &.cp-11, &.cp-12 {
+        .call-user-container {
+          margin: 0 -28px;
+        }
+      }
+    }
+  }
+}
