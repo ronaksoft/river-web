@@ -163,12 +163,13 @@ class CallSettings extends React.Component<IProps, IState> {
                             disabled={mediaSettings.screenShare || activeScreenShare}>
                     {mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
                 </IconButton>}
-                {mediaDevice.video &&
+                {mediaDevice.voice &&
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('audio')}>
                     {mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
                 </IconButton>}
                 {!this.isMobile && allConnected && mediaDevice.screenShare &&
-                <IconButton className="call-settings-item screen-share" onClick={this.mediaSettingsChangeHandler('screenShare')}>
+                <IconButton className="call-settings-item screen-share"
+                            onClick={this.mediaSettingsChangeHandler('screenShare')}>
                     {mediaSettings.screenShare ? <StopScreenShareRounded/> : <ScreenShareRounded/>}
                 </IconButton>}
             </div>

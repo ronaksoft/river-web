@@ -1,3 +1,6 @@
+## 1.1.4
+* Call mute bug fixed
+
 ## 1.1.3
 * Overall improvements
 
