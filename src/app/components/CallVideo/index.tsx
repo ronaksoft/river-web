@@ -24,6 +24,8 @@ export interface IRemoteConnection {
     connId: number;
     deviceType: CallDeviceType;
     media?: CallVideoPlaceholder;
+    muted: boolean;
+    setMute: ((muted: boolean) => void) | undefined;
     status: number;
     stream: MediaStream | undefined;
     userId: string;
@@ -84,6 +86,7 @@ class CallVideo extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventShareMediaStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantMuted, this.eventParticipantMutedHandler));
     }
 
     public componentWillUnmount() {
@@ -204,6 +207,9 @@ class CallVideo extends React.Component<IProps, IState> {
                 if (item.stream && item.media) {
                     item.media.setVideo(item.stream);
                 }
+                item.setMute = () => {
+                    ref.setMute(item.muted);
+                };
             };
             return (<div key={item.connId} className="call-user-container"
                          style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}
@@ -233,6 +239,8 @@ class CallVideo extends React.Component<IProps, IState> {
                 connId: participant.connectionid || 0,
                 deviceType: participant.deviceType,
                 media: undefined,
+                muted: participant.muted,
+                setMute: undefined,
                 status: participant.started ? 2 : 0,
                 stream: undefined,
                 userId: participant.peer.userid || '0',
@@ -314,6 +322,16 @@ class CallVideo extends React.Component<IProps, IState> {
                     screenShareStream: streamData.stream,
                     screenShareUserId: streamData.userId,
                 });
+            }
+        }
+    }
+
+    private eventParticipantMutedHandler = ({connId, muted, userId}: { connId: number, muted: boolean, userId: string }) => {
+        const index = findIndex(this.videoRemoteRefs, {connId});
+        if (index > -1) {
+            this.videoRemoteRefs[index].muted = muted;
+            if (this.videoRemoteRefs[index].setMute) {
+                this.videoRemoteRefs[index].setMute(muted);
             }
         }
     }

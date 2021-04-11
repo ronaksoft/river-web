@@ -198,7 +198,8 @@ class PeerMedia extends React.Component<IProps, IState> {
                         </Tabs>}
                 </div>}
                 <div className="peer-media-container">
-                    {loading && items.length > 0 && <div className="media-load-more">{i18n.t('general.loading')}</div>}
+                    {loading && items.length > 0 && this.props.full &&
+                    <div className="media-load-more">{i18n.t('general.loading')}</div>}
                     {this.getContent()}
                 </div>
                 <Menu

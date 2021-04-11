@@ -53,6 +53,7 @@ interface IState {
     allConnected: boolean;
     currentParticipant: ICallParticipant | undefined;
     drawerOpen: boolean;
+    isAdmin: boolean;
     loading: boolean;
     mediaDevice: IMediaDevice;
     mediaSettings: IMediaSettings;
@@ -80,6 +81,7 @@ class CallSettings extends React.Component<IProps, IState> {
             allConnected: false,
             currentParticipant: undefined,
             drawerOpen: false,
+            isAdmin: false,
             loading: false,
             mediaDevice: {
                 screenShare: false,
@@ -128,14 +130,8 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     public openContextMenu(userId: string, e: any) {
-        const activeCallId = this.callService.getActiveCallId();
-        if (!activeCallId) {
-            return;
-        }
-        const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
-        if (currentParticipant && (currentParticipant.initiator || currentParticipant.admin)) {
-            this.openMenuHandler(userId)(e);
-        }
+        this.getParticipants(false);
+        this.openMenuHandler(userId)(e);
     }
 
     public render() {
@@ -299,7 +295,7 @@ class CallSettings extends React.Component<IProps, IState> {
     private drawerOpenHandler = () => {
         this.preventClose();
         if (!this.state.drawerOpen) {
-            this.getParticipants();
+            this.getParticipants(true);
         } else {
             this.setState({
                 drawerOpen: false,
@@ -325,7 +321,7 @@ class CallSettings extends React.Component<IProps, IState> {
         }, 127);
     }
 
-    private getParticipants() {
+    private getParticipants(open: boolean) {
         const activeCallId = this.callService.getActiveCallId();
         if (!activeCallId) {
             return;
@@ -334,7 +330,7 @@ class CallSettings extends React.Component<IProps, IState> {
         const participants = orderBy(this.callService.getParticipantList(activeCallId, true), ['admin'], ['desc']);
         this.setState({
             currentParticipant,
-            drawerOpen: true,
+            drawerOpen: open,
             participants,
         });
     }
@@ -365,7 +361,13 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private openMenuHandler = (userId: string) => (e: any) => {
+        const activeCallId = this.callService.getActiveCallId();
+        if (!activeCallId) {
+            return;
+        }
+        const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
         this.setState({
+            isAdmin: currentParticipant && (currentParticipant.initiator || currentParticipant.admin),
             moreAnchorPos: {
                 left: e.pageX - 96,
                 top: e.pageY,
@@ -375,26 +377,42 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private contextMenuContent() {
-        const {selectedUserId, participants} = this.state;
+        const {selectedUserId, participants, isAdmin} = this.state;
         const menuItems = [];
+        window.console.log(participants);
         const index = findIndex(participants, o => o.peer.userid === selectedUserId);
+        if (isAdmin) {
+            if (index > -1) {
+                if (participants[index].admin) {
+                    menuItems.push({
+                        cmd: 'demote',
+                        title: i18n.t('contact.demote'),
+                    });
+                } else {
+                    menuItems.push({
+                        cmd: 'promote',
+                        title: i18n.t('contact.promote'),
+                    });
+                }
+            }
+            menuItems.push({
+                cmd: 'remove',
+                title: i18n.t('contact.remove'),
+            });
+        }
         if (index > -1) {
-            if (participants[index].admin) {
+            if (!participants[index].muted) {
                 menuItems.push({
-                    cmd: 'demote',
-                    title: i18n.t('contact.demote'),
+                    cmd: 'mute',
+                    title: i18n.t('call.mute'),
                 });
             } else {
                 menuItems.push({
-                    cmd: 'promote',
-                    title: i18n.t('contact.promote'),
+                    cmd: 'unmute',
+                    title: i18n.t('call.unmute'),
                 });
             }
         }
-        menuItems.push({
-            cmd: 'remove',
-            title: i18n.t('contact.remove'),
-        });
 
         return menuItems.map((item, index) => {
             return (<MenuItem key={index} onClick={this.moreCmdHandler(item.cmd)}
@@ -409,13 +427,12 @@ class CallSettings extends React.Component<IProps, IState> {
             return;
         }
 
-        const {selectedUserId} = this.state;
+        const {selectedUserId, participants} = this.state;
         switch (cmd) {
             case 'promote':
             case 'demote':
                 const admin = cmd === 'promote';
                 this.callService.callUpdateAdmin(activeCallId, selectedUserId, admin).then(() => {
-                    const {participants} = this.state;
                     const index = findIndex(participants, o => o.peer.userid === selectedUserId);
                     if (index > -1) {
                         participants[index].admin = admin;
@@ -427,7 +444,6 @@ class CallSettings extends React.Component<IProps, IState> {
                 break;
             case 'remove':
                 this.callService.callRemoveParticipant(activeCallId, [selectedUserId], false).then(() => {
-                    const {participants} = this.state;
                     const index = findIndex(participants, o => o.peer.userid === selectedUserId);
                     if (index > -1) {
                         participants.splice(index, 1);
@@ -436,6 +452,18 @@ class CallSettings extends React.Component<IProps, IState> {
                         });
                     }
                 });
+                break;
+            case 'mute':
+            case 'unmute':
+                const mute = cmd === 'mute';
+                this.callService.setParticipantMute(selectedUserId, mute);
+                const index = findIndex(participants, o => o.peer.userid === selectedUserId);
+                if (index > -1) {
+                    participants[index].muted = mute;
+                    this.setState({
+                        participants,
+                    });
+                }
                 break;
         }
         this.menuCloseHandler();

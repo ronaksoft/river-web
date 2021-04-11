@@ -371,6 +371,10 @@ class CallModal extends React.Component<IProps, IState> {
         } else {
             this.setState({
                 minimize: !this.state.minimize,
+            }, () => {
+                if (this.callVideoRef) {
+                    this.callVideoRef.resize(this.state.fullscreen);
+                }
             });
         }
     }
@@ -979,6 +983,10 @@ class CallModal extends React.Component<IProps, IState> {
         } else {
             this.setState({
                 minimize: false,
+            }, () => {
+                if (this.callVideoRef) {
+                    this.callVideoRef.resize(this.state.fullscreen);
+                }
             });
         }
     }

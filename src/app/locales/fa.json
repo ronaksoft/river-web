@@ -583,7 +583,9 @@
     "in_progress": "در حال انجام",
     "privacy_error": "به دلیل تنظیمات حریم خصوصی نمی توانید با این کاربر تماس بگیرید.",
     "streaming_from": "جریان از ",
-    "screen_list": "لیست صفحه نمایش"
+    "screen_list": "لیست صفحه نمایش",
+    "mute": "بی صدا کردن",
+    "unmute": "با صدا کردن"
   },
   "notification": {
     "new_messages": "{0} پیام جدید",

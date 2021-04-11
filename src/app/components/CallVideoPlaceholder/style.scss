@@ -13,6 +13,21 @@
   width: 100%;
   overflow: hidden;
 
+  .audio-muted {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    padding: 6px;
+    background-color: var(--glass-dark-high);
+    border-radius: 24px;
+
+    svg {
+      font-size: 24px;
+    }
+  }
+
   .video-placeholder-user {
     position: absolute;
     display: flex;
@@ -174,6 +189,7 @@
     }
   }
 }
+
 .call-modal.call_init.minimize,
 .call-modal.call.minimize {
   .call-modal-content.video-swap {

@@ -1,3 +1,8 @@
+## 1.1.5
+* Shared Media improvements
+* Now you can mute call participants
+* Call overall improvements 
+
 ## 1.1.4
 * Call mute bug fixed
 

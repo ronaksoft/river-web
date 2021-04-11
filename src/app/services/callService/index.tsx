@@ -58,6 +58,7 @@ export const C_CALL_EVENT = {
     ParticipantAdminUpdated: 0x10,
     ParticipantJoined: 0x09,
     ParticipantLeft: 0x0a,
+    ParticipantMuted: 0x14,
     ParticipantRemoved: 0x0c,
     ShareScreenStreamUpdated: 0x11,
     StreamUpdated: 0x03,
@@ -76,6 +77,7 @@ export interface IMediaSettings {
 export interface ICallParticipant extends PhoneParticipant.AsObject {
     deviceType: CallDeviceType;
     mediaSettings: IMediaSettings;
+    muted: boolean,
     started?: boolean;
 }
 
@@ -685,6 +687,18 @@ export default class CallService {
         return !participants.some(o => o.mediaSettings.video);
     }
 
+    public setParticipantMute(userId: string, muted: boolean) {
+        if (!this.activeCallId) {
+            return;
+        }
+        if (!this.callInfo[this.activeCallId]) {
+            return;
+        }
+        const connId = this.callInfo[this.activeCallId].participantMap[userId];
+        this.callInfo[this.activeCallId].participants[connId].muted = muted;
+        this.callHandlers(C_CALL_EVENT.ParticipantMuted, {connId, muted, userId});
+    }
+
     private phoneCallHandler = (data: IUpdatePhoneCall) => {
         const d = parseData(data.action || 0, data.actiondata);
         delete data.actiondata;
@@ -960,6 +974,7 @@ export default class CallService {
                 deviceType: CallDeviceType.CALLDEVICEUNKNOWN,
                 initiator: index === 0,
                 mediaSettings: {audio: true, screenShare: false, video: true},
+                muted: false,
                 peer: participant,
             };
             callParticipantMap[participant.userid || '0'] = index;
@@ -987,6 +1002,7 @@ export default class CallService {
                     deviceType: CallDeviceType.CALLDEVICEUNKNOWN,
                     initiator: participant.initiator,
                     mediaSettings: {audio: true, screenShare: false, video: true},
+                    muted: false,
                     peer: participant.peer,
                 };
                 callParticipantMap[participant.peer.userid || '0'] = participant.connectionid;
@@ -1037,6 +1053,7 @@ export default class CallService {
                 deviceType: data.userid === participant.peer.userid ? sdpData.devicetype : CallDeviceType.CALLDEVICEUNKNOWN,
                 initiator: participant.initiator,
                 mediaSettings: {audio: true, screenShare: false, video: true},
+                muted: false,
                 peer: participant.peer,
             };
             callParticipantMap[participant.peer.userid || '0'] = participant.connectionid || 0;

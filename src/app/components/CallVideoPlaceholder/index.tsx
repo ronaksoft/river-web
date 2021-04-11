@@ -18,7 +18,8 @@ import {
     LaptopRounded,
     PhoneIphoneRounded,
     PhoneAndroidRounded,
-    DevicesOtherRounded
+    DevicesOtherRounded,
+    VolumeOffRounded,
 } from "@material-ui/icons";
 
 import './style.scss';
@@ -37,6 +38,7 @@ interface IProps {
 interface IState {
     deviceType: CallDeviceType;
     img: any;
+    muted: boolean;
     userId: string;
     videoMute: boolean;
 }
@@ -62,6 +64,7 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
         this.state = {
             deviceType: props.deviceType,
             img: undefined,
+            muted: props.muted || false,
             userId: props.userId,
             videoMute: false,
         };
@@ -108,11 +111,20 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
         }
     }
 
+    public setMute(muted: boolean) {
+        this.setState({
+            muted,
+        });
+    }
+
     public render() {
-        const {className, muted, playsInline, autoPlay} = this.props;
-        const {videoMute, img, userId} = this.state;
+        const {className, playsInline, autoPlay} = this.props;
+        const {videoMute, img, userId, muted} = this.state;
         return (<div className={'video-placeholder ' + (className || '') + (!img ? ' no-image' : '')}
                      onClick={this.props.onClick}>
+            {muted && <div className="audio-muted">
+                <VolumeOffRounded/>
+            </div>}
             {img && <img className={'video-img' + (videoMute ? ' upper' : '')} alt="" src={img}/>}
             <video key="video" ref={this.vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}
                    style={{visibility: userId && videoMute ? 'hidden' : 'visible'}}/>

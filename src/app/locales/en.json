@@ -588,7 +588,9 @@
     "in_progress": "In progress",
     "privacy_error": "You cannot call this user because of their privacy settings.",
     "streaming_from": "Streaming from ",
-    "screen_list": "Screen List"
+    "screen_list": "Screen List",
+    "mute": "Mute",
+    "unmute": "Unmute"
   },
   "notification": {
     "new_messages": "{0} new messages",
