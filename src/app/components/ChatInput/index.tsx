@@ -91,6 +91,8 @@ import {canEditMessage, isEditableMessageType} from "../Message";
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
 
+export type shiftArrow = 'up' | 'right' | 'down' | 'left' | 'cancel';
+
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
         if (i1.offset === undefined || i2.offset === undefined) {
@@ -250,6 +252,7 @@ interface IProps {
     onFocus?: () => void;
     onGifSelect: (item: IGif, viaBotId?: string) => void;
     onChatClose: () => void;
+    onShitKeyArrow: (arrow: shiftArrow) => void;
 }
 
 interface IState {
@@ -358,6 +361,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private startPosHold: number = 0;
     private recordingVoice: boolean = false;
     private loading: boolean = false;
+    private selectWithArrow: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -472,6 +476,7 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.props.onPreviewMessageChange) {
                 this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
             }
+            this.selectWithArrow = false;
             return;
         }
         if (this.state.previewMessageMode === C_MSG_MODE.Edit && previewMessageMode === C_MSG_MODE.Normal) {
@@ -506,9 +511,11 @@ class ChatInput extends React.Component<IProps, IState> {
             this.animatePreviewMessage();
             if (previewMessageMode === C_MSG_MODE.Edit || previewMessageMode === C_MSG_MODE.Reply) {
                 this.focus();
+                this.selectWithArrow = false;
             }
         });
         if (peer && this.state.peer !== peer) {
+            this.selectWithArrow = false;
             this.firstLoad = true;
             this.botKeyboard = undefined;
             this.preventMessageSend = false;
@@ -582,6 +589,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.typingThrottle) {
             this.typingThrottle.cancel();
         }
+        this.selectWithArrow = false;
     }
 
     public getUploaderOptions(): IUploaderOptions {
@@ -759,6 +767,7 @@ class ChatInput extends React.Component<IProps, IState> {
         } else {
             this.loading = false;
         }
+        this.selectWithArrow = false;
         this.removeDraft(removeDraft).finally(() => {
             if (cb) {
                 cb();
@@ -1195,7 +1204,11 @@ class ChatInput extends React.Component<IProps, IState> {
     private inputKeyDownHandler = (e: any) => {
         const textVal = e.target.value;
         const {previewMessageMode} = this.state;
-        if (e.key === 'Escape' && textVal.length === 0 && this.props.onChatClose && previewMessageMode === C_MSG_MODE.Normal) {
+        if (e.shiftKey || (e.key === 'Escape' && this.selectWithArrow)) {
+            this.handleShiftArrowKeys(e.keyCode);
+            return;
+        }
+        if (e.key === 'Escape' && textVal.length === 0 && this.props.onChatClose && previewMessageMode === C_MSG_MODE.Normal && !this.selectWithArrow) {
             this.props.onChatClose();
             return;
         }
@@ -1214,6 +1227,32 @@ class ChatInput extends React.Component<IProps, IState> {
             });
         } else if (e.keyCode === 27) {
             this.clearPreviewMessage(false)();
+        }
+    }
+
+    private handleShiftArrowKeys(code: number) {
+        // 37 <
+        // 38 ^
+        // 39 >
+        // 40 v
+        switch (code) {
+            case 37:
+                this.props.onShitKeyArrow('left');
+                break;
+            case 38:
+                this.props.onShitKeyArrow('up');
+                this.selectWithArrow = true;
+                break;
+            case 39:
+                this.props.onShitKeyArrow('right');
+                break;
+            case 40:
+                this.props.onShitKeyArrow('down');
+                break;
+            case 27:
+                this.props.onShitKeyArrow('cancel');
+                this.selectWithArrow = false;
+                break;
         }
     }
 

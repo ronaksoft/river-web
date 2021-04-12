@@ -379,7 +379,6 @@ class CallSettings extends React.Component<IProps, IState> {
     private contextMenuContent() {
         const {selectedUserId, participants, isAdmin} = this.state;
         const menuItems = [];
-        window.console.log(participants);
         const index = findIndex(participants, o => o.peer.userid === selectedUserId);
         if (isAdmin) {
             if (index > -1) {

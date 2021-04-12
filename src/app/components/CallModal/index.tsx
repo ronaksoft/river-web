@@ -564,7 +564,7 @@ class CallModal extends React.Component<IProps, IState> {
                         <CallRounded/>
                     </div>
                 </div> : <div className="call-buttons">
-                    <div className="call-item call-end" onClick={this.rejectCallHandler}>
+                    <div className="call-item call-end" onClick={this.closeHandler}>
                         <CallEndRounded/>
                     </div>
                     <div className="call-item call-accept" onClick={this.callHandler(callId)}>
@@ -735,6 +735,7 @@ class CallModal extends React.Component<IProps, IState> {
                         if (this.callSettingsRef) {
                             this.callSettingsRef.startAudioAnalyzer();
                         }
+                        this.checkLocalGroupVideo();
                     });
                 }).catch((err) => {
                     if (err && ((err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemUserID) || (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemAccessHash))) {
@@ -959,15 +960,24 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private eventLocalStreamUpdatedHandler = (stream: MediaStream) => {
-        if (!this.videoRef) {
-            return;
+        if (this.videoRef) {
+            this.videoRef.srcObject = stream;
+            const allAudio = this.callService.areAllAudio();
+            if (this.state.allAudio !== allAudio) {
+                this.setState({
+                    allAudio,
+                }, this.checkMinimize);
+            }
         }
+        this.checkLocalGroupVideo();
+    }
 
-        this.videoRef.srcObject = stream;
-        const allAudio = this.callService.areAllAudio();
-        if (this.state.allAudio !== allAudio) {
+    private checkLocalGroupVideo() {
+        // add video to CallVideo in group calls
+        if (this.callVideoRef && this.peer && this.peer.getType() === PeerType.PEERGROUP && !this.state.localVideoInGrid) {
+            this.callVideoRef.addLocalVideo(true, this.videoRefHandler);
             this.setState({
-                allAudio,
+                localVideoInGrid: true,
             }, this.checkMinimize);
         }
     }
