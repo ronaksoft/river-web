@@ -18,7 +18,7 @@ import ChatInput, {
     C_TYPING_INTERVAL,
     C_TYPING_INTERVAL_OFFSET,
     canSendMessage,
-    IMessageParam
+    IMessageParam, shiftArrow
 } from '../../components/ChatInput/index';
 import {
     clone,
@@ -730,6 +730,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onMessageDrop={this.chatInputMessageDropHandler}
                                        onGifSelect={this.chatInputGifSelectHandler}
                                        onChatClose={this.closePeerHandler}
+                                       onShitKeyArrow={this.chatInputShiftKeyArrowHandler}
                             />
                         </div>}
                         {this.selectedPeerName === 'null' && <div className="column-center">
@@ -945,7 +946,7 @@ class Chat extends React.Component<IProps, IState> {
             const dialog = this.getDialogByPeerName(this.selectedPeerName);
             if (dialog) {
                 this.infoBarRef.setPeer(this.teamId, this.peer, dialog);
-                this.infoBarRef.setCallStarted(dialog.activecallid && dialog.activecallid !== '0');
+                this.infoBarRef.setCallId(dialog.activecallid || '0');
             }
         }
     }
@@ -1775,7 +1776,7 @@ class Chat extends React.Component<IProps, IState> {
 
             // date breakpoint
             if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
-                 || ((key > 0 || (key === 0 && !push)) && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
+                || ((key > 0 || (key === 0 && !push)) && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
                 const t: IMessage = {
                     createdon: msg.createdon,
                     id: msg.id,
@@ -3000,7 +3001,7 @@ class Chat extends React.Component<IProps, IState> {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         this.updateDialogsCounter(peerName, {activeCallId: data.callid});
         if (this.infoBarRef && this.selectedPeerName === peerName) {
-            this.infoBarRef.setCallStarted(true);
+            this.infoBarRef.setCallId(data.callid);
         }
     }
 
@@ -3008,7 +3009,7 @@ class Chat extends React.Component<IProps, IState> {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         this.updateDialogsCounter(peerName, {activeCallId: '0'});
         if (this.infoBarRef && this.selectedPeerName === peerName) {
-            this.infoBarRef.setCallStarted(false);
+            this.infoBarRef.setCallId('0');
         }
     }
 
@@ -5393,6 +5394,12 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private chatInputShiftKeyArrowHandler = (arrow: shiftArrow) => {
+        if (this.messageRef) {
+            this.messageRef.shiftArrow(arrow);
+        }
+    }
+
     /* Save file by type */
     private saveFile(msg: IMessage, noRetry?: boolean, electronCB?: any) {
         const mediaDocument = getMediaDocument(msg);
@@ -5927,7 +5934,7 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         if (this.infoBarRef && dialog) {
-            this.infoBarRef.setCallStarted(dialog.activecallid && dialog.activecallid !== '0');
+            this.infoBarRef.setCallId(dialog.activecallid || '0');
         }
 
         if (this.infoBarRef) {

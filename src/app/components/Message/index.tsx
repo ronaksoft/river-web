@@ -60,9 +60,10 @@ import ReactionPicker from "../ReactionPicker";
 import ReactionList from "../ReactionList";
 import GroupSeenBy from "../GroupSeenBy";
 import {IDialog} from "../../repository/dialog/interface";
+import MessageWeb from "../MessageWeb";
+import {shiftArrow} from "../ChatInput";
 
 import './style.scss';
-import MessageWeb from "../MessageWeb";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -295,6 +296,8 @@ class Message extends React.Component<IProps, IState> {
     private reactionListRef: ReactionList | undefined;
     private groupSeenByRef: GroupSeenBy | undefined;
     private pinnedMessageId: number = 0;
+    private selectWithArrow: boolean = false;
+    private selectWithArrowIndex: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -646,6 +649,61 @@ class Message extends React.Component<IProps, IState> {
             return this.list.refillGap();
         }
         return false;
+    }
+
+    public shiftArrow(arrow: shiftArrow) {
+        const {items} = this.state;
+        if (items.length === 0) {
+            return;
+        }
+        const reset = () => {
+            this.selectWithArrow = false;
+            this.selectWithArrowIndex = 0;
+            this.setState({
+                selectable: false,
+                selectedIds: {},
+            });
+        };
+        if (!this.selectWithArrow && arrow === 'up') {
+            this.selectWithArrow = true;
+            this.selectWithArrowIndex = items.length - 1;
+        } else if (this.selectWithArrow) {
+            if (arrow === 'cancel') {
+                reset();
+                return;
+            }
+            if (arrow === 'right') {
+                if (items[this.selectWithArrowIndex] && isEditableMessageType(items[this.selectWithArrowIndex].messagetype)) {
+                    this.props.onContextMenu('reply', items[this.selectWithArrowIndex]);
+                    reset();
+                }
+                return;
+            } else if (arrow === 'left') {
+                if (canEditMessage(items[this.selectWithArrowIndex], this.riverTime.now())) {
+                    this.props.onContextMenu('edit', items[this.selectWithArrowIndex]);
+                    reset();
+                }
+                return;
+            } else if (arrow === 'up') {
+                this.selectWithArrowIndex--;
+            } else if (arrow === 'down') {
+                this.selectWithArrowIndex++;
+            }
+            if (this.selectWithArrowIndex < 0) {
+                this.selectWithArrowIndex = 0;
+            }
+            if (this.selectWithArrowIndex >= items.length) {
+                this.selectWithArrowIndex = items.length - 1;
+            }
+        }
+        if (this.selectWithArrow) {
+            const selectedIds: { [key: number]: number } = {};
+            selectedIds[items[this.selectWithArrowIndex].id || 0] = this.selectWithArrowIndex;
+            this.setState({
+                selectable: true,
+                selectedIds,
+            });
+        }
     }
 
     public render() {
@@ -1005,7 +1063,7 @@ class Message extends React.Component<IProps, IState> {
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
                             onDoubleClick={this.selectMessage(index)}
                             onContextMenu={this.messageContextMenuHandler(index)}>
-                            {this.state.selectable && <Checkbox
+                            {this.state.selectable && !this.selectWithArrow && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
                                 onChange={this.selectMessageHandler(message.id || 0, index, null)}/>}
@@ -1019,10 +1077,10 @@ class Message extends React.Component<IProps, IState> {
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
                             onDoubleClick={this.selectMessage(index)}
                         >
-                            {(!this.state.selectable && message.avatar && message.senderid) && (
+                            {((!this.state.selectable || this.selectWithArrow) && message.avatar && message.senderid) && (
                                 <UserAvatar id={message.senderid} className="avatar"/>
                             )}
-                            {this.state.selectable && <Checkbox
+                            {this.state.selectable && !this.selectWithArrow && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
                                 onChange={this.selectMessageHandler(message.id || 0, index, null)}/>}

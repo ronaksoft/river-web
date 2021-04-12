@@ -205,4 +205,10 @@
       Width: 56px;
     }
   }
+
+  .video-placeholder {
+    .video-audio-muted {
+      display: none;
+    }
+  }
 }

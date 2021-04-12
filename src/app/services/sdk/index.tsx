@@ -192,7 +192,7 @@ import {
     PhoneCallRateReason,
     PhoneCallsMany,
     PhoneDiscardCall,
-    PhoneGetHistory,
+    PhoneGetHistory, PhoneGetParticipants,
     PhoneInit,
     PhoneInitCall,
     PhoneJoinCall,
@@ -1371,6 +1371,14 @@ export default class APIManager {
         data.setTimeout(timeout);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRemoveParticipant, data.serializeBinary(), true);
+    }
+
+    public callGetParticipants(inputPeer: InputPeer, id: string): Promise<PhoneParticipants.AsObject> {
+        const data = new PhoneGetParticipants();
+        data.setPeer(inputPeer);
+        data.setCallid(id);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneGetParticipants, data.serializeBinary(), true);
     }
 
     public callUpdateAdmin(inputPeer: InputPeer, id: string, inputUser: InputUser, admin: boolean): Promise<Bool.AsObject> {

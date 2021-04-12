@@ -1,3 +1,7 @@
+## 1.1.7
+* Now you can use Shift + Arrow keys to Reply and Edit message
+* Overall improvements
+
 ## 1.1.6
 * Call join bugs fixed
 * Call improvements

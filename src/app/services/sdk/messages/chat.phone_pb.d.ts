@@ -235,6 +235,32 @@ export namespace PhoneRemoveParticipant {
   }
 }
 
+export class PhoneGetParticipants extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getCallid(): string;
+  setCallid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneGetParticipants.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneGetParticipants): PhoneGetParticipants.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneGetParticipants, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneGetParticipants;
+  static deserializeBinaryFromReader(message: PhoneGetParticipants, reader: jspb.BinaryReader): PhoneGetParticipants;
+}
+
+export namespace PhoneGetParticipants {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
+  }
+}
+
 export class PhoneUpdateCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;

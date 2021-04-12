@@ -2,7 +2,6 @@ syntax = "proto3";
 package msg;
 import "core.types.proto";
 
-option go_package = '.;msg';
 
 
 // PhoneInitCall
@@ -100,6 +99,14 @@ message PhoneRemoveParticipant {
     int64 CallID = 2 [jstype = JS_STRING];
     repeated InputUser Participants = 3;
     bool Timeout = 4;
+}
+
+// PhoneGetParticipants
+// @Function
+// @Return: PhoneParticipants
+message PhoneGetParticipants {
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
 }
 
 // PhoneUpdateCall
