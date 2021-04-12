@@ -143,6 +143,7 @@ class InfoBar extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallDestroyed, this.eventCallDestroyedHandler));
         window.addEventListener(EventOnline, this.eventOnlineHandler);
         window.addEventListener(EventOffline, this.eventOfflineHandler);
     }
@@ -294,6 +295,13 @@ class InfoBar extends React.Component<IProps, IState> {
                 activeCallId: activeCallId !== '0' ? activeCallId : null,
             });
         }
+    }
+
+    private eventCallDestroyedHandler = () => {
+        const activeCallId = this.callService.getActiveCallId();
+        this.setState({
+            activeCallId: activeCallId !== '0' ? activeCallId : null,
+        });
     }
 
     private eventOnlineHandler = () => {

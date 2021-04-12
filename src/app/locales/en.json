@@ -162,7 +162,7 @@
     "created": "Created",
     "all_member_admin": "All Admin",
     "add_member": "Add member",
-    "leave_the": "Leave the",
+    "leave": "Leave",
     "participants": "{0} participants",
     "no_shared_media": "No Shared Media Here!",
     "user_cannot_be_added": "Sorry, you cannot add {0} to group because of their privacy settings."

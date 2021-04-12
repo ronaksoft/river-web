@@ -1,3 +1,7 @@
+## 1.1.6
+* Call join bugs fixed
+* Call improvements
+
 ## 1.1.5
 * Shared Media improvements
 * Now you can mute call participants

@@ -127,7 +127,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 16px 0;
+    padding: 8px 0;
     line-height: 1.3em;
     background-color: var(--glass-dark-ultra);
     color: var(--white);
@@ -135,6 +135,7 @@
     align-items: center;
     justify-content: center;
     font-size: 16px;
+    z-index: 20;
 
     svg {
       font-size: 16px;

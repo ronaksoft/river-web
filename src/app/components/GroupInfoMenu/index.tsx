@@ -391,7 +391,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 </div>}
                                 {isMember && <div className="leave-group kk-card">
                                     <Button color="secondary" fullWidth={true} onClick={this.leaveGroupHandler}>
-                                        <ExitToAppRounded/> {i18n.t('peer_info.leave_the')} '{group ? group.title : ''}'
+                                        <ExitToAppRounded/> {i18n.t('peer_info.leave')}
                                     </Button>
                                 </div>}
                             </div>

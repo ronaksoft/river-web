@@ -46,6 +46,7 @@ export const C_CALL_EVENT = {
     CallAccepted: 0x02,
     CallAck: 0x08,
     CallCancelled: 0x0e,
+    CallDestroyed: 0x15,
     CallJoinRequested: 0x0f,
     CallPreview: 0x0d,
     CallRejected: 0x04,
@@ -389,6 +390,8 @@ export default class CallService {
     public destroy() {
         this.destroyLocalStream();
         this.destroyScreenShareStream();
+        this.callHandlers(C_CALL_EVENT.CallDestroyed, {callId: this.activeCallId});
+        this.activeCallId = undefined;
     }
 
     public destroyLocalStream() {
