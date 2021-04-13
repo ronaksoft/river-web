@@ -105,7 +105,7 @@ export default class GroupRepo {
                     input.setAccesshash('0');
                     this.apiManager.groupGetFull(input).then((res) => {
                         let g: IGroup | undefined = res.group;
-                        if (res.participantsList.length > 0) {
+                        if (res.participantsList && res.participantsList.length > 0) {
                             g.participantList = res.participantsList;
                         }
                         g.photogalleryList = res.photogalleryList;
@@ -211,7 +211,7 @@ export default class GroupRepo {
     }
 
     private mergeCheck(group: IGroup, newGroup: IGroup): IGroup {
-        if (newGroup.participantList.length > 0) {
+        if (newGroup.participantList && newGroup.participantList.length > 0) {
             group.participantList = uniqBy(newGroup.participantList, 'userid');
         }
         if (newGroup.photogalleryList) {

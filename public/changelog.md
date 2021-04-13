@@ -1,3 +1,6 @@
+## 1.1.9
+* Overall improvements
+
 ## 1.1.8
 * Insert space after mention
 * Remove label item bug fixed
