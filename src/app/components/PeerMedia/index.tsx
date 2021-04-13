@@ -516,7 +516,9 @@ class PeerMedia extends React.Component<IProps, IState> {
             return (<CachedPhoto className="picture"
                                  fileLocation={(item.download && isPicture) ? item.info.file : item.info.thumbFile}
                                  mimeType={(item.download && isPicture) ? (item.info.mimeType || 'image/jpeg') : 'image/jpeg'}
-                                 blur={item.download ? 0 : 10}/>);
+                                 blur={item.download ? 0 : 10}
+                                 tinyThumb={!item.download? item.info.tinyThumb : undefined}
+            />);
         } else {
             switch (item.type) {
                 default:

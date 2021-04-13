@@ -235,9 +235,6 @@ class SignUp extends React.Component<IProps, IState> {
                                            value={this.state.workspace}
                                            onKeyDown={this.workspaceKeyDownHandler}
                                            onChange={this.workspaceChangeHandler}/>}
-                                {step !== 'workspace' && workspaceInfo.workgroupname && <div className="text-wrapper">
-                                    {workspaceInfo.workgroupname}
-                                </div>}
                             </div>
                             {step === 'workspace' && <div className="input-wrapper qr-wrapper">
                                 <div className="qr-link"
@@ -367,7 +364,9 @@ class SignUp extends React.Component<IProps, IState> {
                     </div>
                 </div>
                 <div className="login-bottom-bar">
-                    <div className="version-container" onClick={this.versionClickHandler}>{C_VERSION}</div>
+                    <div className="version-container" onClick={this.versionClickHandler}>
+                        {C_VERSION}
+                    </div>
                     <div className="link-container">
                         <a href="https://river.im" target="_blank"
                            rel="noopener noreferrer">{i18n.t('sign_up.home')}</a>
@@ -380,6 +379,9 @@ class SignUp extends React.Component<IProps, IState> {
                     </div>
                     <div className="language-container"
                          onClick={this.showLanguageDialogHandler}>{i18n.t(`sign_up.${this.state.selectedLanguage}`)}</div>
+                    {step !== 'workspace' && workspaceInfo.workgroupname && <div className="workspace-label">
+                        {workspaceInfo.workgroupname}
+                    </div>}
                 </div>
                 <SettingsModal
                     open={this.state.qrCodeOpen}

@@ -20,7 +20,6 @@ import {IMessage} from "../message/interface";
 import UserRepo from "../user";
 import GroupRepo from "../group";
 import {UserMessage} from "../../services/sdk/messages/core.types_pb";
-import MediaRepo from "../media";
 
 export default class LabelRepo {
     public static labelColors: { [key: number]: string } = {};
@@ -40,7 +39,6 @@ export default class LabelRepo {
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
-    private mediaRepo: MediaRepo;
     private broadcaster: Broadcaster;
     private apiManager: APIManager;
 
@@ -50,7 +48,6 @@ export default class LabelRepo {
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
-        this.mediaRepo = MediaRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.apiManager = APIManager.getInstance();
         this.db.labels.toArray().then((items) => {
@@ -200,9 +197,9 @@ export default class LabelRepo {
                 this.insertManyLabelItem(team || '0', id, messages);
                 this.messageRepo.insertDiscrete(teamId, messages);
             }
-            if (messageWithMediaMany.medias.length > 0) {
-                this.mediaRepo.importBulk(messageWithMediaMany.medias, false);
-            }
+            // if (messageWithMediaMany.medias.length > 0) {
+            //     this.mediaRepo.importBulk(messageWithMediaMany.medias, false);
+            // }
             this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);
             return remoteRes.messagesList;
@@ -281,9 +278,9 @@ export default class LabelRepo {
             }
         });
         if (labelItems.length > 0) {
-            return this.db.labelItems.bulkDelete(labelItems);
+            return this.db.labelItems.where('[teamid+lid+mid]').anyOf(labelItems).delete();
         }
-        return Promise.resolve();
+        return Promise.resolve(null);
     }
 
     private insertManyLabelItem(teamId: string, labelId: number, messageList: IMessage[]) {

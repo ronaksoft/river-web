@@ -1,4 +1,9 @@
+## 1.1.9
+* Overall improvements
+
 ## 1.1.8
+* Insert space after mention
+* Remove label item bug fixed
 * Minor bug in editable message fixed
 
 ## 1.1.7

@@ -120,6 +120,7 @@ class MentionInput extends React.Component<IProps, IState> {
                     data={this.searchMentionHandler}
                     renderSuggestion={this.renderMentionSuggestion}
                     className="mention-item"
+                    appendSpaceOnAdd={true}
                 />
                 <Mention
                     trigger=":"
