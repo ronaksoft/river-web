@@ -1,3 +1,6 @@
+## 1.1.8
+* Minor bug in editable message fixed
+
 ## 1.1.7
 * Now you can use Shift + Arrow keys to Reply and Edit message
 * Overall improvements

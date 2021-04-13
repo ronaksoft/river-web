@@ -180,7 +180,7 @@ export const isEditableMessageType = (type?: number) => {
 };
 
 export const canEditMessage = (message: IMessage, time: number) => {
-    return ((time - message.createdon || 0)) < 86400 && (message.fwdsenderid === '0' || !message.fwdsenderid) && !message.fwd && isEditableMessageType(message.messagetype);
+    return (message.me && (time - message.createdon || 0)) < 86400 && (message.fwdsenderid === '0' || !message.fwdsenderid) && !message.fwd && isEditableMessageType(message.messagetype);
 };
 
 interface IProps {
