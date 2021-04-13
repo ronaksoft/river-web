@@ -1784,11 +1784,11 @@ export default class UpdateManager {
             if (item && this.labelRepo) {
                 if (item.mode === 'add') {
                     this.labelRepo.insertInRange(item.teamId, item.labelId, item.peerid, item.peertype, item.msgIds).then(() => {
-                        fn(resolve, resolve);
+                        fn(resolve, reject);
                     }).catch(reject);
                 } else {
-                    this.labelRepo.removeFromRange(item.teamId, item.labelId, item.msgIds).then(() => {
-                        fn(resolve, resolve);
+                    this.labelRepo.removeFromRange(item.teamId, item.labelId, item.msgIds).then((res) => {
+                        fn(resolve, reject);
                     }).catch(reject);
                 }
             } else {

@@ -1,3 +1,7 @@
+## 1.1.8
+* Insert space after mention
+* Remove label item bug fixed
+
 ## 1.1.7
 * Now you can use Shift + Arrow keys to Reply and Edit message
 * Overall improvements
