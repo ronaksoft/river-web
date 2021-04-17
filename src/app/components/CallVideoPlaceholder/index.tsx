@@ -15,12 +15,15 @@ import {CallDeviceType} from "../../services/sdk/messages/chat.phone_pb";
 import UserName from "../UserName";
 import {
     DesktopMacRounded,
-    LaptopRounded,
-    PhoneIphoneRounded,
-    PhoneAndroidRounded,
     DevicesOtherRounded,
+    LaptopRounded,
+    PhoneAndroidRounded,
+    PhoneIphoneRounded,
     VolumeOffRounded,
+    WifiRounded,
 } from "@material-ui/icons";
+import {IceState} from "../CallVideo";
+import i18n from "../../services/i18n";
 
 import './style.scss';
 
@@ -37,6 +40,7 @@ interface IProps {
 
 interface IState {
     deviceType: CallDeviceType;
+    iceState: IceState;
     img: any;
     muted: boolean;
     userId: string;
@@ -63,6 +67,7 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
 
         this.state = {
             deviceType: props.deviceType,
+            iceState: IceState.Connected,
             img: undefined,
             muted: props.muted || false,
             userId: props.userId,
@@ -111,6 +116,13 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
         }
     }
 
+    public setIceState(iceState: IceState) {
+        window.console.log(iceState);
+        this.setState({
+            iceState,
+        });
+    }
+
     public setMute(muted: boolean) {
         this.setState({
             muted,
@@ -122,15 +134,29 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
         const {videoMute, img, userId, muted} = this.state;
         return (<div className={'video-placeholder ' + (className || '') + (!img ? ' no-image' : '')}
                      onClick={this.props.onClick}>
-            {muted && <div className="audio-muted">
-                <VolumeOffRounded/>
-            </div>}
+            {this.getIndicatorContent()}
             {img && <img className={'video-img' + (videoMute ? ' upper' : '')} alt="" src={img}/>}
             <video key="video" ref={this.vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}
                    style={{visibility: userId && videoMute ? 'hidden' : 'visible'}}/>
             {this.getUserContent()}
             <CallVideoAugment ref={this.callVideoAugmentRefHandler} videoMute={videoMute} userId={userId}/>
         </div>);
+    }
+
+    private getIndicatorContent() {
+        const {muted, iceState} = this.state;
+        if (iceState === IceState.Connecting) {
+            return <div className="video-ice-status">
+                <WifiRounded/>
+                <div className="status-label">{i18n.t('status.reconnecting')}</div>
+            </div>;
+        }
+        if (muted) {
+            return <div className="audio-muted">
+                <VolumeOffRounded/>
+            </div>;
+        }
+        return null;
     }
 
     private getUserContent() {

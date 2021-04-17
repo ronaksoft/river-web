@@ -444,6 +444,7 @@
   "status": {
     "members": "{0} members",
     "connecting": "Connecting...",
+    "reconnecting": "Reconnecting",
     "updating": "Updating...",
     "last_seen": "Last seen",
     "recently": "recently",

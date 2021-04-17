@@ -440,6 +440,7 @@
   "status": {
     "members": "{0} عضو",
     "connecting": "در‌حال اتصال...",
+    "reconnecting": "در‌حال اتصال مجدد",
     "updating": "در حال بروزرسانی...",
     "last_seen": "آخرین بازدید",
     "recently": "به تازگی",

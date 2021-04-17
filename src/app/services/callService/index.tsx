@@ -12,7 +12,7 @@ import {C_LOCALSTORAGE, C_MSG} from "../sdk/const";
 import {UpdatePhoneCall, UpdatePhoneCallEnded} from "../sdk/messages/updates_pb";
 import {
     CallDeviceType,
-    DiscardReason,
+    DiscardReason, IceServer,
     PhoneActionAccepted,
     PhoneActionAck,
     PhoneActionAdminUpdated,
@@ -87,6 +87,9 @@ interface IConnection {
     audioIndex: number;
     connection: RTCPeerConnection;
     iceQueue: RTCIceCandidate[];
+    iceServers?: RTCIceServer[];
+    init: boolean;
+    reconnecting: boolean;
     screenShareStream?: MediaStream;
     stream?: MediaStream;
     streamId: string;
@@ -405,8 +408,8 @@ export default class CallService {
     }
 
     public destroyScreenShareStream() {
-        window.console.log('[webrtc] screen share destroy, has stream: ', Boolean(this.screenShareStream));
         if (this.screenShareStream) {
+            window.console.log('[webrtc] screen share destroy, has stream: ', Boolean(this.screenShareStream));
             this.screenShareStream.getTracks().forEach(track => {
                 track.stop();
                 this.screenShareStream.removeTrack(track);
@@ -451,11 +454,7 @@ export default class CallService {
         this.peer = peer;
 
         return this.apiManager.callInit(peer).then((res) => {
-            this.configs.iceServers = res.iceserversList.map((item) => ({
-                credential: item.credential,
-                urls: item.urlsList,
-                username: item.username,
-            }));
+            this.configs.iceServers = this.transformIceServers(res.iceserversList);
             if (callId) {
                 this.activeCallId = callId;
                 return this.apiManager.callJoin(peer, this.activeCallId).then((res) => {
@@ -491,11 +490,7 @@ export default class CallService {
         return this.apiManager.callInit(peer).then((res) => {
             this.activeCallId = id;
 
-            this.configs.iceServers = res.iceserversList.map((item) => ({
-                credential: item.credential,
-                urls: item.urlsList,
-                username: item.username,
-            }));
+            this.configs.iceServers = this.transformIceServers(res.iceserversList);
             const info = this.getCallInfo(id);
             if (!info) {
                 return Promise.reject('invalid call request');
@@ -1202,7 +1197,12 @@ export default class CallService {
 
         return new Promise((resolve, reject) => {
             try {
-                const pc = new RTCPeerConnection(this.configs);
+                const config = cloneDeep(this.configs);
+                if (this.peerConnections[connId] && this.peerConnections[connId].iceServers) {
+                    config.iceServers = this.peerConnections[connId].iceServers;
+                }
+
+                const pc = new RTCPeerConnection(config);
                 pc.addEventListener('icecandidate', (e) => {
                     this.sendIceCandidate(this.activeCallId || '0', e.candidate, connId).catch((err) => {
                         window.console.log('[webrtc] icecandidate, connId:', connId, err);
@@ -1218,6 +1218,7 @@ export default class CallService {
 
                 pc.addEventListener('icecandidateerror', (e) => {
                     window.console.log('[webrtc] icecandidateerror, connId:', connId, e);
+                    this.checkDisconnection(connId, pc.iceConnectionState, true);
                 });
 
                 pc.addEventListener('signalingstatechange', () => {
@@ -1231,7 +1232,9 @@ export default class CallService {
                     audioIndex: -1,
                     connection: pc,
                     iceQueue: [],
+                    init: false,
                     interval: null,
+                    reconnecting: false,
                     stream: undefined,
                     streamId: '',
                     try: 0,
@@ -1244,6 +1247,8 @@ export default class CallService {
                 }
 
                 pc.addEventListener('track', (e) => {
+                    conn.init = true;
+                    conn.reconnecting = false;
                     if (e.streams.length > 0) {
                         const streamId = e.streams[0].id;
                         e.streams.forEach((stream) => {
@@ -1350,16 +1355,28 @@ export default class CallService {
         }, 255);
     }
 
-    private checkDisconnection(connId: number, state: RTCIceConnectionState) {
-        if (state === 'disconnected' && this.peerConnections.hasOwnProperty(connId)) {
+    private checkDisconnection(connId: number, state: RTCIceConnectionState, isIceError?: boolean) {
+        if (this.peerConnections.hasOwnProperty(connId) && !this.peerConnections[connId].reconnecting && ((isIceError && this.peerConnections[connId].init) || state === 'disconnected')) {
             this.peerConnections[connId].connection.close();
-            if (this.activeCallId) {
+            this.peerConnections[connId].reconnecting = true;
+            const fn = () => {
                 const currentConnId = this.getConnId(this.activeCallId, currentUserId);
                 if (currentConnId < connId) {
                     this.initConnection(false, connId);
                 } else {
                     this.initConnection(true, connId);
                 }
+            };
+            if (this.activeCallId && isIceError) {
+                this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: 'disconnected'});
+                this.apiManager.callInit(this.peer, this.activeCallId).then((res) => {
+                    if (this.peerConnections[connId]) {
+                        this.peerConnections[connId].iceServers = this.transformIceServers(res.iceserversList);
+                    }
+                    fn();
+                });
+            } else {
+                fn();
             }
         }
     }
@@ -1998,6 +2015,14 @@ export default class CallService {
                 this.callRemoveParticipant(this.activeCallId, userIds, true);
             }
         }
+    }
+
+    private transformIceServers(list: IceServer.AsObject[]) {
+        return list.map((item) => ({
+            credential: item.credential,
+            urls: item.urlsList,
+            username: item.username,
+        }));
     }
 
     private callHandlers(name: number, data: any) {

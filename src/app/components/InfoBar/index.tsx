@@ -213,10 +213,6 @@ class InfoBar extends React.Component<IProps, IState> {
                     open={Boolean(callAnchorEl)}
                     onClose={this.callMenuCloseHandler}
                     className="kk-context-menu"
-                    anchorOrigin={{
-                        horizontal: 'right',
-                        vertical: 'center',
-                    }}
                     transformOrigin={{
                         horizontal: 'right',
                         vertical: 'top',

@@ -1,3 +1,7 @@
+## 1.1.11
+* Call reconnect implemented
+* Overall improvements
+
 ## 1.1.10
 * Http rate limit implemented
 * Websocket rate limit implemented

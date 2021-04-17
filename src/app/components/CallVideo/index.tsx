@@ -20,11 +20,19 @@ import IsMobile from "../../services/isMobile";
 
 import './style.scss';
 
+export enum IceState {
+    Closed = 0,
+    Connected = 1,
+    Connecting = 2,
+}
+
 export interface IRemoteConnection {
     connId: number;
     deviceType: CallDeviceType;
+    iceState: IceState;
     media?: CallVideoPlaceholder;
     muted: boolean;
+    setIceState: ((iceState: IceState) => void) | undefined;
     setMute: ((muted: boolean) => void) | undefined;
     status: number;
     stream: MediaStream | undefined;
@@ -87,6 +95,7 @@ class CallVideo extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventShareMediaStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantMuted, this.eventParticipantMutedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ConnectionStateChanged, this.eventConnectionStateChangedHandler));
     }
 
     public componentWillUnmount() {
@@ -207,9 +216,17 @@ class CallVideo extends React.Component<IProps, IState> {
                 if (item.stream && item.media) {
                     item.media.setVideo(item.stream);
                 }
-                item.setMute = () => {
-                    ref.setMute(item.muted);
+                if (!ref) {
+                    return;
+                }
+                item.setIceState = (iceState: IceState) => {
+                    ref.setIceState(iceState);
                 };
+                ref.setIceState(item.iceState);
+                item.setMute = (muted: boolean) => {
+                    ref.setMute(muted);
+                };
+                ref.setMute(item.muted);
             };
             return (<div key={item.connId} className="call-user-container"
                          style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}
@@ -238,8 +255,10 @@ class CallVideo extends React.Component<IProps, IState> {
             this.videoRemoteRefs.push(...addedVideos.map(participant => ({
                 connId: participant.connectionid || 0,
                 deviceType: participant.deviceType,
+                iceState: IceState.Connected,
                 media: undefined,
                 muted: participant.muted,
+                setIceState: undefined,
                 setMute: undefined,
                 status: participant.started ? 2 : 0,
                 stream: undefined,
@@ -333,6 +352,30 @@ class CallVideo extends React.Component<IProps, IState> {
             if (this.videoRemoteRefs[index].setMute) {
                 this.videoRemoteRefs[index].setMute(muted);
             }
+        }
+    }
+
+    private eventConnectionStateChangedHandler = ({connId, state}: { connId: number, state: RTCIceConnectionState }) => {
+        const index = findIndex(this.videoRemoteRefs, {connId});
+        if (index > -1) {
+            this.videoRemoteRefs[index].iceState = this.transformIceState(state);
+            window.console.log(this.videoRemoteRefs[index].iceState, this.videoRemoteRefs[index].setIceState, state);
+            if (this.videoRemoteRefs[index].setIceState) {
+                this.videoRemoteRefs[index].setIceState(this.videoRemoteRefs[index].iceState);
+            }
+        }
+    }
+
+    private transformIceState(state: RTCIceConnectionState ): IceState {
+        switch (state) {
+            case 'closed':
+                return IceState.Closed;
+            case 'new':
+            case 'connected':
+            case 'completed':
+                return IceState.Connected;
+            default:
+                return IceState.Connecting;
         }
     }
 
