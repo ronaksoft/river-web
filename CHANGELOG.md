@@ -1,3 +1,6 @@
+## 1.1.12
+* Known bugs fixed
+
 ## 1.1.11
 * Call reconnect implemented
 * Overall improvements

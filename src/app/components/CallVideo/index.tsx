@@ -359,22 +359,21 @@ class CallVideo extends React.Component<IProps, IState> {
         const index = findIndex(this.videoRemoteRefs, {connId});
         if (index > -1) {
             this.videoRemoteRefs[index].iceState = this.transformIceState(state);
-            window.console.log(this.videoRemoteRefs[index].iceState, this.videoRemoteRefs[index].setIceState, state);
             if (this.videoRemoteRefs[index].setIceState) {
                 this.videoRemoteRefs[index].setIceState(this.videoRemoteRefs[index].iceState);
             }
         }
     }
 
-    private transformIceState(state: RTCIceConnectionState ): IceState {
+    private transformIceState(state: RTCIceConnectionState | 'reconnecting'): IceState {
         switch (state) {
-            case 'closed':
+            default:
                 return IceState.Closed;
             case 'new':
             case 'connected':
             case 'completed':
                 return IceState.Connected;
-            default:
+            case 'reconnecting':
                 return IceState.Connecting;
         }
     }

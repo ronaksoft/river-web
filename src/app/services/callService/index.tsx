@@ -1356,9 +1356,10 @@ export default class CallService {
     }
 
     private checkDisconnection(connId: number, state: RTCIceConnectionState, isIceError?: boolean) {
-        if (this.peerConnections.hasOwnProperty(connId) && !this.peerConnections[connId].reconnecting && ((isIceError && this.peerConnections[connId].init) || state === 'disconnected')) {
+        if (this.peerConnections.hasOwnProperty(connId) && !this.peerConnections[connId].reconnecting && ((isIceError && this.peerConnections[connId].init && state !== 'connected') || state === 'disconnected')) {
             this.peerConnections[connId].connection.close();
             this.peerConnections[connId].reconnecting = true;
+            this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: 'reconnecting'});
             const fn = () => {
                 const currentConnId = this.getConnId(this.activeCallId, currentUserId);
                 if (currentConnId < connId) {
@@ -1368,7 +1369,6 @@ export default class CallService {
                 }
             };
             if (this.activeCallId && isIceError) {
-                this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: 'disconnected'});
                 this.apiManager.callInit(this.peer, this.activeCallId).then((res) => {
                     if (this.peerConnections[connId]) {
                         this.peerConnections[connId].iceServers = this.transformIceServers(res.iceserversList);

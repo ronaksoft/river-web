@@ -117,7 +117,6 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
     }
 
     public setIceState(iceState: IceState) {
-        window.console.log(iceState);
         this.setState({
             iceState,
         });

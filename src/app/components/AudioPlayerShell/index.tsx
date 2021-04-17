@@ -205,8 +205,8 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                         {mediaInfo && <div className="song-details">
                             <div className="song-cover">
                                 {mediaInfo.thumbFile.fileid !== '' &&
-                                <CachedPhoto className="picture" fileLocation={mediaInfo.thumbFile}
-                                             mimeType="image/jpeg"/>}
+                                <CachedPhoto key={mediaInfo.thumbFile.fileid} className="picture"
+                                             fileLocation={mediaInfo.thumbFile} mimeType="image/jpeg"/>}
                                 {mediaInfo.thumbFile.fileid === '' && <div className="picture">
                                     <MusicNoteRounded/>
                                 </div>}

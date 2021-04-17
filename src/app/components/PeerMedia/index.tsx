@@ -473,13 +473,11 @@ class PeerMedia extends React.Component<IProps, IState> {
         e.stopPropagation();
         const {items, selectable, selectedIds} = this.state;
         if (selectable && items[index]) {
-            if (!items[index].selected) {
+            const idx = selectedIds.indexOf(items[index].id);
+            if (idx === -1) {
                 selectedIds.push(items[index].id);
             } else {
-                const idx = findIndex(items, {id: items[index].id});
-                if (idx > -1) {
-                    selectedIds.splice(idx, 1);
-                }
+                selectedIds.splice(idx, 1);
             }
             items[index].selected = !items[index].selected;
             this.setState({
@@ -517,7 +515,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                                  fileLocation={(item.download && isPicture) ? item.info.file : item.info.thumbFile}
                                  mimeType={(item.download && isPicture) ? (item.info.mimeType || 'image/jpeg') : 'image/jpeg'}
                                  blur={item.download ? 0 : 10}
-                                 tinyThumb={!item.download? item.info.tinyThumb : undefined}
+                                 tinyThumb={!item.download ? item.info.tinyThumb : undefined}
             />);
         } else {
             switch (item.type) {

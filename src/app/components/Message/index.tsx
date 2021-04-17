@@ -221,6 +221,7 @@ interface IState {
     loadingPersist: boolean;
     moreAnchorEl: any;
     moreAnchorPos: any;
+    moreAnchorRef: 'anchorPosition' | 'anchorEl';
     moreIndex: number;
     readIdInit: number;
     selectable: boolean;
@@ -319,6 +320,7 @@ class Message extends React.Component<IProps, IState> {
             loadingPersist: false,
             moreAnchorEl: null,
             moreAnchorPos: null,
+            moreAnchorRef: 'anchorEl',
             moreIndex: -1,
             readIdInit: -1,
             selectable: false,
@@ -707,7 +709,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay, containerSize, enable} = this.state;
+        const {items, moreAnchorEl, moreAnchorPos, moreAnchorRef, selectable, loadingOverlay, containerSize, enable} = this.state;
         return (
             <div className="main-messages">
                 <div
@@ -737,7 +739,7 @@ class Message extends React.Component<IProps, IState> {
                     <Menu
                         anchorEl={moreAnchorEl}
                         anchorPosition={moreAnchorPos}
-                        anchorReference={moreAnchorPos ? 'anchorPosition' : 'anchorEl'}
+                        anchorReference={moreAnchorRef}
                         open={Boolean(moreAnchorEl || moreAnchorPos)}
                         onClose={this.moreCloseHandler}
                         className="kk-context-menu"
@@ -959,7 +961,7 @@ class Message extends React.Component<IProps, IState> {
             });
         }
         return menuItems.map((item, index) => {
-            return (<MenuItem key={index} onClick={this.moreCmdHandler(item.cmd, moreIndex)}
+            return (<MenuItem key={`${index}-${item.cmd}`} onClick={this.moreCmdHandler(item.cmd, moreIndex)}
                               className="context-item">{item.title}</MenuItem>);
         });
     }
@@ -1164,6 +1166,7 @@ class Message extends React.Component<IProps, IState> {
         this.setState({
             moreAnchorEl: e.currentTarget,
             moreAnchorPos: null,
+            moreAnchorRef: 'anchorEl',
             moreIndex: index,
         });
     }
@@ -1606,6 +1609,7 @@ class Message extends React.Component<IProps, IState> {
                 left: e.pageX,
                 top: e.pageY,
             },
+            moreAnchorRef: 'anchorPosition',
             moreIndex: index,
         });
     }

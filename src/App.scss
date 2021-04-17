@@ -1139,6 +1139,17 @@ table {
   color: rgba(0, 0, 0, 0.54);
 }
 
+body {
+  .MuiButtonBase-root.MuiSwitch-switchBase {
+    position: absolute;
+  }
+
+  .MuiButtonBase-root.MuiCheckbox-root {
+    position: relative;
+    padding: 12px;
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-night"] {
   .markdown-body h2 {

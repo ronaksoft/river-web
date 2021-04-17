@@ -393,6 +393,10 @@
 
     .action {
       width: 48px;
+
+      button {
+        padding: 12px;
+      }
     }
   }
 
@@ -474,6 +478,16 @@
 .container:not(.mobile-view) {
   .group-info-menu {
     width: 318px;
+  }
+}
+
+.notify-content {
+  .MuiFormControlLabel-root {
+    padding: 0 0 8px;
+
+    .MuiFormControlLabel-label {
+      padding: 0 6px;
+    }
   }
 }
 

@@ -117,6 +117,7 @@ export const NotifyContent = ({value, onChange}: { value: string, onChange: (val
         onChange(v);
     };
     return <RadioGroup
+        className="notify-content"
         name="notify-setting"
         value={val}
         onChange={notifyValueChangeHandler}
