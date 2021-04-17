@@ -11,6 +11,9 @@ export class PhoneInitCall extends jspb.Message {
   getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
+  getCallid(): string;
+  setCallid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneInitCall.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneInitCall): PhoneInitCall.AsObject;
@@ -24,6 +27,7 @@ export class PhoneInitCall extends jspb.Message {
 export namespace PhoneInitCall {
   export type AsObject = {
     peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
   }
 }
 

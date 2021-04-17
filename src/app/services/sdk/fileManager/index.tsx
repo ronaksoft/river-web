@@ -220,14 +220,17 @@ export default class FileManager {
         this.chunkBlob(blob).then((chunks) => {
             const saveFileToDBPromises: any[] = [];
             saveFileToDBPromises.push(md5FromBlob(blob));
+            const temps: ITempFile[] = [];
             chunks.forEach((chunk, index) => {
-                const temp: ITempFile = {
+                temps.push({
                     data: chunk,
                     id,
                     part: index + 1,
-                };
-                saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
+                });
             });
+            if (temps.length > 0) {
+                saveFileToDBPromises.push(this.fileRepo.setManyTemp(temps));
+            }
 
             Promise.all(saveFileToDBPromises).then((arr) => {
                 this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);

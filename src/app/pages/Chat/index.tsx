@@ -1715,6 +1715,7 @@ class Chat extends React.Component<IProps, IState> {
             before = this.messages[0].id;
         }
 
+        this.setScrollMode('none');
         window.console.log('messageLoadMoreBeforeHandler');
 
         const dialogName = GetPeerName(peer.getId(), peer.getType());
@@ -1776,7 +1777,7 @@ class Chat extends React.Component<IProps, IState> {
 
             // date breakpoint
             if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
-                || ((key > 0 || (key === 0 && !push)) && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
+                || ((key > 0 || (key === 0 && !push)) && messages[key - 1] && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
                 const t: IMessage = {
                     createdon: msg.createdon,
                     id: msg.id,
@@ -2427,15 +2428,17 @@ class Chat extends React.Component<IProps, IState> {
                 } else if (shouldRerender && this.dialogRef) {
                     this.dialogRef.forceRender();
                 }
-                if (this.selectedPeerName === peerName) {
-                    if (unreadCounter === 0 && this.endOfMessage && this.moveDownRef) {
-                        this.moveDownRef.setVisible(false);
-                    } else if (unreadCounter && this.endOfMessage && this.moveDownRef) {
-                        this.moveDownRef.setVisible(true);
+                if (this.moveDownRef) {
+                    if (this.selectedPeerName === peerName) {
+                        if (unreadCounter === 0 && this.endOfMessage) {
+                            this.moveDownRef.setVisible(false);
+                        } else if (unreadCounter && this.endOfMessage) {
+                            this.moveDownRef.setVisible(true);
+                        }
                     }
-                }
-                if (counterAction && peerName === this.selectedPeerName && this.moveDownRef) {
-                    this.moveDownRef.setDialog(dialogs[index]);
+                    if (counterAction && peerName === this.selectedPeerName) {
+                        this.moveDownRef.setDialog(dialogs[index]);
+                    }
                 }
                 this.dialogRepo.lazyUpsert([dialogs[index]]);
             } else {
@@ -2870,11 +2873,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (!this.messageRef) {
                     return;
                 }
-                if (this.endOfMessage && this.isInChat) {
-                    this.setScrollMode('end');
-                } else {
-                    this.setScrollMode('none');
-                }
+                this.setScrollMode('none');
                 this.updateManager.getLastUpdateId();
                 const mRes = res.map((o) => {
                     o.random_id = data.randomIdMap[o.id] || 0;
@@ -3477,6 +3476,7 @@ class Chat extends React.Component<IProps, IState> {
         // Modify temporary message in view port
         if (diff <= 2 && messages && messages[end] && (messages[end].id || 0) > 0) {
             const dialog = this.getDialogByPeerName(this.selectedPeerName);
+            // check if has more messages
             if (dialog && dialog.topmessageid !== messages[end].id) {
                 diff = 5;
             }
@@ -3490,9 +3490,9 @@ class Chat extends React.Component<IProps, IState> {
             if (diff <= 2) {
                 this.lastMessageId = -1;
             } else {
-                this.lastMessageId = messages[end].id || -1;
+                this.lastMessageId = Math.floor(messages[end].id || -1);
             }
-            if (messages[end].id !== -1) {
+            if (messages[end].id) {
                 // Update unread counter in dialog
                 this.sendReadHistory(this.peer, Math.floor(messages[end].id || 0), end, diff > 1);
             }

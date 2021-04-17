@@ -931,6 +931,17 @@ export default class Server {
             return true;
         }
 
+        if (error.code === C_ERR.ErrCodeRateLimit) {
+            if (req.timeout) {
+                clearTimeout(req.timeout);
+            }
+            req.timeout = null;
+            setTimeout(() => {
+                this.sendRequest(cloneDeep(req));
+            }, parseInt(error.items, 10) * 1000);
+            return false;
+        }
+
         if (!req.options || !req.options.retryErrors || (req.options.retry || C_RETRY) <= req.retry) {
             return true;
         }
@@ -947,6 +958,9 @@ export default class Server {
         const request: IServerRequest = cloneDeep(req);
         request.reqId = reqId;
         request.retry++;
+        if (request.timeout) {
+            clearTimeout(request.timeout);
+        }
         request.timeout = null;
 
         if (this.isReady || (this.isConnected && this.isUnAuth(request.constructor))) {

@@ -79,6 +79,10 @@ export default class FileRepo {
         return this.db.temps.where('[id+part]').between([id, Dexie.minKey], [id, Dexie.maxKey], true, true).delete();
     }
 
+    public setManyTemp(tempFiles: ITempFile[]) {
+        return this.db.temps.bulkPut(tempFiles);
+    }
+
     public setTemp(tempFile: ITempFile) {
         return this.db.temps.put(tempFile);
     }

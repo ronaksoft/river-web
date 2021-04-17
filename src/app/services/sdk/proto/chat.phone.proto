@@ -9,6 +9,7 @@ import "core.types.proto";
 // @Return: PhoneInit
 message PhoneInitCall {
     InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
 }
 
 // PhoneRequestCall

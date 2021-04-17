@@ -867,7 +867,8 @@ proto.msg.PhoneInitCall.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.PhoneInitCall.toObject = function(includeInstance, msg) {
   var f, obj = {
-    peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f)
+    peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
+    callid: jspb.Message.getFieldWithDefault(msg, 2, "0")
   };
 
   if (includeInstance) {
@@ -909,6 +910,10 @@ proto.msg.PhoneInitCall.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,core_types_pb.InputPeer.deserializeBinaryFromReader);
       msg.setPeer(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setCallid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -944,6 +949,13 @@ proto.msg.PhoneInitCall.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       core_types_pb.InputPeer.serializeBinaryToWriter
+    );
+  }
+  f = message.getCallid();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeInt64String(
+      2,
+      f
     );
   }
 };
@@ -983,6 +995,24 @@ proto.msg.PhoneInitCall.prototype.clearPeer = function() {
  */
 proto.msg.PhoneInitCall.prototype.hasPeer = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional int64 CallID = 2;
+ * @return {string}
+ */
+proto.msg.PhoneInitCall.prototype.getCallid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.PhoneInitCall} returns this
+ */
+proto.msg.PhoneInitCall.prototype.setCallid = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 

@@ -1,3 +1,9 @@
+## 1.1.10
+* Http rate limit implemented
+* Websocket rate limit implemented
+* Scroll improvements
+* Clear storage updated with new types
+
 ## 1.1.9
 * Overall improvements
 

@@ -9,17 +9,16 @@
 
 import React from 'react';
 import SettingsModal from '../SettingsModal';
-import {DeleteForeverRounded, DataUsageRounded} from '@material-ui/icons';
+import {DataUsageRounded, DeleteForeverRounded} from '@material-ui/icons';
 import StorageUsageService, {IDialogInfo, IFileWithId, IStorageProgress} from '../../services/storageUsageService';
 import UserAvatar from '../UserAvatar';
-import {PeerType} from '../../services/sdk/messages/core.types_pb';
+import {MediaCategory, PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import UserName from '../UserName';
 import GroupName from '../GroupName';
 import {getHumanReadableSize} from '../MessageFile';
 import {findIndex, throttle} from 'lodash';
-import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import {Button, Checkbox, LinearProgress, DialogContentText} from '@material-ui/core';
+import {Button, Checkbox, DialogContentText, LinearProgress} from '@material-ui/core';
 import i18n from "../../services/i18n";
 import {localize} from '../../services/utilities/localize';
 import {IPeer} from "../../repository/dialog/interface";
@@ -293,17 +292,18 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     }
 
     private getMediaTypeTitle(type: string) {
-        switch (parseInt(type, 10)) {
-            case C_MESSAGE_TYPE.Audio:
+        const mediaType: MediaCategory = parseInt(type, 10);
+        switch (mediaType) {
+            case MediaCategory.MEDIACATEGORYAUDIO:
                 return i18n.t('settings.audios');
-            case C_MESSAGE_TYPE.File:
+            case MediaCategory.MEDIACATEGORYFILE:
                 return i18n.t('settings.files');
-            case C_MESSAGE_TYPE.Picture:
-                return i18n.t('settings.photos');
-            case C_MESSAGE_TYPE.Video:
-                return i18n.t('settings.videos');
-            case C_MESSAGE_TYPE.Voice:
+            case MediaCategory.MEDIACATEGORYMEDIA:
+                return i18n.t('settings.media');
+            case MediaCategory.MEDIACATEGORYVOICE:
                 return i18n.t('settings.voices');
+            case MediaCategory.MEDIACATEGORYGIF:
+                return i18n.t('settings.gifs');
             default:
                 return i18n.t('settings.other');
         }

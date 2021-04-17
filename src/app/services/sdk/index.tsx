@@ -1305,9 +1305,12 @@ export default class APIManager {
         return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true, undefined, undefined, true);
     }
 
-    public callInit(inputPeer: InputPeer): Promise<PhoneInit.AsObject> {
+    public callInit(inputPeer: InputPeer, callId?: string): Promise<PhoneInit.AsObject> {
         const data = new PhoneInitCall();
         data.setPeer(inputPeer);
+        if (callId) {
+            data.setCallid(callId);
+        }
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneInitCall, data.serializeBinary(), true);
     }

@@ -264,6 +264,9 @@ export default class MediaRepo {
         if (mode !== 0x2) {
             pipe2 = pipe2.reverse();
         }
+        if (localOnly) {
+            return pipe2.limit(safeLimit).filter(o => !o.hole).toArray();
+        }
         return pipe2.limit(safeLimit).toArray().then((list: IMedia[]) => {
             const earlyMessages: IMessage[] = [];
             let earlyFnCalled = false;
