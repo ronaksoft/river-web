@@ -1,3 +1,6 @@
+## 1.1.15
+* Team panel UI bug fixed
+
 ## 1.1.14
 * Minor improvements in search
 * Call improvements

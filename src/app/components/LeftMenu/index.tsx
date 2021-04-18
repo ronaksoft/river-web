@@ -867,6 +867,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private leftPanelActionHandler = (cmd: string) => (e: any) => {
         switch (cmd) {
             case 'call_history':
+                if (this.state.shrunkMenu) {
+                    this.toggleMenuHandler();
+                }
                 this.setMenu('call_history');
                 break;
         }
