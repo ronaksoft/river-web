@@ -1,3 +1,7 @@
+## 1.1.14
+* Minor improvements in search
+* Call improvements
+
 ## 1.1.13
 * Known bugs fixed
 

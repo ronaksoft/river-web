@@ -799,13 +799,14 @@ export default class MessageRepo {
             pipe2 = pipe2.filter((item: IMessage) => {
                 if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0) {
                     let isMatched = false;
+                    const hasFilter = labelIds.length > 0 || senderIds.length > 0;
                     if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
                         isMatched = true;
                     }
                     if (senderIds && senderIds.length && senderIds.indexOf(item.senderid || '0') > -1) {
                         isMatched = true;
                     }
-                    if (keyword.length > 0) {
+                    if (((hasFilter && isMatched) || !hasFilter) && keyword.length > 0) {
                         if (item.messagetype === 0 || item.messagetype === C_MESSAGE_TYPE.Normal) {
                             isMatched = reg.test(item.body || '');
                         } else {
