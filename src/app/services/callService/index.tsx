@@ -1356,9 +1356,10 @@ export default class CallService {
     }
 
     private checkDisconnection(connId: number, state: RTCIceConnectionState, isIceError?: boolean) {
-        if (this.peerConnections.hasOwnProperty(connId) && !this.peerConnections[connId].reconnecting && ((isIceError && this.peerConnections[connId].init && state !== 'connected') || state === 'disconnected')) {
+        if (this.peerConnections.hasOwnProperty(connId) && !this.peerConnections[connId].reconnecting && ((isIceError && this.peerConnections[connId].init && (state === 'disconnected' || state === 'failed' || state === 'closed')) || state === 'disconnected')) {
             this.peerConnections[connId].connection.close();
             this.peerConnections[connId].reconnecting = true;
+            window.console.log('[webrtc] reconnecting, connId: ', connId, ' state: ', state, ' from ice error: ', isIceError ? 'true' : 'false');
             this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: 'reconnecting'});
             const fn = () => {
                 const currentConnId = this.getConnId(this.activeCallId, currentUserId);
