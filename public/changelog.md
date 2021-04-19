@@ -1,3 +1,6 @@
+## 1.1.16
+* Select message UI bug fixed
+
 ## 1.1.15
 * Team panel UI bug fixed
 
