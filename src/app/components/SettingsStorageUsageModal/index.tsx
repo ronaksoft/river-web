@@ -24,6 +24,7 @@ import {localize} from '../../services/utilities/localize';
 import {IPeer} from "../../repository/dialog/interface";
 import {GetPeerNameByPeer} from "../../repository/dialog";
 import {ModalityService} from "kk-modality";
+import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
 
@@ -234,7 +235,8 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         switch (info.peerType) {
             case PeerType.PEERUSER:
             case PeerType.PEEREXTERNALUSER:
-                return <UserName className="name" id={info.peer.id}/>;
+                return <UserName className="name" id={info.peer.id} you={info.peer.id === currentUserId}
+                                 youPlaceholder={i18n.t('general.saved_messages')}/>;
             case PeerType.PEERGROUP:
                 return <GroupName className="name" id={info.peer.id} teamId={info.teamId}/>;
             default:
@@ -360,7 +362,8 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
             description: <>{!this.state.loadingProgress && <DialogContentText>
                 {i18n.t('settings.clear_cache_confirm_text')}<br/>{i18n.t('settings.clear_cache_confirm_text2')}
             </DialogContentText>}
-                {this.state.loadingProgress && <LinearProgress variant="determinate" value={this.state.loadingProgress.percent}/>}</>,
+                {this.state.loadingProgress &&
+                <LinearProgress variant="determinate" value={this.state.loadingProgress.percent}/>}</>,
             title: i18n.t('general.are_you_sure'),
         }).then((modalRes) => {
             if (modalRes === 'confirm') {
