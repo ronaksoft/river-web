@@ -1,3 +1,7 @@
+## 1.1.18
+* Improvements in editable message
+* Improvements in shortcuts
+
 ## 1.1.17
 * Known bugs fixed
 
