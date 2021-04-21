@@ -1,3 +1,6 @@
+## 1.1.17
+* Known bugs fixed
+
 ## 1.1.16
 * Select message UI bug fixed
 
