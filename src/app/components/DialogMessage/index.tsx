@@ -323,7 +323,9 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                             <GetStatus id={dialog.topmessageid || 0} isBot={isBot} readId={dialog.readoutboxmaxid || 0}
                                        userId={currentUserId} peerId={dialog.peerid || ''}/>
                         </div>}
-                        {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
+                        {dialog.last_update &&
+                        <LiveDate className="time"
+                                  time={dialog.draft && dialog.draft.peerid ? dialog.draft.date : dialog.last_update || 0}/>}
                     </div>
                     {Boolean(ids.length === 0) && <div className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>
                         <RenderPreviewMessage dialog={dialog}/>
