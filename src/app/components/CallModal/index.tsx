@@ -52,6 +52,7 @@ import {IUser} from "../../repository/user/interface";
 import ScreenCaptureModal from "../ScreenCaptureModal";
 import {EventResize} from "../../services/events";
 import IsMobile from "../../services/isMobile";
+import ElectronService from "../../services/electron";
 
 import './style.scss';
 
@@ -838,12 +839,16 @@ class CallModal extends React.Component<IProps, IState> {
 
     private focus() {
         if (this.state.mode !== 'call_request' && this.state.mode !== 'call_join_request' && !window.document.hasFocus()) {
-            const popupWin = window.open('url', 'call_request', 'scrollbars=no,resizable=yes, width=1,height=1,status=no,location=no,toolbar=no');
-            if (popupWin) {
-                popupWin.focus();
-                popupWin.close();
+            if (ElectronService.isElectron()) {
+                ElectronService.getInstance().focus();
+            } else {
+                const popupWin = window.open('url', 'call_request', 'scrollbars=no,resizable=yes, width=1,height=1,status=no,location=no,toolbar=no');
+                if (popupWin) {
+                    popupWin.focus();
+                    popupWin.close();
+                }
+                window.focus();
             }
-            window.focus();
         }
     }
 

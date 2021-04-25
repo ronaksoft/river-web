@@ -1088,6 +1088,9 @@ export class UserMessage extends jspb.Message {
   setYourreactionsList(value: Array<string>): void;
   addYourreactions(value: string, index?: number): string;
 
+  getMediacat(): MediaCategory;
+  setMediacat(value: MediaCategory): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -1128,6 +1131,7 @@ export namespace UserMessage {
     viabotid: string,
     reactionsList: Array<ReactionCounter.AsObject>,
     yourreactionsList: Array<string>,
+    mediacat: MediaCategory,
   }
 }
 

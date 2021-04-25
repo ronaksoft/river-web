@@ -102,8 +102,14 @@ class CallVideoAugment extends React.Component<IProps, IState> {
                 <div ref={this.vodWaveSmoothRefHandler} className="inner-smooth"/>
                 <div ref={this.vodWaveRefHandler} className="inner"/>
             </div>}
-            {videoMute && userId && <UserAvatar className="video-user-placeholder" id={userId} noDetail={true}/>}
-            {audioMute && <div className="video-audio-muted">
+            {videoMute && userId && <div className="video-user-placeholder">
+                <UserAvatar className="call-user-avatar" id={userId} noDetail={true}/>
+                {audioMute && <div className="video-user-audio-muted">
+                    <MicOffRounded/>
+                    {i18n.t('call.muted')}
+                </div>}
+            </div>}
+            {!videoMute && audioMute && <div className="video-audio-muted">
                 <MicOffRounded/>
                 {i18n.t('call.muted')}
             </div>}

@@ -2555,10 +2555,10 @@
     react-is "^16.8.0 || ^17.0.0"
     react-transition-group "^4.4.0"
 
-"@material-ui/icons@^5.0.0-alpha.22":
-  version "5.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/@material-ui/icons/-/icons-5.0.0-alpha.22.tgz#5696eea55253e1eae15680c0bbecb6a2a8a476d7"
-  integrity sha512-SeJY7tRkNlpyVKpXC9EsJ5AaRYU8ITqvFti0R//Z7hLlaN5XnIlVkvmLs4UVS7DbK2/6ETleJ5RgdkisEC4ucg==
+"@material-ui/icons@^5.0.0-alpha.29":
+  version "5.0.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/@material-ui/icons/-/icons-5.0.0-alpha.29.tgz#8b137dc014f928e18331028b896bf640d2743897"
+  integrity sha512-DNJ7MD46WMEAPl0j8CVOcCIDuLOMbTf7+x8EO4diJ4R7DlNwH1YPJ47gHr1yYhp6ETLmlIrzo+apzfLerAmRSw==
   dependencies:
     "@babel/runtime" "^7.4.4"
 
@@ -6817,10 +6817,10 @@ electron-util@^0.13.0:
     electron-is-dev "^1.1.0"
     new-github-issue-url "^0.2.1"
 
-electron@^12.0.2:
-  version "12.0.2"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-12.0.2.tgz#d92be205f1937627bd6718aad44ac161382b4c2d"
-  integrity sha512-14luh9mGzfL4e0sncyy0+kW37IU7Y0Y1tvI97FDRSW0ZBQxi5cmAwSs5dmPmNBFBIGtzkaGaEB01j9RjZuCmow==
+electron@^12.0.5:
+  version "12.0.5"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-12.0.5.tgz#005cf4375d2ee4563f5e75dc4da4ef871846a8be"
+  integrity sha512-z0xYB3sPr0qZcDrHUUWqooPKe3yUzBDxQcgQe3f2TLstA84JIFXBoaIJCPh/fJW0+JdF/ZFVeK2SNgLhYtRV+Q==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"

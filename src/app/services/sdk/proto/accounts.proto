@@ -1,7 +1,6 @@
 syntax = "proto3";
 package msg;
 import "core.types.proto";
-option go_package = '.;msg';
 
 // AccountSetNotifySettings
 // @Function
@@ -95,17 +94,27 @@ message AccountRemovePhoto {
 // AccountSendChangePhoneCode
 // @Function
 // @Return: AuthSentCode
+// @Deprecated
 message AccountSendChangePhoneCode {
     string Phone = 1;
     string AppHash = 2;
 }
 
-// AccountResendChangePhoneCode
+// AccountSendChangePhoneCode
+// @Function
+// @Return: AuthSentCode
+message AccountSendVerifyPhoneCode {
+    string Phone = 1;
+    string AppHash = 2;
+}
+
+// AccountResendVerifyPhoneCode
 // @Function
 // @Return: Bool
-message AccountResendChangePhoneCode {
+message AccountResendVerifyPhoneCode {
     string Phone = 1;
     string PhoneCodeHash = 2;
+    string AppHash = 3;
 }
 
 // AccountChangePhone
@@ -116,6 +125,17 @@ message AccountChangePhone {
     string PhoneCodeHash = 2;
     string PhoneCode = 3;
     InputPassword Password = 4;
+}
+
+// AccountDelete
+// @Function
+// @Return: Bool
+message AccountDelete {
+    string Phone = 1;
+    string PhoneCodeHash = 2;
+    string PhoneCode = 3;
+    InputPassword Password = 4;
+    string Reason = 5;
 }
 
 // AccountSetPrivacy

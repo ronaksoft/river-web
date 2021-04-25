@@ -2,7 +2,6 @@ syntax = "proto3";
 package msg;
 import "core.types.proto";
 
-option go_package = '.;msg';
 
 
 /*
@@ -13,6 +12,20 @@ option go_package = '.;msg';
     Auditor: Ehsan N. Moosa (E2)
     Copyright Ronak Software Group 2018
 */
+
+// Document Type
+enum DocumentType {
+    DocumentTypeUnknown = 0;
+    DocumentTypePhoto = 1;
+    DocumentTypeVoice = 2;
+    DocumentTypeVideo = 3;
+    DocumentTypeWebPage = 4;
+    DocumentTypeReserved1 = 5;
+    DocumentTypeReserved2 = 6;
+    DocumentTypeReserved3 = 7;
+    DocumentTypeReserved4 = 8;
+}
+
 
 // DocumentAttributeType
 enum DocumentAttributeType {
@@ -66,19 +79,6 @@ message DocumentAttributeAnimated {
 message DocumentAttribute {
     DocumentAttributeType Type = 1;
     bytes Data = 2;
-}
-
-// Document Type
-enum DocumentType {
-    DocumentTypeUnknown = 0;
-    DocumentTypePhoto = 1;
-    DocumentTypeVoice = 2;
-    DocumentTypeVideo = 3;
-    DocumentTypeWebPage = 4;
-    DocumentTypeReserved1 = 5;
-    DocumentTypeReserved2 = 6;
-    DocumentTypeReserved3 = 7;
-    DocumentTypeReserved4 = 8;
 }
 
 // Document

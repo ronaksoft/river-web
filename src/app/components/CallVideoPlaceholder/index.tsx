@@ -131,14 +131,15 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
     public render() {
         const {className, playsInline, autoPlay} = this.props;
         const {videoMute, img, userId, muted} = this.state;
-        return (<div className={'video-placeholder ' + (className || '') + (!img ? ' no-image' : '')}
-                     onClick={this.props.onClick}>
+        return (<div
+            className={'video-placeholder ' + (className || '') + (!img ? ' no-image' : '') + (videoMute ? ' video-muted' : '')}
+            onClick={this.props.onClick}>
             {this.getIndicatorContent()}
             {img && <img className={'video-img' + (videoMute ? ' upper' : '')} alt="" src={img}/>}
             <video key="video" ref={this.vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}
                    style={{visibility: userId && videoMute ? 'hidden' : 'visible'}}/>
-            {this.getUserContent()}
             <CallVideoAugment ref={this.callVideoAugmentRefHandler} videoMute={videoMute} userId={userId}/>
+            {this.getUserContent()}
         </div>);
     }
 

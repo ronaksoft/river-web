@@ -2,7 +2,6 @@ syntax = "proto3";
 package msg;
 import "chat.messages.medias.proto";
 import "core.types.proto";
-option go_package = '.;msg';
 
 
 // GifGetSaved

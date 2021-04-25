@@ -4,7 +4,6 @@ package msg;
 import "core.types.proto";
 import "chat.messages.medias.proto";
 import "chat.wallpaper.proto";
-option go_package = '.;msg';
 
 
 // BotStart

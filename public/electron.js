@@ -15,7 +15,7 @@ const {
 const Store = require('electron-store');
 const store = new Store();
 
-const C_APP_VERSION = '0.33.0';
+const C_APP_VERSION = '0.34.0';
 
 const C_LOAD_URL = 'https://web.river.im';
 const C_LOAD_URL_KEY = 'load_url';
@@ -525,6 +525,18 @@ ipcMain.on('fnCall', (e, arg) => {
                 reqId: arg.reqId,
                 data: {
                     version: C_APP_VERSION,
+                },
+            });
+            break;
+        case 'focus':
+            if (mainWindow) {
+                mainWindow.focus();
+            }
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: true,
                 },
             });
             break;

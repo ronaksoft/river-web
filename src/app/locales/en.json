@@ -8,6 +8,7 @@
     "cancel": "Cancel",
     "change": "Change",
     "next": "Next",
+    "continue": "Continue",
     "submit": "Submit",
     "saved_messages": "Saved Messages",
     "first_name": "First Name",
@@ -367,7 +368,16 @@
       "audio": "Audio",
       "video": "Video"
     },
-    "left_panel": "Show Team Panel"
+    "left_panel": "Show Team Panel",
+    "delete_account": {
+      "title": "Delete Account",
+      "text": "You can delete your River account here. Your Account and all your cloud data - messages, media, contacts etc. will be deleted.",
+      "important": "Important: ",
+      "note": "We will send an SMS with a confirmation code to {0}.",
+      "enter_password": "Enter password",
+      "note_2fa": "You have Two-Step Verification enabled, so your account is protected with an additional password.",
+      "account_deleted": "Your account has been deleted"
+    }
   },
   "contact": {
     "contacts": "Contacts",

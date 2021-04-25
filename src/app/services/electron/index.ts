@@ -22,6 +22,7 @@ export const C_ELECTRON_CMD = {
     AskForMediaAccess: 'askForMediaAccess',
     Download: 'download',
     Error: 'error',
+    Focus: 'focus',
     GetLoadUrl: 'getLoadUrl',
     GetScreenCaptureList: 'getScreenCaptureList',
     GetVersion: 'getVersion',
@@ -193,6 +194,11 @@ export default class ElectronService {
     /* Get Version */
     public getVersion() {
         return this.send(C_ELECTRON_CMD.GetVersion, {});
+    }
+
+    /* Focus */
+    public focus() {
+        return this.send(C_ELECTRON_CMD.Focus, {});
     }
 
     /* Call queue handler */

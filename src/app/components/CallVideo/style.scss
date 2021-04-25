@@ -312,6 +312,17 @@
             height: 56px;
             width: 56px;
           }
+
+          &.video-muted {
+            .audio-muted {
+              top: calc(50% - 18px);
+              left: calc(50% - 18px);
+
+              svg {
+                font-size: 12px;
+              }
+            }
+          }
         }
       }
 

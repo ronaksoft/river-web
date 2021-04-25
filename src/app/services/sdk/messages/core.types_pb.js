@@ -8193,7 +8193,8 @@ proto.msg.UserMessage.toObject = function(includeInstance, msg) {
     viabotid: jspb.Message.getFieldWithDefault(msg, 24, "0"),
     reactionsList: jspb.Message.toObjectList(msg.getReactionsList(),
     proto.msg.ReactionCounter.toObject, includeInstance),
-    yourreactionsList: (f = jspb.Message.getRepeatedField(msg, 26)) == null ? undefined : f
+    yourreactionsList: (f = jspb.Message.getRepeatedField(msg, 26)) == null ? undefined : f,
+    mediacat: jspb.Message.getFieldWithDefault(msg, 27, 0)
   };
 
   if (includeInstance) {
@@ -8345,6 +8346,10 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 26:
       var value = /** @type {string} */ (reader.readString());
       msg.addYourreactions(value);
+      break;
+    case 27:
+      var value = /** @type {!proto.msg.MediaCategory} */ (reader.readEnum());
+      msg.setMediacat(value);
       break;
     default:
       reader.skipField();
@@ -8570,6 +8575,13 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeRepeatedString(
       26,
+      f
+    );
+  }
+  f = message.getMediacat();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      27,
       f
     );
   }
@@ -9227,6 +9239,24 @@ proto.msg.UserMessage.prototype.addYourreactions = function(value, opt_index) {
  */
 proto.msg.UserMessage.prototype.clearYourreactionsList = function() {
   return this.setYourreactionsList([]);
+};
+
+
+/**
+ * optional MediaCategory MediaCat = 27;
+ * @return {!proto.msg.MediaCategory}
+ */
+proto.msg.UserMessage.prototype.getMediacat = function() {
+  return /** @type {!proto.msg.MediaCategory} */ (jspb.Message.getFieldWithDefault(this, 27, 0));
+};
+
+
+/**
+ * @param {!proto.msg.MediaCategory} value
+ * @return {!proto.msg.UserMessage} returns this
+ */
+proto.msg.UserMessage.prototype.setMediacat = function(value) {
+  return jspb.Message.setProto3EnumField(this, 27, value);
 };
 
 

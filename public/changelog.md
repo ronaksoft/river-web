@@ -1,3 +1,10 @@
+## 1.1.19
+* Delete account implemented
+* Call reconnecting implemented
+* Call new design
+* Improvements in file manager
+* Overall improvements and bug fixes
+
 ## 1.1.18
 * Improvements in editable message
 * Improvements in shortcuts

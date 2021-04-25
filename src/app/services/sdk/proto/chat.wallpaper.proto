@@ -2,7 +2,6 @@ syntax = "proto3";
 package msg;
 import "core.types.proto";
 import "chat.messages.medias.proto";
-option go_package = '.;msg';
 
 // WallPaperGetAll
 // @Function

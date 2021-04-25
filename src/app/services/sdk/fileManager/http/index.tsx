@@ -291,7 +291,7 @@ export default class Http {
                     }, parseInt(errObj.items, 10) * 1000);
                     return;
                 } else {
-                    this.messageListeners[reqId].reject({constructor, data: res.toObject()});
+                    this.messageListeners[reqId].reject({constructor, data: errObj});
                 }
             } else {
                 this.messageListeners[reqId].resolve({constructor, data: res});

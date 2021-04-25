@@ -1,0 +1,178 @@
+/*
+    Creation Time: 2021 - April - 25
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2021
+*/
+
+.delete-account-dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .delete-account-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0 8px;
+
+    &.big {
+      min-height: 196px;
+    }
+
+    svg {
+      height: 100px;
+      width: 100px;
+      color: var(--river);
+    }
+  }
+
+  .delete-account-text,
+  .delete-account-success {
+    line-height: 1.3em;
+    max-width: 300px;
+    padding: 6px 12px;
+    font-size: 14px;
+    text-align: justify;
+    flex: 1 1;
+
+    b {
+      font-weight: bold;
+    }
+  }
+
+  .delete-account-success {
+    text-align: center;
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .delete-account-input {
+    padding: 10px 12px;
+
+    &.phone-number {
+      display: flex;
+      padding: 12px 12px 6px;
+
+      .intl-tel-input {
+        display: flex;
+        flex-direction: row-reverse;
+        border-radius: 3px;
+        border: 1px solid #c4c4c4;
+        flex: 1 1;
+        padding: 10px 6px;
+
+        .flag-container {
+          .selected-flag {
+            padding: 0;
+
+            .iti-arrow {
+              right: 12px;
+            }
+          }
+        }
+
+        .country-list .country {
+          line-height: 1em;
+        }
+
+        input {
+          flex: 1 1;
+          direction: ltr;
+          font-size: 14px;
+        }
+      }
+
+      &.has-error {
+        .intl-tel-input {
+          border-color: var(--red);
+        }
+      }
+    }
+
+    .code {
+      input {
+        text-align: center;
+        letter-spacing: 30px;
+      }
+    }
+  }
+
+  .delete-account-gap {
+    flex: 1 1;
+  }
+}
+
+html[direction="rtl"] {
+  .delete-account-dialog {
+    direction: rtl;
+
+    .delete-account-text {
+      direction: rtl;
+    }
+
+    .delete-account-input {
+      input[type=tel] {
+        direction: rtl;
+        padding-left: 6px;
+        padding-right: 52px;
+      }
+    }
+  }
+}
+
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .delete-account-dialog {
+    .delete-account-input {
+      input, label, p {
+        color: var(--white);
+      }
+
+      .intl-tel-input {
+        border-color: var(--dark-low);
+
+        .flag-container, input {
+          background-color: transparent;
+        }
+      }
+    }
+
+    .delete-account-header, .delete-account-text, .delete-account-success {
+      color: var(--white);
+
+      svg path {
+        fill: var(--light);
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .delete-account-dialog {
+    .delete-account-input {
+      input, label, p {
+        color: var(--white);
+      }
+
+      .intl-tel-input {
+        border-color: var(--dark-blue-low);
+
+        .flag-container, input {
+          background-color: transparent;
+        }
+      }
+    }
+
+    .delete-account-header, .delete-account-text, .delete-account-success {
+      color: var(--white);
+
+      svg path {
+        fill: var(--light);
+      }
+    }
+  }
+}

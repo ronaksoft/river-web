@@ -24,7 +24,7 @@ import {
     PhoneActionMediaSettingsUpdated,
     PhoneActionParticipantAdded,
     PhoneActionParticipantRemoved, PhoneActionPicked,
-    PhoneActionRequested,
+    PhoneActionRequested, PhoneActionRestarted,
     PhoneActionScreenShare,
     PhoneActionSDPAnswer,
     PhoneActionSDPOffer,
@@ -152,6 +152,8 @@ const parseData = (constructor: number, data: any) => {
             return PhoneActionScreenShare.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLPICKED:
             return PhoneActionPicked.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLRESTARTED:
+            return PhoneActionRestarted.deserializeBinary(data).toObject();
     }
     return undefined;
 };
@@ -435,6 +437,10 @@ export default class CallService {
         } else {
             return undefined;
         }
+    }
+
+    public shitIt(connId: number) {
+        this.checkDisconnection(connId, 'disconnected');
     }
 
     public getRemoteScreenShareStream(): { stream: MediaStream, userId: string } | undefined {
@@ -743,6 +749,9 @@ export default class CallService {
                 break;
             case PhoneCallAction.PHONECALLPICKED:
                 this.callPicked(data);
+                break;
+            case PhoneCallAction.PHONECALLRESTARTED:
+                this.callRestarted(data);
                 break;
         }
     }
@@ -1170,7 +1179,7 @@ export default class CallService {
                         }, C_RETRY_INTERVAL);
                     }
                 });
-                window.console.log('[webrtc] call form:', currentUserId, ' to:', phoneParticipants.map(o => o.getPeer().getUserid()).join(", "));
+                window.console.log('[webrtc] call from:', currentUserId, ' to:', phoneParticipants.map(o => o.getPeer().getUserid()).join(", "));
                 return this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
             }));
         }
@@ -1227,7 +1236,7 @@ export default class CallService {
                     }
                 });
 
-                const conn: IConnection = {
+                let conn: IConnection = {
                     accepted: remote,
                     audioIndex: -1,
                     connection: pc,
@@ -1243,7 +1252,8 @@ export default class CallService {
                 if (!this.peerConnections.hasOwnProperty(connId)) {
                     this.peerConnections[connId] = conn;
                 } else {
-                    this.peerConnections[connId].connection = conn.connection;
+                    conn = this.peerConnections[connId];
+                    conn.connection = pc;
                 }
 
                 pc.addEventListener('track', (e) => {
@@ -1370,9 +1380,10 @@ export default class CallService {
                 }
                 const currentConnId = this.getConnId(this.activeCallId, currentUserId);
                 if (currentConnId < connId) {
-                    this.initConnection(false, connId);
+                    this.callSendRestart(connId, true);
                 } else {
-                    this.initConnection(true, connId);
+                    this.initConnection(true, connId).catch((sdp) => {
+                    });
                 }
             });
         }
@@ -1785,6 +1796,8 @@ export default class CallService {
             sdp: sdpOfferData.sdp,
             type: sdpOfferData.type as any,
         }).then(() => {
+            this.peerConnections[connId].accepted = true;
+            this.flushIceCandidates(data.callid || '0', connId);
             return pc.createAnswer().then((res) => {
                 return pc.setLocalDescription(res).then(() => {
                     return this.sendSDPAnswer(connId, res);
@@ -1821,6 +1834,19 @@ export default class CallService {
         const callPickedData = data.data as PhoneActionPicked.AsObject;
         if (callPickedData.authid !== currentAuthId) {
             this.callHandlers(C_CALL_EVENT.CallCancelled, {callId: data.callid});
+        }
+    }
+
+    private callRestarted(data: IUpdatePhoneCall) {
+        const callRestartedData = data.data as PhoneActionRestarted.AsObject;
+        const connId = this.getConnId(data.callid, data.userid);
+        if (callRestartedData.sender) {
+            this.checkDisconnection(connId, 'disconnected');
+            this.callSendRestart(connId, false);
+        } else {
+            this.initConnection(false, connId).then((sdp) => {
+                return this.sendSDPOffer(connId, sdp);
+            });
         }
     }
 
@@ -1969,6 +1995,35 @@ export default class CallService {
         const actionData = new PhoneActionAck();
 
         return this.apiManager.callUpdate(peer, data.callid, [inputUser], PhoneCallAction.PHONECALLACK, actionData.serializeBinary());
+    }
+
+    private callSendRestart(connId: number, sender: boolean) {
+        const callId = this.activeCallId;
+        if (!callId) {
+            return Promise.reject('no active call');
+        }
+
+        const conn = this.peerConnections[connId];
+        if (!conn) {
+            return Promise.reject('invalid connection');
+        }
+
+        const peer = this.peer;
+        if (!peer || !this.activeCallId) {
+            return Promise.reject('invalid input');
+        }
+
+        const inputUser = this.getInputUserByConnId(callId, connId);
+        if (!inputUser) {
+            return Promise.reject('invalid connId');
+        }
+
+        const actionData = new PhoneActionRestarted();
+        actionData.setSender(sender);
+
+        return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLRESTARTED, actionData.serializeBinary(), true).then(() => {
+            return Promise.resolve();
+        });
     }
 
     private clearRetryInterval(connId: number, onlyClearInterval?: boolean) {

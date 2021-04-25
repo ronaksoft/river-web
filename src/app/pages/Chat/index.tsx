@@ -18,7 +18,8 @@ import ChatInput, {
     C_TYPING_INTERVAL,
     C_TYPING_INTERVAL_OFFSET,
     canSendMessage,
-    IMessageParam, shiftArrow
+    IMessageParam,
+    shiftArrow
 } from '../../components/ChatInput/index';
 import {
     clone,
@@ -37,7 +38,8 @@ import NewMessage from '../../components/NewMessage';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog, IPeer} from '../../repository/dialog/interface';
 import UpdateManager, {
-    IDialogDBUpdated, IDialogRemoved,
+    IDialogDBUpdated,
+    IDialogRemoved,
     IMessageDBRemoved,
     IMessageDBUpdated,
     IMessageIdDBUpdated
@@ -102,11 +104,12 @@ import {
     EventFileDownloaded,
     EventFocus,
     EventMouseWheel,
-    EventNetworkStatus, EventRightMenuToggled,
+    EventNetworkStatus,
+    EventRightMenuToggled,
+    EventSocketReady,
     EventWasmInit,
     EventWasmStarted,
-    EventWebSocketClose,
-    EventSocketReady
+    EventWebSocketClose
 } from "../../services/events";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
@@ -134,13 +137,18 @@ import {
     UpdateLabelItemsAdded,
     UpdateLabelItemsRemoved,
     UpdateLabelSet,
-    UpdateMessageEdited, UpdateMessagePinned,
+    UpdateMessageEdited,
+    UpdateMessagePinned,
     UpdateMessagesDeleted,
     UpdateNewMessage,
-    UpdateNotifySettings, UpdatePhoneCallEnded, UpdatePhoneCallStarted, UpdateReaction,
+    UpdateNotifySettings,
+    UpdatePhoneCallEnded,
+    UpdatePhoneCallStarted,
+    UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents, UpdateTeamCreated,
+    UpdateReadMessagesContents,
+    UpdateTeamCreated,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping
@@ -870,12 +878,14 @@ class Chat extends React.Component<IProps, IState> {
                 if (dialog && dialog.activecallid && this.peer && this.callService) {
                     if (cmd === 'call_end') {
                         this.callService.callReject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
-                            this.updatePhoneCallEndedHandler({
-                                peer: this.peer.toObject(),
-                                teamid: this.teamId,
-                                ucount: 0,
-                                updateid: 0,
-                            });
+                            if (this.peer && this.peer.getType() === PeerType.PEERUSER) {
+                                this.updatePhoneCallEndedHandler({
+                                    peer: this.peer.toObject(),
+                                    teamid: this.teamId,
+                                    ucount: 0,
+                                    updateid: 0,
+                                });
+                            }
                         });
                     } else {
                         this.callService.joinCall(this.peer, dialog.activecallid);

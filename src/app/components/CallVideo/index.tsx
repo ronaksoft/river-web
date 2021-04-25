@@ -230,12 +230,16 @@ class CallVideo extends React.Component<IProps, IState> {
             };
             return (<div key={item.connId} className="call-user-container"
                          style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}
-                         onContextMenu={this.props.onContextMenu(item.userId)}>
+                         onContextMenu={this.props.onContextMenu(item.userId)} onDoubleClick={this.shitIt(item.connId)}>
                 <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
                                       srcObject={item.stream} playsInline={true}
                                       autoPlay={true} userId={item.userId} deviceType={item.deviceType}/>
             </div>);
         });
+    }
+
+    private shitIt = (connId: number) => () => {
+        this.callService.shitIt(connId);
     }
 
     private retrieveConnections() {

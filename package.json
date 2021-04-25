@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^5.0.0-alpha.22",
+    "@material-ui/icons": "^5.0.0-alpha.29",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/styles": "^4.10.0",
     "@sentry/react": "^6.2.5",
@@ -125,7 +125,7 @@
     "@types/react-window": "^1.8.1",
     "@types/shortid": "^0.0.29",
     "@types/xregexp": "^3.0.29",
-    "electron": "^12.0.2",
+    "electron": "^12.0.5",
     "electron-builder": "^22.10.5",
     "electron-devtools-installer": "^3.1.1",
     "glob": "^7.1.6",

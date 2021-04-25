@@ -8,7 +8,7 @@
 */
 
 import Http from './http';
-import {C_LOCALSTORAGE, C_MSG} from '../const';
+import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from '../const';
 import {File, FileGet, FileSavePart} from '../messages/files_pb';
 import {Bool, FileLocation, InputTeam} from '../messages/core.types_pb';
 import FileRepo, {GetDbFileName, md5FromBlob} from '../../../repository/file';
@@ -643,7 +643,9 @@ export default class FileManager {
                                     setTimeout(() => {
                                         this.startDownloading(name);
                                     }, 1000);
-                                } else if (err.code === 'E00' && err.items === 'not found') {
+                                } else if (err.code === C_ERR.ErrCodeInternal && err.items === 'not found') {
+                                    this.cancel(name);
+                                } else if (err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemServer) {
                                     this.cancel(name);
                                 } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                                     this.fileDownloadQueue[name].receiveChunks.push(chunk);
@@ -784,6 +786,12 @@ export default class FileManager {
                 }
                 return res.getBytes_asU8().byteLength;
             });
+        }).catch((err) => {
+            if (err && err.constructor === C_MSG.Error) {
+                return Promise.reject(err.data);
+            } else {
+                return Promise.reject(err);
+            }
         });
     }
 

@@ -1,7 +1,6 @@
 syntax = "proto3";
 package msg;
 import "rony.proto";
-option go_package = '.;msg';
 
 // Ping
 message Ping {
@@ -366,6 +365,7 @@ message UserMessage {
     int64 ViaBotID = 24 [jstype = JS_STRING];
     repeated ReactionCounter Reactions = 25;
     repeated string YourReactions = 26;
+    MediaCategory MediaCat = 27;
 }
 
 // ReactionCounter
@@ -557,3 +557,4 @@ message Team {
     bool Community = 9;
     TeamPhoto Photo = 10;
 }
+
