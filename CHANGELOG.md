@@ -1,3 +1,6 @@
+## 1.1.22
+* Known bugs fixed
+
 ## 1.1.21
 * Improvements in delete account
 

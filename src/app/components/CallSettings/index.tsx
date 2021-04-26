@@ -337,7 +337,7 @@ class CallSettings extends React.Component<IProps, IState> {
 
     private drawerContent() {
         const {participants, currentParticipant} = this.state;
-        const hasAccess = currentParticipant && currentParticipant.peer.userid !== currentUserId && (currentParticipant.initiator || currentParticipant.admin);
+        const hasAccess = currentParticipant && (currentParticipant.initiator || currentParticipant.admin);
         return <>
             {hasAccess && <div className="call-participant-item add-participant" onClick={this.addParticipantHandler}>
                 <div className="action-icon">
@@ -351,7 +351,7 @@ class CallSettings extends React.Component<IProps, IState> {
                     {item.initiator ? <div className="user-badge"><StarsRounded/></div> : item.admin ?
                         <div className="user-badge"><StarRateRounded/></div> : null}
                     <UserName className="user-name" id={item.peer.userid} noDetail={true} you={true} noIcon={true}/>
-                    {hasAccess && !item.initiator &&
+                    {hasAccess && !item.initiator && item.peer.userid !== currentUserId &&
                     <div className="more" onClick={this.openMenuHandler(item.peer.userid)}>
                         <MoreVertRounded/>
                     </div>}
