@@ -56,6 +56,7 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
             code: codePlaceholder,
             open: false,
             password: '',
+            phone: '',
             phoneError: false,
             phoneHash: '',
             step: 0,
