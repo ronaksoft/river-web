@@ -131,7 +131,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
         entity.setOffset(start);
         entity.setLength(len);
         entity.setType(MessageEntityType.MESSAGEENTITYTYPECODE);
-        entity.setUserid('');
+        entity.setUserid('0');
         entities.push(entity);
         codeResult.push({
             len,
@@ -149,12 +149,12 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
             underlineText = underlineRange(underlineText, r.start, r.len);
         });
     }
-    XRegExp.forEach(underlineText, /\bhttps?:\/\/\S+/, (match) => {
+    XRegExp.forEach(underlineText, /(\bhttps?:\/\/\S+)|([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](\.com|\.org|\.net|\.im|\.ir))/, (match) => {
         const entity = new MessageEntity();
         entity.setOffset(match.index);
         entity.setLength(match[0].length);
         entity.setType(MessageEntityType.MESSAGEENTITYTYPEURL);
-        entity.setUserid('');
+        entity.setUserid('0');
         entities.push(entity);
     });
     const hashTagReg = XRegExp('#[\\p{L}_]+');
@@ -163,7 +163,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
         entity.setOffset(match.index);
         entity.setLength(match[0].length);
         entity.setType(MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
-        entity.setUserid('');
+        entity.setUserid('0');
         entities.push(entity);
     });
     codeStarts.sort((a, b) => b - a);
@@ -190,6 +190,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
                 entity.setUserid(mention.id);
             }
             entities.push(entity);
+            underlineText = underlineRange(underlineText, mention.plainTextIndex - offset, mention.display.length);
         });
         mentions.filter((c) => {
             return c.id.indexOf('/') === 0;
@@ -201,6 +202,15 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
             entities.push(entity);
         });
     }
+    const mentionReg = XRegExp(/\B@([a-zA-Z][\da-zA-Z]{4,31})/);
+    XRegExp.forEach(underlineText, mentionReg, (match) => {
+        const entity = new MessageEntity();
+        entity.setOffset(match.index);
+        entity.setLength(match[0].length);
+        entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
+        entity.setUserid('0');
+        entities.push(entity);
+    });
     // const fn = (f: number, l: number, e: any) => {
     //     const entity = new MessageEntity();
     //     entity.setOffset(f);

@@ -581,7 +581,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     private searchContacts(text: string) {
-        this.userRepo.getManyCache(this.props.teamId, true, {keyword: text, limit: 12}).then((res) => {
+        this.userRepo.getManyCache(this.props.teamId, false, {keyword: text, limit: 12}).then((res) => {
             this.contactsRes = clone(res || []);
             if (this.list) {
                 this.list.resetAfterIndex(0, false);

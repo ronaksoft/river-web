@@ -771,7 +771,8 @@ class Chat extends React.Component<IProps, IState> {
                                   teamId={this.teamId}
                 />
                 <UserDialog key="user-dialog" ref={this.userDialogRefHandler} onAction={this.userDialogActionHandler}
-                            teamId={this.teamId} onError={this.textErrorHandler}/>
+                            teamId={this.teamId} onError={this.textErrorHandler}
+                            enqueueSnackbar={this.props.enqueueSnackbar} closeSnackbar={this.props.closeSnackbar}/>
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
                                 onMessageAction={this.documentViewerMessageActionHandler}
                                 onError={this.textErrorHandler}/>
@@ -5673,7 +5674,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateMessagePinnedHandler = (data: UpdateMessagePinned.AsObject) => {
-        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0, undefined, data.userid);
+        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0, true, data.userid);
         // TODO modify server for silent pin
         // const peerName = GetPeerName(data.peer.id, data.peer.type);
         // if (this.selectedPeerName === peerName) {
@@ -5718,13 +5719,15 @@ class Chat extends React.Component<IProps, IState> {
         const index = findIndex(dialogs, {peerid: peerId, peertype: peerType});
         let msgIdNotif: number = 0;
         if (index > -1) {
-            if (dialogs[index].pinnedmessageid === msgId) {
-                dialogs[index].pinnedmessageid = 0;
-            } else {
-                dialogs[index].pinnedmessageid = msgId;
+            if (dialogs[index].pinnedmessageid !== msgId) {
                 msgIdNotif = msgId;
             }
             if (store) {
+                if (dialogs[index].pinnedmessageid === msgId) {
+                    dialogs[index].pinnedmessageid = 0;
+                } else {
+                    dialogs[index].pinnedmessageid = msgId;
+                }
                 this.dialogRepo.lazyUpsert([dialogs[index]]);
             }
         }
@@ -6315,7 +6318,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private pinMessage(peer: InputPeer, msgId: number, silent: boolean) {
         this.apiManager.messagePin(peer, msgId, silent).then(() => {
-            this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, msgId);
+            this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, msgId, false);
         }).catch((err: RiverError.AsObject) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMessage) {
                 this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, 0, true);

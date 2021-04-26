@@ -80,7 +80,8 @@
     "web": "وب",
     "ios": "iOS",
     "android": "اندروید",
-    "unknown": "نامشخص"
+    "unknown": "نامشخص",
+    "no_username_found": "{0} هنوز اکانتی ندارد"
   },
   "chat": {
     "search": "جستجو",

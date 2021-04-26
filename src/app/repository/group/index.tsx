@@ -17,6 +17,7 @@ import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
 import Dexie from "dexie";
+import UserRepo from "../user";
 
 export const GroupDBUpdated = 'Group_DB_Updated';
 
@@ -43,6 +44,7 @@ export default class GroupRepo {
     private broadcaster: Broadcaster;
     private apiManager: APIManager;
     private riverTime: RiverTime;
+    private userRepo: UserRepo;
     private throttleBroadcastList: string[] = [];
     private readonly throttleBroadcastExecute: any = undefined;
     private actionList: IGroupAction[] = [];
@@ -55,6 +57,7 @@ export default class GroupRepo {
         this.apiManager = APIManager.getInstance();
         this.throttleBroadcastExecute = throttle(this.broadcastThrottledList, 255);
         this.riverTime = RiverTime.getInstance();
+        this.userRepo = UserRepo.getInstance();
     }
 
     public create(group: IGroup) {
@@ -107,6 +110,9 @@ export default class GroupRepo {
                         let g: IGroup | undefined = res.group;
                         if (res.participantsList && res.participantsList.length > 0) {
                             g.participantList = res.participantsList;
+                        }
+                        if (res.usersList) {
+                            this.userRepo.importBulk(false, res.usersList);
                         }
                         g.photogalleryList = res.photogalleryList;
                         if (g) {

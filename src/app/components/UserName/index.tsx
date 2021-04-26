@@ -34,6 +34,7 @@ interface IProps {
     youPlaceholder?: string;
     onLoad?: (user?: IUser) => void;
     noIcon?: boolean;
+    iconException?: ['bot'];
     onClick?: (id: string) => void;
     peerName?: boolean;
     peerType?: PeerType;
@@ -99,7 +100,7 @@ class UserName extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {onlyFirstName, defaultString, noIcon, noDetail, format} = this.props;
+        const {onlyFirstName, defaultString, noIcon, iconException, noDetail, format} = this.props;
         const {peerType} = this.props;
         let {postfix, prefix} = this.props;
         prefix = prefix || '';
@@ -118,7 +119,8 @@ class UserName extends React.PureComponent<IProps, IState> {
         if (this.props.username === true) {
             return (
                 <span className={className} style={style} onClick={this.clickHandler}>
-                    {Boolean(noIcon !== true && user.isbot) && <BotIcon/>}
+                    {Boolean(user.isbot && (noIcon !== true || (iconException && iconException.indexOf('bot') > -1))) &&
+                    <BotIcon/>}
                     {(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}
                     {Boolean(noIcon !== true && user.official) && <OfficialIcon/>}
                 </span>
@@ -128,7 +130,8 @@ class UserName extends React.PureComponent<IProps, IState> {
             return (
                 <span className={className} style={style} onClick={this.clickHandler}>
                     {Boolean(peerType === PeerType.PEEREXTERNALUSER) && <FaceRounded/>}
-                    {Boolean(noIcon !== true && user.isbot) && <BotIcon/>}
+                    {Boolean(user.isbot && (noIcon !== true || (iconException && iconException.indexOf('bot') > -1))) &&
+                    <BotIcon/>}
                     {format ? format.replace('{0}', name) : name}
                     {Boolean(noIcon !== true && user.official) && <OfficialIcon/>}
                 </span>

@@ -8,7 +8,7 @@
 */
 
 import TimeUtility from '../../services/utilities/time';
-import {DoneRounded, DoneAllRounded, ScheduleRounded, AddRounded} from '@material-ui/icons';
+import {DoneRounded, DoneAllRounded, ScheduleOutlined, AddRounded} from '@material-ui/icons';
 import LabelRepo from "../../repository/label";
 import i18n from "../../services/i18n";
 
@@ -30,7 +30,7 @@ interface IProps {
 const GetStatus = ({id, readId, status, forceDoubleTick, markAsSent}: { id: number, readId: number, status: boolean, forceDoubleTick: boolean, markAsSent?: boolean }) => {
     if (id && status) {
         if (id < 0 && !markAsSent) {
-            return (<ScheduleRounded className="icon"/>);
+            return (<ScheduleOutlined className="icon"/>);
         } else if ((id > 0 && readId >= id) || forceDoubleTick) {
             return (<DoneAllRounded className="icon"/>);
         } else if ((id > 0 && readId < id) || markAsSent) {

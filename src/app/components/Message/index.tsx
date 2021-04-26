@@ -27,7 +27,7 @@ import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
 import MessagePreview from '../MessagePreview';
 import MessageStatus from '../MessageStatus';
-import {ErrorRounded, MoreVertRounded, TagFacesRounded} from '@material-ui/icons';
+import {ErrorRounded, MoreVertRounded, TagFacesOutlined} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
@@ -1743,7 +1743,7 @@ class Message extends React.Component<IProps, IState> {
             {Boolean(!message.me && message.peerid !== '2374' && !this.props.isBot && !this.state.disable) &&
             <div className="reaction-anchor" onClick={this.reactionPickerOpenHandler(message)}
                  onContextMenu={this.reactionPickerOpenHandler(message)}>
-                <TagFacesRounded/>
+                <TagFacesOutlined/>
             </div>}
         </>);
     }

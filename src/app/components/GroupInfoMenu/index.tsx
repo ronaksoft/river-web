@@ -73,6 +73,7 @@ import ContactPicker from "../ContactPicker";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
 import './style.scss';
+import UserName from "../UserName";
 
 interface IProps {
     peer: InputPeer | null;
@@ -373,10 +374,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                     <div className="admin-wrapper"><StarsRounded/></div> :
                                                     (allMemberAdmin || participant.type === ParticipantType.PARTICIPANTTYPEADMIN) ?
                                                         <div className="admin-wrapper"><StarRateRounded/></div> : null}
-                                                <span className="name"
-                                                      onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{currentUserId === participant.userid ? ' (you)' : ''}</span>
-                                                <span
-                                                    className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
+                                                <UserName className="name" id={participant.userid} you={true}
+                                                          noIcon={true} iconException={['bot']} noDetail={true}
+                                                          onClick={this.participantClickHandler(participant.userid, participant.accesshash)}/>
+                                                <div
+                                                    className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</div>
                                                 {isAdmin && participant.type !== ParticipantType.PARTICIPANTTYPECREATOR && (participant.userid !== currentUserId || (participant.userid === currentUserId && participant.type !== ParticipantType.PARTICIPANTTYPEADMIN)) &&
                                                 <div className="more"
                                                      onClick={this.moreOpenHandler(participant)}>
@@ -410,7 +412,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia key={peer.getId() || ''}  className="kk-card" peer={peer} teamId={this.teamId}
+                        <PeerMedia key={peer.getId() || ''} className="kk-card" peer={peer} teamId={this.teamId}
                                    full={true} onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                     </div>
                 </div>

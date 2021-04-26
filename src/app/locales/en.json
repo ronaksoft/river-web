@@ -80,7 +80,8 @@
     "web": "Web",
     "ios": "iOS",
     "android": "Android",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "no_username_found": "{0} doesn't have an account yet!"
   },
   "chat": {
     "search": "Search",

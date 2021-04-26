@@ -288,6 +288,15 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
         }
     };
 
+    const clickHandler = (e: any) => {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+        }
+        if (onClick) {
+            onClick(e);
+        }
+    };
+
     const ids = Object.keys(isTyping);
     const muted = isMuted(dialog.notifysettings);
     const hasCounter = Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
@@ -295,7 +304,7 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
     const peerName = GetPeerName(dialog.peerid, dialog.peertype);
     const showStatus = dialog.preview_me && dialog.action_code === C_MESSAGE_ACTION.MessageActionNope && !Boolean(dialog.draft && dialog.draft.peerid);
     return (
-        <Link className="dialog-a" onClick={onClick} data-peerid={dialog.peerid}
+        <Link className="dialog-a" onClick={clickHandler} data-peerid={dialog.peerid}
               to={messageId ? `/chat/${dialog.teamid || '0'}/${peerName}/${messageId}` : `/chat/${dialog.teamid}/${dialog.peerid}_${dialog.peertype || 0}`}
               onDrop={dropHandler}
         >

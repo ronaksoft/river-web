@@ -30,7 +30,7 @@
 
   .video-ice-status {
     position: absolute;
-    top: 50%;
+    top: calc(50% - 60px);
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: var(--glass-dark-ultra);
@@ -292,6 +292,7 @@
     }
 
     .video-ice-status {
+      top: 50%;
       height: 48px;
       width: 48px;
       padding: 4px;

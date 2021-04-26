@@ -1,3 +1,9 @@
+## 1.1.23
+* Now you can mention with @
+* Bots can be added to groups
+* New link RegEx
+* Known bugs fixed
+
 ## 1.1.22
 * Known bugs fixed
 

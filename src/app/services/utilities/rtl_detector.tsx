@@ -44,7 +44,7 @@ export default class RTLDetector {
         ];
         str = str.replace(new RegExp(emojiRanges.join('|'), 'g'), '');
         // detects mentions :
-        str = str.replace(/(^|\s)@(\w+)/g, '');
+        str = str.replace(/\B@(\w+)/g, '');
         // detects numbers
         str = str.replace(/\d+/g, '');
         str = str.trim();

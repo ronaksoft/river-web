@@ -1112,6 +1112,7 @@ export default class UpdateManager {
                 const updateMessagePinned = UpdateMessagePinned.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateMessagePinned);
                 this.callUpdateHandler(updateMessagePinned.teamid || '0', update.constructor, updateMessagePinned);
+                window.console.log(updateMessagePinned);
                 this.mergeDialog(transaction.dialogs, {
                     peerid: updateMessagePinned.peer.id || '0',
                     peertype: updateMessagePinned.peer.type || 0,
