@@ -643,7 +643,7 @@ export default class FileManager {
                                     setTimeout(() => {
                                         this.startDownloading(name);
                                     }, 1000);
-                                } else if (err.code === C_ERR.ErrCodeInternal && err.items === 'not found') {
+                                } else if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemDocument) {
                                     this.cancel(name);
                                 } else if (err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemServer) {
                                     this.cancel(name);
