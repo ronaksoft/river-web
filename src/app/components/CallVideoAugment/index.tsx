@@ -82,6 +82,7 @@ class CallVideoAugment extends React.Component<IProps, IState> {
 
     public destroyVOD() {
         if (this.vod) {
+            this.resetWaves();
             this.vod.destroy(false);
             this.vod = undefined;
         }
@@ -118,6 +119,7 @@ class CallVideoAugment extends React.Component<IProps, IState> {
 
     private checkVOD() {
         if (!this.vodEnable) {
+            this.resetWaves();
             return;
         }
         const {videoMute, audioMute, userId} = this.state;
@@ -145,6 +147,15 @@ class CallVideoAugment extends React.Component<IProps, IState> {
         this.vod.setStream(this.mediaStream, true).catch(() => {
             //
         });
+    }
+
+    private resetWaves() {
+        if (this.vodWave) {
+            this.vodWave.style.transform = `scale(1)`;
+        }
+        if (this.vodWaveSmooth) {
+            this.vodWaveSmooth.style.transform = `scale(1)`;
+        }
     }
 
     private vodWaveRefHandler = (ref: any) => {

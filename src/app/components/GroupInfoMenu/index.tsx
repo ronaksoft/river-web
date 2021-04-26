@@ -359,9 +359,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     </div>}
                                 </>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.teamId}
-                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}
-                                           onBulkAction={this.props.onBulkAction}/>}
+                                <PeerMedia key={peer.getId() || ''} className="kk-card" peer={peer} full={false}
+                                           teamId={this.teamId} onMore={this.peerMediaMoreHandler}
+                                           onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                                 {group && !disable && <div className="participant kk-card">
                                     <label>{i18n.tf('peer_info.participants', String(group.participants))} </label>
                                     {participants.map((participant, index) => {
@@ -410,8 +410,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia className="kk-card" peer={peer} teamId={this.teamId} full={true}
-                                   onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
+                        <PeerMedia key={peer.getId() || ''}  className="kk-card" peer={peer} teamId={this.teamId}
+                                   full={true} onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                     </div>
                 </div>
                 <Menu

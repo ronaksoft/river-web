@@ -75,7 +75,12 @@
     "select_all": "Select All",
     "view_in_chat": "View in chat",
     "unsupported_document": "Unsupported document",
-    "sending_message_is_not_allowed": "Sending message is not allowed"
+    "sending_message_is_not_allowed": "Sending message is not allowed",
+    "desktop": "Desktop",
+    "web": "Web",
+    "ios": "iOS",
+    "android": "Android",
+    "unknown": "Unknown"
   },
   "chat": {
     "search": "Search",
@@ -574,7 +579,7 @@
     "is_calling": "is calling...",
     "is_ringing": "is ringing...",
     "rate_this_call": "Rate this call",
-    "muted": "Muted",
+    "muted": "muted",
     "call_back": "Call Back",
     "call_timeout": "no answer",
     "is_not_available": "is not available",

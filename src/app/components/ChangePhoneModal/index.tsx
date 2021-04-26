@@ -258,21 +258,32 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
         if (phone === '') {
             return;
         }
-        this.apiManager.accountSendVerifyPhoneCode(phone, "").then((res) => {
-            this.setState({
-                phone: res.phone || '',
-                phoneHash: res.phonecodehash || '',
-                step: step + 1,
-            });
-        }).catch((err) => {
-            if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemPhone) {
+        this.apiManager.checkPhone(phone).then((res) => {
+            if (res.registered) {
                 if (this.props.onError) {
                     this.props.onError(i18n.t('settings.change_phone_number.phone_already_exists'));
                 }
+                this.setState({
+                    phoneError: true,
+                });
+            } else {
+                this.apiManager.accountSendVerifyPhoneCode(phone, "").then((res) => {
+                    this.setState({
+                        phone: res.phone || '',
+                        phoneHash: res.phonecodehash || '',
+                        step: step + 1,
+                    });
+                }).catch((err) => {
+                    if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemPhone) {
+                        if (this.props.onError) {
+                            this.props.onError(i18n.t('settings.change_phone_number.phone_already_exists'));
+                        }
+                    }
+                    this.setState({
+                        phoneError: true,
+                    });
+                });
             }
-            this.setState({
-                phoneError: true,
-            });
         });
     }
 

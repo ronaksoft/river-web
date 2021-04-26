@@ -53,6 +53,7 @@ export const C_CALL_EVENT = {
     CallRequested: 0x01,
     CallTimeout: 0x07,
     ConnectionStateChanged: 0x13,
+    LocalMediaSettingsUpdated: 0x16,
     LocalStreamUpdated: 0x06,
     MediaSettingsUpdated: 0x05,
     ParticipantAdded: 0x0b,
@@ -439,7 +440,7 @@ export default class CallService {
         }
     }
 
-    public shitIt(connId: number) {
+    public tryReconnect(connId: number) {
         this.checkDisconnection(connId, 'disconnected');
     }
 
@@ -1573,6 +1574,9 @@ export default class CallService {
         actionData.setAudio(this.callInfo[this.activeCallId].mediaSettings.audio);
         actionData.setVideo(this.callInfo[this.activeCallId].mediaSettings.video);
         actionData.setScreenshare(this.callInfo[this.activeCallId].mediaSettings.screenShare);
+
+        this.callHandlers(C_CALL_EVENT.LocalMediaSettingsUpdated, this.callInfo[this.activeCallId].mediaSettings);
+
         this.apiManager.callUpdate(this.peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED, actionData.serializeBinary());
     }
 

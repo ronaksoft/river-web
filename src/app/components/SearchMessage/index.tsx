@@ -195,6 +195,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                         <ChipInput
                             id="message-search"
                             placeholder={i18n.t('chat.search_messages')}
+                            clearInputValueOnChange={false}
                             className="search-chip-input"
                             value={this.mergeSelectedChips()}
                             chipRenderer={this.chipRenderer}

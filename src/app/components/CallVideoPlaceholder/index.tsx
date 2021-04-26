@@ -22,6 +22,7 @@ import {
     VolumeOffRounded,
     WifiRounded,
 } from "@material-ui/icons";
+import {Tooltip} from "@material-ui/core";
 import {IceState} from "../CallVideo";
 import i18n from "../../services/i18n";
 
@@ -173,15 +174,25 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
     private getDeviceType(deviceType: CallDeviceType) {
         switch (deviceType) {
             case CallDeviceType.CALLDEVICEDESKTOP:
-                return <DesktopMacRounded/>;
+                return <Tooltip title={i18n.t('general.desktop')}>
+                    <DesktopMacRounded/>
+                </Tooltip>;
             case CallDeviceType.CALLDEVICEWEB:
-                return <LaptopRounded/>;
+                return <Tooltip title={i18n.t('general.web')}>
+                    <LaptopRounded/>
+                </Tooltip>;
             case CallDeviceType.CALLDEVICEIOS:
-                return <PhoneIphoneRounded/>;
+                return <Tooltip title={i18n.t('general.ios')}>
+                    <PhoneIphoneRounded/>
+                </Tooltip>;
             case CallDeviceType.CALLDEVICEANDROID:
-                return <PhoneAndroidRounded/>;
+                return <Tooltip title={i18n.t('general.android')}>
+                    <PhoneAndroidRounded/>
+                </Tooltip>;
             case CallDeviceType.CALLDEVICEUNKNOWN:
-                return <DevicesOtherRounded/>;
+                return <Tooltip title={i18n.t('general.unknown')}>
+                    <DevicesOtherRounded/>
+                </Tooltip>;
         }
         return null;
     }

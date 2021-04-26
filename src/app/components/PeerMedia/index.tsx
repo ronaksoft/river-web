@@ -159,13 +159,6 @@ class PeerMedia extends React.Component<IProps, IState> {
         this.eventReferences.push(this.audioPlayer.globalListen(this.audioPlayerHandler));
     }
 
-    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
-        if (this.peer.getId() !== (newProps.peer.getId() || '') || this.peer.getType() !== (newProps.peer.getType() || 0)) {
-            this.peer = newProps.peer;
-            this.getMedias();
-        }
-    }
-
     public componentWillUnmount() {
         window.removeEventListener(EventFileDownloaded, this.fileDownloadedHandler);
         this.removeAllListeners();

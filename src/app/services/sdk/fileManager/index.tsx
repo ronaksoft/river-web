@@ -635,7 +635,7 @@ export default class FileManager {
                                 window.console.debug(`${chunk.part}/${chunkInfo.totalParts} downloaded, size: ${res}`);
                             }
                         }).catch((err) => {
-                            window.console.log(err);
+                            window.console.log(err, chunkInfo.fileLocation.toObject());
                             if (this.fileDownloadQueue.hasOwnProperty(name)) {
                                 this.fileDownloadQueue[name].pipelines--;
                                 if (err.code === C_FILE_ERR_CODE.NO_WORKER) {

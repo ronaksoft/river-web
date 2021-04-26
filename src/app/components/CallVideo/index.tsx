@@ -10,13 +10,14 @@
 import React from 'react';
 import CallService, {C_CALL_EVENT, ICallParticipant, IMediaSettings} from "../../services/callService";
 import CallVideoPlaceholder from "../CallVideoPlaceholder";
-import {findIndex, differenceWith} from "lodash";
+import {findIndex, differenceWith, cloneDeep} from "lodash";
 import UserAvatar from "../UserAvatar";
 import i18n from "../../services/i18n";
 import {currentUserId} from "../../services/sdk";
 import UserName from "../UserName";
 import {CallDeviceType} from "../../services/sdk/messages/chat.phone_pb";
 import IsMobile from "../../services/isMobile";
+import {MicOffRounded} from "@material-ui/icons";
 
 import './style.scss';
 
@@ -94,6 +95,7 @@ class CallVideo extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventShareMediaStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalMediaSettingsUpdated, this.eventLocalMediaSettingsUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantMuted, this.eventParticipantMutedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ConnectionStateChanged, this.eventConnectionStateChangedHandler));
     }
@@ -181,8 +183,13 @@ class CallVideo extends React.Component<IProps, IState> {
                  style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}>
                 <div className="video-placeholder">
                     <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true}/>
-                    {!this.mediaSettings.video &&
-                    <UserAvatar className="video-user-placeholder" id={currentUserId} noDetail={true}/>}
+                    {!this.mediaSettings.video && <div className="video-user-placeholder">
+                        <UserAvatar className="call-user-avatar" id={currentUserId} noDetail={true}/>
+                        {!this.mediaSettings.audio && <div className="video-user-audio-muted">
+                            <MicOffRounded/>
+                            {i18n.t('call.muted')}
+                        </div>}
+                    </div>}
                 </div>
             </div>}
             {this.getRemoteVideoContent()}
@@ -230,7 +237,8 @@ class CallVideo extends React.Component<IProps, IState> {
             };
             return (<div key={item.connId} className="call-user-container"
                          style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}
-                         onContextMenu={this.props.onContextMenu(item.userId)} onDoubleClick={this.shitIt(item.connId)}>
+                         onContextMenu={this.props.onContextMenu(item.userId)}
+                         onDoubleClick={this.reconnectHandler(item.connId)}>
                 <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
                                       srcObject={item.stream} playsInline={true}
                                       autoPlay={true} userId={item.userId} deviceType={item.deviceType}/>
@@ -238,8 +246,8 @@ class CallVideo extends React.Component<IProps, IState> {
         });
     }
 
-    private shitIt = (connId: number) => () => {
-        this.callService.shitIt(connId);
+    private reconnectHandler = (connId: number) => () => {
+        this.callService.tryReconnect(connId);
     }
 
     private retrieveConnections() {
@@ -366,6 +374,13 @@ class CallVideo extends React.Component<IProps, IState> {
             if (this.videoRemoteRefs[index].setIceState) {
                 this.videoRemoteRefs[index].setIceState(this.videoRemoteRefs[index].iceState);
             }
+        }
+    }
+
+    private eventLocalMediaSettingsUpdatedHandler = (mediaSettings: IMediaSettings) => {
+        this.mediaSettings = cloneDeep(mediaSettings);
+        if (this.state.localVideo) {
+            this.forceUpdate();
         }
     }
 

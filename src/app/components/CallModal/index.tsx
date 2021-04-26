@@ -380,7 +380,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private showPreview(video: boolean, callId?: string) {
+    private showPreview(video: boolean, callId?: string, disableVideo?: boolean) {
         this.timeStart = 0;
         this.timeEnd = 0;
         const state: Partial<IState> = {
@@ -393,8 +393,9 @@ class CallModal extends React.Component<IProps, IState> {
             state.callId = callId;
         }
         this.mediaSettings.video = video;
+        const useVideo = video && disableVideo !== true;
         this.setState(state as any, () => {
-            this.initMediaStreams(video).then((stream) => {
+            this.initMediaStreams(useVideo).then((stream) => {
                 if (this.videoRef) {
                     this.videoRef.srcObject = stream;
                 }
@@ -832,6 +833,10 @@ class CallModal extends React.Component<IProps, IState> {
             } else if (this.state.mode !== 'call_report') {
                 this.closeHandler();
             }
+        }).catch((err) => {
+            if (err && err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemCall) {
+                this.closeHandler();
+            }
         }).finally(() => {
             this.loading = false;
         });
@@ -886,7 +891,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private eventCallJoinedHandler = ({peer, callId}: { peer: InputPeer, callId: string }) => {
         this.peer = peer;
-        this.showPreview(true, callId);
+        this.showPreview(true, callId, true);
     }
 
     private eventCallRejectedHandler = ({reason}: { reason: DiscardReason }) => {

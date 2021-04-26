@@ -579,6 +579,7 @@ export const C_ERR_ITEM = {
     ErrItemBindUser: "BIND_USER",
     ErrItemBio: "BIO",
     ErrItemBot: "BOT",
+    ErrItemCall: "CALL",
     ErrItemChatText: "CHAT_TEXT",
     ErrItemColour: "COLOUR",
     ErrItemCounter: "COUNTER",

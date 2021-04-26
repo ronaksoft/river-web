@@ -1,3 +1,6 @@
+## 1.1.20
+* Known bugs fixed
+
 ## 1.1.19
 * Delete account implemented
 * Call reconnecting implemented

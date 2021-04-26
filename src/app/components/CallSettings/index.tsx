@@ -327,7 +327,7 @@ class CallSettings extends React.Component<IProps, IState> {
             return;
         }
         const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
-        const participants = orderBy(this.callService.getParticipantList(activeCallId, true), ['admin'], ['desc']);
+        const participants = orderBy(this.callService.getParticipantList(activeCallId, false), ['admin'], ['desc']);
         this.setState({
             currentParticipant,
             drawerOpen: open,
@@ -337,7 +337,7 @@ class CallSettings extends React.Component<IProps, IState> {
 
     private drawerContent() {
         const {participants, currentParticipant} = this.state;
-        const hasAccess = currentParticipant && (currentParticipant.initiator || currentParticipant.admin);
+        const hasAccess = currentParticipant && currentParticipant.peer.userid !== currentUserId && (currentParticipant.initiator || currentParticipant.admin);
         return <>
             {hasAccess && <div className="call-participant-item add-participant" onClick={this.addParticipantHandler}>
                 <div className="action-icon">
