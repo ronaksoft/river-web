@@ -22,7 +22,7 @@ import {codeLen, codePlaceholder} from "../../pages/SignUp";
 import {modifyCode} from "../../pages/SignUp/utils";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 import {InputPassword} from "../../services/sdk/messages/core.types_pb";
-import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
+import {faToEn} from "../../services/utilities/localize";
 import {DeletedUserDark} from "../UserAvatar/svg";
 
 import './style.scss';
@@ -31,6 +31,7 @@ interface IProps {
     onClose?: () => void;
     onError?: (message: string) => void;
     onDone?: () => void;
+    phone: string;
 }
 
 interface IState {
@@ -51,17 +52,16 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        this.apiManager = APIManager.getInstance();
-
         this.state = {
             code: codePlaceholder,
             open: false,
             password: '',
-            phone: this.apiManager.getConnInfo().Phone || '',
             phoneError: false,
             phoneHash: '',
             step: 0,
         };
+
+        this.apiManager = APIManager.getInstance();
     }
 
     public openDialog() {
@@ -75,7 +75,8 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, step, accountPassword, phone, password, code} = this.state;
+        const {phone} = this.props;
+        const {open, step, accountPassword, password, code} = this.state;
         return (
             <SettingsModal open={open} title={i18n.t('settings.delete_account.title')}
                            icon={<PersonOffRounded/>}
@@ -106,7 +107,6 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
                                       defaultCountry={'ir'}
                                       value={phone}
                                       autoHideDialCode={false}
-                                      onPhoneNumberChange={this.phoneChangeHandler}
                                       nationalMode={false}
                                       disabled={true}
                                       fieldId="input-phone"
@@ -185,6 +185,7 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
             open: false,
             password: '',
             phone: '',
+            phoneError: false,
             phoneHash: '',
             step: 1,
         });
@@ -208,17 +209,6 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
             this.setState({
                 accountPassword: res,
             });
-        });
-    }
-
-    private phoneChangeHandler = (e: any, value: any) => {
-        let phone = faToEn(value);
-        if (phone.indexOf('09') === 0) {
-            phone = phone.replace('09', `+989`);
-        }
-        this.setState({
-            phone: extractPhoneNumber(phone),
-            phoneError: false,
         });
     }
 
@@ -249,7 +239,8 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
     }
 
     private sendCodeHandler = () => {
-        const {phone, step} = this.state;
+        const {phone} = this.props;
+        const {step} = this.state;
         if (phone === '') {
             return;
         }

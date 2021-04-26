@@ -477,7 +477,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                            onDone={this.props.onReloadDialog}/>
                 <ChangePhoneModal ref={this.changePhoneModalRefHandler} onError={this.props.onError}
                                   onDone={this.changePhoneModalDoneHandler}/>
-                <DeleteAccountModal ref={this.deleteAccountModalRefHandler} onError={this.props.onError}
+                <DeleteAccountModal ref={this.deleteAccountModalRefHandler} onError={this.props.onError} phone={phone}
                                     onDone={this.deleteAccountModalDoneHandler}/>
                 <TwoStepVerificationModal ref={this.twoStepVerificationModalRefHandler} onError={this.props.onError}
                                           onDone={this.twoStepVerificationModalDoneHandler}/>
