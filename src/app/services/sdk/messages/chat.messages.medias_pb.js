@@ -6264,6 +6264,21 @@ proto.msg.PollAnswerVoters.prototype.setVoters = function(value) {
 /**
  * @enum {number}
  */
+proto.msg.DocumentType = {
+  DOCUMENTTYPEUNKNOWN: 0,
+  DOCUMENTTYPEPHOTO: 1,
+  DOCUMENTTYPEVOICE: 2,
+  DOCUMENTTYPEVIDEO: 3,
+  DOCUMENTTYPEWEBPAGE: 4,
+  DOCUMENTTYPERESERVED1: 5,
+  DOCUMENTTYPERESERVED2: 6,
+  DOCUMENTTYPERESERVED3: 7,
+  DOCUMENTTYPERESERVED4: 8
+};
+
+/**
+ * @enum {number}
+ */
 proto.msg.DocumentAttributeType = {
   ATTRIBUTETYPENONE: 0,
   ATTRIBUTETYPEAUDIO: 1,
@@ -6275,21 +6290,6 @@ proto.msg.DocumentAttributeType = {
   ATTRIBUTERESERVED2: 7,
   ATTRIBUTERESERVED3: 8,
   ATTRIBUTERESERVED4: 9
-};
-
-/**
- * @enum {number}
- */
-proto.msg.DocumentType = {
-  DOCUMENTTYPEUNKNOWN: 0,
-  DOCUMENTTYPEPHOTO: 1,
-  DOCUMENTTYPEVOICE: 2,
-  DOCUMENTTYPEVIDEO: 3,
-  DOCUMENTTYPEWEBPAGE: 4,
-  DOCUMENTTYPERESERVED1: 5,
-  DOCUMENTTYPERESERVED2: 6,
-  DOCUMENTTYPERESERVED3: 7,
-  DOCUMENTTYPERESERVED4: 8
 };
 
 goog.object.extend(exports, proto.msg);

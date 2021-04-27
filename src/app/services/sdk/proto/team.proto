@@ -2,7 +2,6 @@ syntax = "proto3";
 package msg;
 import "core.types.proto";
 
-option go_package = '.;msg';
 
 // TeamGet
 // @Function
@@ -68,7 +67,7 @@ message TeamListMembers {
 
 // TeamEdit
 // @Function
-// @Returns: Team
+// @Returns: Bool/Team
 message TeamEdit {
     int64 TeamID = 1 [jstype = JS_STRING];
     string Name = 2;

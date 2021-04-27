@@ -30,6 +30,14 @@ input {
     font-size: 12px;
     z-index: 10;
 
+    .workspace-label {
+      position: absolute;
+      color: var(--grey);
+      top: -24px;
+      right: 0;
+      left: 0;
+    }
+
     .version-container {
       width: 72px;
       color: #ACB0B4;

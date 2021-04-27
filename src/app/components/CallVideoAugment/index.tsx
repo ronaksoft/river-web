@@ -82,6 +82,7 @@ class CallVideoAugment extends React.Component<IProps, IState> {
 
     public destroyVOD() {
         if (this.vod) {
+            this.resetWaves();
             this.vod.destroy(false);
             this.vod = undefined;
         }
@@ -102,8 +103,14 @@ class CallVideoAugment extends React.Component<IProps, IState> {
                 <div ref={this.vodWaveSmoothRefHandler} className="inner-smooth"/>
                 <div ref={this.vodWaveRefHandler} className="inner"/>
             </div>}
-            {videoMute && userId && <UserAvatar className="video-user-placeholder" id={userId} noDetail={true}/>}
-            {audioMute && <div className="video-audio-muted">
+            {videoMute && userId && <div className="video-user-placeholder">
+                <UserAvatar className="call-user-avatar" id={userId} noDetail={true}/>
+                {audioMute && <div className="video-user-audio-muted">
+                    <MicOffRounded/>
+                    {i18n.t('call.muted')}
+                </div>}
+            </div>}
+            {!videoMute && audioMute && <div className="video-audio-muted">
                 <MicOffRounded/>
                 {i18n.t('call.muted')}
             </div>}
@@ -112,6 +119,7 @@ class CallVideoAugment extends React.Component<IProps, IState> {
 
     private checkVOD() {
         if (!this.vodEnable) {
+            this.resetWaves();
             return;
         }
         const {videoMute, audioMute, userId} = this.state;
@@ -139,6 +147,15 @@ class CallVideoAugment extends React.Component<IProps, IState> {
         this.vod.setStream(this.mediaStream, true).catch(() => {
             //
         });
+    }
+
+    private resetWaves() {
+        if (this.vodWave) {
+            this.vodWave.style.transform = `scale(1)`;
+        }
+        if (this.vodWaveSmooth) {
+            this.vodWaveSmooth.style.transform = `scale(1)`;
+        }
     }
 
     private vodWaveRefHandler = (ref: any) => {

@@ -8,7 +8,7 @@
 */
 
 import Http from './http';
-import {C_LOCALSTORAGE, C_MSG} from '../const';
+import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from '../const';
 import {File, FileGet, FileSavePart} from '../messages/files_pb';
 import {Bool, FileLocation, InputTeam} from '../messages/core.types_pb';
 import FileRepo, {GetDbFileName, md5FromBlob} from '../../../repository/file';
@@ -220,14 +220,17 @@ export default class FileManager {
         this.chunkBlob(blob).then((chunks) => {
             const saveFileToDBPromises: any[] = [];
             saveFileToDBPromises.push(md5FromBlob(blob));
+            const temps: ITempFile[] = [];
             chunks.forEach((chunk, index) => {
-                const temp: ITempFile = {
+                temps.push({
                     data: chunk,
                     id,
                     part: index + 1,
-                };
-                saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
+                });
             });
+            if (temps.length > 0) {
+                saveFileToDBPromises.push(this.fileRepo.setManyTemp(temps));
+            }
 
             Promise.all(saveFileToDBPromises).then((arr) => {
                 this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);
@@ -632,7 +635,7 @@ export default class FileManager {
                                 window.console.debug(`${chunk.part}/${chunkInfo.totalParts} downloaded, size: ${res}`);
                             }
                         }).catch((err) => {
-                            window.console.log(err);
+                            window.console.log(err, chunkInfo.fileLocation.toObject());
                             if (this.fileDownloadQueue.hasOwnProperty(name)) {
                                 this.fileDownloadQueue[name].pipelines--;
                                 if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
@@ -640,7 +643,9 @@ export default class FileManager {
                                     setTimeout(() => {
                                         this.startDownloading(name);
                                     }, 1000);
-                                } else if (err.code === 'E00' && err.items === 'not found') {
+                                } else if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemDocument) {
+                                    this.cancel(name);
+                                } else if (err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemServer) {
                                     this.cancel(name);
                                 } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                                     this.fileDownloadQueue[name].receiveChunks.push(chunk);
@@ -781,6 +786,12 @@ export default class FileManager {
                 }
                 return res.getBytes_asU8().byteLength;
             });
+        }).catch((err) => {
+            if (err && err.constructor === C_MSG.Error) {
+                return Promise.reject(err.data);
+            } else {
+                return Promise.reject(err);
+            }
         });
     }
 

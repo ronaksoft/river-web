@@ -91,6 +91,8 @@ import {canEditMessage, isEditableMessageType} from "../Message";
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
 
+export type shiftArrow = 'up' | 'right' | 'down' | 'left' | 'cancel';
+
 const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
     sortedEntities.sort((i1, i2) => {
         if (i1.offset === undefined || i2.offset === undefined) {
@@ -129,7 +131,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
         entity.setOffset(start);
         entity.setLength(len);
         entity.setType(MessageEntityType.MESSAGEENTITYTYPECODE);
-        entity.setUserid('');
+        entity.setUserid('0');
         entities.push(entity);
         codeResult.push({
             len,
@@ -147,12 +149,12 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
             underlineText = underlineRange(underlineText, r.start, r.len);
         });
     }
-    XRegExp.forEach(underlineText, /\bhttps?:\/\/\S+/, (match) => {
+    XRegExp.forEach(underlineText, /(\bhttps?:\/\/\S+)|([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](\.com|\.org|\.net|\.im|\.ir))/, (match) => {
         const entity = new MessageEntity();
         entity.setOffset(match.index);
         entity.setLength(match[0].length);
         entity.setType(MessageEntityType.MESSAGEENTITYTYPEURL);
-        entity.setUserid('');
+        entity.setUserid('0');
         entities.push(entity);
     });
     const hashTagReg = XRegExp('#[\\p{L}_]+');
@@ -161,7 +163,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
         entity.setOffset(match.index);
         entity.setLength(match[0].length);
         entity.setType(MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
-        entity.setUserid('');
+        entity.setUserid('0');
         entities.push(entity);
     });
     codeStarts.sort((a, b) => b - a);
@@ -188,6 +190,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
                 entity.setUserid(mention.id);
             }
             entities.push(entity);
+            underlineText = underlineRange(underlineText, mention.plainTextIndex - offset, mention.display.length);
         });
         mentions.filter((c) => {
             return c.id.indexOf('/') === 0;
@@ -199,6 +202,15 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
             entities.push(entity);
         });
     }
+    const mentionReg = XRegExp(/\B@([a-zA-Z][\da-zA-Z]{4,31})/);
+    XRegExp.forEach(underlineText, mentionReg, (match) => {
+        const entity = new MessageEntity();
+        entity.setOffset(match.index);
+        entity.setLength(match[0].length);
+        entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
+        entity.setUserid('0');
+        entities.push(entity);
+    });
     // const fn = (f: number, l: number, e: any) => {
     //     const entity = new MessageEntity();
     //     entity.setOffset(f);
@@ -250,6 +262,7 @@ interface IProps {
     onFocus?: () => void;
     onGifSelect: (item: IGif, viaBotId?: string) => void;
     onChatClose: () => void;
+    onShitKeyArrow: (arrow: shiftArrow) => void;
 }
 
 interface IState {
@@ -358,6 +371,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private startPosHold: number = 0;
     private recordingVoice: boolean = false;
     private loading: boolean = false;
+    private selectWithArrow: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -472,6 +486,7 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.props.onPreviewMessageChange) {
                 this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
             }
+            this.selectWithArrow = false;
             return;
         }
         if (this.state.previewMessageMode === C_MSG_MODE.Edit && previewMessageMode === C_MSG_MODE.Normal) {
@@ -506,9 +521,11 @@ class ChatInput extends React.Component<IProps, IState> {
             this.animatePreviewMessage();
             if (previewMessageMode === C_MSG_MODE.Edit || previewMessageMode === C_MSG_MODE.Reply) {
                 this.focus();
+                this.selectWithArrow = false;
             }
         });
         if (peer && this.state.peer !== peer) {
+            this.selectWithArrow = false;
             this.firstLoad = true;
             this.botKeyboard = undefined;
             this.preventMessageSend = false;
@@ -582,6 +599,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.typingThrottle) {
             this.typingThrottle.cancel();
         }
+        this.selectWithArrow = false;
     }
 
     public getUploaderOptions(): IUploaderOptions {
@@ -759,6 +777,7 @@ class ChatInput extends React.Component<IProps, IState> {
         } else {
             this.loading = false;
         }
+        this.selectWithArrow = false;
         this.removeDraft(removeDraft).finally(() => {
             if (cb) {
                 cb();
@@ -795,14 +814,21 @@ class ChatInput extends React.Component<IProps, IState> {
             const isBot = Boolean(this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data));
             const hasPreviewMessage = Boolean(previewMessage || (droppedMessage && droppedMessage.messagetype && droppedMessage.messagetype !== C_MESSAGE_TYPE.Normal));
             const {selectableHasPending, showInput} = this.state;
+            if (!showInput && !selectable) {
+                return <div className="input-placeholder">
+                    <span className="notice">{i18n.t('general.sending_message_is_not_allowed')}</span>
+                </div>;
+            }
             return (
                 <div className="chat-input">
-                    <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
-                           onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
-                    <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}
-                                   teamId={this.teamId}/>
-                    <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
-                    {(!selectable && hasPreviewMessage && showInput) &&
+                    {showInput && <>
+                        <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
+                               onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
+                        <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}
+                                       teamId={this.teamId}/>
+                        <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
+                    </>}
+                    {(!selectable && hasPreviewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
                             <div
@@ -833,7 +859,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
-                    {Boolean(!selectable && showInput) && <>
+                    {Boolean(!selectable) && <>
                         <div className={`inputs mode-${inputMode}`}>
                             <div className="user">
                                 <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
@@ -1188,7 +1214,11 @@ class ChatInput extends React.Component<IProps, IState> {
     private inputKeyDownHandler = (e: any) => {
         const textVal = e.target.value;
         const {previewMessageMode} = this.state;
-        if (e.key === 'Escape' && textVal.length === 0 && this.props.onChatClose && previewMessageMode === C_MSG_MODE.Normal) {
+        if (e.shiftKey || (e.key === 'Escape' && this.selectWithArrow)) {
+            this.handleShiftArrowKeys(e.keyCode);
+            return;
+        }
+        if (e.key === 'Escape' && textVal.length === 0 && this.props.onChatClose && previewMessageMode === C_MSG_MODE.Normal && !this.selectWithArrow) {
             this.props.onChatClose();
             return;
         }
@@ -1207,6 +1237,32 @@ class ChatInput extends React.Component<IProps, IState> {
             });
         } else if (e.keyCode === 27) {
             this.clearPreviewMessage(false)();
+        }
+    }
+
+    private handleShiftArrowKeys(code: number) {
+        // 37 <
+        // 38 ^
+        // 39 >
+        // 40 v
+        switch (code) {
+            case 37:
+                this.props.onShitKeyArrow('left');
+                break;
+            case 38:
+                this.props.onShitKeyArrow('up');
+                this.selectWithArrow = true;
+                break;
+            case 39:
+                this.props.onShitKeyArrow('right');
+                break;
+            case 40:
+                this.props.onShitKeyArrow('down');
+                break;
+            case 27:
+                this.props.onShitKeyArrow('cancel');
+                this.selectWithArrow = false;
+                break;
         }
     }
 

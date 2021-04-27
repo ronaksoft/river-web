@@ -166,6 +166,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         const {
             user, page, peer, edit, firstname, lastname, phone, isInContact, dialog, shareMediaEnabled,
         } = this.state;
+        const isOfficial = user && user.official;
         return (
             <div className="user-info-menu">
                 <div className={'page-container page-' + page}>
@@ -194,7 +195,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <label>{i18n.t('general.first_name')}</label>
                                             <div className="inner">{user.firstname}{user && user.official &&
                                             <OfficialIcon/>}</div>
-                                            {Boolean(!this.me && isInContact) && <div className="action">
+                                            {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
                                                 <IconButton
                                                     onClick={this.editHandler}
                                                 >
@@ -220,7 +221,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         <div className="form-control">
                                             <label>{i18n.t('general.last_name')}</label>
                                             <div className="inner">{user.lastname}</div>
-                                            {Boolean(!this.me && isInContact) && <div className="action">
+                                            {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
                                                 <IconButton
                                                     onClick={this.editHandler}
                                                 >
@@ -301,9 +302,9 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.teamId}
-                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}
-                                           onBulkAction={this.props.onBulkAction}/>}
+                                <PeerMedia key={peer.getId() || ''}  className="kk-card" peer={peer} full={false}
+                                           teamId={this.teamId} onMore={this.peerMediaMoreHandler}
+                                           onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                             </div>
                         </Scrollbars>
                     </div>
@@ -319,8 +320,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia className="kk-card" peer={peer} teamId={this.teamId} full={true}
-                                   onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
+                        <PeerMedia key={peer.getId() || ''} className="kk-card" peer={peer} teamId={this.teamId}
+                                   full={true} onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                     </div>
                 </div>
             </div>

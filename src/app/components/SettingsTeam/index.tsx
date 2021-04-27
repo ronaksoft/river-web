@@ -41,10 +41,10 @@ import {ITeam} from "../../repository/team/interface";
 import {switchClasses} from "../SettingsMenu";
 import TeamRepo from "../../repository/team";
 import {ModalityService} from "kk-modality";
-
-import './style.scss';
 import {PartialDeep} from "type-fest";
 import {TeamFlags} from "../../services/sdk/messages/core.types_pb";
+
+import './style.scss';
 
 interface IMember {
     admin: boolean;

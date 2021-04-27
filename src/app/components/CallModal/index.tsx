@@ -10,7 +10,7 @@
 import React from 'react';
 import {Dialog, Grow, IconButton, Tooltip} from '@material-ui/core';
 import {TransitionProps} from '@material-ui/core/transitions';
-import Draggable, {ControlPosition} from 'react-draggable';
+import Draggable, {ControlPosition, DraggableData} from 'react-draggable';
 import {InputPeer, InputUser, PeerType} from "../../services/sdk/messages/core.types_pb";
 import CallService, {
     C_CALL_EVENT,
@@ -52,6 +52,7 @@ import {IUser} from "../../repository/user/interface";
 import ScreenCaptureModal from "../ScreenCaptureModal";
 import {EventResize} from "../../services/events";
 import IsMobile from "../../services/isMobile";
+import ElectronService from "../../services/electron";
 
 import './style.scss';
 
@@ -113,6 +114,15 @@ class CallModal extends React.Component<IProps, IState> {
     private videoCall: boolean = false;
     private readonly windowResizeDebounce: any = undefined;
     private readonly isMobile = IsMobile.isAny();
+    private draggablePos: DraggableData = {
+        deltaX: 0,
+        deltaY: 0,
+        lastX: 0,
+        lastY: 0,
+        node: window.document as any,
+        x: 0,
+        y: 0,
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -212,7 +222,7 @@ class CallModal extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantLeft, this.eventParticipantLeftHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantJoined, this.eventParticipantJoinedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantRemoved, this.eventParticipantRemovedHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventScreenShareSteamUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventScreenShareSteamUpdatedHandler));
         window.addEventListener(EventResize, this.windowResizeHandler);
     }
 
@@ -255,7 +265,8 @@ class CallModal extends React.Component<IProps, IState> {
             <>
                 {Boolean(enableDrag) ?
                     <Draggable handle="#draggable-call-modal" cancel={'[class*="MuiDialogContent-root"]'}
-                               positionOffset={this.getDraggableOffset()} disabled={fullscreen}>
+                               positionOffset={this.getDraggableOffset()} disabled={fullscreen}
+                               onStop={this.draggableStopHandler}>
                         {dialogRenderer()}
                     </Draggable> : dialogRenderer()}
                 <ContactPicker ref={this.contactPickerRefHandler} groupId={groupId} teamId={this.teamId}
@@ -283,6 +294,10 @@ class CallModal extends React.Component<IProps, IState> {
         this.openDialog(this.peer, this.videoCall, true);
     }
 
+    private draggableStopHandler = (e: any, data: DraggableData) => {
+        this.draggablePos = data;
+    }
+
     private getDraggableOffset(): ControlPosition | undefined {
         const xo = -320;
         const yo = -240;
@@ -296,8 +311,8 @@ class CallModal extends React.Component<IProps, IState> {
         const w = window.innerWidth;
         const h = window.innerHeight;
         return {
-            x: ((w / 2) - C_MINIMIZE_WIDTH) - C_MINIMIZE__PADDING,
-            y: -((h / 2) - C_MINIMIZE__PADDING),
+            x: (((w / 2) - C_MINIMIZE_WIDTH) - C_MINIMIZE__PADDING) - this.draggablePos.x,
+            y: -((h / 2) - C_MINIMIZE__PADDING) - this.draggablePos.y,
         };
     }
 
@@ -327,6 +342,8 @@ class CallModal extends React.Component<IProps, IState> {
         this.peer = null;
         this.loading = false;
         this.videoCall = false;
+        this.draggablePos.x = 0;
+        this.draggablePos.y = 0;
     }
 
     private toggleFullscreenHandler = () => {
@@ -355,11 +372,15 @@ class CallModal extends React.Component<IProps, IState> {
         } else {
             this.setState({
                 minimize: !this.state.minimize,
+            }, () => {
+                if (this.callVideoRef) {
+                    this.callVideoRef.resize(this.state.fullscreen);
+                }
             });
         }
     }
 
-    private showPreview(video: boolean, callId?: string) {
+    private showPreview(video: boolean, callId?: string, disableVideo?: boolean) {
         this.timeStart = 0;
         this.timeEnd = 0;
         const state: Partial<IState> = {
@@ -372,8 +393,9 @@ class CallModal extends React.Component<IProps, IState> {
             state.callId = callId;
         }
         this.mediaSettings.video = video;
+        const useVideo = video && disableVideo !== true;
         this.setState(state as any, () => {
-            this.initMediaStreams(video).then((stream) => {
+            this.initMediaStreams(useVideo).then((stream) => {
                 if (this.videoRef) {
                     this.videoRef.srcObject = stream;
                 }
@@ -544,7 +566,7 @@ class CallModal extends React.Component<IProps, IState> {
                         <CallRounded/>
                     </div>
                 </div> : <div className="call-buttons">
-                    <div className="call-item call-end" onClick={this.rejectCallHandler}>
+                    <div className="call-item call-end" onClick={this.closeHandler}>
                         <CallEndRounded/>
                     </div>
                     <div className="call-item call-accept" onClick={this.callHandler(callId)}>
@@ -715,6 +737,7 @@ class CallModal extends React.Component<IProps, IState> {
                         if (this.callSettingsRef) {
                             this.callSettingsRef.startAudioAnalyzer();
                         }
+                        this.checkLocalGroupVideo();
                     });
                 }).catch((err) => {
                     if (err && ((err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemUserID) || (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemAccessHash))) {
@@ -810,6 +833,10 @@ class CallModal extends React.Component<IProps, IState> {
             } else if (this.state.mode !== 'call_report') {
                 this.closeHandler();
             }
+        }).catch((err) => {
+            if (err && err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemCall) {
+                this.closeHandler();
+            }
         }).finally(() => {
             this.loading = false;
         });
@@ -817,12 +844,16 @@ class CallModal extends React.Component<IProps, IState> {
 
     private focus() {
         if (this.state.mode !== 'call_request' && this.state.mode !== 'call_join_request' && !window.document.hasFocus()) {
-            const popupWin = window.open('url', 'call_request', 'scrollbars=no,resizable=yes, width=1,height=1,status=no,location=no,toolbar=no');
-            if (popupWin) {
-                popupWin.focus();
-                popupWin.close();
+            if (ElectronService.isElectron()) {
+                ElectronService.getInstance().focus();
+            } else {
+                const popupWin = window.open('url', 'call_request', 'scrollbars=no,resizable=yes, width=1,height=1,status=no,location=no,toolbar=no');
+                if (popupWin) {
+                    popupWin.focus();
+                    popupWin.close();
+                }
+                window.focus();
             }
-            window.focus();
         }
     }
 
@@ -860,7 +891,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private eventCallJoinedHandler = ({peer, callId}: { peer: InputPeer, callId: string }) => {
         this.peer = peer;
-        this.showPreview(true, callId);
+        this.showPreview(true, callId, true);
     }
 
     private eventCallRejectedHandler = ({reason}: { reason: DiscardReason }) => {
@@ -939,15 +970,24 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private eventLocalStreamUpdatedHandler = (stream: MediaStream) => {
-        if (!this.videoRef) {
-            return;
+        if (this.videoRef) {
+            this.videoRef.srcObject = stream;
+            const allAudio = this.callService.areAllAudio();
+            if (this.state.allAudio !== allAudio) {
+                this.setState({
+                    allAudio,
+                }, this.checkMinimize);
+            }
         }
+        this.checkLocalGroupVideo();
+    }
 
-        this.videoRef.srcObject = stream;
-        const allAudio = this.callService.areAllAudio();
-        if (this.state.allAudio !== allAudio) {
+    private checkLocalGroupVideo() {
+        // add video to CallVideo in group calls
+        if (this.callVideoRef && this.peer && this.peer.getType() === PeerType.PEERGROUP && !this.state.localVideoInGrid) {
+            this.callVideoRef.addLocalVideo(true, this.videoRefHandler);
             this.setState({
-                allAudio,
+                localVideoInGrid: true,
             }, this.checkMinimize);
         }
     }
@@ -963,6 +1003,10 @@ class CallModal extends React.Component<IProps, IState> {
         } else {
             this.setState({
                 minimize: false,
+            }, () => {
+                if (this.callVideoRef) {
+                    this.callVideoRef.resize(this.state.fullscreen);
+                }
             });
         }
     }

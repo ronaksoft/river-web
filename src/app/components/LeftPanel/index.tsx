@@ -16,9 +16,9 @@ import {findIndex} from "lodash";
 import {PersonRounded, CallRounded} from "@material-ui/icons";
 import Scrollbars from "react-custom-scrollbars";
 import i18n from "../../services/i18n";
+import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 import './style.scss';
-import {C_LOCALSTORAGE} from "../../services/sdk/const";
 
 interface IProps {
     onAction: (cmd: string) => (e: any) => void;
@@ -42,7 +42,7 @@ class LeftPanel extends React.Component<IProps, IState> {
         };
     }
 
-    private rtl: boolean = false;
+    private readonly rtl: boolean = false;
 
     constructor(props: IProps) {
         super(props);

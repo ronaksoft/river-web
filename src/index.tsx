@@ -14,9 +14,9 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 import './index.css';
 
-export const C_VERSION = '1.0.93';
-export const C_ELECTRON_VERSIONS = ['11.2.4'];
-export const C_APP_VERSION = '0.32.0';
+export const C_VERSION = '1.1.23';
+export const C_ELECTRON_VERSIONS = ['12.0.5'];
+export const C_APP_VERSION = '0.34.0';
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 
 const App = React.lazy(() => import('./App'));

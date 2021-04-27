@@ -282,9 +282,6 @@ export default class UserRepo {
                     user.status_last_modified = RiverTime.getInstance().now();
                 } else if (user.lastseen) {
                     user.status_last_modified = user.lastseen;
-                } else if (user.status === UserStatus.USERSTATUSRECENTLY) {
-                    user.status_last_modified = 0;
-                    user.lastseen = 0;
                 }
                 if (user.remove_photo) {
                     delete user.remove_photo;
@@ -415,9 +412,9 @@ export default class UserRepo {
             if (u1.status !== undefined && u2.status === undefined) {
                 u2.status = u1.status;
             }
-            if (u1.status_last_modified !== undefined && u2.status_last_modified === undefined) {
-                u2.status_last_modified = u1.status_last_modified;
-            }
+            // if (u1.status_last_modified !== undefined && u2.status_last_modified === undefined) {
+            //     u2.status_last_modified = u1.status_last_modified;
+            // }
             if (!force && u1.username && u1.username.length > 0 && (!u2.username || (u2.username && u2.username.length === 0))) {
                 u2.username = u1.username;
             }
@@ -432,6 +429,7 @@ export default class UserRepo {
             }
             if (u2.status === UserStatus.USERSTATUSOFFLINE) {
                 u2.status_last_modified = 0;
+                u2.lastseen = 0;
             }
             if (u2.photogalleryList) {
                 u1.photogalleryList = u2.photogalleryList;

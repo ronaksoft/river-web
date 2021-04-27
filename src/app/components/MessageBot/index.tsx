@@ -7,7 +7,6 @@
     Copyright Ronak Software Group 2020
 */
 
-import React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 import {C_REPLY_ACTION} from "../../repository/message/consts";

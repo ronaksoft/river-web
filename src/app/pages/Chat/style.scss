@@ -484,6 +484,10 @@ html[theme="dark-blue"][bg="15"] {
   ul {
     padding: 6px 0 !important;
     min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    justify-content: center;
 
     .context-icon {
       min-width: 36px;
@@ -498,6 +502,10 @@ html[theme="dark-blue"][bg="15"] {
       padding: 3px 12px;
       font-size: 13px;
       min-height: auto;
+      width: 100%;
+      display: flex;
+      align-content: center;
+      justify-content: flex-start;
     }
   }
 

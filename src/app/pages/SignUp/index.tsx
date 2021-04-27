@@ -45,6 +45,7 @@ import SessionDialog from "../../components/SessionDialog";
 
 import './tel-input.css';
 import './style.scss';
+import MainRepo from "../../repository";
 
 let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const electronVersion = ElectronService.electronVersion();
@@ -234,9 +235,6 @@ class SignUp extends React.Component<IProps, IState> {
                                            value={this.state.workspace}
                                            onKeyDown={this.workspaceKeyDownHandler}
                                            onChange={this.workspaceChangeHandler}/>}
-                                {step !== 'workspace' && workspaceInfo.workgroupname && <div className="text-wrapper">
-                                    {workspaceInfo.workgroupname}
-                                </div>}
                             </div>
                             {step === 'workspace' && <div className="input-wrapper qr-wrapper">
                                 <div className="qr-link"
@@ -366,7 +364,9 @@ class SignUp extends React.Component<IProps, IState> {
                     </div>
                 </div>
                 <div className="login-bottom-bar">
-                    <div className="version-container" onClick={this.versionClickHandler}>{C_VERSION}</div>
+                    <div className="version-container" onClick={this.versionClickHandler}>
+                        {C_VERSION}
+                    </div>
                     <div className="link-container">
                         <a href="https://river.im" target="_blank"
                            rel="noopener noreferrer">{i18n.t('sign_up.home')}</a>
@@ -379,6 +379,9 @@ class SignUp extends React.Component<IProps, IState> {
                     </div>
                     <div className="language-container"
                          onClick={this.showLanguageDialogHandler}>{i18n.t(`sign_up.${this.state.selectedLanguage}`)}</div>
+                    {step !== 'workspace' && workspaceInfo.workgroupname && <div className="workspace-label">
+                        {workspaceInfo.workgroupname}
+                    </div>}
                 </div>
                 <SettingsModal
                     open={this.state.qrCodeOpen}
@@ -637,7 +640,9 @@ class SignUp extends React.Component<IProps, IState> {
             // this.notification.initToken().then((token) => {
             //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             // }).catch(() => {
-            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
+                this.checkLastPhone(info.Phone);
+            });
             // });
         };
         const maxSessions = this.apiManager.getInstantSystemConfig().maxactivesessions || 7;
@@ -799,7 +804,9 @@ class SignUp extends React.Component<IProps, IState> {
             // this.notification.initToken().then((token) => {
             //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             // }).catch(() => {
-            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
+                this.checkLastPhone(info.Phone);
+            });
             // });
         }).catch((err) => {
             this.setState({
@@ -816,6 +823,19 @@ class SignUp extends React.Component<IProps, IState> {
                 this.props.enqueueSnackbar(`Error! Code:${err.code} Items${err.items}`);
             }
         });
+    }
+
+    private checkLastPhone(currentPhone: string) {
+        const lastPhone = localStorage.getItem(C_LOCALSTORAGE.LastPhone);
+        if (!lastPhone) {
+            return;
+        }
+        localStorage.removeItem(C_LOCALSTORAGE.LastPhone);
+        if (currentPhone !== lastPhone) {
+            MainRepo.getInstance().destroyDB().then(() => {
+                window.location.reload();
+            });
+        }
     }
 
     private registerKeyDownHandler = (e: any) => {

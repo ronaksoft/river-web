@@ -1,4 +1,3 @@
-import React from "react";
 import {
     Button, ButtonBuy, ButtonCallback, ButtonRequestGeoLocation, ButtonRequestPhone, ButtonSwitchInline,
     ButtonUrl,

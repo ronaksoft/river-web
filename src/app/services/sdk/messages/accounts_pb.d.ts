@@ -309,27 +309,55 @@ export namespace AccountSendChangePhoneCode {
   }
 }
 
-export class AccountResendChangePhoneCode extends jspb.Message {
+export class AccountSendVerifyPhoneCode extends jspb.Message {
+  getPhone(): string;
+  setPhone(value: string): void;
+
+  getApphash(): string;
+  setApphash(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountSendVerifyPhoneCode.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountSendVerifyPhoneCode): AccountSendVerifyPhoneCode.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountSendVerifyPhoneCode, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountSendVerifyPhoneCode;
+  static deserializeBinaryFromReader(message: AccountSendVerifyPhoneCode, reader: jspb.BinaryReader): AccountSendVerifyPhoneCode;
+}
+
+export namespace AccountSendVerifyPhoneCode {
+  export type AsObject = {
+    phone: string,
+    apphash: string,
+  }
+}
+
+export class AccountResendVerifyPhoneCode extends jspb.Message {
   getPhone(): string;
   setPhone(value: string): void;
 
   getPhonecodehash(): string;
   setPhonecodehash(value: string): void;
 
+  getApphash(): string;
+  setApphash(value: string): void;
+
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): AccountResendChangePhoneCode.AsObject;
-  static toObject(includeInstance: boolean, msg: AccountResendChangePhoneCode): AccountResendChangePhoneCode.AsObject;
+  toObject(includeInstance?: boolean): AccountResendVerifyPhoneCode.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountResendVerifyPhoneCode): AccountResendVerifyPhoneCode.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: AccountResendChangePhoneCode, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): AccountResendChangePhoneCode;
-  static deserializeBinaryFromReader(message: AccountResendChangePhoneCode, reader: jspb.BinaryReader): AccountResendChangePhoneCode;
+  static serializeBinaryToWriter(message: AccountResendVerifyPhoneCode, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountResendVerifyPhoneCode;
+  static deserializeBinaryFromReader(message: AccountResendVerifyPhoneCode, reader: jspb.BinaryReader): AccountResendVerifyPhoneCode;
 }
 
-export namespace AccountResendChangePhoneCode {
+export namespace AccountResendVerifyPhoneCode {
   export type AsObject = {
     phone: string,
     phonecodehash: string,
+    apphash: string,
   }
 }
 
@@ -364,6 +392,44 @@ export namespace AccountChangePhone {
     phonecodehash: string,
     phonecode: string,
     password?: core_types_pb.InputPassword.AsObject,
+  }
+}
+
+export class AccountDelete extends jspb.Message {
+  getPhone(): string;
+  setPhone(value: string): void;
+
+  getPhonecodehash(): string;
+  setPhonecodehash(value: string): void;
+
+  getPhonecode(): string;
+  setPhonecode(value: string): void;
+
+  hasPassword(): boolean;
+  clearPassword(): void;
+  getPassword(): core_types_pb.InputPassword | undefined;
+  setPassword(value?: core_types_pb.InputPassword): void;
+
+  getReason(): string;
+  setReason(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountDelete.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountDelete): AccountDelete.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountDelete, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountDelete;
+  static deserializeBinaryFromReader(message: AccountDelete, reader: jspb.BinaryReader): AccountDelete;
+}
+
+export namespace AccountDelete {
+  export type AsObject = {
+    phone: string,
+    phonecodehash: string,
+    phonecode: string,
+    password?: core_types_pb.InputPassword.AsObject,
+    reason: string,
   }
 }
 

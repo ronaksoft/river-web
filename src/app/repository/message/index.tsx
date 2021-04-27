@@ -8,13 +8,19 @@
 */
 
 import MessageDB from '../../services/db/message';
-import {IMessage, IPendingMessage, IReactionInfo} from './interface';
+import {
+    IMessage,
+    IMessageWithMedia,
+    IMessageWithMediaMany,
+    IPendingMessage,
+    IReactionInfo
+} from './interface';
 import {cloneDeep, differenceBy, find, throttle, uniq, difference, groupBy} from 'lodash';
 import APIManager, {currentUserId} from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import {
-    InputPeer,
+    InputPeer, MediaCategory,
     MediaType,
     MessageEntityType, ReactionCounter,
     UserMessage
@@ -33,7 +39,7 @@ import {
     DocumentAttributeVideo,
     MediaContact,
     MediaDocument,
-    MediaGeoLocation,
+    MediaGeoLocation, MediaWebDocument,
 } from '../../services/sdk/messages/chat.messages.medias_pb';
 import {
     MessageActionCallEnded,
@@ -48,7 +54,6 @@ import {
     MessageActionScreenShotTaken,
 } from '../../services/sdk/messages/chat.messages.actions_pb';
 import MediaRepo from '../media';
-import {C_MEDIA_TYPE} from '../media/interface';
 import {kMerge} from "../../services/utilities/kDash";
 import {emojiLevel} from "../../services/utilities/emoji";
 import FileRepo from "../file";
@@ -64,6 +69,7 @@ import {
     ReplyKeyboardMarkup
 } from "../../services/sdk/messages/chat.messages.markups_pb";
 import DialogRepo from "../dialog";
+import {IMedia} from "../media/interface";
 
 interface IClearHistory {
     teamId: string;
@@ -199,7 +205,7 @@ export default class MessageRepo {
         return attrOut;
     }
 
-    public static parseMessage(msg: Partial<UserMessage.AsObject>, userId: string): IMessage {
+    public static parseMessage(msg: Partial<UserMessage.AsObject>, userId: string): IMessageWithMedia {
         const out: IMessage = msg;
         if (msg.entitiesList && msg.entitiesList.length > 0) {
             out.mention_me = msg.entitiesList.some((entity) => {
@@ -255,8 +261,16 @@ export default class MessageRepo {
                     out.mediadata = MediaGeoLocation.deserializeBinary(mediaData).toObject();
                     out.messagetype = C_MESSAGE_TYPE.Location;
                     break;
+                case MediaType.MEDIATYPEWEBDOCUMENT:
+                    out.mediadata = MediaWebDocument.deserializeBinary(mediaData).toObject();
+                    if (out.mediadata && out.mediadata.attributesList) {
+                        out.attributes = this.parseAttributes(out.mediadata.attributesList, {type: C_MESSAGE_TYPE.Normal});
+                    }
+                    out.messagetype = C_MESSAGE_TYPE.WebDocument;
+                    break;
             }
             delete out.media;
+            delete msg.media;
         }
         if (msg.messageactiondata) {
             // @ts-ignore
@@ -317,39 +331,45 @@ export default class MessageRepo {
             }
             delete out.replymarkupdata;
         }
-        let msgType: number = 0;
+        let mediaType: MediaCategory = 0;
         switch (out.messagetype) {
             case C_MESSAGE_TYPE.Picture:
-                msgType = C_MEDIA_TYPE.PHOTO;
+                mediaType = MediaCategory.MEDIACATEGORYMEDIA;
                 break;
             case C_MESSAGE_TYPE.Video:
-                msgType = C_MEDIA_TYPE.VIDEO;
+                mediaType = MediaCategory.MEDIACATEGORYMEDIA;
                 break;
             case C_MESSAGE_TYPE.File:
-                msgType = C_MEDIA_TYPE.FILE;
+                mediaType = MediaCategory.MEDIACATEGORYFILE;
                 break;
             case C_MESSAGE_TYPE.Audio:
-                msgType = C_MEDIA_TYPE.AUDIO;
+                mediaType = MediaCategory.MEDIACATEGORYAUDIO;
                 break;
             case C_MESSAGE_TYPE.Voice:
-                msgType = C_MEDIA_TYPE.VOICE;
+                mediaType = MediaCategory.MEDIACATEGORYVOICE;
                 break;
             case C_MESSAGE_TYPE.Location:
-                msgType = C_MEDIA_TYPE.LOCATION;
+                mediaType = MediaCategory.MEDIACATEGORYLOCATION;
                 break;
             case C_MESSAGE_TYPE.Gif:
-                msgType = C_MEDIA_TYPE.GIF;
+                mediaType = MediaCategory.MEDIACATEGORYGIF;
+                break;
+            case C_MESSAGE_TYPE.Contact:
+                mediaType = MediaCategory.MEDIACATEGORYCONTACT;
+                break;
+            case C_MESSAGE_TYPE.WebDocument:
+                mediaType = MediaCategory.MEDIACATEGORYWEB;
                 break;
         }
-        if (msgType && out.id && (out.id || 0) > 0) {
-            MediaRepo.getInstance().importBulk([{
-                id: out.id,
-                peerid: out.peerid || '',
-                peertype: out.peertype || 0,
-                teamid: out.teamid || '0',
-                type: msgType,
-            }]);
-        }
+        // if (msgType && out.id && (out.id || 0) > 0) {
+        //     MediaRepo.getInstance().importBulk([{
+        //         id: out.id,
+        //         peerid: out.peerid || '',
+        //         peertype: out.peertype || 0,
+        //         teamid: out.teamid || '0',
+        //         type: msgType,
+        //     }]);
+        // }
         if (out.body && out.body.length > 0) {
             out.rtl = RTLDetector.getInstance().direction(out.body);
         }
@@ -365,13 +385,37 @@ export default class MessageRepo {
             out.reactionsList = modifyReactions(out.reactionsList || []);
             out.reaction_updated = true;
         }
-        return out;
+        const d: IMessageWithMedia = {
+            message: out,
+        };
+        if (mediaType) {
+            d.media = {
+                hole: false,
+                id: out.id,
+                peerid: out.peerid,
+                peertype: out.peertype,
+                teamid: out.teamid,
+                timestamp: out.createdon,
+                type: mediaType,
+            };
+        }
+        return d;
     }
 
-    public static parseMessageMany(msg: Partial<UserMessage.AsObject>[], userId: string): IMessage[] {
-        return msg.map((m) => {
-            return this.parseMessage(m, userId);
+    public static parseMessageMany(msg: Partial<UserMessage.AsObject>[], userId: string): IMessageWithMediaMany {
+        const messages: IMessage[] = [];
+        const medias: IMedia[] = [];
+        msg.forEach((m) => {
+            const d = this.parseMessage(m, userId);
+            messages.push(d.message);
+            if (d.media && d.media.type) {
+                medias.push(d.media);
+            }
         });
+        return {
+            medias,
+            messages,
+        };
     }
 
     public static getInstance() {
@@ -389,6 +433,7 @@ export default class MessageRepo {
     private apiManager: APIManager;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
+    private mediaRepo: MediaRepo;
     private messageBundle: { [key: string]: IMessageBundle } = {};
     private readonly getBundleMessageThrottle: any = null;
     private actionList: IMessageAction[] = [];
@@ -401,6 +446,7 @@ export default class MessageRepo {
         this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
+        this.mediaRepo = MediaRepo.getInstance();
         this.getBundleMessageThrottle = throttle(this.getMessageForBundle, 300);
     }
 
@@ -572,27 +618,29 @@ export default class MessageRepo {
         pipe2 = pipe2.filter((item: IMessage) => {
             return (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Date && item.messagetype !== C_MESSAGE_TYPE.NewMessage;
         });
-        return pipe2.limit(safeLimit).toArray().then((res) => {
+        return pipe2.limit(safeLimit).toArray().then((list) => {
             const earlyMessages: IMessage[] = [];
-            const hasHole = res.some((item) => {
+            let earlyFnCalled = false;
+            const hasHole = list.some((item) => {
                 if (fnEarlyCallback && mode === 0x1) {
                     if (item.messagetype === C_MESSAGE_TYPE.Hole) {
                         fnEarlyCallback(earlyMessages);
+                        earlyFnCalled = true;
                         return true;
                     }
                     earlyMessages.push(item);
                 }
                 return (item.messagetype === C_MESSAGE_TYPE.Hole);
             });
-            window.console.debug('has hole:', hasHole);
-            let lastId: number = (mode === 0x2 ? safeAfter : safeBefore);
+            window.console.debug('message: has hole:', hasHole);
             const asc = (mode === 0x2);
+            let lastId: number = (asc ? safeAfter : safeBefore);
             if (localOnly && hasHole) {
                 localOnly = false;
             }
             if (!hasHole) {
-                if (res.length > 0) {
-                    lastId = (res[res.length - 1].id || -1);
+                if (list.length > 0) {
+                    lastId = (list[list.length - 1].id || -1);
                     if (lastId !== -1) {
                         if (asc) {
                             lastId += 1;
@@ -601,20 +649,27 @@ export default class MessageRepo {
                         }
                     }
                 }
-                if (fnEarlyCallback && res.length > 0) {
-                    fnEarlyCallback(res);
-                    return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit - res.length, localOnly);
+                if (fnEarlyCallback && list.length > 0) {
+                    fnEarlyCallback(list);
+                    return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit - list.length, localOnly);
                 } else {
                     if (fnEarlyCallback) {
                         fnEarlyCallback([]);
                     }
-                    return this.completeMessagesLimitFromRemote(teamId, peer, res, lastId, asc, safeLimit - res.length, localOnly);
+                    return this.completeMessagesLimitFromRemote(teamId, peer, list, lastId, asc, safeLimit - list.length, localOnly);
                 }
             } else {
-                if (fnEarlyCallback) {
+                if (!earlyFnCalled && fnEarlyCallback) {
                     fnEarlyCallback([]);
                 }
-                return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit, localOnly);
+                return this.completeMessagesLimitFromRemote(teamId, peer, [], lastId, asc, safeLimit, localOnly).then((res) => {
+                    if (earlyFnCalled && earlyMessages.length > 0) {
+                        const ids = earlyMessages.map(o => o.id);
+                        return res.filter(o => ids.indexOf(o.id) === -1);
+                    } else {
+                        return res;
+                    }
+                });
             }
         });
     }
@@ -744,13 +799,14 @@ export default class MessageRepo {
             pipe2 = pipe2.filter((item: IMessage) => {
                 if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0) {
                     let isMatched = false;
+                    const hasFilter = labelIds.length > 0 || senderIds.length > 0;
                     if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
                         isMatched = true;
                     }
                     if (senderIds && senderIds.length && senderIds.indexOf(item.senderid || '0') > -1) {
                         isMatched = true;
                     }
-                    if (keyword.length > 0) {
+                    if (((hasFilter && isMatched) || !hasFilter) && keyword.length > 0) {
                         if (item.messagetype === 0 || item.messagetype === C_MESSAGE_TYPE.Normal) {
                             isMatched = reg.test(item.body || '');
                         } else {
@@ -937,37 +993,21 @@ export default class MessageRepo {
     }
 
     public insertDiscrete(teamId: string, messages: IMessage[]) {
-        const peerGroups = groupBy(messages, (o => `${o.peerid || ''}_${o.peertype || 0}`));
-        const edgeIds: any[] = [];
-        const holeIds: { [key: number]: { lower: boolean, peerId: string, peerType: number } } = {};
-        for (const [peerId, msgs] of Object.entries(peerGroups)) {
-            msgs.sort((a, b) => (a.id || 0) - (b.id || 0)).forEach((msg, index) => {
-                const id = msg.id || 0;
-                const d = peerId.split('_');
-                const peerid: string = d[0];
-                const peertype: number = parseInt(d[1], 10);
-                if (id > 1 && (index === 0 || (index > 0 && ((msgs[index - 1].id || 0) + 1) !== msg.id))) {
-                    edgeIds.push([teamId, peerid, peertype, id - 1]);
-                    holeIds[id - 1] = {lower: true, peerId: peerid, peerType: peertype};
-                }
-                if ((msgs.length - 1 === index) || (msgs.length - 1 > index && ((msgs[index + 1].id || 0) - 1) !== msg.id)) {
-                    edgeIds.push([teamId, peerid, peertype, id + 1]);
-                    holeIds[id + 1] = {lower: false, peerId: peerid, peerType: peertype};
-                }
-            });
+        if (messages.length === 0) {
+            return Promise.resolve();
         }
-        return this.db.messages.where('[teamid+peerid+peertype+id]').anyOf(edgeIds).toArray().then((msgs) => {
-            const holes: IMessage[] = [];
-            msgs.forEach((msg) => {
-                const id = msg.id || 0;
-                if (holeIds.hasOwnProperty(id)) {
-                    delete holeIds[id];
-                }
-            });
-            for (const [id, data] of Object.entries(holeIds)) {
-                holes.push(this.getHoleMessage(teamId, data.peerId, data.peerType, parseInt(id, 10), data.lower));
+        const ids = messages.map(o => o.id);
+        return this.db.messages.where('id').anyOf(ids).toArray().then((res) => {
+            if (res.length === 0) {
+                return this.insertTrimmedDiscrete(teamId, messages) as any;
             }
-            return this.db.messages.bulkPut([...messages, ...holes]);
+            const listIds = res.map(o => o.id);
+            const list = messages.filter((o) => listIds.indexOf(o.id) === -1);
+            if (list.length > 0) {
+                return this.insertTrimmedDiscrete(teamId, list) as any;
+            } else {
+                return Promise.resolve();
+            }
         });
     }
 
@@ -975,14 +1015,8 @@ export default class MessageRepo {
         return this.db.messages.put(this.getHoleMessage(teamId, peerId, peerType, id, after));
     }
 
-    public getHoleMessage(teamId: string, peerId: string, peerType: number, id: number, after: boolean): IMessage {
-        return {
-            id: id + (after ? 0.5 : -0.5),
-            messagetype: C_MESSAGE_TYPE.Hole,
-            peerid: peerId,
-            peertype: peerType,
-            teamid: teamId,
-        };
+    public insertMayHole(data: Array<{ teamId: string, peerId: string, peerType: number, id: number }>, after: boolean) {
+        return this.db.messages.bulkPut(data.map(o => this.getHoleMessage(o.teamId, o.peerId, o.peerType, o.id, after)));
     }
 
     public insertEnd(teamId: string, peerId: string, peerType: number, id: number) {
@@ -1073,7 +1107,11 @@ export default class MessageRepo {
         return this.checkHoles(teamId, peer, id, asc, limit).then((remoteMessages) => {
             this.userRepo.importBulk(false, remoteMessages.usersList);
             this.groupRepo.importBulk(remoteMessages.groupsList);
-            remoteMessages.messagesList = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId) as Array<UserMessage.AsObject>;
+            const messageWithMediaMany = MessageRepo.parseMessageMany(remoteMessages.messagesList, currentUserId);
+            remoteMessages.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
+            if (messageWithMediaMany.medias.length > 0) {
+                this.mediaRepo.importBulk(messageWithMediaMany.medias, true);
+            }
             return this.importBulk(remoteMessages.messagesList).then(() => {
                 if (asc) {
                     return [...messages, ...remoteMessages.messagesList];
@@ -1153,11 +1191,14 @@ export default class MessageRepo {
                 const dataIds = Object.keys(data.reqs);
                 res.messagesList.forEach((msg) => {
                     const idStr = String(msg.id || 0);
-                    const message = MessageRepo.parseMessage(msg, currentUserId);
-                    messages.push(message);
+                    const messageWithMedia = MessageRepo.parseMessage(msg, currentUserId);
+                    if (messageWithMedia.media) {
+                        this.mediaRepo.importBulk([messageWithMedia.media], false);
+                    }
+                    messages.push(messageWithMedia.message);
                     if (data.reqs[idStr]) {
                         data.reqs[idStr].promises.forEach((promise) => {
-                            promise.resolve(message);
+                            promise.resolve(messageWithMedia.message);
                         });
                         const index = dataIds.indexOf(idStr);
                         if (index > -1) {
@@ -1183,6 +1224,16 @@ export default class MessageRepo {
                 }
             });
         });
+    }
+
+    private getHoleMessage(teamId: string, peerId: string, peerType: number, id: number, after: boolean): IMessage {
+        return {
+            id: id + (after ? 0.5 : -0.5),
+            messagetype: C_MESSAGE_TYPE.Hole,
+            peerid: peerId,
+            peertype: peerType,
+            teamid: teamId,
+        };
     }
 
     private checkHoles(teamId: string, peer: InputPeer, id: number, asc: boolean, limit: number) {
@@ -1224,18 +1275,22 @@ export default class MessageRepo {
         return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, min - 1], [teamId, peerId, peerType, max + 1], true, true).filter((item) => {
             return (item.messagetype === C_MESSAGE_TYPE.Hole);
         }).delete().then((dres) => {
+            const messageWithMediaMany = MessageRepo.parseMessageMany(res, currentUserId);
+            if (messageWithMediaMany.medias.length > 0) {
+                this.mediaRepo.importBulk(messageWithMediaMany.medias, true);
+            }
             if (edgeMessage) {
                 const messages: IMessage[] = [];
-                return this.db.messages.where('[teamid+peerid+peertype+id]').equals([teamId, peerId, peerType, edgeMessage.id || 0]).first().then((edgeRes) => {
+                return this.db.messages.where('id').equals(edgeMessage.id || 0).first().then((edgeRes) => {
                     if (!edgeRes && edgeMessage) {
                         messages.push(this.getHoleMessage(teamId, peerId, peerType, edgeMessage.id || 0, !asc));
                         // window.console.log('insert hole at', edgeMessage.id);
                     }
-                    messages.push(...MessageRepo.parseMessageMany(res, currentUserId));
+                    messages.push(...messageWithMediaMany.messages);
                     return this.upsert(messages);
                 });
             } else {
-                return this.upsert(MessageRepo.parseMessageMany(res, currentUserId));
+                return this.upsert(messageWithMediaMany.messages);
             }
         });
     }
@@ -1244,6 +1299,41 @@ export default class MessageRepo {
         return this.db.messages.where('[teamid+peerid+peertype+id]').between([teamId, peerId, peerType, Dexie.minKey], [teamId, peerId, peerType, id], true, true).toArray((res) => {
             const ids = res.map(o => o.id || 0);
             return this.db.messages.bulkDelete(ids);
+        });
+    }
+
+    private insertTrimmedDiscrete(teamId: string, messages: IMessage[]) {
+        const peerGroups = groupBy(messages, (o => `${o.peerid || ''}_${o.peertype || 0}`));
+        const edgeIds: any[] = [];
+        const holeIds: { [key: number]: { lower: boolean, peerId: string, peerType: number } } = {};
+        for (const [peerId, msgs] of Object.entries(peerGroups)) {
+            msgs.sort((a, b) => (a.id || 0) - (b.id || 0)).forEach((msg, index) => {
+                const id = msg.id || 0;
+                const d = peerId.split('_');
+                const peerid: string = d[0];
+                const peertype: number = parseInt(d[1], 10);
+                if (id > 1 && (index === 0 || (index > 0 && ((msgs[index - 1].id || 0) + 1) !== msg.id))) {
+                    edgeIds.push([teamId, peerid, peertype, id - 1]);
+                    holeIds[id - 1] = {lower: true, peerId: peerid, peerType: peertype};
+                }
+                if ((msgs.length - 1 === index) || (msgs.length - 1 > index && ((msgs[index + 1].id || 0) - 1) !== msg.id)) {
+                    edgeIds.push([teamId, peerid, peertype, id + 1]);
+                    holeIds[id + 1] = {lower: false, peerId: peerid, peerType: peertype};
+                }
+            });
+        }
+        return this.db.messages.where('[teamid+peerid+peertype+id]').anyOf(edgeIds).toArray().then((msgs) => {
+            const holes: IMessage[] = [];
+            msgs.forEach((msg) => {
+                const id = msg.id || 0;
+                if (holeIds.hasOwnProperty(id)) {
+                    delete holeIds[id];
+                }
+            });
+            for (const [id, data] of Object.entries(holeIds)) {
+                holes.push(this.getHoleMessage(teamId, data.peerId, data.peerType, parseInt(id, 10), data.lower));
+            }
+            return this.db.messages.bulkPut([...messages, ...holes]);
         });
     }
 

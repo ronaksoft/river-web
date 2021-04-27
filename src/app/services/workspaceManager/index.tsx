@@ -73,7 +73,7 @@ export default class WorkspaceManger {
                 this.connected = true;
                 this.systemGetServerTime();
                 this.startQueue();
-                resolve();
+                resolve(null);
             };
 
             // Listen for messages

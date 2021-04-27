@@ -2,7 +2,6 @@ syntax = "proto3";
 package msg;
 import "core.types.proto";
 
-option go_package = '.;msg';
 
 
 // PhoneInitCall
@@ -10,6 +9,7 @@ option go_package = '.;msg';
 // @Return: PhoneInit
 message PhoneInitCall {
     InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
 }
 
 // PhoneRequestCall
@@ -100,6 +100,14 @@ message PhoneRemoveParticipant {
     int64 CallID = 2 [jstype = JS_STRING];
     repeated InputUser Participants = 3;
     bool Timeout = 4;
+}
+
+// PhoneGetParticipants
+// @Function
+// @Return: PhoneParticipants
+message PhoneGetParticipants {
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
 }
 
 // PhoneUpdateCall
@@ -199,7 +207,7 @@ enum PhoneCallAction {
     PhoneCallAdminUpdated = 14;
     PhoneCallScreenShare = 15;
     PhoneCallPicked = 16;
-    PhoneCallReserved13 = 17;
+    PhoneCallRestarted = 17;
     PhoneCallReserved14 = 18;
     PhoneCallReserved15 = 19;
     PhoneCallReserved16 = 20;
@@ -323,6 +331,11 @@ message PhoneActionScreenShare {
 // PhoneActionPicked
 message PhoneActionPicked {
     int64 AuthID = 1 [jstype = JS_STRING];
+}
+
+// PhoneActionRestarted
+message PhoneActionRestarted {
+    bool Sender = 1;
 }
 
 // PhoneActionMediaSettingsUpdated

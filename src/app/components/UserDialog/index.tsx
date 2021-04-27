@@ -33,11 +33,12 @@ import {extractPhoneNumber} from "../../services/utilities/localize";
 import LastSeen from "../LastSeen";
 import {ModalityService} from "kk-modality";
 import {NotifyContent} from "../GroupInfoMenu";
+import UserName from "../UserName";
+import {WithSnackbarProps} from "notistack";
 
 import './style.scss';
-import UserName from "../UserName";
 
-interface IProps {
+interface IProps extends WithSnackbarProps {
     onClose?: () => void;
     onAction: (cmd: string, user?: IUser) => void;
     teamId: string;
@@ -133,9 +134,7 @@ class UserDialog extends React.Component<IProps, IState> {
 
     public render() {
         const {user, edit, firstname, lastname, phone, isInContact, notifySetting, userDialogOpen, sendMessageEnable} = this.state;
-        // if (!dialog) {
-        //     return '';
-        // }
+        const isOfficial = user && user.official;
         return (
             <Dialog
                 open={userDialogOpen}
@@ -161,7 +160,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <label>{i18n.t('general.first_name')}</label>
                                 <div className="inner">{user.firstname}{user && user.official &&
                                 <OfficialIcon/>}</div>
-                                {isInContact && <div className="action">
+                                {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
                                     <IconButton
                                         onClick={this.editHandler}
                                     >
@@ -187,7 +186,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             <div className="form-control">
                                 <label>{i18n.t('general.last_name')}</label>
                                 <div className="inner">{user.lastname}</div>
-                                {isInContact && <div className="action">
+                                {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
                                     <IconButton
                                         onClick={this.editHandler}
                                     >
@@ -272,7 +271,7 @@ class UserDialog extends React.Component<IProps, IState> {
                     {sendMessageEnable && <div className="kk-card">
                         <Link className="send-message"
                               to={`/chat/${this.props.teamId}/${user ? `${user.id}_${PeerType.PEERUSER}` : 'null'}`}
-                              onClick={this.close}>
+                              onClick={this.closeHandler}>
                             <SendRounded/> {i18n.t('general.send_message')}
                         </Link>
                     </div>}
@@ -302,8 +301,10 @@ class UserDialog extends React.Component<IProps, IState> {
         this.userRepo.getFull(peer.getId() || '', fn, undefined, true).then((res) => {
             fn(res);
         }).catch((err) => {
+            window.console.log(err, text);
             if (err === 'not_found' && text && text.indexOf('@') === 0) {
                 this.userRepo.contactSearch(text.substr(1)).then((userRes) => {
+                    window.console.log(userRes);
                     if (userRes.length === 1) {
                         const userPeer = new InputPeer();
                         userPeer.setId(userRes[0].id || '');
@@ -314,7 +315,12 @@ class UserDialog extends React.Component<IProps, IState> {
                         }, () => {
                             this.getUser(text);
                         });
+                    } else if (userRes.length === 0) {
+                        this.props.enqueueSnackbar(i18n.tf('general.no_username_found', text));
+                        this.closeHandler();
                     }
+                }).catch((err) => {
+                    window.console.log(err);
                 });
             }
         });
@@ -515,8 +521,9 @@ class UserDialog extends React.Component<IProps, IState> {
     }
 
     /* Close dialog */
-    private close = () => {
+    private closeHandler = () => {
         this.setState({
+            peer: null,
             userDialogOpen: false,
         });
     }

@@ -27,6 +27,8 @@ import DialogRepo from "../../../repository/dialog";
 import {C_MESSAGE_ACTION} from "../../../repository/message/consts";
 import {currentUserId} from "../index";
 import {PublicKey, ServerKeys} from "../messages/conn_pb";
+import {ModalityService} from "kk-modality";
+import i18n from "../../i18n";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;
@@ -571,7 +573,7 @@ export default class Server {
                 const resp = res.toObject();
                 if ((resp.code === C_ERR.ErrCodeInvalid && resp.items === C_ERR_ITEM.ErrItemAuth) ||
                     (resp.code === C_ERR.ErrCodeAlreadyExists && resp.items === C_ERR_ITEM.ErrItemBindUser)) {
-                    const authErrorEvent = new CustomEvent(EventAuthError, {});
+                    const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: false}});
                     window.dispatchEvent(authErrorEvent);
                 } else {
                     window.console.warn(resp);
@@ -674,7 +676,7 @@ export default class Server {
         const v = localStorage.getItem(C_LOCALSTORAGE.Version);
         if (v === null) {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                v: 8,
+                v: 10,
             }));
             return false;
         }
@@ -689,8 +691,10 @@ export default class Server {
             case 5:
             case 6:
             case 7:
-                return pv.v;
             case 8:
+            case 9:
+                return pv.v;
+            case 10:
                 return false;
         }
     }
@@ -717,6 +721,12 @@ export default class Server {
                 return;
             case 7:
                 this.migrate7();
+                return;
+            case 8:
+                this.migrate8();
+                return;
+            case 9:
+                this.migrate9();
                 return;
         }
     }
@@ -875,6 +885,44 @@ export default class Server {
         }, 1000);
     }
 
+    private migrate8() {
+        if (this.updateManager) {
+            this.updateManager.disableLiveUpdate();
+        }
+        setTimeout(() => {
+            MainRepo.getInstance().destroyMediaRelatedDBs().then(() => {
+                localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+                    v: 9,
+                }));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+            });
+        }, 1000);
+    }
+
+    private migrate9() {
+        if (this.updateManager) {
+            this.updateManager.disableLiveUpdate();
+        }
+        ModalityService.getInstance().open({
+            cancelText: i18n.t('general.cancel'),
+            confirmText: i18n.t('general.ok'),
+            description: 'Please wait, it will restart automatically',
+            title: 'Migrating DBs',
+        });
+        setTimeout(() => {
+            MainRepo.getInstance().destroyMediaRelatedDBs().then(() => {
+                localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+                    v: 10,
+                }));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+            });
+        }, 1000);
+    }
+
     private getTime() {
         return Math.floor(Date.now() / 1000);
     }
@@ -909,6 +957,17 @@ export default class Server {
             return true;
         }
 
+        if (error.code === C_ERR.ErrCodeRateLimit) {
+            if (req.timeout) {
+                clearTimeout(req.timeout);
+            }
+            req.timeout = null;
+            setTimeout(() => {
+                this.sendRequest(cloneDeep(req));
+            }, parseInt(error.items, 10) * 1000);
+            return false;
+        }
+
         if (!req.options || !req.options.retryErrors || (req.options.retry || C_RETRY) <= req.retry) {
             return true;
         }
@@ -925,6 +984,9 @@ export default class Server {
         const request: IServerRequest = cloneDeep(req);
         request.reqId = reqId;
         request.retry++;
+        if (request.timeout) {
+            clearTimeout(request.timeout);
+        }
         request.timeout = null;
 
         if (this.isReady || (this.isConnected && this.isUnAuth(request.constructor))) {

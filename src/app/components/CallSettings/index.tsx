@@ -53,6 +53,7 @@ interface IState {
     allConnected: boolean;
     currentParticipant: ICallParticipant | undefined;
     drawerOpen: boolean;
+    isAdmin: boolean;
     loading: boolean;
     mediaDevice: IMediaDevice;
     mediaSettings: IMediaSettings;
@@ -80,6 +81,7 @@ class CallSettings extends React.Component<IProps, IState> {
             allConnected: false,
             currentParticipant: undefined,
             drawerOpen: false,
+            isAdmin: false,
             loading: false,
             mediaDevice: {
                 screenShare: false,
@@ -103,7 +105,7 @@ class CallSettings extends React.Component<IProps, IState> {
         });
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.AllConnected, this.eventAllConnectedHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventShareMediaStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventShareMediaStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
         getMediaInputs().then((mediaDevice) => {
             this.setState({
@@ -128,14 +130,8 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     public openContextMenu(userId: string, e: any) {
-        const activeCallId = this.callService.getActiveCallId();
-        if (!activeCallId) {
-            return;
-        }
-        const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
-        if (currentParticipant && (currentParticipant.initiator || currentParticipant.admin)) {
-            this.openMenuHandler(userId)(e);
-        }
+        this.getParticipants(false);
+        this.openMenuHandler(userId)(e);
     }
 
     public render() {
@@ -163,12 +159,13 @@ class CallSettings extends React.Component<IProps, IState> {
                             disabled={mediaSettings.screenShare || activeScreenShare}>
                     {mediaSettings.video ? <VideocamRounded/> : <VideocamOffRounded/>}
                 </IconButton>}
-                {mediaDevice.video &&
+                {mediaDevice.voice &&
                 <IconButton className="call-settings-item" onClick={this.mediaSettingsChangeHandler('audio')}>
                     {mediaSettings.audio ? <MicRounded/> : <MicOffRounded/>}
                 </IconButton>}
                 {!this.isMobile && allConnected && mediaDevice.screenShare &&
-                <IconButton className="call-settings-item screen-share" onClick={this.mediaSettingsChangeHandler('screenShare')}>
+                <IconButton className="call-settings-item screen-share"
+                            onClick={this.mediaSettingsChangeHandler('screenShare')}>
                     {mediaSettings.screenShare ? <StopScreenShareRounded/> : <ScreenShareRounded/>}
                 </IconButton>}
             </div>
@@ -210,13 +207,13 @@ class CallSettings extends React.Component<IProps, IState> {
                 if (this.vad) {
                     this.vad.setActive(!enable);
                 }
-                resolve();
+                resolve(null);
             } else if (key === 'video') {
                 this.callService.toggleVideo(enable).then(resolve).catch(reject);
             } else if (key === 'screenShare') {
                 this.callService.toggleScreenShare(enable).then(resolve).catch(reject);
             } else {
-                resolve();
+                resolve(null);
             }
         });
         promise.then(() => {
@@ -298,7 +295,7 @@ class CallSettings extends React.Component<IProps, IState> {
     private drawerOpenHandler = () => {
         this.preventClose();
         if (!this.state.drawerOpen) {
-            this.getParticipants();
+            this.getParticipants(true);
         } else {
             this.setState({
                 drawerOpen: false,
@@ -324,16 +321,16 @@ class CallSettings extends React.Component<IProps, IState> {
         }, 127);
     }
 
-    private getParticipants() {
+    private getParticipants(open: boolean) {
         const activeCallId = this.callService.getActiveCallId();
         if (!activeCallId) {
             return;
         }
         const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
-        const participants = orderBy(this.callService.getParticipantList(activeCallId, true), ['admin'], ['desc']);
+        const participants = orderBy(this.callService.getParticipantList(activeCallId, false), ['admin'], ['desc']);
         this.setState({
             currentParticipant,
-            drawerOpen: true,
+            drawerOpen: open,
             participants,
         });
     }
@@ -354,7 +351,7 @@ class CallSettings extends React.Component<IProps, IState> {
                     {item.initiator ? <div className="user-badge"><StarsRounded/></div> : item.admin ?
                         <div className="user-badge"><StarRateRounded/></div> : null}
                     <UserName className="user-name" id={item.peer.userid} noDetail={true} you={true} noIcon={true}/>
-                    {hasAccess && !item.initiator &&
+                    {hasAccess && !item.initiator && item.peer.userid !== currentUserId &&
                     <div className="more" onClick={this.openMenuHandler(item.peer.userid)}>
                         <MoreVertRounded/>
                     </div>}
@@ -364,7 +361,13 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private openMenuHandler = (userId: string) => (e: any) => {
+        const activeCallId = this.callService.getActiveCallId();
+        if (!activeCallId) {
+            return;
+        }
+        const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
         this.setState({
+            isAdmin: currentParticipant && (currentParticipant.initiator || currentParticipant.admin),
             moreAnchorPos: {
                 left: e.pageX - 96,
                 top: e.pageY,
@@ -374,26 +377,41 @@ class CallSettings extends React.Component<IProps, IState> {
     }
 
     private contextMenuContent() {
-        const {selectedUserId, participants} = this.state;
+        const {selectedUserId, participants, isAdmin} = this.state;
         const menuItems = [];
         const index = findIndex(participants, o => o.peer.userid === selectedUserId);
+        if (isAdmin) {
+            if (index > -1) {
+                if (participants[index].admin) {
+                    menuItems.push({
+                        cmd: 'demote',
+                        title: i18n.t('contact.demote'),
+                    });
+                } else {
+                    menuItems.push({
+                        cmd: 'promote',
+                        title: i18n.t('contact.promote'),
+                    });
+                }
+            }
+            menuItems.push({
+                cmd: 'remove',
+                title: i18n.t('contact.remove'),
+            });
+        }
         if (index > -1) {
-            if (participants[index].admin) {
+            if (!participants[index].muted) {
                 menuItems.push({
-                    cmd: 'demote',
-                    title: i18n.t('contact.demote'),
+                    cmd: 'mute',
+                    title: i18n.t('call.mute'),
                 });
             } else {
                 menuItems.push({
-                    cmd: 'promote',
-                    title: i18n.t('contact.promote'),
+                    cmd: 'unmute',
+                    title: i18n.t('call.unmute'),
                 });
             }
         }
-        menuItems.push({
-            cmd: 'remove',
-            title: i18n.t('contact.remove'),
-        });
 
         return menuItems.map((item, index) => {
             return (<MenuItem key={index} onClick={this.moreCmdHandler(item.cmd)}
@@ -408,13 +426,12 @@ class CallSettings extends React.Component<IProps, IState> {
             return;
         }
 
-        const {selectedUserId} = this.state;
+        const {selectedUserId, participants} = this.state;
         switch (cmd) {
             case 'promote':
             case 'demote':
                 const admin = cmd === 'promote';
                 this.callService.callUpdateAdmin(activeCallId, selectedUserId, admin).then(() => {
-                    const {participants} = this.state;
                     const index = findIndex(participants, o => o.peer.userid === selectedUserId);
                     if (index > -1) {
                         participants[index].admin = admin;
@@ -426,7 +443,6 @@ class CallSettings extends React.Component<IProps, IState> {
                 break;
             case 'remove':
                 this.callService.callRemoveParticipant(activeCallId, [selectedUserId], false).then(() => {
-                    const {participants} = this.state;
                     const index = findIndex(participants, o => o.peer.userid === selectedUserId);
                     if (index > -1) {
                         participants.splice(index, 1);
@@ -435,6 +451,18 @@ class CallSettings extends React.Component<IProps, IState> {
                         });
                     }
                 });
+                break;
+            case 'mute':
+            case 'unmute':
+                const mute = cmd === 'mute';
+                this.callService.setParticipantMute(selectedUserId, mute);
+                const index = findIndex(participants, o => o.peer.userid === selectedUserId);
+                if (index > -1) {
+                    participants[index].muted = mute;
+                    this.setState({
+                        participants,
+                    });
+                }
                 break;
         }
         this.menuCloseHandler();

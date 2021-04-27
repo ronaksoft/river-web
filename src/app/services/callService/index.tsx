@@ -12,7 +12,7 @@ import {C_LOCALSTORAGE, C_MSG} from "../sdk/const";
 import {UpdatePhoneCall, UpdatePhoneCallEnded} from "../sdk/messages/updates_pb";
 import {
     CallDeviceType,
-    DiscardReason,
+    DiscardReason, IceServer,
     PhoneActionAccepted,
     PhoneActionAck,
     PhoneActionAdminUpdated,
@@ -24,7 +24,7 @@ import {
     PhoneActionMediaSettingsUpdated,
     PhoneActionParticipantAdded,
     PhoneActionParticipantRemoved, PhoneActionPicked,
-    PhoneActionRequested,
+    PhoneActionRequested, PhoneActionRestarted,
     PhoneActionScreenShare,
     PhoneActionSDPAnswer,
     PhoneActionSDPOffer,
@@ -46,20 +46,23 @@ export const C_CALL_EVENT = {
     CallAccepted: 0x02,
     CallAck: 0x08,
     CallCancelled: 0x0e,
+    CallDestroyed: 0x15,
     CallJoinRequested: 0x0f,
     CallPreview: 0x0d,
     CallRejected: 0x04,
     CallRequested: 0x01,
     CallTimeout: 0x07,
     ConnectionStateChanged: 0x13,
+    LocalMediaSettingsUpdated: 0x16,
     LocalStreamUpdated: 0x06,
     MediaSettingsUpdated: 0x05,
     ParticipantAdded: 0x0b,
     ParticipantAdminUpdated: 0x10,
     ParticipantJoined: 0x09,
     ParticipantLeft: 0x0a,
+    ParticipantMuted: 0x14,
     ParticipantRemoved: 0x0c,
-    ShareMediaStreamUpdated: 0x11,
+    ShareScreenStreamUpdated: 0x11,
     StreamUpdated: 0x03,
 };
 
@@ -76,6 +79,7 @@ export interface IMediaSettings {
 export interface ICallParticipant extends PhoneParticipant.AsObject {
     deviceType: CallDeviceType;
     mediaSettings: IMediaSettings;
+    muted: boolean,
     started?: boolean;
 }
 
@@ -84,6 +88,9 @@ interface IConnection {
     audioIndex: number;
     connection: RTCPeerConnection;
     iceQueue: RTCIceCandidate[];
+    iceServers?: RTCIceServer[];
+    init: boolean;
+    reconnecting: boolean;
     screenShareStream?: MediaStream;
     stream?: MediaStream;
     streamId: string;
@@ -146,6 +153,8 @@ const parseData = (constructor: number, data: any) => {
             return PhoneActionScreenShare.deserializeBinary(data).toObject();
         case PhoneCallAction.PHONECALLPICKED:
             return PhoneActionPicked.deserializeBinary(data).toObject();
+        case PhoneCallAction.PHONECALLRESTARTED:
+            return PhoneActionRestarted.deserializeBinary(data).toObject();
     }
     return undefined;
 };
@@ -357,7 +366,7 @@ export default class CallService {
             }
             const connId = this.getConnId(this.activeCallId, currentUserId);
             window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', Boolean(stream));
-            this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+            this.callHandlers(C_CALL_EVENT.ShareScreenStreamUpdated, {
                 connId,
                 stream: enable ? stream : undefined,
                 userId: currentUserId,
@@ -387,6 +396,8 @@ export default class CallService {
     public destroy() {
         this.destroyLocalStream();
         this.destroyScreenShareStream();
+        this.callHandlers(C_CALL_EVENT.CallDestroyed, {callId: this.activeCallId});
+        this.activeCallId = undefined;
     }
 
     public destroyLocalStream() {
@@ -400,8 +411,8 @@ export default class CallService {
     }
 
     public destroyScreenShareStream() {
-        window.console.log('[webrtc] screen share destroy, has stream: ', Boolean(this.screenShareStream));
         if (this.screenShareStream) {
+            window.console.log('[webrtc] screen share destroy, has stream: ', Boolean(this.screenShareStream));
             this.screenShareStream.getTracks().forEach(track => {
                 track.stop();
                 this.screenShareStream.removeTrack(track);
@@ -429,6 +440,10 @@ export default class CallService {
         }
     }
 
+    public tryReconnect(connId: number) {
+        this.checkDisconnection(connId, 'disconnected');
+    }
+
     public getRemoteScreenShareStream(): { stream: MediaStream, userId: string } | undefined {
         const screenShare = this.activeScreenShare;
         if (!screenShare || !this.activeCallId || !this.peerConnections.hasOwnProperty(screenShare.connId)) {
@@ -446,11 +461,7 @@ export default class CallService {
         this.peer = peer;
 
         return this.apiManager.callInit(peer).then((res) => {
-            this.configs.iceServers = res.iceserversList.map((item) => ({
-                credential: item.credential,
-                urls: item.urlsList,
-                username: item.username,
-            }));
+            this.configs.iceServers = this.transformIceServers(res.iceserversList);
             if (callId) {
                 this.activeCallId = callId;
                 return this.apiManager.callJoin(peer, this.activeCallId).then((res) => {
@@ -486,11 +497,7 @@ export default class CallService {
         return this.apiManager.callInit(peer).then((res) => {
             this.activeCallId = id;
 
-            this.configs.iceServers = res.iceserversList.map((item) => ({
-                credential: item.credential,
-                urls: item.urlsList,
-                username: item.username,
-            }));
+            this.configs.iceServers = this.transformIceServers(res.iceserversList);
             const info = this.getCallInfo(id);
             if (!info) {
                 return Promise.reject('invalid call request');
@@ -685,6 +692,18 @@ export default class CallService {
         return !participants.some(o => o.mediaSettings.video);
     }
 
+    public setParticipantMute(userId: string, muted: boolean) {
+        if (!this.activeCallId) {
+            return;
+        }
+        if (!this.callInfo[this.activeCallId]) {
+            return;
+        }
+        const connId = this.callInfo[this.activeCallId].participantMap[userId];
+        this.callInfo[this.activeCallId].participants[connId].muted = muted;
+        this.callHandlers(C_CALL_EVENT.ParticipantMuted, {connId, muted, userId});
+    }
+
     private phoneCallHandler = (data: IUpdatePhoneCall) => {
         const d = parseData(data.action || 0, data.actiondata);
         delete data.actiondata;
@@ -731,6 +750,9 @@ export default class CallService {
                 break;
             case PhoneCallAction.PHONECALLPICKED:
                 this.callPicked(data);
+                break;
+            case PhoneCallAction.PHONECALLRESTARTED:
+                this.callRestarted(data);
                 break;
         }
     }
@@ -960,6 +982,7 @@ export default class CallService {
                 deviceType: CallDeviceType.CALLDEVICEUNKNOWN,
                 initiator: index === 0,
                 mediaSettings: {audio: true, screenShare: false, video: true},
+                muted: false,
                 peer: participant,
             };
             callParticipantMap[participant.userid || '0'] = index;
@@ -987,6 +1010,7 @@ export default class CallService {
                     deviceType: CallDeviceType.CALLDEVICEUNKNOWN,
                     initiator: participant.initiator,
                     mediaSettings: {audio: true, screenShare: false, video: true},
+                    muted: false,
                     peer: participant.peer,
                 };
                 callParticipantMap[participant.peer.userid || '0'] = participant.connectionid;
@@ -1037,6 +1061,7 @@ export default class CallService {
                 deviceType: data.userid === participant.peer.userid ? sdpData.devicetype : CallDeviceType.CALLDEVICEUNKNOWN,
                 initiator: participant.initiator,
                 mediaSettings: {audio: true, screenShare: false, video: true},
+                muted: false,
                 peer: participant.peer,
             };
             callParticipantMap[participant.peer.userid || '0'] = participant.connectionid || 0;
@@ -1155,7 +1180,7 @@ export default class CallService {
                         }, C_RETRY_INTERVAL);
                     }
                 });
-                window.console.log('[webrtc] call form:', currentUserId, ' to:', phoneParticipants.map(o => o.getPeer().getUserid()).join(", "));
+                window.console.log('[webrtc] call from:', currentUserId, ' to:', phoneParticipants.map(o => o.getPeer().getUserid()).join(", "));
                 return this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
             }));
         }
@@ -1182,7 +1207,12 @@ export default class CallService {
 
         return new Promise((resolve, reject) => {
             try {
-                const pc = new RTCPeerConnection(this.configs);
+                const config = cloneDeep(this.configs);
+                if (this.peerConnections[connId] && this.peerConnections[connId].iceServers) {
+                    config.iceServers = this.peerConnections[connId].iceServers;
+                }
+
+                const pc = new RTCPeerConnection(config);
                 pc.addEventListener('icecandidate', (e) => {
                     this.sendIceCandidate(this.activeCallId || '0', e.candidate, connId).catch((err) => {
                         window.console.log('[webrtc] icecandidate, connId:', connId, err);
@@ -1198,6 +1228,7 @@ export default class CallService {
 
                 pc.addEventListener('icecandidateerror', (e) => {
                     window.console.log('[webrtc] icecandidateerror, connId:', connId, e);
+                    this.checkDisconnection(connId, pc.iceConnectionState, true);
                 });
 
                 pc.addEventListener('signalingstatechange', () => {
@@ -1206,12 +1237,14 @@ export default class CallService {
                     }
                 });
 
-                const conn: IConnection = {
+                let conn: IConnection = {
                     accepted: remote,
                     audioIndex: -1,
                     connection: pc,
                     iceQueue: [],
+                    init: false,
                     interval: null,
+                    reconnecting: false,
                     stream: undefined,
                     streamId: '',
                     try: 0,
@@ -1220,10 +1253,13 @@ export default class CallService {
                 if (!this.peerConnections.hasOwnProperty(connId)) {
                     this.peerConnections[connId] = conn;
                 } else {
-                    this.peerConnections[connId].connection = conn.connection;
+                    conn = this.peerConnections[connId];
+                    conn.connection = pc;
                 }
 
                 pc.addEventListener('track', (e) => {
+                    conn.init = true;
+                    conn.reconnecting = false;
                     if (e.streams.length > 0) {
                         const streamId = e.streams[0].id;
                         e.streams.forEach((stream) => {
@@ -1251,7 +1287,7 @@ export default class CallService {
                                     conn.screenShareStream = new MediaStream(stream.getTracks());
                                     const userId = this.getUserIdByCallId(this.activeCallId, connId);
                                     window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', Boolean(conn.screenShareStream));
-                                    this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+                                    this.callHandlers(C_CALL_EVENT.ShareScreenStreamUpdated, {
                                         connId,
                                         stream: conn.screenShareStream,
                                         userId
@@ -1330,17 +1366,27 @@ export default class CallService {
         }, 255);
     }
 
-    private checkDisconnection(connId: number, state: RTCIceConnectionState) {
-        if (state === 'disconnected' && this.peerConnections.hasOwnProperty(connId)) {
+    private checkDisconnection(connId: number, state: RTCIceConnectionState, isIceError?: boolean) {
+        if (this.activeCallId === '0') {
+            return;
+        }
+        if (this.peerConnections.hasOwnProperty(connId) && !this.peerConnections[connId].reconnecting && ((isIceError && this.peerConnections[connId].init && (state === 'disconnected' || state === 'failed' || state === 'closed')) || state === 'disconnected')) {
             this.peerConnections[connId].connection.close();
-            if (this.activeCallId) {
+            this.peerConnections[connId].reconnecting = true;
+            window.console.log('[webrtc] reconnecting, connId: ', connId, ' state: ', state, ' from ice error: ', isIceError ? 'true' : 'false');
+            this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: 'reconnecting'});
+            this.apiManager.callInit(this.peer, this.activeCallId).then((res) => {
+                if (this.peerConnections[connId]) {
+                    this.peerConnections[connId].iceServers = this.transformIceServers(res.iceserversList);
+                }
                 const currentConnId = this.getConnId(this.activeCallId, currentUserId);
                 if (currentConnId < connId) {
-                    this.initConnection(false, connId);
+                    this.callSendRestart(connId, true);
                 } else {
-                    this.initConnection(true, connId);
+                    this.initConnection(true, connId).catch((sdp) => {
+                    });
                 }
-            }
+            });
         }
     }
 
@@ -1528,6 +1574,9 @@ export default class CallService {
         actionData.setAudio(this.callInfo[this.activeCallId].mediaSettings.audio);
         actionData.setVideo(this.callInfo[this.activeCallId].mediaSettings.video);
         actionData.setScreenshare(this.callInfo[this.activeCallId].mediaSettings.screenShare);
+
+        this.callHandlers(C_CALL_EVENT.LocalMediaSettingsUpdated, this.callInfo[this.activeCallId].mediaSettings);
+
         this.apiManager.callUpdate(this.peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED, actionData.serializeBinary());
     }
 
@@ -1574,7 +1623,7 @@ export default class CallService {
                 } else {
                     // Deactivate previous screen share stream
                     window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', false);
-                    this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+                    this.callHandlers(C_CALL_EVENT.ShareScreenStreamUpdated, {
                         connId,
                         stream: undefined,
                         userId: data.userid,
@@ -1590,7 +1639,7 @@ export default class CallService {
             this.activeScreenShare = undefined;
             // Deactivate screen share stream
             window.console.log('[webrtc] screen share stream, connId: ', connId, ' has stream: ', false);
-            this.callHandlers(C_CALL_EVENT.ShareMediaStreamUpdated, {
+            this.callHandlers(C_CALL_EVENT.ShareScreenStreamUpdated, {
                 connId,
                 stream: undefined,
                 userId: data.userid,
@@ -1751,6 +1800,8 @@ export default class CallService {
             sdp: sdpOfferData.sdp,
             type: sdpOfferData.type as any,
         }).then(() => {
+            this.peerConnections[connId].accepted = true;
+            this.flushIceCandidates(data.callid || '0', connId);
             return pc.createAnswer().then((res) => {
                 return pc.setLocalDescription(res).then(() => {
                     return this.sendSDPAnswer(connId, res);
@@ -1787,6 +1838,19 @@ export default class CallService {
         const callPickedData = data.data as PhoneActionPicked.AsObject;
         if (callPickedData.authid !== currentAuthId) {
             this.callHandlers(C_CALL_EVENT.CallCancelled, {callId: data.callid});
+        }
+    }
+
+    private callRestarted(data: IUpdatePhoneCall) {
+        const callRestartedData = data.data as PhoneActionRestarted.AsObject;
+        const connId = this.getConnId(data.callid, data.userid);
+        if (callRestartedData.sender) {
+            this.checkDisconnection(connId, 'disconnected');
+            this.callSendRestart(connId, false);
+        } else {
+            this.initConnection(false, connId).then((sdp) => {
+                return this.sendSDPOffer(connId, sdp);
+            });
         }
     }
 
@@ -1937,6 +2001,35 @@ export default class CallService {
         return this.apiManager.callUpdate(peer, data.callid, [inputUser], PhoneCallAction.PHONECALLACK, actionData.serializeBinary());
     }
 
+    private callSendRestart(connId: number, sender: boolean) {
+        const callId = this.activeCallId;
+        if (!callId) {
+            return Promise.reject('no active call');
+        }
+
+        const conn = this.peerConnections[connId];
+        if (!conn) {
+            return Promise.reject('invalid connection');
+        }
+
+        const peer = this.peer;
+        if (!peer || !this.activeCallId) {
+            return Promise.reject('invalid input');
+        }
+
+        const inputUser = this.getInputUserByConnId(callId, connId);
+        if (!inputUser) {
+            return Promise.reject('invalid connId');
+        }
+
+        const actionData = new PhoneActionRestarted();
+        actionData.setSender(sender);
+
+        return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLRESTARTED, actionData.serializeBinary(), true).then(() => {
+            return Promise.resolve();
+        });
+    }
+
     private clearRetryInterval(connId: number, onlyClearInterval?: boolean) {
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
@@ -1980,6 +2073,14 @@ export default class CallService {
         }
     }
 
+    private transformIceServers(list: IceServer.AsObject[]) {
+        return list.map((item) => ({
+            credential: item.credential,
+            urls: item.urlsList,
+            username: item.username,
+        }));
+    }
+
     private callHandlers(name: number, data: any) {
         if (!this.listeners.hasOwnProperty(name)) {
             return Promise.resolve();
@@ -1994,7 +2095,7 @@ export default class CallService {
                         fn(data);
                     }
                 });
-                resolve();
+                resolve(null);
             } catch (e) {
                 reject(e);
             }

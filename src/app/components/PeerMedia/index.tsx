@@ -8,27 +8,26 @@
 */
 
 import React from 'react';
-import MediaRepo from '../../repository/media';
-import {InputPeer} from '../../services/sdk/messages/core.types_pb';
+import MediaRepo, {IMediaWithCount} from '../../repository/media';
+import {InputPeer, MediaCategory} from '../../services/sdk/messages/core.types_pb';
 import {getDuration, getMediaInfo, IMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
 import {
-    PlayCircleFilledRounded,
-    InsertDriveFileTwoTone,
-    HeadsetTwoTone,
-    KeyboardVoiceTwoTone,
-    PlayArrowRounded,
-    PauseRounded,
-    MoreVertRounded,
-    RadioButtonUncheckedRounded,
     CheckCircleRounded,
     CloseRounded,
     ForwardRounded,
     ForwardToInboxRounded,
+    HeadsetTwoTone,
+    InsertDriveFileTwoTone,
+    KeyboardVoiceTwoTone,
+    MoreVertRounded,
+    PauseRounded,
+    PlayArrowRounded,
+    PlayCircleFilledRounded,
+    RadioButtonUncheckedRounded,
 } from '@material-ui/icons';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import {Tabs, Tab, Menu, MenuItem, IconButton, Tooltip} from '@material-ui/core';
-import {C_MEDIA_TYPE} from '../../repository/media/interface';
+import {IconButton, Menu, MenuItem, Tab, Tabs, Tooltip} from '@material-ui/core';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import Scrollbars from 'react-custom-scrollbars';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
@@ -38,14 +37,17 @@ import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
 import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import i18n from '../../services/i18n';
-import {IPeer} from "../../repository/dialog/interface";
 import {GetDbFileName} from "../../repository/file";
 import ElectronService from "../../services/electron";
 import {findIndex} from "lodash";
 import SettingsConfigManager from "../../services/settingsConfigManager";
-import {EventFileDownloaded, EventMediaDBUpdated} from "../../services/events";
+import {EventFileDownloaded} from "../../services/events";
+import {IPeer} from "../../repository/dialog/interface";
+import {C_INFINITY} from "../../repository";
 
 import './style.scss';
+
+const C_LIMIT = 64;
 
 interface IMenuItem {
     cmd: string;
@@ -92,7 +94,7 @@ interface IState {
 class PeerMedia extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private downloadEventReferences: any[] = [];
-    private peer: IPeer = {id: '', peerType: 0};
+    private peer: InputPeer;
     private mediaRepo: MediaRepo;
     private documentViewerService: DocumentViewerService;
     private itemMap: { [key: number]: number } = {};
@@ -100,6 +102,9 @@ class PeerMedia extends React.Component<IProps, IState> {
     private progressBroadcaster: ProgressBroadcaster;
     private menuItems: IMenuItem[] = [];
     private actionsItems: IMenuItem[] = [];
+    private scrollbarRef: Scrollbars | undefined;
+    private hasMore: boolean = false;
+    private atEnd: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -108,16 +113,13 @@ class PeerMedia extends React.Component<IProps, IState> {
             anchorEl: null,
             className: props.className || '',
             items: [],
-            loading: true,
+            loading: false,
             selectable: false,
             selectedIds: [],
             tab: 0,
         };
 
-        this.peer = {
-            id: props.peer.getId() || '',
-            peerType: props.peer.getType() || 0,
-        };
+        this.peer = this.props.peer;
         this.mediaRepo = MediaRepo.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
         this.audioPlayer = AudioPlayer.getInstance();
@@ -154,34 +156,21 @@ class PeerMedia extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.getMedias();
         window.addEventListener(EventFileDownloaded, this.fileDownloadedHandler);
-        window.addEventListener(EventMediaDBUpdated, this.mediaDBUpdatedHandler);
         this.eventReferences.push(this.audioPlayer.globalListen(this.audioPlayerHandler));
-    }
-
-    public UNSAFE_componentWillReceiveProps(newProps: IProps) {
-        if (this.peer.id !== (newProps.peer.getId() || '') || this.peer.peerType !== (newProps.peer.getType() || 0)) {
-            this.peer = {
-                id: newProps.peer.getId() || '',
-                peerType: newProps.peer.getType() || 0,
-            };
-            this.getMedias();
-        }
     }
 
     public componentWillUnmount() {
         window.removeEventListener(EventFileDownloaded, this.fileDownloadedHandler);
-        window.removeEventListener(EventMediaDBUpdated, this.mediaDBUpdatedHandler);
         this.removeAllListeners();
     }
 
     public render() {
-        const {className, tab, items, anchorEl, selectedIds, selectable} = this.state;
+        const {className, tab, anchorEl, selectedIds, selectable, loading, items} = this.state;
         return (
             <div className={`peer-media ${(this.props.full ? ' full' : '')} ${className}`}>
                 {!this.props.full && <div className="peer-media-title">
                     <span className="peer-label">{i18n.t('peer_info.shared_media')}</span>
-                    {Boolean(items.length > 0) &&
-                    <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>}
+                    <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>
                 </div>}
                 {this.props.full && <div className="peer-media-tab">
                     {selectable && selectedIds.length > 0 ?
@@ -196,11 +185,14 @@ class PeerMedia extends React.Component<IProps, IState> {
                               onChange={this.tabChangeHandler}>
                             <Tab value={0} label={i18n.t('peer_info.photo_video')} className="peer-media-tab-item"/>
                             <Tab value={1} label={i18n.t('peer_info.audio')} className="peer-media-tab-item"/>
-                            <Tab value={2} label={i18n.t('peer_info.file')} className="peer-media-tab-item"/>
-                            <Tab value={3} label={i18n.t('peer_info.gif')} className="peer-media-tab-item"/>
+                            <Tab value={2} label={i18n.t('peer_info.voice')} className="peer-media-tab-item"/>
+                            <Tab value={3} label={i18n.t('peer_info.file')} className="peer-media-tab-item"/>
+                            <Tab value={4} label={i18n.t('peer_info.gif')} className="peer-media-tab-item"/>
                         </Tabs>}
                 </div>}
                 <div className="peer-media-container">
+                    {loading && items.length > 0 && this.props.full &&
+                    <div className="media-load-more">{i18n.t('general.loading')}</div>}
                     {this.getContent()}
                 </div>
                 <Menu
@@ -292,7 +284,6 @@ class PeerMedia extends React.Component<IProps, IState> {
         const actions: IMenuItem[] = [];
         const {selectedIds} = this.state;
         actions.push(this.actionsItems[0]);
-        window.console.log(selectedIds);
         if (selectedIds.length === 1) {
             actions.push(this.actionsItems[1]);
         }
@@ -328,7 +319,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     /* Get media list content */
     private getContent() {
         const {items, tab, loading} = this.state;
-        if (loading) {
+        if (loading && items.length === 0) {
             return (<div className="media-loading">{i18n.t('general.loading')}</div>);
         }
         if (!this.props.full) {
@@ -341,9 +332,12 @@ class PeerMedia extends React.Component<IProps, IState> {
             switch (tab) {
                 default:
                 case 0:
+                case 4:
                     if (items.length > 0) {
                         return (
                             <Scrollbars
+                                ref={this.scrollRefHandler}
+                                onScroll={this.scrollHandler}
                                 autoHide={true}
                             >
                                 {this.getGridView()}
@@ -354,23 +348,44 @@ class PeerMedia extends React.Component<IProps, IState> {
                     }
                 case 1:
                 case 2:
+                case 3:
                     if (items.length > 0) {
                         return (
                             <Scrollbars
+                                ref={this.scrollRefHandler}
+                                onScroll={this.scrollHandler}
                                 autoHide={true}
                             >
                                 {this.getListView()}
                             </Scrollbars>
                         );
                     } else {
-                        if (tab === 1) {
+                        if (tab === 1 || tab === 2) {
                             return (<div className="media-placeholder"><span className="img audio"/></div>);
-                        } else if (tab === 2) {
+                        } else if (tab === 3) {
                             return (<div className="media-placeholder"><span className="img file"/></div>);
                         } else {
                             return (<div className="media-placeholder"><span className="img media"/></div>);
                         }
                     }
+            }
+        }
+    }
+
+    private scrollRefHandler = (ref: any) => {
+        this.scrollbarRef = ref;
+    }
+
+    private scrollHandler = (e: any) => {
+        if (!this.state.loading && this.hasMore && this.scrollbarRef) {
+            const {scrollTop} = e.target;
+            const {items} = this.state;
+            const pos = (this.scrollbarRef.getScrollHeight() - this.scrollbarRef.getClientHeight() - 64);
+            if (pos < scrollTop && items.length > 0 && !this.atEnd) {
+                this.atEnd = true;
+                this.getMedias(items[items.length - 1].id - 1);
+            } else if (pos - 24 > scrollTop && this.atEnd) {
+                this.atEnd = false;
             }
         }
     }
@@ -382,7 +397,8 @@ class PeerMedia extends React.Component<IProps, IState> {
             <div className={'media-grid-view' + (selectedIds.length > 0 ? ' has-selected' : '')}>
                 {items.map((item, i) => {
                     return (
-                        <div key={item.id} className={`media-item item_${item.id}`}
+                        <div key={`${item.id}_${item.download ? 'd' : 'u'}`}
+                             className={`media-item item_${item.id}`}
                              onClick={this.showMediaHandler(i)}>
                             {this.getFileIcon(item)}
                             {Boolean(item.type === C_MESSAGE_TYPE.Video) &&
@@ -450,13 +466,11 @@ class PeerMedia extends React.Component<IProps, IState> {
         e.stopPropagation();
         const {items, selectable, selectedIds} = this.state;
         if (selectable && items[index]) {
-            if (!items[index].selected) {
+            const idx = selectedIds.indexOf(items[index].id);
+            if (idx === -1) {
                 selectedIds.push(items[index].id);
             } else {
-                const idx = findIndex(items, {id: items[index].id});
-                if (idx > -1) {
-                    selectedIds.splice(idx, 1);
-                }
+                selectedIds.splice(idx, 1);
             }
             items[index].selected = !items[index].selected;
             this.setState({
@@ -488,11 +502,14 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     /* Get file icon */
     private getFileIcon(item: IMedia) {
-        if (item.info.thumbFile.fileid !== '') {
+        const isPicture = item.type === C_MESSAGE_TYPE.Picture || item.type === C_MESSAGE_TYPE.Gif;
+        if (item.info.thumbFile.fileid !== '' || (item.download && isPicture)) {
             return (<CachedPhoto className="picture"
-                                 fileLocation={(item.download && item.type === C_MESSAGE_TYPE.Picture) ? item.info.file : item.info.thumbFile}
-                                 mimeType={(item.download && item.type === C_MESSAGE_TYPE.Picture) ? (item.info.mimeType || 'image/jpeg') : 'image/jpeg'}
-                                 blur={item.download ? 0 : 10}/>);
+                                 fileLocation={(item.download && isPicture) ? item.info.file : item.info.thumbFile}
+                                 mimeType={(item.download && isPicture) ? (item.info.mimeType || 'image/jpeg') : 'image/jpeg'}
+                                 blur={item.download ? 0 : 10}
+                                 tinyThumb={!item.download ? item.info.tinyThumb : undefined}
+            />);
         } else {
             switch (item.type) {
                 default:
@@ -517,40 +534,85 @@ class PeerMedia extends React.Component<IProps, IState> {
         }
     }
 
+    private getMediaCategory(): MediaCategory {
+        if (!this.props.full) {
+            return MediaCategory.MEDIACATEGORYMEDIA;
+        }
+        switch (this.state.tab) {
+            case 0:
+                return MediaCategory.MEDIACATEGORYMEDIA;
+            case 1:
+                return MediaCategory.MEDIACATEGORYAUDIO;
+            case 2:
+                return MediaCategory.MEDIACATEGORYVOICE;
+            case 3:
+                return MediaCategory.MEDIACATEGORYFILE;
+            case 4:
+                return MediaCategory.MEDIACATEGORYGIF;
+        }
+        return MediaCategory.MEDIACATEGORYMEDIA;
+    }
+
     /* Get media from repository */
-    private getMedias() {
+    private getMedias(before?: number) {
+        if (this.state.loading) {
+            return;
+        }
+
         this.setState({
             loading: true,
         });
 
-        let mediaType = C_MEDIA_TYPE.MEDIA;
-        switch (this.state.tab) {
-            case 0:
-                mediaType = C_MEDIA_TYPE.PHOTOVIDEO;
-                break;
-            case 1:
-                mediaType = C_MEDIA_TYPE.MUSIC;
-                break;
-            case 2:
-                mediaType = C_MEDIA_TYPE.FILE;
-                break;
-            case 3:
-                mediaType = C_MEDIA_TYPE.GIF;
-                break;
-        }
+        const currentTab = this.state.tab;
 
-        this.mediaRepo.getMany(this.props.teamId, this.peer, {
-            limit: this.props.full ? 128 : 8,
-            type: this.props.full ? mediaType : undefined,
-        }).then((result) => {
+        const earlyFn = before ? undefined : (earlyItems: IMediaWithCount) => {
+            if (currentTab !== this.state.tab) {
+                return;
+            }
             if (!this.props.full) {
-                result.messages = result.messages.slice(0, 4);
+                earlyItems.messages = earlyItems.messages.slice(0, 4);
             }
             this.setState({
-                items: this.modifyMediaList(result.messages),
+                items: this.modifyMediaList(earlyItems.messages),
+            });
+        };
+        const mediaCategory = this.getMediaCategory();
+        this.mediaRepo.list(this.props.teamId, this.peer, mediaCategory, {
+            before: before || C_INFINITY,
+            limit: this.props.full ? C_LIMIT : 8,
+            localOnly: !this.props.full,
+        }, earlyFn).then((result) => {
+            if (currentTab !== this.state.tab) {
+                this.setState({
+                    loading: false,
+                    selectable: false,
+                    selectedIds: [],
+                });
+            }
+            let {items} = this.state;
+            // @ts-ignore
+            items.push.apply(items, result.messages);
+            if (!this.props.full) {
+                items = items.slice(0, 4);
+            }
+            items = this.modifyMediaList(items);
+            if (before) {
+                this.setState({
+                    items,
+                    loading: false,
+                });
+            } else {
+                this.setState({
+                    items,
+                    loading: false,
+                    selectable: false,
+                    selectedIds: [],
+                });
+            }
+            this.hasMore = this.props.full && items.length >= C_LIMIT;
+        }).catch(() => {
+            this.setState({
                 loading: false,
-                selectable: false,
-                selectedIds: [],
             });
         });
     }
@@ -558,8 +620,11 @@ class PeerMedia extends React.Component<IProps, IState> {
     /* Tab change handler */
     private tabChangeHandler = (e: any, tab: number) => {
         this.setState({
+            items: [],
+            loading: false,
             tab,
         }, () => {
+            this.atEnd = false;
             this.getMedias();
         });
     }
@@ -639,13 +704,14 @@ class PeerMedia extends React.Component<IProps, IState> {
         } else {
             switch (tab) {
                 case 1:
+                case 2:
                     return (<div className="media-item-action">
                         <div className="audio-action" onClick={this.audioActionClickHandler(item.id)}>
                             {!item.playing && <PlayArrowRounded/>}
                             {item.playing && <PauseRounded/>}
                         </div>
                     </div>);
-                case 2:
+                case 3:
                 default:
                     if (!item.saved) {
                         return (<div className="media-file-action">
@@ -683,76 +749,6 @@ class PeerMedia extends React.Component<IProps, IState> {
                 items,
             });
         }
-    }
-
-    /* Media repo updated handler */
-    private mediaDBUpdatedHandler = (event: any) => {
-        const data = event.detail;
-        if (data.peerids && data.peerids.indexOf(this.props.peer.getId() || '') > -1) {
-            setTimeout(() => {
-                this.loadMediaList(false, 32);
-            }, 600);
-        }
-    }
-
-    /* Update media list */
-    private loadMediaList(append: boolean, limit: number) {
-        this.setState({
-            loading: true,
-        });
-        let {items} = this.state;
-        let breakPoint = 0;
-        if (items.length > 0) {
-            if (append) {
-                breakPoint = items[items.length - 1].id - 1;
-            } else {
-                breakPoint = items[0].id + 1;
-            }
-        }
-        let mediaType;
-        if (this.props.full) {
-            switch (this.state.tab) {
-                case 0:
-                    mediaType = C_MEDIA_TYPE.MEDIA;
-                    break;
-                case 1:
-                    mediaType = C_MEDIA_TYPE.MUSIC;
-                    break;
-                case 2:
-                    mediaType = C_MEDIA_TYPE.FILE;
-                    break;
-                case 3:
-                    mediaType = C_MEDIA_TYPE.GIF;
-                    break;
-            }
-        }
-        this.mediaRepo.getMany(this.props.teamId, this.peer, {
-            after: !append ? breakPoint : undefined,
-            before: append ? breakPoint : undefined,
-            limit,
-            type: mediaType,
-        }).then((result) => {
-            if (result.messages.length === 0) {
-                this.setState({
-                    loading: false,
-                });
-                return;
-            }
-            if (append) {
-                // @ts-ignore
-                items.push.apply(items, result.messages);
-            } else {
-                // @ts-ignore
-                items.unshift.apply(items, result.messages);
-            }
-            if (!this.props.full) {
-                items = items.slice(0, 4);
-            }
-            this.setState({
-                items: this.modifyMediaList(items),
-                loading: false,
-            });
-        });
     }
 
     /* Modify media list */
@@ -793,7 +789,7 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     /* Audio player handler */
     private audioPlayerHandler = (info: IAudioInfo, e: IAudioEvent) => {
-        if (info.peer.id !== this.peer.id || !this.itemMap.hasOwnProperty(info.messageId)) {
+        if (info.peer.id !== this.peer.getId() || !this.itemMap.hasOwnProperty(info.messageId)) {
             return;
         }
         const index = this.itemMap[info.messageId];
@@ -820,7 +816,11 @@ class PeerMedia extends React.Component<IProps, IState> {
         const {items} = this.state;
         const item = items[index];
         if (!item.playing) {
-            this.audioPlayer.addToPlaylist(id, this.peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
+            const peer: IPeer = {
+                id: this.peer.getId(),
+                peerType: this.peer.getType(),
+            };
+            this.audioPlayer.addToPlaylist(id, peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
             this.audioPlayer.play(id);
         } else {
             this.audioPlayer.pause(id);

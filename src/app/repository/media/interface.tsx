@@ -7,6 +7,8 @@
     Copyright Ronak Software Group 2019
 */
 
+import {MediaCategory} from "../../services/sdk/messages/core.types_pb";
+
 export const C_MEDIA_TYPE = {
     AUDIO: 3,
     FILE: 5,
@@ -26,5 +28,6 @@ export interface IMedia {
     peerid: string;
     peertype: number;
     timestamp?: number;
-    type: number;
+    type: MediaCategory;
+    hole?: boolean;
 }

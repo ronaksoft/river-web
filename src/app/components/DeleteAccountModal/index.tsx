@@ -9,9 +9,8 @@
 
 import React from 'react';
 import SettingsModal from '../SettingsModal';
-import {CheckCircleOutlineRounded, SimCardRounded} from '@material-ui/icons';
+import {PersonOffRounded} from '@material-ui/icons';
 import i18n from '../../services/i18n';
-import ChangePhone from "../SVG/change_phone";
 import Button from '@material-ui/core/Button';
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import TextField from "@material-ui/core/TextField/TextField";
@@ -21,10 +20,10 @@ import {AccountPassword} from "../../services/sdk/messages/accounts_pb";
 import IntlTelInput from 'react-intl-tel-input';
 import {codeLen, codePlaceholder} from "../../pages/SignUp";
 import {modifyCode} from "../../pages/SignUp/utils";
-import UserRepo from "../../repository/user";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 import {InputPassword} from "../../services/sdk/messages/core.types_pb";
-import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
+import {faToEn} from "../../services/utilities/localize";
+import {DeletedUserDark} from "../UserAvatar/svg";
 
 import './style.scss';
 
@@ -32,6 +31,7 @@ interface IProps {
     onClose?: () => void;
     onError?: (message: string) => void;
     onDone?: () => void;
+    phone: string;
 }
 
 interface IState {
@@ -45,10 +45,9 @@ interface IState {
     password: string;
 }
 
-class ChangePhoneModal extends React.Component<IProps, IState> {
+class DeleteAccountModal extends React.Component<IProps, IState> {
     private apiManager: APIManager;
     private timeout: any = null;
-    private userRepo: UserRepo;
 
     constructor(props: IProps) {
         super(props);
@@ -60,11 +59,10 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
             phone: '',
             phoneError: false,
             phoneHash: '',
-            step: 1,
+            step: 0,
         };
 
         this.apiManager = APIManager.getInstance();
-        this.userRepo = UserRepo.getInstance();
     }
 
     public openDialog() {
@@ -78,63 +76,64 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, step, accountPassword, phone, password, code} = this.state;
+        const {phone} = this.props;
+        const {open, step, accountPassword, password, code} = this.state;
         return (
-            <SettingsModal open={open} title={i18n.t('settings.change_phone_number.title')}
-                           icon={<SimCardRounded/>}
+            <SettingsModal open={open} title={i18n.t('settings.delete_account.title')}
+                           icon={<PersonOffRounded/>}
                            onClose={this.modalCloseHandler}
                            height="340px"
                            noScrollbar={true}
             >
-                {Boolean(step === 1) && <div className="change-phone-dialog">
-                    <div className="change-phone-header">
-                        <ChangePhone/>
+                {Boolean(step === 1) && <div className="delete-account-dialog">
+                    <div className="delete-account-header">
+                        <DeletedUserDark/>
                     </div>
-                    <div className="change-phone-text">{i18n.t('settings.change_phone_number.text')}</div>
-                    <div className="change-phone-text">
-                        <b>{i18n.t('settings.change_phone_number.important')}</b>{i18n.t('settings.change_phone_number.note')}
+                    <div className="delete-account-text">{i18n.t('settings.delete_account.text')}</div>
+                    <div className="delete-account-text">
+                        <b>{i18n.t('settings.delete_account.important')}</b>{i18n.tf('settings.delete_account.note', phone)}
                     </div>
                     <DialogActions>
                         <Button color="primary" onClick={this.modalCloseHandler}>
                             {i18n.t('general.cancel')}
                         </Button>
                         <Button color="secondary" autoFocus={true} onClick={this.nextPageHandler}>
-                            {i18n.t('general.change')}
+                            {i18n.t('general.continue')}
                         </Button>
                     </DialogActions>
                 </div>}
-                {Boolean(step === 2) && <div className="change-phone-dialog">
-                    <div className={`change-phone-input phone-number ${this.state.phoneError ? 'has-error' : ''}`}>
+                {Boolean(step === 2) && <div className="delete-account-dialog">
+                    <div className={`delete-account-input phone-number ${this.state.phoneError ? 'has-error' : ''}`}>
                         <IntlTelInput preferredCountries={[]}
                                       defaultCountry={'ir'}
                                       value={phone}
                                       autoHideDialCode={false}
-                                      onPhoneNumberChange={this.phoneChangeHandler}
                                       nationalMode={false}
+                                      disabled={true}
                                       fieldId="input-phone"
                                       placeholder={i18n.t('settings.change_phone_number.enter_new_number')}
                         />
                     </div>
-                    <div className="change-phone-text">
-                        {i18n.t('settings.change_phone_number.note_2')}
+                    <div className="delete-account-text">
+                        {i18n.tf('settings.delete_account.note', phone)}
                     </div>
                     {Boolean(accountPassword && accountPassword.getHaspassword()) && <>
-                        <div className="change-phone-input">
+                        <div className="delete-account-input">
                             <TextField
                                 fullWidth={true}
                                 value={password}
-                                label={i18n.t('settings.change_phone_number.enter_password')}
+                                label={i18n.t('settings.delete_account.enter_password')}
                                 margin="dense"
                                 variant="outlined"
                                 helperText={accountPassword ? (accountPassword.getHint() as string || '') : ''}
                                 onChange={this.passwordChangeHandler}
                             />
                         </div>
-                        <div className="change-phone-text">
-                            {i18n.t('settings.change_phone_number.note_2fa')}
+                        <div className="delete-account-text">
+                            {i18n.t('settings.delete_account.note_2fa')}
                         </div>
                     </>}
-                    <div className="change-phone-gap"/>
+                    <div className="delete-account-gap"/>
                     <DialogActions>
                         <Button color="primary" onClick={this.modalCloseHandler}>
                             {i18n.t('general.cancel')}
@@ -144,8 +143,8 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                         </Button>
                     </DialogActions>
                 </div>}
-                {Boolean(step === 3 || step === 4) && <div className="change-phone-dialog">
-                    {Boolean(step === 3) && <div className="change-phone-input">
+                {Boolean(step === 3 || step === 4) && <div className="delete-account-dialog">
+                    {Boolean(step === 3) && <div className="delete-account-input">
                         <TextField
                             label={i18n.t('sign_up.code')}
                             placeholder={codePlaceholder}
@@ -159,16 +158,13 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                             onKeyDown={this.confirmKeyDown}
                         />
                     </div>}
-                    <div className="change-phone-header">
-                        <ChangePhone/>
+                    <div className={'delete-account-header' + (step === 4 ? ' big' : '')}>
+                        <DeletedUserDark/>
                     </div>
-                    {Boolean(step === 4) && <div className="tsv-header">
-                        <CheckCircleOutlineRounded/>
+                    {Boolean(step === 4) && <div className="delete-account-success">
+                        {i18n.t('settings.delete_account.account_deleted')}
                     </div>}
-                    {Boolean(step === 4) && <div className="change-phone-success">
-                        {i18n.tf('settings.change_phone_number.phone_number_changed', phone)}
-                    </div>}
-                    <div className="change-phone-gap"/>
+                    <div className="delete-account-gap"/>
                     {Boolean(step === 3) && <DialogActions>
                         <Button color="primary" onClick={this.modalCloseHandler}>
                             {i18n.t('general.cancel')}
@@ -190,6 +186,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
             open: false,
             password: '',
             phone: '',
+            phoneError: false,
             phoneHash: '',
             step: 1,
         });
@@ -213,17 +210,6 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
             this.setState({
                 accountPassword: res,
             });
-        });
-    }
-
-    private phoneChangeHandler = (e: any, value: any) => {
-        let phone = faToEn(value);
-        if (phone.indexOf('09') === 0) {
-            phone = phone.replace('09', `+989`);
-        }
-        this.setState({
-            phone: extractPhoneNumber(phone),
-            phoneError: false,
         });
     }
 
@@ -254,36 +240,21 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
     }
 
     private sendCodeHandler = () => {
-        const {phone, step} = this.state;
+        const {phone} = this.props;
+        const {step} = this.state;
         if (phone === '') {
             return;
         }
-        this.apiManager.checkPhone(phone).then((res) => {
-            if (res.registered) {
-                if (this.props.onError) {
-                    this.props.onError(i18n.t('settings.change_phone_number.phone_already_exists'));
-                }
-                this.setState({
-                    phoneError: true,
-                });
-            } else {
-                this.apiManager.accountSendVerifyPhoneCode(phone, "").then((res) => {
-                    this.setState({
-                        phone: res.phone || '',
-                        phoneHash: res.phonecodehash || '',
-                        step: step + 1,
-                    });
-                }).catch((err) => {
-                    if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemPhone) {
-                        if (this.props.onError) {
-                            this.props.onError(i18n.t('settings.change_phone_number.phone_already_exists'));
-                        }
-                    }
-                    this.setState({
-                        phoneError: true,
-                    });
-                });
-            }
+        this.apiManager.accountSendVerifyPhoneCode(phone, "").then((res) => {
+            this.setState({
+                phone: res.phone || '',
+                phoneHash: res.phonecodehash || '',
+                step: step + 1,
+            });
+        }).catch((err) => {
+            this.setState({
+                phoneError: true,
+            });
         });
     }
 
@@ -292,18 +263,11 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
         if (phone === '' || phoneHash === '' || code.length < codeLen) {
             return;
         }
-        const changeNumber = (inputPass?: InputPassword) => {
-            this.apiManager.accountChangeNumber(phone, code, phoneHash, inputPass).then((res) => {
+        const deleteAccount = (inputPass?: InputPassword) => {
+            this.apiManager.accountDelete(phone, code, phoneHash, inputPass).then((res) => {
                 this.setState({
                     step: 4,
                 });
-                this.userRepo.importBulk(false, [{
-                    id: this.userRepo.getCurrentUserId(),
-                    phone,
-                }]);
-                const connInfo = this.apiManager.getConnInfo();
-                connInfo.Phone = phone;
-                this.apiManager.setConnInfo(connInfo);
                 this.timeout = setTimeout(() => {
                     this.modalCloseHandler();
                 }, 4000);
@@ -319,10 +283,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                     if (this.props.onError) {
                         this.props.onError(i18n.t('settings.2fa.pass_is_incorrect'));
                     }
-                } else if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemPhone) {
-                    if (this.props.onError) {
-                        this.props.onError(i18n.t('settings.change_phone_number.phone_already_exists'));
-                    }
+                } else {
                     this.setState({
                         accountPassword: undefined,
                         code: codePlaceholder,
@@ -338,12 +299,12 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
 
         if (accountPassword && accountPassword.getHaspassword()) {
             this.apiManager.genInputPassword(password, accountPassword).then((inputPassword) => {
-                changeNumber(inputPassword);
+                deleteAccount(inputPassword);
             });
         } else {
-            changeNumber();
+            deleteAccount();
         }
     }
 }
 
-export default ChangePhoneModal;
+export default DeleteAccountModal;

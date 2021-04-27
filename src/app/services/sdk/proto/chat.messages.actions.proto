@@ -2,7 +2,6 @@ syntax = "proto3";
 package msg;
 import "core.types.proto";
 import "chat.phone.proto";
-option go_package = '.;msg';
 
 /*
     Creation Time: 2018 - Nov - 28

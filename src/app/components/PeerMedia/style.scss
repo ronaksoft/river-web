@@ -31,12 +31,12 @@
     }
 
     .more {
-      width: 64px;
       color: var(--river);
       font-size: 12px;
       font-weight: bold;
       text-transform: uppercase;
       cursor: pointer;
+      white-space: nowrap;
     }
   }
 
@@ -75,7 +75,22 @@
   }
 
   .peer-media-container {
+    position: relative;
     padding: 0 0 0 12px;
+
+    .media-load-more {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      padding: 4px 12px;
+      border-radius: 12px;
+      transform: translateX(-50%);
+      background-color: var(--river-light);
+      color: var(--light);
+      font-size: 12px;
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+    }
 
     .media-loading {
       text-align: center;
@@ -130,6 +145,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        background-color: var(--bg);
 
         .file-extension {
           position: absolute;
@@ -181,6 +197,7 @@
         float: left;
         overflow: hidden;
         border-radius: 3px;
+        background-color: var(--bg);
 
         .media-more {
           position: absolute;
@@ -459,7 +476,17 @@ html[theme="dark-blue"] {
       }
     }
 
+    .media-grid-view {
+      .media-item {
+        background-color: var(--dark-low);
+      }
+    }
+
     .media-list-view {
+      .file-icon {
+        background-color: var(--dark-low);
+      }
+
       .media-item {
         .file-icon {
           .file-extension {
@@ -484,6 +511,22 @@ html[theme="dark-blue"] {
             color: var(--white);
           }
         }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .peer-media {
+    .media-grid-view {
+      .media-item {
+        background-color: var(--dark-blue-low);
+      }
+    }
+
+    .media-list-view {
+      .file-icon {
+        background-color: var(--dark-blue-low);
       }
     }
   }

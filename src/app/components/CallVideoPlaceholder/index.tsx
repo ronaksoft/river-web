@@ -15,11 +15,16 @@ import {CallDeviceType} from "../../services/sdk/messages/chat.phone_pb";
 import UserName from "../UserName";
 import {
     DesktopMacRounded,
+    DevicesOtherRounded,
     LaptopRounded,
-    PhoneIphoneRounded,
     PhoneAndroidRounded,
-    DevicesOtherRounded
+    PhoneIphoneRounded,
+    VolumeOffRounded,
+    WifiRounded,
 } from "@material-ui/icons";
+import {Tooltip} from "@material-ui/core";
+import {IceState} from "../CallVideo";
+import i18n from "../../services/i18n";
 
 import './style.scss';
 
@@ -36,7 +41,9 @@ interface IProps {
 
 interface IState {
     deviceType: CallDeviceType;
+    iceState: IceState;
     img: any;
+    muted: boolean;
     userId: string;
     videoMute: boolean;
 }
@@ -61,7 +68,9 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
 
         this.state = {
             deviceType: props.deviceType,
+            iceState: IceState.Connected,
             img: undefined,
+            muted: props.muted || false,
             userId: props.userId,
             videoMute: false,
         };
@@ -108,17 +117,47 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
         }
     }
 
+    public setIceState(iceState: IceState) {
+        this.setState({
+            iceState,
+        });
+    }
+
+    public setMute(muted: boolean) {
+        this.setState({
+            muted,
+        });
+    }
+
     public render() {
-        const {className, muted, playsInline, autoPlay} = this.props;
-        const {videoMute, img, userId} = this.state;
-        return (<div className={'video-placeholder ' + (className || '') + (!img ? ' no-image' : '')}
-                     onClick={this.props.onClick}>
+        const {className, playsInline, autoPlay} = this.props;
+        const {videoMute, img, userId, muted} = this.state;
+        return (<div
+            className={'video-placeholder ' + (className || '') + (!img ? ' no-image' : '') + (videoMute ? ' video-muted' : '')}
+            onClick={this.props.onClick}>
+            {this.getIndicatorContent()}
             {img && <img className={'video-img' + (videoMute ? ' upper' : '')} alt="" src={img}/>}
             <video key="video" ref={this.vidRef} playsInline={playsInline} autoPlay={autoPlay} muted={muted}
                    style={{visibility: userId && videoMute ? 'hidden' : 'visible'}}/>
-            {this.getUserContent()}
             <CallVideoAugment ref={this.callVideoAugmentRefHandler} videoMute={videoMute} userId={userId}/>
+            {this.getUserContent()}
         </div>);
+    }
+
+    private getIndicatorContent() {
+        const {muted, iceState} = this.state;
+        if (iceState === IceState.Connecting) {
+            return <div className="video-ice-status">
+                <WifiRounded/>
+                <div className="status-label">{i18n.t('status.reconnecting')}</div>
+            </div>;
+        }
+        if (muted) {
+            return <div className="audio-muted">
+                <VolumeOffRounded/>
+            </div>;
+        }
+        return null;
     }
 
     private getUserContent() {
@@ -135,15 +174,25 @@ class CallVideoPlaceholder extends React.Component<IProps, IState> {
     private getDeviceType(deviceType: CallDeviceType) {
         switch (deviceType) {
             case CallDeviceType.CALLDEVICEDESKTOP:
-                return <DesktopMacRounded/>;
+                return <Tooltip title={i18n.t('general.desktop')}>
+                    <DesktopMacRounded/>
+                </Tooltip>;
             case CallDeviceType.CALLDEVICEWEB:
-                return <LaptopRounded/>;
+                return <Tooltip title={i18n.t('general.web')}>
+                    <LaptopRounded/>
+                </Tooltip>;
             case CallDeviceType.CALLDEVICEIOS:
-                return <PhoneIphoneRounded/>;
+                return <Tooltip title={i18n.t('general.ios')}>
+                    <PhoneIphoneRounded/>
+                </Tooltip>;
             case CallDeviceType.CALLDEVICEANDROID:
-                return <PhoneAndroidRounded/>;
+                return <Tooltip title={i18n.t('general.android')}>
+                    <PhoneAndroidRounded/>
+                </Tooltip>;
             case CallDeviceType.CALLDEVICEUNKNOWN:
-                return <DevicesOtherRounded/>;
+                return <Tooltip title={i18n.t('general.unknown')}>
+                    <DevicesOtherRounded/>
+                </Tooltip>;
         }
         return null;
     }

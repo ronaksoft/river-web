@@ -12,13 +12,14 @@ import Presenter from '../../presenters';
 import axios from 'axios';
 import {base64ToU8a, uint8ToBase64} from './utils';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
-import {C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../../const';
+import {C_ERR, C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../../const';
 import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
 import Socket, {ISendPayload, serverTime} from '../../server/socket';
 import {EventSocketReady} from "../../../events";
 import {InputTeam} from "../../messages/core.types_pb";
 import {getFileServerUrl} from "../../../../components/DevTools";
+import {Error as RiverError} from "../../messages/rony_pb";
 //@ts-ignore
 import RiverWorker from 'worker-loader?filename=river.js!../../worker';
 
@@ -280,7 +281,18 @@ export default class Http {
         try {
             const res = Presenter.getMessage(constructor, base64ToU8a(base64));
             if (constructor === C_MSG.Error) {
-                this.messageListeners[reqId].reject({constructor, data: res.toObject()});
+                const errObj: RiverError.AsObject = res.toObject();
+                window.console.warn('http error:', errObj);
+                if (errObj && errObj.code === C_ERR.ErrCodeRateLimit) {
+                    setTimeout(() => {
+                        if (this.messageListeners.hasOwnProperty(reqId)) {
+                            this.sendRequest(this.messageListeners[reqId].request);
+                        }
+                    }, parseInt(errObj.items, 10) * 1000);
+                    return;
+                } else {
+                    this.messageListeners[reqId].reject({constructor, data: errObj});
+                }
             } else {
                 this.messageListeners[reqId].resolve({constructor, data: res});
             }

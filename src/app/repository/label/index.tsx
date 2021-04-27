@@ -139,7 +139,7 @@ export default class LabelRepo {
                         this.getRemoteMessageByItem(teamId, id, {limit: lim, max: max || 0}).then((remoteRes) => {
                             resolve({
                                 labelCount: cacheRes.labelCount + remoteRes.length,
-                                messageList: [...cacheRes.messageList, ...MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId())],
+                                messageList: [...cacheRes.messageList, ...remoteRes],
                             });
                         }).catch((remoteErr) => {
                             reject(remoteErr);
@@ -190,15 +190,19 @@ export default class LabelRepo {
 
     public getRemoteMessageByItem(teamId: string, id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
         return this.apiManager.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId()) as Array<UserMessage.AsObject>;
-            const labelGroup = groupBy(remoteRes.messagesList, (o => o.teamid));
+            const messageWithMediaMany = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
+            remoteRes.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
+            const labelGroup = groupBy(messageWithMediaMany.messages, (o => o.teamid));
             for (const [team, messages] of Object.entries(labelGroup)) {
                 this.insertManyLabelItem(team || '0', id, messages);
                 this.messageRepo.insertDiscrete(teamId, messages);
             }
+            // if (messageWithMediaMany.medias.length > 0) {
+            //     this.mediaRepo.importBulk(messageWithMediaMany.medias, false);
+            // }
             this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);
-            return remoteRes.messagesList.filter(o => o.teamid === teamId);
+            return remoteRes.messagesList;
         });
     }
 
@@ -274,9 +278,9 @@ export default class LabelRepo {
             }
         });
         if (labelItems.length > 0) {
-            return this.db.labelItems.bulkDelete(labelItems);
+            return this.db.labelItems.where('[teamid+lid+mid]').anyOf(labelItems).delete();
         }
-        return Promise.resolve();
+        return Promise.resolve(null);
     }
 
     private insertManyLabelItem(teamId: string, labelId: number, messageList: IMessage[]) {

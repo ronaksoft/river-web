@@ -8,6 +8,7 @@
     "cancel": "Cancel",
     "change": "Change",
     "next": "Next",
+    "continue": "Continue",
     "submit": "Submit",
     "saved_messages": "Saved Messages",
     "first_name": "First Name",
@@ -72,7 +73,15 @@
     "via_gif": " via @",
     "all": "All",
     "select_all": "Select All",
-    "view_in_chat": "View in chat"
+    "view_in_chat": "View in chat",
+    "unsupported_document": "Unsupported document",
+    "sending_message_is_not_allowed": "Sending message is not allowed",
+    "desktop": "Desktop",
+    "web": "Web",
+    "ios": "iOS",
+    "android": "Android",
+    "unknown": "Unknown",
+    "no_username_found": "{0} doesn't have an account yet!"
   },
   "chat": {
     "search": "Search",
@@ -91,7 +100,7 @@
     "logout_dialog": {
       "title": "Are you sure you want to log out?",
       "p1": "We are about to log out of River.",
-      "p2": "All your data will be removed!",
+      "p2": "All your data on this device will be removed!",
       "p3": "Are you sure you want to log out?"
     },
     "remove_message_dialog": {
@@ -151,6 +160,7 @@
     "show_all": "Show All",
     "photo_video": "Media",
     "audio": "Audio",
+    "voice": "Voice",
     "file": "File",
     "gif": "GIF",
     "CHANGE": "CHANGE",
@@ -159,7 +169,7 @@
     "created": "Created",
     "all_member_admin": "All Admin",
     "add_member": "Add member",
-    "leave_the": "Leave the",
+    "leave": "Leave",
     "participants": "{0} participants",
     "no_shared_media": "No Shared Media Here!",
     "user_cannot_be_added": "Sorry, you cannot add {0} to group because of their privacy settings."
@@ -217,6 +227,7 @@
     "private_chats": "Private Chats",
     "photos": "Photos",
     "videos": "Videos",
+    "media": "Media",
     "voices": "Voices",
     "gifs": "GIFs",
     "files": "Files",
@@ -363,7 +374,16 @@
       "audio": "Audio",
       "video": "Video"
     },
-    "left_panel": "Show Team Panel"
+    "left_panel": "Show Team Panel",
+    "delete_account": {
+      "title": "Delete Account",
+      "text": "You can delete your River account here. Your Account and all your cloud data - messages, media, contacts etc. will be deleted.",
+      "important": "Important: ",
+      "note": "We will send an SMS with a confirmation code to {0}.",
+      "enter_password": "Enter password",
+      "note_2fa": "You have Two-Step Verification enabled, so your account is protected with an additional password.",
+      "account_deleted": "Your account has been deleted"
+    }
   },
   "contact": {
     "contacts": "Contacts",
@@ -440,6 +460,7 @@
   "status": {
     "members": "{0} members",
     "connecting": "Connecting...",
+    "reconnecting": "Reconnecting",
     "updating": "Updating...",
     "last_seen": "Last seen",
     "recently": "recently",
@@ -466,6 +487,7 @@
     "photo_message": "Photo Message",
     "file": "File",
     "gif": "GIF",
+    "web_document": "Web Document",
     "contact": "Contact",
     "location": "Location",
     "forwarded_message_from": "Forwarded message from ",
@@ -558,7 +580,7 @@
     "is_calling": "is calling...",
     "is_ringing": "is ringing...",
     "rate_this_call": "Rate this call",
-    "muted": "Muted",
+    "muted": "muted",
     "call_back": "Call Back",
     "call_timeout": "no answer",
     "is_not_available": "is not available",
@@ -584,7 +606,9 @@
     "in_progress": "In progress",
     "privacy_error": "You cannot call this user because of their privacy settings.",
     "streaming_from": "Streaming from ",
-    "screen_list": "Screen List"
+    "screen_list": "Screen List",
+    "mute": "Mute",
+    "unmute": "Unmute"
   },
   "notification": {
     "new_messages": "{0} new messages",

@@ -73,6 +73,7 @@ import ContactPicker from "../ContactPicker";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
 import './style.scss';
+import UserName from "../UserName";
 
 interface IProps {
     peer: InputPeer | null;
@@ -117,6 +118,7 @@ export const NotifyContent = ({value, onChange}: { value: string, onChange: (val
         onChange(v);
     };
     return <RadioGroup
+        className="notify-content"
         name="notify-setting"
         value={val}
         onChange={notifyValueChangeHandler}
@@ -358,9 +360,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     </div>}
                                 </>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false} teamId={this.teamId}
-                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}
-                                           onBulkAction={this.props.onBulkAction}/>}
+                                <PeerMedia key={peer.getId() || ''} className="kk-card" peer={peer} full={false}
+                                           teamId={this.teamId} onMore={this.peerMediaMoreHandler}
+                                           onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                                 {group && !disable && <div className="participant kk-card">
                                     <label>{i18n.tf('peer_info.participants', String(group.participants))} </label>
                                     {participants.map((participant, index) => {
@@ -372,10 +374,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                     <div className="admin-wrapper"><StarsRounded/></div> :
                                                     (allMemberAdmin || participant.type === ParticipantType.PARTICIPANTTYPEADMIN) ?
                                                         <div className="admin-wrapper"><StarRateRounded/></div> : null}
-                                                <span className="name"
-                                                      onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{currentUserId === participant.userid ? ' (you)' : ''}</span>
-                                                <span
-                                                    className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
+                                                <UserName className="name" id={participant.userid} you={true}
+                                                          noIcon={true} iconException={['bot']} noDetail={true}
+                                                          onClick={this.participantClickHandler(participant.userid, participant.accesshash)}/>
+                                                <div
+                                                    className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</div>
                                                 {isAdmin && participant.type !== ParticipantType.PARTICIPANTTYPECREATOR && (participant.userid !== currentUserId || (participant.userid === currentUserId && participant.type !== ParticipantType.PARTICIPANTTYPEADMIN)) &&
                                                 <div className="more"
                                                      onClick={this.moreOpenHandler(participant)}>
@@ -391,7 +394,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 </div>}
                                 {isMember && <div className="leave-group kk-card">
                                     <Button color="secondary" fullWidth={true} onClick={this.leaveGroupHandler}>
-                                        <ExitToAppRounded/> {i18n.t('peer_info.leave_the')} '{group ? group.title : ''}'
+                                        <ExitToAppRounded/> {i18n.t('peer_info.leave')}
                                     </Button>
                                 </div>}
                             </div>
@@ -409,8 +412,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
-                        <PeerMedia className="kk-card" peer={peer} teamId={this.teamId} full={true}
-                                   onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
+                        <PeerMedia key={peer.getId() || ''} className="kk-card" peer={peer} teamId={this.teamId}
+                                   full={true} onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                     </div>
                 </div>
                 <Menu

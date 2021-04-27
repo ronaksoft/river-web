@@ -21,6 +21,7 @@ import {kMerge} from "../../services/utilities/kDash";
 import {PeerType, UserMessage} from "../../services/sdk/messages/core.types_pb";
 import Dexie from "dexie";
 import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
+import MediaRepo from "../media";
 
 const withThumb = [C_MESSAGE_ICON.Audio, C_MESSAGE_ICON.File, C_MESSAGE_ICON.GIF, C_MESSAGE_ICON.Photo, C_MESSAGE_ICON.Video];
 
@@ -45,6 +46,7 @@ export default class DialogRepo {
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
+    private mediaRepo: MediaRepo;
     private lazyMap: { [key: string]: IDialog } = {};
     private readonly updateThrottle: any = null;
     private insertToDbTimeout: any = null;
@@ -56,6 +58,7 @@ export default class DialogRepo {
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
+        this.mediaRepo = MediaRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDbDebounced, 256);
     }
 
@@ -138,8 +141,12 @@ export default class DialogRepo {
 
     public getMany(teamId: string, {skip, limit}: any): Promise<IDialog[]> {
         return this.apiManager.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId) as Array<UserMessage.AsObject>;
+            const messageWithMediaMany = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId);
+            remoteRes.messagesList = messageWithMediaMany.messages as Array<UserMessage.AsObject>;
             this.messageRepo.importBulk(remoteRes.messagesList);
+            if (messageWithMediaMany.medias.length > 0) {
+                this.mediaRepo.importBulk(messageWithMediaMany.medias, false);
+            }
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {
                 messageMap[msg.id || 0] = msg;
@@ -168,8 +175,12 @@ export default class DialogRepo {
             //         window.console.log('user', remoteRes.usersList.find(o=> o.id === d.peerid));
             //     }
             // });
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId) as Array<UserMessage.AsObject>;
+            const messageWithMedia = MessageRepo.parseMessageMany(remoteRes.messagesList, currentUserId);
+            remoteRes.messagesList = messageWithMedia.messages as Array<UserMessage.AsObject>;
             this.messageRepo.importBulk(remoteRes.messagesList);
+            if (messageWithMedia.medias) {
+                this.mediaRepo.importBulk(messageWithMedia.medias, false);
+            }
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {
                 messageMap[msg.id || 0] = msg;

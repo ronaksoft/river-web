@@ -11,6 +11,9 @@ export class PhoneInitCall extends jspb.Message {
   getPeer(): core_types_pb.InputPeer | undefined;
   setPeer(value?: core_types_pb.InputPeer): void;
 
+  getCallid(): string;
+  setCallid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneInitCall.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneInitCall): PhoneInitCall.AsObject;
@@ -24,6 +27,7 @@ export class PhoneInitCall extends jspb.Message {
 export namespace PhoneInitCall {
   export type AsObject = {
     peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
   }
 }
 
@@ -232,6 +236,32 @@ export namespace PhoneRemoveParticipant {
     callid: string,
     participantsList: Array<core_types_pb.InputUser.AsObject>,
     timeout: boolean,
+  }
+}
+
+export class PhoneGetParticipants extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getCallid(): string;
+  setCallid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneGetParticipants.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneGetParticipants): PhoneGetParticipants.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneGetParticipants, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneGetParticipants;
+  static deserializeBinaryFromReader(message: PhoneGetParticipants, reader: jspb.BinaryReader): PhoneGetParticipants;
+}
+
+export namespace PhoneGetParticipants {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
   }
 }
 
@@ -959,6 +989,26 @@ export namespace PhoneActionPicked {
   }
 }
 
+export class PhoneActionRestarted extends jspb.Message {
+  getSender(): boolean;
+  setSender(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneActionRestarted.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneActionRestarted): PhoneActionRestarted.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneActionRestarted, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneActionRestarted;
+  static deserializeBinaryFromReader(message: PhoneActionRestarted, reader: jspb.BinaryReader): PhoneActionRestarted;
+}
+
+export namespace PhoneActionRestarted {
+  export type AsObject = {
+    sender: boolean,
+  }
+}
+
 export class PhoneActionMediaSettingsUpdated extends jspb.Message {
   getVideo(): boolean;
   setVideo(value: boolean): void;
@@ -1123,7 +1173,7 @@ export enum PhoneCallAction {
   PHONECALLADMINUPDATED = 14,
   PHONECALLSCREENSHARE = 15,
   PHONECALLPICKED = 16,
-  PHONECALLRESERVED13 = 17,
+  PHONECALLRESTARTED = 17,
   PHONECALLRESERVED14 = 18,
   PHONECALLRESERVED15 = 19,
   PHONECALLRESERVED16 = 20,

@@ -18,7 +18,8 @@ import ChatInput, {
     C_TYPING_INTERVAL,
     C_TYPING_INTERVAL_OFFSET,
     canSendMessage,
-    IMessageParam
+    IMessageParam,
+    shiftArrow
 } from '../../components/ChatInput/index';
 import {
     clone,
@@ -37,7 +38,8 @@ import NewMessage from '../../components/NewMessage';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog, IPeer} from '../../repository/dialog/interface';
 import UpdateManager, {
-    IDialogDBUpdated, IDialogRemoved,
+    IDialogDBUpdated,
+    IDialogRemoved,
     IMessageDBRemoved,
     IMessageDBUpdated,
     IMessageIdDBUpdated
@@ -45,7 +47,7 @@ import UpdateManager, {
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from '../../services/sdk/const';
 import UserName from '../../components/UserName';
 import UserRepo from '../../repository/user';
-import MainRepo from '../../repository';
+import MainRepo, {C_INFINITY} from '../../repository';
 import {C_MSG_MODE} from '../../components/ChatInput/consts';
 import TimeUtility from '../../services/utilities/time';
 import {C_BUTTON_ACTION, C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
@@ -102,11 +104,12 @@ import {
     EventFileDownloaded,
     EventFocus,
     EventMouseWheel,
-    EventNetworkStatus, EventRightMenuToggled,
+    EventNetworkStatus,
+    EventRightMenuToggled,
+    EventSocketReady,
     EventWasmInit,
     EventWasmStarted,
-    EventWebSocketClose,
-    EventSocketReady
+    EventWebSocketClose
 } from "../../services/events";
 import BufferProgressBroadcaster from "../../services/bufferProgress";
 import TopPeerRepo, {C_TOP_PEER_LEN, TopPeerType} from "../../repository/topPeer";
@@ -134,13 +137,18 @@ import {
     UpdateLabelItemsAdded,
     UpdateLabelItemsRemoved,
     UpdateLabelSet,
-    UpdateMessageEdited, UpdateMessagePinned,
+    UpdateMessageEdited,
+    UpdateMessagePinned,
     UpdateMessagesDeleted,
     UpdateNewMessage,
-    UpdateNotifySettings, UpdatePhoneCallEnded, UpdatePhoneCallStarted, UpdateReaction,
+    UpdateNotifySettings,
+    UpdatePhoneCallEnded,
+    UpdatePhoneCallStarted,
+    UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents, UpdateTeamCreated,
+    UpdateReadMessagesContents,
+    UpdateTeamCreated,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping
@@ -291,6 +299,7 @@ class Chat extends React.Component<IProps, IState> {
     private modalityService: ModalityService;
     private readonly callService: CallService;
     private dialogInitialized: boolean = false;
+    private started: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -729,6 +738,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onMessageDrop={this.chatInputMessageDropHandler}
                                        onGifSelect={this.chatInputGifSelectHandler}
                                        onChatClose={this.closePeerHandler}
+                                       onShitKeyArrow={this.chatInputShiftKeyArrowHandler}
                             />
                         </div>}
                         {this.selectedPeerName === 'null' && <div className="column-center">
@@ -761,7 +771,8 @@ class Chat extends React.Component<IProps, IState> {
                                   teamId={this.teamId}
                 />
                 <UserDialog key="user-dialog" ref={this.userDialogRefHandler} onAction={this.userDialogActionHandler}
-                            teamId={this.teamId} onError={this.textErrorHandler}/>
+                            teamId={this.teamId} onError={this.textErrorHandler}
+                            enqueueSnackbar={this.props.enqueueSnackbar} closeSnackbar={this.props.closeSnackbar}/>
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
                                 onMessageAction={this.documentViewerMessageActionHandler}
                                 onError={this.textErrorHandler}/>
@@ -868,12 +879,14 @@ class Chat extends React.Component<IProps, IState> {
                 if (dialog && dialog.activecallid && this.peer && this.callService) {
                     if (cmd === 'call_end') {
                         this.callService.callReject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
-                            this.updatePhoneCallEndedHandler({
-                                peer: this.peer.toObject(),
-                                teamid: this.teamId,
-                                ucount: 0,
-                                updateid: 0,
-                            });
+                            if (this.peer && this.peer.getType() === PeerType.PEERUSER) {
+                                this.updatePhoneCallEndedHandler({
+                                    peer: this.peer.toObject(),
+                                    teamid: this.teamId,
+                                    ucount: 0,
+                                    updateid: 0,
+                                });
+                            }
                         });
                     } else {
                         this.callService.joinCall(this.peer, dialog.activecallid);
@@ -944,7 +957,7 @@ class Chat extends React.Component<IProps, IState> {
             const dialog = this.getDialogByPeerName(this.selectedPeerName);
             if (dialog) {
                 this.infoBarRef.setPeer(this.teamId, this.peer, dialog);
-                this.infoBarRef.setCallStarted(dialog.activecallid && dialog.activecallid !== '0');
+                this.infoBarRef.setCallId(dialog.activecallid || '0');
             }
         }
     }
@@ -983,7 +996,7 @@ class Chat extends React.Component<IProps, IState> {
                     const selectedPeerName = this.props.match.params.id;
                     const selectedMessageId = this.props.match.params.mid;
                     this.dialogsSort(res, () => {
-                        resolve();
+                        resolve(null);
                         if (selectedPeerName !== 'null') {
                             this.setLeftMenu('chat');
                             const peer = this.getPeerByName(selectedPeerName);
@@ -998,7 +1011,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setLoading(false);
             }).catch((err) => {
                 this.setLoading(false);
-                resolve();
+                resolve(null);
             }).finally(() => {
                 if (!this.dialogInitialized) {
                     this.dialogInitialized = true;
@@ -1525,7 +1538,7 @@ class Chat extends React.Component<IProps, IState> {
 
         const dialog = this.getDialogByPeerName(dialogPeerName);
 
-        let before = 10000000000;
+        let before = C_INFINITY;
         // Scroll pos check
         if (beforeMsg !== undefined) {
             before = beforeMsg;
@@ -1538,7 +1551,7 @@ class Chat extends React.Component<IProps, IState> {
                         before = tBefore;
                     }
                 } else if ((dialog.scroll_pos || -1) !== -1) {
-                    before = dialog.scroll_pos || 10000000000;
+                    before = dialog.scroll_pos || C_INFINITY;
                 }
             }
         }
@@ -1667,7 +1680,6 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        window.console.log('messageLoadMoreAfterHandler');
         this.setLoading(true);
         this.messageRepo.list(this.teamId, {
             after,
@@ -1714,6 +1726,7 @@ class Chat extends React.Component<IProps, IState> {
             before = this.messages[0].id;
         }
 
+        this.setScrollMode('none');
         window.console.log('messageLoadMoreBeforeHandler');
 
         const dialogName = GetPeerName(peer.getId(), peer.getType());
@@ -1775,7 +1788,7 @@ class Chat extends React.Component<IProps, IState> {
 
             // date breakpoint
             if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
-                || (key === 0 && !push) || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
+                || ((key > 0 || (key === 0 && !push)) && messages[key - 1] && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
                 const t: IMessage = {
                     createdon: msg.createdon,
                     id: msg.id,
@@ -2318,7 +2331,7 @@ class Chat extends React.Component<IProps, IState> {
             setTimeout(() => {
                 this.dialogsSortThrottle(dialogs);
             }, 256);
-            resolve();
+            resolve(null);
         });
         // if (toUpdateDialog) {
         //     this.dialogRepo.lazyUpsert([toUpdateDialog]);
@@ -2426,15 +2439,17 @@ class Chat extends React.Component<IProps, IState> {
                 } else if (shouldRerender && this.dialogRef) {
                     this.dialogRef.forceRender();
                 }
-                if (this.selectedPeerName === peerName) {
-                    if (unreadCounter === 0 && this.endOfMessage && this.moveDownRef) {
-                        this.moveDownRef.setVisible(false);
-                    } else if (unreadCounter && this.endOfMessage && this.moveDownRef) {
-                        this.moveDownRef.setVisible(true);
+                if (this.moveDownRef) {
+                    if (this.selectedPeerName === peerName) {
+                        if (unreadCounter === 0 && this.endOfMessage) {
+                            this.moveDownRef.setVisible(false);
+                        } else if (unreadCounter && this.endOfMessage) {
+                            this.moveDownRef.setVisible(true);
+                        }
                     }
-                }
-                if (counterAction && peerName === this.selectedPeerName && this.moveDownRef) {
-                    this.moveDownRef.setDialog(dialogs[index]);
+                    if (counterAction && peerName === this.selectedPeerName) {
+                        this.moveDownRef.setDialog(dialogs[index]);
+                    }
                 }
                 this.dialogRepo.lazyUpsert([dialogs[index]]);
             } else {
@@ -2532,6 +2547,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private wsReadyHandler = () => {
+        if (this.started) {
+            return;
+        }
+        this.started = true;
         this.setAppStatus({
             isConnecting: false,
         });
@@ -2600,19 +2619,32 @@ class Chat extends React.Component<IProps, IState> {
                     // Insert holes on snapshot if it has difference
                     const sameItems: IDialog[] = intersectionWith(cloneDeep(oldDialogs), res.dialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
                     const newItems: IDialog[] = differenceWith(cloneDeep(res.dialogs), oldDialogs, (i1, i2) => i1.peerid === i2.peerid && i1.peertype === i2.peertype);
+                    const additionalHoles: Array<{ peedId: string, peerType: PeerType, id: number }> = [];
                     const promises: any[] = [];
                     sameItems.forEach((dialog) => {
                         const d = find(res.dialogs, o => o.peerid === dialog.peerid && o.peertype === dialog.peertype);
-                        if (d) {
-                            promises.push(this.messageRepo.clearHistory(this.teamId, d.peerid || '', d.peertype || 0, d.topmessageid || 0));
+                        if (d && d.topmessageid !== dialog.topmessageid) {
+                            promises.push(this.messageRepo.clearHistory(this.teamId, d.peerid || '0', d.peertype || 0, d.topmessageid || 0));
+                            additionalHoles.push({
+                                id: d.topmessageid || 0,
+                                peedId: d.peerid,
+                                peerType: d.peertype || 0,
+                            });
                         }
                     });
                     const insertHoleFn = () => {
-                        newItems.forEach((dialog) => {
-                            if (dialog.topmessageid) {
-                                this.messageRepo.insertHole(this.teamId, dialog.peerid || '', dialog.peertype || 0, dialog.topmessageid, false);
-                            }
-                        });
+                        this.messageRepo.insertMayHole(newItems.map(o => ({
+                            id: o.topmessageid,
+                            peerId: o.peerid || '0',
+                            peerType: o.peertype || 0,
+                            teamId: this.teamId,
+                        })), false);
+                        this.messageRepo.insertMayHole(additionalHoles.map(o => ({
+                            id: o.id,
+                            peerId: o.peedId,
+                            peerType: o.peerType,
+                            teamId: this.teamId,
+                        })), true);
                     };
                     if (promises.length > 0) {
                         Promise.all(promises).then(() => {
@@ -2644,7 +2676,7 @@ class Chat extends React.Component<IProps, IState> {
                             this.startSyncing();
                         }
                         this.addSnapshotRecord(this.teamId);
-                        resolve();
+                        resolve(null);
                     });
                 }).catch((err) => {
                     window.console.log('snapshot', err);
@@ -2662,7 +2694,7 @@ class Chat extends React.Component<IProps, IState> {
     private getRemoteTopPeers() {
         this.apiManager.getTopPeer(TopPeerCategory.FORWARDS, 0, C_TOP_PEER_LEN).then((res) => {
             this.userRepo.importBulk(false, res.usersList);
-            this.userRepo.importBulk(false, res.groupsList);
+            this.groupRepo.importBulk(res.groupsList);
             this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Forward, res.peersList);
         });
         this.apiManager.getTopPeer(TopPeerCategory.USERS, 0, C_TOP_PEER_LEN).then((res) => {
@@ -2670,7 +2702,7 @@ class Chat extends React.Component<IProps, IState> {
             this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Search, res.peersList);
         });
         this.apiManager.getTopPeer(TopPeerCategory.GROUPS, 0, C_TOP_PEER_LEN).then((res) => {
-            this.userRepo.importBulk(false, res.groupsList);
+            this.groupRepo.importBulk(res.groupsList);
             this.topPeerRepo.insertFromRemote(this.teamId, TopPeerType.Search, res.peersList);
         });
     }
@@ -2679,6 +2711,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setAppStatus({
             isConnecting: true,
         });
+        this.started = false;
     }
 
     private fnStartedHandler = () => {
@@ -2851,11 +2884,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (!this.messageRef) {
                     return;
                 }
-                if (this.endOfMessage && this.isInChat) {
-                    this.setScrollMode('end');
-                } else {
-                    this.setScrollMode('none');
-                }
+                this.setScrollMode('none');
                 this.updateManager.getLastUpdateId();
                 const mRes = res.map((o) => {
                     o.random_id = data.randomIdMap[o.id] || 0;
@@ -2982,7 +3011,7 @@ class Chat extends React.Component<IProps, IState> {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         this.updateDialogsCounter(peerName, {activeCallId: data.callid});
         if (this.infoBarRef && this.selectedPeerName === peerName) {
-            this.infoBarRef.setCallStarted(true);
+            this.infoBarRef.setCallId(data.callid);
         }
     }
 
@@ -2990,7 +3019,7 @@ class Chat extends React.Component<IProps, IState> {
         const peerName = GetPeerName(data.peer.id, data.peer.type);
         this.updateDialogsCounter(peerName, {activeCallId: '0'});
         if (this.infoBarRef && this.selectedPeerName === peerName) {
-            this.infoBarRef.setCallStarted(false);
+            this.infoBarRef.setCallId('0');
         }
     }
 
@@ -3191,6 +3220,7 @@ class Chat extends React.Component<IProps, IState> {
             }).catch((err) => {
                 window.console.log(err);
             });
+            this.started = false;
         };
         this.updateManager.disableLiveUpdate();
         this.apiManager.logout(this.connInfo.AuthID).then((res) => {
@@ -3457,6 +3487,7 @@ class Chat extends React.Component<IProps, IState> {
         // Modify temporary message in view port
         if (diff <= 2 && messages && messages[end] && (messages[end].id || 0) > 0) {
             const dialog = this.getDialogByPeerName(this.selectedPeerName);
+            // check if has more messages
             if (dialog && dialog.topmessageid !== messages[end].id) {
                 diff = 5;
             }
@@ -3470,9 +3501,9 @@ class Chat extends React.Component<IProps, IState> {
             if (diff <= 2) {
                 this.lastMessageId = -1;
             } else {
-                this.lastMessageId = messages[end].id || -1;
+                this.lastMessageId = Math.floor(messages[end].id || -1);
             }
-            if (messages[end].id !== -1) {
+            if (messages[end].id) {
                 // Update unread counter in dialog
                 this.sendReadHistory(this.peer, Math.floor(messages[end].id || 0), end, diff > 1);
             }
@@ -5374,6 +5405,12 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private chatInputShiftKeyArrowHandler = (arrow: shiftArrow) => {
+        if (this.messageRef) {
+            this.messageRef.shiftArrow(arrow);
+        }
+    }
+
     /* Save file by type */
     private saveFile(msg: IMessage, noRetry?: boolean, electronCB?: any) {
         const mediaDocument = getMediaDocument(msg);
@@ -5637,7 +5674,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateMessagePinnedHandler = (data: UpdateMessagePinned.AsObject) => {
-        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0, undefined, data.userid);
+        this.pinMessageDialog(data.peer.id || '0', data.peer.type || 0, data.msgid || 0, true, data.userid);
         // TODO modify server for silent pin
         // const peerName = GetPeerName(data.peer.id, data.peer.type);
         // if (this.selectedPeerName === peerName) {
@@ -5682,13 +5719,15 @@ class Chat extends React.Component<IProps, IState> {
         const index = findIndex(dialogs, {peerid: peerId, peertype: peerType});
         let msgIdNotif: number = 0;
         if (index > -1) {
-            if (dialogs[index].pinnedmessageid === msgId) {
-                dialogs[index].pinnedmessageid = 0;
-            } else {
-                dialogs[index].pinnedmessageid = msgId;
+            if (dialogs[index].pinnedmessageid !== msgId) {
                 msgIdNotif = msgId;
             }
             if (store) {
+                if (dialogs[index].pinnedmessageid === msgId) {
+                    dialogs[index].pinnedmessageid = 0;
+                } else {
+                    dialogs[index].pinnedmessageid = msgId;
+                }
                 this.dialogRepo.lazyUpsert([dialogs[index]]);
             }
         }
@@ -5908,7 +5947,7 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         if (this.infoBarRef && dialog) {
-            this.infoBarRef.setCallStarted(dialog.activecallid && dialog.activecallid !== '0');
+            this.infoBarRef.setCallId(dialog.activecallid || '0');
         }
 
         if (this.infoBarRef) {
@@ -6279,7 +6318,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private pinMessage(peer: InputPeer, msgId: number, silent: boolean) {
         this.apiManager.messagePin(peer, msgId, silent).then(() => {
-            this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, msgId);
+            this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, msgId, false);
         }).catch((err: RiverError.AsObject) => {
             if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMessage) {
                 this.pinMessageDialog(peer.getId() || '0', peer.getType() || 0, 0, true);

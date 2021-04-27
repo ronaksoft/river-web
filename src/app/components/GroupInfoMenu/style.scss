@@ -289,7 +289,7 @@
 
         svg {
           font-size: 16px;
-          color: var(--dark);
+          color: var(--river-dark);
         }
       }
 
@@ -305,6 +305,11 @@
         text-overflow: ellipsis;
         max-width: 230px;
         font-weight: bold;
+
+        svg {
+          transform: translateY(0) !important;
+          margin: 0 2px;
+        }
       }
 
       &.admin {
@@ -393,6 +398,10 @@
 
     .action {
       width: 48px;
+
+      button {
+        padding: 12px;
+      }
     }
   }
 
@@ -474,6 +483,16 @@
 .container:not(.mobile-view) {
   .group-info-menu {
     width: 318px;
+  }
+}
+
+.notify-content {
+  .MuiFormControlLabel-root {
+    padding: 0 0 8px;
+
+    .MuiFormControlLabel-label {
+      padding: 0 6px;
+    }
   }
 }
 
@@ -614,11 +633,11 @@ html[theme="dark-blue"] {
           background-color: var(--dark-color-hover);
         }
 
-        .admin-wrapper {
-          svg {
-            color: var(--white);
-          }
-        }
+        //.admin-wrapper {
+        //  svg {
+        //    color: var(--white);
+        //  }
+        //}
 
         .name {
           color: var(--light);

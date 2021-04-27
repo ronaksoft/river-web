@@ -100,7 +100,7 @@ import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from
 import {
     AccountAuthorizations,
     AccountChangePhone,
-    AccountCheckUsername,
+    AccountCheckUsername, AccountDelete,
     AccountGetAuthorizations,
     AccountGetNotifySettings,
     AccountGetPassword,
@@ -110,9 +110,9 @@ import {
     AccountPrivacyRules,
     AccountRecoverPassword,
     AccountRegisterDevice,
-    AccountRemovePhoto,
+    AccountRemovePhoto, AccountResendVerifyPhoneCode,
     AccountResetAuthorization,
-    AccountSendChangePhoneCode,
+    AccountSendVerifyPhoneCode,
     AccountSetLang,
     AccountSetNotifySettings,
     AccountSetPrivacy,
@@ -192,7 +192,7 @@ import {
     PhoneCallRateReason,
     PhoneCallsMany,
     PhoneDiscardCall,
-    PhoneGetHistory,
+    PhoneGetHistory, PhoneGetParticipants,
     PhoneInit,
     PhoneInitCall,
     PhoneJoinCall,
@@ -1051,13 +1051,6 @@ export default class APIManager {
         return this.server.send(C_MSG.AccountChangePhone, data.serializeBinary(), true);
     }
 
-    public accountSendChangePhoneCode(phone: string): Promise<AuthSentCode.AsObject> {
-        const data = new AccountSendChangePhoneCode();
-        data.setPhone(phone);
-        this.logVerbose(data);
-        return this.server.send(C_MSG.AccountSendChangePhoneCode, data.serializeBinary(), true);
-    }
-
     public accountGetPassword(): Promise<AccountPassword> {
         const data = new AccountGetPassword();
         this.logVerbose(data);
@@ -1117,6 +1110,33 @@ export default class APIManager {
         data.setUser(inputUser);
         this.logVerbose(data);
         return this.server.send(C_MSG.ContactsUnblock, data.serializeBinary(), true, undefined, undefined, true);
+    }
+
+    public accountSendVerifyPhoneCode(phone: string, appHash: string): Promise<AuthSentCode.AsObject> {
+        const data = new AccountSendVerifyPhoneCode();
+        data.setPhone(phone);
+        data.setApphash(appHash);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.AccountSendVerifyPhoneCode, data.serializeBinary(), true, undefined, undefined, true);
+    }
+
+    public accountResendVerifyPhoneCode(phone: string, phoneHash: string, appHash: string): Promise<Bool.AsObject> {
+        const data = new AccountResendVerifyPhoneCode();
+        data.setPhone(phone);
+        data.setPhonecodehash(phoneHash);
+        data.setApphash(appHash);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.AccountResendVerifyPhoneCode, data.serializeBinary(), true, undefined, undefined, true);
+    }
+
+    public accountDelete(phone: string, phoneCode: string, phoneHash: string, inputPassword?: InputPassword): Promise<Bool.AsObject> {
+        const data = new AccountDelete();
+        data.setPhone(phone);
+        data.setPhonecode(phoneCode);
+        data.setPhonecodehash(phoneHash);
+        data.setPassword(inputPassword);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.AccountDelete, data.serializeBinary(), true);
     }
 
     public botStart(inputPeer: InputPeer, randomId: number): Promise<Bool.AsObject> {
@@ -1305,9 +1325,12 @@ export default class APIManager {
         return this.server.send(C_MSG.TeamEdit, data.serializeBinary(), true, undefined, undefined, true);
     }
 
-    public callInit(inputPeer: InputPeer): Promise<PhoneInit.AsObject> {
+    public callInit(inputPeer: InputPeer, callId?: string): Promise<PhoneInit.AsObject> {
         const data = new PhoneInitCall();
         data.setPeer(inputPeer);
+        if (callId) {
+            data.setCallid(callId);
+        }
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneInitCall, data.serializeBinary(), true);
     }
@@ -1371,6 +1394,14 @@ export default class APIManager {
         data.setTimeout(timeout);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRemoveParticipant, data.serializeBinary(), true);
+    }
+
+    public callGetParticipants(inputPeer: InputPeer, id: string): Promise<PhoneParticipants.AsObject> {
+        const data = new PhoneGetParticipants();
+        data.setPeer(inputPeer);
+        data.setCallid(id);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneGetParticipants, data.serializeBinary(), true);
     }
 
     public callUpdateAdmin(inputPeer: InputPeer, id: string, inputUser: InputUser, admin: boolean): Promise<Bool.AsObject> {

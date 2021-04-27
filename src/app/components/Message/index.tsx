@@ -27,7 +27,7 @@ import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
 import MessagePreview from '../MessagePreview';
 import MessageStatus from '../MessageStatus';
-import {ErrorRounded, MoreVertRounded, TagFacesRounded} from '@material-ui/icons';
+import {ErrorRounded, MoreVertRounded, TagFacesOutlined} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
@@ -60,6 +60,8 @@ import ReactionPicker from "../ReactionPicker";
 import ReactionList from "../ReactionList";
 import GroupSeenBy from "../GroupSeenBy";
 import {IDialog} from "../../repository/dialog/interface";
+import MessageWeb from "../MessageWeb";
+import {shiftArrow} from "../ChatInput";
 
 import './style.scss';
 
@@ -178,7 +180,7 @@ export const isEditableMessageType = (type?: number) => {
 };
 
 export const canEditMessage = (message: IMessage, time: number) => {
-    return ((time - message.createdon || 0)) < 86400 && (message.fwdsenderid === '0' || !message.fwdsenderid) && !message.fwd && isEditableMessageType(message.messagetype);
+    return (message.me && (time - message.createdon || 0) < 86400 && (message.fwdsenderid === '0' || !message.fwdsenderid) && !message.fwd && isEditableMessageType(message.messagetype));
 };
 
 interface IProps {
@@ -219,6 +221,7 @@ interface IState {
     loadingPersist: boolean;
     moreAnchorEl: any;
     moreAnchorPos: any;
+    moreAnchorRef: 'anchorPosition' | 'anchorEl';
     moreIndex: number;
     readIdInit: number;
     selectable: boolean;
@@ -294,6 +297,8 @@ class Message extends React.Component<IProps, IState> {
     private reactionListRef: ReactionList | undefined;
     private groupSeenByRef: GroupSeenBy | undefined;
     private pinnedMessageId: number = 0;
+    private selectWithArrow: boolean = false;
+    private selectWithArrowIndex: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -315,6 +320,7 @@ class Message extends React.Component<IProps, IState> {
             loadingPersist: false,
             moreAnchorEl: null,
             moreAnchorPos: null,
+            moreAnchorRef: 'anchorEl',
             moreIndex: -1,
             readIdInit: -1,
             selectable: false,
@@ -647,8 +653,63 @@ class Message extends React.Component<IProps, IState> {
         return false;
     }
 
+    public shiftArrow(arrow: shiftArrow) {
+        const {items} = this.state;
+        if (items.length === 0) {
+            return;
+        }
+        const reset = () => {
+            this.selectWithArrow = false;
+            this.selectWithArrowIndex = 0;
+            this.setState({
+                selectable: false,
+                selectedIds: {},
+            });
+        };
+        if (!this.selectWithArrow && arrow === 'up') {
+            this.selectWithArrow = true;
+            this.selectWithArrowIndex = items.length - 1;
+        } else if (this.selectWithArrow) {
+            if (arrow === 'cancel') {
+                reset();
+                return;
+            }
+            if (arrow === 'right') {
+                if (items[this.selectWithArrowIndex] && isEditableMessageType(items[this.selectWithArrowIndex].messagetype)) {
+                    this.props.onContextMenu('reply', items[this.selectWithArrowIndex]);
+                    reset();
+                }
+                return;
+            } else if (arrow === 'left') {
+                if (!this.state.disable && canEditMessage(items[this.selectWithArrowIndex], this.riverTime.now())) {
+                    this.props.onContextMenu('edit', items[this.selectWithArrowIndex]);
+                    reset();
+                }
+                return;
+            } else if (arrow === 'up') {
+                this.selectWithArrowIndex--;
+            } else if (arrow === 'down') {
+                this.selectWithArrowIndex++;
+            }
+            if (this.selectWithArrowIndex < 0) {
+                this.selectWithArrowIndex = 0;
+            }
+            if (this.selectWithArrowIndex >= items.length) {
+                this.selectWithArrowIndex = items.length - 1;
+            }
+        }
+        if (this.selectWithArrow) {
+            const selectedIds: { [key: number]: number } = {};
+            selectedIds[items[this.selectWithArrowIndex].id || 0] = this.selectWithArrowIndex;
+            this.setState({
+                selectable: true,
+                selectedIds,
+            });
+        }
+    }
+
     public render() {
-        const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay, containerSize, enable} = this.state;
+        const {items, moreAnchorEl, moreAnchorPos, moreAnchorRef, selectable, loadingOverlay, containerSize, enable} = this.state;
         return (
             <div className="main-messages">
                 <div
@@ -678,7 +739,7 @@ class Message extends React.Component<IProps, IState> {
                     <Menu
                         anchorEl={moreAnchorEl}
                         anchorPosition={moreAnchorPos}
-                        anchorReference={moreAnchorPos ? 'anchorPosition' : 'anchorEl'}
+                        anchorReference={moreAnchorRef}
                         open={Boolean(moreAnchorEl || moreAnchorPos)}
                         onClose={this.moreCloseHandler}
                         className="kk-context-menu"
@@ -726,6 +787,7 @@ class Message extends React.Component<IProps, IState> {
                 return 33;
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
+            case C_MESSAGE_TYPE.WebDocument:
                 const info = getContentSize(message);
                 if (info) {
                     height = info.height + 10;
@@ -899,7 +961,7 @@ class Message extends React.Component<IProps, IState> {
             });
         }
         return menuItems.map((item, index) => {
-            return (<MenuItem key={index} onClick={this.moreCmdHandler(item.cmd, moreIndex)}
+            return (<MenuItem key={`${index}-${item.cmd}`} onClick={this.moreCmdHandler(item.cmd, moreIndex)}
                               className="context-item">{item.title}</MenuItem>);
         });
     }
@@ -1003,7 +1065,7 @@ class Message extends React.Component<IProps, IState> {
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
                             onDoubleClick={this.selectMessage(index)}
                             onContextMenu={this.messageContextMenuHandler(index)}>
-                            {this.state.selectable && <Checkbox
+                            {this.state.selectable && !this.selectWithArrow && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
                                 onChange={this.selectMessageHandler(message.id || 0, index, null)}/>}
@@ -1017,10 +1079,10 @@ class Message extends React.Component<IProps, IState> {
                             onClick={this.toggleSelectHandler(message.id || 0, index)}
                             onDoubleClick={this.selectMessage(index)}
                         >
-                            {(!this.state.selectable && message.avatar && message.senderid) && (
+                            {((!this.state.selectable || this.selectWithArrow) && message.avatar && message.senderid) && (
                                 <UserAvatar id={message.senderid} className="avatar"/>
                             )}
-                            {this.state.selectable && <Checkbox
+                            {this.state.selectable && !this.selectWithArrow && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
                                 onChange={this.selectMessageHandler(message.id || 0, index, null)}/>}
@@ -1104,6 +1166,7 @@ class Message extends React.Component<IProps, IState> {
         this.setState({
             moreAnchorEl: e.currentTarget,
             moreAnchorPos: null,
+            moreAnchorRef: 'anchorEl',
             moreIndex: index,
         });
     }
@@ -1399,6 +1462,8 @@ class Message extends React.Component<IProps, IState> {
                     return (<MessageMedia key={message.id} ref={refBindHandler} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction} onBodyAction={this.bodyActionHandler}
                                           parentEl={parentEl} measureFn={measureFn}/>);
+                case C_MESSAGE_TYPE.WebDocument:
+                    return (<MessageWeb measureFn={measureFn} message={message} peer={peer}/>);
                 case C_MESSAGE_TYPE.Location:
                     return (<MessageLocation message={message} peer={peer} onBodyAction={this.bodyActionHandler}
                                              measureFn={measureFn}/>);
@@ -1425,6 +1490,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Video:
             case C_MESSAGE_TYPE.Location:
             case C_MESSAGE_TYPE.Gif:
+            case C_MESSAGE_TYPE.WebDocument:
                 type = 'media';
                 break;
             case C_MESSAGE_TYPE.File:
@@ -1543,6 +1609,7 @@ class Message extends React.Component<IProps, IState> {
                 left: e.pageX,
                 top: e.pageY,
             },
+            moreAnchorRef: 'anchorPosition',
             moreIndex: index,
         });
     }
@@ -1676,7 +1743,7 @@ class Message extends React.Component<IProps, IState> {
             {Boolean(!message.me && message.peerid !== '2374' && !this.props.isBot && !this.state.disable) &&
             <div className="reaction-anchor" onClick={this.reactionPickerOpenHandler(message)}
                  onContextMenu={this.reactionPickerOpenHandler(message)}>
-                <TagFacesRounded/>
+                <TagFacesOutlined/>
             </div>}
         </>);
     }

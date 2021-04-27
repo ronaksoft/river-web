@@ -2,7 +2,6 @@ syntax = "proto3";
 package msg;
 
 
-option go_package = '.;msg';
 
 /*
     Creation Time: 2018 - Nov - 28

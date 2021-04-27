@@ -115,7 +115,7 @@ export default class GifRepo {
                     const item = MessageRepo.parseMessage({
                         media: o.message.mediadata,
                         mediatype: o.type,
-                    }, '0');
+                    }, '0').message;
                     if (item.messagetype === C_MESSAGE_TYPE.Gif) {
                         const mediaDocument = item.mediadata as MediaDocument.AsObject;
                         gifts.push({

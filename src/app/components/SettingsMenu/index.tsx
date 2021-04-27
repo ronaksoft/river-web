@@ -41,6 +41,7 @@ import {
     AccessTimeRounded,
     TagFacesRounded,
     MediationRounded,
+    PersonOffRounded,
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import UserRepo from '../../repository/user';
@@ -117,6 +118,7 @@ import SettingsSession from "../SettingsSession";
 import {EventShowChangelog} from "../../services/events";
 import {ModalityService} from "kk-modality";
 import SettingsMediaInput from "../SettingsMediaInput";
+import DeleteAccountModal from "../DeleteAccountModal";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -282,6 +284,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private settingsConfigManger: SettingsConfigManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal | undefined;
     private changePhoneModalRef: ChangePhoneModal | undefined;
+    private deleteAccountModalRef: DeleteAccountModal | undefined;
     private twoStepVerificationModalRef: TwoStepVerificationModal | undefined;
     private devToolsRef: DevTools | undefined;
     private electronService: ElectronService;
@@ -474,6 +477,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                            onDone={this.props.onReloadDialog}/>
                 <ChangePhoneModal ref={this.changePhoneModalRefHandler} onError={this.props.onError}
                                   onDone={this.changePhoneModalDoneHandler}/>
+                <DeleteAccountModal ref={this.deleteAccountModalRefHandler} onError={this.props.onError} phone={phone}
+                                    onDone={this.deleteAccountModalDoneHandler}/>
                 <TwoStepVerificationModal ref={this.twoStepVerificationModalRefHandler} onError={this.props.onError}
                                           onDone={this.twoStepVerificationModalDoneHandler}/>
                 <UserListDialog ref={this.userListDialogRefHandler} onDone={this.userListDialogDoneHandler}
@@ -1101,6 +1106,14 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <div
                                                 className="anchor-label">{i18n.t('settings.two_step_verification')}</div>
                                         </div>
+                                        <div className="page-anchor anchor-padding-side"
+                                             onClick={this.selectSubPageHandler('delete_account')}>
+                                            <div className="icon color-contacts">
+                                                <PersonOffRounded/>
+                                            </div>
+                                            <div
+                                                className="anchor-label">{i18n.t('settings.delete_account.title')}</div>
+                                        </div>
                                         <div
                                             className="sub-page-header-alt">{i18n.t('settings.privacy')}</div>
                                         <div className="page-anchor anchor-padding-side"
@@ -1493,6 +1506,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private selectSubPageHandler = (target: string) => (e: any) => {
+        if (target === 'delete_account') {
+            if (this.deleteAccountModalRef) {
+                this.deleteAccountModalRef.openDialog();
+            }
+            return;
+        }
         this.setState({
             page: '3',
             pageSubContent: target,
@@ -2307,6 +2326,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.changePhoneModalRef = ref;
     }
 
+    private deleteAccountModalRefHandler = (ref: any) => {
+        this.deleteAccountModalRef = ref;
+    }
+
     private editPhoneHandler = () => {
         if (!this.changePhoneModalRef) {
             return;
@@ -2318,6 +2341,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.setState({
             phone: this.apiManager.getConnInfo().Phone || '',
         });
+    }
+
+    private deleteAccountModalDoneHandler = () => {
+        this.logOutHandler();
     }
 
     private twoStepVerificationModalRefHandler = (ref: any) => {

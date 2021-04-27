@@ -232,13 +232,43 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (!doc) {
             return null;
         }
+        if (doc.web) {
+            switch (doc.type) {
+                case 'picture':
+                    return (<div className="picture-container">
+                        {doc.items.map((item, index) => {
+                            return (
+                                <div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
+                                     style={size ? size : {}}>
+                                    <div className="picture">
+                                        <img src={item.url || ''} alt="web-document"/>
+                                    </div>
+                                </div>);
+                        })}
+                    </div>);
+                case 'video':
+                    return (<div className="video-container">
+                        {doc.items.map((item, index) => {
+                            return (
+                                <div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
+                                     style={size ? size : {}}>
+                                    <div className="video">
+                                        <video src={item.url || ''} controls={true}/>
+                                    </div>
+                                </div>);
+                        })}
+                    </div>);
+            }
+            return null;
+        }
         switch (doc.type) {
             case 'avatar':
                 if ((galleryList.length === 0 || gallerySelect === 0) && !doc.photoId) {
                     return (<div className="avatar-container" style={size ? size : {}}>
                         {doc.items.map((item, index) => {
                             return (
-                                <React.Fragment key={item.fileLocation ? (item.fileLocation.fileid || index) : index}>
+                                <React.Fragment
+                                    key={item.fileLocation ? (item.fileLocation.fileid || index) : index}>
                                     {item.thumbFileLocation && <div className="thumbnail">
                                         <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
                                                      mimeType="image/jpeg"/>
@@ -273,46 +303,48 @@ class DocumentViewer extends React.Component<IProps, IState> {
             case 'picture':
                 return (<div className="picture-container">
                     {doc.items.map((item, index) => {
-                        return (<div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
-                                     style={size ? size : {}}>
-                            {item.thumbFileLocation && <div className="thumbnail">
-                                <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
-                                             blur={10} mimeType="image/jpeg"/>
-                            </div>}
-                            {this.getDownloadAction()}
-                            {Boolean(item.downloaded !== false) &&
-                            <CachedPhoto className="picture" fileLocation={item.fileLocation}
-                                         mimeType={item.mimeType || 'image/jpeg'}/>}
-                        </div>);
+                        return (
+                            <div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
+                                 style={size ? size : {}}>
+                                {item.thumbFileLocation && <div className="thumbnail">
+                                    <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
+                                                 blur={10} mimeType="image/jpeg"/>
+                                </div>}
+                                {this.getDownloadAction()}
+                                {Boolean(item.downloaded !== false) &&
+                                <CachedPhoto className="picture" fileLocation={item.fileLocation}
+                                             mimeType={item.mimeType || 'image/jpeg'}/>}
+                            </div>);
                     })}
                 </div>);
             case 'video':
                 return (<div className="video-container">
                     {doc.items.map((item, index) => {
-                        return (<div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
-                                     style={size ? size : {}}>
-                            {item.thumbFileLocation && <div className="thumbnail">
-                                <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
-                                             blur={item.downloaded === false ? 10 : 0} mimeType="image/jpeg"/>
-                            </div>}
-                            {Boolean(!item.downloaded && item.duration && !doc.stream) &&
-                            <div className="media-duration-container">
-                                <PlayArrowRounded/><span>{getDuration(item.duration || 0)}</span>
-                            </div>}
-                            {!Boolean(doc.stream) && this.getDownloadAction()}
-                            {Boolean(item.downloaded !== false && !doc.stream) &&
-                            <CachedVideo className="video" fileLocation={item.fileLocation}
-                                         mimeType={item.mimeType} autoPlay={this.firstTimeLoad}
-                                         timeOut={200} onPlay={this.cachedVideoPlayHandler}/>}
-                            {Boolean(doc.stream) &&
-                            <StreamVideo className="video" fileLocation={item.fileLocation}
-                                         size={item.fileSize || 0} mimeType={item.mimeType}
-                                         autoPlay={this.firstTimeLoad} msgId={item.id || 0}
-                                         onPlay={this.cachedVideoPlayHandler}
-                                         onStartDownload={this.videoStreamStartDownloadHandler}
-                                         onError={this.videoStreamErrorHandler}
-                            />}
-                        </div>);
+                        return (
+                            <div key={index} ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
+                                 style={size ? size : {}}>
+                                {item.thumbFileLocation && <div className="thumbnail">
+                                    <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
+                                                 blur={item.downloaded === false ? 10 : 0} mimeType="image/jpeg"/>
+                                </div>}
+                                {Boolean(!item.downloaded && item.duration && !doc.stream) &&
+                                <div className="media-duration-container">
+                                    <PlayArrowRounded/><span>{getDuration(item.duration || 0)}</span>
+                                </div>}
+                                {!Boolean(doc.stream) && this.getDownloadAction()}
+                                {Boolean(item.downloaded !== false && !doc.stream) &&
+                                <CachedVideo className="video" fileLocation={item.fileLocation}
+                                             mimeType={item.mimeType} autoPlay={this.firstTimeLoad}
+                                             timeOut={200} onPlay={this.cachedVideoPlayHandler}/>}
+                                {Boolean(doc.stream) &&
+                                <StreamVideo className="video" fileLocation={item.fileLocation}
+                                             size={item.fileSize || 0} mimeType={item.mimeType}
+                                             autoPlay={this.firstTimeLoad} msgId={item.id || 0}
+                                             onPlay={this.cachedVideoPlayHandler}
+                                             onStartDownload={this.videoStreamStartDownloadHandler}
+                                             onError={this.videoStreamErrorHandler}
+                                />}
+                            </div>);
                     })}
                 </div>);
             case 'location':
@@ -407,7 +439,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private initPagination() {
         const {doc, prev, next, galleryList, gallerySelect} = this.state;
-        if (!doc || doc.type === 'location') {
+        if (!doc || doc.type === 'location' || doc.web) {
             return null;
         }
         if (doc.type === 'avatar' && galleryList.length > 0) {
@@ -620,9 +652,13 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     transform: `translate(-50%, -50%)`,
                     width: `${size.width}px`,
                 }}>
-                    <CachedPhoto className="picture"
-                                 fileLocation={downloaded ? fileLocation : doc.items[0].thumbFileLocation}
-                                 blur={downloaded ? 0 : 10} mimeType="image/jpeg"/>
+                    {doc.web ? <div className="picture">
+                            {doc.type === 'video' ? <audio src={doc.items[0].url || ''} controls={false}/> :
+                                <img src={doc.items[0].url || ''} alt="web-document"/>}
+                        </div>
+                        : <CachedPhoto className="picture"
+                                       fileLocation={downloaded ? fileLocation : doc.items[0].thumbFileLocation}
+                                       blur={downloaded ? 0 : 10} mimeType="image/jpeg"/>}
                 </div>);
             } else {
                 return null;
@@ -641,8 +677,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 top: `${doc.rect.top}px`,
                 width: `${doc.rect.width}px`,
             }}>
-                <CachedPhoto className="picture" fileLocation={fileLocation} blur={downloaded ? 0 : 10}
-                             mimeType="image/jpeg"/>
+                {doc.web ? <div className="picture">
+                        {doc.type === 'video' ? <audio src={doc.items[0].url || ''} controls={false}/> :
+                            <img src={doc.items[0].url || ''} alt="web-document"/>}
+                    </div>
+                    : <CachedPhoto className="picture" fileLocation={fileLocation} blur={downloaded ? 0 : 10}
+                                   mimeType="image/jpeg"/>}
             </div>);
     }
 
@@ -694,7 +734,11 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 break;
             default:
             case 'message':
-                el = document.querySelector(`.chat .bubble-wrapper .bubble.b_${doc.items[0].id} .message-media .media-big .picture`);
+                if (doc.web) {
+                    el = document.querySelector(`.chat .bubble-wrapper .bubble.b_${doc.items[0].id} .message-web .web-image`);
+                } else {
+                    el = document.querySelector(`.chat .bubble-wrapper .bubble.b_${doc.items[0].id} .message-media .media-big .picture`);
+                }
                 break;
         }
         if (!el) {

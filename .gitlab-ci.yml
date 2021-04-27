@@ -10,8 +10,8 @@ image: "node:14"
 build:app:
   stage: build
   only:
-      - master
-      - feature/call
+    - master
+    - dev
   script:
     - cp -a ./. /var/lib/app
     - cd /var/lib/app
@@ -34,7 +34,7 @@ deploy:production:
   services:
     - docker:dind
   variables:
-    IMAGE_TAG: "4.0"
+    IMAGE_TAG: "4.1"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build --pull -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
@@ -42,15 +42,15 @@ deploy:production:
   dependencies:
     - build:app
 
-deploy:staging:
+deploy:dev:
   image: gitlab/dind
   stage: deploy
   only:
-    - feature/call
+    - dev
   services:
     - docker:dind
   variables:
-    IMAGE_TAG: "4.call"
+    IMAGE_TAG: "4.dev"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build --pull -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .

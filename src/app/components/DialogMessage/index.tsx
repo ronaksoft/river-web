@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import React, {useState} from 'react';
+import {useState} from 'react';
 import UserAvatar from '../UserAvatar';
 import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
@@ -32,6 +32,7 @@ import {
     PlayArrowRounded,
     CallRounded,
     CallEndRounded,
+    WebAssetRounded,
 } from '@material-ui/icons';
 import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -79,6 +80,8 @@ export const getMessageIcon = (icon: number | undefined, tinyThumb?: string) => 
             return (<MusicNoteOutlined className="preview-icon"/>);
         case C_MESSAGE_ICON.GIF:
             return (<GifOutlined className="preview-icon gif"/>);
+        case C_MESSAGE_ICON.WebDocument:
+            return (<WebAssetRounded className="preview-icon"/>);
         case C_MESSAGE_ICON.Forwarded:
             return (<ForwardOutlined className="preview-icon"/>);
         case C_MESSAGE_ICON.Reply:
@@ -285,13 +288,23 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
         }
     };
 
+    const clickHandler = (e: any) => {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+        }
+        if (onClick) {
+            onClick(e);
+        }
+    };
+
     const ids = Object.keys(isTyping);
     const muted = isMuted(dialog.notifysettings);
     const hasCounter = Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
     const hasMention = Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
     const peerName = GetPeerName(dialog.peerid, dialog.peertype);
+    const showStatus = dialog.preview_me && dialog.action_code === C_MESSAGE_ACTION.MessageActionNope && !Boolean(dialog.draft && dialog.draft.peerid);
     return (
-        <Link className="dialog-a" onClick={onClick} data-peerid={dialog.peerid}
+        <Link className="dialog-a" onClick={clickHandler} data-peerid={dialog.peerid}
               to={messageId ? `/chat/${dialog.teamid || '0'}/${peerName}/${messageId}` : `/chat/${dialog.teamid}/${dialog.peerid}_${dialog.peertype || 0}`}
               onDrop={dropHandler}
         >
@@ -315,12 +328,13 @@ export const DialogMessage = ({cancelIsTyping, dialog, isTyping, onContextMenuOp
                                   youPlaceholder={i18n.t('general.saved_messages')}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                         <GroupName className="name" id={dialog.peerid || ''} teamId={dialog.teamid || '0'}/>}
-                        {dialog.preview_me && dialog.action_code === C_MESSAGE_ACTION.MessageActionNope &&
-                        <div className="status">
+                        {showStatus && <div className="status">
                             <GetStatus id={dialog.topmessageid || 0} isBot={isBot} readId={dialog.readoutboxmaxid || 0}
                                        userId={currentUserId} peerId={dialog.peerid || ''}/>
                         </div>}
-                        {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
+                        {dialog.last_update &&
+                        <LiveDate className="time"
+                                  time={dialog.draft && dialog.draft.peerid ? dialog.draft.date : dialog.last_update || 0}/>}
                     </div>
                     {Boolean(ids.length === 0) && <div className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>
                         <RenderPreviewMessage dialog={dialog}/>

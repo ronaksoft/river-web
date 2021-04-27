@@ -255,7 +255,7 @@ class DevTools extends React.Component<IProps, IState> {
     }
 
     private debugModeClearAllDataHandler = () => {
-        const authErrorEvent = new CustomEvent(EventAuthError, {});
+        const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: true}});
         window.dispatchEvent(authErrorEvent);
     }
 
@@ -277,7 +277,7 @@ class DevTools extends React.Component<IProps, IState> {
             this.electronService.setLoadUrl(this.state.electronLoadUrl);
         }
         if (serverKeys !== this.state.debugServerKeys) {
-            const authErrorEvent = new CustomEvent(EventAuthError, {});
+            const authErrorEvent = new CustomEvent(EventAuthError, {detail: {clear: true}});
             window.dispatchEvent(authErrorEvent);
         } else {
             setTimeout(() => {

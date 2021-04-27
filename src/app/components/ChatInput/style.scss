@@ -584,6 +584,9 @@
             justify-content: left;
             width: 100%;
             font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
 
             svg {
               font-size: 13px;
@@ -697,16 +700,24 @@
   height: 50px;
   justify-content: center;
   align-items: center;
-  color: var(--red);
+  color: var(--grey);
   text-transform: uppercase;
 
   .btn {
     cursor: pointer;
     margin: 0 6px;
+    padding: 5px 8px 4px;
+    background-color: var(--glass-dark-low);
+    border-radius: 6px;
+    color: var(--red);
 
     &:hover {
-      text-decoration: underline;
+      background-color: var(--glass-dark-high);
     }
+  }
+
+  .notice {
+    color: var(--grey);
   }
 }
 
@@ -791,6 +802,16 @@ html[direction="rtl"] {
 html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
+  .input-placeholder {
+    .btn {
+      background-color: var(--glass-dark-high);
+
+      &:hover {
+        background-color: var(--glass-dark-ultra);
+      }
+    }
+  }
+
   .chat-input {
     border: 1px solid var(--dark-medium);
     background-color: var(--dark-medium);
@@ -803,7 +824,6 @@ html[theme="dark-blue"] {
       }
 
       .bot-command-display {
-
         background-color: rgba(255, 255, 255, 0.06);
         color: var(--grey);
 

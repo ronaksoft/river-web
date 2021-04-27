@@ -294,7 +294,7 @@
   }
 
   .checkbox {
-    position: absolute;
+    position: absolute !important;
     top: 0;
     left: 0;
     height: 32px;
@@ -602,6 +602,14 @@
     > .user {
       text-transform: uppercase;
       font-style: italic;
+    }
+
+    .target-user {
+
+      svg {
+        transform: translateY(0);
+        margin: 0 4px;
+      }
     }
 
     &.divider {

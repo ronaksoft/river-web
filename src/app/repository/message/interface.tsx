@@ -9,6 +9,17 @@
 
 import {InputMediaType, UserMessage} from "../../services/sdk/messages/core.types_pb";
 import {ReactionList} from "../../services/sdk/messages/chat.messages_pb";
+import {IMedia} from "../media/interface";
+
+export interface IMessageWithMedia {
+    message: IMessage;
+    media?: IMedia;
+}
+
+export interface IMessageWithMediaMany {
+    messages: IMessage[];
+    medias: IMedia[];
+}
 
 export interface IMessage extends Partial<UserMessage.AsObject> {
     actiondata?: any;

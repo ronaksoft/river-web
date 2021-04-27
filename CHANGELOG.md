@@ -1,3 +1,106 @@
+## 1.1.23
+* Now you can mention with @
+* Bots can be added to groups
+* New link RegEx
+* Known bugs fixed
+
+## 1.1.22
+* Known bugs fixed
+
+## 1.1.21
+* Improvements in delete account
+
+## 1.1.20
+* Known bugs fixed
+
+## 1.1.19
+* Delete account implemented
+* Call reconnecting implemented
+* Call new design
+* Improvements in file manager
+* Overall improvements and bug fixes
+
+## 1.1.18
+* Improvements in editable message
+* Improvements in shortcuts
+* Improvements in draft
+
+## 1.1.17
+* Known bugs fixed
+
+## 1.1.16
+* Select message UI bug fixed
+
+## 1.1.15
+* Team panel UI bug fixed
+
+## 1.1.14
+* Minor improvements in search
+* Call improvements
+
+## 1.1.13
+* Known bugs fixed
+ 
+## 1.1.12
+* Known bugs fixed
+
+## 1.1.11
+* Call reconnect implemented
+* Overall improvements
+
+## 1.1.10
+* Http rate limit implemented
+* Websocket rate limit implemented
+* Scroll improvements
+* Clear storage updated with new types
+
+## 1.1.9
+* Overall improvements
+
+## 1.1.8
+* Insert space after mention
+* Remove label item bug fixed
+* Minor bug in editable message fixed
+
+## 1.1.7
+* Now you can use Shift + Arrow keys to Reply and Edit message
+* Overall improvements
+
+## 1.1.6
+* Call join bugs fixed
+* Call improvements
+
+## 1.1.5
+* Shared Media improvements
+* Now you can mute call participants
+* Call overall improvements 
+
+## 1.1.4
+* Call mute bug fixed
+
+## 1.1.3
+* Overall improvements
+
+## 1.1.2
+* Shared media improvements
+
+## 1.1.1
+* Update Manager bug fixed
+* Group repository bug fixed
+
+## 1.1.0
+* Web Documents added
+* Lazy load shared media
+
+## 1.0.96
+* React updated
+
+## 1.0.95
+* Re-create new auth key
+
+## 1.0.94
+* Known bugs fixed
+
 ## 1.0.93
 * Last seen bug fixed
 

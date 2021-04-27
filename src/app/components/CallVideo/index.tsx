@@ -10,20 +10,31 @@
 import React from 'react';
 import CallService, {C_CALL_EVENT, ICallParticipant, IMediaSettings} from "../../services/callService";
 import CallVideoPlaceholder from "../CallVideoPlaceholder";
-import {findIndex, differenceWith} from "lodash";
+import {findIndex, differenceWith, cloneDeep} from "lodash";
 import UserAvatar from "../UserAvatar";
 import i18n from "../../services/i18n";
 import {currentUserId} from "../../services/sdk";
 import UserName from "../UserName";
 import {CallDeviceType} from "../../services/sdk/messages/chat.phone_pb";
 import IsMobile from "../../services/isMobile";
+import {MicOffRounded} from "@material-ui/icons";
 
 import './style.scss';
+
+export enum IceState {
+    Closed = 0,
+    Connected = 1,
+    Connecting = 2,
+}
 
 export interface IRemoteConnection {
     connId: number;
     deviceType: CallDeviceType;
+    iceState: IceState;
     media?: CallVideoPlaceholder;
+    muted: boolean;
+    setIceState: ((iceState: IceState) => void) | undefined;
+    setMute: ((muted: boolean) => void) | undefined;
     status: number;
     stream: MediaStream | undefined;
     userId: string;
@@ -82,8 +93,11 @@ class CallVideo extends React.Component<IProps, IState> {
         if (this.initialized) {
         }
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
-        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareMediaStreamUpdated, this.eventShareMediaStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ShareScreenStreamUpdated, this.eventShareMediaStreamUpdateHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.MediaSettingsUpdated, this.eventMediaSettingsUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalMediaSettingsUpdated, this.eventLocalMediaSettingsUpdatedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantMuted, this.eventParticipantMutedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ConnectionStateChanged, this.eventConnectionStateChangedHandler));
     }
 
     public componentWillUnmount() {
@@ -169,8 +183,13 @@ class CallVideo extends React.Component<IProps, IState> {
                  style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}>
                 <div className="video-placeholder">
                     <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true}/>
-                    {!this.mediaSettings.video &&
-                    <UserAvatar className="video-user-placeholder" id={currentUserId} noDetail={true}/>}
+                    {!this.mediaSettings.video && <div className="video-user-placeholder">
+                        <UserAvatar className="call-user-avatar" id={currentUserId} noDetail={true}/>
+                        {!this.mediaSettings.audio && <div className="video-user-audio-muted">
+                            <MicOffRounded/>
+                            {i18n.t('call.muted')}
+                        </div>}
+                    </div>}
                 </div>
             </div>}
             {this.getRemoteVideoContent()}
@@ -204,15 +223,31 @@ class CallVideo extends React.Component<IProps, IState> {
                 if (item.stream && item.media) {
                     item.media.setVideo(item.stream);
                 }
+                if (!ref) {
+                    return;
+                }
+                item.setIceState = (iceState: IceState) => {
+                    ref.setIceState(iceState);
+                };
+                ref.setIceState(item.iceState);
+                item.setMute = (muted: boolean) => {
+                    ref.setMute(muted);
+                };
+                ref.setMute(item.muted);
             };
             return (<div key={item.connId} className="call-user-container"
                          style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}
-                         onContextMenu={this.props.onContextMenu(item.userId)}>
+                         onContextMenu={this.props.onContextMenu(item.userId)}
+                         onDoubleClick={this.reconnectHandler(item.connId)}>
                 <CallVideoPlaceholder className="remote-video" ref={videoRemoteRefHandler}
                                       srcObject={item.stream} playsInline={true}
                                       autoPlay={true} userId={item.userId} deviceType={item.deviceType}/>
             </div>);
         });
+    }
+
+    private reconnectHandler = (connId: number) => () => {
+        this.callService.tryReconnect(connId);
     }
 
     private retrieveConnections() {
@@ -232,7 +267,11 @@ class CallVideo extends React.Component<IProps, IState> {
             this.videoRemoteRefs.push(...addedVideos.map(participant => ({
                 connId: participant.connectionid || 0,
                 deviceType: participant.deviceType,
+                iceState: IceState.Connected,
                 media: undefined,
+                muted: participant.muted,
+                setIceState: undefined,
+                setMute: undefined,
                 status: participant.started ? 2 : 0,
                 stream: undefined,
                 userId: participant.peer.userid || '0',
@@ -315,6 +354,46 @@ class CallVideo extends React.Component<IProps, IState> {
                     screenShareUserId: streamData.userId,
                 });
             }
+        }
+    }
+
+    private eventParticipantMutedHandler = ({connId, muted, userId}: { connId: number, muted: boolean, userId: string }) => {
+        const index = findIndex(this.videoRemoteRefs, {connId});
+        if (index > -1) {
+            this.videoRemoteRefs[index].muted = muted;
+            if (this.videoRemoteRefs[index].setMute) {
+                this.videoRemoteRefs[index].setMute(muted);
+            }
+        }
+    }
+
+    private eventConnectionStateChangedHandler = ({connId, state}: { connId: number, state: RTCIceConnectionState }) => {
+        const index = findIndex(this.videoRemoteRefs, {connId});
+        if (index > -1) {
+            this.videoRemoteRefs[index].iceState = this.transformIceState(state);
+            if (this.videoRemoteRefs[index].setIceState) {
+                this.videoRemoteRefs[index].setIceState(this.videoRemoteRefs[index].iceState);
+            }
+        }
+    }
+
+    private eventLocalMediaSettingsUpdatedHandler = (mediaSettings: IMediaSettings) => {
+        this.mediaSettings = cloneDeep(mediaSettings);
+        if (this.state.localVideo) {
+            this.forceUpdate();
+        }
+    }
+
+    private transformIceState(state: RTCIceConnectionState | 'reconnecting'): IceState {
+        switch (state) {
+            default:
+                return IceState.Closed;
+            case 'new':
+            case 'connected':
+            case 'completed':
+                return IceState.Connected;
+            case 'reconnecting':
+                return IceState.Connecting;
         }
     }
 

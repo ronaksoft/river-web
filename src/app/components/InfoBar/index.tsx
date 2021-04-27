@@ -21,12 +21,12 @@ import {
     AddIcCallRounded,
 } from "@material-ui/icons";
 import StatusBar from "../StatusBar";
-import {IconButton, ListItemIcon, Menu, MenuItem, Tooltip} from "@material-ui/core";
+import {IconButton, ListItemIcon, Menu, MenuItem, Tooltip, CircularProgress} from "@material-ui/core";
 import {isNil, omitBy} from "lodash";
 import UserRepo from "../../repository/user";
 import {IDialog} from "../../repository/dialog/interface";
 import CallService, {C_CALL_EVENT} from "../../services/callService";
-import {currentUserId} from "../../services/sdk";
+import APIManager, {currentUserId} from "../../services/sdk";
 import {EventOffline, EventOnline} from "../../services/events";
 
 import './style.scss';
@@ -50,14 +50,16 @@ interface IProps {
 interface IState {
     activeCallId: string | null;
     callAnchorEl: any;
-    callStarted: boolean;
+    callId: string;
     disable: boolean;
     online: boolean;
     peer: InputPeer | null;
     isConnecting: boolean;
     isOnline: boolean;
     isUpdating: boolean;
+    loading: boolean;
     teamId: string;
+    visibleMenus: number[];
     withCall: boolean;
 }
 
@@ -66,6 +68,7 @@ class InfoBar extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private menuItems: IMenuItem[] = [];
     private callService: CallService;
+    private apiManager: APIManager;
     private eventReferences: any[] = [];
 
     constructor(props: IProps) {
@@ -74,18 +77,22 @@ class InfoBar extends React.Component<IProps, IState> {
         this.state = {
             activeCallId: null,
             callAnchorEl: null,
-            callStarted: false,
+            callId: '0',
             disable: false,
             isConnecting: false,
             isOnline: false,
             isUpdating: false,
+            loading: false,
             online: navigator.onLine === undefined ? true : navigator.onLine,
             peer: null,
             teamId: props.teamId,
+            visibleMenus: [],
             withCall: true,
         };
 
         this.userRepo = UserRepo.getInstance();
+        this.apiManager = APIManager.getInstance();
+        this.callService = CallService.getInstance();
 
         this.menuItems.push({
             cmd: 'call_audio',
@@ -108,13 +115,12 @@ class InfoBar extends React.Component<IProps, IState> {
             title: i18n.t('call.hangup'),
             whenActive: true,
         });
-
-        this.callService = CallService.getInstance();
     }
 
     public setPeer(teamId: string, peer: InputPeer | null, dialog: IDialog | null) {
         this.setState({
             disable: dialog ? dialog.disable || false : false,
+            loading: false,
             peer,
             teamId,
             withCall: false,
@@ -133,16 +139,17 @@ class InfoBar extends React.Component<IProps, IState> {
         this.setState(omitBy(state, isNil));
     }
 
-    public setCallStarted(callStarted: boolean) {
+    public setCallId(callId: string) {
         const activeCallId = this.callService.getActiveCallId();
         this.setState({
             activeCallId: activeCallId !== '0' ? activeCallId : null,
-            callStarted,
+            callId,
         });
     }
 
     public componentDidMount() {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalStreamUpdated, this.eventLocalStreamUpdateHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.CallDestroyed, this.eventCallDestroyedHandler));
         window.addEventListener(EventOnline, this.eventOnlineHandler);
         window.addEventListener(EventOffline, this.eventOfflineHandler);
     }
@@ -159,7 +166,7 @@ class InfoBar extends React.Component<IProps, IState> {
 
 
     public render() {
-        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callStarted, disable, callAnchorEl, activeCallId, online} = this.state;
+        const {isConnecting, isOnline, isUpdating, peer, teamId, withCall, callId, disable, callAnchorEl, online} = this.state;
         const isGroup = (peer && peer.getType() === PeerType.PEERGROUP);
         return (
             <div className={'info-bar' + (withCall ? ' with-call' : '')}>
@@ -178,7 +185,7 @@ class InfoBar extends React.Component<IProps, IState> {
                            peer={peer} teamId={teamId} currentUserId={this.currentUserId}
                 />
                 <div className="buttons">
-                    {withCall && !disable && <>{callStarted ?
+                    {withCall && !disable && <>{callId !== '0' ?
                         <div className="call-indicator" onClick={this.indicatorClickHandler}>
                             {i18n.t('call.call_started')}
                         </div> : <Tooltip title={i18n.t('call.call')}>
@@ -206,10 +213,6 @@ class InfoBar extends React.Component<IProps, IState> {
                     open={Boolean(callAnchorEl)}
                     onClose={this.callMenuCloseHandler}
                     className="kk-context-menu"
-                    anchorOrigin={{
-                        horizontal: 'right',
-                        vertical: 'center',
-                    }}
                     transformOrigin={{
                         horizontal: 'right',
                         vertical: 'top',
@@ -218,19 +221,28 @@ class InfoBar extends React.Component<IProps, IState> {
                         paper: 'kk-context-menu-paper'
                     }}
                 >
-                    {this.menuItems.map((item, index) => {
-                        if (item.whenActive === (callStarted || false) || (item.cmd === 'call_join' && isGroup && !activeCallId && callStarted)) {
-                            return (<MenuItem key={index} onClick={this.callCmdHandler(item.cmd)}
-                                              className="context-item">
-                                <ListItemIcon className="context-icon">{item.icon}</ListItemIcon>
-                                {item.title}
-                            </MenuItem>);
-                        }
-                        return null;
-                    })}
+                    {this.menuContent()}
                 </Menu>
             </div>
         );
+    }
+
+    private menuContent() {
+        const {visibleMenus, loading} = this.state;
+        if (loading) {
+            return <MenuItem className="context-item">
+                <CircularProgress size={16}/>
+            </MenuItem>;
+        }
+        return this.menuItems.map((item, index) => {
+            if (visibleMenus.indexOf(index) > -1) {
+                return (<MenuItem key={index} onClick={this.callCmdHandler(item.cmd)} className="context-item">
+                    <ListItemIcon className="context-icon">{item.icon}</ListItemIcon>
+                    {item.title}
+                </MenuItem>);
+            }
+            return null;
+        });
     }
 
     private checkCall(peer: InputPeer | null) {
@@ -261,14 +273,54 @@ class InfoBar extends React.Component<IProps, IState> {
     }
 
     private callMenuOpenHandler = (e: any) => {
+        const {callId, peer, activeCallId} = this.state;
+        let visibleMenus: number[] = [];
+        if (callId === '0') {
+            visibleMenus = [0, 1];
+        } else {
+            const isGroup = (peer && peer.getType() === PeerType.PEERGROUP);
+            if (isGroup) {
+                if (activeCallId) {
+                    visibleMenus = [2];
+                } else {
+                    if (this.state.loading) {
+                        return;
+                    }
+                    this.setState({
+                        callAnchorEl: e.currentTarget,
+                        loading: true,
+                    });
+                    this.apiManager.callGetParticipants(peer, callId).then((res) => {
+                        if (res.participantsList.some(o => o.peer.userid === currentUserId)) {
+                            visibleMenus = [3];
+                        } else {
+                            visibleMenus = [2];
+                        }
+                        this.setState({
+                            loading: false,
+                            visibleMenus,
+                        });
+                    }).catch(() => {
+                        this.setState({
+                            loading: false,
+                        });
+                    });
+                    return;
+                }
+            } else {
+                visibleMenus = [3];
+            }
+        }
         this.setState({
             callAnchorEl: e.currentTarget,
+            visibleMenus
         });
     }
 
     private callMenuCloseHandler = () => {
         this.setState({
             callAnchorEl: null,
+            visibleMenus: [],
         });
     }
 
@@ -294,6 +346,13 @@ class InfoBar extends React.Component<IProps, IState> {
                 activeCallId: activeCallId !== '0' ? activeCallId : null,
             });
         }
+    }
+
+    private eventCallDestroyedHandler = () => {
+        const activeCallId = this.callService.getActiveCallId();
+        this.setState({
+            activeCallId: activeCallId !== '0' ? activeCallId : null,
+        });
     }
 
     private eventOnlineHandler = () => {
