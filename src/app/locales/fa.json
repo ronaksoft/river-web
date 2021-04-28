@@ -81,7 +81,8 @@
     "ios": "iOS",
     "android": "اندروید",
     "unknown": "نامشخص",
-    "no_username_found": "{0} هنوز اکانتی ندارد"
+    "no_username_found": "{0} هنوز اکانتی ندارد",
+    "deleted_account": "حساب کاربری حذف شده"
   },
   "chat": {
     "search": "جستجو",
@@ -474,7 +475,8 @@
     "try_again": "(تلاش مجدد)",
     "and_n_more": " و {0} دیگر",
     "type_and": " و ",
-    "type_comma": "، "
+    "type_comma": "، ",
+    "rip": "روحش شاد"
   },
   "message": {
     "voice_message": "پیام صوتی",

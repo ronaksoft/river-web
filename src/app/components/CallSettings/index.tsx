@@ -172,7 +172,8 @@ class CallSettings extends React.Component<IProps, IState> {
             {group && <IconButton className="call-settings-participants" onClick={this.drawerOpenHandler}>
                 <PeopleRounded/>
             </IconButton>}
-            {muteNotice && <div className="call-settings-notice">{i18n.t('call.audio_muted')}</div>}
+            {muteNotice && !mediaSettings.audio &&
+            <div className="call-settings-notice">{i18n.t('call.audio_muted')}</div>}
             <Menu
                 anchorPosition={moreAnchorPos}
                 anchorReference="anchorPosition"

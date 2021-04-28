@@ -32,6 +32,7 @@ interface IProps {
     sendIcon?: any;
     limit?: number;
     selectAll?: boolean;
+    globalSearch?: boolean;
 }
 
 interface IState {
@@ -90,7 +91,7 @@ class ContactPicker extends React.Component<IProps, IState> {
             <Dialog
                 className="contact-picker"
                 open={this.state.open}
-                onClose={this.handleClose}
+                onClose={this.closeHandler}
                 classes={{
                     paper: 'contact-picker-paper'
                 }}
@@ -103,7 +104,7 @@ class ContactPicker extends React.Component<IProps, IState> {
                                     <IconButton
                                         aria-label="Close"
                                         aria-haspopup="true"
-                                        onClick={this.handleClose}
+                                        onClick={this.closeHandler}
                                         className="action"
                                     >
                                         <CloseRounded/>
@@ -114,7 +115,8 @@ class ContactPicker extends React.Component<IProps, IState> {
                                              mode="chip" groupId={this.props.groupId} teamId={this.props.teamId}
                                              hiddenContacts={hiddenContacts} hideYou={Boolean(this.props.groupId)}
                                              onDefaultLoad={this.contactListDefaultLoadHandler}
-                                             disableCheckSelected={this.props.selectAll}/>
+                                             disableCheckSelected={this.props.selectAll}
+                                             globalSearch={this.props.globalSearch}/>
                                 {Boolean(recipients.length > 0 && (!limit || limit >= count)) &&
                                 <div className="actions-bar">
                                     <div
@@ -138,7 +140,7 @@ class ContactPicker extends React.Component<IProps, IState> {
         );
     }
 
-    private handleClose = () => {
+    private closeHandler = () => {
         if (this.state.mode === 'promise' && this.resolve) {
             this.resolve({
                 contacts: [],
@@ -171,7 +173,7 @@ class ContactPicker extends React.Component<IProps, IState> {
             });
             this.resolve = undefined;
         }
-        this.handleClose();
+        this.closeHandler();
     }
 
     private contactListDefaultLoadHandler = (count: number) => {

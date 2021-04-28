@@ -1,3 +1,9 @@
+## 1.1.24
+* Background job for on-viewport users with last seen activated
+* Improvements in call
+* Improvements in delete account
+* Known bugs fixed
+
 ## 1.1.23
 * Now you can mention with @
 * Bots can be added to groups

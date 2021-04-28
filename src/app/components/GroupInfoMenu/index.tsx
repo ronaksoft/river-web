@@ -425,7 +425,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         paper: 'kk-context-menu-paper'
                     }}
                 >
-                    {this.contextMenuItem()}
+                    {this.contextMenuItem(allMemberAdmin)}
                 </Menu>
                 <Menu
                     anchorEl={avatarMenuAnchorEl}
@@ -439,7 +439,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     {this.avatarContextMenuItem()}
                 </Menu>
                 <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
-                               teamId={this.teamId} title={i18n.t('peer_info.add_member')}/>
+                               teamId={this.teamId} title={i18n.t('peer_info.add_member')}
+                               globalSearch={true}/>
             </div>
         );
     }
@@ -454,6 +455,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (data && (data.callerId === this.callerId || data.ids.indexOf(`${this.teamId}_${peer.getId()}`) === -1)) {
             return;
         }
+
         this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
             if (res) {
                 this.setState({
@@ -473,17 +475,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 group.participantList = res.participantsList;
                 group.photogalleryList = res.photogalleryList;
                 this.groupRepo.importBulk([group], this.callerId);
-                const contacts: IUser[] = [];
-                res.participantsList.forEach((list) => {
-                    contacts.push({
-                        accesshash: list.accesshash,
-                        firstname: list.firstname,
-                        id: list.userid,
-                        lastname: list.lastname,
-                        username: list.username,
-                    });
-                });
-                this.userRepo.importBulk(false, contacts);
+                this.userRepo.importBulk(false, res.usersList);
                 this.setState({
                     group: res.group,
                     participants: res.participantsList,
@@ -547,7 +539,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     /* Decides what content the participants' "more" menu must have */
-    private contextMenuItem() {
+    private contextMenuItem(allMemberAdmin: boolean) {
         const {group, currentUser} = this.state;
         if (!group || !currentUser) {
             return null;
@@ -561,7 +553,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     title: i18n.t('contact.remove'),
                 });
             }
-            if (group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) {
+            if (!allMemberAdmin && group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) {
                 if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
                     menuItems.push({
                         cmd: 'promote',

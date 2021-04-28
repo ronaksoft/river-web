@@ -81,7 +81,8 @@
     "ios": "iOS",
     "android": "Android",
     "unknown": "Unknown",
-    "no_username_found": "{0} doesn't have an account yet!"
+    "no_username_found": "{0} doesn't have an account yet!",
+    "deleted_account": "Deleted Account"
   },
   "chat": {
     "search": "Search",
@@ -478,7 +479,8 @@
     "try_again": "(try again)",
     "and_n_more": " & {0} more",
     "type_and": " & ",
-    "type_comma": ", "
+    "type_comma": ", ",
+    "rip": "R.I.P."
   },
   "message": {
     "voice_message": "Voice Message",

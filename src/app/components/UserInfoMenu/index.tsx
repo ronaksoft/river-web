@@ -164,7 +164,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            user, page, peer, edit, firstname, lastname, phone, isInContact, dialog, shareMediaEnabled,
+            user, page, peer, edit, firstname, lastname, phone, isInContact, dialog, shareMediaEnabled, disable,
         } = this.state;
         const isOfficial = user && user.official;
         return (
@@ -241,7 +241,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             onChange={this.lastnameChangeHandler}
                                         />}
                                     </div>}
-                                    {Boolean(edit || (isInContact && user && (user.phone || '').length > 0)) &&
+                                    {Boolean(!disable && (edit || (isInContact && user && (user.phone || '').length > 0))) &&
                                     <div className="line">
                                         {!edit && isInContact && user && (user.phone || '').length > 0 &&
                                         <div className="form-control">
@@ -262,37 +262,39 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             onChange={this.phoneChangeHandler}
                                         />}
                                     </div>}
-                                    {Boolean(user && (user.username || '').length > 0) && <div className="line">
+                                    {Boolean(!disable && user && (user.username || '').length > 0) &&
+                                    <div className="line">
                                         <div className="form-control">
                                             <label>{i18n.t('general.username')}</label>
                                             <div className="inner">@{user.username}</div>
                                         </div>
                                     </div>}
-                                    {Boolean(user && (user.bio || '').length > 0) && <div className="line">
+                                    {Boolean(!disable && user && (user.bio || '').length > 0) && <div className="line">
                                         <div className="form-control">
                                             <label>{i18n.t('general.bio')}</label>
                                             <div className="inner">{user.bio}</div>
                                         </div>
                                     </div>}
-                                    {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
+                                    {Boolean(!disable && edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
                                     <div className="actions-bar">
                                         <div className="add-action" onClick={this.confirmChangesHandler}>
                                             <CheckRounded/>
                                         </div>
                                     </div>}
-                                    {Boolean(this.teamId === '0' && !this.me && !isInContact && !edit && user && !user.isbot) &&
+                                    {Boolean(!disable && this.teamId === '0' && !this.me && !isInContact && !edit && user && !user.isbot) &&
                                     <div className="add-as-contact" onClick={this.addAsContactHandler}>
                                         <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                                     </div>}
-                                    {Boolean(!this.me && !edit && user) &&
+                                    {Boolean(!disable && !this.me && !edit && user) &&
                                     <Button key="block" color="secondary" fullWidth={true}
                                             onClick={this.blockUserHandler(user)}>
                                         {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
-                                    {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
+                                    {Boolean(!disable && !edit && user && user.isbot && !user.is_bot_started) &&
                                     <Button color="secondary" fullWidth={true}
                                             onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
                                 </div>}
-                                {dialog && <div className="kk-card notify-settings">
+                                {dialog && (!disable || dialog.peerid === '2374') &&
+                                <div className="kk-card notify-settings">
                                     <div className="label">{i18n.t('peer_info.mute')}</div>
                                     <div className="value">
                                         <Checkbox
@@ -302,7 +304,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {(dialog && peer && !shareMediaEnabled) &&
-                                <PeerMedia key={peer.getId() || ''}  className="kk-card" peer={peer} full={false}
+                                <PeerMedia key={peer.getId() || ''} className="kk-card" peer={peer} full={false}
                                            teamId={this.teamId} onMore={this.peerMediaMoreHandler}
                                            onAction={this.props.onAction} onBulkAction={this.props.onBulkAction}/>}
                             </div>
@@ -341,6 +343,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
         const fn = (user: IUser) => {
             this.setState({
+                disable: !this.state.disable && (user.deleted || user.id === '2374'),
                 firstname: user.firstname || '',
                 isInContact: (user.is_contact === 1),
                 lastname: user.lastname || '',
@@ -409,9 +412,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             inputUser.setAccesshash(user.accesshash || '');
             inputUser.setUserid(user.id || '');
             this.apiManager.contactAdd(inputUser, firstname, lastname, phone).then(() => {
-                this.userRepo.importBulk(true, [user], false, this.callerId, this.teamId);
                 user.lastname = lastname;
                 user.firstname = firstname;
+                user.dont_update_last_modified = true;
+                this.userRepo.importBulk(true, [user], false, this.callerId, this.teamId);
                 this.setState({
                     edit: false,
                     isInContact: true,
@@ -447,9 +451,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                     }
                     items.push(item);
                 });
-                this.userRepo.importBulk(true, items, false, this.callerId);
                 user.lastname = lastname;
                 user.firstname = firstname;
+                user.dont_update_last_modified = true;
+                this.userRepo.importBulk(true, items, false, this.callerId);
                 this.setState({
                     edit: false,
                     isInContact: true,
@@ -603,6 +608,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 this.apiManager.accountUnblock(inputUser).then(() => {
                     this.userRepo.importBulk(false, [{
                         blocked: false,
+                        dont_update_last_modified: true,
                         id: user.id || '',
                     }], false, this.callerId);
                     user.blocked = false;
@@ -614,6 +620,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 this.apiManager.accountBlock(inputUser).then(() => {
                     this.userRepo.importBulk(false, [{
                         blocked: true,
+                        dont_update_last_modified: true,
                         id: user.id || '',
                     }], false, this.callerId);
                     user.blocked = true;

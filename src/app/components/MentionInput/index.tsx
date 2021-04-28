@@ -165,7 +165,7 @@ class MentionInput extends React.Component<IProps, IState> {
             const reg = new RegExp(word.replace('\\', ''), "i");
             let exactMatchIndex: number = -1;
             for (const [i, participant] of participants.entries()) {
-                if (currentUserId !== participant.userid &&
+                if (currentUserId !== participant.userid && !(participant.firstname === 'Deleted' && participant.lastname === 'Account') &&
                     (reg.test(`${participant.firstname} ${participant.lastname}`) ||
                         (participant.username && reg.test(participant.username)))) {
                     users.push({

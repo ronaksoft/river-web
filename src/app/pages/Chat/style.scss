@@ -20,6 +20,10 @@
   justify-content: center;
 }
 
+.force-upper-case {
+  text-transform: uppercase !important;
+}
+
 .wrapper {
   position: relative;
   width: 1400px;

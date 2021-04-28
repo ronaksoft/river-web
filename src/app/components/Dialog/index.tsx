@@ -43,6 +43,7 @@ import {GetPeerName} from "../../repository/dialog";
 import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
+import UserRepo from "../../repository/user";
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -317,7 +318,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                                    onApply={this.labelPopoverApplyHandler} closeAfterSelect={true}
                                                    onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
-                {searchEnable && <TopPeer ref={this.topPeerRefHandler} teamId={this.props.teamId} type={TopPeerType.Search} visible={focus}/>}
+                {searchEnable &&
+                <TopPeer ref={this.topPeerRefHandler} teamId={this.props.teamId} type={TopPeerType.Search}
+                         visible={focus}/>}
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
                     <AutoSizer>
@@ -578,6 +581,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             2: [8, 9, 0, 1, 0, 6, 7, 0, 2],
         };
         const menuItems: any[] = [];
+        const peerId = searchItems[moreIndex].peerid;
         const peerType = searchItems[moreIndex].peertype;
         const dialog = searchItems[moreIndex];
         if (!dialog) {
@@ -585,17 +589,23 @@ class Dialog extends React.PureComponent<IProps, IState> {
         }
         const muted = isMuted(dialog.notifysettings);
         if (peerType === PeerType.PEERUSER || peerType === PeerType.PEEREXTERNALUSER) {
+            const user = UserRepo.getInstance().getInstant(peerId);
+            const hasAccess = !user || (user && !user.deleted);
             menuTypes[1].forEach((key) => {
-                if (key === 6 || key === 7) {
+                if (key === 4) {
+                    if (hasAccess) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 6 || key === 7) {
                     if (key === 6 && !dialog.pinned) {
                         menuItems.push(this.menuItem[key]);
                     } else if (key === 7 && dialog.pinned) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 8 || key === 9) {
-                    if (key === 8 && !muted) {
+                    if (hasAccess && key === 8 && !muted) {
                         menuItems.push(this.menuItem[key]);
-                    } else if (key === 9 && muted) {
+                    } else if (hasAccess && key === 9 && muted) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {

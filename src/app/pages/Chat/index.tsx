@@ -3129,6 +3129,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.resetSelectedMessages();
                 });
                 break;
+            case 'logout_force':
+                this.logOutHandler();
+                break;
             case 'chat':
             case 'settings':
             case 'contacts':
@@ -3854,10 +3857,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* SettingsMenu on update handler */
-    private settingActionHandler = (cmd: 'logout' | 'count_dialog') => {
+    private settingActionHandler = (cmd: 'logout' | 'logout_force' | 'count_dialog') => {
         switch (cmd) {
             case 'logout':
-                this.bottomBarSelectHandler('logout')();
+            case 'logout_force':
+                this.bottomBarSelectHandler(cmd)();
                 break;
             case 'count_dialog':
                 this.dialogsSort(this.dialogs);
@@ -6106,6 +6110,7 @@ class Chat extends React.Component<IProps, IState> {
         inputPeer.setType(PeerType.PEERUSER);
         this.apiManager.botStart(inputPeer, randomId).then(() => {
             user.is_bot_started = true;
+            user.dont_update_last_modified = true;
             this.userRepo.importBulk(false, [user]);
             const entities: MessageEntity[] = [];
             const entity = new MessageEntity();

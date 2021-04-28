@@ -204,7 +204,7 @@ interface IPrivacy {
 
 interface IProps {
     onClose?: (e: any) => void;
-    onAction?: (cmd: 'logout' | 'count_dialog') => void;
+    onAction?: (cmd: 'logout' | 'logout_force' | 'count_dialog') => void;
     onError?: (message: string) => void;
     onUpdateMessages?: (keep?: boolean) => void;
     onReloadDialog?: (peerIds: IPeer[]) => void;
@@ -1726,6 +1726,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             user.firstname = firstname;
             user.lastname = lastname;
             user.bio = bio;
+            user.dont_update_last_modified = true;
             this.setState({
                 bio: user.bio || '',
                 editProfile: false,
@@ -1764,6 +1765,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             user.firstname = res.firstname;
             user.lastname = res.lastname;
             user.username = res.username;
+            user.dont_update_last_modified = true;
             this.setState({
                 editUsername: false,
                 firstname: user.firstname || '',
@@ -1955,6 +1957,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         user.photo = undefined;
                         this.profileTempPhoto = '';
                         this.userRepo.importBulk(false, [{
+                            dont_update_last_modified: true,
                             id: user.id,
                             remove_photo: true,
                         }]).then(() => {
@@ -2018,9 +2021,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     /* Logout handler */
-    private logOutHandler = () => {
+    private logOutHandler = (force?: any) => {
         if (this.props.onAction) {
-            this.props.onAction('logout');
+            if (force === true) {
+                this.props.onAction('logout');
+            } else {
+                this.props.onAction('logout_force');
+            }
         }
     }
 
@@ -2344,7 +2351,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private deleteAccountModalDoneHandler = () => {
-        this.logOutHandler();
+        this.logOutHandler(true);
     }
 
     private twoStepVerificationModalRefHandler = (ref: any) => {

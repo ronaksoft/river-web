@@ -1365,6 +1365,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     }]);
                 } else {
                     this.userRepo.importBulk(false, [{
+                        dont_update_last_modified: true,
                         id,
                         photogalleryList: galleryList,
                     }]);
@@ -1416,6 +1417,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     }]);
                 } else {
                     this.userRepo.importBulk(false, [{
+                        dont_update_last_modified: true,
                         id,
                         photogalleryList: galleryList,
                     }]);

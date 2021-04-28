@@ -56,7 +56,7 @@ interface IState {
     phone: string;
     sendMessageEnable: boolean;
     user: IUser | null;
-    userDialogOpen: boolean;
+    open: boolean;
 }
 
 class UserDialog extends React.Component<IProps, IState> {
@@ -79,11 +79,11 @@ class UserDialog extends React.Component<IProps, IState> {
             lastname: '',
             notifySetting: null,
             notifyValue: '-1',
+            open: false,
             peer: null,
             phone: '',
             sendMessageEnable: false,
             user: null,
-            userDialogOpen: false,
         };
         // RiverTime singleton
         this.riverTime = RiverTime.getInstance();
@@ -111,7 +111,7 @@ class UserDialog extends React.Component<IProps, IState> {
         });
     }
 
-    public openDialog(peer: InputPeer, text?: string) {
+    public openDialog(peer: InputPeer, text?: string, openAfterLoading?: boolean) {
         if (this.state.peer === peer) {
             return;
         }
@@ -122,22 +122,22 @@ class UserDialog extends React.Component<IProps, IState> {
             isInContact: false,
             lastname: '',
             notifyValue: '-1',
+            open: openAfterLoading !== true,
             peer,
             phone: '',
             sendMessageEnable: false,
             user: null,
-            userDialogOpen: true,
         }, () => {
             this.getUser(text);
         });
     }
 
     public render() {
-        const {user, edit, firstname, lastname, phone, isInContact, notifySetting, userDialogOpen, sendMessageEnable} = this.state;
+        const {user, edit, firstname, lastname, phone, isInContact, notifySetting, open, sendMessageEnable} = this.state;
         const isOfficial = user && user.official;
         return (
             <Dialog
-                open={userDialogOpen}
+                open={open}
                 onClose={this.userDialogCloseHandler}
                 maxWidth="xs"
                 className="user-dialog"
@@ -292,6 +292,7 @@ class UserDialog extends React.Component<IProps, IState> {
                 firstname: user.firstname || '',
                 isInContact: Boolean(user.is_contact),
                 lastname: user.lastname || '',
+                open: true,
                 phone: user.phone || '',
                 sendMessageEnable: Boolean(user.accesshash && user.accesshash.length > 0),
                 user,
@@ -301,10 +302,8 @@ class UserDialog extends React.Component<IProps, IState> {
         this.userRepo.getFull(peer.getId() || '', fn, undefined, true).then((res) => {
             fn(res);
         }).catch((err) => {
-            window.console.log(err, text);
             if (err === 'not_found' && text && text.indexOf('@') === 0) {
                 this.userRepo.contactSearch(text.substr(1)).then((userRes) => {
-                    window.console.log(userRes);
                     if (userRes.length === 1) {
                         const userPeer = new InputPeer();
                         userPeer.setId(userRes[0].id || '');
@@ -374,9 +373,10 @@ class UserDialog extends React.Component<IProps, IState> {
             inputUser.setAccesshash(user.accesshash || '');
             inputUser.setUserid(user.id || '');
             this.apiManager.contactAdd(inputUser, firstname, lastname, phone).then(() => {
-                this.userRepo.importBulk(true, [user], false, undefined, this.props.teamId);
                 user.lastname = lastname;
                 user.firstname = firstname;
+                user.dont_update_last_modified = true;
+                this.userRepo.importBulk(true, [user], false, undefined, this.props.teamId);
                 this.setState({
                     edit: false,
                     isInContact: true,
@@ -503,7 +503,7 @@ class UserDialog extends React.Component<IProps, IState> {
     /* User dialog close handler */
     private userDialogCloseHandler = () => {
         this.setState({
-            userDialogOpen: false,
+            open: false,
         });
     }
 
@@ -517,14 +517,14 @@ class UserDialog extends React.Component<IProps, IState> {
         peer.setId(peerId);
         peer.setType(PeerType.PEERUSER);
         peer.setAccesshash(data.accesshash || '');
-        this.openDialog(peer, data.text);
+        this.openDialog(peer, data.text, true);
     }
 
     /* Close dialog */
     private closeHandler = () => {
         this.setState({
+            open: false,
             peer: null,
-            userDialogOpen: false,
         });
     }
 
@@ -589,6 +589,7 @@ class UserDialog extends React.Component<IProps, IState> {
                 this.apiManager.accountUnblock(inputUser).then(() => {
                     this.userRepo.importBulk(false, [{
                         blocked: false,
+                        dont_update_last_modified: true,
                         id: user.id || '0',
                     }]);
                     user.blocked = false;
@@ -600,6 +601,7 @@ class UserDialog extends React.Component<IProps, IState> {
                 this.apiManager.accountBlock(inputUser).then(() => {
                     this.userRepo.importBulk(false, [{
                         blocked: true,
+                        dont_update_last_modified: true,
                         id: user.id || '0',
                     }]);
                     user.blocked = true;

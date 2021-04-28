@@ -15,6 +15,8 @@ export interface IUser extends Partial<User.AsObject> {
     clientid?: string;
     is_contact?: number;
     status_last_modified?: number;
+    last_modified?: number;
+    dont_update_last_modified?: boolean;
     is_bot_started?: boolean;
     remove_photo?: boolean;
     last_updated?: number;
