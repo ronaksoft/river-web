@@ -397,7 +397,7 @@ class ChatInput extends React.Component<IProps, IState> {
             selectable: false,
             selectableDisable: false,
             selectableHasPending: false,
-            showInput: user ? user.id === '2374' || user.deleted : false,
+            showInput: user ? !(user.id === '2374' || user.deleted) : true,
             textareaValue: '',
             uploadPreviewOpen: false,
             user,
