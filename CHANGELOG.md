@@ -1,3 +1,7 @@
+## 1.1.25
+* Notification counter in title for web clients
+* Bug fix
+
 ## 1.1.24
 * Background job for on-viewport users with last seen activated
 * Improvements in call

@@ -2540,6 +2540,11 @@ class Chat extends React.Component<IProps, IState> {
         if (ElectronService.isElectron()) {
             this.electronService.setBadgeCounter(unreadCounter);
         }
+        if (unreadCounter === 0) {
+            window.document.title = 'River';
+        } else {
+            window.document.title = `(${unreadCounter}) | River`;
+        }
     }
 
     private wasmInitHandler = () => {
