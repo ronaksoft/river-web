@@ -360,11 +360,18 @@
       justify-content: center;
       flex-direction: column;
 
-      .username {
+      .user-name {
         font-size: 14px;
         line-height: 24px;
         font-weight: bold;
         direction: ltr;
+      }
+
+      .username {
+        font-size: 14px;
+        line-height: 24px;
+        direction: ltr;
+        color: var(--grey);
       }
 
       .account-phone {
@@ -1324,7 +1331,7 @@ html[direction="rtl"] {
 
       .account-info {
 
-        .username {
+        .user-name {
           font-size: 14px;
           line-height: 24px;
           font-weight: bold;
@@ -1477,7 +1484,7 @@ html[theme="dark-blue"] {
       }
 
       .account-info {
-        .username {
+        .user-name {
           color: var(--white);
         }
 

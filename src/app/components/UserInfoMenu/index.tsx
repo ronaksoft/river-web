@@ -195,7 +195,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <label>{i18n.t('general.first_name')}</label>
                                             <div className="inner">{user.firstname}{user && user.official &&
                                             <OfficialIcon/>}</div>
-                                            {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
+                                            {Boolean(!disable && !this.me && !isOfficial && isInContact) && <div className="action">
                                                 <IconButton
                                                     onClick={this.editHandler}
                                                 >
@@ -221,7 +221,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         <div className="form-control">
                                             <label>{i18n.t('general.last_name')}</label>
                                             <div className="inner">{user.lastname}</div>
-                                            {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
+                                            {Boolean(!disable && !this.me && !isOfficial && isInContact) && <div className="action">
                                                 <IconButton
                                                     onClick={this.editHandler}
                                                 >
@@ -343,7 +343,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
         const fn = (user: IUser) => {
             this.setState({
-                disable: !this.state.disable && (user.deleted || user.id === '2374'),
+                disable: this.state.disable || (!this.state.disable && (user.deleted || user.id === '2374')),
                 firstname: user.firstname || '',
                 isInContact: (user.is_contact === 1),
                 lastname: user.lastname || '',

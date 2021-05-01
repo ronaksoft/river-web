@@ -418,6 +418,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }).catch(() => {
             //
         });
+        this.getUser();
         this.apiManager.systemGetInfo(true).then((res) => {
             this.setState({
                 riverGroupName: res.workgroupname || '',
@@ -509,7 +510,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="account-info"
                                              onClick={this.selectPageHandler('account')}>
-                                            <UserName className="username" id={currentUserId} noDetail={true}/>
+                                            <UserName className="user-name" id={currentUserId} noDetail={true}/>
+                                            {username.length > 0 && <div className="username">@{username}</div>}
                                             <div className="account-phone">{phone}</div>
                                         </div>
                                         {Boolean(teamList.length > 1) && <div className="team-select">
@@ -2024,9 +2026,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private logOutHandler = (force?: any) => {
         if (this.props.onAction) {
             if (force === true) {
-                this.props.onAction('logout');
-            } else {
                 this.props.onAction('logout_force');
+            } else {
+                this.props.onAction('logout');
             }
         }
     }

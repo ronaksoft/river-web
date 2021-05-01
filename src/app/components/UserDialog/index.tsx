@@ -46,6 +46,7 @@ interface IProps extends WithSnackbarProps {
 }
 
 interface IState {
+    disable: boolean;
     edit: boolean;
     firstname: string;
     isInContact: boolean;
@@ -73,6 +74,7 @@ class UserDialog extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            disable: false,
             edit: false,
             firstname: '',
             isInContact: false,
@@ -133,12 +135,12 @@ class UserDialog extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {user, edit, firstname, lastname, phone, isInContact, notifySetting, open, sendMessageEnable} = this.state;
+        const {disable, user, edit, firstname, lastname, phone, isInContact, notifySetting, open, sendMessageEnable} = this.state;
         const isOfficial = user && user.official;
         return (
             <Dialog
                 open={open}
-                onClose={this.userDialogCloseHandler}
+                onClose={this.closeHandler}
                 maxWidth="xs"
                 className="user-dialog"
                 classes={{
@@ -160,7 +162,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <label>{i18n.t('general.first_name')}</label>
                                 <div className="inner">{user.firstname}{user && user.official &&
                                 <OfficialIcon/>}</div>
-                                {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
+                                {Boolean(!disable && !this.me && !isOfficial && isInContact) && <div className="action">
                                     <IconButton
                                         onClick={this.editHandler}
                                     >
@@ -186,7 +188,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             <div className="form-control">
                                 <label>{i18n.t('general.last_name')}</label>
                                 <div className="inner">{user.lastname}</div>
-                                {Boolean(!this.me && !isOfficial && isInContact) && <div className="action">
+                                {Boolean(!disable && !this.me && !isOfficial && isInContact) && <div className="action">
                                     <IconButton
                                         onClick={this.editHandler}
                                     >
@@ -206,7 +208,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 onChange={this.lastnameChangeHandler}
                             />}
                         </div>}
-                        {Boolean(edit || (isInContact && (user.phone || '').length > 0)) &&
+                        {Boolean(!disable && (edit || (isInContact && (user.phone || '').length > 0))) &&
                         <div className="line">
                             {Boolean(isInContact && !edit && (user.phone || '').length > 0) &&
                             <div className="form-control">
@@ -227,19 +229,19 @@ class UserDialog extends React.Component<IProps, IState> {
                                 onChange={this.phoneChangeHandler}
                             />}
                         </div>}
-                        {Boolean(user.username && (user.username || '').length > 0) && <div className="line">
+                        {Boolean(!disable && user.username && (user.username || '').length > 0) && <div className="line">
                             <div className="form-control">
                                 <label>{i18n.t('general.username')}</label>
                                 <div className="inner">@{user.username}</div>
                             </div>
                         </div>}
-                        {Boolean(user.bio && (user.bio || '').length > 0) && <div className="line">
+                        {Boolean(!disable && user.bio && (user.bio || '').length > 0) && <div className="line">
                             <div className="form-control">
                                 <label>{i18n.t('general.bio')}</label>
                                 <div className="inner">{user.bio}</div>
                             </div>
                         </div>}
-                        {Boolean(this.props.teamId === '0' && !this.me && !isInContact && !edit && user && !user.isbot) &&
+                        {Boolean(!disable && this.props.teamId === '0' && !this.me && !isInContact && !edit && user && !user.isbot) &&
                         <div className="add-as-contact" onClick={this.addAsContactHandler}>
                             <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                         </div>}
@@ -252,14 +254,14 @@ class UserDialog extends React.Component<IProps, IState> {
                         {Boolean(edit) && <div className="actions-bar cancel" onClick={this.cancelHandler}>
                             {i18n.t('general.cancel')}
                         </div>}
-                        {Boolean(!this.me && !edit && user) && <Button key="block" color="secondary" fullWidth={true}
+                        {Boolean(!disable && !this.me && !edit && user) && <Button key="block" color="secondary" fullWidth={true}
                                                                        onClick={this.blockUserHandler(user)}>
                             {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
-                        {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
+                        {Boolean(!disable && !edit && user && user.isbot && !user.is_bot_started) &&
                         <Button key="start" color="secondary" fullWidth={true}
                                 onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
                     </div>}
-                    {notifySetting && <div className="kk-card notify-settings">
+                    {!disable && notifySetting && <div className="kk-card notify-settings">
                         <div className="label">{i18n.t('peer_info.mute')}</div>
                         <div className="value">
                             <Checkbox
@@ -268,7 +270,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 onChange={this.muteChangeHandler}/>
                         </div>
                     </div>}
-                    {sendMessageEnable && <div className="kk-card">
+                    {!disable && sendMessageEnable && <div className="kk-card">
                         <Link className="send-message"
                               to={`/chat/${this.props.teamId}/${user ? `${user.id}_${PeerType.PEERUSER}` : 'null'}`}
                               onClick={this.closeHandler}>
@@ -289,6 +291,7 @@ class UserDialog extends React.Component<IProps, IState> {
 
         const fn = (user: IUser) => {
             this.setState({
+                disable: this.state.disable || (!this.state.disable && (user.deleted || user.id === '2374')),
                 firstname: user.firstname || '',
                 isInContact: Boolean(user.is_contact),
                 lastname: user.lastname || '',
@@ -501,9 +504,11 @@ class UserDialog extends React.Component<IProps, IState> {
     }
 
     /* User dialog close handler */
-    private userDialogCloseHandler = () => {
+    private closeHandler = () => {
         this.setState({
+            disable: false,
             open: false,
+            peer: null,
         });
     }
 
@@ -518,14 +523,6 @@ class UserDialog extends React.Component<IProps, IState> {
         peer.setType(PeerType.PEERUSER);
         peer.setAccesshash(data.accesshash || '');
         this.openDialog(peer, data.text, true);
-    }
-
-    /* Close dialog */
-    private closeHandler = () => {
-        this.setState({
-            open: false,
-            peer: null,
-        });
     }
 
     /* Cancel handler */

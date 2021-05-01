@@ -1,3 +1,6 @@
+## 1.1.26
+* Known bugs fixed
+
 ## 1.1.25
 * Notification counter in title for web clients
 * Bug fix
