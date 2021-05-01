@@ -12,6 +12,7 @@ import UserRepo from "../../repository/user";
 import RiverTime from "../utilities/river_time";
 import {throttle} from "lodash";
 import {InputUser} from "../sdk/messages/core.types_pb";
+import {EventBlur, EventFocus} from "../events";
 
 export default class LastSeenService {
     public static getInstance() {
@@ -30,6 +31,7 @@ export default class LastSeenService {
     private riverTime: RiverTime;
     private interval: number = 15;
     private readonly intervalFn: any;
+    private active: boolean = true;
 
     private constructor() {
         this.apiManager = APIManager.getInstance();
@@ -39,6 +41,8 @@ export default class LastSeenService {
         setTimeout(() => {
             this.interval = this.apiManager.getInstantSystemConfig().onlineupdateperiodinsec;
         }, 5000);
+        window.addEventListener(EventFocus, this.windowFocusHandler);
+        window.addEventListener(EventBlur, this.windowBlurHandler);
     }
 
     public add(userId: string) {
@@ -65,6 +69,9 @@ export default class LastSeenService {
     }
 
     private getUsers = () => {
+        if (!this.active) {
+            return;
+        }
         const toCheckInputs: InputUser[] = [];
         const now = this.riverTime.now();
         this.userRepo.getManyInstant(this.userIds).forEach((user) => {
@@ -80,5 +87,13 @@ export default class LastSeenService {
                 this.userRepo.importBulk(false, res.usersList);
             });
         }
+    }
+
+    private windowFocusHandler = () => {
+        this.active = true;
+    }
+
+    private windowBlurHandler = () => {
+        this.active = false;
     }
 }
