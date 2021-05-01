@@ -40,6 +40,8 @@ import {getDefaultAudio, getDefaultVideo} from "../../components/SettingsMediaIn
 
 const C_RETRY_INTERVAL = 10000;
 const C_RETRY_LIMIT = 6;
+const C_RECONNECT_TRY = 3;
+const C_RECONNECT_TIMEOUT = 15000;
 
 export const C_CALL_EVENT = {
     AllConnected: 0x12,
@@ -91,6 +93,8 @@ interface IConnection {
     iceServers?: RTCIceServer[];
     init: boolean;
     reconnecting: boolean;
+    reconnectingTimeout: any;
+    reconnectingTry: number;
     screenShareStream?: MediaStream;
     stream?: MediaStream;
     streamId: string;
@@ -645,6 +649,7 @@ export default class CallService {
                 conn.stream = undefined;
             }
             clearInterval(conn.interval);
+            clearTimeout(conn.reconnectingTimeout);
         };
 
         if (connId !== undefined) {
@@ -1245,6 +1250,8 @@ export default class CallService {
                     init: false,
                     interval: null,
                     reconnecting: false,
+                    reconnectingTimeout: null,
+                    reconnectingTry: 0,
                     stream: undefined,
                     streamId: '',
                     try: 0,
@@ -1260,6 +1267,7 @@ export default class CallService {
                 pc.addEventListener('track', (e) => {
                     conn.init = true;
                     conn.reconnecting = false;
+                    clearTimeout(conn.reconnectingTimeout);
                     if (e.streams.length > 0) {
                         const streamId = e.streams[0].id;
                         e.streams.forEach((stream) => {
@@ -1372,7 +1380,17 @@ export default class CallService {
         }
         if (this.peerConnections.hasOwnProperty(connId) && !this.peerConnections[connId].reconnecting && ((isIceError && this.peerConnections[connId].init && (state === 'disconnected' || state === 'failed' || state === 'closed')) || state === 'disconnected')) {
             this.peerConnections[connId].connection.close();
+            this.peerConnections[connId].iceQueue = [];
             this.peerConnections[connId].reconnecting = true;
+            this.peerConnections[connId].reconnectingTry++;
+            if (this.peerConnections[connId].reconnectingTry <= C_RECONNECT_TRY) {
+                this.peerConnections[connId].reconnectingTimeout = setTimeout(() => {
+                    if (this.peerConnections.hasOwnProperty(connId)) {
+                        this.peerConnections[connId].reconnecting = false;
+                    }
+                    this.checkDisconnection(connId, state, isIceError);
+                }, C_RECONNECT_TIMEOUT);
+            }
             window.console.log('[webrtc] reconnecting, connId: ', connId, ' state: ', state, ' from ice error: ', isIceError ? 'true' : 'false');
             this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: 'reconnecting'});
             this.apiManager.callInit(this.peer, this.activeCallId).then((res) => {
