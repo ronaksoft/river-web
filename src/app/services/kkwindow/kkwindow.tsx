@@ -121,6 +121,7 @@ class KKWindow extends React.Component<IProps, IState> {
     private loadMoreTimeout: any = null;
     private paddingTop: string = '0';
     private smallerThanContainer: boolean = false;
+    private scrollEndTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -218,6 +219,12 @@ class KKWindow extends React.Component<IProps, IState> {
 
     public setScrollMode(mode: 'end' | 'stay' | 'top' | 'none') {
         this.scrollMode = mode;
+        if (mode === 'end') {
+            clearTimeout(this.scrollEndTimeout);
+            this.scrollEndTimeout = setTimeout(() => {
+                this.scrollMode = 'none';
+            }, 255);
+        }
     }
 
     public getCellOffset(index: number) {
@@ -459,7 +466,7 @@ class KKWindow extends React.Component<IProps, IState> {
 
     private scrollbarThumbUpHandler = () => {
         this.scrollbar.dragged = false;
-        this.teardownDragging();
+        this.destroyDragging();
     }
 
     private setupDragging() {
@@ -469,17 +476,17 @@ class KKWindow extends React.Component<IProps, IState> {
         this.containerRef.style.userSelect = 'none';
         document.addEventListener('mousemove', this.scrollbarThumbMoveHandler);
         document.addEventListener('mouseup', this.scrollbarThumbUpHandler);
-        document.addEventListener('mousedown', this.teardownDragging);
+        document.addEventListener('mousedown', this.destroyDragging);
     }
 
-    private teardownDragging = () => {
+    private destroyDragging = () => {
         if (!this.containerRef) {
             return;
         }
         this.containerRef.style.userSelect = 'auto';
         document.removeEventListener('mousemove', this.scrollbarThumbMoveHandler);
         document.removeEventListener('mouseup', this.scrollbarThumbUpHandler);
-        document.removeEventListener('mousedown', this.teardownDragging);
+        document.removeEventListener('mousedown', this.destroyDragging);
     }
 
     private fillGap() {
@@ -533,7 +540,7 @@ class KKWindow extends React.Component<IProps, IState> {
                         end: this.props.count - 1,
                         overscanEnd: this.props.count - 1,
                         overscanStart: 0,
-                        start: 0
+                        start: 0,
                     });
                 }
                 gapFilled = true;
