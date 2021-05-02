@@ -62,6 +62,7 @@ import GroupSeenBy from "../GroupSeenBy";
 import {IDialog} from "../../repository/dialog/interface";
 import MessageWeb from "../MessageWeb";
 import {shiftArrow} from "../ChatInput";
+import DeepLinkService from "../../services/deepLinkService";
 
 import './style.scss';
 
@@ -83,7 +84,17 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
         const openExternalLinkHandler = (url: string) => (e: any) => {
             e.preventDefault();
             if (onAction) {
-                onAction('open_external_link', url);
+                if (/rvr:\/\//.test(url)) {
+                    onAction('open_deep_link', url);
+                } else {
+                    onAction('open_external_link', url);
+                }
+            }
+        };
+        const openDeepLinkHandler = (url: string) => (e: any) => {
+            if (onAction && /rvr:\/\//.test(url)) {
+                e.preventDefault();
+                onAction('open_deep_link', url);
             }
         };
         const botCommandHandler = (text: string) => (e: any) => {
@@ -139,7 +150,8 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
                                        className="_url">{elem.str}</a>);
                             } else {
                                 return (
-                                    <a key={i} href={url} target="_blank" rel="noopener noreferrer"
+                                    <a key={i} href={url} onClick={openDeepLinkHandler(url)} target="_blank"
+                                       rel="noopener noreferrer"
                                        className="_url">{elem.str}</a>);
                             }
                         }
@@ -1633,6 +1645,9 @@ class Message extends React.Component<IProps, IState> {
         switch (cmd) {
             case 'open_external_link':
                 ElectronService.openExternal(text);
+                break;
+            case'open_deep_link':
+                DeepLinkService.getInstance().parseLink(text);
                 break;
             case 'bot_command':
                 if (this.props.onBotCommand) {

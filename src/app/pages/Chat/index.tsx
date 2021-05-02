@@ -187,6 +187,7 @@ import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import {IsMobileView} from "../../services/isMobile";
 
 import './style.scss';
+import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
 
 export let notifyOptions: any[] = [];
 
@@ -300,6 +301,7 @@ class Chat extends React.Component<IProps, IState> {
     private readonly callService: CallService;
     private dialogInitialized: boolean = false;
     private started: boolean = false;
+    private deepLinkService: DeepLinkService;
 
     constructor(props: IProps) {
         super(props);
@@ -344,6 +346,7 @@ class Chat extends React.Component<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
+        this.deepLinkService = DeepLinkService.getInstance();
         this.callService = CallService.getInstance();
         this.callService.setEnqueueSnackbarFn(this.props.enqueueSnackbar);
 
@@ -540,6 +543,10 @@ class Chat extends React.Component<IProps, IState> {
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.About, this.electronAboutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Logout, this.electronLogoutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.SizeMode, this.electronSizeModeHandler));
+
+        // Deep link events
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.OpenChat, this.deepLinkOpenChatHandler));
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.BotStart, this.deepLinkBotStartHandler));
 
         if (localStorage.getItem(C_LOCALSTORAGE.ThemeBg) === C_CUSTOM_BG) {
             this.backgroundService.getBackground(C_CUSTOM_BG_ID, true);
@@ -6386,6 +6393,30 @@ class Chat extends React.Component<IProps, IState> {
                 resolve(false);
             }
         });
+    }
+
+    private deepLinkOpenChatHandler = ({phone, username}: { phone?: string, username?: string }) => {
+        if (username) {
+            this.userRepo.getByUsername(username).then((user) => {
+                this.props.history.push(`/chat/${this.teamId}/${user.id}_${PeerType.PEERUSER}`);
+            });
+        }
+    }
+
+    private deepLinkBotStartHandler = ({username}: { username?: string }) => {
+        if (username) {
+            this.userRepo.getByUsername(username).then((user) => {
+                if (user.isbot) {
+                    return;
+                }
+                this.props.history.push(`/chat/${this.teamId}/${user.id}_${PeerType.PEERUSER}`);
+                if (!user.is_bot_started) {
+                    setTimeout(() => {
+                        this.startBot(user);
+                    }, 128);
+                }
+            });
+        }
     }
 }
 

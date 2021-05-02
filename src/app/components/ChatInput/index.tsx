@@ -149,7 +149,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
             underlineText = underlineRange(underlineText, r.start, r.len);
         });
     }
-    XRegExp.forEach(underlineText, /(\bhttps?:\/\/\S+)|([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](\.com|\.org|\.net|\.im|\.ir))/, (match) => {
+    XRegExp.forEach(underlineText, /(\bhttps?:\/\/\S+)|(\brvr:\/\/\S+)|([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](\.com|\.org|\.net|\.im|\.ir))/, (match) => {
         const entity = new MessageEntity();
         entity.setOffset(match.index);
         entity.setLength(match[0].length);

@@ -456,6 +456,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.teamSelectHandler(item, true)();
     }
 
+    public openDebug() {
+        if (this.devToolsRef) {
+            this.devToolsRef.open();
+        }
+    }
+
     public render() {
         const {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,

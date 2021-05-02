@@ -15,11 +15,13 @@ const {
 const Store = require('electron-store');
 const store = new Store();
 
-const C_APP_VERSION = '0.34.0';
+const C_APP_VERSION = '0.35.0';
 
 const C_LOAD_URL = 'https://web.river.im';
 const C_LOAD_URL_KEY = 'load_url';
 const C_WINDOW_CONFIG = 'window_config';
+const C_PROTOCOL = 'rvr';
+const C_PROTOCOL_REGEX = new RegExp(`${C_PROTOCOL}:\/\/`);
 
 const MIN_WIDTH = 316;
 const MIN_HEIGHT = 480;
@@ -31,6 +33,8 @@ let mainWindow;
 let sizeMode = 'desktop';
 let firstTimeLoad = false;
 let windowConfig = store.get(C_WINDOW_CONFIG, {});
+let deepLinkUrl = '';
+let webAppReady = false;
 
 if (isDev) {
     require('electron-debug')();
@@ -71,12 +75,31 @@ const resetConfig = () => {
     store.delete(C_WINDOW_CONFIG);
 };
 
-if (!process.mas) {
+const getDeepLink = (url) => {
+    if (C_PROTOCOL_REGEX.test(url)) {
+        deepLinkUrl = url;
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const callDeepLink = () => {
+    if (webAppReady && deepLinkUrl !== '') {
+        callReact('deepLink', deepLinkUrl);
+        deepLinkUrl = '';
+    }
+};
+
+if (process.platform !== 'darwin') {
     const gotTheLock = app.requestSingleInstanceLock();
     if (!gotTheLock) {
         app.exit();
     } else {
-        app.on('second-instance', (event, commandLine, workingDirectory) => {
+        app.on('second-instance', (event, argv) => {
+            if (getDeepLink(argv.slice(1))) {
+                callDeepLink();
+            }
             // Someone tried to run a second instance, we should focus our window.
             if (mainWindow) {
                 if (mainWindow.isMinimized()) {
@@ -89,7 +112,7 @@ if (!process.mas) {
         });
     }
 } else {
-    app.disableHardwareAcceleration();
+    // app.disableHardwareAcceleration();
 }
 
 // Dark theme on macOS
@@ -105,7 +128,7 @@ if (process.platform === 'darwin') {
 
 contextMenu({});
 
-createWindow = (forceShow) => {
+const createWindow = (forceShow) => {
     let windowIcon = undefined;
     const OS = process.platform;
     if (OS === 'win32') {
@@ -189,6 +212,8 @@ createWindow = (forceShow) => {
     mainWindow.on('move', debouncedCaptureStats);
 
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : store.get(C_LOAD_URL_KEY, C_LOAD_URL));
+
+    getDeepLink(process.argv.slice(1));
 
     if (windowConfig && windowConfig.maximized) {
         mainWindow.maximize();
@@ -332,6 +357,8 @@ app.on('ready', () => {
 
 app.on('window-all-closed', (e) => {
     mainWindow = null;
+    deepLinkUrl = '';
+    webAppReady = false;
     if (process.platform !== 'darwin') {
         app.quit();
     }
@@ -341,6 +368,21 @@ app.on('activate', () => {
     if (mainWindow === null) {
         createWindow(firstTimeLoad);
     }
+});
+
+if (!app.isDefaultProtocolClient(C_PROTOCOL)) {
+    // Define custom protocol handler. Deep linking works on packaged versions of the application!
+    app.setAsDefaultProtocolClient(C_PROTOCOL);
+}
+
+app.on('will-finish-launching', function () {
+    // Protocol handler for osx
+    app.on('open-url', function (event, url) {
+        if (getDeepLink(url)) {
+            event.preventDefault();
+            callDeepLink();
+        }
+    });
 });
 
 ipcMain.on('load-page', (event, arg) => {
@@ -539,6 +581,17 @@ ipcMain.on('fnCall', (e, arg) => {
                     bool: true,
                 },
             });
+            break;
+        case 'ready':
+            webAppReady = true;
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: true,
+                },
+            });
+            callDeepLink();
             break;
     }
 });

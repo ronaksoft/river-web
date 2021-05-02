@@ -8,7 +8,7 @@
 */
 
 import DB from '../../services/db/user';
-import {IGroup} from './interface';
+import {IGroup, IGroupParticipant} from './interface';
 import {differenceWith, find, throttle, uniq, uniqBy} from 'lodash';
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Broadcaster from '../../services/broadcaster';
@@ -18,6 +18,7 @@ import APIManager from "../../services/sdk";
 import RiverTime from "../../services/utilities/river_time";
 import Dexie from "dexie";
 import UserRepo from "../user";
+import {IUser} from "../user/interface";
 
 export const GroupDBUpdated = 'Group_DB_Updated';
 
@@ -27,6 +28,19 @@ interface IGroupAction {
     reject: any;
     resolve: any;
 }
+
+export const mergeParticipant = (participants: IGroupParticipant[], users: IUser[]) => {
+    const userMap: { [key: string]: IUser } = {};
+    users.forEach((user) => {
+        userMap[user.id] = user;
+    });
+    return  participants.map((participant) => {
+        if (userMap[participant.userid]) {
+            participant.deleted = userMap[participant.userid].deleted;
+        }
+        return participant;
+    });
+};
 
 export default class GroupRepo {
     public static getInstance() {
@@ -109,7 +123,7 @@ export default class GroupRepo {
                     this.apiManager.groupGetFull(input).then((res) => {
                         let g: IGroup | undefined = res.group;
                         if (res.participantsList && res.participantsList.length > 0) {
-                            g.participantList = res.participantsList;
+                            g.participantList = mergeParticipant(res.participantsList as any, res.usersList);
                         }
                         if (res.usersList) {
                             this.userRepo.importBulk(false, res.usersList);

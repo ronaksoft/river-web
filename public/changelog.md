@@ -1,3 +1,7 @@
+## 1.1.27
+* Deep Link implemented
+* Overall improvements
+
 ## 1.1.26
 * Known bugs fixed
 * Last seen service improvements
