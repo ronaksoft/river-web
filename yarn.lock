@@ -6692,11 +6692,6 @@ ejs@^3.1.6:
   dependencies:
     jake "^10.6.1"
 
-elecron@^0.0.1-security:
-  version "0.0.1-security"
-  resolved "https://registry.yarnpkg.com/elecron/-/elecron-0.0.1-security.tgz#2fd03191f7c4e90530298bc4f1873896a106ef99"
-  integrity sha512-RS2M4DrK1s0BV84bBVC4pJ1Fu9ZvZ6askTnBmz2ZurFFqeTe0nnYwvP4Iq89gPyzPZ/L5lYrrSP3SjRcIy9eJw==
-
 electron-builder@^22.10.5:
   version "22.10.5"
   resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-22.10.5.tgz#03b156b93e6012609027c3aaa69201a3ad21e454"
@@ -6817,10 +6812,10 @@ electron-util@^0.13.0:
     electron-is-dev "^1.1.0"
     new-github-issue-url "^0.2.1"
 
-electron@^12.0.5:
-  version "12.0.5"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-12.0.5.tgz#005cf4375d2ee4563f5e75dc4da4ef871846a8be"
-  integrity sha512-z0xYB3sPr0qZcDrHUUWqooPKe3yUzBDxQcgQe3f2TLstA84JIFXBoaIJCPh/fJW0+JdF/ZFVeK2SNgLhYtRV+Q==
+electron@^12.0.6:
+  version "12.0.6"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-12.0.6.tgz#2d72fa5a7db553dca3a771b22aa13a676122b4af"
+  integrity sha512-+fqhpdG6Fd6LzsizMdaSPC1I8tfsMT8/7fsYBgABED3hEWdus/rt6CQ54P3/EWZyQebtyHR6HXtlofUqKMV3KQ==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"

@@ -33,7 +33,7 @@ import {
 import APIManager, {currentUserId} from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
-import GroupRepo, {GroupDBUpdated} from '../../repository/group';
+import GroupRepo, {GroupDBUpdated, mergeParticipant} from '../../repository/group';
 import TimeUtility from '../../services/utilities/time';
 import {IParticipant, IUser} from '../../repository/user/interface';
 import UserAvatar from '../UserAvatar';
@@ -71,9 +71,9 @@ import {C_AVATAR_SIZE} from "../SettingsMenu";
 import {ModalityService} from "kk-modality";
 import ContactPicker from "../ContactPicker";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
+import UserName from "../UserName";
 
 import './style.scss';
-import UserName from "../UserName";
 
 interface IProps {
     peer: InputPeer | null;
@@ -472,7 +472,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             this.loading = true;
             this.apiManager.groupGetFull(peer).then((res) => {
                 const group: IGroup = res.group;
-                group.participantList = res.participantsList;
+                if (res.participantsList && res.participantsList.length > 0) {
+                    group.participantList = mergeParticipant(res.participantsList as any, res.usersList);
+                }
                 group.photogalleryList = res.photogalleryList;
                 this.groupRepo.importBulk([group], this.callerId);
                 this.userRepo.importBulk(false, res.usersList);

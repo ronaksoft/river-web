@@ -8,7 +8,7 @@
 */
 
 import React from 'react';
-import {GroupParticipant, InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
+import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';
 import {orderBy, uniqBy} from "lodash";
@@ -23,6 +23,7 @@ import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import i18n from '../../services/i18n';
 
 import './style.scss';
+import {IGroupParticipant} from "../../repository/group/interface";
 
 export interface IMention {
     display: string;
@@ -153,7 +154,7 @@ class MentionInput extends React.Component<IProps, IState> {
             return;
         }
         // Search engine
-        const searchParticipant = (word: string, participants: Partial<GroupParticipant.AsObject>[]) => {
+        const searchParticipant = (word: string, participants: Partial<IGroupParticipant>[]) => {
             participants.unshift({
                 accesshash: '',
                 firstname: 'all',
@@ -165,7 +166,7 @@ class MentionInput extends React.Component<IProps, IState> {
             const reg = new RegExp(word.replace('\\', ''), "i");
             let exactMatchIndex: number = -1;
             for (const [i, participant] of participants.entries()) {
-                if (currentUserId !== participant.userid && !(participant.firstname === 'Deleted' && participant.lastname === 'Account') &&
+                if (currentUserId !== participant.userid && !participant.deleted &&
                     (reg.test(`${participant.firstname} ${participant.lastname}`) ||
                         (participant.username && reg.test(participant.username)))) {
                     users.push({
