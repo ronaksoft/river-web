@@ -51,6 +51,7 @@ import UserAvatar from "../UserAvatar";
 import MessageRepo from "../../repository/message";
 import Broadcaster from "../../services/broadcaster";
 import {IsMobileView} from "../../services/isMobile";
+import DeepLinkService from "../../services/deepLinkService";
 
 import './style.scss';
 
@@ -1510,6 +1511,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
         switch (cmd) {
             case 'open_external_link':
                 ElectronService.openExternal(text);
+                break;
+            case'open_deep_link':
+                DeepLinkService.getInstance().parseLink(text);
                 break;
             default:
                 this.preventClosing();

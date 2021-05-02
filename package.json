@@ -154,6 +154,12 @@
   },
   "build": {
     "appId": "com.river.im",
+    "protocols": {
+      "name": "River",
+      "schemes": [
+        "rvr"
+      ]
+    },
     "compression": "maximum",
     "productName": "River",
     "directories": {

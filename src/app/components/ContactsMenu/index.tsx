@@ -9,8 +9,7 @@
 
 import React from 'react';
 import UserRepo from '../../repository/user';
-import TextField from '@material-ui/core/TextField/TextField';
-import {CheckRounded, KeyboardBackspaceRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
+import {KeyboardBackspaceRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import APIManager from '../../services/sdk';
@@ -19,9 +18,8 @@ import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
 import {IUser} from '../../repository/user/interface';
 import Broadcaster from '../../services/broadcaster';
-import SettingsModal from '../SettingsModal';
 import i18n from '../../services/i18n';
-import {extractPhoneNumber} from "../../services/utilities/localize";
+import ContactNew from "../ContactNew";
 
 import './style.scss';
 
@@ -41,11 +39,12 @@ interface IState {
     selectedId: string;
 }
 
-class ContactMenus extends React.Component<IProps, IState> {
+class ContactMenu extends React.Component<IProps, IState> {
     private contactListRef: ContactList | undefined;
     private userRepo: UserRepo;
     private apiManager: APIManager;
     private broadcaster: Broadcaster;
+    private contactNewRef: ContactNew | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -76,8 +75,13 @@ class ContactMenus extends React.Component<IProps, IState> {
         }
     }
 
+    public openNewContact(data: {phone?: string, firstname?: string, lastname?: string}) {
+        if (this.contactNewRef) {
+            this.contactNewRef.open(data);
+        }
+    }
+
     public render() {
-        const {firstName, lastName, phone, newContactDialogOpen} = this.state;
         return (
             <div className="contacts">
                 <div className="menu-header">
@@ -101,53 +105,7 @@ class ContactMenus extends React.Component<IProps, IState> {
                                  onContextMenuAction={this.contextMenuActionHandler} globalSearch={true}
                                  showOfficialBadge={true}/>
                 </div>
-                <SettingsModal open={newContactDialogOpen} title={i18n.t('contact.new_contact')}
-                               icon={<PersonAddRounded/>}
-                               onClose={this.newContactCloseHandler}
-                               noScrollbar={true}
-                               height="280px"
-                >
-                    <div className="new-contact-dialog">
-                        <TextField
-                            autoFocus={true}
-                            fullWidth={true}
-                            label={i18n.t('general.first_name')}
-                            margin="dense"
-                            onChange={this.firstNameHandleChange}
-                            value={firstName}
-                            onKeyDown={this.confirmKeyDown}
-                            error={firstName.length <= 0}
-                        />
-                        <TextField
-                            fullWidth={true}
-                            label={i18n.t('general.last_name')}
-                            margin="dense"
-                            onChange={this.lastNameHandleChange}
-                            value={lastName}
-                            onKeyDown={this.confirmKeyDown}
-                        />
-                        <TextField
-                            fullWidth={true}
-                            label={i18n.t('general.phone')}
-                            inputProps={{
-                                inputMode: "tel",
-                                maxLength: 32,
-                            }}
-                            margin="dense"
-                            onChange={this.phoneHandleChange}
-                            value={phone}
-                            type="tel"
-                            onKeyDown={this.confirmKeyDown}
-                        />
-                        <div className="actions-bar">
-                            <div
-                                className={'add-action' + (((firstName.length > 0 || lastName.length > 0) && phone.length > 5) ? '' : ' disabled')}
-                                onClick={this.createContactHandler}>
-                                <CheckRounded/>
-                            </div>
-                        </div>
-                    </div>
-                </SettingsModal>
+                <ContactNew ref={this.contactNewRefHandler} onDone={this.contactNewDoneHandler}/>
             </div>
         );
     }
@@ -164,54 +122,28 @@ class ContactMenus extends React.Component<IProps, IState> {
             </div>);
     }
 
+    private contactNewRefHandler = (ref: any) => {
+        this.contactNewRef = ref;
+    }
+
     private newContactOpenHandler = () => {
-        this.setState({
-            newContactDialogOpen: true,
-        });
-    }
-
-    private newContactCloseHandler = () => {
-        this.setState({
-            newContactDialogOpen: false,
-        });
-    }
-
-    private firstNameHandleChange = (e: any) => {
-        this.setState({
-            firstName: e.currentTarget.value,
-        });
-    }
-
-    private lastNameHandleChange = (e: any) => {
-        this.setState({
-            lastName: e.currentTarget.value,
-        });
-    }
-
-    private phoneHandleChange = (e: any) => {
-        this.setState({
-            phone: extractPhoneNumber(e.currentTarget.value),
-        });
-    }
-
-    private createContactHandler = () => {
-        let {firstName, lastName} = this.state;
-        const {phone} = this.state;
-        if (!(firstName.length > 0 && phone.length > 5)) {
-            return;
+        if (this.contactNewRef) {
+            this.contactNewRef.open({});
         }
-        this.newContactCloseHandler();
+    }
+
+    private contactNewDoneHandler = (phone: string, firstname: string, lastname: string) => {
         const contacts: PhoneContact.AsObject[] = [];
-        if (firstName.length === 0) {
-            firstName = ' ';
+        if (firstname.length === 0) {
+            firstname = ' ';
         }
-        if (lastName.length === 0) {
-            lastName = ' ';
+        if (lastname.length === 0) {
+            lastname = ' ';
         }
         contacts.push({
             clientid: String(UniqueId.getRandomId()),
-            firstname: firstName,
-            lastname: lastName,
+            firstname,
+            lastname,
             phone,
         });
         this.apiManager.contactImport(true, contacts).then((data) => {
@@ -226,22 +158,10 @@ class ContactMenus extends React.Component<IProps, IState> {
                 });
             });
             if (data.contactusersList.length === 0 && this.props.onError) {
-                this.props.onError(i18n.tf('contact.is_not_on_river_yet', firstName));
+                this.props.onError(i18n.tf('contact.is_not_on_river_yet', firstname));
             } else {
                 this.userRepo.computeHash(this.props.teamId);
             }
-            this.setState({
-                firstName: '',
-                lastName: '',
-                newContactDialogOpen: false,
-                phone: '',
-            });
-        }).catch(() => {
-            this.setState({
-                firstName: '',
-                lastName: '',
-                phone: '',
-            });
         });
     }
 
@@ -264,21 +184,10 @@ class ContactMenus extends React.Component<IProps, IState> {
         }
     }
 
-    /* Confirm key down */
-    private confirmKeyDown = (e: any) => {
-        if (e.key === 'Enter') {
-            const {firstName, lastName, phone} = this.state;
-            if (firstName.length > 0 && lastName.length > 0 && phone.length > 5) {
-                this.createContactHandler();
-            }
-            this.newContactCloseHandler();
-        }
-    }
-
     /* Broadcast global event */
     private broadcastEvent(name: string, data: any) {
         this.broadcaster.publish(name, data);
     }
 }
 
-export default ContactMenus;
+export default ContactMenu;

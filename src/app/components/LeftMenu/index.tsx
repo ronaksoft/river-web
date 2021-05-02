@@ -42,10 +42,11 @@ import {localize} from "../../services/utilities/localize";
 import LeftPanel from "../LeftPanel";
 import Broadcaster from "../../services/broadcaster";
 import MessageRepo from "../../repository/message";
-
-import './style.scss';
 import CallHistory from "../CallHistory";
 import IsMobile from "../../services/isMobile";
+import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
+
+import './style.scss';
 
 export type menuItems = 'chat' | 'settings' | 'contacts' | 'call_history';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -125,6 +126,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private toCheckTeamIds: string[] = [];
     private readonly checkUpdateFlagThrottle: any;
     private readonly isMobile = IsMobile.isAny();
+    private deepLinkService: DeepLinkService;
 
     constructor(props: IProps) {
         super(props);
@@ -190,6 +192,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }];
 
         this.teamRepo = TeamRepo.getInstance();
+        this.deepLinkService = DeepLinkService.getInstance();
 
         this.mouseEnterDebounce = debounce(this.mouseEnterDebounceHandler, 320);
         this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
@@ -267,6 +270,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
         this.getTeamList();
         this.eventReferences.push(this.broadcaster.listen(TeamDBUpdated, this.getTeamList));
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.NewContact, this.deepLinkNewContactHandler));
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.Settings, this.deepLinkSettingsHandler));
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.SettingsDebug, this.deepLinkSettingsDebugHandler));
     }
 
     public componentWillUnmount() {
@@ -880,6 +886,48 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         if (this.leftPanelRef) {
             this.leftPanelRef.setTeamList(this.state.teamList);
             this.leftPanelRef.setUnreadCounter(this.unreadCounter, this.state.teamId);
+        }
+    }
+
+    private deepLinkNewContactHandler = ({phone, first_name, last_name, username}:{phone?: string, first_name?: string, last_name?: string, username?: string}) => {
+        const fn = () => {
+            if (this.contactsMenuRef) {
+                this.contactsMenuRef.openNewContact({firstname: first_name, lastname: last_name, phone});
+            }
+        };
+        if (this.state.leftMenu !== 'contacts') {
+            this.setState({
+                leftMenu: 'contacts',
+            }, () => {
+                fn();
+            });
+        } else {
+            fn();
+        }
+    }
+
+    private deepLinkSettingsHandler = () => {
+        if (this.state.leftMenu !== 'settings') {
+            this.setState({
+                leftMenu: 'settings',
+            });
+        }
+    }
+
+    private deepLinkSettingsDebugHandler = () => {
+        const fn = () => {
+            if (this.settingsMenuRef) {
+                this.settingsMenuRef.openDebug();
+            }
+        };
+        if (this.state.leftMenu !== 'settings') {
+            this.setState({
+                leftMenu: 'settings',
+            }, () => {
+                fn();
+            });
+        } else {
+            fn();
         }
     }
 }

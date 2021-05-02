@@ -8,6 +8,7 @@
 */
 
 import {IpcRenderer} from 'electron';
+import DeepLinkService from "../deepLinkService";
 
 export const C_ELECTRON_SUBJECT = {
     About: 'about',
@@ -27,6 +28,7 @@ export const C_ELECTRON_CMD = {
     GetScreenCaptureList: 'getScreenCaptureList',
     GetVersion: 'getVersion',
     PreviewFile: 'previewFile',
+    Ready: 'ready',
     RevealFile: 'revealFile',
     ScreenCapturePermission: 'screenCapturePermission',
     SetBadgeCounter: 'setBadgeCounter',
@@ -86,10 +88,12 @@ export default class ElectronService {
     private fnIndex: number = 0;
     private reqId: number = 0;
     private messageListeners: { [key: number]: IMessageListener } = {};
+    private deepLinkService: DeepLinkService;
 
     private constructor() {
         // @ts-ignore
         this.ipcRenderer = window.ipcRenderer;
+        this.deepLinkService = DeepLinkService.getInstance();
 
         if (this.ipcRenderer) {
             this.ipcRenderer.on('settings', (event: any, msg: any) => {
@@ -107,6 +111,10 @@ export default class ElectronService {
             this.ipcRenderer.on('fnCallback', (event: any, data: any) => {
                 this.response(data);
             });
+            this.ipcRenderer.on('deepLink', (event: any, data: any) => {
+                this.deepLinkService.parseLink(data);
+            });
+            this.send(C_ELECTRON_CMD.Ready, {});
         }
     }
 
