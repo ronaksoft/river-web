@@ -16,7 +16,7 @@ import {detect} from "detect-browser";
 
 import './index.css';
 
-export const C_VERSION = '1.1.28';
+export const C_VERSION = '1.1.29';
 export const C_ELECTRON_VERSIONS = ['12.0.6'];
 export const C_APP_VERSION = '0.36.0';
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');

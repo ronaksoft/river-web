@@ -69,7 +69,6 @@ export default class NotificationService {
             this.messaging.getToken().then((currentToken) => {
                 if (currentToken) {
                     resolve(currentToken);
-                    window.console.log(currentToken);
                     // sendTokenToServer(currentToken);
                     // updateUIForPushEnabled(currentToken);
                 } else {

@@ -1,3 +1,6 @@
+## 1.1.29
+* Firebase notification implemented
+
 ## 1.1.28
 * Electron load time decreased
 

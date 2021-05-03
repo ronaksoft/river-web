@@ -14,6 +14,9 @@ const {
 } = require('mac-screen-capture-permissions');
 const Store = require('electron-store');
 const store = new Store();
+// const notifier = require('node-notifier');
+// String
+// notifier.notify('Message');
 
 const C_APP_VERSION = '0.36.0';
 

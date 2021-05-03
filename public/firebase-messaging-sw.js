@@ -23,14 +23,25 @@ firebase.initializeApp({
 // messages.
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function(payload) {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    // // Customize notification here
-    const notificationTitle = 'Background Message Title';
-    // const notificationOptions = {
-    //     body: 'Background Message body.',
-    //     icon: '/firebase-logo.png'
-    // };
-    //
-    self.registration.showNotification(notificationTitle, JSON.stringify(payload));
+const isActive = () => {
+    return clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true
+    })
+        .then((windowClients) => {
+            return windowClients.length > 0;
+        });
+};
+
+messaging.onBackgroundMessage(function (payload) {
+    // console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    isActive().then((active) => {
+        if (!active && payload && payload.data && payload.data.Body !== '') {
+            const data = payload.data;
+            self.registration.showNotification(data.Title || '', {
+                body: data.Body,
+                icon: './apple-icon-180x180.png'
+            });
+        }
+    });
 });
