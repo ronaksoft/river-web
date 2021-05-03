@@ -84,7 +84,7 @@ import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
 import CachedMessageService from "../../services/cachedMessageService";
-import {C_VERSION, isProd} from "../../../index";
+import {C_CLIENT, C_VERSION, isProd} from "../../../index";
 import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 import LeftMenu, {menuAction} from "../../components/LeftMenu";
@@ -185,9 +185,11 @@ import CallService from "../../services/callService";
 import {getDefaultAudio} from "../../components/SettingsMediaInput";
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import {IsMobileView} from "../../services/isMobile";
+import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
+import {gotToken} from "../SignUp";
+import NotificationService from "../../services/notification";
 
 import './style.scss';
-import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
 
 export let notifyOptions: any[] = [];
 
@@ -2576,6 +2578,13 @@ class Chat extends React.Component<IProps, IState> {
                     this.userRepo.getAllContacts(this.teamId);
                     this.apiManager.getSystemConfig();
                     this.startSyncing(res.updateid || 0);
+                    if (!gotToken) {
+                        NotificationService.getInstance().initToken().then((token) => {
+                            this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+                        }).catch((err) => {
+                            window.console.warn(err);
+                        });
+                    }
                     this.sendAllPendingMessages();
                 } else {
                     setTimeout(() => {

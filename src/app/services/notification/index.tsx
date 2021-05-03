@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 
 export default class NotificationService {
     public static getInstance() {
@@ -25,10 +25,11 @@ export default class NotificationService {
     private constructor() {
         try {
             this.app = firebase.initializeApp({
-                apiKey: "AIzaSyAxXaCNUveWAy2fxxv824mFe1n53sLUSL4",
-                appId: "river.im",
+                apiKey: "AIzaSyASXB-kW-qY-JqEEe0L3uXzRRnxDHHQx-M",
+                appId: "1:1012919192766:web:8d7a9f9badcf9c341362ef",
                 authDomain: "river-chat.firebaseapp.com",
                 databaseURL: "https://river-chat.firebaseio.com",
+                measurementId: "G-3JG2S2R7LQ",
                 messagingSenderId: "1012919192766",
                 projectId: "river-chat",
                 storageBucket: "river-chat.appspot.com",
@@ -39,9 +40,8 @@ export default class NotificationService {
 
         if (firebase.messaging.isSupported()) {
             this.messaging = firebase.messaging(this.app);
-            this.messaging.usePublicVapidKey('BFxf-8XLrMr4ebwFjejZh1j9vQGTlEnJ_S9_1-cZbvZKXedCQomb7oAEd_eYHKwJlc1iJ7yAvQ_eOSzN9UbFPKM');
 
-            this.messaging.requestPermission().then(() => {
+            Notification.requestPermission().then(() => {
                 window.console.warn('Notification permission granted.');
                 // TODO(developer): Retrieve an Instance ID token for use with FCM.
                 // ...
@@ -69,6 +69,7 @@ export default class NotificationService {
             this.messaging.getToken().then((currentToken) => {
                 if (currentToken) {
                     resolve(currentToken);
+                    window.console.log(currentToken);
                     // sendTokenToServer(currentToken);
                     // updateUIForPushEnabled(currentToken);
                 } else {
@@ -77,7 +78,7 @@ export default class NotificationService {
                     // Show permission UI.
                     // updateUIForPushPermissionRequired();
                     // setTokenSentToServer(false);
-                    reject(currentToken);
+                    reject(null);
                 }
             }).catch((err) => {
                 window.console.debug('An error occurred while retrieving token. ', err);
