@@ -15,7 +15,7 @@ const {
 const Store = require('electron-store');
 const store = new Store();
 
-const C_APP_VERSION = '0.35.0';
+const C_APP_VERSION = '0.36.0';
 
 const C_LOAD_URL = 'https://web.river.im';
 const C_LOAD_URL_KEY = 'load_url';
@@ -152,6 +152,7 @@ const createWindow = (forceShow) => {
             webSecurity: false,
             backgroundThrottling: true,
             v8CacheOptions: 'bypassHeatCheck',
+            sandbox: true,
         },
         height: 860,
         width: 1280,
