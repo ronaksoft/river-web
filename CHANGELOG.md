@@ -1,3 +1,6 @@
+## 1.1.28
+* Electron load time decreased
+
 ## 1.1.27
 * Deep Link implemented
 * Overall improvements
