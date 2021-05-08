@@ -33,14 +33,16 @@ const isActive = () => {
         });
 };
 
+const now = Date.now();
+
 messaging.onBackgroundMessage(function (payload) {
     // console.log('[firebase-messaging-sw.js] Received background message ', payload);
     isActive().then((active) => {
-        if (!active && payload && payload.data && payload.data.Body !== '') {
+        if (!active && payload && payload.data && payload.data.ts > now && payload.data.Body !== '') {
             const data = payload.data;
             self.registration.showNotification(data.Title || '', {
                 body: data.Body,
-                icon: './apple-icon-180x180.png'
+                icon: './android-icon-192x192.png'
             });
         }
     });
