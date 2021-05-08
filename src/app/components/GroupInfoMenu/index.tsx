@@ -365,7 +365,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         <div className="label">{i18n.t('peer_info.admin_only')}</div>
                                         <div className="value switch">
                                             <Switch
-                                                checked={allMemberAdmin}
+                                                checked={group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1}
                                                 className="admin-switch"
                                                 color="default"
                                                 onChange={this.toggleAdminOnlyHandler}
