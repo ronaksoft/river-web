@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import React from 'react';
+import React, {Suspense} from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
@@ -188,8 +188,11 @@ import {IsMobileView} from "../../services/isMobile";
 import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
 import {gotToken} from "../SignUp";
 import NotificationService from "../../services/notification";
+import {Loading} from "../../components/Loading";
 
 import './style.scss';
+
+const UploaderLazy = React.lazy(() => import('../../components/Uploader'));
 
 export let notifyOptions: any[] = [];
 
@@ -788,7 +791,9 @@ class Chat extends React.Component<IProps, IState> {
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
-                <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                <Suspense fallback={<Loading/>}>
+                    <UploaderLazy ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                </Suspense>
                 {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
             </div>
         );

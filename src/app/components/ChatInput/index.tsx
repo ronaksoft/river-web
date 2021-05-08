@@ -8,8 +8,7 @@
 */
 
 /* eslint import/no-webpack-loader-syntax: off */
-import React from 'react';
-import {Picker as EmojiPicker} from 'emoji-mart';
+import React, {Suspense} from 'react';
 import {cloneDeep, range, throttle, trimStart} from 'lodash';
 import {
     AttachFileRounded,
@@ -82,14 +81,17 @@ import {MediaContact, MediaDocument} from "../../services/sdk/messages/chat.mess
 import {getHumanReadableSize} from "../MessageFile";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@material-ui/core';
-import GifPicker from "../GifPicker";
 import {IGif} from "../../repository/gif/interface";
 import {Sticker} from "../SVG/sticker";
 import {getDefaultAudio} from "../SettingsMediaInput";
 import {canEditMessage, isEditableMessageType} from "../Message";
+import {Loading} from "../Loading";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
+
+const EmojiContainer = React.lazy(() => import('./emojiContainer'));
+const GifPicker = React.lazy(() => import('../GifPicker'));
 
 export type shiftArrow = 'up' | 'right' | 'down' | 'left' | 'cancel';
 
@@ -2444,10 +2446,13 @@ class ChatInput extends React.Component<IProps, IState> {
             default:
             case 0:
                 const dark = (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') !== 'light';
-                return <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
-                                    showPreview={false} theme={dark ? 'dark' : 'light'}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <EmojiContainer onSelect={this.emojiSelectHandler} dark={dark}/>
+                </Suspense>;
             case 1:
-                return <GifPicker onSelect={this.gifPickerSelectHandler} inputPeer={peer}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <GifPicker onSelect={this.gifPickerSelectHandler} inputPeer={peer}/>
+                </Suspense>;
         }
     }
 

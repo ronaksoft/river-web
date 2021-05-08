@@ -50,7 +50,7 @@ export default class NotificationService {
             });
 
             this.messaging.onMessage((data) => {
-                window.console.debug(data);
+                // window.console.debug(data);
             });
         } else {
             // @ts-ignore
