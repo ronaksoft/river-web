@@ -284,6 +284,9 @@ export class Dialog extends jspb.Message {
   getActivecallid(): string;
   setActivecallid(value: string): void;
 
+  getReadonly(): boolean;
+  setReadonly(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
   static toObject(includeInstance: boolean, msg: Dialog): Dialog.AsObject;
@@ -310,6 +313,7 @@ export namespace Dialog {
     draft?: DraftMessage.AsObject,
     pinnedmessageid: number,
     activecallid: string,
+    readonly: boolean,
   }
 }
 
@@ -1684,6 +1688,11 @@ export enum GroupFlags {
   GROUPFLAGSADMIN = 3,
   GROUPFLAGSADMINSENABLED = 4,
   GROUPFLAGSDEACTIVATED = 5,
+  GROUPFLAGSADMINONLY = 6,
+  GROUPFLAGSRESERVED1 = 7,
+  GROUPFLAGSRESERVED2 = 8,
+  GROUPFLAGSRESERVED3 = 9,
+  GROUPFLAGSRESERVED4 = 10,
 }
 
 export enum ParticipantType {

@@ -1375,22 +1375,28 @@ class ChatInput extends React.Component<IProps, IState> {
         if (peer.getType() === PeerType.PEERGROUP) {
             this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
                 if (res) {
-                    if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
+                    const flags = res.flagsList || [];
+                    const showInput = !(flags.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1 && flags.indexOf(GroupFlags.GROUPFLAGSADMIN) === -1);
+                    if (flags.indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
                         this.setState({
                             disableAuthority: 0x1,
+                            showInput,
                         });
-                    } else if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
+                    } else if (flags.indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
                         this.setState({
                             disableAuthority: 0x2,
+                            showInput,
                         });
                     } else {
                         this.setState({
                             disableAuthority: 0x0,
+                            showInput,
                         });
                     }
                 } else {
                     this.setState({
                         disableAuthority: 0x0,
+                        showInput: true,
                     });
                 }
             });

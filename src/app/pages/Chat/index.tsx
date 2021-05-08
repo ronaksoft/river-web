@@ -89,7 +89,6 @@ import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 import LeftMenu, {menuAction} from "../../components/LeftMenu";
 import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
-import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
 import {withSnackbar, WithSnackbarProps} from "notistack";
@@ -188,11 +187,11 @@ import {IsMobileView} from "../../services/isMobile";
 import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
 import {gotToken} from "../SignUp";
 import NotificationService from "../../services/notification";
-import {Loading} from "../../components/Loading";
 
 import './style.scss';
 
 const UploaderLazy = React.lazy(() => import('../../components/Uploader'));
+const RightMenu = React.lazy(() => import('../../components/RightMenu'));
 
 export let notifyOptions: any[] = [];
 
@@ -216,6 +215,7 @@ class Chat extends React.Component<IProps, IState> {
     private conversationRef: any = null;
     private containerRef: any = null;
     private isInChat: boolean = true;
+    // @ts-ignore
     private rightMenuRef: RightMenu | undefined;
     private leftMenuRef: LeftMenu | undefined;
     private dialogRef: Dialog | undefined;
@@ -765,14 +765,16 @@ class Chat extends React.Component<IProps, IState> {
                                 <div className="start-messaging-footer"/>
                             </div>
                         </div>}
-                        <RightMenu key="right-menu" ref={this.rightMenuRefHandler}
-                                   onChange={this.rightMenuChangeHandler}
-                                   onMessageAttachmentAction={this.messageAttachmentActionHandler}
-                                   onBulkAction={this.rightMenuBulkActionHandler}
-                                   onExitGroup={this.groupInfoExitHandler}
-                                   onToggleMenu={this.rightMenuToggleMenuHandler}
-                                   onError={this.textErrorHandler}
-                        />
+                        <Suspense fallback={null}>
+                            <RightMenu ref={this.rightMenuRefHandler}
+                                       onChange={this.rightMenuChangeHandler}
+                                       onMessageAttachmentAction={this.messageAttachmentActionHandler}
+                                       onBulkAction={this.rightMenuBulkActionHandler}
+                                       onExitGroup={this.groupInfoExitHandler}
+                                       onToggleMenu={this.rightMenuToggleMenuHandler}
+                                       onError={this.textErrorHandler}
+                            />
+                        </Suspense>
                     </div>
                     <NewMessage key="new-message" open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessageHandler} teamId={this.teamId}/>
@@ -791,7 +793,7 @@ class Chat extends React.Component<IProps, IState> {
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
-                <Suspense fallback={<Loading/>}>
+                <Suspense fallback={null}>
                     <UploaderLazy ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
                 </Suspense>
                 {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
