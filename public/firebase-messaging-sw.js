@@ -33,7 +33,7 @@ const isActive = () => {
         });
 };
 
-const now = Date.now();
+const now = Date.now() / 1000;
 
 messaging.onBackgroundMessage(function (payload) {
     // console.log('[firebase-messaging-sw.js] Received background message ', payload);
