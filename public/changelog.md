@@ -1,3 +1,6 @@
+## 1.1.31
+* Electron notification implemented (updating desktop app is necessary)
+
 ## 1.1.30
 * Group admin only flag implemented
 * Better load time

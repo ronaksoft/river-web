@@ -14,17 +14,18 @@ const {
 } = require('mac-screen-capture-permissions');
 const Store = require('electron-store');
 const store = new Store();
-// const notifier = require('node-notifier');
-// String
-// notifier.notify('Message');
+const {register, listen} = require('push-receiver');
 
-const C_APP_VERSION = '0.36.0';
+const C_APP_VERSION = '0.37.0';
 
 const C_LOAD_URL = 'https://web.river.im';
 const C_LOAD_URL_KEY = 'load_url';
 const C_WINDOW_CONFIG = 'window_config';
 const C_PROTOCOL = 'rvr';
 const C_PROTOCOL_REGEX = new RegExp(`${C_PROTOCOL}:\/\/`);
+const C_FCM_SENDER_ID = 1012919192766;
+let C_FCM_CREDENTIALS = undefined;
+let C_FCM_LISTENED = false;
 
 const MIN_WIDTH = 316;
 const MIN_HEIGHT = 480;
@@ -38,6 +39,7 @@ let firstTimeLoad = false;
 let windowConfig = store.get(C_WINDOW_CONFIG, {});
 let deepLinkUrl = '';
 let webAppReady = false;
+let notificationPeer = undefined;
 
 if (isDev) {
     require('electron-debug')();
@@ -94,6 +96,69 @@ const callDeepLink = () => {
     }
 };
 
+const callNotification = () => {
+    if (webAppReady && notificationPeer) {
+        callReact('notificationClick', notificationPeer);
+        notificationPeer = undefined;
+    }
+};
+
+const initFCM = (credentials) => {
+    if (!credentials) {
+        return register(C_FCM_SENDER_ID);
+    } else {
+        return Promise.resolve(credentials);
+    }
+};
+
+const getAppIcon = () => {
+    const OS = process.platform;
+    if (OS === 'win32') {
+        return path.join(__dirname, 'icons', 'logo.ico');
+    } else if (OS === 'linux') {
+        return path.join(__dirname, 'assets', 'android-icon-192x192.png');
+    } else {
+        return path.join(__dirname, 'android-icon-192x192.png');
+    }
+};
+const AppIcon = getAppIcon();
+
+const listenFCM = (credentials) => {
+    if (C_FCM_LISTENED) {
+        return;
+    }
+    C_FCM_LISTENED = true;
+    const persistentIds = [];
+    const notifier = require('node-notifier');
+    const now = Date.now() / 1000;
+
+    function onNotification({notification, persistentId}) {
+        // Update list of persistentId in file/db/...
+        persistentIds.push(persistentId);
+        if (!mainWindow) {
+            if (notification && notification.data && now < notification.data.ts && notification.data.Title !== '') {
+                notifier.notify({
+                    title: notification.data.Title,
+                    message: notification?.data?.Body || '',
+                    icon: AppIcon,
+                    sound: true,
+                }, (err, response, metadata) => {
+                    if (metadata.activationType === 'contentsClicked') {
+                        notificationPeer = {
+                            teamId: notification.data.teamID,
+                            peerId: notification.data.peerID,
+                            peerType: notification.data.peerType,
+                        };
+                        createWindow(firstTimeLoad);
+                    }
+                });
+            }
+        }
+    }
+
+    listen({...credentials, persistentIds}, onNotification);
+};
+
 if (process.platform !== 'darwin') {
     const gotTheLock = app.requestSingleInstanceLock();
     if (!gotTheLock) {
@@ -132,15 +197,7 @@ if (process.platform === 'darwin') {
 contextMenu({});
 
 const createWindow = (forceShow) => {
-    let windowIcon = undefined;
-    const OS = process.platform;
-    if (OS === 'win32') {
-        windowIcon = path.join(__dirname, 'build', 'icons', 'logo.ico');
-    } else if (OS === 'linux') {
-        windowIcon = path.join(__dirname, 'assets', 'icon.png');
-    } else {
-        windowIcon = path.join(__dirname, 'build', 'logo.png');
-    }
+    let windowIcon = AppIcon;
     firstTimeLoad = true;
     const windowOptions = Object.assign({
         backgroundColor: '#27AE60',
@@ -363,6 +420,7 @@ app.on('window-all-closed', (e) => {
     mainWindow = null;
     deepLinkUrl = '';
     webAppReady = false;
+    listenFCM(C_FCM_CREDENTIALS);
     if (process.platform !== 'darwin') {
         app.quit();
     }
@@ -596,6 +654,25 @@ ipcMain.on('fnCall', (e, arg) => {
                 },
             });
             callDeepLink();
+            callNotification();
+            break;
+        case 'initFCM':
+            initFCM(arg.data).then((res) => {
+                callReact('fnCallback', {
+                    cmd: 'fcmRes',
+                    reqId: arg.reqId,
+                    data: res,
+                });
+                C_FCM_CREDENTIALS = res;
+            }).catch((err) => {
+                callReact('fnCallback', {
+                    cmd: 'error',
+                    reqId: arg.reqId,
+                    data: {
+                        error: err,
+                    },
+                });
+            });
             break;
     }
 });

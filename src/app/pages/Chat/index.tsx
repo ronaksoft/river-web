@@ -548,6 +548,7 @@ class Chat extends React.Component<IProps, IState> {
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.About, this.electronAboutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Logout, this.electronLogoutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.SizeMode, this.electronSizeModeHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Notification, this.electronNotificationHandler));
 
         // Deep link events
         this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.OpenChat, this.deepLinkOpenChatHandler));
@@ -1533,6 +1534,11 @@ class Chat extends React.Component<IProps, IState> {
     private electronSizeModeHandler = (mode: string) => {
         this.isMobileView = (mode === 'responsive');
         this.forceUpdate();
+    }
+
+    /* Electron notification click handler */
+    private electronNotificationHandler = ({teamId, peerId, peerType}: { teamId: string, peerId: string, peerType: string }) => {
+        this.props.history.push(`/chat/${teamId}/${peerId}_${peerType}`);
     }
 
     private getMessagesByPeerName(dialogPeerName: string, force?: boolean, messageId?: string, beforeMsg?: number) {

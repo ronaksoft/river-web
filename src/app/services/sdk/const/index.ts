@@ -1194,6 +1194,7 @@ export const C_LOCALSTORAGE = {
     DebugThrottleInterval: 'river.debug.throttle_interval',
     DebugVerboseAPI: 'river.debug.verbose_api',
     EmojiMartFrequency: 'emoji-mart.frequently',
+    FCMCredentials: 'river.fcm_credentials',
     GifHash: 'river.gif.hash',
     Lang: 'river.lang',
     LangDir: 'river.lang.dir',
