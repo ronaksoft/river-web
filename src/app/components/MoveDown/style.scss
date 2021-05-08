@@ -45,7 +45,7 @@
   .offscreen-reaction {
     position: absolute;
     animation-name: reactionAnimateUp;
-    animation-duration: 2s;
+    animation-duration: 3s;
     animation-iteration-count: 1;
     animation-timing-function: linear;
     z-index: 29;
@@ -58,17 +58,17 @@
     opacity: 1;
   }
   25% {
-    transform: translate(5px, -25px) scale(1.025);
+    transform: translate(5px, -50px) scale(1.025);
     opacity: 1;
   }
   50% {
-    transform: translate(-5px, -50px) scale(1.35);
+    transform: translate(-5px, -100px) scale(1.35);
   }
   95% {
     opacity: 0;
   }
   to {
-    transform: translate(0, -100px) scale(2);
+    transform: translate(0, -200px) scale(2);
     opacity: 0;
   }
 }
