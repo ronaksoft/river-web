@@ -8,8 +8,7 @@
 */
 
 /* eslint import/no-webpack-loader-syntax: off */
-import React from 'react';
-import {Picker as EmojiPicker} from 'emoji-mart';
+import React, {Suspense} from 'react';
 import {cloneDeep, range, throttle, trimStart} from 'lodash';
 import {
     AttachFileRounded,
@@ -82,14 +81,17 @@ import {MediaContact, MediaDocument} from "../../services/sdk/messages/chat.mess
 import {getHumanReadableSize} from "../MessageFile";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@material-ui/core';
-import GifPicker from "../GifPicker";
 import {IGif} from "../../repository/gif/interface";
 import {Sticker} from "../SVG/sticker";
 import {getDefaultAudio} from "../SettingsMediaInput";
 import {canEditMessage, isEditableMessageType} from "../Message";
+import {Loading} from "../Loading";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
+
+const EmojiContainer = React.lazy(() => import('./emojiContainer'));
+const GifPicker = React.lazy(() => import('../GifPicker'));
 
 export type shiftArrow = 'up' | 'right' | 'down' | 'left' | 'cancel';
 
@@ -1373,22 +1375,28 @@ class ChatInput extends React.Component<IProps, IState> {
         if (peer.getType() === PeerType.PEERGROUP) {
             this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
                 if (res) {
-                    if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
+                    const flags = res.flagsList || [];
+                    const showInput = !(flags.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1 && flags.indexOf(GroupFlags.GROUPFLAGSADMIN) === -1);
+                    if (flags.indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
                         this.setState({
                             disableAuthority: 0x1,
+                            showInput,
                         });
-                    } else if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
+                    } else if (flags.indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
                         this.setState({
                             disableAuthority: 0x2,
+                            showInput,
                         });
                     } else {
                         this.setState({
                             disableAuthority: 0x0,
+                            showInput,
                         });
                     }
                 } else {
                     this.setState({
                         disableAuthority: 0x0,
+                        showInput: true,
                     });
                 }
             });
@@ -2444,10 +2452,13 @@ class ChatInput extends React.Component<IProps, IState> {
             default:
             case 0:
                 const dark = (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') !== 'light';
-                return <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
-                                    showPreview={false} theme={dark ? 'dark' : 'light'}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <EmojiContainer onSelect={this.emojiSelectHandler} dark={dark}/>
+                </Suspense>;
             case 1:
-                return <GifPicker onSelect={this.gifPickerSelectHandler} inputPeer={peer}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <GifPicker onSelect={this.gifPickerSelectHandler} inputPeer={peer}/>
+                </Suspense>;
         }
     }
 

@@ -2722,7 +2722,8 @@ proto.msg.Dialog.toObject = function(includeInstance, msg) {
     pinned: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
     draft: (f = msg.getDraft()) && proto.msg.DraftMessage.toObject(includeInstance, f),
     pinnedmessageid: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    activecallid: jspb.Message.getFieldWithDefault(msg, 13, "0")
+    activecallid: jspb.Message.getFieldWithDefault(msg, 13, "0"),
+    readonly: jspb.Message.getBooleanFieldWithDefault(msg, 14, false)
   };
 
   if (includeInstance) {
@@ -2816,6 +2817,10 @@ proto.msg.Dialog.deserializeBinaryFromReader = function(msg, reader) {
     case 13:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setActivecallid(value);
+      break;
+    case 14:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setReadonly(value);
       break;
     default:
       reader.skipField();
@@ -2943,6 +2948,13 @@ proto.msg.Dialog.serializeBinaryToWriter = function(message, writer) {
   if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       13,
+      f
+    );
+  }
+  f = message.getReadonly();
+  if (f) {
+    writer.writeBool(
+      14,
       f
     );
   }
@@ -3236,6 +3248,24 @@ proto.msg.Dialog.prototype.getActivecallid = function() {
  */
 proto.msg.Dialog.prototype.setActivecallid = function(value) {
   return jspb.Message.setProto3StringIntField(this, 13, value);
+};
+
+
+/**
+ * optional bool ReadOnly = 14;
+ * @return {boolean}
+ */
+proto.msg.Dialog.prototype.getReadonly = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.Dialog} returns this
+ */
+proto.msg.Dialog.prototype.setReadonly = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 14, value);
 };
 
 
@@ -12921,7 +12951,12 @@ proto.msg.GroupFlags = {
   GROUPFLAGSNONPARTICIPANT: 2,
   GROUPFLAGSADMIN: 3,
   GROUPFLAGSADMINSENABLED: 4,
-  GROUPFLAGSDEACTIVATED: 5
+  GROUPFLAGSDEACTIVATED: 5,
+  GROUPFLAGSADMINONLY: 6,
+  GROUPFLAGSRESERVED1: 7,
+  GROUPFLAGSRESERVED2: 8,
+  GROUPFLAGSRESERVED3: 9,
+  GROUPFLAGSRESERVED4: 10
 };
 
 /**

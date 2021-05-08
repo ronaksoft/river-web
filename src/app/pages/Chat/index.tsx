@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import React from 'react';
+import React, {Suspense} from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
@@ -84,12 +84,11 @@ import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
 import CachedMessageService from "../../services/cachedMessageService";
-import {C_VERSION, isProd} from "../../../index";
+import {C_CLIENT, C_VERSION, isProd} from "../../../index";
 import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 import LeftMenu, {menuAction} from "../../components/LeftMenu";
 import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
-import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
 import {withSnackbar, WithSnackbarProps} from "notistack";
@@ -185,9 +184,14 @@ import CallService from "../../services/callService";
 import {getDefaultAudio} from "../../components/SettingsMediaInput";
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import {IsMobileView} from "../../services/isMobile";
+import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
+import {gotToken} from "../SignUp";
+import NotificationService from "../../services/notification";
 
 import './style.scss';
-import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
+
+const UploaderLazy = React.lazy(() => import('../../components/Uploader'));
+const RightMenu = React.lazy(() => import('../../components/RightMenu'));
 
 export let notifyOptions: any[] = [];
 
@@ -211,6 +215,7 @@ class Chat extends React.Component<IProps, IState> {
     private conversationRef: any = null;
     private containerRef: any = null;
     private isInChat: boolean = true;
+    // @ts-ignore
     private rightMenuRef: RightMenu | undefined;
     private leftMenuRef: LeftMenu | undefined;
     private dialogRef: Dialog | undefined;
@@ -760,14 +765,16 @@ class Chat extends React.Component<IProps, IState> {
                                 <div className="start-messaging-footer"/>
                             </div>
                         </div>}
-                        <RightMenu key="right-menu" ref={this.rightMenuRefHandler}
-                                   onChange={this.rightMenuChangeHandler}
-                                   onMessageAttachmentAction={this.messageAttachmentActionHandler}
-                                   onBulkAction={this.rightMenuBulkActionHandler}
-                                   onExitGroup={this.groupInfoExitHandler}
-                                   onToggleMenu={this.rightMenuToggleMenuHandler}
-                                   onError={this.textErrorHandler}
-                        />
+                        <Suspense fallback={null}>
+                            <RightMenu ref={this.rightMenuRefHandler}
+                                       onChange={this.rightMenuChangeHandler}
+                                       onMessageAttachmentAction={this.messageAttachmentActionHandler}
+                                       onBulkAction={this.rightMenuBulkActionHandler}
+                                       onExitGroup={this.groupInfoExitHandler}
+                                       onToggleMenu={this.rightMenuToggleMenuHandler}
+                                       onError={this.textErrorHandler}
+                            />
+                        </Suspense>
                     </div>
                     <NewMessage key="new-message" open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessageHandler} teamId={this.teamId}/>
@@ -786,7 +793,9 @@ class Chat extends React.Component<IProps, IState> {
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
-                <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                <Suspense fallback={null}>
+                    <UploaderLazy ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                </Suspense>
                 {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
             </div>
         );
@@ -2576,6 +2585,13 @@ class Chat extends React.Component<IProps, IState> {
                     this.userRepo.getAllContacts(this.teamId);
                     this.apiManager.getSystemConfig();
                     this.startSyncing(res.updateid || 0);
+                    if (!gotToken) {
+                        NotificationService.getInstance().initToken().then((token) => {
+                            this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+                        }).catch((err) => {
+                            window.console.warn(err);
+                        });
+                    }
                     this.sendAllPendingMessages();
                 } else {
                     setTimeout(() => {

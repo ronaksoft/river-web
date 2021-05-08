@@ -133,7 +133,7 @@ import {
     GroupsGetFull,
     GroupsGetReadHistoryStats,
     GroupsHistoryStats,
-    GroupsRemovePhoto,
+    GroupsRemovePhoto, GroupsToggleAdminOnly,
     GroupsToggleAdmins,
     GroupsUpdateAdmin,
     GroupsUpdatePhoto,
@@ -851,6 +851,14 @@ export default class APIManager {
         data.setAdminenabled(adminEnabled);
         this.logVerbose(data);
         return this.server.send(C_MSG.GroupsToggleAdmins, data.serializeBinary(), true, undefined, undefined, true);
+    }
+
+    public groupToggleAdminOnly(peer: InputPeer, adminOnly: boolean): Promise<Bool.AsObject> {
+        const data = new GroupsToggleAdminOnly();
+        data.setGroupid(peer.getId() || '');
+        data.setAdminonly(adminOnly);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.GroupsToggleAdminOnly, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public groupUploadPicture(groupId: string, file: InputFile): Promise<GroupPhoto.AsObject> {

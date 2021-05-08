@@ -1,3 +1,11 @@
+## 1.1.30
+* Group admin only flag implemented
+* Better load time
+* Larger chunks in download manager
+
+## 1.1.29
+* Firebase notification implemented
+
 ## 1.1.28
 * Electron load time decreased
 

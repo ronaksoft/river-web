@@ -359,6 +359,27 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         </div>
                                     </div>}
                                 </>}
+                                {group && !disable && <>
+                                    {Boolean(group && group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) &&
+                                    <div className="kk-card notify-settings">
+                                        <div className="label">{i18n.t('peer_info.admin_only')}</div>
+                                        <div className="value switch">
+                                            <Switch
+                                                checked={allMemberAdmin}
+                                                className="admin-switch"
+                                                color="default"
+                                                onChange={this.toggleAdminOnlyHandler}
+                                                classes={{
+                                                    checked: 'setting-switch-checked',
+                                                    root: 'setting-switch',
+                                                    switchBase: 'setting-switch-base',
+                                                    thumb: 'setting-switch-thumb',
+                                                    track: 'setting-switch-track',
+                                                }}
+                                            />
+                                        </div>
+                                    </div>}
+                                </>}
                                 {(dialog && peer && !shareMediaEnabled) &&
                                 <PeerMedia key={peer.getId() || ''} className="kk-card" peer={peer} full={false}
                                            teamId={this.teamId} onMore={this.peerMediaMoreHandler}
@@ -751,6 +772,37 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         };
         toggleAdmin();
         this.apiManager.groupToggleAdmin(peer, !e.currentTarget.checked).then(() => {
+            this.loading = false;
+        }).catch(() => {
+            toggleAdmin();
+        });
+    }
+
+    /* Toggle admin only handler */
+    private toggleAdminOnlyHandler = (e: any) => {
+        if (this.loading) {
+            return;
+        }
+        const {peer, group} = this.state;
+        if (!peer || !group) {
+            return;
+        }
+        this.loading = true;
+        const toggleAdmin = () => {
+            if (group.flagsList) {
+                const index = group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINONLY);
+                if (index > -1) {
+                    group.flagsList.splice(index, 1);
+                } else {
+                    group.flagsList.push(GroupFlags.GROUPFLAGSADMINONLY);
+                }
+                this.setState({
+                    group,
+                });
+            }
+        };
+        toggleAdmin();
+        this.apiManager.groupToggleAdminOnly(peer, !e.currentTarget.checked).then(() => {
             this.loading = false;
         }).catch(() => {
             toggleAdmin();

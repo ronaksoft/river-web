@@ -39,25 +39,17 @@ import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/acc
 import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
 import {EventFocus, EventWasmInit, EventSocketReady} from "../../services/events";
-import {detect} from 'detect-browser';
-import {C_VERSION} from "../../../index";
+import {C_CLIENT, C_VERSION} from "../../../index";
 import SessionDialog from "../../components/SessionDialog";
+import MainRepo from "../../repository";
+import NotificationService from "../../services/notification";
 
 import './tel-input.css';
 import './style.scss';
-import MainRepo from "../../repository";
-
-let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
-const electronVersion = ElectronService.electronVersion();
-const browserVersion = detect();
-if (electronVersion) {
-    C_CLIENT = `Desktop:- ${electronVersion} ${(browserVersion ? '(' + browserVersion.os + ')' : '')}`;
-} else if (browserVersion) {
-    C_CLIENT = `Web:- ${browserVersion.name} ${browserVersion.version} (${browserVersion.os})`;
-}
 
 export const codeLen = 5;
 export const codePlaceholder = [...new Array(codeLen)].map(o => '_').join('');
+export let gotToken: boolean = false;
 
 interface IProps {
     match?: any;
@@ -103,6 +95,7 @@ class SignUp extends React.Component<IProps, IState> {
     private recoveryQuestionModalRef: RecoveryQuestionModal | undefined;
     private sessionDialogRef: SessionDialog | undefined;
     private sessionLimit: boolean = false;
+    private notificationService: NotificationService;
 
     constructor(props: IProps) {
         super(props);
@@ -141,6 +134,7 @@ class SignUp extends React.Component<IProps, IState> {
         };
         this.apiManager = APIManager.getInstance();
         this.workspaceManager = WorkspaceManger.getInstance();
+        this.notificationService = NotificationService.getInstance();
     }
 
     public componentDidMount() {
@@ -637,13 +631,14 @@ class SignUp extends React.Component<IProps, IState> {
         const redirectFn = () => {
             this.props.history.push('/chat/0/null');
             this.dispatchWSOpenEvent();
-            // this.notification.initToken().then((token) => {
-            //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
-            // }).catch(() => {
-            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
-                this.checkLastPhone(info.Phone);
+            this.notificationService.initToken().then((token) => {
+                gotToken = true;
+                this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+            }).catch(() => {
+                this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
+                    this.checkLastPhone(info.Phone);
+                });
             });
-            // });
         };
         const maxSessions = this.apiManager.getInstantSystemConfig().maxactivesessions || 7;
         if (maxSessions < (res.activesessions || 0)) {
@@ -801,13 +796,14 @@ class SignUp extends React.Component<IProps, IState> {
             });
             this.props.history.push('/chat/0/null');
             this.dispatchWSOpenEvent();
-            // this.notification.initToken().then((token) => {
-            //     this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
-            // }).catch(() => {
-            this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
-                this.checkLastPhone(info.Phone);
+            this.notificationService.initToken().then((token) => {
+                gotToken = true;
+                this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+            }).catch(() => {
+                this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
+                    this.checkLastPhone(info.Phone);
+                });
             });
-            // });
         }).catch((err) => {
             this.setState({
                 loading: false,

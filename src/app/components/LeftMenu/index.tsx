@@ -7,10 +7,8 @@
     Copyright Ronak Software Group 2019
 */
 
-import React from 'react';
+import React, {Suspense} from 'react';
 import Dialog from "../Dialog";
-import SettingsMenu from "../SettingsMenu";
-import ContactsMenu from "../ContactsMenu";
 import {IDialog, IPeer} from "../../repository/dialog/interface";
 import BottomBar from "../BottomBar";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -18,7 +16,6 @@ import i18n from "../../services/i18n";
 import IconButton from "@material-ui/core/IconButton";
 import {
     CloseRounded,
-    /*EditRounded,*/
     MoreVertRounded,
     SearchRounded,
     MenuRounded,
@@ -27,10 +24,8 @@ import {
 import Menu from "@material-ui/core/Menu";
 import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
-import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
 import {omitBy, isNil, debounce, find, throttle, findIndex} from "lodash";
-import LabelMenu from "../LabelMenu";
 import {IMessage} from "../../repository/message/interface";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {RiverTextLogo} from "../SVG/river";
@@ -42,11 +37,17 @@ import {localize} from "../../services/utilities/localize";
 import LeftPanel from "../LeftPanel";
 import Broadcaster from "../../services/broadcaster";
 import MessageRepo from "../../repository/message";
-import CallHistory from "../CallHistory";
 import IsMobile from "../../services/isMobile";
 import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
+import {Loading} from "../Loading";
 
 import './style.scss';
+
+const SettingsMenu = React.lazy(() => import('../SettingsMenu'));
+const ContactsMenu = React.lazy(() => import('../ContactsMenu'));
+const CallHistory = React.lazy(() => import('../CallHistory'));
+const LabelMenu = React.lazy(() => import('../LabelMenu'));
+const NewGroupMenu = React.lazy(() => import('../NewGroupMenu'));
 
 export type menuItems = 'chat' | 'settings' | 'contacts' | 'call_history';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -110,7 +111,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private bottomBarRef: BottomBar | undefined;
     private dialogRef: Dialog | undefined;
+    // @ts-ignore
     private settingsMenuRef: SettingsMenu | undefined;
+    // @ts-ignore
     private contactsMenuRef: ContactsMenu | undefined;
     private chatTopIcons: any[];
     private chatMoreMenuItem: any[];
@@ -474,12 +477,14 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
                                                selected={this.state.leftMenu} teamId={teamId}/>}
                     <div className="left-overlay">
-                        {Boolean(overlayMode === 1) &&
-                        <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
-                                      teamId={teamId} limit={this.props.groupLimit}/>}
-                        {Boolean(overlayMode === 2) &&
-                        <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
-                                   onAction={this.props.onMediaAction} teamId={teamId}/>}
+                        {Boolean(overlayMode === 1) && <Suspense fallback={<Loading/>}>
+                            <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
+                                          teamId={teamId} limit={this.props.groupLimit}/>
+                        </Suspense>}
+                        {Boolean(overlayMode === 2) && <Suspense fallback={<Loading/>}>
+                            <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
+                                       onAction={this.props.onMediaAction} teamId={teamId}/>
+                        </Suspense>}
                     </div>
                     {Boolean(teamList.length > 1) && <Menu
                         anchorEl={teamMoreAnchorEl}
@@ -535,22 +540,28 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         const {leftMenu, teamId} = this.state;
         switch (leftMenu) {
             case 'settings':
-                return <SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
-                                     onUpdateMessages={this.props.onUpdateMessages}
-                                     onClose={this.props.onSettingsClose}
-                                     onAction={this.props.onSettingsAction}
-                                     onError={this.props.onError}
-                                     onReloadDialog={this.props.onReloadDialog}
-                                     onSubPlaceChange={this.settingsSubPlaceChangeHandler}
-                                     onTeamChange={this.props.onTeamChange}
-                                     onTeamUpdate={this.settingsMenuTeamUpdateHandler}
-                                     onPanelToggle={this.settingsPanelToggleHandler}
-                                     teamId={teamId}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <SettingsMenu ref={this.settingsMenuRefHandler}
+                                  onUpdateMessages={this.props.onUpdateMessages}
+                                  onClose={this.props.onSettingsClose}
+                                  onAction={this.props.onSettingsAction}
+                                  onError={this.props.onError}
+                                  onReloadDialog={this.props.onReloadDialog}
+                                  onSubPlaceChange={this.settingsSubPlaceChangeHandler}
+                                  onTeamChange={this.props.onTeamChange}
+                                  onTeamUpdate={this.settingsMenuTeamUpdateHandler}
+                                  onPanelToggle={this.settingsPanelToggleHandler}
+                                  teamId={teamId}/>
+                </Suspense>;
             case 'contacts':
-                return <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}
-                                     onClose={this.contactsCloseHandler} teamId={teamId}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}
+                                  onClose={this.contactsCloseHandler} teamId={teamId}/>
+                </Suspense>;
             case 'call_history':
-                return <CallHistory key="call-history-menu" teamId={teamId} onClose={this.contactsCloseHandler}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <CallHistory key="call-history-menu" teamId={teamId} onClose={this.contactsCloseHandler}/>
+                </Suspense>;
         }
         return null;
     }
@@ -889,7 +900,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
     }
 
-    private deepLinkNewContactHandler = ({phone, first_name, last_name, username}:{phone?: string, first_name?: string, last_name?: string, username?: string}) => {
+    private deepLinkNewContactHandler = ({phone, first_name, last_name, username}: { phone?: string, first_name?: string, last_name?: string, username?: string }) => {
         const fn = () => {
             if (this.contactsMenuRef) {
                 this.contactsMenuRef.openNewContact({firstname: first_name, lastname: last_name, phone});

@@ -169,6 +169,7 @@
     "PHOTO": "پروفایل",
     "created": "ساخته شده در ",
     "all_member_admin": "همه ادمین",
+    "admin_only": "فقط ادمین‌ها می‌توانند پیام بدهند",
     "add_member": "افزودن عضو",
     "leave": "خروج",
     "participants": "{0} عضو",
