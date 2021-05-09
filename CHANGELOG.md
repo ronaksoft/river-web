@@ -1,3 +1,6 @@
+## 1.1.34
+* Critical bug in electron fixed
+
 ## 1.1.33
 * Minor bugs fixed
 

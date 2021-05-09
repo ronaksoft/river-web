@@ -29,6 +29,7 @@ export const C_ELECTRON_CMD = {
     GetScreenCaptureList: 'getScreenCaptureList',
     GetVersion: 'getVersion',
     InitFCM: 'initFCM',
+    LoadUser: 'loadUrl',
     PreviewFile: 'previewFile',
     Ready: 'ready',
     RevealFile: 'revealFile',
@@ -92,11 +93,6 @@ export default class ElectronService {
             }
         }
         return null;
-    }
-
-    public static openExternal(url: string) {
-        // @ts-ignore
-        return window.electronShell.openExternal(url);
     }
 
     public static getInstance() {
@@ -241,6 +237,11 @@ export default class ElectronService {
     /* Init FCM */
     public initFCM(data?: FCMCredentials): Promise<FCMCredentials> {
         return this.send(C_ELECTRON_CMD.InitFCM, data);
+    }
+
+    /* Load Url */
+    public loadUrl(url: string) {
+        return this.send(C_ELECTRON_CMD.LoadUser, {url});
     }
 
     /* Call queue handler */

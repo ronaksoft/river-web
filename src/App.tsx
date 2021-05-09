@@ -420,7 +420,7 @@ class App extends React.Component<{}, IState> {
     }
 
     private downloadDesktopHandler = (link: string) => () => {
-        ElectronService.openExternal(link);
+        ElectronService.getInstance().loadUrl(link);
         this.updateDialogCloseHandler();
     }
 

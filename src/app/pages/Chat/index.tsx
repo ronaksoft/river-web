@@ -3738,7 +3738,7 @@ class Chat extends React.Component<IProps, IState> {
                 link = '//' + link;
             }
             if (ElectronService.isElectron()) {
-                ElectronService.openExternal(link);
+                ElectronService.getInstance().loadUrl(link);
             } else {
                 const win: any = window.open(link, '_blank');
                 win.focus();

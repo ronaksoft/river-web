@@ -1644,7 +1644,7 @@ class Message extends React.Component<IProps, IState> {
     private bodyActionHandler = (cmd: string, text: string) => {
         switch (cmd) {
             case 'open_external_link':
-                ElectronService.openExternal(text);
+                ElectronService.getInstance().loadUrl(text);
                 break;
             case'open_deep_link':
                 DeepLinkService.getInstance().parseLink(text);
