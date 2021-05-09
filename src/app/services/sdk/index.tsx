@@ -1360,75 +1360,75 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), !batch);
     }
 
-    public callAccept(inputPeer: InputPeer, id: string, participants: PhoneParticipantSDP[]): Promise<PhoneCall.AsObject> {
+    public callAccept(inputPeer: InputPeer, callId: string, participants: PhoneParticipantSDP[]): Promise<PhoneCall.AsObject> {
         const data = new PhoneAcceptCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setParticipantsList(participants);
         data.setDevicetype(ElectronService.isElectron() ? CallDeviceType.CALLDEVICEDESKTOP : CallDeviceType.CALLDEVICEWEB);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneAcceptCall, data.serializeBinary(), true);
     }
 
-    public callReject(inputPeer: InputPeer, id: string, reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
+    public callReject(inputPeer: InputPeer, callId: string, reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
         const data = new PhoneDiscardCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setDuration(duration);
         data.setReason(reason);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
     }
 
-    public callJoin(inputPeer: InputPeer, id: string): Promise<PhoneParticipants.AsObject> {
+    public callJoin(inputPeer: InputPeer, callId: string): Promise<PhoneParticipants.AsObject> {
         const data = new PhoneJoinCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneJoinCall, data.serializeBinary(), true);
     }
 
-    public callAddParticipant(inputPeer: InputPeer, id: string, inputUsers: InputUser[]): Promise<PhoneParticipants.AsObject> {
+    public callAddParticipant(inputPeer: InputPeer, callId: string, inputUsers: InputUser[]): Promise<PhoneParticipants.AsObject> {
         const data = new PhoneAddParticipant();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setParticipantsList(inputUsers);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneAddParticipant, data.serializeBinary(), true);
     }
 
-    public callRemoveParticipant(inputPeer: InputPeer, id: string, inputUsers: InputUser[], timeout: boolean): Promise<Bool.AsObject> {
+    public callRemoveParticipant(inputPeer: InputPeer, callId: string, inputUsers: InputUser[], timeout: boolean): Promise<Bool.AsObject> {
         const data = new PhoneRemoveParticipant();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setParticipantsList(inputUsers);
         data.setTimeout(timeout);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRemoveParticipant, data.serializeBinary(), true);
     }
 
-    public callGetParticipants(inputPeer: InputPeer, id: string): Promise<PhoneParticipants.AsObject> {
+    public callGetParticipants(inputPeer: InputPeer, callId: string): Promise<PhoneParticipants.AsObject> {
         const data = new PhoneGetParticipants();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneGetParticipants, data.serializeBinary(), true);
     }
 
-    public callUpdateAdmin(inputPeer: InputPeer, id: string, inputUser: InputUser, admin: boolean): Promise<Bool.AsObject> {
+    public callUpdateAdmin(inputPeer: InputPeer, callId: string, inputUser: InputUser, admin: boolean): Promise<Bool.AsObject> {
         const data = new PhoneUpdateAdmin();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setUser(inputUser);
         data.setAdmin(admin);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneUpdateAdmin, data.serializeBinary(), true);
     }
 
-    public callUpdate(inputPeer: InputPeer, id: string, participants: InputUser[], action: PhoneCallAction, actionData: Uint8Array, instant?: boolean): Promise<Bool.AsObject> {
+    public callUpdate(inputPeer: InputPeer, callId: string, participants: InputUser[], action: PhoneCallAction, actionData: Uint8Array, instant?: boolean): Promise<Bool.AsObject> {
         const data = new PhoneUpdateCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setParticipantsList(participants);
         data.setAction(action);
         data.setActiondata(actionData);
@@ -1436,10 +1436,10 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneUpdateCall, data.serializeBinary(), instant || false);
     }
 
-    public callRate(inputPeer: InputPeer, id: string, rate: number, reasonType?: PhoneCallRateReason, reasonData?: Uint8Array): Promise<Bool.AsObject> {
+    public callRate(inputPeer: InputPeer, callId: string, rate: number, reasonType?: PhoneCallRateReason, reasonData?: Uint8Array): Promise<Bool.AsObject> {
         const data = new PhoneRateCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setRate(rate);
         if (reasonType && reasonData) {
             data.setReasontype(reasonType);
