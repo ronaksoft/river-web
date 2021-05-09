@@ -1370,14 +1370,16 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneAcceptCall, data.serializeBinary(), true);
     }
 
-    public callReject(inputPeer: InputPeer, callId: string, reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
+    public callReject(inputPeer: InputPeer, callId: string, reason: DiscardReason, duration: number, inputTeam?: InputTeam.AsObject): Promise<Bool.AsObject> {
         const data = new PhoneDiscardCall();
         data.setPeer(inputPeer);
         data.setCallid(callId);
         data.setDuration(duration);
         data.setReason(reason);
         this.logVerbose(data);
-        return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
+        return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true, {
+            inputTeam,
+        });
     }
 
     public callJoin(inputPeer: InputPeer, callId: string): Promise<PhoneParticipants.AsObject> {

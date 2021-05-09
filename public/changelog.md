@@ -1,3 +1,6 @@
+## 1.1.33
+* Minor bugs fixed
+
 ## 1.1.32
 * Retry policy updated
 * Known bugs fixed

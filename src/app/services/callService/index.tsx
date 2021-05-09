@@ -32,7 +32,7 @@ import {
     PhoneParticipant,
     PhoneParticipantSDP,
 } from "../sdk/messages/chat.phone_pb";
-import {InputPeer, InputUser, PeerType} from "../sdk/messages/core.types_pb";
+import {InputPeer, InputTeam, InputUser, PeerType} from "../sdk/messages/core.types_pb";
 import UniqueId from "../uniqueId";
 import APIManager, {currentAuthId, currentUserId} from "../sdk";
 import {cloneDeep, difference, findIndex, orderBy} from "lodash";
@@ -771,8 +771,12 @@ export default class CallService {
         } else if (data.peertype === PeerType.PEERUSER) {
             peer.setAccesshash(data.accesshash);
         }
+        const inputTeam: InputTeam.AsObject = {
+            accesshash: data.accesshash,
+            id: data.teamid,
+        };
 
-        return this.apiManager.callReject(peer, data.callid || '0', DiscardReason.DISCARDREASONBUSY, 0).then(() => {
+        return this.apiManager.callReject(peer, data.callid || '0', DiscardReason.DISCARDREASONBUSY, 0, inputTeam).then(() => {
             //
         });
     }
