@@ -1,3 +1,7 @@
+## 1.1.32
+* Retry policy updated
+* Known bugs fixed
+
 ## 1.1.31
 * Electron notification implemented (updating desktop app is necessary)
 

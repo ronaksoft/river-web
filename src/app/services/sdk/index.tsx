@@ -491,7 +491,7 @@ export default class APIManager {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
-                items: C_ERR_ITEM.ErrItemTimeout
+                items: null,
             }],
             timeout: 5000,
         }, reqIdFn);
@@ -511,7 +511,7 @@ export default class APIManager {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
-                items: C_ERR_ITEM.ErrItemTimeout
+                items: null,
             }],
         }, undefined, true);
     }
@@ -531,7 +531,7 @@ export default class APIManager {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
-                items: C_ERR_ITEM.ErrItemTimeout
+                items: null,
             }, {
                 code: C_ERR.ErrCodeInvalid,
                 items: C_ERR_ITEM.ErrItemNotFound
@@ -554,7 +554,7 @@ export default class APIManager {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
-                items: C_ERR_ITEM.ErrItemTimeout
+                items: null,
             }],
         }, undefined, true);
     }

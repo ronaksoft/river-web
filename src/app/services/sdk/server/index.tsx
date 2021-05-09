@@ -35,7 +35,7 @@ export const C_RETRY = 3;
 
 interface IErrorPair {
     code: string;
-    items: string;
+    items: string | null;
 }
 
 interface IRequestOptions {
@@ -947,6 +947,9 @@ export default class Server {
         }
 
         const check = req.options.retryErrors.some((err) => {
+            if (error.code === err.code && err.items === null) {
+                return true;
+            }
             return error.code === err.code && error.items === err.items;
         });
         if (!check) {
