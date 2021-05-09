@@ -291,8 +291,17 @@ class TimeService {
             return date.format('HH:mm');
         }
 
-        const yesterday = now.startOf('day').subtract(7, 'days');
+        const yesterday = now.startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
+            if (this.lang === 'en') {
+                return `${date.from(now, true)} ago`;
+            } else {
+                return `${date.from(now, true)} پیش `;
+            }
+        }
+
+        const sevenDays = now.startOf('day').subtract(7, 'days');
+        if (date.isSameOrAfter(sevenDays)) {
             if (this.lang === 'en') {
                 return `${date.from(now, true)} ago`;
             } else {
