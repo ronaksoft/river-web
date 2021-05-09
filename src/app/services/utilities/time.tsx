@@ -294,9 +294,9 @@ class TimeService {
         const yesterday = now.startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
             if (this.lang === 'en') {
-                return `${date.from(now, true)} ago`;
+                return date.format('[Yesterday at], HH:mm');
             } else {
-                return `${date.from(now, true)} پیش `;
+                return date.format('[دیروز] ،HH:mm');
             }
         }
 
