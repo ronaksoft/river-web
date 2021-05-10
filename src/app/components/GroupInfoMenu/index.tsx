@@ -802,7 +802,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             }
         };
         toggleAdmin();
-        this.apiManager.groupToggleAdminOnly(peer, !e.currentTarget.checked).then(() => {
+        this.apiManager.groupToggleAdminOnly(peer, e.currentTarget.checked).then(() => {
             this.loading = false;
         }).catch(() => {
             toggleAdmin();
