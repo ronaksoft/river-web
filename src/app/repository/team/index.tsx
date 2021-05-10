@@ -11,11 +11,12 @@ import DB from '../../services/db/team';
 import APIManager from "../../services/sdk";
 import {ITeam} from "./interface";
 import {DexieTeamDB} from "../../services/db/dexie/team";
-import {cloneDeep} from "lodash";
+import {cloneDeep, differenceBy} from "lodash";
 import {kMerge} from "../../services/utilities/kDash";
 import MessageRepo from "../message";
 import i18n from "../../services/i18n";
 import Broadcaster from "../../services/broadcaster";
+import RiverTime from "../../services/utilities/river_time";
 
 const C_TEAM_TTL = 60 * 60 * 12;
 
@@ -38,12 +39,18 @@ export default class TeamRepo {
     private teamTtl: number = 0;
     private teamCache: { [key: string]: ITeam } = {};
     private broadcaster: Broadcaster;
+    private riverTime: RiverTime;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.apiManager = APIManager.getInstance();
         this.broadcaster = Broadcaster.getInstance();
+        this.riverTime = RiverTime.getInstance();
+    }
+
+    public resetTTL() {
+        this.teamTtl = 0;
     }
 
     public get(id: string): Promise<ITeam | undefined> {
@@ -87,7 +94,7 @@ export default class TeamRepo {
                     unread_counter: 0,
                 }, ...res]);
             }
-            const d = Date.now() - this.teamTtl;
+            const d = this.riverTime.now() - this.teamTtl;
             if (d < C_TEAM_TTL) {
                 if (withCounter) {
                     return this.db.teams.toArray().then((tt) => {
@@ -98,7 +105,7 @@ export default class TeamRepo {
                 }
             }
             return this.apiManager.accountGetTeams().then((teams) => {
-                this.teamTtl = Date.now();
+                this.teamTtl = this.riverTime.now();
                 teams.teamsList.map((team: ITeam) => {
                     const t = res.find(o => o.id === team.id);
                     if (t) {
@@ -112,7 +119,7 @@ export default class TeamRepo {
                     this.teamCache[team.id || '0'] = team;
                     return team;
                 });
-                this.createMany(cloneDeep(teams.teamsList));
+                this.createMany(cloneDeep(teams.teamsList), true);
                 if (withCounter) {
                     return countFn(teams.teamsList);
                 } else {
@@ -129,12 +136,23 @@ export default class TeamRepo {
             }
         });
         return this.apiManager.accountGetTeams().then((res) => {
-            this.createMany(res.teamsList);
+            this.createMany(res.teamsList, true);
             return res.teamsList;
         });
     }
 
-    public createMany(teams: ITeam[]) {
+    public createMany(teams: ITeam[], withRemove?: boolean) {
+        if (withRemove) {
+            this.db.teams.toArray().then((res) => {
+                const toRemove = differenceBy(res, teams, 'id');
+                if (toRemove.length > 0) {
+                    this.db.teams.bulkDelete(toRemove.map(o => o.id));
+                    toRemove.forEach((team) => {
+                        delete this.teamCache[team.id];
+                    });
+                }
+            });
+        }
         return this.db.teams.bulkPut(teams);
     }
 

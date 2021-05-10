@@ -352,7 +352,7 @@ export default class UserRepo {
                 });
             } else {
                 const crc32 = this.getContactsCrc(teamId);
-                this.apiManager.getContacts(crc32).then((remoteRes) => {
+                this.apiManager.getContacts(crc32, teamId).then((remoteRes) => {
                     if (remoteRes.modified) {
                         const promises = [
                             this.importBulk(true, remoteRes.contactusersList),

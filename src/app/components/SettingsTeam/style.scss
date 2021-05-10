@@ -106,6 +106,7 @@
         .last-seen {
           font-size: 12px;
           line-height: 23px;
+          direction: ltr;
 
           .online {
             color: var(--river);

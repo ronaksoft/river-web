@@ -433,11 +433,15 @@ export default class APIManager {
         return this.server.send(C_MSG.ContactsImport, data.serializeBinary(), false, undefined, undefined, true);
     }
 
-    public getContacts(crc?: number): Promise<ContactsMany.AsObject> {
+    public getContacts(crc?: number, teamId?: string): Promise<ContactsMany.AsObject> {
         const data = new ContactsGet();
         data.setCrc32hash(crc || 0);
         this.logVerbose(data);
         return this.server.send(C_MSG.ContactsGet, data.serializeBinary(), true, {
+            inputTeam: teamId === '0' ? {
+                accesshash: '0',
+                id: '0',
+            } : undefined,
             retry: 2,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
@@ -1225,7 +1229,12 @@ export default class APIManager {
     public accountGetTeams(): Promise<TeamsMany.AsObject> {
         const data = new AccountGetTeams();
         this.logVerbose(data);
-        return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true);
+        return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true, {
+            inputTeam: {
+                accesshash: '0',
+                id: '0',
+            },
+        });
     }
 
     public botGetInlineResults(botPeer: InputUser, userPeer: InputPeer, query: string, offset: string): Promise<BotResults.AsObject> {

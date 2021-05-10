@@ -27,7 +27,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import {IUser} from "../../repository/user/interface";
 import {omitBy, isNil, debounce, find, throttle, findIndex} from "lodash";
 import {IMessage} from "../../repository/message/interface";
-import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {C_LOCALSTORAGE, C_MSG} from "../../services/sdk/const";
 import {RiverTextLogo} from "../SVG/river";
 import {ITeam} from "../../repository/team/interface";
 import TeamName from "../TeamName";
@@ -40,6 +40,9 @@ import MessageRepo from "../../repository/message";
 import IsMobile from "../../services/isMobile";
 import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
 import {Loading} from "../Loading";
+import UpdateManager from "../../services/sdk/updateManager";
+import {UpdateTeamMemberAdded, UpdateTeamMemberRemoved} from "../../services/sdk/messages/updates_pb";
+import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
 
@@ -130,6 +133,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private readonly checkUpdateFlagThrottle: any;
     private readonly isMobile = IsMobile.isAny();
     private deepLinkService: DeepLinkService;
+    private updateManager: UpdateManager;
 
     constructor(props: IProps) {
         super(props);
@@ -203,6 +207,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
         this.messageRepo = MessageRepo.getInstance();
         this.checkUpdateFlagThrottle = throttle(this.checkUpdateFlagThrottleHandler, 1023);
+
+        this.updateManager = UpdateManager.getInstance();
     }
 
     public setTeam(teamId: string) {
@@ -276,6 +282,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.NewContact, this.deepLinkNewContactHandler));
         this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.Settings, this.deepLinkSettingsHandler));
         this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.SettingsDebug, this.deepLinkSettingsDebugHandler));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateTeamMemberAdded, this.updateTeamMemberAddedHandler));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateTeamMemberRemoved, this.updateTeamMemberRemovedHandler));
     }
 
     public componentWillUnmount() {
@@ -784,7 +792,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             if (noNotif !== true) {
                 q.hasUpdate = res.some(o => o.id !== this.state.teamId && o.unread_counter);
             }
-            this.setState(q);
+            this.setState(q, () => {
+                if (!loading) {
+                    this.checkTeam();
+                }
+            });
             if (!loading && this.props.onTeamLoad) {
                 this.props.onTeamLoad(res);
             }
@@ -812,7 +824,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         });
     }
 
-    private teamSelectHandler = (item: ITeam) => (e: any) => {
+    private teamSelectHandler = (item: ITeam) => () => {
         localStorage.setItem(C_LOCALSTORAGE.TeamId, item.id || '0');
         localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
             accesshash: item.accesshash,
@@ -939,6 +951,30 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             });
         } else {
             fn();
+        }
+    }
+
+    private updateTeamMemberAddedHandler = (data: UpdateTeamMemberAdded.AsObject) => {
+        this.teamRepo.resetTTL();
+        if (data.user.id === currentUserId) {
+            this.getTeamList();
+        }
+    }
+
+    private updateTeamMemberRemovedHandler = (data: UpdateTeamMemberRemoved.AsObject) => {
+        this.teamRepo.resetTTL();
+        if (data.userid === currentUserId) {
+            this.checkTeam();
+        }
+    }
+
+    private checkTeam() {
+        const {teamId, teamList} = this.state;
+        if (teamId !== '0' && findIndex(teamList, {id: teamId}) === -1) {
+            this.teamSelectHandler({
+                accesshash: '0',
+                id: '0',
+            })();
         }
     }
 }

@@ -1108,9 +1108,9 @@ export default class CallService {
         return participant.initiator || false;
     }
 
-    private initConnections(peer: InputPeer, id: string, initiator: boolean, request?: IUpdatePhoneCall): Promise<any> {
-        const currentUserConnId = this.getConnId(id, currentUserId) || 0;
-        const callInfo = this.getCallInfo(id);
+    private initConnections(peer: InputPeer, callId: string, initiator: boolean, request?: IUpdatePhoneCall): Promise<any> {
+        const currentUserConnId = this.getConnId(callId, currentUserId) || 0;
+        const callInfo = this.getCallInfo(callId);
         if (!callInfo) {
             return Promise.reject('invalid call id');
         }
@@ -1128,7 +1128,7 @@ export default class CallService {
                     type: res.type || 'answer',
                 });
                 window.console.log('[webrtc] answer, from:', currentUserId, ' to:', rc.getPeer().getUserid());
-                return this.apiManager.callAccept(peer, id || '0', [rc]);
+                return this.apiManager.callAccept(peer, callId || '0', [rc]);
             });
         };
 
@@ -1138,7 +1138,7 @@ export default class CallService {
                 sdp: sdpData.sdp,
                 type: sdpData.type as any,
             };
-            requestConnId = this.getConnId(id, request.userid);
+            requestConnId = this.getConnId(callId, request.userid);
             if (callInfo.dialed) {
                 return initAnswerConnection(requestConnId);
             }
@@ -1146,7 +1146,7 @@ export default class CallService {
 
         const shouldCall = !callInfo.dialed;
         if (shouldCall) {
-            this.setCallInfoDialed(id);
+            this.setCallInfoDialed(callId);
         }
 
         Object.values(callInfo.participants).forEach((participant) => {
@@ -1271,6 +1271,7 @@ export default class CallService {
                 pc.addEventListener('track', (e) => {
                     conn.init = true;
                     conn.reconnecting = false;
+                    conn.reconnectingTry = 0;
                     clearTimeout(conn.reconnectingTimeout);
                     if (e.streams.length > 0) {
                         const streamId = e.streams[0].id;
