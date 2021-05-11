@@ -493,16 +493,16 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.CallPreview, {callId, peer});
     }
 
-    public callAccept(id: string, video: boolean) {
+    public callAccept(callID: string, video: boolean) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
         }
         return this.apiManager.callInit(peer).then((res) => {
-            this.activeCallId = id;
+            this.activeCallId = callID;
 
             this.configs.iceServers = this.transformIceServers(res.iceserversList);
-            const info = this.getCallInfo(id);
+            const info = this.getCallInfo(callID);
             if (!info) {
                 return Promise.reject('invalid call request');
             }
@@ -516,7 +516,7 @@ export default class CallService {
                 do {
                     const request = info.requests.shift();
                     if (request) {
-                        promises.push(this.initConnections(peer, id, false, request).then(() => {
+                        promises.push(this.initConnections(peer, callID, false, request).then(() => {
                             const streamState = this.getStreamState();
                             this.mediaSettingsInit(streamState);
                             this.propagateMediaSettings(streamState);
@@ -807,32 +807,6 @@ export default class CallService {
         }
     }
 
-    private callRequested(data: IUpdatePhoneCall) {
-        if (this.activeCallId && data.callid !== this.activeCallId) {
-            this.busyHandler(data);
-            return;
-        }
-
-        // Send ack update so callee ringing indicator activates
-        this.sendCallAck(data);
-        if (!this.callInfo.hasOwnProperty(data.callid || 0)) {
-            this.initCallRequest(data);
-            const inputPeer = new InputPeer();
-            inputPeer.setId(data.peerid || '0');
-            inputPeer.setAccesshash(data.peertype === PeerType.PEERGROUP ? '0' : (data.accesshash || '0'));
-            inputPeer.setType(data.peertype || PeerType.PEERUSER);
-            this.peer = inputPeer;
-            this.callHandlers(C_CALL_EVENT.CallRequested, data);
-        } else {
-            this.initCallRequest(data);
-
-            // Accept other participants in group
-            if (this.shouldAccept(data)) {
-                this.callAccept(this.activeCallId, this.getStreamState().video);
-            }
-        }
-    }
-
     private shouldAccept(data: IUpdatePhoneCall) {
         if (this.activeCallId !== data.callid) {
             return false;
@@ -853,6 +827,29 @@ export default class CallService {
         this.callInfo[this.activeCallId].acceptedParticipantIds.push(data.userid);
 
         return true;
+    }
+
+    private callRequested(data: IUpdatePhoneCall) {
+        if (this.activeCallId && data.callid !== this.activeCallId) {
+            this.busyHandler(data);
+            return;
+        }
+
+        // Send ack update so callee ringing indicator activates
+        this.sendCallAck(data);
+        this.initCallRequest(data);
+        if (!this.callInfo.hasOwnProperty(data.callid || 0)) {
+            const inputPeer = new InputPeer();
+            inputPeer.setId(data.peerid || '0');
+            inputPeer.setAccesshash(data.peertype === PeerType.PEERGROUP ? '0' : (data.accesshash || '0'));
+            inputPeer.setType(data.peertype || PeerType.PEERUSER);
+            this.peer = inputPeer;
+            this.callHandlers(C_CALL_EVENT.CallRequested, data);
+        }
+        // Accept other participants in group
+        else if (this.shouldAccept(data)) {
+            this.callAccept(this.activeCallId, this.getStreamState().video);
+        }
     }
 
     private callAccepted(data: IUpdatePhoneCall) {
@@ -1610,6 +1607,7 @@ export default class CallService {
         if (connId === null || !this.callInfo.hasOwnProperty(callId) || !this.callInfo[callId].participants.hasOwnProperty(connId)) {
             return;
         }
+
         this.callInfo[callId].participants[connId].mediaSettings.audio = mediaSettings.audio || false;
         this.callInfo[callId].participants[connId].mediaSettings.video = mediaSettings.video || false;
         this.callInfo[callId].participants[connId].mediaSettings.screenShare = mediaSettings.screenshare || false;

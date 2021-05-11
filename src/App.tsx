@@ -248,7 +248,7 @@ class App extends React.Component<{}, IState> {
                         <SnackbarProvider maxSnack={5} anchorOrigin={{
                             horizontal: 'center',
                             vertical: 'top',
-                        }}>
+                        }} disableWindowBlurListener={true}>
                             {Routes}
                         </SnackbarProvider>
                         <CallModal/>
