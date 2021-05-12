@@ -339,7 +339,7 @@ export default class CallService {
             return Promise.reject('no local stream');
         }
         for (const pc of Object.values(this.peerConnections)) {
-            if (pc.connection.iceConnectionState !== 'connected') {
+            if (['failed', 'disconnected', 'closed'].indexOf(pc.connection.iceConnectionState) > -1) {
                 return Promise.reject('still connecting');
             }
         }
@@ -542,14 +542,14 @@ export default class CallService {
         });
     }
 
-    public callReject(id: string, duration: number, reason: DiscardReason, targetPeer?: InputPeer) {
+    public callReject(callId: string, duration: number, reason: DiscardReason, targetPeer?: InputPeer) {
         const peer = targetPeer || this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
         }
 
-        return this.apiManager.callReject(peer, id, reason, duration).then(() => {
-            this.destroyConnections(id);
+        return this.apiManager.callReject(peer, callId, reason, duration).then(() => {
+            this.destroyConnections(callId);
         });
     }
 
@@ -639,7 +639,7 @@ export default class CallService {
         return orderBy(list, ['connectionid'], ['asc']);
     }
 
-    public destroyConnections(id: string, connId?: number) {
+    public destroyConnections(callId: string, connId?: number) {
         const close = (conn: IConnection) => {
             conn.connection.close();
             if (conn.stream) {
@@ -662,7 +662,7 @@ export default class CallService {
                 close(conn);
             });
             this.peerConnections = {};
-            delete this.callInfo[id];
+            delete this.callInfo[callId];
             this.activeCallId = undefined;
             this.peer = null;
         }
@@ -853,6 +853,10 @@ export default class CallService {
     }
 
     private callAccepted(data: IUpdatePhoneCall) {
+        if (!this.activeCallId) {
+            return;
+        }
+
         const connId = this.getConnId(data.callid, data.userid);
         if (connId === null || !this.peerConnections.hasOwnProperty(connId)) {
             return;
@@ -1809,6 +1813,10 @@ export default class CallService {
             return;
         }
 
+        if (this.activeCallId !== data.callid) {
+            return;
+        }
+
         const sdpOfferData = data.data as PhoneActionSDPOffer.AsObject;
         const connId = this.getConnId(data.callid, data.userid);
         const callId = data.callid || '0';
@@ -1821,9 +1829,9 @@ export default class CallService {
             sdp: sdpOfferData.sdp,
             type: sdpOfferData.type as any,
         }).then(() => {
-            this.peerConnections[connId].accepted = true;
-            this.flushIceCandidates(data.callid || '0', connId);
             return pc.createAnswer().then((res) => {
+                this.peerConnections[connId].accepted = true;
+                this.flushIceCandidates(data.callid || '0', connId);
                 return pc.setLocalDescription(res).then(() => {
                     return this.sendSDPAnswer(connId, res);
                 });

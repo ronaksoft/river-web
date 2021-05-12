@@ -957,14 +957,18 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private updateTeamMemberAddedHandler = (data: UpdateTeamMemberAdded.AsObject) => {
         this.teamRepo.resetTTL();
         if (data.user.id === currentUserId) {
-            this.getTeamList();
+            setTimeout(() => {
+                this.getTeamList();
+            }, 255);
         }
     }
 
     private updateTeamMemberRemovedHandler = (data: UpdateTeamMemberRemoved.AsObject) => {
         this.teamRepo.resetTTL();
         if (data.userid === currentUserId) {
-            this.checkTeam();
+            setTimeout(() => {
+                this.getTeamList();
+            }, 255);
         }
     }
 
