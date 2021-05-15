@@ -6131,8 +6131,27 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private userDialogActionHandler = (cmd: string, user?: IUser) => {
-        if (user && cmd === 'start_bot') {
-            this.startBot(user);
+        if (!user) {
+            return;
+        }
+        const peer = new InputPeer();
+        peer.setType(PeerType.PEERUSER);
+        peer.setAccesshash(user.accesshash);
+        peer.setId(user.id);
+        switch (cmd) {
+            case 'start_bot':
+                this.startBot(user);
+                break;
+            case 'call_audio':
+                if (this.callService) {
+                    this.callService.openCallDialog(peer, false);
+                }
+                break;
+            case 'call_video':
+                if (this.callService) {
+                    this.callService.openCallDialog(peer, true);
+                }
+                break;
         }
     }
 

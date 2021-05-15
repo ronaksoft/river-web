@@ -9,13 +9,13 @@
 
 import React from 'react';
 import {IUser} from '../../repository/user/interface';
-import {AddRounded, CheckRounded, EditRounded, SendRounded} from '@material-ui/icons';
+import {AddRounded, CheckRounded, EditRounded, SendRounded, CallRounded, VideocamRounded} from '@material-ui/icons';
 import {
     InputPeer,
     InputUser,
     PeerNotifySettings,
     PeerType,
-    PhoneContact
+    PhoneContact,
 } from '../../services/sdk/messages/core.types_pb';
 import APIManager, {currentUserId} from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
@@ -35,6 +35,7 @@ import {ModalityService} from "kk-modality";
 import {NotifyContent} from "../GroupInfoMenu";
 import UserName from "../UserName";
 import {WithSnackbarProps} from "notistack";
+import CallService from "../../services/callService";
 
 import './style.scss';
 
@@ -46,6 +47,7 @@ interface IProps extends WithSnackbarProps {
 }
 
 interface IState {
+    callEnable: boolean;
     disable: boolean;
     edit: boolean;
     firstname: string;
@@ -69,11 +71,13 @@ class UserDialog extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private me: boolean = false;
     private modalityService: ModalityService;
+    private callService: CallService;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            callEnable: false,
             disable: false,
             edit: false,
             firstname: '',
@@ -99,6 +103,8 @@ class UserDialog extends React.Component<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
 
         this.modalityService = ModalityService.getInstance();
+
+        this.callService = CallService.getInstance();
     }
 
     public componentDidMount() {
@@ -135,7 +141,7 @@ class UserDialog extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {disable, user, edit, firstname, lastname, phone, isInContact, notifySetting, open, sendMessageEnable} = this.state;
+        const {disable, user, edit, firstname, lastname, phone, isInContact, notifySetting, open, sendMessageEnable, callEnable} = this.state;
         const isOfficial = user && user.official;
         return (
             <Dialog
@@ -229,7 +235,8 @@ class UserDialog extends React.Component<IProps, IState> {
                                 onChange={this.phoneChangeHandler}
                             />}
                         </div>}
-                        {Boolean(!disable && user.username && (user.username || '').length > 0) && <div className="line">
+                        {Boolean(!disable && user.username && (user.username || '').length > 0) &&
+                        <div className="line">
                             <div className="form-control">
                                 <label>{i18n.t('general.username')}</label>
                                 <div className="inner">@{user.username}</div>
@@ -254,8 +261,9 @@ class UserDialog extends React.Component<IProps, IState> {
                         {Boolean(edit) && <div className="actions-bar cancel" onClick={this.cancelHandler}>
                             {i18n.t('general.cancel')}
                         </div>}
-                        {Boolean(!disable && !this.me && !edit && user) && <Button key="block" color="secondary" fullWidth={true}
-                                                                       onClick={this.blockUserHandler(user)}>
+                        {Boolean(!disable && !this.me && !edit && user) &&
+                        <Button key="block" color="secondary" fullWidth={true}
+                                onClick={this.blockUserHandler(user)}>
                             {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
                         {Boolean(!disable && !edit && user && user.isbot && !user.is_bot_started) &&
                         <Button key="start" color="secondary" fullWidth={true}
@@ -277,6 +285,16 @@ class UserDialog extends React.Component<IProps, IState> {
                             <SendRounded/> {i18n.t('general.send_message')}
                         </Link>
                     </div>}
+                    {!disable && callEnable && <div className="kk-card">
+                        <div className="send-message">
+                            <div className="call-item" onClick={this.callHandler(false)}>
+                                <CallRounded/> {i18n.t('call.audio_call')}
+                            </div>
+                            <div className="call-item" onClick={this.callHandler(true)}>
+                                <VideocamRounded/> {i18n.t('call.video_call')}
+                            </div>
+                        </div>
+                    </div>}
                 </div>
             </Dialog>
         );
@@ -289,8 +307,11 @@ class UserDialog extends React.Component<IProps, IState> {
             return;
         }
 
+        const callPeer = this.callService.getActivePeer();
+
         const fn = (user: IUser) => {
             this.setState({
+                callEnable: !Boolean(user.isbot || user.official || user.deleted || (callPeer && callPeer.getId() === peer.getId())),
                 disable: this.state.disable || (!this.state.disable && (user.deleted || user.id === '2374')),
                 firstname: user.firstname || '',
                 isInContact: Boolean(user.is_contact),
@@ -622,6 +643,18 @@ class UserDialog extends React.Component<IProps, IState> {
                 }
             });
         }
+    }
+
+    private callHandler = (video: boolean) => () => {
+        const {user} = this.state;
+        if (this.props.onAction && user) {
+            if (video) {
+                this.props.onAction('call_video', user);
+            } else {
+                this.props.onAction('call_audio', user);
+            }
+        }
+        this.closeHandler();
     }
 }
 

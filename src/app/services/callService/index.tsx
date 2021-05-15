@@ -300,6 +300,10 @@ export default class CallService {
         return this.activeCallId;
     }
 
+    public getActivePeer() {
+        return this.peer;
+    }
+
     public initStream(settings: { audio: boolean, video: boolean }) {
         const constraints: MediaStreamConstraints = {
             audio: settings.audio ? getDefaultAudio() : false,
