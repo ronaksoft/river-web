@@ -461,7 +461,7 @@ export default class CallService {
         }
     }
 
-    public callStart(peer: InputPeer, participants: InputUser.AsObject[], callId?: string) {
+    public start(peer: InputPeer, participants: InputUser.AsObject[], callId?: string) {
         this.peer = peer;
 
         return this.apiManager.callInit(peer).then((res) => {
@@ -485,7 +485,7 @@ export default class CallService {
         });
     }
 
-    public joinCall(peer: InputPeer, callId: string) {
+    public join(peer: InputPeer, callId: string) {
         if (this.activeCallId) {
             return;
         }
@@ -493,7 +493,7 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.CallPreview, {callId, peer});
     }
 
-    public callAccept(callID: string, video: boolean) {
+    public accept(callID: string, video: boolean) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
@@ -542,7 +542,7 @@ export default class CallService {
         });
     }
 
-    public callReject(callId: string, duration: number, reason: DiscardReason, targetPeer?: InputPeer) {
+    public reject(callId: string, duration: number, reason: DiscardReason, targetPeer?: InputPeer) {
         const peer = targetPeer || this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
@@ -553,56 +553,7 @@ export default class CallService {
         });
     }
 
-    public callAddParticipant(callId: string, participants: InputUser[]) {
-        const peer = this.peer;
-        if (!peer) {
-            return Promise.reject('invalid peer');
-        }
-
-        return this.apiManager.callAddParticipant(this.peer, callId, participants).then((res) => {
-            return res;
-        });
-    }
-
-    public callRemoveParticipant(callId: string, userIds: string[], timeout: boolean) {
-        const peer = this.peer;
-        if (!peer) {
-            return Promise.reject('invalid peer');
-        }
-
-        const inputUsers = this.getInputUserByUserIds(callId, userIds);
-        if (inputUsers === null) {
-            return Promise.reject('invalid callId');
-        }
-
-        return this.apiManager.callRemoveParticipant(peer, callId, inputUsers, timeout).then(() => {
-            userIds.forEach((userId) => {
-                this.removeParticipant(userId);
-            });
-            this.callHandlers(C_CALL_EVENT.ParticipantRemoved, {timeout, userIds});
-            return Promise.resolve();
-        });
-    }
-
-    public callUpdateAdmin(callId: string, userId: string, admin: boolean) {
-        const peer = this.peer;
-        if (!peer) {
-            return Promise.reject('invalid peer');
-        }
-
-        const inputUsers = this.getInputUserByUserIds(callId, [userId]);
-        if (inputUsers === null || inputUsers.length === 0) {
-            return Promise.reject('invalid callId');
-        }
-
-        return this.apiManager.callUpdateAdmin(peer, callId, inputUsers[0], admin).then(() => {
-            this.updateAdmin(userId, admin);
-            this.callHandlers(C_CALL_EVENT.ParticipantAdminUpdated, {admin, userId});
-            return Promise.resolve();
-        });
-    }
-
-    public getParticipantByUserId(callId: string, userId: string): ICallParticipant | undefined {
+    public participantByUserId(callId: string, userId: string): ICallParticipant | undefined {
         if (!this.callInfo.hasOwnProperty(callId)) {
             return undefined;
         }
@@ -613,7 +564,7 @@ export default class CallService {
         return this.callInfo[callId].participants[connId];
     }
 
-    public getParticipantByConnId(connId: number): ICallParticipant | undefined {
+    public participantByConnId(connId: number): ICallParticipant | undefined {
         if (!this.activeCallId) {
             return undefined;
         }
@@ -637,6 +588,55 @@ export default class CallService {
             }
         });
         return orderBy(list, ['connectionid'], ['asc']);
+    }
+
+    public groupAddParticipant(callId: string, participants: InputUser[]) {
+        const peer = this.peer;
+        if (!peer) {
+            return Promise.reject('invalid peer');
+        }
+
+        return this.apiManager.callAddParticipant(this.peer, callId, participants).then((res) => {
+            return res;
+        });
+    }
+
+    public groupRemoveParticipant(callId: string, userIds: string[], timeout: boolean) {
+        const peer = this.peer;
+        if (!peer) {
+            return Promise.reject('invalid peer');
+        }
+
+        const inputUsers = this.getInputUserByUserIds(callId, userIds);
+        if (inputUsers === null) {
+            return Promise.reject('invalid callId');
+        }
+
+        return this.apiManager.callRemoveParticipant(peer, callId, inputUsers, timeout).then(() => {
+            userIds.forEach((userId) => {
+                this.removeParticipant(userId);
+            });
+            this.callHandlers(C_CALL_EVENT.ParticipantRemoved, {timeout, userIds});
+            return Promise.resolve();
+        });
+    }
+
+    public groupUpdateAdmin(callId: string, userId: string, admin: boolean) {
+        const peer = this.peer;
+        if (!peer) {
+            return Promise.reject('invalid peer');
+        }
+
+        const inputUsers = this.getInputUserByUserIds(callId, [userId]);
+        if (inputUsers === null || inputUsers.length === 0) {
+            return Promise.reject('invalid callId');
+        }
+
+        return this.apiManager.callUpdateAdmin(peer, callId, inputUsers[0], admin).then(() => {
+            this.updateAdmin(userId, admin);
+            this.callHandlers(C_CALL_EVENT.ParticipantAdminUpdated, {admin, userId});
+            return Promise.resolve();
+        });
     }
 
     public destroyConnections(callId: string, connId?: number) {
@@ -793,9 +793,7 @@ export default class CallService {
 
     private callUserSingle(peer: InputPeer, phoneParticipant: PhoneParticipantSDP, callId: string) {
         const randomId = UniqueId.getRandomId();
-        return this.apiManager.callRequest(peer, randomId, false, [phoneParticipant], callId, true).then((res) => {
-            return res;
-        });
+        return this.apiManager.callRequest(peer, randomId, false, [phoneParticipant], callId, true);
     }
 
     private phoneCallEndedHandler = (data: UpdatePhoneCallEnded.AsObject) => {
@@ -837,8 +835,8 @@ export default class CallService {
 
         // Send ack update so callee ringing indicator activates
         this.sendCallAck(data);
-        this.initCallRequest(data);
         if (!this.callInfo.hasOwnProperty(data.callid || 0)) {
+            this.initCallRequest(data);
             const inputPeer = new InputPeer();
             inputPeer.setId(data.peerid || '0');
             inputPeer.setAccesshash(data.peertype === PeerType.PEERGROUP ? '0' : (data.accesshash || '0'));
@@ -848,7 +846,8 @@ export default class CallService {
         }
         // Accept other participants in group
         else if (this.shouldAccept(data)) {
-            this.callAccept(this.activeCallId, this.getStreamState().video);
+            this.initCallRequest(data);
+            this.accept(this.activeCallId, this.getStreamState().video);
         }
     }
 
@@ -2082,7 +2081,7 @@ export default class CallService {
         }
 
         if (this.callInfo[this.activeCallId].acceptedParticipants.length === 0) {
-            this.callReject(this.activeCallId, 0, DiscardReason.DISCARDREASONMISSED);
+            this.reject(this.activeCallId, 0, DiscardReason.DISCARDREASONMISSED);
             this.callHandlers(C_CALL_EVENT.CallTimeout, {});
             window.console.log('[webrtc] call timeout, connId:', connId);
         } else if (this.peer.getType() === PeerType.PEERGROUP) {
@@ -2097,7 +2096,7 @@ export default class CallService {
                         userIds.push(participant.peer.userid);
                     }
                 });
-                this.callRemoveParticipant(this.activeCallId, userIds, true);
+                this.groupRemoveParticipant(this.activeCallId, userIds, true);
             }
         }
     }

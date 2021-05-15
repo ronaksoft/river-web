@@ -606,7 +606,8 @@
     "streaming_from": "جریان از ",
     "screen_list": "لیست صفحه نمایش",
     "mute": "بی صدا کردن",
-    "unmute": "با صدا کردن"
+    "unmute": "با صدا کردن",
+    "join": "پیوستن"
   },
   "notification": {
     "new_messages": "{0} پیام جدید",

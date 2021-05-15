@@ -611,7 +611,8 @@
     "streaming_from": "Streaming from ",
     "screen_list": "Screen List",
     "mute": "Mute",
-    "unmute": "Unmute"
+    "unmute": "Unmute",
+    "join": "Join"
   },
   "notification": {
     "new_messages": "{0} new messages",

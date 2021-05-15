@@ -327,7 +327,7 @@ class CallSettings extends React.Component<IProps, IState> {
         if (!activeCallId) {
             return;
         }
-        const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
+        const currentParticipant = this.callService.participantByUserId(activeCallId, currentUserId);
         const participants = orderBy(this.callService.getParticipantList(activeCallId, false), ['admin'], ['desc']);
         this.setState({
             currentParticipant,
@@ -366,7 +366,7 @@ class CallSettings extends React.Component<IProps, IState> {
         if (!activeCallId) {
             return;
         }
-        const currentParticipant = this.callService.getParticipantByUserId(activeCallId, currentUserId);
+        const currentParticipant = this.callService.participantByUserId(activeCallId, currentUserId);
         this.setState({
             isAdmin: currentParticipant && (currentParticipant.initiator || currentParticipant.admin),
             moreAnchorPos: {
@@ -432,7 +432,7 @@ class CallSettings extends React.Component<IProps, IState> {
             case 'promote':
             case 'demote':
                 const admin = cmd === 'promote';
-                this.callService.callUpdateAdmin(activeCallId, selectedUserId, admin).then(() => {
+                this.callService.groupUpdateAdmin(activeCallId, selectedUserId, admin).then(() => {
                     const index = findIndex(participants, o => o.peer.userid === selectedUserId);
                     if (index > -1) {
                         participants[index].admin = admin;
@@ -443,7 +443,7 @@ class CallSettings extends React.Component<IProps, IState> {
                 });
                 break;
             case 'remove':
-                this.callService.callRemoveParticipant(activeCallId, [selectedUserId], false).then(() => {
+                this.callService.groupRemoveParticipant(activeCallId, [selectedUserId], false).then(() => {
                     const index = findIndex(participants, o => o.peer.userid === selectedUserId);
                     if (index > -1) {
                         participants.splice(index, 1);

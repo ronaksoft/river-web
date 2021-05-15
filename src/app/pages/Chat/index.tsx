@@ -895,7 +895,7 @@ class Chat extends React.Component<IProps, IState> {
                 const dialog = this.getDialogByPeerName(this.selectedPeerName);
                 if (dialog && dialog.activecallid && this.peer && this.callService) {
                     if (cmd === 'call_end') {
-                        this.callService.callReject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
+                        this.callService.reject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
                             if (this.peer && this.peer.getType() === PeerType.PEERUSER) {
                                 this.updatePhoneCallEndedHandler({
                                     peer: this.peer.toObject(),
@@ -906,7 +906,7 @@ class Chat extends React.Component<IProps, IState> {
                             }
                         });
                     } else {
-                        this.callService.joinCall(this.peer, dialog.activecallid);
+                        this.callService.join(this.peer, dialog.activecallid);
                     }
                 }
                 break;
