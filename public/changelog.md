@@ -1,5 +1,6 @@
 ## 1.1.38
 * Call improvements
+* Shortcut improvements
 
 ## 1.1.37
 * Overall improvements in team

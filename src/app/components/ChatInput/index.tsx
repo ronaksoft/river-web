@@ -1220,7 +1220,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private inputKeyDownHandler = (e: any) => {
         const textVal = e.target.value;
         const {previewMessageMode} = this.state;
-        if (e.shiftKey || (e.key === 'Escape' && this.selectWithArrow)) {
+        if ((e.shiftKey && textVal.length === 0) || (e.key === 'Escape' && this.selectWithArrow)) {
             this.handleShiftArrowKeys(e.keyCode);
             return;
         }
