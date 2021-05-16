@@ -1,3 +1,6 @@
+## 1.1.39
+* SystemGetServerTime timeout extended
+
 ## 1.1.38
 * Call improvements
 * Shortcut improvements

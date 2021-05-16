@@ -1066,7 +1066,6 @@ export default class Server {
         return this.send(C_MSG.SystemGetServerTime, data.serializeBinary(), true, {
             retry: 5,
             retryWait: 1000,
-            timeout: 5000,
         }).then((res: SystemServerTime.AsObject) => {
             this.socket.setServerTime(res.timestamp);
             return res;
