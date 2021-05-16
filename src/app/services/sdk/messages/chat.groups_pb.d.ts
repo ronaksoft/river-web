@@ -159,6 +159,30 @@ export namespace GroupsToggleAdmins {
   }
 }
 
+export class GroupsToggleAdminOnly extends jspb.Message {
+  getGroupid(): string;
+  setGroupid(value: string): void;
+
+  getAdminonly(): boolean;
+  setAdminonly(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupsToggleAdminOnly.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsToggleAdminOnly): GroupsToggleAdminOnly.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupsToggleAdminOnly, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsToggleAdminOnly;
+  static deserializeBinaryFromReader(message: GroupsToggleAdminOnly, reader: jspb.BinaryReader): GroupsToggleAdminOnly;
+}
+
+export namespace GroupsToggleAdminOnly {
+  export type AsObject = {
+    groupid: string,
+    adminonly: boolean,
+  }
+}
+
 export class GroupsUpdateAdmin extends jspb.Message {
   getGroupid(): string;
   setGroupid(value: string): void;

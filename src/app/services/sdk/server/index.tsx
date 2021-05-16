@@ -36,7 +36,7 @@ export const C_RETRY = 3;
 
 interface IErrorPair {
     code: string;
-    items: string;
+    items: string | null;
 }
 
 interface IRequestOptions {
@@ -973,6 +973,9 @@ export default class Server {
         }
 
         const check = req.options.retryErrors.some((err) => {
+            if (error.code === err.code && err.items === null) {
+                return true;
+            }
             return error.code === err.code && error.items === err.items;
         });
         if (!check) {
@@ -1089,7 +1092,6 @@ export default class Server {
         return this.send(C_MSG.SystemGetServerTime, data.serializeBinary(), true, {
             retry: 5,
             retryWait: 1000,
-            timeout: 5000,
         }).then((res: SystemServerTime.AsObject) => {
             this.socket.setServerTime(res.timestamp);
             return res;

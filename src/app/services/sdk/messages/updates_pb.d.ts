@@ -746,6 +746,38 @@ export namespace UpdateGroupAdmins {
   }
 }
 
+export class UpdateGroupAdminOnly extends jspb.Message {
+  getUcount(): number;
+  setUcount(value: number): void;
+
+  getUpdateid(): number;
+  setUpdateid(value: number): void;
+
+  getGroupid(): string;
+  setGroupid(value: string): void;
+
+  getAdminonly(): boolean;
+  setAdminonly(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateGroupAdminOnly.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupAdminOnly): UpdateGroupAdminOnly.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateGroupAdminOnly, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupAdminOnly;
+  static deserializeBinaryFromReader(message: UpdateGroupAdminOnly, reader: jspb.BinaryReader): UpdateGroupAdminOnly;
+}
+
+export namespace UpdateGroupAdminOnly {
+  export type AsObject = {
+    ucount: number,
+    updateid: number,
+    groupid: string,
+    adminonly: boolean,
+  }
+}
+
 export class UpdateGroupPhoto extends jspb.Message {
   getUcount(): number;
   setUcount(value: number): void;

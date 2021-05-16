@@ -161,7 +161,7 @@ export default class SearchRepo {
         const limit = 128;
         const skip = 0;
         let users: IUser[] = [];
-        this.userRepo.getManyCache(teamId, false, {keyword, limit}).then((userRes) => {
+        this.userRepo.getManyCache(teamId, false, {filterDeleted: true, keyword, limit}).then((userRes) => {
             const ids: { [key: string]: IUser } = {};
             const peers: Array<[string, number]> = [];
             userRes.forEach((item: IUser) => {

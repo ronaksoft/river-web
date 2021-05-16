@@ -418,7 +418,8 @@ class UserAvatar extends React.PureComponent<IProps, IState> {
         }
 
         const {user} = this.state;
-        if (this.riverTime.now() - (user.status_last_modified || 0) < 60 && user.status === UserStatus.USERSTATUSONLINE) {
+        const lastSeen = user.status_last_modified || user.lastseen || 0;
+        if (this.riverTime.now() - lastSeen < 60 && user.status === UserStatus.USERSTATUSONLINE) {
             clearTimeout(this.timeout);
             this.timeout = setTimeout(() => {
                 this.forceUpdate();

@@ -81,7 +81,8 @@
     "ios": "iOS",
     "android": "Android",
     "unknown": "Unknown",
-    "no_username_found": "{0} doesn't have an account yet!"
+    "no_username_found": "{0} doesn't have an account yet!",
+    "deleted_account": "Deleted Account"
   },
   "chat": {
     "search": "Search",
@@ -167,7 +168,8 @@
     "PROFILE": "PROFILE",
     "PHOTO": "PHOTO",
     "created": "Created",
-    "all_member_admin": "All Admin",
+    "all_member_admin": "All admin",
+    "admin_only": "Only admins can message",
     "add_member": "Add member",
     "leave": "Leave",
     "participants": "{0} participants",
@@ -478,7 +480,8 @@
     "try_again": "(try again)",
     "and_n_more": " & {0} more",
     "type_and": " & ",
-    "type_comma": ", "
+    "type_comma": ", ",
+    "rip": "R.I.P."
   },
   "message": {
     "voice_message": "Voice Message",
@@ -608,7 +611,8 @@
     "streaming_from": "Streaming from ",
     "screen_list": "Screen List",
     "mute": "Mute",
-    "unmute": "Unmute"
+    "unmute": "Unmute",
+    "join": "Join"
   },
   "notification": {
     "new_messages": "{0} new messages",

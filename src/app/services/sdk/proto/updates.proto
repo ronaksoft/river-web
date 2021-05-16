@@ -6,9 +6,6 @@ import "chat.messages.medias.proto";
 import "chat.phone.proto";
 
 
-
-
-
 // UpdateGetState
 // @Function
 // @Return: UpdateState
@@ -189,6 +186,14 @@ message UpdateGroupAdmins {
     int64 UpdateID = 101;
     int64 GroupID = 1 [jstype = JS_STRING];
     bool AdminEnabled = 2;
+}
+
+// UpdateGroupAdminOnly
+message UpdateGroupAdminOnly {
+    int32 UCount = 100;
+    int64 UpdateID = 101;
+    int64 GroupID = 1 [jstype = JS_STRING];
+    bool AdminOnly = 2;
 }
 
 // UpdateGroupPhoto

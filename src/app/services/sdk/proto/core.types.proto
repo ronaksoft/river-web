@@ -83,6 +83,7 @@ message Dialog {
     DraftMessage Draft = 11;
     int64 PinnedMessageID = 12;
     int64 ActiveCallID = 13 [jstype = JS_STRING];
+    bool ReadOnly = 14;
 }
 
 // PeerType
@@ -230,6 +231,11 @@ enum GroupFlags {
     GroupFlagsAdmin = 3;
     GroupFlagsAdminsEnabled = 4;
     GroupFlagsDeactivated = 5;
+    GroupFlagsAdminOnly = 6;
+    GroupFlagsReserved1 = 7;
+    GroupFlagsReserved2 = 8;
+    GroupFlagsReserved3 = 9;
+    GroupFlagsReserved4 = 10;
 }
 
 // GroupPhoto

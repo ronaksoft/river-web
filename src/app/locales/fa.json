@@ -81,7 +81,8 @@
     "ios": "iOS",
     "android": "اندروید",
     "unknown": "نامشخص",
-    "no_username_found": "{0} هنوز اکانتی ندارد"
+    "no_username_found": "{0} هنوز اکانتی ندارد",
+    "deleted_account": "حساب کاربری حذف شده"
   },
   "chat": {
     "search": "جستجو",
@@ -168,6 +169,7 @@
     "PHOTO": "پروفایل",
     "created": "ساخته شده در ",
     "all_member_admin": "همه ادمین",
+    "admin_only": "فقط ادمین‌ها می‌توانند پیام بدهند",
     "add_member": "افزودن عضو",
     "leave": "خروج",
     "participants": "{0} عضو",
@@ -474,7 +476,8 @@
     "try_again": "(تلاش مجدد)",
     "and_n_more": " و {0} دیگر",
     "type_and": " و ",
-    "type_comma": "، "
+    "type_comma": "، ",
+    "rip": "روحش شاد"
   },
   "message": {
     "voice_message": "پیام صوتی",
@@ -603,7 +606,8 @@
     "streaming_from": "جریان از ",
     "screen_list": "لیست صفحه نمایش",
     "mute": "بی صدا کردن",
-    "unmute": "با صدا کردن"
+    "unmute": "با صدا کردن",
+    "join": "پیوستن"
   },
   "notification": {
     "new_messages": "{0} پیام جدید",

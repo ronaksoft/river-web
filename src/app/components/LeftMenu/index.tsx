@@ -7,10 +7,8 @@
     Copyright Ronak Software Group 2019
 */
 
-import React from 'react';
+import React, {Suspense} from 'react';
 import Dialog from "../Dialog";
-import SettingsMenu from "../SettingsMenu";
-import ContactsMenu from "../ContactsMenu";
 import {IDialog, IPeer} from "../../repository/dialog/interface";
 import BottomBar from "../BottomBar";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -18,7 +16,6 @@ import i18n from "../../services/i18n";
 import IconButton from "@material-ui/core/IconButton";
 import {
     CloseRounded,
-    /*EditRounded,*/
     MoreVertRounded,
     SearchRounded,
     MenuRounded,
@@ -27,12 +24,10 @@ import {
 import Menu from "@material-ui/core/Menu";
 import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
-import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
 import {omitBy, isNil, debounce, find, throttle, findIndex} from "lodash";
-import LabelMenu from "../LabelMenu";
 import {IMessage} from "../../repository/message/interface";
-import {C_LOCALSTORAGE} from "../../services/sdk/const";
+import {C_LOCALSTORAGE, C_MSG} from "../../services/sdk/const";
 import {RiverTextLogo} from "../SVG/river";
 import {ITeam} from "../../repository/team/interface";
 import TeamName from "../TeamName";
@@ -42,10 +37,20 @@ import {localize} from "../../services/utilities/localize";
 import LeftPanel from "../LeftPanel";
 import Broadcaster from "../../services/broadcaster";
 import MessageRepo from "../../repository/message";
+import IsMobile from "../../services/isMobile";
+import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
+import {Loading} from "../Loading";
+import UpdateManager from "../../services/sdk/updateManager";
+import {UpdateTeamMemberAdded, UpdateTeamMemberRemoved} from "../../services/sdk/messages/updates_pb";
+import {currentUserId} from "../../services/sdk";
 
 import './style.scss';
-import CallHistory from "../CallHistory";
-import IsMobile from "../../services/isMobile";
+
+const SettingsMenu = React.lazy(() => import('../SettingsMenu'));
+const ContactsMenu = React.lazy(() => import('../ContactsMenu'));
+const CallHistory = React.lazy(() => import('../CallHistory'));
+const LabelMenu = React.lazy(() => import('../LabelMenu'));
+const NewGroupMenu = React.lazy(() => import('../NewGroupMenu'));
 
 export type menuItems = 'chat' | 'settings' | 'contacts' | 'call_history';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -59,7 +64,7 @@ interface IProps {
     onContextMenu: (cmd: string, dialog: IDialog) => void;
     onGroupCreate: (contacts: IUser[], title: string, fileId: string) => void;
     onReloadDialog: (peerIds: IPeer[]) => void;
-    onSettingsAction: (cmd: 'logout' | 'count_dialog') => void;
+    onSettingsAction: (cmd: 'logout' | 'logout_force' | 'count_dialog') => void;
     onSettingsClose: (e: any) => void;
     onUpdateMessages: (keep?: boolean) => void;
     onShrunk: (shrunk: boolean) => void;
@@ -109,7 +114,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private bottomBarRef: BottomBar | undefined;
     private dialogRef: Dialog | undefined;
+    // @ts-ignore
     private settingsMenuRef: SettingsMenu | undefined;
+    // @ts-ignore
     private contactsMenuRef: ContactsMenu | undefined;
     private chatTopIcons: any[];
     private chatMoreMenuItem: any[];
@@ -125,6 +132,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private toCheckTeamIds: string[] = [];
     private readonly checkUpdateFlagThrottle: any;
     private readonly isMobile = IsMobile.isAny();
+    private deepLinkService: DeepLinkService;
+    private updateManager: UpdateManager;
 
     constructor(props: IProps) {
         super(props);
@@ -190,6 +199,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }];
 
         this.teamRepo = TeamRepo.getInstance();
+        this.deepLinkService = DeepLinkService.getInstance();
 
         this.mouseEnterDebounce = debounce(this.mouseEnterDebounceHandler, 320);
         this.mouseLeaveDebounce = debounce(this.mouseLeaveDebounceHandler, 128);
@@ -197,6 +207,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
         this.messageRepo = MessageRepo.getInstance();
         this.checkUpdateFlagThrottle = throttle(this.checkUpdateFlagThrottleHandler, 1023);
+
+        this.updateManager = UpdateManager.getInstance();
     }
 
     public setTeam(teamId: string) {
@@ -267,6 +279,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
         this.getTeamList();
         this.eventReferences.push(this.broadcaster.listen(TeamDBUpdated, this.getTeamList));
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.NewContact, this.deepLinkNewContactHandler));
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.Settings, this.deepLinkSettingsHandler));
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.SettingsDebug, this.deepLinkSettingsDebugHandler));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateTeamMemberAdded, this.updateTeamMemberAddedHandler));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateTeamMemberRemoved, this.updateTeamMemberRemovedHandler));
     }
 
     public componentWillUnmount() {
@@ -468,12 +485,14 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
                                                selected={this.state.leftMenu} teamId={teamId}/>}
                     <div className="left-overlay">
-                        {Boolean(overlayMode === 1) &&
-                        <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
-                                      teamId={teamId} limit={this.props.groupLimit}/>}
-                        {Boolean(overlayMode === 2) &&
-                        <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
-                                   onAction={this.props.onMediaAction} teamId={teamId}/>}
+                        {Boolean(overlayMode === 1) && <Suspense fallback={<Loading/>}>
+                            <NewGroupMenu onClose={this.overlayCloseHandler} onCreate={this.props.onGroupCreate}
+                                          teamId={teamId} limit={this.props.groupLimit}/>
+                        </Suspense>}
+                        {Boolean(overlayMode === 2) && <Suspense fallback={<Loading/>}>
+                            <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}
+                                       onAction={this.props.onMediaAction} teamId={teamId}/>
+                        </Suspense>}
                     </div>
                     {Boolean(teamList.length > 1) && <Menu
                         anchorEl={teamMoreAnchorEl}
@@ -529,22 +548,28 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         const {leftMenu, teamId} = this.state;
         switch (leftMenu) {
             case 'settings':
-                return <SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
-                                     onUpdateMessages={this.props.onUpdateMessages}
-                                     onClose={this.props.onSettingsClose}
-                                     onAction={this.props.onSettingsAction}
-                                     onError={this.props.onError}
-                                     onReloadDialog={this.props.onReloadDialog}
-                                     onSubPlaceChange={this.settingsSubPlaceChangeHandler}
-                                     onTeamChange={this.props.onTeamChange}
-                                     onTeamUpdate={this.settingsMenuTeamUpdateHandler}
-                                     onPanelToggle={this.settingsPanelToggleHandler}
-                                     teamId={teamId}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <SettingsMenu ref={this.settingsMenuRefHandler}
+                                  onUpdateMessages={this.props.onUpdateMessages}
+                                  onClose={this.props.onSettingsClose}
+                                  onAction={this.props.onSettingsAction}
+                                  onError={this.props.onError}
+                                  onReloadDialog={this.props.onReloadDialog}
+                                  onSubPlaceChange={this.settingsSubPlaceChangeHandler}
+                                  onTeamChange={this.props.onTeamChange}
+                                  onTeamUpdate={this.settingsMenuTeamUpdateHandler}
+                                  onPanelToggle={this.settingsPanelToggleHandler}
+                                  teamId={teamId}/>
+                </Suspense>;
             case 'contacts':
-                return <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}
-                                     onClose={this.contactsCloseHandler} teamId={teamId}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}
+                                  onClose={this.contactsCloseHandler} teamId={teamId}/>
+                </Suspense>;
             case 'call_history':
-                return <CallHistory key="call-history-menu" teamId={teamId} onClose={this.contactsCloseHandler}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <CallHistory key="call-history-menu" teamId={teamId} onClose={this.contactsCloseHandler}/>
+                </Suspense>;
         }
         return null;
     }
@@ -767,7 +792,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             if (noNotif !== true) {
                 q.hasUpdate = res.some(o => o.id !== this.state.teamId && o.unread_counter);
             }
-            this.setState(q);
+            this.setState(q, () => {
+                if (!loading) {
+                    this.checkTeam();
+                }
+            });
             if (!loading && this.props.onTeamLoad) {
                 this.props.onTeamLoad(res);
             }
@@ -795,7 +824,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         });
     }
 
-    private teamSelectHandler = (item: ITeam) => (e: any) => {
+    private teamSelectHandler = (item: ITeam) => () => {
         localStorage.setItem(C_LOCALSTORAGE.TeamId, item.id || '0');
         localStorage.setItem(C_LOCALSTORAGE.TeamData, JSON.stringify({
             accesshash: item.accesshash,
@@ -880,6 +909,76 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         if (this.leftPanelRef) {
             this.leftPanelRef.setTeamList(this.state.teamList);
             this.leftPanelRef.setUnreadCounter(this.unreadCounter, this.state.teamId);
+        }
+    }
+
+    private deepLinkNewContactHandler = ({phone, first_name, last_name, username}: { phone?: string, first_name?: string, last_name?: string, username?: string }) => {
+        const fn = () => {
+            if (this.contactsMenuRef) {
+                this.contactsMenuRef.openNewContact({firstname: first_name, lastname: last_name, phone});
+            }
+        };
+        if (this.state.leftMenu !== 'contacts') {
+            this.setState({
+                leftMenu: 'contacts',
+            }, () => {
+                fn();
+            });
+        } else {
+            fn();
+        }
+    }
+
+    private deepLinkSettingsHandler = () => {
+        if (this.state.leftMenu !== 'settings') {
+            this.setState({
+                leftMenu: 'settings',
+            });
+        }
+    }
+
+    private deepLinkSettingsDebugHandler = () => {
+        const fn = () => {
+            if (this.settingsMenuRef) {
+                this.settingsMenuRef.openDebug();
+            }
+        };
+        if (this.state.leftMenu !== 'settings') {
+            this.setState({
+                leftMenu: 'settings',
+            }, () => {
+                fn();
+            });
+        } else {
+            fn();
+        }
+    }
+
+    private updateTeamMemberAddedHandler = (data: UpdateTeamMemberAdded.AsObject) => {
+        this.teamRepo.resetTTL();
+        if (data.user.id === currentUserId) {
+            setTimeout(() => {
+                this.getTeamList();
+            }, 255);
+        }
+    }
+
+    private updateTeamMemberRemovedHandler = (data: UpdateTeamMemberRemoved.AsObject) => {
+        this.teamRepo.resetTTL();
+        if (data.userid === currentUserId) {
+            setTimeout(() => {
+                this.getTeamList();
+            }, 255);
+        }
+    }
+
+    private checkTeam() {
+        const {teamId, teamList} = this.state;
+        if (teamId !== '0' && findIndex(teamList, {id: teamId}) === -1) {
+            this.teamSelectHandler({
+                accesshash: '0',
+                id: '0',
+            })();
         }
     }
 }

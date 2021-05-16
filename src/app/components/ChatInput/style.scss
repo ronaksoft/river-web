@@ -722,7 +722,7 @@
 }
 
 .picker-menu-paper {
-  background-color: transparent !important;
+  background-color: var(--white) !important;
 
   .chat-input-popover-tabs {
     background-color: var(--white);
@@ -802,6 +802,10 @@ html[direction="rtl"] {
 html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
+  .picker-menu-paper {
+    background-color: var(--dark-low) !important;
+  }
+
   .input-placeholder {
     .btn {
       background-color: var(--glass-dark-high);
@@ -975,6 +979,10 @@ html[theme="dark-blue"] {
 }
 
 html[theme="dark-blue"] {
+  .picker-menu-paper {
+    background-color: var(--dark-blue-low) !important;
+  }
+
   .chat-input {
     border: 1px solid var(--dark-blue-medium);
     background-color: var(--dark-blue-medium);

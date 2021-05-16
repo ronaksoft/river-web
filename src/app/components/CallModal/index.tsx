@@ -30,6 +30,7 @@ import {
     FullscreenRounded,
     VideocamRounded,
     WebAssetRounded,
+    CallMergeRounded,
 } from "@material-ui/icons";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -380,7 +381,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private showPreview(video: boolean, callId?: string, disableVideo?: boolean) {
+    private showPreview(video: boolean, callId?: string, disableVideo?: boolean, isJoin?: boolean) {
         this.timeStart = 0;
         this.timeEnd = 0;
         const state: Partial<IState> = {
@@ -570,7 +571,8 @@ class CallModal extends React.Component<IProps, IState> {
                         <CallEndRounded/>
                     </div>
                     <div className="call-item call-accept" onClick={this.callHandler(callId)}>
-                        <CallRounded/>
+                        <div className="call-item-label">{i18n.t('call.join')}</div>
+                        <CallMergeRounded/>
                     </div>
                 </div>}
             </div>
@@ -727,7 +729,7 @@ class CallModal extends React.Component<IProps, IState> {
         });
         if (this.peer) {
             const callFn = () => {
-                this.callService.callStart(this.peer, this.getRecipients(), callId).then((callId) => {
+                this.callService.start(this.peer, this.getRecipients(), callId).then((callId) => {
                     this.setState({
                         callId,
                     }, () => {
@@ -770,7 +772,7 @@ class CallModal extends React.Component<IProps, IState> {
             groupId: this.peer && this.peer.getType() === PeerType.PEERGROUP ? this.peer.getId() || '0' : undefined,
             mode: 'call',
         });
-        this.callService.callAccept(this.state.callId, video).then(() => {
+        this.callService.accept(this.state.callId, video).then(() => {
             const stream = this.callService.getLocalStream();
             if (!stream) {
                 return;
@@ -806,7 +808,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private rejectCallHandler = () => {
-        this.callService.callReject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
+        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
             window.console.log(err);
         });
         this.closeHandler();
@@ -817,7 +819,7 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
         this.loading = true;
-        this.callService.callReject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
+        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
             if (this.state.callStarted) {
                 this.timeEnd = Date.now();
                 this.setState({
@@ -961,7 +963,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
 
         this.callVideoRef.initRemoteConnection(true);
-        const participant = this.callService.getParticipantByConnId(connId);
+        const participant = this.callService.participantByConnId(connId);
         this.callVideoRef.setStatus(connId, 2, participant ? participant.deviceType : undefined);
         this.callVideoRef.setStream(connId, stream);
         if (!this.timeStart) {
@@ -1149,7 +1151,7 @@ class CallModal extends React.Component<IProps, IState> {
                         inputUser.setUserid(contact.id);
                         inputUsers.push(inputUser);
                     });
-                    this.callService.callAddParticipant(callId, inputUsers).then((res) => {
+                    this.callService.groupAddParticipant(callId, inputUsers).then((res) => {
                         window.console.log(res);
                     });
                 }

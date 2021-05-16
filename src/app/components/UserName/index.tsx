@@ -116,6 +116,11 @@ class UserName extends React.PureComponent<IProps, IState> {
         if (this.props.uniqueColor === true && this.state.forceColor) {
             style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, TextColors);
         }
+        if (user && user.deleted) {
+            return <span className={className} style={style} onClick={this.clickHandler}>
+                {i18n.t('general.deleted_account')}
+            </span>;
+        }
         if (this.props.username === true) {
             return (
                 <span className={className} style={style} onClick={this.clickHandler}>

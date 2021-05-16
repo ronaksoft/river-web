@@ -248,7 +248,7 @@ class App extends React.Component<{}, IState> {
                         <SnackbarProvider maxSnack={5} anchorOrigin={{
                             horizontal: 'center',
                             vertical: 'top',
-                        }}>
+                        }} disableWindowBlurListener={true}>
                             {Routes}
                         </SnackbarProvider>
                         <CallModal/>
@@ -420,7 +420,7 @@ class App extends React.Component<{}, IState> {
     }
 
     private downloadDesktopHandler = (link: string) => () => {
-        ElectronService.openExternal(link);
+        ElectronService.getInstance().loadUrl(link);
         this.updateDialogCloseHandler();
     }
 

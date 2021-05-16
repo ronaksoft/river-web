@@ -29,7 +29,7 @@ import {
     UpdateNotifySettings, UpdatePhoneCall, UpdatePhoneCallEnded, UpdatePhoneCallStarted, UpdateReaction,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents, UpdateTeamCreated,
+    UpdateReadMessagesContents, UpdateTeamCreated, UpdateTeamMemberAdded, UpdateTeamMemberRemoved,
     UpdateUserBlocked,
     UpdateUsername,
     UpdateUserPhoto,
@@ -1146,6 +1146,16 @@ export default class UpdateManager {
                 const updateTeamCreated = UpdateTeamCreated.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateTeamCreated);
                 this.callHandlers('all', update.constructor, updateTeamCreated);
+                break;
+            case C_MSG.UpdateTeamMemberAdded:
+                const updateTeamMemberAdded = UpdateTeamMemberAdded.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateTeamMemberAdded);
+                this.callHandlers('all', update.constructor, updateTeamMemberAdded);
+                break;
+            case C_MSG.UpdateTeamMemberRemoved:
+                const updateTeamMemberRemoved = UpdateTeamMemberRemoved.deserializeBinary(data).toObject();
+                this.logVerbose(update.constructor, updateTeamMemberRemoved);
+                this.callHandlers('all', update.constructor, updateTeamMemberRemoved);
                 break;
             default:
                 break;

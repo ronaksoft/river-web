@@ -59,7 +59,7 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
             phone: '',
             phoneError: false,
             phoneHash: '',
-            step: 0,
+            step: 1,
         };
 
         this.apiManager = APIManager.getInstance();
@@ -76,8 +76,7 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {phone} = this.props;
-        const {open, step, accountPassword, password, code} = this.state;
+        const {open} = this.state;
         return (
             <SettingsModal open={open} title={i18n.t('settings.delete_account.title')}
                            icon={<PersonOffRounded/>}
@@ -85,7 +84,17 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
                            height="340px"
                            noScrollbar={true}
             >
-                {Boolean(step === 1) && <div className="delete-account-dialog">
+                {this.getContent()}
+            </SettingsModal>
+        );
+    }
+
+    private getContent() {
+        const {phone} = this.props;
+        const {step, accountPassword, password, code} = this.state;
+        switch (step) {
+            case 1:
+                return <div className="delete-account-dialog">
                     <div className="delete-account-header">
                         <DeletedUserDark/>
                     </div>
@@ -101,8 +110,9 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
                             {i18n.t('general.continue')}
                         </Button>
                     </DialogActions>
-                </div>}
-                {Boolean(step === 2) && <div className="delete-account-dialog">
+                </div>;
+            case 2:
+                return <div className="delete-account-dialog">
                     <div className={`delete-account-input phone-number ${this.state.phoneError ? 'has-error' : ''}`}>
                         <IntlTelInput preferredCountries={[]}
                                       defaultCountry={'ir'}
@@ -142,8 +152,10 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
                             {i18n.t('general.next')}
                         </Button>
                     </DialogActions>
-                </div>}
-                {Boolean(step === 3 || step === 4) && <div className="delete-account-dialog">
+                </div>;
+            case 3:
+            case 4:
+                return <div className="delete-account-dialog">
                     {Boolean(step === 3) && <div className="delete-account-input">
                         <TextField
                             label={i18n.t('sign_up.code')}
@@ -173,9 +185,9 @@ class DeleteAccountModal extends React.Component<IProps, IState> {
                             {i18n.t('general.submit')}
                         </Button>
                     </DialogActions>}
-                </div>}
-            </SettingsModal>
-        );
+                </div>;
+        }
+        return null;
     }
 
     private modalCloseHandler = () => {

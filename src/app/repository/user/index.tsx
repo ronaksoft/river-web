@@ -180,7 +180,11 @@ export default class UserRepo {
         return this.dbService.getUser(id);
     }
 
-    public getManyCache(teamId: string, isContact: boolean, {keyword, limit}: any): Promise<IUser[]> {
+    public getManyInstant(ids: string[]): Array<IUser | null> {
+        return ids.map(o => this.dbService.getUser(o));
+    }
+
+    public getManyCache(teamId: string, isContact: boolean, {keyword, limit, filterDeleted}: {keyword?: string, limit?: number, filterDeleted?: boolean}): Promise<IUser[]> {
         if (keyword) {
             keyword = keyword.replace('\\', '');
         }
@@ -189,12 +193,18 @@ export default class UserRepo {
             if (u.id === currentUserId && reg.test('Saved Messages')) {
                 return true;
             }
+            if (filterDeleted && u.deleted) {
+                return false;
+            }
+            if (!keyword) {
+                return true;
+            }
             return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(`${u.firstname} ${u.lastname}`));
         };
         if (isContact || teamId !== '0') {
-            return this.searchTeamContacts(teamId, keyword ? searchFilter : undefined);
+            return this.searchTeamContacts(teamId, keyword || filterDeleted ? searchFilter : undefined);
         } else {
-            if (!keyword) {
+            if (!keyword && !filterDeleted) {
                 return this.db.users.limit(limit || 1000).toArray();
             }
             return this.db.users.filter(searchFilter).limit(limit || 12).toArray();
@@ -202,13 +212,13 @@ export default class UserRepo {
     }
 
     public getByUsername(username: string) {
-        return this.db.users.where('[is_contact+username]').between([1, username], [1, username], true, true).first().then((res) => {
+        return this.db.users.where('[is_contact+username]').between([0, username], [1, username], true, true).first().then((res) => {
             if (res && res.username === username) {
                 return res;
             } else {
                 return this.apiManager.contactSearch(username).then((remoteRes) => {
                     if (remoteRes.usersList.length > 0) {
-                        this.importBulk(true, [remoteRes.usersList[0]]);
+                        this.importBulk(false, remoteRes.usersList);
                         return remoteRes.usersList[0] as IUser;
                     } else {
                         throw Error('not found');
@@ -274,12 +284,23 @@ export default class UserRepo {
         }
         return this.db.users.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IUser[] = differenceBy(users, result, 'id');
+            const now = this.riverTime.now();
             const updateItems: IUser[] = result.map((user: IUser) => {
+                if (user.dont_update_last_modified) {
+                    delete user.dont_update_last_modified;
+                } else {
+                    user.last_modified = now;
+                }
                 return this.mergeUser(users, user, force);
             });
             createItems.forEach((user: IUser) => {
+                if (user.dont_update_last_modified) {
+                    delete user.dont_update_last_modified;
+                } else {
+                    user.last_modified = now;
+                }
                 if (user.status === UserStatus.USERSTATUSONLINE && !user.status_last_modified) {
-                    user.status_last_modified = RiverTime.getInstance().now();
+                    user.status_last_modified = now;
                 } else if (user.lastseen) {
                     user.status_last_modified = user.lastseen;
                 }
@@ -314,26 +335,29 @@ export default class UserRepo {
         delete this.lastContactTimestamp[teamId];
     }
 
-    public getAllContacts(teamId: string, cb?: (users: IUser[]) => void): Promise<IUser[]> {
+    public getAllContacts(teamId: string, cb?: (users: IUser[]) => void, filter?: { filterDeleted?: boolean }): Promise<IUser[]> {
+        const searchParam = {filterDeleted: filter ? filter.filterDeleted : undefined};
         if (cb) {
-            this.getManyCache(teamId, true, {}).then((res) => {
+            this.getManyCache(teamId, true, searchParam).then((res) => {
                 cb(res);
             });
         }
         return new Promise((resolve, reject) => {
             const now = Math.floor(Date.now() / 1000);
             if (now - (this.lastContactTimestamp[teamId] || 0) < 1800) {
-                this.getManyCache(teamId, true, {}).then((res) => {
+                this.getManyCache(teamId, true, searchParam).then((res) => {
                     resolve(res);
                 }).catch((err) => {
                     reject(err);
                 });
             } else {
                 const crc32 = this.getContactsCrc(teamId);
-                this.apiManager.getContacts(crc32).then((remoteRes) => {
+                this.apiManager.getContacts(crc32, teamId).then((remoteRes) => {
                     if (remoteRes.modified) {
-                        this.importBulk(true, remoteRes.contactusersList);
-                        this.importBulk(false, remoteRes.usersList);
+                        const promises = [
+                            this.importBulk(true, remoteRes.contactusersList),
+                            this.importBulk(false, remoteRes.usersList),
+                        ];
                         this.removeContactList(teamId).then(() => {
                             this.setContactList(remoteRes.usersList.map((o) => {
                                 return {
@@ -344,10 +368,14 @@ export default class UserRepo {
                         });
                         this.storeContactsCrc(teamId, remoteRes.contactusersList);
                         this.lastContactTimestamp[teamId] = now;
-                        resolve(remoteRes.contactusersList);
+                        Promise.all(promises).then(() => {
+                            this.getManyCache(teamId, true, searchParam).then((res) => {
+                                resolve(res);
+                            });
+                        });
                     } else {
                         this.lastContactTimestamp[teamId] = now;
-                        this.getManyCache(teamId, true, {}).then((res) => {
+                        this.getManyCache(teamId, true, searchParam).then((res) => {
                             resolve(res);
                         });
                     }

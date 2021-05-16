@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import React from 'react';
+import React, {Suspense} from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
@@ -84,12 +84,11 @@ import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
 import CachedMessageService from "../../services/cachedMessageService";
-import {C_VERSION, isProd} from "../../../index";
+import {C_CLIENT, C_VERSION, isProd} from "../../../index";
 import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 import LeftMenu, {menuAction} from "../../components/LeftMenu";
 import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
-import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
 import {withSnackbar, WithSnackbarProps} from "notistack";
@@ -185,8 +184,14 @@ import CallService from "../../services/callService";
 import {getDefaultAudio} from "../../components/SettingsMediaInput";
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import {IsMobileView} from "../../services/isMobile";
+import DeepLinkService, {C_DEEP_LINK_EVENT} from "../../services/deepLinkService";
+import {gotToken} from "../SignUp";
+import NotificationService from "../../services/notification";
 
 import './style.scss';
+
+const UploaderLazy = React.lazy(() => import('../../components/Uploader'));
+const RightMenu = React.lazy(() => import('../../components/RightMenu'));
 
 export let notifyOptions: any[] = [];
 
@@ -210,6 +215,7 @@ class Chat extends React.Component<IProps, IState> {
     private conversationRef: any = null;
     private containerRef: any = null;
     private isInChat: boolean = true;
+    // @ts-ignore
     private rightMenuRef: RightMenu | undefined;
     private leftMenuRef: LeftMenu | undefined;
     private dialogRef: Dialog | undefined;
@@ -300,6 +306,7 @@ class Chat extends React.Component<IProps, IState> {
     private readonly callService: CallService;
     private dialogInitialized: boolean = false;
     private started: boolean = false;
+    private deepLinkService: DeepLinkService;
 
     constructor(props: IProps) {
         super(props);
@@ -344,6 +351,7 @@ class Chat extends React.Component<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
+        this.deepLinkService = DeepLinkService.getInstance();
         this.callService = CallService.getInstance();
         this.callService.setEnqueueSnackbarFn(this.props.enqueueSnackbar);
 
@@ -540,6 +548,11 @@ class Chat extends React.Component<IProps, IState> {
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.About, this.electronAboutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Logout, this.electronLogoutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.SizeMode, this.electronSizeModeHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Notification, this.electronNotificationHandler));
+
+        // Deep link events
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.OpenChat, this.deepLinkOpenChatHandler));
+        this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.BotStart, this.deepLinkBotStartHandler));
 
         if (localStorage.getItem(C_LOCALSTORAGE.ThemeBg) === C_CUSTOM_BG) {
             this.backgroundService.getBackground(C_CUSTOM_BG_ID, true);
@@ -753,14 +766,16 @@ class Chat extends React.Component<IProps, IState> {
                                 <div className="start-messaging-footer"/>
                             </div>
                         </div>}
-                        <RightMenu key="right-menu" ref={this.rightMenuRefHandler}
-                                   onChange={this.rightMenuChangeHandler}
-                                   onMessageAttachmentAction={this.messageAttachmentActionHandler}
-                                   onBulkAction={this.rightMenuBulkActionHandler}
-                                   onExitGroup={this.groupInfoExitHandler}
-                                   onToggleMenu={this.rightMenuToggleMenuHandler}
-                                   onError={this.textErrorHandler}
-                        />
+                        <Suspense fallback={null}>
+                            <RightMenu ref={this.rightMenuRefHandler}
+                                       onChange={this.rightMenuChangeHandler}
+                                       onMessageAttachmentAction={this.messageAttachmentActionHandler}
+                                       onBulkAction={this.rightMenuBulkActionHandler}
+                                       onExitGroup={this.groupInfoExitHandler}
+                                       onToggleMenu={this.rightMenuToggleMenuHandler}
+                                       onError={this.textErrorHandler}
+                            />
+                        </Suspense>
                     </div>
                     <NewMessage key="new-message" open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessageHandler} teamId={this.teamId}/>
@@ -779,7 +794,9 @@ class Chat extends React.Component<IProps, IState> {
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
                 <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
                              onClose={this.forwardDialogCloseHandler} teamId={this.teamId}/>
-                <Uploader ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                <Suspense fallback={null}>
+                    <UploaderLazy ref={this.uploaderRefHandler} onDone={this.uploaderDoneHandler}/>
+                </Suspense>
                 {/*<button onClick={this.toggleLiveUpdateHandler}>toggle live update</button>*/}
             </div>
         );
@@ -878,7 +895,7 @@ class Chat extends React.Component<IProps, IState> {
                 const dialog = this.getDialogByPeerName(this.selectedPeerName);
                 if (dialog && dialog.activecallid && this.peer && this.callService) {
                     if (cmd === 'call_end') {
-                        this.callService.callReject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
+                        this.callService.reject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
                             if (this.peer && this.peer.getType() === PeerType.PEERUSER) {
                                 this.updatePhoneCallEndedHandler({
                                     peer: this.peer.toObject(),
@@ -889,7 +906,7 @@ class Chat extends React.Component<IProps, IState> {
                             }
                         });
                     } else {
-                        this.callService.joinCall(this.peer, dialog.activecallid);
+                        this.callService.join(this.peer, dialog.activecallid);
                     }
                 }
                 break;
@@ -1517,6 +1534,11 @@ class Chat extends React.Component<IProps, IState> {
     private electronSizeModeHandler = (mode: string) => {
         this.isMobileView = (mode === 'responsive');
         this.forceUpdate();
+    }
+
+    /* Electron notification click handler */
+    private electronNotificationHandler = ({teamId, peerId, peerType}: { teamId: string, peerId: string, peerType: string }) => {
+        this.props.history.push(`/chat/${teamId}/${peerId}_${peerType}`);
     }
 
     private getMessagesByPeerName(dialogPeerName: string, force?: boolean, messageId?: string, beforeMsg?: number) {
@@ -2540,6 +2562,11 @@ class Chat extends React.Component<IProps, IState> {
         if (ElectronService.isElectron()) {
             this.electronService.setBadgeCounter(unreadCounter);
         }
+        if (unreadCounter === 0) {
+            window.document.title = 'River';
+        } else {
+            window.document.title = `(${unreadCounter}) | River`;
+        }
     }
 
     private wasmInitHandler = () => {
@@ -2564,6 +2591,13 @@ class Chat extends React.Component<IProps, IState> {
                     this.userRepo.getAllContacts(this.teamId);
                     this.apiManager.getSystemConfig();
                     this.startSyncing(res.updateid || 0);
+                    if (!gotToken) {
+                        NotificationService.getInstance().initToken().then((token) => {
+                            this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+                        }).catch((err) => {
+                            window.console.warn(err);
+                        });
+                    }
                     this.sendAllPendingMessages();
                 } else {
                     setTimeout(() => {
@@ -3128,6 +3162,9 @@ class Chat extends React.Component<IProps, IState> {
                     }
                     this.resetSelectedMessages();
                 });
+                break;
+            case 'logout_force':
+                this.logOutHandler();
                 break;
             case 'chat':
             case 'settings':
@@ -3701,7 +3738,7 @@ class Chat extends React.Component<IProps, IState> {
                 link = '//' + link;
             }
             if (ElectronService.isElectron()) {
-                ElectronService.openExternal(link);
+                ElectronService.getInstance().loadUrl(link);
             } else {
                 const win: any = window.open(link, '_blank');
                 win.focus();
@@ -3854,10 +3891,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* SettingsMenu on update handler */
-    private settingActionHandler = (cmd: 'logout' | 'count_dialog') => {
+    private settingActionHandler = (cmd: 'logout' | 'logout_force' | 'count_dialog') => {
         switch (cmd) {
             case 'logout':
-                this.bottomBarSelectHandler('logout')();
+            case 'logout_force':
+                this.bottomBarSelectHandler(cmd)();
                 break;
             case 'count_dialog':
                 this.dialogsSort(this.dialogs);
@@ -6093,8 +6131,27 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private userDialogActionHandler = (cmd: string, user?: IUser) => {
-        if (user && cmd === 'start_bot') {
-            this.startBot(user);
+        if (!user) {
+            return;
+        }
+        const peer = new InputPeer();
+        peer.setType(PeerType.PEERUSER);
+        peer.setAccesshash(user.accesshash);
+        peer.setId(user.id);
+        switch (cmd) {
+            case 'start_bot':
+                this.startBot(user);
+                break;
+            case 'call_audio':
+                if (this.callService) {
+                    this.callService.openCallDialog(peer, false);
+                }
+                break;
+            case 'call_video':
+                if (this.callService) {
+                    this.callService.openCallDialog(peer, true);
+                }
+                break;
         }
     }
 
@@ -6106,6 +6163,7 @@ class Chat extends React.Component<IProps, IState> {
         inputPeer.setType(PeerType.PEERUSER);
         this.apiManager.botStart(inputPeer, randomId).then(() => {
             user.is_bot_started = true;
+            user.dont_update_last_modified = true;
             this.userRepo.importBulk(false, [user]);
             const entities: MessageEntity[] = [];
             const entity = new MessageEntity();
@@ -6376,6 +6434,30 @@ class Chat extends React.Component<IProps, IState> {
                 resolve(false);
             }
         });
+    }
+
+    private deepLinkOpenChatHandler = ({phone, username}: { phone?: string, username?: string }) => {
+        if (username) {
+            this.userRepo.getByUsername(username).then((user) => {
+                this.props.history.push(`/chat/${this.teamId}/${user.id}_${PeerType.PEERUSER}`);
+            });
+        }
+    }
+
+    private deepLinkBotStartHandler = ({username}: { username?: string }) => {
+        if (username) {
+            this.userRepo.getByUsername(username).then((user) => {
+                if (user.isbot) {
+                    return;
+                }
+                this.props.history.push(`/chat/${this.teamId}/${user.id}_${PeerType.PEERUSER}`);
+                if (!user.is_bot_started) {
+                    setTimeout(() => {
+                        this.startBot(user);
+                    }, 128);
+                }
+            });
+        }
     }
 }
 

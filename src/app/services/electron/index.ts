@@ -8,12 +8,14 @@
 */
 
 import {IpcRenderer} from 'electron';
+import DeepLinkService from "../deepLinkService";
 
 export const C_ELECTRON_SUBJECT = {
     About: 'about',
     FnCall: 'fnCall',
     FnCallback: 'fnCallback',
     Logout: 'logout',
+    Notification: 'notification',
     Setting: 'settings',
     SizeMode: 'sizeMode',
 };
@@ -26,7 +28,10 @@ export const C_ELECTRON_CMD = {
     GetLoadUrl: 'getLoadUrl',
     GetScreenCaptureList: 'getScreenCaptureList',
     GetVersion: 'getVersion',
+    InitFCM: 'initFCM',
+    LoadUser: 'loadUrl',
     PreviewFile: 'previewFile',
+    Ready: 'ready',
     RevealFile: 'revealFile',
     ScreenCapturePermission: 'screenCapturePermission',
     SetBadgeCounter: 'setBadgeCounter',
@@ -34,10 +39,29 @@ export const C_ELECTRON_CMD = {
     ToggleMenuBar: 'toggleMenuBar',
 };
 
+export interface FCMCredentials {
+    keys: {
+        privateKey: string;
+        publicKey: string;
+        authSecret: string;
+    },
+    fcm: {
+        token: string;
+        pushSet: string;
+    },
+    gcm: {
+        token: string;
+        androidId: string;
+        securityToken: string;
+        appId: string;
+    }
+}
+
 interface IMessageListener {
     cmd: string;
     reject: any;
     resolve: any;
+    timeout: any;
 }
 
 export default class ElectronService {
@@ -49,6 +73,11 @@ export default class ElectronService {
     public static isNewElectron() {
         // @ts-ignore
         return window.isNewElectron || false;
+    }
+
+    public static hasFCMSupport() {
+        // @ts-ignore
+        return window.hasFCMSupport || false;
     }
 
     public static electronVersion() {
@@ -66,11 +95,6 @@ export default class ElectronService {
         return null;
     }
 
-    public static openExternal(url: string) {
-        // @ts-ignore
-        return window.electronShell.openExternal(url);
-    }
-
     public static getInstance() {
         if (!this.instance) {
             this.instance = new ElectronService();
@@ -86,10 +110,12 @@ export default class ElectronService {
     private fnIndex: number = 0;
     private reqId: number = 0;
     private messageListeners: { [key: number]: IMessageListener } = {};
+    private deepLinkService: DeepLinkService;
 
     private constructor() {
         // @ts-ignore
         this.ipcRenderer = window.ipcRenderer;
+        this.deepLinkService = DeepLinkService.getInstance();
 
         if (this.ipcRenderer) {
             this.ipcRenderer.on('settings', (event: any, msg: any) => {
@@ -104,9 +130,16 @@ export default class ElectronService {
             this.ipcRenderer.on('sizeMode', (event: any, msg: any) => {
                 this.callHandlers(C_ELECTRON_SUBJECT.SizeMode, msg);
             });
+            this.ipcRenderer.on('notificationClick', (event: any, msg: any) => {
+                this.callHandlers(C_ELECTRON_SUBJECT.Notification, msg);
+            });
             this.ipcRenderer.on('fnCallback', (event: any, data: any) => {
                 this.response(data);
             });
+            this.ipcRenderer.on('deepLink', (event: any, data: any) => {
+                this.deepLinkService.parseLink(data);
+            });
+            this.send(C_ELECTRON_CMD.Ready, {});
         }
     }
 
@@ -201,6 +234,16 @@ export default class ElectronService {
         return this.send(C_ELECTRON_CMD.Focus, {});
     }
 
+    /* Init FCM */
+    public initFCM(data?: FCMCredentials): Promise<FCMCredentials> {
+        return this.send(C_ELECTRON_CMD.InitFCM, data);
+    }
+
+    /* Load Url */
+    public loadUrl(url: string) {
+        return this.send(C_ELECTRON_CMD.LoadUser, {url});
+    }
+
     /* Call queue handler */
     private callHandlers(subject: string, payload: any) {
         if (!this.fnQueue[subject]) {
@@ -219,8 +262,8 @@ export default class ElectronService {
         if (!this.ipcRenderer) {
             return Promise.reject('non ipcRenderer');
         }
-        let internalResolve = null;
-        let internalReject = null;
+        let internalResolve: any = null;
+        let internalReject: any = null;
 
         const reqId = ++this.reqId;
 
@@ -229,10 +272,18 @@ export default class ElectronService {
             internalReject = rej;
         });
 
+        const timeout = setTimeout(() => {
+            if (internalReject) {
+                internalReject('timeout');
+            }
+            delete this.messageListeners[data.reqId];
+        }, 15000);
+
         this.messageListeners[reqId] = {
             cmd,
             reject: internalReject,
             resolve: internalResolve,
+            timeout,
         };
 
         this.ipcRenderer.send('fnCall', {
@@ -248,6 +299,7 @@ export default class ElectronService {
         if (!this.messageListeners.hasOwnProperty(data.reqId)) {
             return;
         }
+        clearTimeout(this.messageListeners[data.reqId].timeout);
         if (data.cmd === C_ELECTRON_CMD.Error) {
             this.messageListeners[data.reqId].reject(data.data);
         } else {

@@ -133,7 +133,7 @@ import {
     GroupsGetFull,
     GroupsGetReadHistoryStats,
     GroupsHistoryStats,
-    GroupsRemovePhoto,
+    GroupsRemovePhoto, GroupsToggleAdminOnly,
     GroupsToggleAdmins,
     GroupsUpdateAdmin,
     GroupsUpdatePhoto,
@@ -296,6 +296,9 @@ export default class APIManager {
         localStorage.removeItem(C_LOCALSTORAGE.ThemeBg);
         localStorage.removeItem(C_LOCALSTORAGE.ThemeBgPic);
         localStorage.removeItem(C_LOCALSTORAGE.SettingsLeftPanelVisible);
+        localStorage.removeItem(C_LOCALSTORAGE.FCMCredentials);
+        localStorage.removeItem(C_LOCALSTORAGE.LastUpdateId);
+        localStorage.removeItem(C_LOCALSTORAGE.ReactionFrequently);
     }
 
     public loadConnInfo(): IConnInfo {
@@ -430,11 +433,15 @@ export default class APIManager {
         return this.server.send(C_MSG.ContactsImport, data.serializeBinary(), false, undefined, undefined, true);
     }
 
-    public getContacts(crc?: number): Promise<ContactsMany.AsObject> {
+    public getContacts(crc?: number, teamId?: string): Promise<ContactsMany.AsObject> {
         const data = new ContactsGet();
         data.setCrc32hash(crc || 0);
         this.logVerbose(data);
         return this.server.send(C_MSG.ContactsGet, data.serializeBinary(), true, {
+            inputTeam: teamId === '0' ? {
+                accesshash: '0',
+                id: '0',
+            } : undefined,
             retry: 2,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
@@ -488,7 +495,7 @@ export default class APIManager {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
-                items: C_ERR_ITEM.ErrItemTimeout
+                items: null,
             }],
             timeout: 5000,
         }, reqIdFn);
@@ -508,7 +515,7 @@ export default class APIManager {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
-                items: C_ERR_ITEM.ErrItemTimeout
+                items: null,
             }],
         }, undefined, true);
     }
@@ -528,7 +535,7 @@ export default class APIManager {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
-                items: C_ERR_ITEM.ErrItemTimeout
+                items: null,
             }, {
                 code: C_ERR.ErrCodeInvalid,
                 items: C_ERR_ITEM.ErrItemNotFound
@@ -551,7 +558,7 @@ export default class APIManager {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
-                items: C_ERR_ITEM.ErrItemTimeout
+                items: null,
             }],
         }, undefined, true);
     }
@@ -851,6 +858,14 @@ export default class APIManager {
         data.setAdminenabled(adminEnabled);
         this.logVerbose(data);
         return this.server.send(C_MSG.GroupsToggleAdmins, data.serializeBinary(), true, undefined, undefined, true);
+    }
+
+    public groupToggleAdminOnly(peer: InputPeer, adminOnly: boolean): Promise<Bool.AsObject> {
+        const data = new GroupsToggleAdminOnly();
+        data.setGroupid(peer.getId() || '');
+        data.setAdminonly(adminOnly);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.GroupsToggleAdminOnly, data.serializeBinary(), true, undefined, undefined, true);
     }
 
     public groupUploadPicture(groupId: string, file: InputFile): Promise<GroupPhoto.AsObject> {
@@ -1214,7 +1229,12 @@ export default class APIManager {
     public accountGetTeams(): Promise<TeamsMany.AsObject> {
         const data = new AccountGetTeams();
         this.logVerbose(data);
-        return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true);
+        return this.server.send(C_MSG.AccountGetTeams, data.serializeBinary(), true, {
+            inputTeam: {
+                accesshash: '0',
+                id: '0',
+            },
+        });
     }
 
     public botGetInlineResults(botPeer: InputUser, userPeer: InputPeer, query: string, offset: string): Promise<BotResults.AsObject> {
@@ -1349,75 +1369,77 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), !batch);
     }
 
-    public callAccept(inputPeer: InputPeer, id: string, participants: PhoneParticipantSDP[]): Promise<PhoneCall.AsObject> {
+    public callAccept(inputPeer: InputPeer, callId: string, participants: PhoneParticipantSDP[]): Promise<PhoneCall.AsObject> {
         const data = new PhoneAcceptCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setParticipantsList(participants);
         data.setDevicetype(ElectronService.isElectron() ? CallDeviceType.CALLDEVICEDESKTOP : CallDeviceType.CALLDEVICEWEB);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneAcceptCall, data.serializeBinary(), true);
     }
 
-    public callReject(inputPeer: InputPeer, id: string, reason: DiscardReason, duration: number): Promise<Bool.AsObject> {
+    public callReject(inputPeer: InputPeer, callId: string, reason: DiscardReason, duration: number, inputTeam?: InputTeam.AsObject): Promise<Bool.AsObject> {
         const data = new PhoneDiscardCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setDuration(duration);
         data.setReason(reason);
         this.logVerbose(data);
-        return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true);
+        return this.server.send(C_MSG.PhoneDiscardCall, data.serializeBinary(), true, {
+            inputTeam,
+        });
     }
 
-    public callJoin(inputPeer: InputPeer, id: string): Promise<PhoneParticipants.AsObject> {
+    public callJoin(inputPeer: InputPeer, callId: string): Promise<PhoneParticipants.AsObject> {
         const data = new PhoneJoinCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneJoinCall, data.serializeBinary(), true);
     }
 
-    public callAddParticipant(inputPeer: InputPeer, id: string, inputUsers: InputUser[]): Promise<PhoneParticipants.AsObject> {
+    public callAddParticipant(inputPeer: InputPeer, callId: string, inputUsers: InputUser[]): Promise<PhoneParticipants.AsObject> {
         const data = new PhoneAddParticipant();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setParticipantsList(inputUsers);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneAddParticipant, data.serializeBinary(), true);
     }
 
-    public callRemoveParticipant(inputPeer: InputPeer, id: string, inputUsers: InputUser[], timeout: boolean): Promise<Bool.AsObject> {
+    public callRemoveParticipant(inputPeer: InputPeer, callId: string, inputUsers: InputUser[], timeout: boolean): Promise<Bool.AsObject> {
         const data = new PhoneRemoveParticipant();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setParticipantsList(inputUsers);
         data.setTimeout(timeout);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRemoveParticipant, data.serializeBinary(), true);
     }
 
-    public callGetParticipants(inputPeer: InputPeer, id: string): Promise<PhoneParticipants.AsObject> {
+    public callGetParticipants(inputPeer: InputPeer, callId: string): Promise<PhoneParticipants.AsObject> {
         const data = new PhoneGetParticipants();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneGetParticipants, data.serializeBinary(), true);
     }
 
-    public callUpdateAdmin(inputPeer: InputPeer, id: string, inputUser: InputUser, admin: boolean): Promise<Bool.AsObject> {
+    public callUpdateAdmin(inputPeer: InputPeer, callId: string, inputUser: InputUser, admin: boolean): Promise<Bool.AsObject> {
         const data = new PhoneUpdateAdmin();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setUser(inputUser);
         data.setAdmin(admin);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneUpdateAdmin, data.serializeBinary(), true);
     }
 
-    public callUpdate(inputPeer: InputPeer, id: string, participants: InputUser[], action: PhoneCallAction, actionData: Uint8Array, instant?: boolean): Promise<Bool.AsObject> {
+    public callUpdate(inputPeer: InputPeer, callId: string, participants: InputUser[], action: PhoneCallAction, actionData: Uint8Array, instant?: boolean): Promise<Bool.AsObject> {
         const data = new PhoneUpdateCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setParticipantsList(participants);
         data.setAction(action);
         data.setActiondata(actionData);
@@ -1425,10 +1447,10 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneUpdateCall, data.serializeBinary(), instant || false);
     }
 
-    public callRate(inputPeer: InputPeer, id: string, rate: number, reasonType?: PhoneCallRateReason, reasonData?: Uint8Array): Promise<Bool.AsObject> {
+    public callRate(inputPeer: InputPeer, callId: string, rate: number, reasonType?: PhoneCallRateReason, reasonData?: Uint8Array): Promise<Bool.AsObject> {
         const data = new PhoneRateCall();
         data.setPeer(inputPeer);
-        data.setCallid(id);
+        data.setCallid(callId);
         data.setRate(rate);
         if (reasonType && reasonData) {
             data.setReasontype(reasonType);

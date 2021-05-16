@@ -33,7 +33,7 @@ import {
 import APIManager, {currentUserId} from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
-import GroupRepo, {GroupDBUpdated} from '../../repository/group';
+import GroupRepo, {GroupDBUpdated, mergeParticipant} from '../../repository/group';
 import TimeUtility from '../../services/utilities/time';
 import {IParticipant, IUser} from '../../repository/user/interface';
 import UserAvatar from '../UserAvatar';
@@ -71,9 +71,9 @@ import {C_AVATAR_SIZE} from "../SettingsMenu";
 import {ModalityService} from "kk-modality";
 import ContactPicker from "../ContactPicker";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
+import UserName from "../UserName";
 
 import './style.scss';
-import UserName from "../UserName";
 
 interface IProps {
     peer: InputPeer | null;
@@ -359,6 +359,27 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         </div>
                                     </div>}
                                 </>}
+                                {group && !disable && <>
+                                    {Boolean(group && group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) &&
+                                    <div className="kk-card notify-settings">
+                                        <div className="label">{i18n.t('peer_info.admin_only')}</div>
+                                        <div className="value switch">
+                                            <Switch
+                                                checked={group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1}
+                                                className="admin-switch"
+                                                color="default"
+                                                onChange={this.toggleAdminOnlyHandler}
+                                                classes={{
+                                                    checked: 'setting-switch-checked',
+                                                    root: 'setting-switch',
+                                                    switchBase: 'setting-switch-base',
+                                                    thumb: 'setting-switch-thumb',
+                                                    track: 'setting-switch-track',
+                                                }}
+                                            />
+                                        </div>
+                                    </div>}
+                                </>}
                                 {(dialog && peer && !shareMediaEnabled) &&
                                 <PeerMedia key={peer.getId() || ''} className="kk-card" peer={peer} full={false}
                                            teamId={this.teamId} onMore={this.peerMediaMoreHandler}
@@ -425,7 +446,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         paper: 'kk-context-menu-paper'
                     }}
                 >
-                    {this.contextMenuItem()}
+                    {this.contextMenuItem(allMemberAdmin)}
                 </Menu>
                 <Menu
                     anchorEl={avatarMenuAnchorEl}
@@ -439,7 +460,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     {this.avatarContextMenuItem()}
                 </Menu>
                 <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactPickerDoneHandler}
-                               teamId={this.teamId} title={i18n.t('peer_info.add_member')}/>
+                               teamId={this.teamId} title={i18n.t('peer_info.add_member')}
+                               globalSearch={true}/>
             </div>
         );
     }
@@ -454,6 +476,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (data && (data.callerId === this.callerId || data.ids.indexOf(`${this.teamId}_${peer.getId()}`) === -1)) {
             return;
         }
+
         this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
             if (res) {
                 this.setState({
@@ -470,20 +493,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             this.loading = true;
             this.apiManager.groupGetFull(peer).then((res) => {
                 const group: IGroup = res.group;
-                group.participantList = res.participantsList;
+                if (res.participantsList && res.participantsList.length > 0) {
+                    group.participantList = mergeParticipant(res.participantsList as any, res.usersList);
+                }
                 group.photogalleryList = res.photogalleryList;
                 this.groupRepo.importBulk([group], this.callerId);
-                const contacts: IUser[] = [];
-                res.participantsList.forEach((list) => {
-                    contacts.push({
-                        accesshash: list.accesshash,
-                        firstname: list.firstname,
-                        id: list.userid,
-                        lastname: list.lastname,
-                        username: list.username,
-                    });
-                });
-                this.userRepo.importBulk(false, contacts);
+                this.userRepo.importBulk(false, res.usersList);
                 this.setState({
                     group: res.group,
                     participants: res.participantsList,
@@ -547,7 +562,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     /* Decides what content the participants' "more" menu must have */
-    private contextMenuItem() {
+    private contextMenuItem(allMemberAdmin: boolean) {
         const {group, currentUser} = this.state;
         if (!group || !currentUser) {
             return null;
@@ -561,7 +576,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     title: i18n.t('contact.remove'),
                 });
             }
-            if (group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) {
+            if (!allMemberAdmin && group.flagsList && group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1) {
                 if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
                     menuItems.push({
                         cmd: 'promote',
@@ -757,6 +772,37 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         };
         toggleAdmin();
         this.apiManager.groupToggleAdmin(peer, !e.currentTarget.checked).then(() => {
+            this.loading = false;
+        }).catch(() => {
+            toggleAdmin();
+        });
+    }
+
+    /* Toggle admin only handler */
+    private toggleAdminOnlyHandler = (e: any) => {
+        if (this.loading) {
+            return;
+        }
+        const {peer, group} = this.state;
+        if (!peer || !group) {
+            return;
+        }
+        this.loading = true;
+        const toggleAdmin = () => {
+            if (group.flagsList) {
+                const index = group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINONLY);
+                if (index > -1) {
+                    group.flagsList.splice(index, 1);
+                } else {
+                    group.flagsList.push(GroupFlags.GROUPFLAGSADMINONLY);
+                }
+                this.setState({
+                    group,
+                });
+            }
+        };
+        toggleAdmin();
+        this.apiManager.groupToggleAdminOnly(peer, e.currentTarget.checked).then(() => {
             this.loading = false;
         }).catch(() => {
             toggleAdmin();

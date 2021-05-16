@@ -8,8 +8,7 @@
 */
 
 /* eslint import/no-webpack-loader-syntax: off */
-import React from 'react';
-import {Picker as EmojiPicker} from 'emoji-mart';
+import React, {Suspense} from 'react';
 import {cloneDeep, range, throttle, trimStart} from 'lodash';
 import {
     AttachFileRounded,
@@ -82,14 +81,17 @@ import {MediaContact, MediaDocument} from "../../services/sdk/messages/chat.mess
 import {getHumanReadableSize} from "../MessageFile";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
 import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@material-ui/core';
-import GifPicker from "../GifPicker";
 import {IGif} from "../../repository/gif/interface";
 import {Sticker} from "../SVG/sticker";
 import {getDefaultAudio} from "../SettingsMediaInput";
 import {canEditMessage, isEditableMessageType} from "../Message";
+import {Loading} from "../Loading";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
+
+const EmojiContainer = React.lazy(() => import('./emojiContainer'));
+const GifPicker = React.lazy(() => import('../GifPicker'));
 
 export type shiftArrow = 'up' | 'right' | 'down' | 'left' | 'cancel';
 
@@ -149,7 +151,7 @@ export const generateEntities = (text: string, mentions: IMention[]): { entities
             underlineText = underlineRange(underlineText, r.start, r.len);
         });
     }
-    XRegExp.forEach(underlineText, /(\bhttps?:\/\/\S+)|([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](\.com|\.org|\.net|\.im|\.ir))/, (match) => {
+    XRegExp.forEach(underlineText, /(\bhttps?:\/\/\S+)|(\brvr:\/\/\S+)|([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](\.com|\.org|\.net|\.im|\.ir))/, (match) => {
         const entity = new MessageEntity();
         entity.setOffset(match.index);
         entity.setLength(match[0].length);
@@ -378,6 +380,8 @@ class ChatInput extends React.Component<IProps, IState> {
 
         this.userRepo = UserRepo.getInstance();
 
+        const user = props.peer && (props.peer.getType() === PeerType.PEERUSER && props.peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(props.peer.getId() || '') : null;
+
         this.state = {
             botKeyboard: false,
             disableAuthority: 0x0,
@@ -395,10 +399,10 @@ class ChatInput extends React.Component<IProps, IState> {
             selectable: false,
             selectableDisable: false,
             selectableHasPending: false,
-            showInput: props.peer ? props.peer.getId() !== '2374' : true,
+            showInput: user ? !(user.id === '2374' || user.deleted) : true,
             textareaValue: '',
             uploadPreviewOpen: false,
-            user: props.peer && (props.peer.getType() === PeerType.PEERUSER && props.peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(props.peer.getId() || '') : null,
+            user,
             voiceMode: 'up',
         };
 
@@ -450,7 +454,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.setState({
                 disableAuthority: 0x0,
                 peer,
-                showInput: peer ? peer.getId() !== '2374' : true,
+                showInput: user ? !(user.id === '2374' || user.deleted) : true,
                 user,
             }, () => {
                 this.checkAuthority()();
@@ -459,6 +463,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     if (res) {
                         this.setState({
+                            showInput: res ? !(res.id === '2374' || res.deleted) : true,
                             user: res,
                         });
                     }
@@ -538,7 +543,7 @@ class ChatInput extends React.Component<IProps, IState> {
             const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 peer,
-                showInput: peer ? peer.getId() !== '2374' : true,
+                showInput: user ? !(user.id === '2374' || user.deleted) : true,
                 user,
             }, () => {
                 this.checkAuthority()();
@@ -547,6 +552,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     if (res) {
                         this.setState({
+                            showInput: res ? !(res.id === '2374' || res.deleted) : true,
                             user: res,
                         });
                     }
@@ -1214,7 +1220,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private inputKeyDownHandler = (e: any) => {
         const textVal = e.target.value;
         const {previewMessageMode} = this.state;
-        if (e.shiftKey || (e.key === 'Escape' && this.selectWithArrow)) {
+        if ((e.shiftKey && textVal.length === 0) || (e.key === 'Escape' && this.selectWithArrow)) {
             this.handleShiftArrowKeys(e.keyCode);
             return;
         }
@@ -1369,22 +1375,28 @@ class ChatInput extends React.Component<IProps, IState> {
         if (peer.getType() === PeerType.PEERGROUP) {
             this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
                 if (res) {
-                    if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
+                    const flags = res.flagsList || [];
+                    const showInput = !(flags.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1 && flags.indexOf(GroupFlags.GROUPFLAGSADMIN) === -1);
+                    if (flags.indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
                         this.setState({
                             disableAuthority: 0x1,
+                            showInput,
                         });
-                    } else if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
+                    } else if (flags.indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
                         this.setState({
                             disableAuthority: 0x2,
+                            showInput,
                         });
                     } else {
                         this.setState({
                             disableAuthority: 0x0,
+                            showInput,
                         });
                     }
                 } else {
                     this.setState({
                         disableAuthority: 0x0,
+                        showInput: true,
                     });
                 }
             });
@@ -2297,6 +2309,7 @@ class ChatInput extends React.Component<IProps, IState> {
         const {user} = this.state;
         if (user) {
             user.is_bot_started = started;
+            user.dont_update_last_modified = true;
             this.userRepo.importBulk(false, [user]);
         }
     }
@@ -2439,10 +2452,13 @@ class ChatInput extends React.Component<IProps, IState> {
             default:
             case 0:
                 const dark = (localStorage.getItem(C_LOCALSTORAGE.ThemeColor) || 'light') !== 'light';
-                return <EmojiPicker custom={[]} onSelect={this.emojiSelectHandler} native={true}
-                                    showPreview={false} theme={dark ? 'dark' : 'light'}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <EmojiContainer onSelect={this.emojiSelectHandler} dark={dark}/>
+                </Suspense>;
             case 1:
-                return <GifPicker onSelect={this.gifPickerSelectHandler} inputPeer={peer}/>;
+                return <Suspense fallback={<Loading/>}>
+                    <GifPicker onSelect={this.gifPickerSelectHandler} inputPeer={peer}/>
+                </Suspense>;
         }
     }
 

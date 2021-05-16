@@ -1,3 +1,61 @@
+## 1.1.39
+* SystemGetServerTime timeout extended
+
+## 1.1.38
+* Call improvements
+* Shortcut improvements
+
+## 1.1.37
+* Overall improvements in team
+
+## 1.1.36
+* Known bugs fixed
+
+## 1.1.35
+* Known bugs fixed
+
+## 1.1.34
+* Critical bug in electron fixed
+
+## 1.1.33
+* Minor bugs fixed
+
+## 1.1.32
+* Retry policy updated
+* Known bugs fixed
+
+## 1.1.31
+* Electron notification implemented (updating desktop app is necessary)
+
+## 1.1.30
+* Group admin only flag implemented
+* Better load time
+* Larger chunks in download manager
+
+## 1.1.29
+* Firebase notification implemented
+
+## 1.1.28
+* Electron load time decreased
+
+## 1.1.27
+* Deep Link implemented
+* Overall improvements
+
+## 1.1.26
+* Known bugs fixed
+* Last seen service improvements
+
+## 1.1.25
+* Notification counter in title for web clients
+* Bug fix
+
+## 1.1.24
+* Background job for on-viewport users with last seen activated
+* Improvements in call
+* Improvements in delete account
+* Known bugs fixed
+
 ## 1.1.23
 * Now you can mention with @
 * Bots can be added to groups

@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.34.0",
+  "version": "0.38.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -9,7 +9,7 @@
   "main": "public/electron.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "PUBLIC_URL=/ GENERATE_SOURCEMAP=false NODE_OPTIONS=--max_old_space_size=2048 react-scripts build",
+    "build": "PUBLIC_URL=/ GENERATE_SOURCEMAP=false NODE_OPTIONS=--max_old_space_size=4096 react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "elec2": "electron --inspect=5858 .",
@@ -35,15 +35,14 @@
     "detect-browser": "^5.0.0",
     "dexie": "3.0.3",
     "dom-css": "^2.1.0",
-    "elecron": "^0.0.1-security",
     "electron-context-menu": "^2.4.0",
     "electron-debug": "^3.2.0",
     "electron-dl": "^3.0.2",
     "electron-is-dev": "^1.2.0",
     "electron-store": "^6.0.1",
-    "emoji-mart": "^3.0.0",
+    "emoji-mart": "^3.0.1",
     "file-saver": "^2.0.5",
-    "firebase": "^7.8.2",
+    "firebase": "^8.4.3",
     "glur": "^1.1.2",
     "google-protobuf": "^3.15.7",
     "int64-buffer": "^1.0.0",
@@ -60,11 +59,13 @@
     "moment": "^2.29.1",
     "moment-jalaali": "^0.9.2",
     "music-metadata-browser": "^1.2.1",
+    "node-notifier": "^9.0.1",
     "notistack": "^1.0.3",
     "nprogress": "^0.2.0",
     "opus-recorder": "^8.0.3",
     "path": "^0.12.7",
     "protobufjs": "^6.10.2",
+    "push-receiver": "^2.1.1",
     "react": "^17.0.2",
     "react-avatar-editor": "11.0.13",
     "react-custom-scrollbars": "ronaksoft/react-custom-scrollbars",
@@ -125,7 +126,7 @@
     "@types/react-window": "^1.8.1",
     "@types/shortid": "^0.0.29",
     "@types/xregexp": "^3.0.29",
-    "electron": "^12.0.5",
+    "electron": "^12.0.7",
     "electron-builder": "^22.10.5",
     "electron-devtools-installer": "^3.1.1",
     "glob": "^7.1.6",
@@ -155,6 +156,12 @@
   },
   "build": {
     "appId": "com.river.im",
+    "protocols": {
+      "name": "River",
+      "schemes": [
+        "rvr"
+      ]
+    },
     "compression": "maximum",
     "productName": "River",
     "directories": {

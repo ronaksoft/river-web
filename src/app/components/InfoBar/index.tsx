@@ -260,7 +260,7 @@ class InfoBar extends React.Component<IProps, IState> {
                     if (user) {
                         this.setState({
                             activeCallId: null,
-                            withCall: !Boolean(user.isbot || user.official),
+                            withCall: !Boolean(user.isbot || user.official || user.deleted),
                         });
                     }
                 });

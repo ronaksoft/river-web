@@ -78,7 +78,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, step, accountPassword, phone, password, code} = this.state;
+        const {open} = this.state;
         return (
             <SettingsModal open={open} title={i18n.t('settings.change_phone_number.title')}
                            icon={<SimCardRounded/>}
@@ -86,7 +86,16 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                            height="340px"
                            noScrollbar={true}
             >
-                {Boolean(step === 1) && <div className="change-phone-dialog">
+                {this.getContent()}
+            </SettingsModal>
+        );
+    }
+
+    private getContent() {
+        const {step, accountPassword, phone, password, code} = this.state;
+        switch (step) {
+            case 1:
+                return <div className="change-phone-dialog">
                     <div className="change-phone-header">
                         <ChangePhone/>
                     </div>
@@ -102,8 +111,9 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                             {i18n.t('general.change')}
                         </Button>
                     </DialogActions>
-                </div>}
-                {Boolean(step === 2) && <div className="change-phone-dialog">
+                </div>;
+            case 2:
+                return <div className="change-phone-dialog">
                     <div className={`change-phone-input phone-number ${this.state.phoneError ? 'has-error' : ''}`}>
                         <IntlTelInput preferredCountries={[]}
                                       defaultCountry={'ir'}
@@ -143,8 +153,10 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                             {i18n.t('general.next')}
                         </Button>
                     </DialogActions>
-                </div>}
-                {Boolean(step === 3 || step === 4) && <div className="change-phone-dialog">
+                </div>;
+            case 3:
+            case 4:
+                return <div className="change-phone-dialog">
                     {Boolean(step === 3) && <div className="change-phone-input">
                         <TextField
                             label={i18n.t('sign_up.code')}
@@ -177,9 +189,9 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                             {i18n.t('general.submit')}
                         </Button>
                     </DialogActions>}
-                </div>}
-            </SettingsModal>
-        );
+                </div>;
+        }
+        return null;
     }
 
     private modalCloseHandler = () => {
@@ -298,6 +310,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                     step: 4,
                 });
                 this.userRepo.importBulk(false, [{
+                    dont_update_last_modified: true,
                     id: this.userRepo.getCurrentUserId(),
                     phone,
                 }]);
