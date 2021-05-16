@@ -281,6 +281,7 @@ export default class Socket {
                 break;
             case C_JS_MSG.CreateAuthKey:
                 if (this.fnCreateAuthKey) {
+                    window.console.log('fnCreateAuthKey');
                     this.fnCreateAuthKey().then((duration: number) => {
                         if (!this.started && this.connected) {
                             this.started = true;

@@ -110,6 +110,7 @@ export default class Server {
     private messageListeners: { [key: number]: IMessageListener } = {};
     private serviceMessagesListeners: object = {};
     private sentQueue: number[] = [];
+    private onProgressQueue: number[] = [];
     private updateQueue: any[] = [];
     private readonly updateManager: UpdateManager | undefined;
     private isReady: boolean = false;
@@ -182,6 +183,7 @@ export default class Server {
 
             window.addEventListener(EventSocketConnected, () => {
                 this.isConnected = true;
+                this.onProgressQueue = [];
                 this.flushSentQueue();
             });
 
@@ -429,6 +431,9 @@ export default class Server {
                 return;
             }
         }
+
+        this.onProgressQueue.push(request.reqId);
+
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId} ${request.inputTeam && request.inputTeam.id !== '0' ? ('teamId: ' + request.inputTeam.id) : ''}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
@@ -481,6 +486,7 @@ export default class Server {
                 if (this.cancelList.length > 0 && this.cancelList.indexOf(envelope.getRequestid() || 0) > -1) {
                     this.cancelRequestByEnvelope(envelope);
                 } else {
+                    this.onProgressQueue.push(envelope.getRequestid());
                     envelopes.push(envelope);
                 }
             }
@@ -589,6 +595,9 @@ export default class Server {
 
         const skipIds = this.getSkippableRequestIds();
         this.sentQueue.forEach((reqId) => {
+            if (this.onProgressQueue.indexOf(reqId) > -1) {
+                return;
+            }
             if (this.messageListeners[reqId]) {
                 const msg = this.messageListeners[reqId];
                 if (!this.isReady && !this.isUnAuth(msg.request.constructor)) {
@@ -642,9 +651,13 @@ export default class Server {
 
     private cleanQueue(reqId: number) {
         delete this.messageListeners[reqId];
-        const index = this.sentQueue.indexOf(reqId);
+        let index = this.sentQueue.indexOf(reqId);
         if (index > -1) {
             this.sentQueue.splice(index, 1);
+        }
+        index = this.onProgressQueue.indexOf(reqId);
+        if (index > -1) {
+            this.onProgressQueue.splice(index, 1);
         }
     }
 
