@@ -27,6 +27,13 @@ export enum IceState {
     Connecting = 2,
 }
 
+export enum ConnectionStatus {
+    Calling = 0,
+    Ringing = 1,
+    Connecting = 2,
+    Connected = 3,
+};
+
 export interface IRemoteConnection {
     connId: number;
     deviceType: CallDeviceType;
@@ -35,7 +42,7 @@ export interface IRemoteConnection {
     muted: boolean;
     setIceState: ((iceState: IceState) => void) | undefined;
     setMute: ((muted: boolean) => void) | undefined;
-    status: number;
+    status: ConnectionStatus;
     stream: MediaStream | undefined;
     userId: string;
 }
@@ -141,7 +148,7 @@ class CallVideo extends React.Component<IProps, IState> {
         }
     }
 
-    public setStatus(connId: number, status: number, deviceType?: CallDeviceType) {
+    public setStatus(connId: number, status: ConnectionStatus, deviceType?: CallDeviceType) {
         const index = findIndex(this.videoRemoteRefs, {connId});
         if (index > -1) {
             const remote = this.videoRemoteRefs[index];
@@ -204,13 +211,26 @@ class CallVideo extends React.Component<IProps, IState> {
         </div>);
     }
 
+    private getStatusName(status: ConnectionStatus) {
+        switch (status) {
+            case ConnectionStatus.Calling:
+                return i18n.t('call.is_calling');
+            case ConnectionStatus.Ringing:
+                return i18n.t('call.is_ringing');
+            case ConnectionStatus.Connecting:
+                return i18n.t('call.is_connecting');
+            case ConnectionStatus.Connected:
+                return i18n.t('call.connected');
+        }
+        return null;
+    }
+
     private getRemoteVideoContent() {
         return this.videoRemoteRefs.map((item) => {
-            if (item.status === 0 || item.status === 1) {
+            if (item.status !== ConnectionStatus.Connected) {
                 return <div key={item.connId} className="call-user-container">
                     <UserAvatar className="call-user" id={item.userId} noDetail={true} big={true}/>
-                    <div className="call-user-status"
-                    >{i18n.t(item.status ? 'call.is_ringing' : 'call.is_calling')}</div>
+                    <div className="call-user-status">{this.getStatusName(item.status)}</div>
                 </div>;
             }
             const {gridSize} = this.state;

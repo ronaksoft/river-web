@@ -577,6 +577,8 @@
     "call": "تماس",
     "is_calling": "در تماس...",
     "is_ringing": "در حال زنگ خوردن",
+    "is_connecting": "در حال اتصال",
+    "connected": "متصل شد",
     "rate_this_call": "به این تماس امتیاز دهید",
     "muted": "بی صدا",
     "call_back": "تماس مجدد",

@@ -1,3 +1,6 @@
+## 1.1.40
+* Call connecting status added
+
 ## 1.1.39
 * SystemGetServerTime timeout extended
 

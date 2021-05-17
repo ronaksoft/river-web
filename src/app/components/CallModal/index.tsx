@@ -20,6 +20,7 @@ import CallService, {
 } from "../../services/callService";
 import {
     CallEndRounded,
+    CallMergeRounded,
     CallRounded,
     CheckRounded,
     CloseRounded,
@@ -30,7 +31,6 @@ import {
     FullscreenRounded,
     VideocamRounded,
     WebAssetRounded,
-    CallMergeRounded,
 } from "@material-ui/icons";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -42,7 +42,7 @@ import Rating from '@material-ui/lab/Rating';
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import ContactPicker from "../ContactPicker";
 import APIManager, {currentUserId} from "../../services/sdk";
-import CallVideo from "../CallVideo";
+import CallVideo, {ConnectionStatus} from "../CallVideo";
 import CallSettings from "../CallSettings";
 import {clone, debounce} from "lodash";
 import MainRepo from "../../repository";
@@ -887,7 +887,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private eventCallAcceptedHandler = ({connId, data}: { connId: number, data: IUpdatePhoneCall }) => {
         if (this.callVideoRef) {
-            this.callVideoRef.setStatus(connId, 2);
+            this.callVideoRef.setStatus(connId, ConnectionStatus.Connecting);
         }
     }
 
@@ -933,7 +933,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private eventCallAckHandler = (connId: number) => {
         if (this.callVideoRef) {
-            this.callVideoRef.setStatus(connId, 1);
+            this.callVideoRef.setStatus(connId, ConnectionStatus.Ringing);
         }
     }
 
@@ -964,7 +964,7 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callVideoRef.initRemoteConnection(true);
         const participant = this.callService.participantByConnId(connId);
-        this.callVideoRef.setStatus(connId, 2, participant ? participant.deviceType : undefined);
+        this.callVideoRef.setStatus(connId, ConnectionStatus.Connected, participant ? participant.deviceType : undefined);
         this.callVideoRef.setStream(connId, stream);
         if (!this.timeStart) {
             this.timeStart = Date.now();

@@ -582,6 +582,8 @@
     "call": "Call",
     "is_calling": "is calling...",
     "is_ringing": "is ringing...",
+    "is_connecting": "is connecting...",
+    "connected": "connected",
     "rate_this_call": "Rate this call",
     "muted": "muted",
     "call_back": "Call Back",
