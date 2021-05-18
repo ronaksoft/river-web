@@ -1186,7 +1186,7 @@ export default class MessageRepo {
                 return;
             }
             delete this.messageBundle[mapId];
-            this.apiManager.getManyMessage(peer, ids).then((res) => {
+            this.apiManager.messageGetMany(peer, ids).then((res) => {
                 const messages: IMessage[] = [];
                 const dataIds = Object.keys(data.reqs);
                 res.messagesList.forEach((msg) => {
@@ -1250,7 +1250,7 @@ export default class MessageRepo {
                 maxId: id,
             };
         }
-        return this.apiManager.getMessageHistory(peer, query).then((remoteRes) => {
+        return this.apiManager.messageGetHistory(peer, query).then((remoteRes) => {
             return this.modifyHoles(teamId, peer.getId() || '', peer.getType() || 0, remoteRes.messagesList, asc, limit - 1).then(() => {
                 return remoteRes;
             });

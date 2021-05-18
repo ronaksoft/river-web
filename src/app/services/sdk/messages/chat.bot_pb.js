@@ -3,6 +3,7 @@
 /**
  * @fileoverview
  * @enhanceable
+ * @suppress {missingRequire} reports error on implicit type usages.
  * @suppress {messageConventions} JS Compiler reports an error if a variable or
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
@@ -3877,7 +3878,8 @@ proto.msg.BotGetCallbackAnswer.toObject = function(includeInstance, msg) {
   var f, obj = {
     peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
     messageid: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    data: msg.getData_asB64()
+    data: msg.getData_asB64(),
+    bot: (f = msg.getBot()) && core_types_pb.InputUser.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -3926,6 +3928,11 @@ proto.msg.BotGetCallbackAnswer.deserializeBinaryFromReader = function(msg, reade
     case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setData(value);
+      break;
+    case 4:
+      var value = new core_types_pb.InputUser;
+      reader.readMessage(value,core_types_pb.InputUser.deserializeBinaryFromReader);
+      msg.setBot(value);
       break;
     default:
       reader.skipField();
@@ -3976,6 +3983,14 @@ proto.msg.BotGetCallbackAnswer.serializeBinaryToWriter = function(message, write
     writer.writeBytes(
       3,
       f
+    );
+  }
+  f = message.getBot();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      core_types_pb.InputUser.serializeBinaryToWriter
     );
   }
 };
@@ -4075,6 +4090,43 @@ proto.msg.BotGetCallbackAnswer.prototype.getData_asU8 = function() {
  */
 proto.msg.BotGetCallbackAnswer.prototype.setData = function(value) {
   return jspb.Message.setProto3BytesField(this, 3, value);
+};
+
+
+/**
+ * optional InputUser Bot = 4;
+ * @return {?proto.msg.InputUser}
+ */
+proto.msg.BotGetCallbackAnswer.prototype.getBot = function() {
+  return /** @type{?proto.msg.InputUser} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputUser, 4));
+};
+
+
+/**
+ * @param {?proto.msg.InputUser|undefined} value
+ * @return {!proto.msg.BotGetCallbackAnswer} returns this
+*/
+proto.msg.BotGetCallbackAnswer.prototype.setBot = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.msg.BotGetCallbackAnswer} returns this
+ */
+proto.msg.BotGetCallbackAnswer.prototype.clearBot = function() {
+  return this.setBot(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.BotGetCallbackAnswer.prototype.hasBot = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

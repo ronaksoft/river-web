@@ -457,6 +457,11 @@ export class BotGetCallbackAnswer extends jspb.Message {
   getData_asB64(): string;
   setData(value: Uint8Array | string): void;
 
+  hasBot(): boolean;
+  clearBot(): void;
+  getBot(): core_types_pb.InputUser | undefined;
+  setBot(value?: core_types_pb.InputUser): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BotGetCallbackAnswer.AsObject;
   static toObject(includeInstance: boolean, msg: BotGetCallbackAnswer): BotGetCallbackAnswer.AsObject;
@@ -472,6 +477,7 @@ export namespace BotGetCallbackAnswer {
     peer?: core_types_pb.InputPeer.AsObject,
     messageid: number,
     data: Uint8Array | string,
+    bot?: core_types_pb.InputUser.AsObject,
   }
 }
 

@@ -208,7 +208,7 @@ interface IProps {
     onDrop: (files: File[]) => void;
     onRendered?: scrollFunc;
     onBotCommand?: (cmd: string, params?: any) => void;
-    onBotButtonAction?: (cmd: number, data: any, msgId?: number) => void;
+    onBotButtonAction?: (cmd: number, data: any, msgId?: number, senderId?: string) => void;
     onMessageDrop?: (id: number) => void;
     onError?: (text: string) => void;
     showDate: (timestamp: number | null) => void;

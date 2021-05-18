@@ -789,6 +789,34 @@ export namespace MessagesTogglePin {
   }
 }
 
+export class MessagesReadReaction extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesReadReaction.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesReadReaction): MessagesReadReaction.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesReadReaction, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesReadReaction;
+  static deserializeBinaryFromReader(message: MessagesReadReaction, reader: jspb.BinaryReader): MessagesReadReaction;
+}
+
+export namespace MessagesReadReaction {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    messageidsList: Array<number>,
+  }
+}
+
 export class MessagesDialogs extends jspb.Message {
   clearDialogsList(): void;
   getDialogsList(): Array<core_types_pb.Dialog>;

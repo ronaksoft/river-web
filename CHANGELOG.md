@@ -1,3 +1,7 @@
+## 1.1.42
+* Read reaction implemented
+* Bot is now working in groups
+
 ## 1.1.41
 * Group call improvements
 
