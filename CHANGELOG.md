@@ -1,6 +1,7 @@
 ## 1.1.42
 * Read reaction implemented
 * Bot support in groups
+* Waveform updated
 
 ## 1.1.41
 * Group call improvements
