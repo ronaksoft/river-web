@@ -1,3 +1,6 @@
+## 1.1.41
+* Group call improvements
+
 ## 1.1.40
 * Call connecting status added
 

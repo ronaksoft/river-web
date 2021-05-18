@@ -831,6 +831,25 @@ export default class CallService {
         return true;
     }
 
+    private revertShouldAccept(data: IUpdatePhoneCall) {
+        if (this.activeCallId !== data.callid) {
+            return;
+        }
+
+        if (!this.peer || this.peer.getType() === PeerType.PEERUSER) {
+            return;
+        }
+
+        if (!this.callInfo.hasOwnProperty(this.activeCallId)) {
+            return;
+        }
+
+        const index = this.callInfo[this.activeCallId].acceptedParticipantIds.indexOf(data.userid);
+        if (index > -1) {
+            this.callInfo[this.activeCallId].acceptedParticipantIds.splice(index, 1);
+        }
+    }
+
     private callRequested(data: IUpdatePhoneCall) {
         if (this.activeCallId && data.callid !== this.activeCallId) {
             this.busyHandler(data);
@@ -849,9 +868,13 @@ export default class CallService {
             this.callHandlers(C_CALL_EVENT.CallRequested, data);
         }
         // Accept other participants in group
-        else if (this.shouldAccept(data)) {
+        else {
             this.initCallRequest(data);
-            this.accept(this.activeCallId, this.getStreamState().video);
+            if (this.shouldAccept(data)) {
+                this.accept(this.activeCallId, this.getStreamState().video).catch(() => {
+                    this.revertShouldAccept(data);
+                });
+            }
         }
     }
 
@@ -884,6 +907,7 @@ export default class CallService {
         this.propagateMediaSettings(this.getStreamState());
 
         this.clearRetryInterval(connId);
+        this.appendToAcceptedList(connId);
         window.console.log('[webrtc] accept signal, connId:', connId);
 
         this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
@@ -951,12 +975,16 @@ export default class CallService {
         const connId = this.getConnId(data.callid, data.userid);
         const conn = this.peerConnections;
         if (connId === null || !conn.hasOwnProperty(connId)) {
-            return Promise.reject('connId is not found');
+            return;
         }
 
         const actionData = data.data as PhoneActionIceExchange.AsObject;
         if (!actionData) {
-            return Promise.reject('cannot find sdp');
+            return;
+        }
+
+        if (conn[connId].connection.iceConnectionState in ['closed', 'disconnected', 'failed']) {
+            return;
         }
 
         const iceCandidate = new RTCIceCandidate({
@@ -966,7 +994,9 @@ export default class CallService {
             usernameFragment: actionData.usernamefragment,
         });
 
-        return conn[connId].connection.addIceCandidate(iceCandidate);
+        conn[connId].connection.addIceCandidate(iceCandidate).catch((err) => {
+            window.console.log('cannot add ice candidate', err);
+        });
     }
 
     private convertPhoneParticipant(item: PhoneParticipantSDP.AsObject) {
@@ -1131,7 +1161,7 @@ export default class CallService {
                     sdp: res.sdp || '',
                     type: res.type || 'answer',
                 });
-                window.console.log('[webrtc] answer, from:', currentUserId, ' to:', rc.getPeer().getUserid());
+                window.console.log('[webrtc] answer from:', currentUserId, ' to:', rc.getPeer().getUserid(), ' connId:', connId);
                 return this.apiManager.callAccept(peer, callId || '0', [rc]);
             });
         };
@@ -1862,7 +1892,8 @@ export default class CallService {
         if (connId === null) {
             return;
         }
-        this.clearRetryInterval(connId, true);
+
+        // this.clearRetryInterval(connId);
         this.callHandlers(C_CALL_EVENT.CallAck, connId);
     }
 
@@ -2062,14 +2093,21 @@ export default class CallService {
         });
     }
 
-    private clearRetryInterval(connId: number, onlyClearInterval?: boolean) {
+    private clearRetryInterval(connId: number) {
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
         clearInterval(this.peerConnections[connId].interval);
-        if (onlyClearInterval !== true && this.activeCallId && this.callInfo.hasOwnProperty(this.activeCallId)) {
-            this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
+    }
+
+    private appendToAcceptedList(connId: number) {
+        if (!this.activeCallId) {
+            return;
         }
+        if (!this.callInfo.hasOwnProperty(this.activeCallId)) {
+            return;
+        }
+        this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
     }
 
     private parseNumberValue(val: number | string) {

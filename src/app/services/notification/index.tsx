@@ -109,12 +109,19 @@ export default class NotificationService {
     }
 
     private requestPermission() {
-        Notification.requestPermission().then(() => {
-            window.console.warn('Notification permission granted.');
-            // TODO(developer): Retrieve an Instance ID token for use with FCM.
-            // ...
-        }).catch((err) => {
-            window.console.info('Unable to get permission to notify.', err);
-        });
+        if (!window.Notification) {
+            return;
+        }
+        try {
+            Notification.requestPermission().then(() => {
+                window.console.warn('Notification permission granted.');
+                // TODO(developer): Retrieve an Instance ID token for use with FCM.
+                // ...
+            }).catch((err) => {
+                window.console.info('Unable to get permission to notify.', err);
+            });
+        } catch (e) {
+            window.console.info('Unable to get permission to notify.', e);
+        }
     }
 }
