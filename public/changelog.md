@@ -1,3 +1,6 @@
+## 1.1.43
+* Call improvements
+
 ## 1.1.42
 * Read reaction implemented
 * Bot support in groups

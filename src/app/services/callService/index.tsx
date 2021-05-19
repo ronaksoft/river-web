@@ -523,7 +523,9 @@ export default class CallService {
                         promises.push(this.initConnections(peer, callID, false, request).then(() => {
                             const streamState = this.getStreamState();
                             this.mediaSettingsInit(streamState);
-                            this.propagateMediaSettings(streamState);
+                            setTimeout(() => {
+                                this.propagateMediaSettings(streamState);
+                            }, 255);
                             return Promise.resolve();
                         }));
                     } else {
@@ -904,7 +906,9 @@ export default class CallService {
             }
         });
 
-        this.propagateMediaSettings(this.getStreamState());
+        setTimeout(() => {
+            this.propagateMediaSettings(this.getStreamState());
+        }, 255);
 
         this.clearRetryInterval(connId);
         this.appendToAcceptedList(connId);
