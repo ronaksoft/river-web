@@ -234,7 +234,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl,
             dialog, uploadingPhoto, shareMediaEnabled, disable,
         } = this.state;
-        const isAdmin = group ? hasAuthority(group, false) : false;
+        const isAdmin = group ? hasAuthority(group, true) : false;
         const hasAccess = disable ? false : group ? hasAuthority(group, true) : false;
         const allMemberAdmin = group && (group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
         const isMember = group && (group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) === -1;
@@ -569,7 +569,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }
 
         const menuItems = [];
-        if (hasAuthority(group, false)) {
+        if (hasAuthority(group, true)) {
             if (currentUser.userid !== currentUserId) {
                 menuItems.push({
                     cmd: 'remove',

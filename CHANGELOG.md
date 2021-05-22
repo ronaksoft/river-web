@@ -1,3 +1,6 @@
+## 1.1.44
+* Known bugs fixed
+
 ## 1.1.43
 * Call improvements
 

@@ -679,7 +679,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 width: `${doc.rect.width}px`,
             }}>
                 {doc.web ? <div className="picture">
-                        {doc.type === 'video' ? <audio src={doc.items[0].url || ''} controls={false}/> :
+                        {doc.type === 'video' ? <video src={doc.items[0].url || ''} controls={false}/> :
                             <img src={doc.items[0].url || ''} alt="web-document"/>}
                     </div>
                     : <CachedPhoto className="picture" fileLocation={fileLocation} blur={downloaded ? 0 : 10}

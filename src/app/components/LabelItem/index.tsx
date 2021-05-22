@@ -222,8 +222,10 @@ const LabelBodyFile = ({message}: IProps) => {
 const viewDocumentHandler = (labelId: number, message: IMessage) => (e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    // @ts-ignore
-    const el = e.currentTarget.querySelector('.thumbnail');
+    let el = e.target.querySelector('.thumbnail');
+    if (!el) {
+        el = e.target.parentElement.querySelector('.thumbnail');
+    }
     const info = getMediaInfo(message);
     const doc: IDocument = {
         anchor: 'label',
@@ -241,7 +243,7 @@ const viewDocumentHandler = (labelId: number, message: IMessage) => (e: any) => 
             mimeType: info.mimeType,
             orientation: info.orientation,
             rtl: message.rtl,
-            thumbFileLocation: message.messagetype === C_MESSAGE_TYPE.Video ? undefined : info.thumbFile,
+            thumbFileLocation: info.thumbFile,
             userId: message.senderid || '',
             width: info.width,
         }],
