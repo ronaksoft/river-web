@@ -15,6 +15,7 @@ import {
     ClearRounded,
     DeleteRounded,
     ForwardRounded,
+    GifRounded,
     KeyboardRounded,
     KeyboardVoiceRounded,
     LabelRounded,
@@ -23,7 +24,6 @@ import {
     SentimentSatisfiedRounded,
     StopRounded,
     ViewModuleRounded,
-    GifRounded,
 } from '@material-ui/icons';
 import UserAvatar from '../UserAvatar';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -80,7 +80,7 @@ import {getMapLocation} from "../MessageLocation";
 import {MediaContact, MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
 import {getHumanReadableSize} from "../MessageFile";
 import {C_LOCALSTORAGE} from "../../services/sdk/const";
-import {IconButton, Tabs, Tab, Tooltip, Popover, PopoverPosition} from '@material-ui/core';
+import {IconButton, Popover, PopoverPosition, Tab, Tabs, Tooltip} from '@material-ui/core';
 import {IGif} from "../../repository/gif/interface";
 import {Sticker} from "../SVG/sticker";
 import {getDefaultAudio} from "../SettingsMediaInput";
@@ -1401,7 +1401,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
                 if (res) {
                     const flags = res.flagsList || [];
-                    const hideInput = !(flags.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1 && flags.indexOf(GroupFlags.GROUPFLAGSADMIN) === -1);
+                    const hideInput = (flags.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1 && flags.indexOf(GroupFlags.GROUPFLAGSADMIN) === -1);
                     if (flags.indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
                         this.setState({
                             disableAuthority: 0x1,
@@ -1441,7 +1441,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         disableAuthority: 0x0,
                     });
                 }
-            } else if (user && this.teamId !== '0') {
+            } else if (user && peer.getType() === PeerType.PEERUSER && this.teamId !== '0') {
                 this.userRepo.isTeamMember(this.teamId, user.id).then((ok) => {
                     if (ok) {
                         this.setState({

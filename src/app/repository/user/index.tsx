@@ -429,6 +429,10 @@ export default class UserRepo {
         });
     }
 
+    public removeManyTeamMember(list: Array<[string, string]>) {
+        return this.db.contacts.where('[teamid+id]').anyOf(list).delete();
+    }
+
     private mergeUser(users: IUser[], user: IUser, force?: boolean) {
         const t = find(users, {id: user.id});
         if (user.remove_photo) {

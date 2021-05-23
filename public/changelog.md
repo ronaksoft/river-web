@@ -1,3 +1,6 @@
+## 1.1.45
+* Team updated
+
 ## 1.1.44
 * Known bugs fixed
 

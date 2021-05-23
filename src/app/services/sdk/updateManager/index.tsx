@@ -1404,6 +1404,17 @@ export default class UpdateManager {
             if (this.topPeerRepo && transaction.topPeers.length > 0) {
                 promises.push(this.topPeerRepo.importBulkEmbedType(transaction.topPeers));
             }
+            // Team
+            if (this.userRepo && Object.keys(transaction.teamRemovedMembers).length > 0) {
+                for (const [teamId, list] of Object.entries(transaction.teamRemovedMembers)) {
+                    if (teamId !== '0') {
+                        this.userRepo.invalidateCacheByTeamId(teamId);
+                        promises.push(this.userRepo.removeManyTeamMember(list.map((item) => {
+                            return [teamId, item];
+                        })));
+                    }
+                }
+            }
             if (promises.length > 0) {
                 Promise.all(promises).then(() => {
                     this.processTransactionStep2(transaction, transactionResolve, doneFn);
