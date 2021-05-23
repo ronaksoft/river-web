@@ -152,6 +152,7 @@ interface ITransactionPayload {
     reloadLabels: boolean;
     removedLabels: number[];
     removedMessages: { [key: string]: number[] };
+    teamRemovedMembers: { [key: string]: string[] };
     toCheckDialogIds: IToCheckDialog[];
     topPeers: ITopPeerWithType[];
     updateId: number;
@@ -623,6 +624,7 @@ export default class UpdateManager {
             reloadLabels: false,
             removedLabels: [],
             removedMessages: {},
+            teamRemovedMembers: {},
             toCheckDialogIds: [],
             topPeers: [],
             updateId: data.maxupdateid || 0,
@@ -1112,7 +1114,6 @@ export default class UpdateManager {
                 const updateMessagePinned = UpdateMessagePinned.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateMessagePinned);
                 this.callUpdateHandler(updateMessagePinned.teamid || '0', update.constructor, updateMessagePinned);
-                window.console.log(updateMessagePinned);
                 this.mergeDialog(transaction.dialogs, {
                     peerid: updateMessagePinned.peer.id || '0',
                     peertype: updateMessagePinned.peer.type || 0,
@@ -1154,6 +1155,11 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateTeamMemberRemoved:
                 const updateTeamMemberRemoved = UpdateTeamMemberRemoved.deserializeBinary(data).toObject();
+                if (!transaction.teamRemovedMembers.hasOwnProperty(updateTeamMemberRemoved.teamid)) {
+                    transaction.teamRemovedMembers[updateTeamMemberRemoved.teamid] = [updateTeamMemberRemoved.userid];
+                } else {
+                    transaction.teamRemovedMembers[updateTeamMemberRemoved.teamid].push(updateTeamMemberRemoved.userid);
+                }
                 this.logVerbose(update.constructor, updateTeamMemberRemoved);
                 this.callHandlers('all', update.constructor, updateTeamMemberRemoved);
                 break;

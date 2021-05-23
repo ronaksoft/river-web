@@ -76,6 +76,8 @@
     "view_in_chat": "مشاده در گفتگو",
     "unsupported_document": "سند قابل پشتیبانی نیست",
     "sending_message_is_not_allowed": "امکان ارسال پیام وجود ندارد",
+    "only_admins_can_send_message": "فقط ادمین‌‌ها امکان ارسال پیام دارند",
+    "not_a_team_member": "عضو تیم نیست",
     "desktop": "دسکتاپ",
     "web": "وب",
     "ios": "iOS",

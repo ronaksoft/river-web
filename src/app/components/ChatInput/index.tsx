@@ -235,7 +235,7 @@ export const canSendMessage = (text: string, mode: number, message: IMessage) =>
         (mode === C_MSG_MODE.Edit && message && (!message.messagetype || message.messagetype === C_MESSAGE_TYPE.Normal))));
 };
 
-enum hideInputReason {
+enum HideInputReason {
     Empty = 0,
     NotAllowed = 1,
     OnlyAdmin = 2,
@@ -296,7 +296,7 @@ interface IState {
     user: IUser | null;
     voiceMode: 'lock' | 'down' | 'up' | 'play';
     hideInput: boolean;
-    hideInputReason: hideInputReason;
+    hideInputReason: HideInputReason;
 }
 
 const mentionInputStyle = {
@@ -395,7 +395,7 @@ class ChatInput extends React.Component<IProps, IState> {
             disableAuthority: 0x0,
             droppedMessage: null,
             hideInput: user ? (user.id === '2374' || user.deleted) : false,
-            hideInputReason: hideInputReason.Empty,
+            hideInputReason: HideInputReason.Empty,
             inputMode: 'default',
             isBot: false,
             mediaInputMode: 'none',
@@ -463,6 +463,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.setState({
                 disableAuthority: 0x0,
                 hideInput: user ? (user.id === '2374' || user.deleted) : false,
+                hideInputReason: HideInputReason.NotAllowed,
                 peer,
                 user,
             }, () => {
@@ -473,6 +474,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     if (res) {
                         this.setState({
                             hideInput: res ? (res.id === '2374' || res.deleted) : false,
+                            hideInputReason: HideInputReason.NotAllowed,
                             user: res,
                         });
                     }
@@ -552,6 +554,7 @@ class ChatInput extends React.Component<IProps, IState> {
             const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 hideInput: user ? (user.id === '2374' || user.deleted) : false,
+                hideInputReason: HideInputReason.NotAllowed,
                 peer,
                 user,
             }, () => {
@@ -562,6 +565,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     if (res) {
                         this.setState({
                             hideInput: res ? (res.id === '2374' || res.deleted) : false,
+                            hideInputReason: HideInputReason.NotAllowed,
                             user: res,
                         });
                     }
@@ -831,7 +835,7 @@ class ChatInput extends React.Component<IProps, IState> {
             const {selectableHasPending, hideInput} = this.state;
             if (hideInput && !selectable) {
                 return <div className="input-placeholder">
-                    <span className="notice">{i18n.t('general.sending_message_is_not_allowed')}</span>
+                    <span className="notice">{this.getHideInputReasonContent()}</span>
                 </div>;
             }
             return (
@@ -946,6 +950,18 @@ class ChatInput extends React.Component<IProps, IState> {
                     </div>}
                 </div>
             );
+        }
+    }
+
+    private getHideInputReasonContent() {
+        const {hideInputReason} = this.state;
+        switch (hideInputReason) {
+            case HideInputReason.OnlyAdmin:
+                return i18n.t('general.only_admins_can_send_message');
+            case HideInputReason.NotTeamMember:
+                return i18n.t('general.not_a_team_member');
+            default:
+                return i18n.t('general.sending_message_is_not_allowed');
         }
     }
 
@@ -1390,22 +1406,26 @@ class ChatInput extends React.Component<IProps, IState> {
                         this.setState({
                             disableAuthority: 0x1,
                             hideInput,
+                            hideInputReason: HideInputReason.OnlyAdmin,
                         });
                     } else if (flags.indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
                         this.setState({
                             disableAuthority: 0x2,
                             hideInput,
+                            hideInputReason: HideInputReason.OnlyAdmin,
                         });
                     } else {
                         this.setState({
                             disableAuthority: 0x0,
                             hideInput,
+                            hideInputReason: HideInputReason.OnlyAdmin,
                         });
                     }
                 } else {
                     this.setState({
                         disableAuthority: 0x0,
                         hideInput: false,
+                        hideInputReason: HideInputReason.Empty,
                     });
                 }
             });
@@ -1421,6 +1441,20 @@ class ChatInput extends React.Component<IProps, IState> {
                         disableAuthority: 0x0,
                     });
                 }
+            } else if (user && this.teamId !== '0') {
+                this.userRepo.isTeamMember(this.teamId, user.id).then((ok) => {
+                    if (ok) {
+                        this.setState({
+                            disableAuthority: 0x0,
+                        });
+                    } else {
+                        this.setState({
+                            disableAuthority: 0x0,
+                            hideInput: true,
+                            hideInputReason: HideInputReason.NotTeamMember,
+                        });
+                    }
+                });
             } else {
                 this.setState({
                     disableAuthority: 0x0,
