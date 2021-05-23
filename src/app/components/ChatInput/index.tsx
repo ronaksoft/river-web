@@ -235,6 +235,13 @@ export const canSendMessage = (text: string, mode: number, message: IMessage) =>
         (mode === C_MSG_MODE.Edit && message && (!message.messagetype || message.messagetype === C_MESSAGE_TYPE.Normal))));
 };
 
+enum hideInputReason {
+    Empty = 0,
+    NotAllowed = 1,
+    OnlyAdmin = 2,
+    NotTeamMember = 3,
+};
+
 export interface IMessageParam {
     entities?: MessageEntity[] | null;
     mode?: number;
@@ -288,7 +295,8 @@ interface IState {
     uploadPreviewOpen: boolean;
     user: IUser | null;
     voiceMode: 'lock' | 'down' | 'up' | 'play';
-    showInput: boolean;
+    hideInput: boolean;
+    hideInputReason: hideInputReason;
 }
 
 const mentionInputStyle = {
@@ -386,6 +394,8 @@ class ChatInput extends React.Component<IProps, IState> {
             botKeyboard: false,
             disableAuthority: 0x0,
             droppedMessage: null,
+            hideInput: user ? (user.id === '2374' || user.deleted) : false,
+            hideInputReason: hideInputReason.Empty,
             inputMode: 'default',
             isBot: false,
             mediaInputMode: 'none',
@@ -399,7 +409,6 @@ class ChatInput extends React.Component<IProps, IState> {
             selectable: false,
             selectableDisable: false,
             selectableHasPending: false,
-            showInput: user ? !(user.id === '2374' || user.deleted) : true,
             textareaValue: '',
             uploadPreviewOpen: false,
             user,
@@ -453,8 +462,8 @@ class ChatInput extends React.Component<IProps, IState> {
             const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 disableAuthority: 0x0,
+                hideInput: user ? (user.id === '2374' || user.deleted) : false,
                 peer,
-                showInput: user ? !(user.id === '2374' || user.deleted) : true,
                 user,
             }, () => {
                 this.checkAuthority()();
@@ -463,7 +472,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     if (res) {
                         this.setState({
-                            showInput: res ? !(res.id === '2374' || res.deleted) : true,
+                            hideInput: res ? (res.id === '2374' || res.deleted) : false,
                             user: res,
                         });
                     }
@@ -542,8 +551,8 @@ class ChatInput extends React.Component<IProps, IState> {
             }
             const user = (peer.getType() === PeerType.PEERUSER || peer.getType() === PeerType.PEEREXTERNALUSER) ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
+                hideInput: user ? (user.id === '2374' || user.deleted) : false,
                 peer,
-                showInput: user ? !(user.id === '2374' || user.deleted) : true,
                 user,
             }, () => {
                 this.checkAuthority()();
@@ -552,7 +561,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     if (res) {
                         this.setState({
-                            showInput: res ? !(res.id === '2374' || res.deleted) : true,
+                            hideInput: res ? (res.id === '2374' || res.deleted) : false,
                             user: res,
                         });
                     }
@@ -819,15 +828,15 @@ class ChatInput extends React.Component<IProps, IState> {
         } else {
             const isBot = Boolean(this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data));
             const hasPreviewMessage = Boolean(previewMessage || (droppedMessage && droppedMessage.messagetype && droppedMessage.messagetype !== C_MESSAGE_TYPE.Normal));
-            const {selectableHasPending, showInput} = this.state;
-            if (!showInput && !selectable) {
+            const {selectableHasPending, hideInput} = this.state;
+            if (hideInput && !selectable) {
                 return <div className="input-placeholder">
                     <span className="notice">{i18n.t('general.sending_message_is_not_allowed')}</span>
                 </div>;
             }
             return (
                 <div className="chat-input">
-                    {showInput && <>
+                    {!hideInput && <>
                         <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                                onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
                         <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}
@@ -1376,27 +1385,27 @@ class ChatInput extends React.Component<IProps, IState> {
             this.groupRepo.get(this.teamId, peer.getId() || '').then((res) => {
                 if (res) {
                     const flags = res.flagsList || [];
-                    const showInput = !(flags.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1 && flags.indexOf(GroupFlags.GROUPFLAGSADMIN) === -1);
+                    const hideInput = !(flags.indexOf(GroupFlags.GROUPFLAGSADMINONLY) > -1 && flags.indexOf(GroupFlags.GROUPFLAGSADMIN) === -1);
                     if (flags.indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
                         this.setState({
                             disableAuthority: 0x1,
-                            showInput,
+                            hideInput,
                         });
                     } else if (flags.indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
                         this.setState({
                             disableAuthority: 0x2,
-                            showInput,
+                            hideInput,
                         });
                     } else {
                         this.setState({
                             disableAuthority: 0x0,
-                            showInput,
+                            hideInput,
                         });
                     }
                 } else {
                     this.setState({
                         disableAuthority: 0x0,
-                        showInput: true,
+                        hideInput: false,
                     });
                 }
             });
