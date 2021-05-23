@@ -429,6 +429,10 @@ export default class UserRepo {
         });
     }
 
+    public addManyTeamMember(teamId: string, users: IUser[]) {
+        return this.importBulk(true, users, undefined, undefined, teamId);
+    }
+
     public removeManyTeamMember(list: Array<[string, string]>) {
         return this.db.contacts.where('[teamid+id]').anyOf(list).delete();
     }

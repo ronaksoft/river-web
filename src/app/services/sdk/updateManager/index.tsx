@@ -152,6 +152,7 @@ interface ITransactionPayload {
     reloadLabels: boolean;
     removedLabels: number[];
     removedMessages: { [key: string]: number[] };
+    teamAddedMembers: { [key: string]: IUser[] };
     teamRemovedMembers: { [key: string]: string[] };
     toCheckDialogIds: IToCheckDialog[];
     topPeers: ITopPeerWithType[];
@@ -624,6 +625,7 @@ export default class UpdateManager {
             reloadLabels: false,
             removedLabels: [],
             removedMessages: {},
+            teamAddedMembers: {},
             teamRemovedMembers: {},
             toCheckDialogIds: [],
             topPeers: [],
@@ -1150,6 +1152,11 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateTeamMemberAdded:
                 const updateTeamMemberAdded = UpdateTeamMemberAdded.deserializeBinary(data).toObject();
+                if (!transaction.teamAddedMembers.hasOwnProperty(updateTeamMemberAdded.teamid)) {
+                    transaction.teamAddedMembers[updateTeamMemberAdded.teamid] = [updateTeamMemberAdded.user];
+                } else {
+                    transaction.teamAddedMembers[updateTeamMemberAdded.teamid].push(updateTeamMemberAdded.user);
+                }
                 this.logVerbose(update.constructor, updateTeamMemberAdded);
                 this.callHandlers('all', update.constructor, updateTeamMemberAdded);
                 break;
@@ -1404,7 +1411,15 @@ export default class UpdateManager {
             if (this.topPeerRepo && transaction.topPeers.length > 0) {
                 promises.push(this.topPeerRepo.importBulkEmbedType(transaction.topPeers));
             }
-            // Team
+            // Team Add Member
+            if (this.userRepo && Object.keys(transaction.teamAddedMembers).length > 0) {
+                for (const [teamId, users] of Object.entries(transaction.teamAddedMembers)) {
+                    if (teamId !== '0') {
+                        promises.push(this.userRepo.addManyTeamMember(teamId, users));
+                    }
+                }
+            }
+            // Team Remove Member
             if (this.userRepo && Object.keys(transaction.teamRemovedMembers).length > 0) {
                 for (const [teamId, list] of Object.entries(transaction.teamRemovedMembers)) {
                     if (teamId !== '0') {
