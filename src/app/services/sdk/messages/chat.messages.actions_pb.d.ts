@@ -229,6 +229,9 @@ export class MessageActionCallEnded extends jspb.Message {
   getReason(): chat_phone_pb.DiscardReason;
   setReason(value: chat_phone_pb.DiscardReason): void;
 
+  getDuration(): number;
+  setDuration(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageActionCallEnded.AsObject;
   static toObject(includeInstance: boolean, msg: MessageActionCallEnded): MessageActionCallEnded.AsObject;
@@ -243,6 +246,7 @@ export namespace MessageActionCallEnded {
   export type AsObject = {
     callid: number,
     reason: chat_phone_pb.DiscardReason,
+    duration: number,
   }
 }
 

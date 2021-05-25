@@ -1,3 +1,6 @@
+## 1.1.46
+* Call improvements
+
 ## 1.1.45
 * Team updated
 

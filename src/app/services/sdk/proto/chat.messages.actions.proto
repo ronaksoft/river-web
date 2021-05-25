@@ -69,4 +69,5 @@ message MessageActionCallStarted {
 message MessageActionCallEnded {
     int64 CallID = 1;
     DiscardReason Reason = 2;
+    uint32 Duration = 3;
 }

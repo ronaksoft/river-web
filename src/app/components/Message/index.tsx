@@ -19,7 +19,8 @@ import {
     MediaType,
     MessageEntity,
     MessageEntityType,
-    PeerType, ReactionCounter,
+    PeerType,
+    ReactionCounter,
 } from '../../services/sdk/messages/core.types_pb';
 import {findLastIndex, throttle} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
@@ -63,6 +64,8 @@ import {IDialog} from "../../repository/dialog/interface";
 import MessageWeb from "../MessageWeb";
 import {shiftArrow} from "../ChatInput";
 import DeepLinkService from "../../services/deepLinkService";
+import {MessageActionCallEnded} from "../../services/sdk/messages/chat.messages.actions_pb";
+import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 
 import './style.scss';
 
@@ -1404,6 +1407,15 @@ class Message extends React.Component<IProps, IState> {
                               format={i18n.t('message.call_from_user')}/>
                 </span>);
             case C_MESSAGE_ACTION.MessageActionCallEnded:
+                if (message.actiondata) {
+                    const actionCallEnded: MessageActionCallEnded.AsObject = message.actiondata;
+                    if (actionCallEnded.reason === DiscardReason.DISCARDREASONMISSED) {
+                        return (<span className="system-message">{i18n.t('message.call_missed')}</span>);
+                    } else if (actionCallEnded.duration > 0) {
+                        return (<span
+                            className="system-message">{i18n.tf('message.call_ended_param', TimeUtility.durationAmount(actionCallEnded.duration))}</span>);
+                    }
+                }
                 return (<span className="system-message">{i18n.t('message.call_ended')}</span>);
             default:
                 return (<span className="system-message">{i18n.t('message.unsupported_message')}</span>);

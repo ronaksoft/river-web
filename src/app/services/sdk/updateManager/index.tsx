@@ -303,7 +303,7 @@ export default class UpdateManager {
             if (minId && minId === maxId && data.updatesList.length === 1) {
                 window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId, 'name:', C_MSG_NAME[data.updatesList[0].constructor || '']);
             } else {
-                window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId);
+                window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId, 'names:', data.updatesList.map(o => C_MSG_NAME[o.constructor]));
             }
             if (minId === 0 && maxId === 0) {
                 this.processZeroContainer(data);

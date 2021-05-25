@@ -109,8 +109,8 @@ class CallModal extends React.Component<IProps, IState> {
     private groupParticipant: InputUser.AsObject[] = [];
     private callSettingsRef: CallSettings | undefined;
     private mediaSettings: IMediaSettings = {audio: true, screenShare: false, video: true};
-    private callConnectingTone: string = '/ringingtone/connecting-1.mp3';
-    private callRingingTone: string = '/ringingtone/tone-2.mp3';
+    private callConnectingTone: string = '/ringingtone/connecting-2.ogg';
+    private callRingingTone: string = '/ringingtone/tone-3.ogg';
     private loading: boolean = false;
     private videoCall: boolean = false;
     private readonly windowResizeDebounce: any = undefined;

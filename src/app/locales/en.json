@@ -526,6 +526,8 @@
     "no_message": "No messages",
     "call_started": "Call started",
     "call_ended": "Call ended",
+    "call_ended_param": "Call ended {0}",
+    "call_missed": "Missed call",
     "call_from_user": "Call from {0}",
     "call_from": "Call from "
   },

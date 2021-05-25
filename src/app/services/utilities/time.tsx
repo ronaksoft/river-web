@@ -366,6 +366,10 @@ class TimeService {
             return m.format('HH:mm:ss');
         }
     }
+
+    public durationAmount(val: number) {
+        return this.duration(0, val);
+    }
 }
 
 export default new TimeService();
