@@ -528,7 +528,7 @@
     "call_ended": "Call ended",
     "call_ended_param": "Call ended {0}",
     "call_missed": "Missed call",
-    "call_from_user": "Call from {0}",
+    "call_from_user": "Call {0}",
     "call_from": "Call from "
   },
   "uploader": {
