@@ -88,6 +88,7 @@ export interface ICallParticipant extends PhoneParticipant.AsObject {
 interface IConnection {
     accepted: boolean;
     audioIndex: number;
+    connectingInterval: any;
     connection: RTCPeerConnection;
     iceQueue: RTCIceCandidate[];
     iceServers?: RTCIceServer[];
@@ -98,7 +99,6 @@ interface IConnection {
     screenShareStream?: MediaStream;
     stream?: MediaStream;
     streamId: string;
-    interval: any;
     try: number;
     videoIndex: number;
 }
@@ -654,7 +654,7 @@ export default class CallService {
                 });
                 conn.stream = undefined;
             }
-            clearInterval(conn.interval);
+            clearInterval(conn.connectingInterval);
             clearTimeout(conn.reconnectingTimeout);
         };
 
@@ -910,7 +910,6 @@ export default class CallService {
             this.propagateMediaSettings(this.getStreamState());
         }, 255);
 
-        this.clearRetryInterval(connId);
         this.appendToAcceptedList(connId);
         window.console.log('[webrtc] accept signal, connId:', connId);
 
@@ -1214,12 +1213,12 @@ export default class CallService {
                     const connId = participant.getConnectionid() || 0;
                     if (this.peerConnections.hasOwnProperty(connId)) {
                         // Retry mechanism
-                        this.peerConnections[connId].interval = setInterval(() => {
+                        this.peerConnections[connId].connectingInterval = setInterval(() => {
                             if (this.activeCallId && this.peerConnections.hasOwnProperty(connId)) {
                                 this.peerConnections[connId].try++;
                                 this.callUserSingle(peer, participant, this.activeCallId).finally(() => {
                                     if (this.peerConnections.hasOwnProperty(connId) && this.peerConnections[connId].try >= C_RETRY_LIMIT) {
-                                        clearInterval(this.peerConnections[connId].interval);
+                                        clearInterval(this.peerConnections[connId].connectingInterval);
                                         if (initiator) {
                                             this.checkCallTimout(connId);
                                         }
@@ -1290,9 +1289,9 @@ export default class CallService {
                     accepted: remote,
                     audioIndex: -1,
                     connection: pc,
+                    connectingInterval: null,
                     iceQueue: [],
                     init: false,
-                    interval: null,
                     reconnecting: false,
                     reconnectingTimeout: null,
                     reconnectingTry: 0,
@@ -1309,6 +1308,7 @@ export default class CallService {
                 }
 
                 pc.addEventListener('track', (e) => {
+                    this.clearRetryInterval(connId);
                     conn.init = true;
                     conn.reconnecting = false;
                     conn.reconnectingTry = 0;
@@ -2103,7 +2103,10 @@ export default class CallService {
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
-        clearInterval(this.peerConnections[connId].interval);
+        if (this.peerConnections[connId].connectingInterval) {
+            clearInterval(this.peerConnections[connId].connectingInterval);
+            this.peerConnections[connId].connectingInterval = null;
+        }
     }
 
     private appendToAcceptedList(connId: number) {
