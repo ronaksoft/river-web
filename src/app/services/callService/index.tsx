@@ -2016,8 +2016,6 @@ export default class CallService {
         actionData.setSdp(sdp.sdp);
         actionData.setType(sdp.type);
 
-        window.console.log(actionData.toObject());
-
         return this.apiManager.callUpdate(peer, this.activeCallId, [inputUser], PhoneCallAction.PHONECALLSDPOFFER, actionData.serializeBinary()).then(() => {
             return Promise.resolve();
         });
