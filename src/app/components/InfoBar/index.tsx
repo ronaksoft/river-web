@@ -301,8 +301,10 @@ class InfoBar extends React.Component<IProps, IState> {
                             visibleMenus,
                         });
                     }).catch(() => {
+                        visibleMenus = [3];
                         this.setState({
                             loading: false,
+                            visibleMenus,
                         });
                     });
                     return;
