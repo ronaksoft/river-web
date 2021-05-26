@@ -209,8 +209,8 @@ class InfoBar extends React.Component<IProps, IState> {
                     </Tooltip>
                 </div>
                 <Menu
-                    anchorEl={callAnchorEl}
                     open={Boolean(callAnchorEl)}
+                    anchorEl={callAnchorEl}
                     onClose={this.callMenuCloseHandler}
                     className="kk-context-menu"
                     transformOrigin={{

@@ -1137,7 +1137,8 @@ export default class UpdateManager {
             case C_MSG.UpdatePhoneCallEnded:
                 const updatePhoneCallEnded = UpdatePhoneCallEnded.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updatePhoneCallEnded);
-                this.callUpdateHandler(updatePhoneCallEnded.teamid || '0', update.constructor, updatePhoneCallEnded);
+                // Send end event even on updating
+                this.callHandlers(updatePhoneCallEnded.teamid || '0', update.constructor, updatePhoneCallEnded);
                 this.mergeDialog(transaction.dialogs, {
                     activecallid: '0',
                     peerid: updatePhoneCallEnded.peer.id || '0',
