@@ -1288,8 +1288,8 @@ export default class CallService {
                 let conn: IConnection = {
                     accepted: remote,
                     audioIndex: -1,
-                    connection: pc,
                     connectingInterval: null,
+                    connection: pc,
                     iceQueue: [],
                     init: false,
                     reconnecting: false,
