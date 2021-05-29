@@ -258,10 +258,19 @@ class InfoBar extends React.Component<IProps, IState> {
             } else {
                 this.userRepo.get(peer.getId() || '0').then((user) => {
                     if (user) {
-                        this.setState({
-                            activeCallId: null,
-                            withCall: !Boolean(user.isbot || user.official || user.deleted),
-                        });
+                        if (this.props.teamId === '0') {
+                            this.setState({
+                                activeCallId: null,
+                                withCall: !Boolean(user.isbot || user.official || user.deleted),
+                            });
+                        } else {
+                            this.userRepo.isTeamMember(this.props.teamId, user.id).then((ok) => {
+                                this.setState({
+                                    activeCallId: null,
+                                    withCall: ok,
+                                });
+                            });
+                        }
                     }
                 });
             }
