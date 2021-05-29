@@ -1,3 +1,6 @@
+## 1.1.51
+* Known bugs fixed
+
 ## 1.1.50
 * Call reconnect improvements
 * Known bugs fixed
