@@ -17,8 +17,8 @@ import {detect} from "detect-browser";
 import './index.css';
 
 export const C_VERSION = '1.1.50';
-export const C_ELECTRON_VERSIONS = ['12.0.6'];
-export const C_APP_VERSION = '0.38.0';
+export const C_ELECTRON_VERSIONS = ['13.0.1'];
+export const C_APP_VERSION = '0.39.0';
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 export let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const electronVersion = ElectronService.electronVersion();
