@@ -819,22 +819,23 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
         this.loading = true;
-        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
-            if (this.state.callStarted) {
-                this.timeEnd = Date.now();
-                this.setState({
-                    callStarted: false,
-                    fullscreen: false,
-                    isCaller: false,
-                    mode: 'call_report',
-                });
-                if (this.callService) {
-                    this.callService.destroy();
-                    this.callService.destroyConnections(this.state.callId);
-                }
-            } else if (this.state.mode !== 'call_report') {
-                this.closeHandler();
+        this.timeEnd = Date.now();
+        if (this.state.callStarted) {
+            this.setState({
+                callStarted: false,
+                fullscreen: false,
+                isCaller: false,
+                mode: 'call_report',
+            });
+            if (this.callService) {
+                this.callService.destroy();
+                this.callService.destroyConnections(this.state.callId);
             }
+        } else if (this.state.mode !== 'call_report') {
+            this.closeHandler();
+        }
+        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
+            //
         }).catch((err) => {
             if (err && err.code === C_ERR.ErrCodeAccess && err.items === C_ERR_ITEM.ErrItemCall) {
                 this.closeHandler();

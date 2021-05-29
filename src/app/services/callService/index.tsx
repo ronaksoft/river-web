@@ -40,8 +40,9 @@ import {getDefaultAudio, getDefaultVideo} from "../../components/SettingsMediaIn
 
 const C_RETRY_INTERVAL = 10000;
 const C_RETRY_LIMIT = 6;
-const C_RECONNECT_TRY = 3;
-const C_RECONNECT_TIMEOUT = 15000;
+const C_RECONNECT_TRY = 7;
+const C_RECONNECT_TIMEOUT = 10000;
+const C_CHECK_STREAM_INTERVAL = 10000;
 
 export const C_CALL_EVENT = {
     AllConnected: 0x12,
@@ -89,6 +90,7 @@ interface IConnection {
     accepted: boolean;
     audioIndex: number;
     connectingInterval: any;
+    checkStreamInterval: any;
     connection: RTCPeerConnection;
     iceQueue: RTCIceCandidate[];
     iceServers?: RTCIceServer[];
@@ -497,16 +499,16 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.CallPreview, {callId, peer});
     }
 
-    public accept(callID: string, video: boolean) {
+    public accept(callId: string, video: boolean) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
         }
         return this.apiManager.callInit(peer).then((res) => {
-            this.activeCallId = callID;
+            this.activeCallId = callId;
 
             this.configs.iceServers = this.transformIceServers(res.iceserversList);
-            const info = this.getCallInfo(callID);
+            const info = this.getCallInfo(callId);
             if (!info) {
                 return Promise.reject('invalid call request');
             }
@@ -520,12 +522,16 @@ export default class CallService {
                 do {
                     const request = info.requests.shift();
                     if (request) {
-                        promises.push(this.initConnections(peer, callID, false, request).then(() => {
+                        promises.push(this.initConnections(peer, callId, false, request).then(() => {
                             const streamState = this.getStreamState();
                             this.mediaSettingsInit(streamState);
                             setTimeout(() => {
                                 this.propagateMediaSettings(streamState);
                             }, 255);
+                            const connId = this.getConnId(callId, request.userid);
+                            if (connId) {
+                                this.checkStreamState(connId);
+                            }
                             return Promise.resolve();
                         }));
                     } else {
@@ -656,6 +662,7 @@ export default class CallService {
             }
             clearInterval(conn.connectingInterval);
             clearTimeout(conn.reconnectingTimeout);
+            clearInterval(conn.checkStreamInterval);
         };
 
         if (connId !== undefined) {
@@ -910,7 +917,9 @@ export default class CallService {
             this.propagateMediaSettings(this.getStreamState());
         }, 255);
 
+        this.clearRetryInterval(connId);
         this.appendToAcceptedList(connId);
+        this.checkStreamState(connId);
         window.console.log('[webrtc] accept signal, connId:', connId);
 
         this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
@@ -1288,6 +1297,7 @@ export default class CallService {
                 let conn: IConnection = {
                     accepted: remote,
                     audioIndex: -1,
+                    checkStreamInterval: null,
                     connectingInterval: null,
                     connection: pc,
                     iceQueue: [],
@@ -1308,11 +1318,11 @@ export default class CallService {
                 }
 
                 pc.addEventListener('track', (e) => {
-                    this.clearRetryInterval(connId);
                     conn.init = true;
                     conn.reconnecting = false;
                     conn.reconnectingTry = 0;
                     clearTimeout(conn.reconnectingTimeout);
+                    clearTimeout(conn.checkStreamInterval);
                     if (e.streams.length > 0) {
                         const streamId = e.streams[0].id;
                         e.streams.forEach((stream) => {
@@ -2117,6 +2127,22 @@ export default class CallService {
             return;
         }
         this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
+    }
+
+    private checkStreamState(connId: number) {
+        if (!this.peerConnections.hasOwnProperty(connId)) {
+            return;
+        }
+
+        this.peerConnections[connId].checkStreamInterval = setInterval(() => {
+            if (!this.activeCallId || !this.peerConnections.hasOwnProperty(connId)) {
+                return;
+            }
+
+            if (!this.peerConnections[connId].stream) {
+                this.checkDisconnection(connId, 'disconnected');
+            }
+        }, C_CHECK_STREAM_INTERVAL);
     }
 
     private parseNumberValue(val: number | string) {
