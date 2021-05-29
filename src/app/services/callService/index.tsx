@@ -1006,8 +1006,6 @@ export default class CallService {
             usernameFragment: actionData.usernamefragment,
         });
 
-        window.console.log(iceCandidate.toJSON());
-
         conn[connId].connection.addIceCandidate(iceCandidate).catch((err) => {
             window.console.log('cannot add ice candidate', err);
         });
