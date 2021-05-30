@@ -242,6 +242,7 @@ export default class CallService {
     private peer: InputPeer | null = null;
     private activeCallId: string | undefined;
     private callInfo: { [key: string]: ICallInfo } = {};
+    private rejectedCallIds: string[] = [];
 
     private constructor() {
         this.initMediaDevice();
@@ -560,6 +561,8 @@ export default class CallService {
             return Promise.reject('invalid peer');
         }
 
+        this.pushToRejectedCallIds(callId);
+
         return this.apiManager.callReject(peer, callId, reason, duration).then(() => {
             this.destroyConnections(callId);
         });
@@ -862,6 +865,10 @@ export default class CallService {
     private callRequested(data: IUpdatePhoneCall) {
         if (this.activeCallId && data.callid !== this.activeCallId) {
             this.busyHandler(data);
+            return;
+        }
+
+        if (this.rejectedCallIds.indexOf(data.callid) > -1) {
             return;
         }
 
@@ -2174,6 +2181,16 @@ export default class CallService {
                 this.groupRemoveParticipant(this.activeCallId, userIds, true);
             }
         }
+    }
+
+    private pushToRejectedCallIds(callId: string) {
+        this.rejectedCallIds.push(callId);
+        setTimeout(() => {
+            const index = this.rejectedCallIds.indexOf(callId);
+            if (index > -1) {
+                this.rejectedCallIds.splice(index, 1);
+            }
+        }, 15000);
     }
 
     private transformIceServers(list: IceServer.AsObject[]) {

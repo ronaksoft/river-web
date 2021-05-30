@@ -523,6 +523,7 @@
     "call_ended": "پایان تماس",
     "call_ended_param": "تماس {0}",
     "call_missed": "تماس بی‌پاسخ",
+    "call_unavailable": "تماس غیر قابل دسترس",
     "call_from_user": "تماس از {0}",
     "call_from": "تماس از "
   },

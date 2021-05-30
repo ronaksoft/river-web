@@ -1411,6 +1411,8 @@ class Message extends React.Component<IProps, IState> {
                     const actionCallEnded: MessageActionCallEnded.AsObject = message.actiondata;
                     if (actionCallEnded.reason === DiscardReason.DISCARDREASONMISSED) {
                         return (<span className="system-message">{i18n.t('message.call_missed')}</span>);
+                    } else if (actionCallEnded.reason === DiscardReason.DISCARDREASONBUSY) {
+                        return (<span className="system-message">{i18n.t('message.call_unavailable')}</span>);
                     } else if (actionCallEnded.duration > 0) {
                         return (<span
                             className="system-message">{i18n.tf('message.call_ended_param', TimeUtility.durationAmount(actionCallEnded.duration))}</span>);

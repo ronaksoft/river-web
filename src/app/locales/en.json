@@ -528,6 +528,7 @@
     "call_ended": "Call ended",
     "call_ended_param": "Call {0}",
     "call_missed": "Missed call",
+    "call_unavailable": "Unavailable call",
     "call_from_user": "Call from {0}",
     "call_from": "Call from "
   },

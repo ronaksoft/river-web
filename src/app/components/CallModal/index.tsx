@@ -808,7 +808,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private rejectCallHandler = () => {
-        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
+        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONBUSY).catch((err) => {
             window.console.log(err);
         });
         this.closeHandler();
