@@ -116,6 +116,9 @@ export default class LabelRepo {
         ids.forEach((id) => {
             this.dbService.removeLabel(id);
             promises.push(this.db.labels.delete(id));
+            if (this.messageRepo) {
+                this.messageRepo.removeLabelFromMessage(id);
+            }
         });
         return Promise.all(promises).then((res) => {
             this.broadcastEvent('Label_DB_Updated', {callerId, ids});

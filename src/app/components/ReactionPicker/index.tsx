@@ -109,7 +109,8 @@ class ReactionPicker extends React.PureComponent<IProps, IState> {
     }
 
     private getHeight() {
-        return `${(Math.ceil((this.state.reactions.length + 1) / 5) - 1) * 30 + 36}px`;
+        const {more} = this.state;
+        return `${(Math.ceil((this.state.reactions.length + 1) / 5) - 1) * 30 + (more ? 64 : 46)}px`;
     }
 
     private getSortedReactions(complete: boolean, selected?: { [key: string]: boolean }): string[] {

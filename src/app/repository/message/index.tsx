@@ -1032,6 +1032,17 @@ export default class MessageRepo {
         });
     }
 
+    public removeLabelFromMessage(labelId: number) {
+        return this.db.messages.filter((o) => {
+            return o.labelidsList && o.labelidsList.indexOf(labelId) > -1;
+        }).toArray().then((res) => {
+            return this.importBulk(res.map((msg) => {
+                msg.removed_labels = [labelId];
+                return msg;
+            }));
+        });
+    }
+
     private applyActions() {
         if (!this.actionBusy && this.actionList.length > 0) {
             const action = this.actionList.shift();

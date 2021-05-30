@@ -1,3 +1,7 @@
+## 1.1.52
+* A bug related to deleting label fixed
+* Overall improvements
+
 ## 1.1.51
 * Known bugs fixed
 
