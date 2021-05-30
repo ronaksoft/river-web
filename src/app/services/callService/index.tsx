@@ -2137,7 +2137,7 @@ export default class CallService {
                 return;
             }
 
-            if (!this.peerConnections[connId].stream) {
+            if (!this.peerConnections[connId].init) {
                 this.checkDisconnection(connId, 'disconnected');
             }
         }, C_CHECK_STREAM_INTERVAL);
