@@ -1,3 +1,6 @@
+## 1.1.53
+* Call improvements
+
 ## 1.1.52
 * A bug related to deleting label fixed
 * Overall improvements

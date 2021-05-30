@@ -91,6 +91,7 @@ interface IConnection {
     audioIndex: number;
     connectingInterval: any;
     checkStreamInterval: any;
+    checkStreamTimeout: any;
     connection: RTCPeerConnection;
     iceQueue: RTCIceCandidate[];
     iceServers?: RTCIceServer[];
@@ -666,6 +667,7 @@ export default class CallService {
             clearInterval(conn.connectingInterval);
             clearTimeout(conn.reconnectingTimeout);
             clearInterval(conn.checkStreamInterval);
+            clearInterval(conn.checkStreamTimeout);
         };
 
         if (connId !== undefined) {
@@ -1293,16 +1295,11 @@ export default class CallService {
                     this.checkDisconnection(connId, pc.iceConnectionState, true);
                 });
 
-                pc.addEventListener('signalingstatechange', () => {
-                    if (pc.signalingState === 'closed') {
-                        window.console.log('[webrtc] signalingstatechange, connId:', connId, pc.signalingState);
-                    }
-                });
-
                 let conn: IConnection = {
                     accepted: remote,
                     audioIndex: -1,
                     checkStreamInterval: null,
+                    checkStreamTimeout: null,
                     connectingInterval: null,
                     connection: pc,
                     iceQueue: [],
@@ -1424,7 +1421,7 @@ export default class CallService {
             return;
         }
         for (const pc of Object.values(this.peerConnections)) {
-            if (pc.connection.iceConnectionState !== 'connected') {
+            if (!(pc.connection.iceConnectionState === 'connected' || pc.connection.iceConnectionState === 'completed')) {
                 return;
             }
         }
@@ -1763,7 +1760,7 @@ export default class CallService {
             return Promise.reject('no localStream');
         }
         for (const pc of Object.values(this.peerConnections)) {
-            if (pc.connection.iceConnectionState !== 'connected') {
+            if (!(pc.connection.iceConnectionState === 'connected' || pc.connection.iceConnectionState === 'completed')) {
                 return Promise.reject('still connecting');
             }
         }
@@ -1815,7 +1812,7 @@ export default class CallService {
         const videoTracks = stream.getVideoTracks().filter(o => o.readyState === 'live');
         try {
             for (const [connId, pc] of Object.entries(this.peerConnections)) {
-                if (pc.connection.iceConnectionState === 'connected') {
+                if (pc.connection.iceConnectionState === 'connected' || pc.connection.iceConnectionState === 'completed') {
                     const senders = pc.connection.getSenders();
                     senders.forEach((sender, index) => {
                         // if (pc.audioIndex === -1 && sender.track && sender.track.kind === 'audio') {
@@ -2139,14 +2136,20 @@ export default class CallService {
             return;
         }
 
-        this.peerConnections[connId].checkStreamInterval = setInterval(() => {
-            if (!this.activeCallId || !this.peerConnections.hasOwnProperty(connId)) {
+        this.peerConnections[connId].checkStreamTimeout = setTimeout(() => {
+            if (!this.peerConnections.hasOwnProperty(connId)) {
                 return;
             }
 
-            if (!this.peerConnections[connId].init) {
-                this.checkDisconnection(connId, 'disconnected');
-            }
+            this.peerConnections[connId].checkStreamInterval = setInterval(() => {
+                if (!this.activeCallId || !this.peerConnections.hasOwnProperty(connId)) {
+                    return;
+                }
+
+                if (!this.peerConnections[connId].init) {
+                    this.checkDisconnection(connId, 'disconnected');
+                }
+            }, C_CHECK_STREAM_INTERVAL);
         }, C_CHECK_STREAM_INTERVAL);
     }
 
