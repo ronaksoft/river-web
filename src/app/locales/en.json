@@ -596,7 +596,7 @@
     "is_not_available": "is not available",
     "is_busy": "is busy",
     "audio_muted": "Microphone is muted",
-    "call_started": "in call...",
+    "call_started": "In Call...",
     "join_call": "Join Call",
     "user_joined_the_call": "{0} joined the call",
     "user_left_the_call": "{0} left the call",

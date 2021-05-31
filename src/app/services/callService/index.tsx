@@ -534,13 +534,13 @@ export default class CallService {
                 do {
                     const request = info.requests.shift();
                     if (request) {
-                        const connId = this.getConnId(callId, request.userid);
-                        if (connId) {
-                            this.checkInitialization(connId);
-                        }
                         promises.push(this.initConnections(peer, callId, false, request).then(() => {
                             const streamState = this.getStreamState();
                             this.mediaSettingsInit(streamState);
+                            const connId = this.getConnId(callId, request.userid);
+                            if (connId !== null) {
+                                this.checkInitialization(connId);
+                            }
                             this.propagateMediaSettings(streamState, 255);
                             return Promise.resolve();
                         }));
@@ -926,19 +926,18 @@ export default class CallService {
         }).then(() => {
             if (this.peerConnections.hasOwnProperty(connId)) {
                 this.peerConnections[connId].accepted = true;
-
-                this.checkInitialization(connId);
-                this.clearRetryInterval(connId);
-                this.appendToAcceptedList(connId);
-
                 this.flushIceCandidates(data.callid || '0', connId);
 
-                this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
                 this.propagateMediaSettings(this.getStreamState(), 255);
             }
         });
 
+        this.clearRetryInterval(connId);
+        this.appendToAcceptedList(connId);
+        this.checkInitialization(connId);
         window.console.log('[webrtc] accept signal, connId:', connId);
+
+        this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
     }
 
     private callRejected(data: IUpdatePhoneCall) {
@@ -1327,6 +1326,7 @@ export default class CallService {
                 }
 
                 pc.addEventListener('track', (e) => {
+                    this.propagateMediaSettings(this.getStreamState(), 255);
                     conn.init = true;
                     conn.reconnecting = false;
                     conn.reconnectingTry = 0;
@@ -2164,11 +2164,6 @@ export default class CallService {
                     this.checkDisconnection(connId, 'disconnected');
                 } else {
                     clearInterval(this.peerConnections[connId].checkStreamInterval);
-                    // Resend stream update in order to make sure states are correct
-                    this.callHandlers(C_CALL_EVENT.StreamUpdated, {
-                        connId,
-                        stream: this.peerConnections[connId].stream
-                    });
                 }
             }, C_CHECK_STREAM_INTERVAL);
         }, C_CHECK_STREAM_INTERVAL);
