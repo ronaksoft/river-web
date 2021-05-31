@@ -308,38 +308,48 @@ export default class CallService {
         return this.peer;
     }
 
-    public initStream(settings: { audio: boolean, video: boolean }) {
-        const constraints: MediaStreamConstraints = {
-            audio: settings.audio ? getDefaultAudio() : false,
-            video: settings.video ? getDefaultVideo() : false,
-        };
-        this.lastVideoState = settings.video;
-        if (!this.localStream) {
-            return navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-                this.localStream = stream;
-                this.callHandlers(C_CALL_EVENT.LocalStreamUpdated, stream);
-                return stream;
-            });
-        } else {
-            if (constraints.video) {
-                if (this.localStream.getVideoTracks().length > 0) {
-                    return Promise.resolve(this.localStream);
-                } else {
-                    return navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
-                        stream.getVideoTracks().forEach((track) => {
-                            this.localStream.addTrack(track);
-                        });
-                        return this.localStream;
+    public initStream(settings: { audio: boolean, video: boolean }): Promise<MediaStream> {
+        return new Promise((resolve, reject) => {
+            try {
+                const constraints: MediaStreamConstraints = {
+                    audio: settings.audio ? getDefaultAudio() : false,
+                    video: settings.video ? getDefaultVideo() : false,
+                };
+                this.lastVideoState = settings.video;
+                if (!this.localStream) {
+                    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+                        this.localStream = stream;
+                        this.callHandlers(C_CALL_EVENT.LocalStreamUpdated, stream);
+                        resolve(stream);
+                    }).catch((err) => {
+                        reject(err);
                     });
+                } else {
+                    if (constraints.video) {
+                        if (this.localStream.getVideoTracks().length > 0) {
+                            resolve(this.localStream);
+                        } else {
+                            navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
+                                stream.getVideoTracks().forEach((track) => {
+                                    this.localStream.addTrack(track);
+                                });
+                                resolve(this.localStream);
+                            }).catch((err) => {
+                                reject(err);
+                            });
+                        }
+                    } else {
+                        this.localStream.getVideoTracks().forEach((track) => {
+                            track.stop();
+                            this.localStream.removeTrack(track);
+                        });
+                        resolve(this.localStream);
+                    }
                 }
-            } else {
-                this.localStream.getVideoTracks().forEach((track) => {
-                    track.stop();
-                    this.localStream.removeTrack(track);
-                });
-                return Promise.resolve(this.localStream);
+            } catch (e) {
+                reject(e);
             }
-        }
+        });
     }
 
     public toggleVideo(enable: boolean) {
@@ -524,16 +534,14 @@ export default class CallService {
                 do {
                     const request = info.requests.shift();
                     if (request) {
+                        const connId = this.getConnId(callId, request.userid);
+                        if (connId) {
+                            this.checkInitialization(connId);
+                        }
                         promises.push(this.initConnections(peer, callId, false, request).then(() => {
                             const streamState = this.getStreamState();
                             this.mediaSettingsInit(streamState);
-                            setTimeout(() => {
-                                this.propagateMediaSettings(streamState);
-                            }, 255);
-                            const connId = this.getConnId(callId, request.userid);
-                            if (connId) {
-                                this.checkInitialization(connId);
-                            }
+                            this.propagateMediaSettings(streamState, 255);
                             return Promise.resolve();
                         }));
                     } else {
@@ -918,20 +926,19 @@ export default class CallService {
         }).then(() => {
             if (this.peerConnections.hasOwnProperty(connId)) {
                 this.peerConnections[connId].accepted = true;
+
+                this.checkInitialization(connId);
+                this.clearRetryInterval(connId);
+                this.appendToAcceptedList(connId);
+
                 this.flushIceCandidates(data.callid || '0', connId);
+
+                this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
+                this.propagateMediaSettings(this.getStreamState(), 255);
             }
         });
 
-        setTimeout(() => {
-            this.propagateMediaSettings(this.getStreamState());
-        }, 255);
-
-        this.clearRetryInterval(connId);
-        this.appendToAcceptedList(connId);
-        this.checkInitialization(connId);
         window.console.log('[webrtc] accept signal, connId:', connId);
-
-        this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
     }
 
     private callRejected(data: IUpdatePhoneCall) {
@@ -1623,36 +1630,38 @@ export default class CallService {
         }
     }
 
-    private propagateMediaSettings({video, screenShare, audio}: { video?: boolean, screenShare?: boolean, audio?: boolean }) {
-        if (!this.activeCallId || !this.peer || !this.callInfo.hasOwnProperty(this.activeCallId)) {
-            return;
-        }
+    private propagateMediaSettings({video, screenShare, audio}: { video?: boolean, screenShare?: boolean, audio?: boolean }, delay?: number) {
+        setTimeout(() => {
+            if (!this.activeCallId || !this.peer || !this.callInfo.hasOwnProperty(this.activeCallId)) {
+                return;
+            }
 
-        const inputUsers = this.getInputUsers(this.activeCallId);
-        if (!inputUsers) {
-            return;
-        }
+            const inputUsers = this.getInputUsers(this.activeCallId);
+            if (!inputUsers) {
+                return;
+            }
 
-        if (audio !== undefined) {
-            this.callInfo[this.activeCallId].mediaSettings.audio = audio;
-        }
+            if (audio !== undefined) {
+                this.callInfo[this.activeCallId].mediaSettings.audio = audio;
+            }
 
-        if (video !== undefined) {
-            this.callInfo[this.activeCallId].mediaSettings.video = video;
-        }
+            if (video !== undefined) {
+                this.callInfo[this.activeCallId].mediaSettings.video = video;
+            }
 
-        if (screenShare !== undefined) {
-            this.callInfo[this.activeCallId].mediaSettings.screenShare = screenShare;
-        }
+            if (screenShare !== undefined) {
+                this.callInfo[this.activeCallId].mediaSettings.screenShare = screenShare;
+            }
 
-        const actionData = new PhoneActionMediaSettingsUpdated();
-        actionData.setAudio(this.callInfo[this.activeCallId].mediaSettings.audio);
-        actionData.setVideo(this.callInfo[this.activeCallId].mediaSettings.video);
-        actionData.setScreenshare(this.callInfo[this.activeCallId].mediaSettings.screenShare);
+            const actionData = new PhoneActionMediaSettingsUpdated();
+            actionData.setAudio(this.callInfo[this.activeCallId].mediaSettings.audio);
+            actionData.setVideo(this.callInfo[this.activeCallId].mediaSettings.video);
+            actionData.setScreenshare(this.callInfo[this.activeCallId].mediaSettings.screenShare);
 
-        this.callHandlers(C_CALL_EVENT.LocalMediaSettingsUpdated, this.callInfo[this.activeCallId].mediaSettings);
+            this.callHandlers(C_CALL_EVENT.LocalMediaSettingsUpdated, this.callInfo[this.activeCallId].mediaSettings);
 
-        this.apiManager.callUpdate(this.peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED, actionData.serializeBinary());
+            this.apiManager.callUpdate(this.peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED, actionData.serializeBinary());
+        }, delay || 0);
     }
 
     private mediaSettingsUpdated(data: IUpdatePhoneCall) {
@@ -2131,8 +2140,13 @@ export default class CallService {
         this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
     }
 
+    // Check if all peer connections are initialized
     private checkInitialization(connId: number) {
         if (!this.peerConnections.hasOwnProperty(connId)) {
+            return;
+        }
+
+        if (this.peerConnections[connId].init) {
             return;
         }
 
@@ -2150,6 +2164,11 @@ export default class CallService {
                     this.checkDisconnection(connId, 'disconnected');
                 } else {
                     clearInterval(this.peerConnections[connId].checkStreamInterval);
+                    // Resend stream update in order to make sure states are correct
+                    this.callHandlers(C_CALL_EVENT.StreamUpdated, {
+                        connId,
+                        stream: this.peerConnections[connId].stream
+                    });
                 }
             }, C_CHECK_STREAM_INTERVAL);
         }, C_CHECK_STREAM_INTERVAL);

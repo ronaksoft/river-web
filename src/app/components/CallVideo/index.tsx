@@ -228,7 +228,8 @@ class CallVideo extends React.Component<IProps, IState> {
     private getRemoteVideoContent() {
         return this.videoRemoteRefs.map((item) => {
             if (item.status !== ConnectionStatus.Connected) {
-                return <div key={item.connId} className="call-user-container">
+                return <div key={`${item.connId}_p`} className="call-user-container"
+                            onDoubleClick={this.reconnectHandler(item.connId)}>
                     <UserAvatar className="call-user" id={item.userId} noDetail={true} big={true}/>
                     <div className="call-user-status">{this.getStatusName(item.status)}</div>
                 </div>;
@@ -255,7 +256,7 @@ class CallVideo extends React.Component<IProps, IState> {
                 };
                 ref.setMute(item.muted);
             };
-            return (<div key={item.connId} className="call-user-container"
+            return (<div key={`${item.connId}_v`} className="call-user-container"
                          style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}
                          onContextMenu={this.props.onContextMenu(item.userId)}
                          onDoubleClick={this.reconnectHandler(item.connId)}>
