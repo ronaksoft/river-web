@@ -532,7 +532,7 @@ export default class CallService {
                             }, 255);
                             const connId = this.getConnId(callId, request.userid);
                             if (connId) {
-                                this.checkStreamState(connId);
+                                this.checkInitialization(connId);
                             }
                             return Promise.resolve();
                         }));
@@ -928,7 +928,7 @@ export default class CallService {
 
         this.clearRetryInterval(connId);
         this.appendToAcceptedList(connId);
-        this.checkStreamState(connId);
+        this.checkInitialization(connId);
         window.console.log('[webrtc] accept signal, connId:', connId);
 
         this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
@@ -2131,7 +2131,7 @@ export default class CallService {
         this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
     }
 
-    private checkStreamState(connId: number) {
+    private checkInitialization(connId: number) {
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
@@ -2148,6 +2148,8 @@ export default class CallService {
 
                 if (!this.peerConnections[connId].init) {
                     this.checkDisconnection(connId, 'disconnected');
+                } else {
+                    clearInterval(this.peerConnections[connId].checkStreamInterval);
                 }
             }, C_CHECK_STREAM_INTERVAL);
         }, C_CHECK_STREAM_INTERVAL);
