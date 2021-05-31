@@ -24,7 +24,7 @@ export let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const electronVersion = ElectronService.electronVersion();
 const browserVersion = detect();
 if (electronVersion) {
-    C_CLIENT = `Desktop:- ${electronVersion} ${(browserVersion ? '(' + browserVersion.os + ')' : '')}`;
+    C_CLIENT = `Desktop:- ${electronVersion} ${(browserVersion ? `(${browserVersion.os})` : '')}`;
 } else if (browserVersion) {
     C_CLIENT = `Web:- ${browserVersion.name} ${browserVersion.version} (${browserVersion.os})`;
 }
