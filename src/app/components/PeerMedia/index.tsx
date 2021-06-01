@@ -65,6 +65,7 @@ interface IMedia {
     peerType: number;
     playing?: boolean;
     saved: boolean;
+    saved_path: string;
     selected: boolean;
     type: number;
     userId: string;
@@ -713,7 +714,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     </div>);
                 case 3:
                 default:
-                    if (!item.saved) {
+                    if (!item.saved || item.saved_path === '') {
                         return (<div className="media-file-action">
                             <span
                                 onClick={this.mediaActionClickHandler(item.id, 'view')}>{i18n.t('general.save')}</span>
@@ -772,6 +773,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     peerId: item.peerid || '0',
                     peerType: item.peertype || 0,
                     saved: item.saved || false,
+                    saved_path: item.saved_path || '',
                     selected: false,
                     teamId: item.teamid || '0',
                     type: item.messagetype || C_MESSAGE_TYPE.Normal,
