@@ -966,8 +966,8 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callVideoRef.initRemoteConnection(true);
         const participant = this.callService.participantByConnId(connId);
-        this.callVideoRef.setStatus(connId, ConnectionStatus.Connected, participant ? participant.deviceType : undefined);
         this.callVideoRef.setStream(connId, stream);
+        this.callVideoRef.setStatus(connId, ConnectionStatus.Connected, participant ? participant.deviceType : undefined);
         if (!this.timeStart) {
             this.timeStart = Date.now();
         }

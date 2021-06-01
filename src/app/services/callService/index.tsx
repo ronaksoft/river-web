@@ -482,7 +482,7 @@ export default class CallService {
     public start(peer: InputPeer, participants: InputUser.AsObject[], callId?: string) {
         this.peer = peer;
 
-        return this.apiManager.callInit(peer).then((res) => {
+        return this.apiManager.callInit(peer, callId).then((res) => {
             this.configs.iceServers = this.transformIceServers(res.iceserversList);
             if (callId) {
                 this.activeCallId = callId;
@@ -516,7 +516,7 @@ export default class CallService {
         if (!peer) {
             return Promise.reject('invalid peer');
         }
-        return this.apiManager.callInit(peer).then((res) => {
+        return this.apiManager.callInit(peer, callId).then((res) => {
             this.activeCallId = callId;
 
             this.configs.iceServers = this.transformIceServers(res.iceserversList);
@@ -1022,7 +1022,7 @@ export default class CallService {
         });
 
         conn[connId].connection.addIceCandidate(iceCandidate).catch((err) => {
-            window.console.log('cannot add ice candidate', err);
+            window.console.log('cannot add ice candidate', err, actionData);
         });
     }
 
@@ -1294,6 +1294,17 @@ export default class CallService {
                     this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: pc.iceConnectionState});
                     this.checkAllConnected();
                     this.checkDisconnection(connId, pc.iceConnectionState);
+
+                    // End of initializing the connection
+                    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+                        window.console.log('[webrtc] connection initialized, connId:', connId);
+                        this.propagateMediaSettings(this.getStreamState(), 255);
+                        conn.init = true;
+                        conn.reconnecting = false;
+                        conn.reconnectingTry = 0;
+                        clearTimeout(conn.reconnectingTimeout);
+                        clearTimeout(conn.checkStreamInterval);
+                    }
                 });
 
                 pc.addEventListener('icecandidateerror', (e) => {
@@ -1326,12 +1337,6 @@ export default class CallService {
                 }
 
                 pc.addEventListener('track', (e) => {
-                    this.propagateMediaSettings(this.getStreamState(), 255);
-                    conn.init = true;
-                    conn.reconnecting = false;
-                    conn.reconnectingTry = 0;
-                    clearTimeout(conn.reconnectingTimeout);
-                    clearTimeout(conn.checkStreamInterval);
                     if (e.streams.length > 0) {
                         const streamId = e.streams[0].id;
                         e.streams.forEach((stream) => {
@@ -2149,6 +2154,8 @@ export default class CallService {
         if (this.peerConnections[connId].init) {
             return;
         }
+
+        window.console.log('[webrtc] checkInitialization, connId:', connId);
 
         this.peerConnections[connId].checkStreamTimeout = setTimeout(() => {
             if (!this.peerConnections.hasOwnProperty(connId)) {
