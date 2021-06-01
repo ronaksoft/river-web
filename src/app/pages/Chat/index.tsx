@@ -100,7 +100,7 @@ import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
 import {
     EventBlur,
-    EventFileDownloaded,
+    EventFileDownloaded, EventFileSaved,
     EventFocus,
     EventMouseWheel,
     EventNetworkStatus,
@@ -5494,6 +5494,7 @@ class Chat extends React.Component<IProps, IState> {
                             if (electronCB) {
                                 electronCB();
                             }
+                            this.broadcastEvent(EventFileSaved, {id: msg.id});
                         });
                     } else {
                         saveAs(res.data, this.getFileName(msg));

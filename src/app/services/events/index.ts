@@ -19,6 +19,7 @@ export const EventWebSocketClose = 'wsClose';
 export const EventNetworkStatus = 'networkStatus';
 export const EventShowChangelog = 'showChangelog';
 export const EventFileDownloaded = 'File_Downloaded';
+export const EventFileSaved = 'File_Saved';
 export const EventMediaDBUpdated = 'Media_DB_Updated';
 export const EventRightMenuToggled = 'Right_Menu_Toggled';
 export const EventAuthProgress = 'authProgress';
