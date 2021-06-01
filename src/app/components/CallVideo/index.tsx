@@ -427,9 +427,9 @@ class CallVideo extends React.Component<IProps, IState> {
     }
 
     private eventAllConnectedHandler = () => {
-        setInterval(() => {
-            window.console.log(this.videoRemoteRefs.map(o => `${o.connId}_${o.status}_${o.stream}`).join(' | '));
-        }, 1000);
+        // setInterval(() => {
+        //     window.console.log(this.videoRemoteRefs.map(o => `${o.connId}_${o.status}_${o.stream}`).join(' | '));
+        // }, 1000);
     }
 }
 
