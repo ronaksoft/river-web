@@ -105,6 +105,7 @@ class CallVideo extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalMediaSettingsUpdated, this.eventLocalMediaSettingsUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantMuted, this.eventParticipantMutedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ConnectionStateChanged, this.eventConnectionStateChangedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.AllConnected, this.eventAllConnectedHandler));
     }
 
     public componentWillUnmount() {
@@ -113,6 +114,7 @@ class CallVideo extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+        this.videoRemoteRefs = [];
         this.initialized = false;
     }
 
@@ -422,6 +424,12 @@ class CallVideo extends React.Component<IProps, IState> {
         if (ref && this.state.screenShareStream) {
             ref.srcObject = this.state.screenShareStream;
         }
+    }
+
+    private eventAllConnectedHandler = () => {
+        setInterval(() => {
+            window.console.log(this.videoRemoteRefs.map(o => `${o.connId}_${o.status}_${o.stream}`).join(' | '));
+        }, 1000);
     }
 }
 

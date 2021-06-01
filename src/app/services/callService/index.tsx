@@ -1111,17 +1111,21 @@ export default class CallService {
     }
 
     private initCallRequest(data: IUpdatePhoneCall) {
+        const sdpData = (data.data as PhoneActionRequested.AsObject);
         if (this.callInfo.hasOwnProperty(data.callid || '0')) {
             const requestParticipantIds = this.callInfo[data.callid || '0'].requestParticipantIds;
             if (requestParticipantIds.indexOf(data.userid) === -1) {
                 this.callInfo[data.callid || '0'].requests.push(data);
                 this.callInfo[data.callid || '0'].requestParticipantIds.push(data.userid);
+                const pi = this.callInfo[data.callid || '0'].participantMap[data.userid];
+                if (pi !== undefined) {
+                    this.callInfo[data.callid || '0'].participants[pi].deviceType = sdpData.devicetype || CallDeviceType.CALLDEVICEUNKNOWN;
+                }
                 window.console.log('[webrtc] request from:', data.userid);
             }
             return;
         }
         window.console.log('[webrtc] request from:', data.userid);
-        const sdpData = (data.data as PhoneActionRequested.AsObject);
         const callParticipants: { [key: number]: ICallParticipant } = {};
         const callParticipantMap: { [key: string]: number } = {};
         sdpData.participantsList.forEach((participant) => {
@@ -1901,6 +1905,8 @@ export default class CallService {
                     return this.sendSDPAnswer(connId, res);
                 });
             });
+        }).catch((err) => {
+            window.console.log(err);
         });
     }
 
@@ -1916,6 +1922,8 @@ export default class CallService {
         pc.setRemoteDescription({
             sdp: sdpAnswerData.sdp,
             type: sdpAnswerData.type as any,
+        }).catch((err) => {
+            window.console.log(err);
         });
     }
 
