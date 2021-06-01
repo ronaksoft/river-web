@@ -916,8 +916,12 @@ export default class CallService {
 
         const sdpData = (data.data as PhoneActionAccepted.AsObject);
 
-        if (this.activeCallId && this.callInfo.hasOwnProperty(this.activeCallId)) {
+        if (this.callInfo.hasOwnProperty(this.activeCallId)) {
             this.callInfo[this.activeCallId].participants[connId].deviceType = sdpData.devicetype;
+        }
+
+        if (this.peerConnections[connId].accepted) {
+            return;
         }
 
         this.peerConnections[connId].connection.setRemoteDescription({

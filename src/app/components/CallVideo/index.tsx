@@ -155,7 +155,9 @@ class CallVideo extends React.Component<IProps, IState> {
         if (index > -1) {
             const remote = this.videoRemoteRefs[index];
             if (remote.status !== status || (deviceType !== undefined && remote.deviceType !== deviceType)) {
-                remote.status = status;
+                if (remote.status !== ConnectionStatus.Connected) {
+                    remote.status = status;
+                }
                 if (deviceType !== undefined) {
                     remote.deviceType = deviceType;
                 }

@@ -1,3 +1,6 @@
+## 1.1.59
+* Call UI bug fixed
+
 ## 1.1.58
 * File improvements
 
