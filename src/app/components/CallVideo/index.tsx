@@ -193,7 +193,9 @@ class CallVideo extends React.Component<IProps, IState> {
             <div className="call-user-container"
                  style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}>
                 <div className="video-placeholder">
-                    <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true}/>
+                    <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true} style={{
+                        display: !this.mediaSettings.video ? 'none' : undefined,
+                    }}/>
                     {!this.mediaSettings.video && <div className="video-user-placeholder">
                         <UserAvatar className="call-user-avatar" id={currentUserId} noDetail={true}/>
                         {!this.mediaSettings.audio && <div className="video-user-audio-muted">

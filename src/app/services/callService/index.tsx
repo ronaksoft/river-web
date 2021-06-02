@@ -974,6 +974,9 @@ export default class CallService {
         const connId = this.callInfo[activeCallId].participantMap[userId];
         if (this.peerConnections.hasOwnProperty(connId)) {
             this.peerConnections[connId].connection.close();
+            clearInterval(this.peerConnections[connId].checkStreamInterval);
+            clearTimeout(this.peerConnections[connId].checkStreamTimeout);
+            clearTimeout(this.peerConnections[connId].reconnectingTimeout);
             delete this.peerConnections[connId];
         }
         let index = this.callInfo[activeCallId].acceptedParticipantIds.indexOf(userId);

@@ -1,3 +1,6 @@
+## 1.1.61
+* Call improvements
+
 ## 1.1.60
 * Call upgrade connection bug fixed
 
