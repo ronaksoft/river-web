@@ -619,7 +619,8 @@
     "screen_list": "Screen List",
     "mute": "Mute",
     "unmute": "Unmute",
-    "join": "Join"
+    "join": "Join",
+    "all_participants_should_be_connected": "All participants should be connected"
   },
   "notification": {
     "new_messages": "{0} new messages",

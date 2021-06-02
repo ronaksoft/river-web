@@ -614,7 +614,8 @@
     "screen_list": "لیست صفحه نمایش",
     "mute": "بی صدا کردن",
     "unmute": "با صدا کردن",
-    "join": "پیوستن"
+    "join": "پیوستن",
+    "all_participants_should_be_connected": "تمام اعضا باید وصل باشند"
   },
   "notification": {
     "new_messages": "{0} پیام جدید",

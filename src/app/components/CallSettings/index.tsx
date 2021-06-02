@@ -230,6 +230,7 @@ class CallSettings extends React.Component<IProps, IState> {
             this.setState({
                 loading: false,
             });
+            this.callService.enqueueSnackbar(i18n.t('call.all_participants_should_be_connected'));
         });
     }
 

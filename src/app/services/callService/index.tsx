@@ -676,6 +676,7 @@ export default class CallService {
             clearTimeout(conn.reconnectingTimeout);
             clearInterval(conn.checkStreamInterval);
             clearInterval(conn.checkStreamTimeout);
+            delete this.peerConnections[connId];
         };
 
         if (connId !== undefined) {
@@ -973,6 +974,7 @@ export default class CallService {
         const connId = this.callInfo[activeCallId].participantMap[userId];
         if (this.peerConnections.hasOwnProperty(connId)) {
             this.peerConnections[connId].connection.close();
+            delete this.peerConnections[connId];
         }
         let index = this.callInfo[activeCallId].acceptedParticipantIds.indexOf(userId);
         if (index > -1) {
