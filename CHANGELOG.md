@@ -1,5 +1,7 @@
 ## 1.1.62
 * Label remove bug fixed
+* Sync and live transition bug fixed
+* Electron updated
 
 ## 1.1.61
 * Call improvements

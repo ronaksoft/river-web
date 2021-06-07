@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.39.0",
+  "version": "0.40.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -126,7 +126,7 @@
     "@types/react-window": "^1.8.1",
     "@types/shortid": "^0.0.29",
     "@types/xregexp": "^3.0.29",
-    "electron": "^13.0.1",
+    "electron": "^13.1.1",
     "electron-builder": "^22.10.5",
     "electron-devtools-installer": "^3.1.1",
     "glob": "^7.1.6",

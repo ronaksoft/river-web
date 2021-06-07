@@ -2781,6 +2781,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateDialogDBUpdatedHandler = (data: IDialogDBUpdated) => {
+        window.console.log(data);
         this.dialogRepo.getManyCache(this.teamId, {}).then((res) => {
             this.dialogsSort(res, (dialogs) => {
                 if (data.counters) {

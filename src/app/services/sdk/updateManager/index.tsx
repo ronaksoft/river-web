@@ -1641,7 +1641,7 @@ export default class UpdateManager {
             const peerName = GetPeerName(message.peerid, message.peertype);
             messageList.push(message);
             keys.push(message.id);
-            if (!peerNames[peerName]) {
+            if (peerNames.indexOf(peerName) === -1) {
                 peerNames.push(peerName);
                 peers.push({
                     id: message.peerid || '',
@@ -1649,7 +1649,7 @@ export default class UpdateManager {
                 });
             }
             if (message && message.id) {
-                if (minIdPerPeer.hasOwnProperty(peerName)) {
+                if (!minIdPerPeer.hasOwnProperty(peerName)) {
                     minIdPerPeer[peerName] = message.id;
                 } else {
                     if (minIdPerPeer[peerName] > message.id) {
