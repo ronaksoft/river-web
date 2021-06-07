@@ -119,6 +119,7 @@ export default class LabelRepo {
             if (this.messageRepo) {
                 this.messageRepo.removeLabelFromMessage(id);
             }
+            this.db.labelItems.where('[teamid+lid+mid]').between([Dexie.minKey, id, Dexie.minKey], [Dexie.maxKey, id, Dexie.maxKey], true, true).delete();
         });
         return Promise.all(promises).then((res) => {
             this.broadcastEvent('Label_DB_Updated', {callerId, ids});

@@ -1,3 +1,6 @@
+## 1.1.62
+* Label remove bug fixed
+
 ## 1.1.61
 * Call improvements
 
