@@ -1,3 +1,6 @@
+## 1.1.63
+* Overall improvements
+
 ## 1.1.62
 * Label remove bug fixed
 * Sync and live transition bug fixed

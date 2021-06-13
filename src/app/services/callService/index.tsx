@@ -2159,6 +2159,9 @@ export default class CallService {
         if (!this.callInfo.hasOwnProperty(this.activeCallId)) {
             return;
         }
+        if (this.callInfo[this.activeCallId].acceptedParticipants.indexOf(connId) > -1) {
+            return;
+        }
         this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
     }
 

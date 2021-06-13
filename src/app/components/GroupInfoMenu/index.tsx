@@ -203,10 +203,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 this.setState({
                     dialog,
                     disable,
+                    titleEdit: false,
                 });
             } else {
                 this.setState({
                     dialog,
+                    titleEdit: false,
                 });
             }
             return;
@@ -216,6 +218,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             dialog,
             disable: dialog ? dialog.disable || false : false,
             peer,
+            titleEdit: false,
         }, () => {
             this.getGroup();
         });

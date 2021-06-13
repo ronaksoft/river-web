@@ -31,7 +31,7 @@ import DialogSkeleton from "../DialogSkeleton";
 import './style.scss';
 
 export enum CallStatus {
-    Nope = 0x00,
+    Empty = 0x00,
     Init = 0x01,
     Ended = 0x02,
     Busy = 0x03,

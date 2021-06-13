@@ -140,6 +140,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             if (this.state.disable !== disable) {
                 this.setState({
                     disable,
+                    edit: false,
                 });
             }
             return;
@@ -148,6 +149,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.me = Boolean(peer && peer.getId() === currentUserId);
         this.setState({
             disable: dialog ? dialog.disable || false : false,
+            edit: false,
             peer,
         }, () => {
             this.getUser();
