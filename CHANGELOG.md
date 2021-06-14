@@ -1,3 +1,9 @@
+## 1.1.64
+* Improvements in selecting texts
+* Improvements in call discard
+* Improvements in call timeout
+* Known bugs fixed
+
 ## 1.1.63
 * Overall improvements
 

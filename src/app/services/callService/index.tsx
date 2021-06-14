@@ -572,6 +572,11 @@ export default class CallService {
 
         this.pushToRejectedCallIds(callId);
 
+        this.callHandlers(C_CALL_EVENT.CallRejected, {
+            callId,
+            reason: DiscardReason.DISCARDREASONHANGUP,
+        });
+
         return this.apiManager.callReject(peer, callId, reason, duration).then(() => {
             this.destroyConnections(callId);
         });
@@ -636,10 +641,11 @@ export default class CallService {
             return Promise.reject('invalid callId');
         }
 
+        userIds.forEach((userId) => {
+            this.removeParticipant(userId);
+        });
+
         return this.apiManager.callRemoveParticipant(peer, callId, inputUsers, timeout).then(() => {
-            userIds.forEach((userId) => {
-                this.removeParticipant(userId);
-            });
             this.callHandlers(C_CALL_EVENT.ParticipantRemoved, {timeout, userIds});
             return Promise.resolve();
         });
@@ -1247,6 +1253,7 @@ export default class CallService {
                 phoneParticipants.forEach((participant) => {
                     const connId = participant.getConnectionid() || 0;
                     if (this.peerConnections.hasOwnProperty(connId)) {
+                        clearInterval(this.peerConnections[connId].connectingInterval);
                         // Retry mechanism
                         this.peerConnections[connId].connectingInterval = setInterval(() => {
                             if (this.activeCallId && this.peerConnections.hasOwnProperty(connId)) {

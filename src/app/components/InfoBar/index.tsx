@@ -114,6 +114,11 @@ class InfoBar extends React.Component<IProps, IState> {
             icon: <CallEndRounded/>,
             title: i18n.t('call.hangup'),
             whenActive: true,
+        }, {
+            cmd: 'call_end_join',
+            icon: <AddIcCallRounded/>,
+            title: i18n.t('call.join_call'),
+            whenActive: true,
         });
     }
 
@@ -234,14 +239,15 @@ class InfoBar extends React.Component<IProps, IState> {
                 <CircularProgress size={16}/>
             </MenuItem>;
         }
-        return this.menuItems.map((item, index) => {
-            if (visibleMenus.indexOf(index) > -1) {
-                return (<MenuItem key={index} onClick={this.callCmdHandler(item.cmd)} className="context-item">
-                    <ListItemIcon className="context-icon">{item.icon}</ListItemIcon>
-                    {item.title}
-                </MenuItem>);
+        return visibleMenus.map((idx) => {
+            const item = this.menuItems[idx];
+            if (!item) {
+                return null;
             }
-            return null;
+            return (<MenuItem key={idx} onClick={this.callCmdHandler(item.cmd)} className="context-item">
+                <ListItemIcon className="context-icon">{item.icon}</ListItemIcon>
+                {item.title}
+            </MenuItem>);
         });
     }
 
@@ -300,8 +306,21 @@ class InfoBar extends React.Component<IProps, IState> {
                         loading: true,
                     });
                     this.apiManager.callGetParticipants(peer, callId).then((res) => {
-                        if (res.participantsList.some(o => o.peer.userid === currentUserId)) {
-                            visibleMenus = [3];
+                        let lastAdmin = true;
+                        let isInCall = false;
+                        res.participantsList.forEach((o) => {
+                            if (o.peer.userid === currentUserId) {
+                                isInCall = true;
+                            } else if (o.admin || o.initiator) {
+                                lastAdmin = false;
+                            }
+                        });
+                        if (!isInCall) {
+                            if (lastAdmin) {
+                                visibleMenus = [3];
+                            } else {
+                                visibleMenus = [4, 3];
+                            }
                         } else {
                             visibleMenus = [2];
                         }

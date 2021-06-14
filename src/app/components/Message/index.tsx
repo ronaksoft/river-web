@@ -238,6 +238,7 @@ interface IState {
     moreAnchorPos: any;
     moreAnchorRef: 'anchorPosition' | 'anchorEl';
     moreIndex: number;
+    moreTarget: any;
     readIdInit: number;
     selectable: boolean;
     selectedIds: { [key: number]: number };
@@ -337,6 +338,7 @@ class Message extends React.Component<IProps, IState> {
             moreAnchorPos: null,
             moreAnchorRef: 'anchorEl',
             moreIndex: -1,
+            moreTarget: null,
             readIdInit: -1,
             selectable: false,
             selectedIds: {},
@@ -1194,6 +1196,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private moreCmdHandler = (cmd: string, index: number) => (e: any) => {
+        window.console.log(cmd);
         e.stopPropagation();
         if (cmd === 'reply' && this.state.disable) {
             this.setState({
@@ -1214,7 +1217,7 @@ class Message extends React.Component<IProps, IState> {
         } else if (cmd === 'copy') {
             this.copy();
         } else if (cmd === 'copy_all') {
-            const el = document.querySelector(`.bubble-wrapper .bubble.b_${this.state.items[index].id || 0} .bubble-body .inner`);
+            const el = this.state.moreTarget ? this.state.moreTarget : document.querySelector(`.bubble-wrapper .bubble.b_${this.state.items[index].id || 0} .bubble-body .inner`);
             if (el) {
                 this.selectAll(el);
                 this.copy();
@@ -1225,6 +1228,7 @@ class Message extends React.Component<IProps, IState> {
         this.setState({
             moreAnchorEl: null,
             moreAnchorPos: null,
+            moreTarget: null,
         });
     }
 
@@ -1637,6 +1641,7 @@ class Message extends React.Component<IProps, IState> {
             },
             moreAnchorRef: 'anchorPosition',
             moreIndex: index,
+            moreTarget: e.target,
         });
     }
 

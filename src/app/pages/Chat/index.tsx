@@ -902,10 +902,11 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'call_end':
             case 'call_join':
+            case 'call_end_join':
                 const dialog = this.getDialogByPeerName(this.selectedPeerName);
                 if (dialog && dialog.activecallid && this.peer && this.callService) {
-                    if (cmd === 'call_end') {
-                        this.callService.reject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
+                    const callReject = () => {
+                        const endUpdate = () => {
                             if (this.peer && this.peer.getType() === PeerType.PEERUSER) {
                                 this.updatePhoneCallEndedHandler({
                                     peer: this.peer.toObject(),
@@ -914,9 +915,26 @@ class Chat extends React.Component<IProps, IState> {
                                     updateid: 0,
                                 });
                             }
+                        };
+                        return this.callService.reject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).then(() => {
+                            endUpdate();
+                            return Promise.resolve();
+                        }).catch(() => {
+                            endUpdate();
+                            return Promise.reject();
                         });
-                    } else {
+                    };
+                    const callJoin = () => {
                         this.callService.join(this.peer, dialog.activecallid);
+                    };
+                    if (cmd === 'call_end') {
+                        callReject();
+                    } else if (cmd === 'call_join') {
+                        callJoin();
+                    } else if (cmd === 'call_end_join') {
+                        callReject().then(() => {
+                            callJoin();
+                        });
                     }
                 }
                 break;
