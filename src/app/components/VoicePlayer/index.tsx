@@ -388,16 +388,16 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         }
 
         this.canvasCtx.clearRect(0, 0, this.canvasConfig.width, this.canvasConfig.height);
+        const canvasYMid = this.canvasConfig.height / 2;
 
-        let barHeight;
         let x = 0;
         const ratio = (this.props.sampleCount || 200) / this.canvasConfig.maxBars;
 
         for (let i = 0; i < this.canvasConfig.maxBars; i++) {
-            barHeight = Math.floor(this.bars[Math.floor(i * ratio)] * this.canvasConfig.ratio) + 1;
+            const barHeight = Math.floor(this.bars[Math.floor(i * ratio)] * this.canvasConfig.ratio) + 1;
 
             this.canvasCtx.fillStyle = overlay ? this.canvasConfig.color : this.canvasConfig.color + '33';
-            this.canvasCtx.fillRect(x, this.canvasConfig.height - barHeight, this.canvasConfig.barWidth, this.canvasConfig.height);
+            this.canvasCtx.fillRect(x, canvasYMid - barHeight / 2, this.canvasConfig.barWidth, barHeight);
 
             x += this.canvasConfig.totalWith;
         }

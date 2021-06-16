@@ -76,6 +76,8 @@
     "view_in_chat": "مشاده در گفتگو",
     "unsupported_document": "سند قابل پشتیبانی نیست",
     "sending_message_is_not_allowed": "امکان ارسال پیام وجود ندارد",
+    "only_admins_can_send_message": "فقط ادمین‌‌ها امکان ارسال پیام دارند",
+    "not_a_team_member": "عضو تیم نیست",
     "desktop": "دسکتاپ",
     "web": "وب",
     "ios": "iOS",
@@ -519,6 +521,9 @@
     "no_message": "بدون پیام",
     "call_started": "شروع تماس",
     "call_ended": "پایان تماس",
+    "call_ended_param": "تماس {0}",
+    "call_missed": "تماس بی‌پاسخ",
+    "call_unavailable": "تماس غیر قابل دسترس",
     "call_from_user": "تماس از {0}",
     "call_from": "تماس از "
   },
@@ -577,6 +582,8 @@
     "call": "تماس",
     "is_calling": "در تماس...",
     "is_ringing": "در حال زنگ خوردن",
+    "is_connecting": "در حال اتصال",
+    "connected": "متصل شد",
     "rate_this_call": "به این تماس امتیاز دهید",
     "muted": "بی صدا",
     "call_back": "تماس مجدد",
@@ -584,7 +591,7 @@
     "is_not_available": "در دسترس نیست",
     "is_busy": "مشغول است",
     "audio_muted": "میکروفن بی صدا هست",
-    "call_started": "تماس فعال",
+    "call_started": "تماس فعال...",
     "join_call": "ورود به تماس",
     "user_joined_the_call": "{0} به تماس افزوده شد",
     "user_left_the_call": "{0} از تماس خارج شد",
@@ -607,7 +614,8 @@
     "screen_list": "لیست صفحه نمایش",
     "mute": "بی صدا کردن",
     "unmute": "با صدا کردن",
-    "join": "پیوستن"
+    "join": "پیوستن",
+    "all_participants_should_be_connected": "تمام اعضا باید وصل باشند"
   },
   "notification": {
     "new_messages": "{0} پیام جدید",

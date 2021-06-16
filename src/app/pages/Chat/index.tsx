@@ -100,7 +100,7 @@ import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
 import {
     EventBlur,
-    EventFileDownloaded,
+    EventFileDownloaded, EventFileSaved,
     EventFocus,
     EventMouseWheel,
     EventNetworkStatus,
@@ -195,6 +195,18 @@ const RightMenu = React.lazy(() => import('../../components/RightMenu'));
 
 export let notifyOptions: any[] = [];
 
+interface IScrollInfo {
+    end: number;
+    overscanEnd: number;
+    overscanStart: number;
+    start: number;
+}
+
+interface IReadReaction {
+    peer: InputPeer;
+    msgIds: number[];
+}
+
 interface IProps extends WithSnackbarProps {
     history?: any;
     location?: any;
@@ -272,12 +284,7 @@ class Chat extends React.Component<IProps, IState> {
     private isTypingList: { [key: string]: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } } = {};
     private iframeService: IframeService;
     private readonly newMessageLoadThrottle: any = null;
-    private scrollInfo: {
-        end: number;
-        overscanEnd: number;
-        overscanStart: number;
-        start: number;
-    } = {
+    private scrollInfo: IScrollInfo = {
         end: 0,
         overscanEnd: 0,
         overscanStart: 0,
@@ -307,6 +314,8 @@ class Chat extends React.Component<IProps, IState> {
     private dialogInitialized: boolean = false;
     private started: boolean = false;
     private deepLinkService: DeepLinkService;
+    private reactionReadList: { [key: string]: IReadReaction } = {};
+    private readonly reactionReadThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -337,21 +346,22 @@ class Chat extends React.Component<IProps, IState> {
         this.topPeerRepo = TopPeerRepo.getInstance();
         this.gifRepo = GifRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
-        this.dialogsSortThrottle = throttle(this.dialogsSort, 256);
+        this.dialogsSortThrottle = throttle(this.dialogsSort, 255);
         this.isInChat = (document.visibilityState === 'visible');
         this.isMobileView = IsMobileView();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.bufferProgressBroadcaster = BufferProgressBroadcaster.getInstance();
         this.electronService = ElectronService.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
-        this.messageReadThrottle = throttle(this.readMessage, 256);
+        this.messageReadThrottle = throttle(this.readMessage, 255);
         this.backgroundService = BackgroundService.getInstance();
         this.settingsConfigManager = SettingsConfigManager.getInstance();
-        this.newMessageLoadThrottle = throttle(this.newMessageLoad, 128);
+        this.newMessageLoadThrottle = throttle(this.newMessageLoad, 127);
         this.cachedMessageService = CachedMessageService.getInstance();
         this.avatarService = AvatarService.getInstance();
         this.modalityService = ModalityService.getInstance();
         this.deepLinkService = DeepLinkService.getInstance();
+        this.reactionReadThrottle = throttle(this.readReactionHandler, 511);
         this.callService = CallService.getInstance();
         this.callService.setEnqueueSnackbarFn(this.props.enqueueSnackbar);
 
@@ -892,10 +902,11 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'call_end':
             case 'call_join':
+            case 'call_end_join':
                 const dialog = this.getDialogByPeerName(this.selectedPeerName);
                 if (dialog && dialog.activecallid && this.peer && this.callService) {
-                    if (cmd === 'call_end') {
-                        this.callService.reject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).finally(() => {
+                    const callReject = () => {
+                        const endUpdate = () => {
                             if (this.peer && this.peer.getType() === PeerType.PEERUSER) {
                                 this.updatePhoneCallEndedHandler({
                                     peer: this.peer.toObject(),
@@ -904,9 +915,26 @@ class Chat extends React.Component<IProps, IState> {
                                     updateid: 0,
                                 });
                             }
+                        };
+                        return this.callService.reject(dialog.activecallid, 0, DiscardReason.DISCARDREASONHANGUP, this.peer).then(() => {
+                            endUpdate();
+                            return Promise.resolve();
+                        }).catch(() => {
+                            endUpdate();
+                            return Promise.reject();
                         });
-                    } else {
+                    };
+                    const callJoin = () => {
                         this.callService.join(this.peer, dialog.activecallid);
+                    };
+                    if (cmd === 'call_end') {
+                        callReject();
+                    } else if (cmd === 'call_join') {
+                        callJoin();
+                    } else if (cmd === 'call_end_join') {
+                        callReject().then(() => {
+                            callJoin();
+                        });
                     }
                 }
                 break;
@@ -1219,7 +1247,25 @@ class Chat extends React.Component<IProps, IState> {
                 this.updateVisibleRows([index], true, true);
             }
         }
+        const reactionFn = (readReaction: boolean) => {
+            if (this.scrollInfo && data.reaction && data.reaction !== '') {
+                const fromId = this.messages[this.scrollInfo.start] ? this.messages[this.scrollInfo.start].id || 0 : 0;
+                const toId = this.messages[this.scrollInfo.end] ? this.messages[this.scrollInfo.end].id || 0 : 0;
+                if (fromId > 0 && toId > 0) {
+                    if (this.moveDownRef && msgId > toId) {
+                        this.moveDownRef.addReaction(data.reaction);
+                    } else if (this.popUpDateRef && msgId < fromId) {
+                        this.popUpDateRef.addReaction(data.reaction);
+                    } else if (readReaction && data.sender.id !== currentUserId) {
+                        this.readReaction(data.peer, data.messageid);
+                    }
+                }
+            }
+        };
         if (this.selectedPeerName !== peerName || !this.isInChat) {
+            if (this.selectedPeerName === peerName) {
+                reactionFn(false);
+            }
             this.messageRepo.get(msgId).then((msg) => {
                 if (!data.peer || !data.sender || !msg || !msg.me || data.reaction === '') {
                     return;
@@ -1244,16 +1290,8 @@ class Chat extends React.Component<IProps, IState> {
                     sender: data.sender,
                 });
             });
-        } else if (this.moveDownRef && this.popUpDateRef && this.scrollInfo && data.reaction && data.reaction !== '') {
-            const fromId = this.messages[this.scrollInfo.start] ? this.messages[this.scrollInfo.start].id || 0 : 0;
-            const toId = this.messages[this.scrollInfo.end] ? this.messages[this.scrollInfo.end].id || 0 : 0;
-            if (fromId > 0 && toId > 0) {
-                if (msgId > toId) {
-                    this.moveDownRef.addReaction(data.reaction);
-                } else if (msgId < fromId) {
-                    this.popUpDateRef.addReaction(data.reaction);
-                }
-            }
+        } else {
+            reactionFn(true);
         }
     }
 
@@ -1933,7 +1971,7 @@ class Chat extends React.Component<IProps, IState> {
                         entities = param.entities;
                     }
 
-                    this.apiManager.editMessage(peer, message.id || 0, randomId, text, entities).then(fnSuccess(message)).catch((err) => {
+                    this.apiManager.messageEdit(peer, message.id || 0, randomId, text, entities).then(fnSuccess(message)).catch((err) => {
                         window.console.debug(err);
                     });
                     break;
@@ -1951,7 +1989,7 @@ class Chat extends React.Component<IProps, IState> {
                         entities = param.entities;
                     }
 
-                    this.apiManager.editMediaMessage(peer, message.id || 0, randomId, text, entities).then(fnSuccess(message, true)).catch((err) => {
+                    this.apiManager.messageEditMedia(peer, message.id || 0, randomId, text, entities).then(fnSuccess(message, true)).catch((err) => {
                         window.console.debug(err);
                     });
                     break;
@@ -2003,7 +2041,7 @@ class Chat extends React.Component<IProps, IState> {
 
             // For double checking update message id
             this.updateManager.setRandomId(randomId);
-            this.apiManager.sendMessage(randomId, text, peer, replyTo, entities, (reqId: number) => {
+            this.apiManager.messageSend(randomId, text, peer, replyTo, entities, (reqId: number) => {
                 message.req_id = reqId;
                 index = this.pushMessage(message);
             }).then((res) => {
@@ -2187,7 +2225,7 @@ class Chat extends React.Component<IProps, IState> {
             peer.setAccesshash(contact.accesshash || '');
             peer.setId(contact.id || '');
             this.updateManager.setRandomId(randomId);
-            this.apiManager.sendMessage(randomId, text, peer);
+            this.apiManager.messageSend(randomId, text, peer);
         });
     }
 
@@ -2197,7 +2235,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        this.apiManager.setTyping(peer, typing).catch((err) => {
+        this.apiManager.messageSetTyping(peer, typing).catch((err) => {
             window.console.debug(err);
         });
     }
@@ -2761,6 +2799,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateDialogDBUpdatedHandler = (data: IDialogDBUpdated) => {
+        window.console.log(data);
         this.dialogRepo.getManyCache(this.teamId, {}).then((res) => {
             this.dialogsSort(res, (dialogs) => {
                 if (data.counters) {
@@ -3395,7 +3434,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         keys.forEach((key) => {
-            this.apiManager.readMessageHistory(this.dialogReadMap[key].peer, this.dialogReadMap[key].id);
+            this.apiManager.messageReadHistory(this.dialogReadMap[key].peer, this.dialogReadMap[key].id);
             delete this.dialogReadMap[key];
         });
     }
@@ -3628,7 +3667,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Message on bot button click handler */
-    private messageBotButtonActionHandler = (cmd: number, data: any, msgId?: number) => {
+    private messageBotButtonActionHandler = (cmd: number, data: any, msgId?: number, senderId?: string) => {
         if (!this.peer) {
             return;
         }
@@ -3676,18 +3715,32 @@ class Chat extends React.Component<IProps, IState> {
             //     const buttonBuy: ButtonBuy.AsObject = data;
             //     break;
             case C_BUTTON_ACTION.ButtonCallback:
-                const buttonCallback: ButtonCallback.AsObject = data;
-                this.apiManager.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId).then((res) => {
-                    if ((res.message || '').length > 0) {
-                        this.modalityService.open({
-                            cancelText: i18n.t('general.ok'),
-                            title: i18n.t('bot.alert'),
-                        }).then((modalRes) => {
-                            this.resetSelectedMessages();
-                        });
-                    }
-                    this.openLink(res.url || '');
-                });
+                const callbackFn = (inputBot?: InputUser) => {
+                    const buttonCallback: ButtonCallback.AsObject = data;
+                    this.apiManager.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId, inputBot).then((res) => {
+                        if ((res.message || '').length > 0) {
+                            this.modalityService.open({
+                                cancelText: i18n.t('general.ok'),
+                                title: i18n.t('bot.alert'),
+                            }).then((modalRes) => {
+                                this.resetSelectedMessages();
+                            });
+                        }
+                        this.openLink(res.url || '');
+                    });
+                };
+                if (senderId) {
+                    this.userRepo.get(senderId).then((res) => {
+                        if (res) {
+                            const inputBot = new InputUser();
+                            inputBot.setUserid(res.id);
+                            inputBot.setAccesshash(res.accesshash);
+                            callbackFn(inputBot);
+                        }
+                    });
+                } else {
+                    callbackFn();
+                }
                 break;
         }
     }
@@ -4396,7 +4449,7 @@ class Chat extends React.Component<IProps, IState> {
 
         // For double checking update message id
         this.updateManager.setRandomId(randomId);
-        return this.apiManager.sendMessage(randomId, message.body || '', peerInfo.peer, message.replyto, messageEntities).then((res) => {
+        return this.apiManager.messageSend(randomId, message.body || '', peerInfo.peer, message.replyto, messageEntities).then((res) => {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
@@ -4424,7 +4477,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             // For double checking update message id
             this.updateManager.setRandomId(randomId);
-            return this.apiManager.sendMediaMessage(randomId, peerInfo.peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+            return this.apiManager.messageSendMedia(randomId, peerInfo.peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 message.id = res.messageid;
                 this.messageMapAppend(message);
                 message.downloaded = true;
@@ -5047,7 +5100,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 // For double checking update message id
                 this.updateManager.setRandomId(randomId);
-                this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
+                this.apiManager.messageSendMedia(randomId, peer, inputMediaType, data, replyTo).then((res) => {
                     message.id = res.messageid;
                     this.messageMapAppend(message);
                     message.downloaded = true;
@@ -5197,7 +5250,7 @@ class Chat extends React.Component<IProps, IState> {
                 message_id: id,
                 type: inputMediaType,
             });
-            this.apiManager.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
+            this.apiManager.messageSendMedia(randomId, peer, inputMediaType, data, replyTo).then((res) => {
                 message.id = res.messageid;
                 this.messageMapAppend(message);
                 this.messageRepo.importBulk([message]);
@@ -5314,7 +5367,7 @@ class Chat extends React.Component<IProps, IState> {
 
         // For double checking update message id
         this.updateManager.setRandomId(randomId);
-        this.apiManager.sendMediaMessage(randomId, peer, mediaType, media, replyTo).then((res) => {
+        this.apiManager.messageSendMedia(randomId, peer, mediaType, media, replyTo).then((res) => {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
@@ -5397,7 +5450,7 @@ class Chat extends React.Component<IProps, IState> {
 
         // For double checking update message id
         this.updateManager.setRandomId(randomId);
-        this.apiManager.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEMESSAGEDOCUMENT, media.serializeBinary(), replyTo).then((res) => {
+        this.apiManager.messageSendMedia(randomId, peer, InputMediaType.INPUTMEDIATYPEMESSAGEDOCUMENT, media.serializeBinary(), replyTo).then((res) => {
             message.id = res.messageid;
             this.messageMapAppend(message);
 
@@ -5460,6 +5513,7 @@ class Chat extends React.Component<IProps, IState> {
                             if (electronCB) {
                                 electronCB();
                             }
+                            this.broadcastEvent(EventFileSaved, {id: msg.id});
                         });
                     } else {
                         saveAs(res.data, this.getFileName(msg));
@@ -5546,7 +5600,7 @@ class Chat extends React.Component<IProps, IState> {
     private readMessageContent(message: IMessage) {
         const peer = this.peer;
         if (message && !message.contentread && !message.me && peer) {
-            this.apiManager.readMessageContent([message.id || 0], peer);
+            this.apiManager.messageReadContent([message.id || 0], peer);
         }
     }
 
@@ -6457,6 +6511,32 @@ class Chat extends React.Component<IProps, IState> {
                     }, 128);
                 }
             });
+        }
+    }
+
+    private readReaction(peer: InputPeer.AsObject, id: number) {
+        const peerTag = `${peer.id}_${peer.type}`;
+        if (!this.reactionReadList.hasOwnProperty(peerTag)) {
+            const inputPeer = new InputPeer();
+            inputPeer.setId(peer.id);
+            inputPeer.setType(peer.type);
+            inputPeer.setAccesshash(peer.accesshash);
+            this.reactionReadList[peerTag] = {
+                msgIds: [id],
+                peer: inputPeer,
+            };
+        } else {
+            this.reactionReadList[peerTag].msgIds.push(id);
+        }
+        setTimeout(() => {
+            this.reactionReadThrottle();
+        }, 1023);
+    }
+
+    private readReactionHandler = () => {
+        for (const [tag, item] of Object.entries(this.reactionReadList)) {
+            this.apiManager.messageReadReaction(item.peer, item.msgIds);
+            delete this.reactionReadList[tag];
         }
     }
 }

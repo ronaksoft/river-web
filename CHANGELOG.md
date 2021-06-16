@@ -1,3 +1,87 @@
+## 1.1.64
+* Improvements in selecting texts
+* Improvements in call discard
+* Improvements in call timeout
+* Known bugs fixed
+
+## 1.1.63
+* Overall improvements
+
+## 1.1.62
+* Label remove bug fixed
+* Sync and live transition bug fixed
+* Electron updated
+
+## 1.1.61
+* Call improvements
+
+## 1.1.60
+* Call upgrade connection bug fixed 
+
+## 1.1.59
+* Call UI bug fixed
+
+## 1.1.58
+* File improvements
+
+## 1.1.57
+* Call improvements
+
+## 1.1.56
+* Call improvements
+
+## 1.1.55
+* Call improvements
+
+## 1.1.54
+* Call improvements
+
+## 1.1.53
+* Call improvements
+
+## 1.1.52
+* A bug related to deleting label fixed
+* Overall improvements
+
+## 1.1.51
+* Known bugs fixed
+
+## 1.1.50
+* Call reconnect improvements
+* Known bugs fixed
+
+## 1.1.49
+* Call improvements
+
+## 1.1.48
+* Call improvements
+
+## 1.1.47
+* Call improvements
+
+## 1.1.46
+* Call improvements
+
+## 1.1.45
+* Team updated
+
+## 1.1.44
+* Known bugs fixed
+
+## 1.1.43
+* Call improvements
+
+## 1.1.42
+* Read reaction implemented
+* Bot support in groups
+* Waveform updated
+
+## 1.1.41
+* Group call improvements
+
+## 1.1.40
+* Call connecting status added
+
 ## 1.1.39
 * SystemGetServerTime timeout extended
 

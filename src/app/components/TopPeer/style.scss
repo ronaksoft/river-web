@@ -1,5 +1,5 @@
 .top-peer {
-  height: 112px;
+  height: 116px;
   user-select: none;
   overflow: hidden;
   line-height: 1em;
@@ -91,7 +91,9 @@
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 56px;
+        width: 100%;
         font-size: 13px;
+        line-height: 1.5em;
         color: var(--dark);
       }
     }

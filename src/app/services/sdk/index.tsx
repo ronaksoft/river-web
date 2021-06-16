@@ -86,7 +86,7 @@ import {
     MessagesMany,
     MessagesReactionList,
     MessagesReadContents,
-    MessagesReadHistory,
+    MessagesReadHistory, MessagesReadReaction,
     MessagesSaveDraft,
     MessagesSend,
     MessagesSendMedia,
@@ -478,7 +478,7 @@ export default class APIManager {
         });
     }
 
-    public sendMessage(randomId: number, body: string, peer: InputPeer, replyTo?: number, entities?: MessageEntity[], reqIdFn?: (rId: number) => void): Promise<MessagesSent.AsObject> {
+    public messageSend(randomId: number, body: string, peer: InputPeer, replyTo?: number, entities?: MessageEntity[], reqIdFn?: (rId: number) => void): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
         data.setRandomid(randomId);
         data.setBody(body);
@@ -501,7 +501,7 @@ export default class APIManager {
         }, reqIdFn);
     }
 
-    public editMessage(peer: InputPeer, id: number, randomId: number, body: string, entities?: MessageEntity[]): Promise<Bool.AsObject> {
+    public messageEdit(peer: InputPeer, id: number, randomId: number, body: string, entities?: MessageEntity[]): Promise<Bool.AsObject> {
         const data = new MessagesEdit();
         data.setRandomid(randomId);
         data.setBody(body);
@@ -520,7 +520,7 @@ export default class APIManager {
         }, undefined, true);
     }
 
-    public sendMediaMessage(randomId: number, peer: InputPeer, mediaType: InputMediaType, mediaData: Uint8Array, replyTo?: number): Promise<MessagesSent.AsObject> {
+    public messageSendMedia(randomId: number, peer: InputPeer, mediaType: InputMediaType, mediaData: Uint8Array, replyTo?: number): Promise<MessagesSent.AsObject> {
         const data = new MessagesSendMedia();
         data.setRandomid(randomId);
         data.setPeer(peer);
@@ -544,7 +544,7 @@ export default class APIManager {
         });
     }
 
-    public editMediaMessage(peer: InputPeer, id: number, randomId: number, caption: string, entities?: MessageEntity[]): Promise<Bool.AsObject> {
+    public messageEditMedia(peer: InputPeer, id: number, randomId: number, caption: string, entities?: MessageEntity[]): Promise<Bool.AsObject> {
         const data = new MessagesEditMedia();
         data.setRandomid(randomId);
         data.setPeer(peer);
@@ -563,15 +563,7 @@ export default class APIManager {
         }, undefined, true);
     }
 
-    public readMessageContent(ids: number[], peer: InputPeer): Promise<MessagesSent.AsObject> {
-        const data = new MessagesReadContents();
-        data.setPeer(peer);
-        data.setMessageidsList(ids);
-        this.logVerbose(data);
-        return this.server.send(C_MSG.MessagesReadContents, data.serializeBinary(), false, undefined, undefined, true);
-    }
-
-    public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
+    public messageGetHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
         const data = new MessagesGetHistory();
         data.setPeer(peer);
         data.setLimit(limit || 0);
@@ -591,7 +583,7 @@ export default class APIManager {
         });
     }
 
-    public getMessageMediaHistory(peer: InputPeer, category: MediaCategory, {limit, maxId}: { limit: number, maxId: number }): Promise<MessagesMany.AsObject> {
+    public messageGetMediaHistory(peer: InputPeer, category: MediaCategory, {limit, maxId}: { limit: number, maxId: number }): Promise<MessagesMany.AsObject> {
         const data = new MessagesGetMediaHistory();
         data.setPeer(peer);
         data.setCat(category);
@@ -607,7 +599,7 @@ export default class APIManager {
         });
     }
 
-    public getManyMessage(peer: InputPeer, ids: number[]): Promise<MessagesMany.AsObject> {
+    public messageGetMany(peer: InputPeer, ids: number[]): Promise<MessagesMany.AsObject> {
         const data = new MessagesGet();
         data.setPeer(peer);
         data.setMessagesidsList(ids);
@@ -615,7 +607,7 @@ export default class APIManager {
         return this.server.send(C_MSG.MessagesGet, data.serializeBinary(), true);
     }
 
-    public setTyping(peer: InputPeer, type: TypingAction): Promise<Bool.AsObject> {
+    public messageSetTyping(peer: InputPeer, type: TypingAction): Promise<Bool.AsObject> {
         const key = `${peer.getId()}_${peer.getType()}_${type}`;
         if (this.typingList.hasOwnProperty(key)) {
             return Promise.resolve({result: true});
@@ -638,12 +630,34 @@ export default class APIManager {
         });
     }
 
-    public readMessageHistory(peer: InputPeer, maxId: number): Promise<Bool> {
+    public messageReadHistory(peer: InputPeer, maxId: number): Promise<Bool> {
         const data = new MessagesReadHistory();
         data.setPeer(peer);
         data.setMaxid(Math.floor(maxId));
         this.logVerbose(data);
         return this.server.send(C_MSG.MessagesReadHistory, data.serializeBinary(), true, {
+            retry: 3,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+        });
+    }
+
+    public messageReadContent(ids: number[], peer: InputPeer): Promise<MessagesSent.AsObject> {
+        const data = new MessagesReadContents();
+        data.setPeer(peer);
+        data.setMessageidsList(ids);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.MessagesReadContents, data.serializeBinary(), false, undefined, undefined, true);
+    }
+
+    public messageReadReaction(peer: InputPeer, msgIds: number[]): Promise<Bool> {
+        const data = new MessagesReadReaction();
+        data.setPeer(peer);
+        data.setMessageidsList(msgIds);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.MessagesReadReaction, data.serializeBinary(), true, {
             retry: 3,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
@@ -1163,12 +1177,15 @@ export default class APIManager {
         return this.server.send(C_MSG.BotStart, data.serializeBinary(), true);
     }
 
-    public botGetCallbackAnswer(inputPeer: InputPeer, payload: any, msgId?: number): Promise<BotCallbackAnswer.AsObject> {
+    public botGetCallbackAnswer(inputPeer: InputPeer, payload: any, msgId?: number, inputBot?: InputUser): Promise<BotCallbackAnswer.AsObject> {
         const data = new BotGetCallbackAnswer();
         data.setPeer(inputPeer);
         data.setData(payload);
         if (msgId) {
             data.setMessageid(msgId);
+        }
+        if (inputBot) {
+            data.setBot(inputBot);
         }
         this.logVerbose(data);
         return this.server.send(C_MSG.BotGetCallbackAnswer, data.serializeBinary(), true);

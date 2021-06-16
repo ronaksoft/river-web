@@ -152,6 +152,8 @@ interface ITransactionPayload {
     reloadLabels: boolean;
     removedLabels: number[];
     removedMessages: { [key: string]: number[] };
+    teamAddedMembers: { [key: string]: IUser[] };
+    teamRemovedMembers: { [key: string]: string[] };
     toCheckDialogIds: IToCheckDialog[];
     topPeers: ITopPeerWithType[];
     updateId: number;
@@ -301,7 +303,7 @@ export default class UpdateManager {
             if (minId && minId === maxId && data.updatesList.length === 1) {
                 window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId, 'name:', C_MSG_NAME[data.updatesList[0].constructor || '']);
             } else {
-                window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId);
+                window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId, 'names:', data.updatesList.map(o => C_MSG_NAME[o.constructor]));
             }
             if (minId === 0 && maxId === 0) {
                 this.processZeroContainer(data);
@@ -623,6 +625,8 @@ export default class UpdateManager {
             reloadLabels: false,
             removedLabels: [],
             removedMessages: {},
+            teamAddedMembers: {},
+            teamRemovedMembers: {},
             toCheckDialogIds: [],
             topPeers: [],
             updateId: data.maxupdateid || 0,
@@ -1112,7 +1116,6 @@ export default class UpdateManager {
                 const updateMessagePinned = UpdateMessagePinned.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updateMessagePinned);
                 this.callUpdateHandler(updateMessagePinned.teamid || '0', update.constructor, updateMessagePinned);
-                window.console.log(updateMessagePinned);
                 this.mergeDialog(transaction.dialogs, {
                     peerid: updateMessagePinned.peer.id || '0',
                     peertype: updateMessagePinned.peer.type || 0,
@@ -1134,7 +1137,8 @@ export default class UpdateManager {
             case C_MSG.UpdatePhoneCallEnded:
                 const updatePhoneCallEnded = UpdatePhoneCallEnded.deserializeBinary(data).toObject();
                 this.logVerbose(update.constructor, updatePhoneCallEnded);
-                this.callUpdateHandler(updatePhoneCallEnded.teamid || '0', update.constructor, updatePhoneCallEnded);
+                // Send end event even on updating
+                this.callHandlers(updatePhoneCallEnded.teamid || '0', update.constructor, updatePhoneCallEnded);
                 this.mergeDialog(transaction.dialogs, {
                     activecallid: '0',
                     peerid: updatePhoneCallEnded.peer.id || '0',
@@ -1149,11 +1153,21 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateTeamMemberAdded:
                 const updateTeamMemberAdded = UpdateTeamMemberAdded.deserializeBinary(data).toObject();
+                if (!transaction.teamAddedMembers.hasOwnProperty(updateTeamMemberAdded.teamid)) {
+                    transaction.teamAddedMembers[updateTeamMemberAdded.teamid] = [updateTeamMemberAdded.user];
+                } else {
+                    transaction.teamAddedMembers[updateTeamMemberAdded.teamid].push(updateTeamMemberAdded.user);
+                }
                 this.logVerbose(update.constructor, updateTeamMemberAdded);
                 this.callHandlers('all', update.constructor, updateTeamMemberAdded);
                 break;
             case C_MSG.UpdateTeamMemberRemoved:
                 const updateTeamMemberRemoved = UpdateTeamMemberRemoved.deserializeBinary(data).toObject();
+                if (!transaction.teamRemovedMembers.hasOwnProperty(updateTeamMemberRemoved.teamid)) {
+                    transaction.teamRemovedMembers[updateTeamMemberRemoved.teamid] = [updateTeamMemberRemoved.userid];
+                } else {
+                    transaction.teamRemovedMembers[updateTeamMemberRemoved.teamid].push(updateTeamMemberRemoved.userid);
+                }
                 this.logVerbose(update.constructor, updateTeamMemberRemoved);
                 this.callHandlers('all', update.constructor, updateTeamMemberRemoved);
                 break;
@@ -1398,6 +1412,25 @@ export default class UpdateManager {
             if (this.topPeerRepo && transaction.topPeers.length > 0) {
                 promises.push(this.topPeerRepo.importBulkEmbedType(transaction.topPeers));
             }
+            // Team Add Member
+            if (this.userRepo && Object.keys(transaction.teamAddedMembers).length > 0) {
+                for (const [teamId, users] of Object.entries(transaction.teamAddedMembers)) {
+                    if (teamId !== '0') {
+                        promises.push(this.userRepo.addManyTeamMember(teamId, users));
+                    }
+                }
+            }
+            // Team Remove Member
+            if (this.userRepo && Object.keys(transaction.teamRemovedMembers).length > 0) {
+                for (const [teamId, list] of Object.entries(transaction.teamRemovedMembers)) {
+                    if (teamId !== '0') {
+                        this.userRepo.invalidateCacheByTeamId(teamId);
+                        promises.push(this.userRepo.removeManyTeamMember(list.map((item) => {
+                            return [teamId, item];
+                        })));
+                    }
+                }
+            }
             if (promises.length > 0) {
                 Promise.all(promises).then(() => {
                     this.processTransactionStep2(transaction, transactionResolve, doneFn);
@@ -1608,7 +1641,7 @@ export default class UpdateManager {
             const peerName = GetPeerName(message.peerid, message.peertype);
             messageList.push(message);
             keys.push(message.id);
-            if (!peerNames[peerName]) {
+            if (peerNames.indexOf(peerName) === -1) {
                 peerNames.push(peerName);
                 peers.push({
                     id: message.peerid || '',
@@ -1616,7 +1649,7 @@ export default class UpdateManager {
                 });
             }
             if (message && message.id) {
-                if (minIdPerPeer.hasOwnProperty(peerName)) {
+                if (!minIdPerPeer.hasOwnProperty(peerName)) {
                     minIdPerPeer[peerName] = message.id;
                 } else {
                     if (minIdPerPeer[peerName] > message.id) {

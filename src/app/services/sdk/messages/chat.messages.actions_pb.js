@@ -1761,7 +1761,8 @@ proto.msg.MessageActionCallEnded.prototype.toObject = function(opt_includeInstan
 proto.msg.MessageActionCallEnded.toObject = function(includeInstance, msg) {
   var f, obj = {
     callid: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    reason: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    reason: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    duration: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -1806,6 +1807,10 @@ proto.msg.MessageActionCallEnded.deserializeBinaryFromReader = function(msg, rea
       var value = /** @type {!proto.msg.DiscardReason} */ (reader.readEnum());
       msg.setReason(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setDuration(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1849,6 +1854,13 @@ proto.msg.MessageActionCallEnded.serializeBinaryToWriter = function(message, wri
       f
     );
   }
+  f = message.getDuration();
+  if (f !== 0) {
+    writer.writeUint32(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -1885,6 +1897,24 @@ proto.msg.MessageActionCallEnded.prototype.getReason = function() {
  */
 proto.msg.MessageActionCallEnded.prototype.setReason = function(value) {
   return jspb.Message.setProto3EnumField(this, 2, value);
+};
+
+
+/**
+ * optional uint32 Duration = 3;
+ * @return {number}
+ */
+proto.msg.MessageActionCallEnded.prototype.getDuration = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.MessageActionCallEnded} returns this
+ */
+proto.msg.MessageActionCallEnded.prototype.setDuration = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

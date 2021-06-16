@@ -6817,10 +6817,10 @@ electron-util@^0.13.0:
     electron-is-dev "^1.1.0"
     new-github-issue-url "^0.2.1"
 
-electron@^12.0.7:
-  version "12.0.7"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-12.0.7.tgz#e0fca2c8be34cb7da48c4d15cfb1d2ad666d2718"
-  integrity sha512-722TZNKDuLpEmj96AzTYFKHaJEH98xgOBH0aldStaPXI1xDFfb9SJQQuirvwFlkwG5OqQdz6Ne3OwwJ7Dbs5nQ==
+electron@^13.1.1:
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-13.1.1.tgz#de1ea908bcac2197d7a5a373fb68c0c66043e10e"
+  integrity sha512-kySSb5CbIkWU2Kd9mf2rpGZC9p1nWhVVNl+CJjuOUGeVPXHbojHvTkDU1iC8AvV28eik3gqHisSJss40Caprog==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"
@@ -15808,10 +15808,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^4.2.3:
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.3.tgz#39062d8019912d43726298f09493d598048c1ce3"
-  integrity sha512-qOcYwxaByStAWrBf4x0fibwZvMRG+r4cQoTjbPtUlrWjBHbmCAww1i448U0GJ+3cNNEtebDteo/cHOR3xJ4wEw==
+typescript@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.2.tgz#399ab18aac45802d6f2498de5054fcbbe716a805"
+  integrity sha512-zZ4hShnmnoVnAHpVHWpTcxdv7dWP60S2FsydQLV8V5PbS3FifjWFFRiHSWpDJahly88PRyV5teTSLoq4eG7mKw==
 
 ua-parser-js@^0.7.18:
   version "0.7.22"

@@ -184,7 +184,7 @@ export default class UserRepo {
         return ids.map(o => this.dbService.getUser(o));
     }
 
-    public getManyCache(teamId: string, isContact: boolean, {keyword, limit, filterDeleted}: {keyword?: string, limit?: number, filterDeleted?: boolean}): Promise<IUser[]> {
+    public getManyCache(teamId: string, isContact: boolean, {keyword, limit, filterDeleted}: { keyword?: string, limit?: number, filterDeleted?: boolean }): Promise<IUser[]> {
         if (keyword) {
             keyword = keyword.replace('\\', '');
         }
@@ -421,6 +421,20 @@ export default class UserRepo {
                 throw err;
             }
         });
+    }
+
+    public isTeamMember(teamId: string, userId: string) {
+        return this.db.contacts.where('[teamid+id]').equals([teamId, userId]).first().then((res) => {
+            return Boolean(res);
+        });
+    }
+
+    public addManyTeamMember(teamId: string, users: IUser[]) {
+        return this.importBulk(true, users, undefined, undefined, teamId);
+    }
+
+    public removeManyTeamMember(list: Array<[string, string]>) {
+        return this.db.contacts.where('[teamid+id]').anyOf(list).delete();
     }
 
     private mergeUser(users: IUser[], user: IUser, force?: boolean) {

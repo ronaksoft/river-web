@@ -27,6 +27,13 @@ export enum IceState {
     Connecting = 2,
 }
 
+export enum ConnectionStatus {
+    Calling = 0,
+    Ringing = 1,
+    Connecting = 2,
+    Connected = 3,
+};
+
 export interface IRemoteConnection {
     connId: number;
     deviceType: CallDeviceType;
@@ -35,7 +42,7 @@ export interface IRemoteConnection {
     muted: boolean;
     setIceState: ((iceState: IceState) => void) | undefined;
     setMute: ((muted: boolean) => void) | undefined;
-    status: number;
+    status: ConnectionStatus;
     stream: MediaStream | undefined;
     userId: string;
 }
@@ -98,6 +105,7 @@ class CallVideo extends React.Component<IProps, IState> {
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.LocalMediaSettingsUpdated, this.eventLocalMediaSettingsUpdatedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ParticipantMuted, this.eventParticipantMutedHandler));
         this.eventReferences.push(this.callService.listen(C_CALL_EVENT.ConnectionStateChanged, this.eventConnectionStateChangedHandler));
+        this.eventReferences.push(this.callService.listen(C_CALL_EVENT.AllConnected, this.eventAllConnectedHandler));
     }
 
     public componentWillUnmount() {
@@ -106,6 +114,7 @@ class CallVideo extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+        this.videoRemoteRefs = [];
         this.initialized = false;
     }
 
@@ -141,12 +150,14 @@ class CallVideo extends React.Component<IProps, IState> {
         }
     }
 
-    public setStatus(connId: number, status: number, deviceType?: CallDeviceType) {
+    public setStatus(connId: number, status: ConnectionStatus, deviceType?: CallDeviceType) {
         const index = findIndex(this.videoRemoteRefs, {connId});
         if (index > -1) {
             const remote = this.videoRemoteRefs[index];
             if (remote.status !== status || (deviceType !== undefined && remote.deviceType !== deviceType)) {
-                remote.status = status;
+                if (remote.status !== ConnectionStatus.Connected) {
+                    remote.status = status;
+                }
                 if (deviceType !== undefined) {
                     remote.deviceType = deviceType;
                 }
@@ -182,7 +193,9 @@ class CallVideo extends React.Component<IProps, IState> {
             <div className="call-user-container"
                  style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}>
                 <div className="video-placeholder">
-                    <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true}/>
+                    <video ref={this.localVideoRefFn} playsInline={true} autoPlay={true} muted={true} style={{
+                        display: !this.mediaSettings.video ? 'none' : undefined,
+                    }}/>
                     {!this.mediaSettings.video && <div className="video-user-placeholder">
                         <UserAvatar className="call-user-avatar" id={currentUserId} noDetail={true}/>
                         {!this.mediaSettings.audio && <div className="video-user-audio-muted">
@@ -204,13 +217,27 @@ class CallVideo extends React.Component<IProps, IState> {
         </div>);
     }
 
+    private getStatusName(status: ConnectionStatus) {
+        switch (status) {
+            case ConnectionStatus.Calling:
+                return i18n.t('call.is_calling');
+            case ConnectionStatus.Ringing:
+                return i18n.t('call.is_ringing');
+            case ConnectionStatus.Connecting:
+                return i18n.t('call.is_connecting');
+            case ConnectionStatus.Connected:
+                return i18n.t('call.connected');
+        }
+        return null;
+    }
+
     private getRemoteVideoContent() {
         return this.videoRemoteRefs.map((item) => {
-            if (item.status === 0 || item.status === 1) {
-                return <div key={item.connId} className="call-user-container">
+            if (item.status !== ConnectionStatus.Connected) {
+                return <div key={`${item.connId}_p`} className="call-user-container"
+                            onDoubleClick={this.reconnectHandler(item.connId)}>
                     <UserAvatar className="call-user" id={item.userId} noDetail={true} big={true}/>
-                    <div className="call-user-status"
-                    >{i18n.t(item.status ? 'call.is_ringing' : 'call.is_calling')}</div>
+                    <div className="call-user-status">{this.getStatusName(item.status)}</div>
                 </div>;
             }
             const {gridSize} = this.state;
@@ -235,7 +262,7 @@ class CallVideo extends React.Component<IProps, IState> {
                 };
                 ref.setMute(item.muted);
             };
-            return (<div key={item.connId} className="call-user-container"
+            return (<div key={`${item.connId}_v`} className="call-user-container"
                          style={gridSize ? this.isMobile ? {width: `${gridSize}px`} : {height: `${gridSize}px`} : undefined}
                          onContextMenu={this.props.onContextMenu(item.userId)}
                          onDoubleClick={this.reconnectHandler(item.connId)}>
@@ -401,6 +428,12 @@ class CallVideo extends React.Component<IProps, IState> {
         if (ref && this.state.screenShareStream) {
             ref.srcObject = this.state.screenShareStream;
         }
+    }
+
+    private eventAllConnectedHandler = () => {
+        // setInterval(() => {
+        //     window.console.log(this.videoRemoteRefs.map(o => `${o.connId}_${o.status}_${o.stream}`).join(' | '));
+        // }, 1000);
     }
 }
 

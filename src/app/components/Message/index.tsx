@@ -19,7 +19,8 @@ import {
     MediaType,
     MessageEntity,
     MessageEntityType,
-    PeerType, ReactionCounter,
+    PeerType,
+    ReactionCounter,
 } from '../../services/sdk/messages/core.types_pb';
 import {findLastIndex, throttle} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
@@ -63,6 +64,8 @@ import {IDialog} from "../../repository/dialog/interface";
 import MessageWeb from "../MessageWeb";
 import {shiftArrow} from "../ChatInput";
 import DeepLinkService from "../../services/deepLinkService";
+import {MessageActionCallEnded} from "../../services/sdk/messages/chat.messages.actions_pb";
+import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 
 import './style.scss';
 
@@ -208,7 +211,7 @@ interface IProps {
     onDrop: (files: File[]) => void;
     onRendered?: scrollFunc;
     onBotCommand?: (cmd: string, params?: any) => void;
-    onBotButtonAction?: (cmd: number, data: any, msgId?: number) => void;
+    onBotButtonAction?: (cmd: number, data: any, msgId?: number, senderId?: string) => void;
     onMessageDrop?: (id: number) => void;
     onError?: (text: string) => void;
     showDate: (timestamp: number | null) => void;
@@ -235,6 +238,7 @@ interface IState {
     moreAnchorPos: any;
     moreAnchorRef: 'anchorPosition' | 'anchorEl';
     moreIndex: number;
+    moreTarget: any;
     readIdInit: number;
     selectable: boolean;
     selectedIds: { [key: number]: number };
@@ -334,6 +338,7 @@ class Message extends React.Component<IProps, IState> {
             moreAnchorPos: null,
             moreAnchorRef: 'anchorEl',
             moreIndex: -1,
+            moreTarget: null,
             readIdInit: -1,
             selectable: false,
             selectedIds: {},
@@ -1191,6 +1196,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private moreCmdHandler = (cmd: string, index: number) => (e: any) => {
+        window.console.log(cmd);
         e.stopPropagation();
         if (cmd === 'reply' && this.state.disable) {
             this.setState({
@@ -1211,7 +1217,7 @@ class Message extends React.Component<IProps, IState> {
         } else if (cmd === 'copy') {
             this.copy();
         } else if (cmd === 'copy_all') {
-            const el = document.querySelector(`.bubble-wrapper .bubble.b_${this.state.items[index].id || 0} .bubble-body .inner`);
+            const el = this.state.moreTarget ? this.state.moreTarget : document.querySelector(`.bubble-wrapper .bubble.b_${this.state.items[index].id || 0} .bubble-body .inner`);
             if (el) {
                 this.selectAll(el);
                 this.copy();
@@ -1222,6 +1228,7 @@ class Message extends React.Component<IProps, IState> {
         this.setState({
             moreAnchorEl: null,
             moreAnchorPos: null,
+            moreTarget: null,
         });
     }
 
@@ -1404,6 +1411,17 @@ class Message extends React.Component<IProps, IState> {
                               format={i18n.t('message.call_from_user')}/>
                 </span>);
             case C_MESSAGE_ACTION.MessageActionCallEnded:
+                if (message.actiondata) {
+                    const actionCallEnded: MessageActionCallEnded.AsObject = message.actiondata;
+                    if (actionCallEnded.reason === DiscardReason.DISCARDREASONMISSED) {
+                        return (<span className="system-message">{i18n.t('message.call_missed')}</span>);
+                    } else if (actionCallEnded.reason === DiscardReason.DISCARDREASONBUSY) {
+                        return (<span className="system-message">{i18n.t('message.call_unavailable')}</span>);
+                    } else if (actionCallEnded.duration > 0) {
+                        return (<span
+                            className="system-message">{i18n.tf('message.call_ended_param', TimeUtility.durationAmount(actionCallEnded.duration))}</span>);
+                    }
+                }
                 return (<span className="system-message">{i18n.t('message.call_ended')}</span>);
             default:
                 return (<span className="system-message">{i18n.t('message.unsupported_message')}</span>);
@@ -1623,6 +1641,7 @@ class Message extends React.Component<IProps, IState> {
             },
             moreAnchorRef: 'anchorPosition',
             moreIndex: index,
+            moreTarget: e.target,
         });
     }
 

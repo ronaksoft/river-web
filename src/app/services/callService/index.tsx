@@ -40,8 +40,9 @@ import {getDefaultAudio, getDefaultVideo} from "../../components/SettingsMediaIn
 
 const C_RETRY_INTERVAL = 10000;
 const C_RETRY_LIMIT = 6;
-const C_RECONNECT_TRY = 3;
-const C_RECONNECT_TIMEOUT = 15000;
+const C_RECONNECT_TRY = 7;
+const C_RECONNECT_TIMEOUT = 10000;
+const C_CHECK_STREAM_INTERVAL = 10000;
 
 export const C_CALL_EVENT = {
     AllConnected: 0x12,
@@ -88,6 +89,9 @@ export interface ICallParticipant extends PhoneParticipant.AsObject {
 interface IConnection {
     accepted: boolean;
     audioIndex: number;
+    connectingInterval: any;
+    checkStreamInterval: any;
+    checkStreamTimeout: any;
     connection: RTCPeerConnection;
     iceQueue: RTCIceCandidate[];
     iceServers?: RTCIceServer[];
@@ -98,7 +102,6 @@ interface IConnection {
     screenShareStream?: MediaStream;
     stream?: MediaStream;
     streamId: string;
-    interval: any;
     try: number;
     videoIndex: number;
 }
@@ -240,6 +243,7 @@ export default class CallService {
     private peer: InputPeer | null = null;
     private activeCallId: string | undefined;
     private callInfo: { [key: string]: ICallInfo } = {};
+    private rejectedCallIds: string[] = [];
 
     private constructor() {
         this.initMediaDevice();
@@ -304,38 +308,48 @@ export default class CallService {
         return this.peer;
     }
 
-    public initStream(settings: { audio: boolean, video: boolean }) {
-        const constraints: MediaStreamConstraints = {
-            audio: settings.audio ? getDefaultAudio() : false,
-            video: settings.video ? getDefaultVideo() : false,
-        };
-        this.lastVideoState = settings.video;
-        if (!this.localStream) {
-            return navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-                this.localStream = stream;
-                this.callHandlers(C_CALL_EVENT.LocalStreamUpdated, stream);
-                return stream;
-            });
-        } else {
-            if (constraints.video) {
-                if (this.localStream.getVideoTracks().length > 0) {
-                    return Promise.resolve(this.localStream);
-                } else {
-                    return navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
-                        stream.getVideoTracks().forEach((track) => {
-                            this.localStream.addTrack(track);
-                        });
-                        return this.localStream;
+    public initStream(settings: { audio: boolean, video: boolean }): Promise<MediaStream> {
+        return new Promise((resolve, reject) => {
+            try {
+                const constraints: MediaStreamConstraints = {
+                    audio: settings.audio ? getDefaultAudio() : false,
+                    video: settings.video ? getDefaultVideo() : false,
+                };
+                this.lastVideoState = settings.video;
+                if (!this.localStream) {
+                    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+                        this.localStream = stream;
+                        this.callHandlers(C_CALL_EVENT.LocalStreamUpdated, stream);
+                        resolve(stream);
+                    }).catch((err) => {
+                        reject(err);
                     });
+                } else {
+                    if (constraints.video) {
+                        if (this.localStream.getVideoTracks().length > 0) {
+                            resolve(this.localStream);
+                        } else {
+                            navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
+                                stream.getVideoTracks().forEach((track) => {
+                                    this.localStream.addTrack(track);
+                                });
+                                resolve(this.localStream);
+                            }).catch((err) => {
+                                reject(err);
+                            });
+                        }
+                    } else {
+                        this.localStream.getVideoTracks().forEach((track) => {
+                            track.stop();
+                            this.localStream.removeTrack(track);
+                        });
+                        resolve(this.localStream);
+                    }
                 }
-            } else {
-                this.localStream.getVideoTracks().forEach((track) => {
-                    track.stop();
-                    this.localStream.removeTrack(track);
-                });
-                return Promise.resolve(this.localStream);
+            } catch (e) {
+                reject(e);
             }
-        }
+        });
     }
 
     public toggleVideo(enable: boolean) {
@@ -468,7 +482,7 @@ export default class CallService {
     public start(peer: InputPeer, participants: InputUser.AsObject[], callId?: string) {
         this.peer = peer;
 
-        return this.apiManager.callInit(peer).then((res) => {
+        return this.apiManager.callInit(peer, callId).then((res) => {
             this.configs.iceServers = this.transformIceServers(res.iceserversList);
             if (callId) {
                 this.activeCallId = callId;
@@ -497,16 +511,16 @@ export default class CallService {
         this.callHandlers(C_CALL_EVENT.CallPreview, {callId, peer});
     }
 
-    public accept(callID: string, video: boolean) {
+    public accept(callId: string, video: boolean) {
         const peer = this.peer;
         if (!peer) {
             return Promise.reject('invalid peer');
         }
-        return this.apiManager.callInit(peer).then((res) => {
-            this.activeCallId = callID;
+        return this.apiManager.callInit(peer, callId).then((res) => {
+            this.activeCallId = callId;
 
             this.configs.iceServers = this.transformIceServers(res.iceserversList);
-            const info = this.getCallInfo(callID);
+            const info = this.getCallInfo(callId);
             if (!info) {
                 return Promise.reject('invalid call request');
             }
@@ -520,10 +534,14 @@ export default class CallService {
                 do {
                     const request = info.requests.shift();
                     if (request) {
-                        promises.push(this.initConnections(peer, callID, false, request).then(() => {
+                        promises.push(this.initConnections(peer, callId, false, request).then(() => {
                             const streamState = this.getStreamState();
                             this.mediaSettingsInit(streamState);
-                            this.propagateMediaSettings(streamState);
+                            const connId = this.getConnId(callId, request.userid);
+                            if (connId !== null) {
+                                this.checkInitialization(connId);
+                            }
+                            this.propagateMediaSettings(streamState, 255);
                             return Promise.resolve();
                         }));
                     } else {
@@ -551,6 +569,13 @@ export default class CallService {
         if (!peer) {
             return Promise.reject('invalid peer');
         }
+
+        this.pushToRejectedCallIds(callId);
+
+        this.callHandlers(C_CALL_EVENT.CallRejected, {
+            callId,
+            reason: DiscardReason.DISCARDREASONHANGUP,
+        });
 
         return this.apiManager.callReject(peer, callId, reason, duration).then(() => {
             this.destroyConnections(callId);
@@ -616,10 +641,11 @@ export default class CallService {
             return Promise.reject('invalid callId');
         }
 
+        userIds.forEach((userId) => {
+            this.removeParticipant(userId);
+        });
+
         return this.apiManager.callRemoveParticipant(peer, callId, inputUsers, timeout).then(() => {
-            userIds.forEach((userId) => {
-                this.removeParticipant(userId);
-            });
             this.callHandlers(C_CALL_EVENT.ParticipantRemoved, {timeout, userIds});
             return Promise.resolve();
         });
@@ -652,8 +678,11 @@ export default class CallService {
                 });
                 conn.stream = undefined;
             }
-            clearInterval(conn.interval);
+            clearInterval(conn.connectingInterval);
             clearTimeout(conn.reconnectingTimeout);
+            clearInterval(conn.checkStreamInterval);
+            clearInterval(conn.checkStreamTimeout);
+            delete this.peerConnections[connId];
         };
 
         if (connId !== undefined) {
@@ -831,9 +860,32 @@ export default class CallService {
         return true;
     }
 
+    private revertShouldAccept(data: IUpdatePhoneCall) {
+        if (this.activeCallId !== data.callid) {
+            return;
+        }
+
+        if (!this.peer || this.peer.getType() === PeerType.PEERUSER) {
+            return;
+        }
+
+        if (!this.callInfo.hasOwnProperty(this.activeCallId)) {
+            return;
+        }
+
+        const index = this.callInfo[this.activeCallId].acceptedParticipantIds.indexOf(data.userid);
+        if (index > -1) {
+            this.callInfo[this.activeCallId].acceptedParticipantIds.splice(index, 1);
+        }
+    }
+
     private callRequested(data: IUpdatePhoneCall) {
         if (this.activeCallId && data.callid !== this.activeCallId) {
             this.busyHandler(data);
+            return;
+        }
+
+        if (this.rejectedCallIds.indexOf(data.callid) > -1) {
             return;
         }
 
@@ -849,9 +901,13 @@ export default class CallService {
             this.callHandlers(C_CALL_EVENT.CallRequested, data);
         }
         // Accept other participants in group
-        else if (this.shouldAccept(data)) {
+        else {
             this.initCallRequest(data);
-            this.accept(this.activeCallId, this.getStreamState().video);
+            if (this.shouldAccept(data)) {
+                this.accept(this.activeCallId, this.getStreamState().video).catch(() => {
+                    this.revertShouldAccept(data);
+                });
+            }
         }
     }
 
@@ -867,8 +923,12 @@ export default class CallService {
 
         const sdpData = (data.data as PhoneActionAccepted.AsObject);
 
-        if (this.activeCallId && this.callInfo.hasOwnProperty(this.activeCallId)) {
+        if (this.callInfo.hasOwnProperty(this.activeCallId)) {
             this.callInfo[this.activeCallId].participants[connId].deviceType = sdpData.devicetype;
+        }
+
+        if (this.peerConnections[connId].accepted) {
+            return;
         }
 
         this.peerConnections[connId].connection.setRemoteDescription({
@@ -878,12 +938,14 @@ export default class CallService {
             if (this.peerConnections.hasOwnProperty(connId)) {
                 this.peerConnections[connId].accepted = true;
                 this.flushIceCandidates(data.callid || '0', connId);
+
+                this.propagateMediaSettings(this.getStreamState(), 255);
             }
         });
 
-        this.propagateMediaSettings(this.getStreamState());
-
         this.clearRetryInterval(connId);
+        this.appendToAcceptedList(connId);
+        this.checkInitialization(connId);
         window.console.log('[webrtc] accept signal, connId:', connId);
 
         this.callHandlers(C_CALL_EVENT.CallAccepted, {connId, data});
@@ -918,6 +980,10 @@ export default class CallService {
         const connId = this.callInfo[activeCallId].participantMap[userId];
         if (this.peerConnections.hasOwnProperty(connId)) {
             this.peerConnections[connId].connection.close();
+            clearInterval(this.peerConnections[connId].checkStreamInterval);
+            clearTimeout(this.peerConnections[connId].checkStreamTimeout);
+            clearTimeout(this.peerConnections[connId].reconnectingTimeout);
+            delete this.peerConnections[connId];
         }
         let index = this.callInfo[activeCallId].acceptedParticipantIds.indexOf(userId);
         if (index > -1) {
@@ -951,12 +1017,16 @@ export default class CallService {
         const connId = this.getConnId(data.callid, data.userid);
         const conn = this.peerConnections;
         if (connId === null || !conn.hasOwnProperty(connId)) {
-            return Promise.reject('connId is not found');
+            return;
         }
 
         const actionData = data.data as PhoneActionIceExchange.AsObject;
         if (!actionData) {
-            return Promise.reject('cannot find sdp');
+            return;
+        }
+
+        if (conn[connId].connection.iceConnectionState in ['closed', 'disconnected', 'failed']) {
+            return;
         }
 
         const iceCandidate = new RTCIceCandidate({
@@ -966,7 +1036,9 @@ export default class CallService {
             usernameFragment: actionData.usernamefragment,
         });
 
-        return conn[connId].connection.addIceCandidate(iceCandidate);
+        conn[connId].connection.addIceCandidate(iceCandidate).catch((err) => {
+            window.console.log('cannot add ice candidate', err, actionData);
+        });
     }
 
     private convertPhoneParticipant(item: PhoneParticipantSDP.AsObject) {
@@ -1054,17 +1126,21 @@ export default class CallService {
     }
 
     private initCallRequest(data: IUpdatePhoneCall) {
+        const sdpData = (data.data as PhoneActionRequested.AsObject);
         if (this.callInfo.hasOwnProperty(data.callid || '0')) {
             const requestParticipantIds = this.callInfo[data.callid || '0'].requestParticipantIds;
             if (requestParticipantIds.indexOf(data.userid) === -1) {
                 this.callInfo[data.callid || '0'].requests.push(data);
                 this.callInfo[data.callid || '0'].requestParticipantIds.push(data.userid);
+                const pi = this.callInfo[data.callid || '0'].participantMap[data.userid];
+                if (pi !== undefined) {
+                    this.callInfo[data.callid || '0'].participants[pi].deviceType = sdpData.devicetype || CallDeviceType.CALLDEVICEUNKNOWN;
+                }
                 window.console.log('[webrtc] request from:', data.userid);
             }
             return;
         }
         window.console.log('[webrtc] request from:', data.userid);
-        const sdpData = (data.data as PhoneActionRequested.AsObject);
         const callParticipants: { [key: number]: ICallParticipant } = {};
         const callParticipantMap: { [key: string]: number } = {};
         sdpData.participantsList.forEach((participant) => {
@@ -1131,7 +1207,7 @@ export default class CallService {
                     sdp: res.sdp || '',
                     type: res.type || 'answer',
                 });
-                window.console.log('[webrtc] answer, from:', currentUserId, ' to:', rc.getPeer().getUserid());
+                window.console.log('[webrtc] answer from:', currentUserId, ' to:', rc.getPeer().getUserid(), ' connId:', connId);
                 return this.apiManager.callAccept(peer, callId || '0', [rc]);
             });
         };
@@ -1177,13 +1253,14 @@ export default class CallService {
                 phoneParticipants.forEach((participant) => {
                     const connId = participant.getConnectionid() || 0;
                     if (this.peerConnections.hasOwnProperty(connId)) {
+                        clearInterval(this.peerConnections[connId].connectingInterval);
                         // Retry mechanism
-                        this.peerConnections[connId].interval = setInterval(() => {
+                        this.peerConnections[connId].connectingInterval = setInterval(() => {
                             if (this.activeCallId && this.peerConnections.hasOwnProperty(connId)) {
                                 this.peerConnections[connId].try++;
                                 this.callUserSingle(peer, participant, this.activeCallId).finally(() => {
                                     if (this.peerConnections.hasOwnProperty(connId) && this.peerConnections[connId].try >= C_RETRY_LIMIT) {
-                                        clearInterval(this.peerConnections[connId].interval);
+                                        clearInterval(this.peerConnections[connId].connectingInterval);
                                         if (initiator) {
                                             this.checkCallTimout(connId);
                                         }
@@ -1237,6 +1314,17 @@ export default class CallService {
                     this.callHandlers(C_CALL_EVENT.ConnectionStateChanged, {connId, state: pc.iceConnectionState});
                     this.checkAllConnected();
                     this.checkDisconnection(connId, pc.iceConnectionState);
+
+                    // End of initializing the connection
+                    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+                        window.console.log('[webrtc] connection initialized, connId:', connId);
+                        this.propagateMediaSettings(this.getStreamState(), 255);
+                        conn.init = true;
+                        conn.reconnecting = false;
+                        conn.reconnectingTry = 0;
+                        clearTimeout(conn.reconnectingTimeout);
+                        clearTimeout(conn.checkStreamInterval);
+                    }
                 });
 
                 pc.addEventListener('icecandidateerror', (e) => {
@@ -1244,19 +1332,15 @@ export default class CallService {
                     this.checkDisconnection(connId, pc.iceConnectionState, true);
                 });
 
-                pc.addEventListener('signalingstatechange', () => {
-                    if (pc.signalingState === 'closed') {
-                        window.console.log('[webrtc] signalingstatechange, connId:', connId, pc.signalingState);
-                    }
-                });
-
                 let conn: IConnection = {
                     accepted: remote,
                     audioIndex: -1,
+                    checkStreamInterval: null,
+                    checkStreamTimeout: null,
+                    connectingInterval: null,
                     connection: pc,
                     iceQueue: [],
                     init: false,
-                    interval: null,
                     reconnecting: false,
                     reconnectingTimeout: null,
                     reconnectingTry: 0,
@@ -1273,10 +1357,6 @@ export default class CallService {
                 }
 
                 pc.addEventListener('track', (e) => {
-                    conn.init = true;
-                    conn.reconnecting = false;
-                    conn.reconnectingTry = 0;
-                    clearTimeout(conn.reconnectingTimeout);
                     if (e.streams.length > 0) {
                         const streamId = e.streams[0].id;
                         e.streams.forEach((stream) => {
@@ -1373,7 +1453,7 @@ export default class CallService {
             return;
         }
         for (const pc of Object.values(this.peerConnections)) {
-            if (pc.connection.iceConnectionState !== 'connected') {
+            if (!(pc.connection.iceConnectionState === 'connected' || pc.connection.iceConnectionState === 'completed')) {
                 return;
             }
         }
@@ -1575,36 +1655,38 @@ export default class CallService {
         }
     }
 
-    private propagateMediaSettings({video, screenShare, audio}: { video?: boolean, screenShare?: boolean, audio?: boolean }) {
-        if (!this.activeCallId || !this.peer || !this.callInfo.hasOwnProperty(this.activeCallId)) {
-            return;
-        }
+    private propagateMediaSettings({video, screenShare, audio}: { video?: boolean, screenShare?: boolean, audio?: boolean }, delay?: number) {
+        setTimeout(() => {
+            if (!this.activeCallId || !this.peer || !this.callInfo.hasOwnProperty(this.activeCallId)) {
+                return;
+            }
 
-        const inputUsers = this.getInputUsers(this.activeCallId);
-        if (!inputUsers) {
-            return;
-        }
+            const inputUsers = this.getInputUsers(this.activeCallId);
+            if (!inputUsers) {
+                return;
+            }
 
-        if (audio !== undefined) {
-            this.callInfo[this.activeCallId].mediaSettings.audio = audio;
-        }
+            if (audio !== undefined) {
+                this.callInfo[this.activeCallId].mediaSettings.audio = audio;
+            }
 
-        if (video !== undefined) {
-            this.callInfo[this.activeCallId].mediaSettings.video = video;
-        }
+            if (video !== undefined) {
+                this.callInfo[this.activeCallId].mediaSettings.video = video;
+            }
 
-        if (screenShare !== undefined) {
-            this.callInfo[this.activeCallId].mediaSettings.screenShare = screenShare;
-        }
+            if (screenShare !== undefined) {
+                this.callInfo[this.activeCallId].mediaSettings.screenShare = screenShare;
+            }
 
-        const actionData = new PhoneActionMediaSettingsUpdated();
-        actionData.setAudio(this.callInfo[this.activeCallId].mediaSettings.audio);
-        actionData.setVideo(this.callInfo[this.activeCallId].mediaSettings.video);
-        actionData.setScreenshare(this.callInfo[this.activeCallId].mediaSettings.screenShare);
+            const actionData = new PhoneActionMediaSettingsUpdated();
+            actionData.setAudio(this.callInfo[this.activeCallId].mediaSettings.audio);
+            actionData.setVideo(this.callInfo[this.activeCallId].mediaSettings.video);
+            actionData.setScreenshare(this.callInfo[this.activeCallId].mediaSettings.screenShare);
 
-        this.callHandlers(C_CALL_EVENT.LocalMediaSettingsUpdated, this.callInfo[this.activeCallId].mediaSettings);
+            this.callHandlers(C_CALL_EVENT.LocalMediaSettingsUpdated, this.callInfo[this.activeCallId].mediaSettings);
 
-        this.apiManager.callUpdate(this.peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED, actionData.serializeBinary());
+            this.apiManager.callUpdate(this.peer, this.activeCallId, inputUsers, PhoneCallAction.PHONECALLMEDIASETTINGSCHANGED, actionData.serializeBinary());
+        }, delay || 0);
     }
 
     private mediaSettingsUpdated(data: IUpdatePhoneCall) {
@@ -1712,7 +1794,7 @@ export default class CallService {
             return Promise.reject('no localStream');
         }
         for (const pc of Object.values(this.peerConnections)) {
-            if (pc.connection.iceConnectionState !== 'connected') {
+            if (!(pc.connection.iceConnectionState === 'connected' || pc.connection.iceConnectionState === 'completed')) {
                 return Promise.reject('still connecting');
             }
         }
@@ -1764,7 +1846,7 @@ export default class CallService {
         const videoTracks = stream.getVideoTracks().filter(o => o.readyState === 'live');
         try {
             for (const [connId, pc] of Object.entries(this.peerConnections)) {
-                if (pc.connection.iceConnectionState === 'connected') {
+                if (pc.connection.iceConnectionState === 'connected' || pc.connection.iceConnectionState === 'completed') {
                     const senders = pc.connection.getSenders();
                     senders.forEach((sender, index) => {
                         // if (pc.audioIndex === -1 && sender.track && sender.track.kind === 'audio') {
@@ -1839,6 +1921,8 @@ export default class CallService {
                     return this.sendSDPAnswer(connId, res);
                 });
             });
+        }).catch((err) => {
+            window.console.log(err);
         });
     }
 
@@ -1854,6 +1938,8 @@ export default class CallService {
         pc.setRemoteDescription({
             sdp: sdpAnswerData.sdp,
             type: sdpAnswerData.type as any,
+        }).catch((err) => {
+            window.console.log(err);
         });
     }
 
@@ -1862,7 +1948,8 @@ export default class CallService {
         if (connId === null) {
             return;
         }
-        this.clearRetryInterval(connId, true);
+
+        // this.clearRetryInterval(connId);
         this.callHandlers(C_CALL_EVENT.CallAck, connId);
     }
 
@@ -2062,14 +2149,58 @@ export default class CallService {
         });
     }
 
-    private clearRetryInterval(connId: number, onlyClearInterval?: boolean) {
+    private clearRetryInterval(connId: number) {
         if (!this.peerConnections.hasOwnProperty(connId)) {
             return;
         }
-        clearInterval(this.peerConnections[connId].interval);
-        if (onlyClearInterval !== true && this.activeCallId && this.callInfo.hasOwnProperty(this.activeCallId)) {
-            this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
+        if (this.peerConnections[connId].connectingInterval) {
+            clearInterval(this.peerConnections[connId].connectingInterval);
+            this.peerConnections[connId].connectingInterval = null;
         }
+    }
+
+    private appendToAcceptedList(connId: number) {
+        if (!this.activeCallId) {
+            return;
+        }
+        if (!this.callInfo.hasOwnProperty(this.activeCallId)) {
+            return;
+        }
+        if (this.callInfo[this.activeCallId].acceptedParticipants.indexOf(connId) > -1) {
+            return;
+        }
+        this.callInfo[this.activeCallId].acceptedParticipants.push(connId);
+    }
+
+    // Check if all peer connections are initialized
+    private checkInitialization(connId: number) {
+        if (!this.peerConnections.hasOwnProperty(connId)) {
+            return;
+        }
+
+        if (this.peerConnections[connId].init) {
+            return;
+        }
+
+        window.console.log('[webrtc] checkInitialization, connId:', connId);
+
+        this.peerConnections[connId].checkStreamTimeout = setTimeout(() => {
+            if (!this.peerConnections.hasOwnProperty(connId)) {
+                return;
+            }
+
+            this.peerConnections[connId].checkStreamInterval = setInterval(() => {
+                if (!this.activeCallId || !this.peerConnections.hasOwnProperty(connId)) {
+                    return;
+                }
+
+                if (!this.peerConnections[connId].init) {
+                    this.checkDisconnection(connId, 'disconnected');
+                } else {
+                    clearInterval(this.peerConnections[connId].checkStreamInterval);
+                }
+            }, C_CHECK_STREAM_INTERVAL);
+        }, C_CHECK_STREAM_INTERVAL);
     }
 
     private parseNumberValue(val: number | string) {
@@ -2103,6 +2234,16 @@ export default class CallService {
                 this.groupRemoveParticipant(this.activeCallId, userIds, true);
             }
         }
+    }
+
+    private pushToRejectedCallIds(callId: string) {
+        this.rejectedCallIds.push(callId);
+        setTimeout(() => {
+            const index = this.rejectedCallIds.indexOf(callId);
+            if (index > -1) {
+                this.rejectedCallIds.splice(index, 1);
+            }
+        }, 15000);
     }
 
     private transformIceServers(list: IceServer.AsObject[]) {

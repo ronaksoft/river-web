@@ -20,6 +20,7 @@ import CallService, {
 } from "../../services/callService";
 import {
     CallEndRounded,
+    CallMergeRounded,
     CallRounded,
     CheckRounded,
     CloseRounded,
@@ -30,7 +31,6 @@ import {
     FullscreenRounded,
     VideocamRounded,
     WebAssetRounded,
-    CallMergeRounded,
 } from "@material-ui/icons";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
@@ -42,7 +42,7 @@ import Rating from '@material-ui/lab/Rating';
 import {DiscardReason} from "../../services/sdk/messages/chat.phone_pb";
 import ContactPicker from "../ContactPicker";
 import APIManager, {currentUserId} from "../../services/sdk";
-import CallVideo from "../CallVideo";
+import CallVideo, {ConnectionStatus} from "../CallVideo";
 import CallSettings from "../CallSettings";
 import {clone, debounce} from "lodash";
 import MainRepo from "../../repository";
@@ -109,8 +109,8 @@ class CallModal extends React.Component<IProps, IState> {
     private groupParticipant: InputUser.AsObject[] = [];
     private callSettingsRef: CallSettings | undefined;
     private mediaSettings: IMediaSettings = {audio: true, screenShare: false, video: true};
-    private callConnectingTone: string = '/ringingtone/connecting-1.mp3';
-    private callRingingTone: string = '/ringingtone/tone-2.mp3';
+    private callConnectingTone: string = '/ringingtone/connecting-2.ogg';
+    private callRingingTone: string = '/ringingtone/tone-2.ogg';
     private loading: boolean = false;
     private videoCall: boolean = false;
     private readonly windowResizeDebounce: any = undefined;
@@ -808,7 +808,7 @@ class CallModal extends React.Component<IProps, IState> {
     }
 
     private rejectCallHandler = () => {
-        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONDISCONNECT).catch((err) => {
+        this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONBUSY).catch((err) => {
             window.console.log(err);
         });
         this.closeHandler();
@@ -819,9 +819,11 @@ class CallModal extends React.Component<IProps, IState> {
             return;
         }
         this.loading = true;
+        if (this.state.callStarted) {
+            this.timeEnd = Date.now();
+        }
         this.callService.reject(this.state.callId, Math.floor((this.timeEnd - this.timeStart) / 1000), DiscardReason.DISCARDREASONHANGUP).then(() => {
             if (this.state.callStarted) {
-                this.timeEnd = Date.now();
                 this.setState({
                     callStarted: false,
                     fullscreen: false,
@@ -887,7 +889,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private eventCallAcceptedHandler = ({connId, data}: { connId: number, data: IUpdatePhoneCall }) => {
         if (this.callVideoRef) {
-            this.callVideoRef.setStatus(connId, 2);
+            this.callVideoRef.setStatus(connId, ConnectionStatus.Connecting);
         }
     }
 
@@ -933,7 +935,7 @@ class CallModal extends React.Component<IProps, IState> {
 
     private eventCallAckHandler = (connId: number) => {
         if (this.callVideoRef) {
-            this.callVideoRef.setStatus(connId, 1);
+            this.callVideoRef.setStatus(connId, ConnectionStatus.Ringing);
         }
     }
 
@@ -964,8 +966,8 @@ class CallModal extends React.Component<IProps, IState> {
 
         this.callVideoRef.initRemoteConnection(true);
         const participant = this.callService.participantByConnId(connId);
-        this.callVideoRef.setStatus(connId, 2, participant ? participant.deviceType : undefined);
         this.callVideoRef.setStream(connId, stream);
+        this.callVideoRef.setStatus(connId, ConnectionStatus.Connected, participant ? participant.deviceType : undefined);
         if (!this.timeStart) {
             this.timeStart = Date.now();
         }

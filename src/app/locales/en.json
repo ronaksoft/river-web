@@ -76,6 +76,8 @@
     "view_in_chat": "View in chat",
     "unsupported_document": "Unsupported document",
     "sending_message_is_not_allowed": "Sending message is not allowed",
+    "only_admins_can_send_message": "Only admins can send message",
+    "not_a_team_member": "Not a team member",
     "desktop": "Desktop",
     "web": "Web",
     "ios": "iOS",
@@ -524,6 +526,9 @@
     "no_message": "No messages",
     "call_started": "Call started",
     "call_ended": "Call ended",
+    "call_ended_param": "Call {0}",
+    "call_missed": "Missed call",
+    "call_unavailable": "Unavailable call",
     "call_from_user": "Call from {0}",
     "call_from": "Call from "
   },
@@ -582,6 +587,8 @@
     "call": "Call",
     "is_calling": "is calling...",
     "is_ringing": "is ringing...",
+    "is_connecting": "is connecting...",
+    "connected": "connected",
     "rate_this_call": "Rate this call",
     "muted": "muted",
     "call_back": "Call Back",
@@ -589,7 +596,7 @@
     "is_not_available": "is not available",
     "is_busy": "is busy",
     "audio_muted": "Microphone is muted",
-    "call_started": "Call Started",
+    "call_started": "In Call...",
     "join_call": "Join Call",
     "user_joined_the_call": "{0} joined the call",
     "user_left_the_call": "{0} left the call",
@@ -612,7 +619,8 @@
     "screen_list": "Screen List",
     "mute": "Mute",
     "unmute": "Unmute",
-    "join": "Join"
+    "join": "Join",
+    "all_participants_should_be_connected": "All participants should be connected"
   },
   "notification": {
     "new_messages": "{0} new messages",

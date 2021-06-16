@@ -16,15 +16,15 @@ import {detect} from "detect-browser";
 
 import './index.css';
 
-export const C_VERSION = '1.1.39';
-export const C_ELECTRON_VERSIONS = ['12.0.6'];
-export const C_APP_VERSION = '0.38.0';
+export const C_VERSION = '1.1.64';
+export const C_ELECTRON_VERSIONS = ['13.1.1'];
+export const C_APP_VERSION = '0.40.0';
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 export let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const electronVersion = ElectronService.electronVersion();
 const browserVersion = detect();
 if (electronVersion) {
-    C_CLIENT = `Desktop:- ${electronVersion} ${(browserVersion ? '(' + browserVersion.os + ')' : '')}`;
+    C_CLIENT = `Desktop:- ${electronVersion} ${(browserVersion ? `(${browserVersion.os})` : '')}`;
 } else if (browserVersion) {
     C_CLIENT = `Web:- ${browserVersion.name} ${browserVersion.version} (${browserVersion.os})`;
 }

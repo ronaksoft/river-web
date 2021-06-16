@@ -348,7 +348,7 @@ export default class MediaRepo {
             limit,
             maxId: id,
         };
-        return this.apiManager.getMessageMediaHistory(peer, type, query).then((remoteRes) => {
+        return this.apiManager.messageGetMediaHistory(peer, type, query).then((remoteRes) => {
             return this.modifyHoles(teamId, peer.getId() || '', peer.getType() || 0, type, remoteRes.messagesList, limit - 1).then(() => {
                 return remoteRes;
             });

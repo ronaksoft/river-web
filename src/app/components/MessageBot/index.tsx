@@ -15,10 +15,10 @@ import BotLayout from "../BotLayout";
 
 import './style.scss';
 
-export default function MessageBot({message, peer, onAction}: { message: IMessage, peer: InputPeer | null, onAction?: (cmd: number, data: any, msgId?: number) => void }) {
+export default function MessageBot({message, peer, onAction}: { message: IMessage, peer: InputPeer | null, onAction?: (cmd: number, data: any, msgId?: number, senderId?: string) => void }) {
     const actionHandler = (cmd: number, data: any) => {
         if (onAction) {
-            onAction(cmd, data, message.id || 0);
+            onAction(cmd, data, message.id || 0, message.senderid);
         }
     };
 

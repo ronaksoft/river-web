@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.38.0",
+  "version": "0.40.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -126,7 +126,7 @@
     "@types/react-window": "^1.8.1",
     "@types/shortid": "^0.0.29",
     "@types/xregexp": "^3.0.29",
-    "electron": "^12.0.7",
+    "electron": "^13.1.1",
     "electron-builder": "^22.10.5",
     "electron-devtools-installer": "^3.1.1",
     "glob": "^7.1.6",
@@ -141,7 +141,7 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-react": "^4.1.0",
     "type-fest": "^0.20.2",
-    "typescript": "^4.2.3",
+    "typescript": "^4.3.2",
     "worker-loader": "^3.0.6"
   },
   "babel": {

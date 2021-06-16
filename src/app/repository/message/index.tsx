@@ -824,7 +824,7 @@ export default class MessageRepo {
         return pipe2.limit(limit || 32).toArray();
     }
 
-    public searchAll({keyword, labelIds}: { keyword?: string, labelIds?: number[] }, {after, limit}: { after?: number, limit?: number }) {
+    public searchAll({keyword, labelIds, teamId}: { keyword?: string, labelIds?: number[], teamId?: string }, {after, limit}: { after?: number, limit?: number }) {
         const pipe = this.db.messages;
         let pipe2: Dexie.Collection<IMessage, number>;
         if (after) {
@@ -837,6 +837,9 @@ export default class MessageRepo {
             const reg = new RegExp(term, 'i');
             pipe2 = pipe2.filter((item: IMessage) => {
                 if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0) {
+                    if (teamId && item.teamid !== teamId) {
+                        return false;
+                    }
                     let isMatched = false;
                     if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
                         isMatched = true;
@@ -1029,6 +1032,17 @@ export default class MessageRepo {
         });
     }
 
+    public removeLabelFromMessage(labelId: number) {
+        return this.db.messages.filter((o) => {
+            return o.labelidsList && o.labelidsList.indexOf(labelId) > -1;
+        }).toArray().then((res) => {
+            return this.importBulk(res.map((msg) => {
+                msg.removed_labels = [labelId];
+                return msg;
+            }));
+        });
+    }
+
     private applyActions() {
         if (!this.actionBusy && this.actionList.length > 0) {
             const action = this.actionList.shift();
@@ -1186,7 +1200,7 @@ export default class MessageRepo {
                 return;
             }
             delete this.messageBundle[mapId];
-            this.apiManager.getManyMessage(peer, ids).then((res) => {
+            this.apiManager.messageGetMany(peer, ids).then((res) => {
                 const messages: IMessage[] = [];
                 const dataIds = Object.keys(data.reqs);
                 res.messagesList.forEach((msg) => {
@@ -1250,7 +1264,7 @@ export default class MessageRepo {
                 maxId: id,
             };
         }
-        return this.apiManager.getMessageHistory(peer, query).then((remoteRes) => {
+        return this.apiManager.messageGetHistory(peer, query).then((remoteRes) => {
             return this.modifyHoles(teamId, peer.getId() || '', peer.getType() || 0, remoteRes.messagesList, asc, limit - 1).then(() => {
                 return remoteRes;
             });

@@ -41,7 +41,7 @@ import {GetDbFileName} from "../../repository/file";
 import ElectronService from "../../services/electron";
 import {findIndex} from "lodash";
 import SettingsConfigManager from "../../services/settingsConfigManager";
-import {EventFileDownloaded} from "../../services/events";
+import {EventFileDownloaded, EventFileSaved} from "../../services/events";
 import {IPeer} from "../../repository/dialog/interface";
 import {C_INFINITY} from "../../repository";
 
@@ -65,6 +65,7 @@ interface IMedia {
     peerType: number;
     playing?: boolean;
     saved: boolean;
+    saved_path: string;
     selected: boolean;
     type: number;
     userId: string;
@@ -156,11 +157,13 @@ class PeerMedia extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.getMedias();
         window.addEventListener(EventFileDownloaded, this.fileDownloadedHandler);
+        window.addEventListener(EventFileSaved, this.fileSavedHandler);
         this.eventReferences.push(this.audioPlayer.globalListen(this.audioPlayerHandler));
     }
 
     public componentWillUnmount() {
         window.removeEventListener(EventFileDownloaded, this.fileDownloadedHandler);
+        window.removeEventListener(EventFileSaved, this.fileSavedHandler);
         this.removeAllListeners();
     }
 
@@ -693,6 +696,23 @@ class PeerMedia extends React.Component<IProps, IState> {
         });
     }
 
+    /* File saved handler */
+    private fileSavedHandler = (data: any) => {
+        if (!data.detail.id) {
+            return;
+        }
+        const id = data.detail.id;
+        if (!this.itemMap.hasOwnProperty(id)) {
+            return;
+        }
+        const {items} = this.state;
+        const index = this.itemMap[id];
+        items[index].saved = true;
+        this.setState({
+            items,
+        });
+    }
+
     /* Get media action */
     private getMediaAction(item: IMedia) {
         const {tab} = this.state;
@@ -713,7 +733,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     </div>);
                 case 3:
                 default:
-                    if (!item.saved) {
+                    if (!item.saved || item.saved_path === '') {
                         return (<div className="media-file-action">
                             <span
                                 onClick={this.mediaActionClickHandler(item.id, 'view')}>{i18n.t('general.save')}</span>
@@ -772,6 +792,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     peerId: item.peerid || '0',
                     peerType: item.peertype || 0,
                     saved: item.saved || false,
+                    saved_path: item.saved_path || '',
                     selected: false,
                     teamId: item.teamid || '0',
                     type: item.messagetype || C_MESSAGE_TYPE.Normal,
