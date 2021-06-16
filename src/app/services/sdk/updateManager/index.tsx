@@ -957,7 +957,7 @@ export default class UpdateManager {
                 });
                 if (this.apiManager) {
                     const connInfo = this.apiManager.getConnInfo();
-                    connInfo.Phone = updateUsername.phone;
+                    connInfo.phone = updateUsername.phone;
                     this.apiManager.setConnInfo(connInfo);
                 }
                 break;

@@ -35,7 +35,6 @@ import {
 } from 'lodash';
 import APIManager, {currentUserId} from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
-import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog, IPeer} from '../../repository/dialog/interface';
 import UpdateManager, {
     IDialogDBUpdated,
@@ -189,6 +188,7 @@ import {gotToken} from "../SignUp";
 import NotificationService from "../../services/notification";
 
 import './style.scss';
+import {RiverConnection} from "../../services/sdk/messages/conn_pb";
 
 const UploaderLazy = React.lazy(() => import('../../components/Uploader'));
 const RightMenu = React.lazy(() => import('../../components/RightMenu'));
@@ -254,7 +254,7 @@ class Chat extends React.Component<IProps, IState> {
     private isLoading: boolean = false;
     private apiManager: APIManager;
     private updateManager: UpdateManager;
-    private connInfo: IConnInfo;
+    private connInfo: RiverConnection.AsObject;
     private eventReferences: any[] = [];
     private readonly dialogsSortThrottle: any = null;
     private isMobileView: boolean = false;
@@ -373,9 +373,9 @@ class Chat extends React.Component<IProps, IState> {
             Sentry.configureScope((scope) => {
                 scope.setUser({
                     'App Version': C_VERSION,
-                    'Auth Id': this.connInfo.AuthID,
+                    'Auth Id':this.connInfo.authid,
                     'User Id': currentUserId,
-                    'Username': this.connInfo.Username,
+                    'Username': this.connInfo.username,
                 });
             });
         }
@@ -403,7 +403,7 @@ class Chat extends React.Component<IProps, IState> {
             this.checkMicrophonePermission();
         }
 
-        if (this.connInfo.AuthID === '0' || this.connInfo.UserID === '0') {
+        if (this.connInfo.authid === '0' || this.connInfo.userid === '0') {
             this.props.history.push('/signup/null');
             return;
         }
@@ -3299,7 +3299,7 @@ class Chat extends React.Component<IProps, IState> {
             this.started = false;
         };
         this.updateManager.disableLiveUpdate();
-        this.apiManager.logout(this.connInfo.AuthID).then((res) => {
+        this.apiManager.logout(this.connInfo.authid).then((res) => {
             wipe();
         }).catch(() => {
             wipe();
@@ -3801,10 +3801,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private botSendPhoneHandler = () => {
         this.chatInputContactSelectHandler([{
-            firstname: this.connInfo.FirstName || '',
+            firstname: this.connInfo.firstname || '',
             id: currentUserId,
-            lastname: this.connInfo.LastName || '',
-            phone: this.connInfo.Phone || '',
+            lastname: this.connInfo.lastname || '',
+            phone: this.connInfo.phone || '',
         }], '', {});
     }
 

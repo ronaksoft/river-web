@@ -323,7 +323,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             pageContent: 'none',
             pageSubContent: 'none',
             passwordMode: 0,
-            phone: this.apiManager.getConnInfo().Phone || '',
+            phone: this.apiManager.getConnInfo().phone || '',
             privacy: cloneDeep(privacyDefault),
             profileCropperOpen: false,
             profilePictureCrop: {
@@ -2354,7 +2354,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     private changePhoneModalDoneHandler = () => {
         this.setState({
-            phone: this.apiManager.getConnInfo().Phone || '',
+            phone: this.apiManager.getConnInfo().phone || '',
         });
     }
 

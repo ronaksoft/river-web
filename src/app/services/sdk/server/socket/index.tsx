@@ -49,7 +49,7 @@ export interface ISendPayload {
     withSend: boolean;
 }
 
-const C_JS_MSG = {
+export const C_JS_MSG = {
     Auth: 'auth',
     AuthProgress: 'authProgress',
     CreateAuthKey: 'createAuthKey',
@@ -58,12 +58,13 @@ const C_JS_MSG = {
     GenInputPassword: 'genInputPassword',
     GenSrpHash: 'genSrpHash',
     GetServerTime: 'getServerTime',
+    Ready: 'ready',
     Save: 'save',
     Update: 'update',
     WASMLoaded: 'wasmLoaded',
 };
 
-const C_WASM_MSG = {
+export const C_WASM_MSG = {
     Auth: 'auth',
     Decode: 'decode',
     Encode: 'encode',
@@ -72,6 +73,37 @@ const C_WASM_MSG = {
     Init: 'init',
     Load: 'load',
     SetServerTime: 'setServerTime',
+};
+
+export const convertConnInfoJsonToProto = (str: string) => {
+    if (!str || str === '') {
+        return '';
+    }
+    const data: RiverConnection.AsObject = JSON.parse(str);
+    const dataAlt: {
+        AuthID: string;
+        AuthKey: string;
+        FirstName: string;
+        LastName: string;
+        Phone: string;
+        UserID: string;
+        Username: string;
+    } = data as any;
+    const riverConn = new RiverConnection();
+    riverConn.setAuthid(data.authid || dataAlt.AuthID);
+    riverConn.setAuthkey(data.authkey || dataAlt.AuthKey);
+    riverConn.setUserid(data.userid || dataAlt.UserID);
+    riverConn.setUsername(data.username || dataAlt.Username);
+    riverConn.setPhone(data.phone || dataAlt.Phone);
+    riverConn.setFirstname(data.firstname || dataAlt.FirstName);
+    riverConn.setLastname(data.lastname || dataAlt.LastName);
+    return uint8ToBase64(riverConn.serializeBinary());
+};
+
+export const convertConnInfoProtoToJson = (str: string) => {
+    const data = base64ToU8a(str);
+    const connInfo = RiverConnection.deserializeBinary(data).toObject();
+    return JSON.stringify(connInfo);
 };
 
 export default class Socket {
@@ -265,19 +297,13 @@ export default class Socket {
         }
     }
 
-    private convertConnInfoProtoToJson(str: string) {
-        const data = base64ToU8a(str);
-        const connInfo = RiverConnection.deserializeBinary(data).toObject();
-        return JSON.stringify(connInfo);
-    }
-
     private messageHandler(cmd: string, data: any) {
         switch (cmd) {
             case C_JS_MSG.WASMLoaded:
                 this.wasmLoaded();
                 break;
             case C_JS_MSG.Save:
-                localStorage.setItem(C_LOCALSTORAGE.ConnInfo, this.convertConnInfoProtoToJson(data));
+                localStorage.setItem(C_LOCALSTORAGE.ConnInfo, convertConnInfoProtoToJson(data));
                 break;
             case C_JS_MSG.CreateAuthKey:
                 if (this.fnCreateAuthKey) {
@@ -437,34 +463,9 @@ export default class Socket {
         }, 12000);
     }
 
-    private convertConnInfoJsonToProto(str: string) {
-        if (!str || str === '') {
-            return '';
-        }
-        const data: RiverConnection.AsObject = JSON.parse(str);
-        const dataAlt: {
-            AuthID: string;
-            AuthKey: string;
-            FirstName: string;
-            LastName: string;
-            Phone: string;
-            UserID: string;
-            Username: string;
-        }= data as any;
-        const riverConn = new RiverConnection();
-        riverConn.setAuthid(data.authid || dataAlt.AuthID);
-        riverConn.setAuthkey(data.authkey || dataAlt.AuthKey);
-        riverConn.setUserid(data.userid || dataAlt.UserID);
-        riverConn.setUsername(data.username || dataAlt.Username);
-        riverConn.setPhone(data.phone || dataAlt.Phone);
-        riverConn.setFirstname(data.firstname || dataAlt.FirstName);
-        riverConn.setLastname(data.lastname || dataAlt.LastName);
-        return uint8ToBase64(riverConn.serializeBinary());
-    }
-
     private wasmLoaded() {
         this.workerMessage(C_WASM_MSG.Load, {
-            connInfo: this.convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
+            connInfo: convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
             serverKeys
         });
         this.initWebSocket();

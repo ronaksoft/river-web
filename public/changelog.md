@@ -1,3 +1,7 @@
+## 1.2.0
+* 🎉 New WASM thanks to the tinygo
+* Known bugs fixed
+
 ## 1.1.64
 * Improvements in selecting texts
 * Improvements in call discard

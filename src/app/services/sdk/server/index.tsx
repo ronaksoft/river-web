@@ -689,7 +689,7 @@ export default class Server {
         const v = localStorage.getItem(C_LOCALSTORAGE.Version);
         if (v === null) {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                v: 10,
+                v: 11,
             }));
             return false;
         }
@@ -706,8 +706,9 @@ export default class Server {
             case 7:
             case 8:
             case 9:
-                return pv.v;
             case 10:
+                return pv.v;
+            case 11:
                 return false;
         }
     }
@@ -740,6 +741,9 @@ export default class Server {
                 return;
             case 9:
                 this.migrate9();
+                return;
+            case 10:
+                this.migrate10();
                 return;
         }
     }
@@ -934,6 +938,19 @@ export default class Server {
                 }, 100);
             });
         }, 1000);
+    }
+
+    private migrate10() {
+        if (this.updateManager) {
+            this.updateManager.disableLiveUpdate();
+        }
+        localStorage.removeItem(C_LOCALSTORAGE.ServerKeys);
+        localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+            v: 11,
+        }));
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
     }
 
     private getTime() {

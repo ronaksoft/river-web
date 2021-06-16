@@ -286,7 +286,7 @@ class App extends React.Component<{}, IState> {
             const connInfo = APIManager.getInstance().getConnInfo();
             fnClear();
             if (connInfo) {
-                localStorage.setItem(C_LOCALSTORAGE.LastPhone, connInfo.Phone);
+                localStorage.setItem(C_LOCALSTORAGE.LastPhone, connInfo.phone);
             }
             window.location.reload();
         }
