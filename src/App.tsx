@@ -101,6 +101,7 @@ class App extends React.Component<{}, IState> {
     private sessionsIds: number[] = [];
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private updateModalVisible: boolean = false;
 
     constructor(props: {}) {
         super(props);
@@ -363,6 +364,7 @@ class App extends React.Component<{}, IState> {
     }
 
     private updateDialogAcceptHandler = () => {
+        this.updateModalVisible = false;
         window.location.reload();
     }
 
@@ -420,6 +422,7 @@ class App extends React.Component<{}, IState> {
     }
 
     private downloadDesktopHandler = (link: string) => () => {
+        this.updateModalVisible = false;
         ElectronService.getInstance().loadUrl(link);
         this.updateDialogCloseHandler();
     }
@@ -446,8 +449,12 @@ class App extends React.Component<{}, IState> {
     }
 
     private showUpdateDialog() {
+        if (this.updateModalVisible) {
+            return;
+        }
         const {updateMode, desktopDownloadLink, updateContent} = this.state;
         const isUpdate = (updateMode === 'notif' || updateMode === 'changelog');
+        this.updateModalVisible = true;
         ModalityService.getInstance().open({
             buttons: desktopDownloadLink !== '' ? [{
                 action: 'download_electron',
@@ -478,6 +485,8 @@ class App extends React.Component<{}, IState> {
                 }
             } else if (modalRes === 'download_electron') {
                 this.downloadDesktopHandler(desktopDownloadLink)();
+            } else {
+                this.updateModalVisible = false;
             }
         });
     }
