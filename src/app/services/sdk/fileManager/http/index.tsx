@@ -15,7 +15,7 @@ import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
 import {C_ERR, C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../../const';
 import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
-import Socket, {ISendPayload, serverTime} from '../../server/socket';
+import Socket, {C_JS_MSG, C_WASM_MSG, convertConnInfoJsonToProto, ISendPayload, serverTime} from '../../server/socket';
 import {EventSocketReady} from "../../../events";
 import {InputTeam} from "../../messages/core.types_pb";
 import {getFileServerUrl} from "../../../../components/DevTools";
@@ -184,25 +184,25 @@ export default class Http {
         this.worker.onmessage = (e) => {
             const d = e.data;
             switch (d.cmd) {
-                case 'wasmLoaded':
-                    this.workerMessage('load', {
-                        connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo),
+                case C_JS_MSG.WASMLoaded:
+                    this.workerMessage(C_WASM_MSG.Load, {
+                        connInfo: convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
                         serverKeys
                     });
                     if (serverTime) {
-                        this.workerMessage('setServerTime', serverTime);
+                        this.workerMessage(C_WASM_MSG.SetServerTime, serverTime);
                     }
                     break;
-                case 'ready':
+                case C_JS_MSG.Ready:
                     if (this.readyHandler) {
                         this.readyHandler();
                     }
                     this.isWorkerReady = true;
                     break;
-                case 'encode':
+                case C_JS_MSG.Encode:
                     this.resolveEncrypt(d.data.reqId, d.data.msg);
                     break;
-                case 'decode':
+                case C_JS_MSG.Decode:
                     this.resolveDecrypt(d.data.reqId, d.data.constructor, d.data.msg);
                     break;
                 default:

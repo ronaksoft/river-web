@@ -427,7 +427,7 @@ message RSAPublicKey {
 
 // DHGroup
 message DHGroup {
-    int64 FingerPrint = 1;
+    int64 FingerPrint = 1 [jstype = JS_STRING];
     string Prime = 2;
     int32 Gen = 3;
 }

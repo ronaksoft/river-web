@@ -1274,8 +1274,8 @@ export namespace RSAPublicKey {
 }
 
 export class DHGroup extends jspb.Message {
-  getFingerprint(): number;
-  setFingerprint(value: number): void;
+  getFingerprint(): string;
+  setFingerprint(value: string): void;
 
   getPrime(): string;
   setPrime(value: string): void;
@@ -1295,7 +1295,7 @@ export class DHGroup extends jspb.Message {
 
 export namespace DHGroup {
   export type AsObject = {
-    fingerprint: number,
+    fingerprint: string,
     prime: string,
     gen: number,
   }

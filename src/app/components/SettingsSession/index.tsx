@@ -51,7 +51,7 @@ class SettingsSession extends React.Component<IProps, IState> {
 
         this.rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
         this.apiManager = APIManager.getInstance();
-        this.currentAuthID = this.apiManager.getConnInfo().AuthID;
+        this.currentAuthID = this.apiManager.getConnInfo().authid;
 
         this.modalityService = ModalityService.getInstance();
     }

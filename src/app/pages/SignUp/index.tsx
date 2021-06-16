@@ -142,7 +142,7 @@ class SignUp extends React.Component<IProps, IState> {
         window.addEventListener(EventSocketReady, this.wsOpenHandler);
         window.addEventListener(EventFocus, this.windowFocusHandler);
         this.apiManager.loadConnInfo();
-        if (this.apiManager.getConnInfo().AuthID === '0' && this.props.match.params.mode !== 'workspace') {
+        if (this.apiManager.getConnInfo().authid === '0' && this.props.match.params.mode !== 'workspace') {
             this.props.history.push('/loading');
         }
         if (this.apiManager.isStarted()) {
@@ -618,10 +618,10 @@ class SignUp extends React.Component<IProps, IState> {
 
     private login(res: AuthAuthorization.AsObject) {
         const info = this.apiManager.loadConnInfo();
-        info.UserID = res.user.id;
-        info.FirstName = res.user.firstname;
-        info.LastName = res.user.lastname;
-        info.Phone = this.state.phone;
+        info.userid = res.user.id;
+        info.firstname = res.user.firstname;
+        info.lastname = res.user.lastname;
+        info.phone = this.state.phone;
         this.apiManager.setConnInfo(info);
         UserRepo.getInstance().importBulk(false, [res.user]);
         this.setState({
@@ -636,7 +636,7 @@ class SignUp extends React.Component<IProps, IState> {
                 this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             }).catch(() => {
                 this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
-                    this.checkLastPhone(info.Phone);
+                    this.checkLastPhone(info.phone);
                 });
             });
         };
@@ -785,10 +785,10 @@ class SignUp extends React.Component<IProps, IState> {
         const lang = localStorage.getItem(C_LOCALSTORAGE.Lang) || 'en';
         this.apiManager.register(phone, code, phoneHash, firstName, lastName, lang).then((res) => {
             const info = this.apiManager.loadConnInfo();
-            info.UserID = res.user.id;
-            info.FirstName = res.user.firstname;
-            info.LastName = res.user.lastname;
-            info.Phone = this.state.phone;
+            info.userid = res.user.id;
+            info.firstname = res.user.firstname;
+            info.lastname = res.user.lastname;
+            info.phone = this.state.phone;
             this.apiManager.setConnInfo(info);
             this.setState({
                 loading: false,
@@ -801,7 +801,7 @@ class SignUp extends React.Component<IProps, IState> {
                 this.apiManager.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             }).catch(() => {
                 this.apiManager.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1').then(() => {
-                    this.checkLastPhone(info.Phone);
+                    this.checkLastPhone(info.phone);
                 });
             });
         }).catch((err) => {
@@ -866,7 +866,7 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private wasmInitHandler = () => {
-        if (parseInt(this.apiManager.getConnInfo().AuthID, 10) === 0) {
+        if (parseInt(this.apiManager.getConnInfo().authid, 10) === 0) {
             this.props.history.push('/loading');
         }
     }

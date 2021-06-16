@@ -315,7 +315,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                     phone,
                 }]);
                 const connInfo = this.apiManager.getConnInfo();
-                connInfo.Phone = phone;
+                connInfo.phone = phone;
                 this.apiManager.setConnInfo(connInfo);
                 this.timeout = setTimeout(() => {
                     this.modalCloseHandler();

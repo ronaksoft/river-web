@@ -206,6 +206,7 @@ import {
 } from "./messages/chat.phone_pb";
 import {debounce} from "lodash";
 import ElectronService from "../electron";
+import {RiverConnection} from "./messages/conn_pb";
 
 export let currentUserId: string = '0';
 export let currentAuthId: string = '0';
@@ -221,7 +222,7 @@ export default class APIManager {
     private static instance: APIManager;
 
     private server: Server;
-    private connInfo: IConnInfo;
+    private connInfo: RiverConnection.AsObject;
 
     private clientId: number = 0;
     private systemInfoCache: any = null;
@@ -240,13 +241,14 @@ export default class APIManager {
             this.connInfo = JSON.parse(s);
         } else {
             this.connInfo = {
-                AuthID: '0',
-                AuthKey: '',
-                FirstName: '',
-                LastName: '',
-                Phone: '',
-                UserID: '0',
-                Username: ''
+                authid: '0',
+                authkey: '',
+                difftime: 0,
+                firstname: '',
+                lastname: '',
+                phone: '',
+                userid: '0',
+                username: '',
             };
         }
 
@@ -264,28 +266,28 @@ export default class APIManager {
         FileManager.getInstance().setTeam(team);
     }
 
-    public getConnInfo(): IConnInfo {
+    public getConnInfo(): RiverConnection.AsObject {
         return this.connInfo;
     }
 
-    public setConnInfo(info: IConnInfo) {
+    public setConnInfo(info: RiverConnection.AsObject) {
         this.connInfo = info;
         const s = JSON.stringify(info);
         localStorage.setItem(C_LOCALSTORAGE.ConnInfo, s);
-        currentUserId = info.UserID || '0';
-        currentAuthId = info.AuthID || '0';
+        currentUserId = info.userid || '0';
+        currentAuthId = info.authid || '0';
     }
 
     public resetConnInfo() {
         this.loadConnInfo();
         const info = this.getConnInfo();
-        info.UserID = '0';
-        info.FirstName = '';
-        info.LastName = '';
-        info.Phone = '';
-        info.Username = '';
-        currentUserId = info.UserID;
-        currentAuthId = info.AuthID;
+        info.userid = '0';
+        info.firstname = '';
+        info.lastname = '';
+        info.phone = '';
+        info.username = '';
+        currentUserId = info.userid;
+        currentAuthId = info.authid;
         this.setConnInfo(info);
         localStorage.removeItem(C_LOCALSTORAGE.ContactsHash);
         localStorage.removeItem(C_LOCALSTORAGE.SettingsDownload);
@@ -301,13 +303,23 @@ export default class APIManager {
         localStorage.removeItem(C_LOCALSTORAGE.ReactionFrequently);
     }
 
-    public loadConnInfo(): IConnInfo {
+    public loadConnInfo(): RiverConnection.AsObject {
         const s = localStorage.getItem(C_LOCALSTORAGE.ConnInfo);
         if (s) {
             this.connInfo = this.connInfo = JSON.parse(s);
         }
-        currentUserId = this.connInfo.UserID || '0';
-        currentAuthId = this.connInfo.AuthID;
+        const altConn = this.connInfo as unknown as IConnInfo;
+        if (altConn.AuthID) {
+            this.connInfo.authid = altConn.AuthID;
+            this.connInfo.authkey = altConn.AuthKey;
+            this.connInfo.userid = altConn.UserID;
+            this.connInfo.firstname = altConn.FirstName;
+            this.connInfo.lastname = altConn.LastName;
+            this.connInfo.phone = altConn.Phone;
+            this.connInfo.username = altConn.Username;
+        }
+        currentUserId = this.connInfo.userid || '0';
+        currentAuthId = this.connInfo.authid;
         return this.connInfo;
     }
 

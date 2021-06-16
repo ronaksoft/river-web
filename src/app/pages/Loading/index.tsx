@@ -62,7 +62,7 @@ class Loading extends React.Component<IProps, IState> {
         this.apiManager.loadConnInfo();
         if (currentUserId !== '0') {
             this.props.history.push('/chat/0/null');
-        } else if (this.apiManager.getConnInfo().AuthID !== '0') {
+        } else if (this.apiManager.getConnInfo().authid !== '0') {
             this.props.history.push('/signup/null');
         }
 

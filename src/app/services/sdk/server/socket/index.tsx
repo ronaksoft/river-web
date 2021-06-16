@@ -22,6 +22,7 @@ import {getWsServerUrl} from "../../../../components/DevTools";
 
 //@ts-ignore
 import RiverWorker from 'worker-loader?filename=river.js!../../worker';
+import {RiverConnection} from "../../messages/conn_pb";
 
 export const defaultGateway = 'edge.river.im';
 
@@ -48,7 +49,7 @@ export interface ISendPayload {
     withSend: boolean;
 }
 
-const C_JS_MSG = {
+export const C_JS_MSG = {
     Auth: 'auth',
     AuthProgress: 'authProgress',
     CreateAuthKey: 'createAuthKey',
@@ -57,12 +58,13 @@ const C_JS_MSG = {
     GenInputPassword: 'genInputPassword',
     GenSrpHash: 'genSrpHash',
     GetServerTime: 'getServerTime',
+    Ready: 'ready',
     Save: 'save',
     Update: 'update',
     WASMLoaded: 'wasmLoaded',
 };
 
-const C_WASM_MSG = {
+export const C_WASM_MSG = {
     Auth: 'auth',
     Decode: 'decode',
     Encode: 'encode',
@@ -71,6 +73,37 @@ const C_WASM_MSG = {
     Init: 'init',
     Load: 'load',
     SetServerTime: 'setServerTime',
+};
+
+export const convertConnInfoJsonToProto = (str: string) => {
+    if (!str || str === '') {
+        return '';
+    }
+    const data: RiverConnection.AsObject = JSON.parse(str);
+    const dataAlt: {
+        AuthID: string;
+        AuthKey: string;
+        FirstName: string;
+        LastName: string;
+        Phone: string;
+        UserID: string;
+        Username: string;
+    } = data as any;
+    const riverConn = new RiverConnection();
+    riverConn.setAuthid(data.authid || dataAlt.AuthID);
+    riverConn.setAuthkey(data.authkey || dataAlt.AuthKey);
+    riverConn.setUserid(data.userid || dataAlt.UserID);
+    riverConn.setUsername(data.username || dataAlt.Username);
+    riverConn.setPhone(data.phone || dataAlt.Phone);
+    riverConn.setFirstname(data.firstname || dataAlt.FirstName);
+    riverConn.setLastname(data.lastname || dataAlt.LastName);
+    return uint8ToBase64(riverConn.serializeBinary());
+};
+
+export const convertConnInfoProtoToJson = (str: string) => {
+    const data = base64ToU8a(str);
+    const connInfo = RiverConnection.deserializeBinary(data).toObject();
+    return JSON.stringify(connInfo);
 };
 
 export default class Socket {
@@ -270,10 +303,11 @@ export default class Socket {
                 this.wasmLoaded();
                 break;
             case C_JS_MSG.Save:
-                localStorage.setItem(C_LOCALSTORAGE.ConnInfo, data);
+                localStorage.setItem(C_LOCALSTORAGE.ConnInfo, convertConnInfoProtoToJson(data));
                 break;
             case C_JS_MSG.CreateAuthKey:
                 if (this.fnCreateAuthKey) {
+                    window.console.log('fnCreateAuthKey');
                     this.fnCreateAuthKey().then((duration: number) => {
                         if (!this.started && this.connected) {
                             this.started = true;
@@ -431,7 +465,7 @@ export default class Socket {
 
     private wasmLoaded() {
         this.workerMessage(C_WASM_MSG.Load, {
-            connInfo: localStorage.getItem(C_LOCALSTORAGE.ConnInfo),
+            connInfo: convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
             serverKeys
         });
         this.initWebSocket();
