@@ -58,6 +58,12 @@ precache([{
 }, {
     revision: '1',
     url: '/ringingtone/connecting-2.ogg',
+},{
+    revision: '3',
+    url: '/bin/river-tiny.wasm',
+}, {
+    revision: '10',
+    url: '/bin/wasm_exec_tiny.js',
 }]);
 
 // Set up App Shell-style routing, so that all navigation requests
