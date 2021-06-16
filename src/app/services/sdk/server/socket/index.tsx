@@ -442,15 +442,23 @@ export default class Socket {
             return '';
         }
         const data: RiverConnection.AsObject = JSON.parse(str);
+        const dataAlt: {
+            AuthID: string;
+            AuthKey: string;
+            FirstName: string;
+            LastName: string;
+            Phone: string;
+            UserID: string;
+            Username: string;
+        }= data as any;
         const riverConn = new RiverConnection();
-        riverConn.setAuthid(data.authid);
-        riverConn.setAuthkey(data.authkey);
-        riverConn.setUserid(data.userid);
-        riverConn.setUsername(data.username);
-        riverConn.setPhone(data.phone);
-        riverConn.setFirstname(data.firstname);
-        riverConn.setLastname(data.lastname);
-        riverConn.setDifftime(data.difftime);
+        riverConn.setAuthid(data.authid || dataAlt.AuthID);
+        riverConn.setAuthkey(data.authkey || dataAlt.AuthKey);
+        riverConn.setUserid(data.userid || dataAlt.UserID);
+        riverConn.setUsername(data.username || dataAlt.Username);
+        riverConn.setPhone(data.phone || dataAlt.Phone);
+        riverConn.setFirstname(data.firstname || dataAlt.FirstName);
+        riverConn.setLastname(data.lastname || dataAlt.LastName);
         return uint8ToBase64(riverConn.serializeBinary());
     }
 

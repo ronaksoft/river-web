@@ -33,7 +33,7 @@
     "axios": "^0.21.0",
     "browser-image-resizer": "1.2.0",
     "detect-browser": "^5.0.0",
-    "dexie": "3.0.3",
+    "dexie": "^3.1.0-beta.13",
     "dom-css": "^2.1.0",
     "electron-context-menu": "^2.4.0",
     "electron-debug": "^3.2.0",
