@@ -315,7 +315,7 @@ class InfoBar extends React.Component<IProps, IState> {
                                 lastAdmin = false;
                             }
                         });
-                        if (!isInCall) {
+                        if (isInCall) {
                             if (lastAdmin) {
                                 visibleMenus = [3];
                             } else {

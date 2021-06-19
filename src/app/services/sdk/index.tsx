@@ -286,6 +286,16 @@ export default class APIManager {
         info.lastname = '';
         info.phone = '';
         info.username = '';
+        //@ts-ignore
+        delete info.UserID;
+        //@ts-ignore
+        delete info.FirstName;
+        //@ts-ignore
+        delete info.LastName;
+        //@ts-ignore
+        delete info.Phone;
+        //@ts-ignore
+        delete info.Username;
         currentUserId = info.userid;
         currentAuthId = info.authid;
         this.setConnInfo(info);
@@ -309,9 +319,9 @@ export default class APIManager {
             this.connInfo = this.connInfo = JSON.parse(s);
         }
         const altConn = this.connInfo as unknown as IConnInfo;
-        if (altConn.AuthID) {
-            this.connInfo.authid = altConn.AuthID;
-            this.connInfo.authkey = altConn.AuthKey;
+        if (altConn.UserID) {
+            this.connInfo.authid = altConn.AuthID || this.connInfo.authid;
+            this.connInfo.authkey = altConn.AuthKey || this.connInfo.authkey;
             this.connInfo.userid = altConn.UserID;
             this.connInfo.firstname = altConn.FirstName;
             this.connInfo.lastname = altConn.LastName;

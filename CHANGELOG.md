@@ -1,3 +1,6 @@
+## 1.2.1
+* Known bugs fixed
+
 ## 1.2.0
 * 🎉 New WASM thanks to the tinygo
 * Known bugs fixed
