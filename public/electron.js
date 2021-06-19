@@ -15,8 +15,9 @@ const {
 const Store = require('electron-store');
 const store = new Store();
 const {register, listen} = require('push-receiver');
+const notifier = require('node-notifier');
 
-const C_APP_VERSION = '0.40.0';
+const C_APP_VERSION = '0.41.0';
 
 const C_LOAD_URL = 'https://web.river.im';
 const C_LOAD_URL_KEY = 'load_url';
@@ -129,13 +130,12 @@ const listenFCM = (credentials) => {
     }
     C_FCM_LISTENED = true;
     const persistentIds = [];
-    const notifier = require('node-notifier');
     const now = Date.now() / 1000;
 
     function onNotification({notification, persistentId}) {
         // Update list of persistentId in file/db/...
         persistentIds.push(persistentId);
-        if (!mainWindow) {
+        if (!mainWindow && notifier && notifier.notify) {
             if (notification && notification.data && now < notification.data.ts && notification.data.Title !== '') {
                 notifier.notify({
                     title: notification.data.Title,
