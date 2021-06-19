@@ -191,12 +191,12 @@ class MentionInput extends React.Component<IProps, IState> {
             callback(uniqBy(users, 'id'));
         };
         this.groupRepo.getFull(this.props.teamId, peer.getId() || '', undefined, true).then((group) => {
-            if (group && group.participantList && group.participantList.length > 0) {
-                searchParticipant(keyword, group.participantList);
+            if (group && group.participantsList && group.participantsList.length > 0) {
+                searchParticipant(keyword, group.participantsList);
             } else {
                 this.groupRepo.getFull(this.props.teamId, peer.getId() || '').then((remoteGroup) => {
-                    if (remoteGroup && remoteGroup.participantList && remoteGroup.participantList.length > 0) {
-                        searchParticipant(keyword, remoteGroup.participantList);
+                    if (remoteGroup && remoteGroup.participantsList && remoteGroup.participantsList.length > 0) {
+                        searchParticipant(keyword, remoteGroup.participantsList);
                     } else {
                         callback([]);
                     }

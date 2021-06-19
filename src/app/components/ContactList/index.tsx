@@ -491,7 +491,7 @@ class ContactList extends React.Component<IProps, IState> {
             loading: true,
         });
         const fn = (cache: boolean) => (group: IGroup) => {
-            const us: IUser[] = uniqBy((group.participantList || []).map((member) => ({
+            const us: IUser[] = uniqBy((group.participantsList || []).map((member) => ({
                 accesshash: member.accesshash,
                 firstname: member.firstname,
                 id: member.userid,

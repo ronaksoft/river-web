@@ -9,13 +9,13 @@
 
 import {Group, GroupParticipant, GroupPhoto} from "../../services/sdk/messages/core.types_pb";
 
-export interface IGroupParticipant extends GroupParticipant.AsObject{
+export interface IGroupParticipant extends GroupParticipant.AsObject {
     deleted: boolean;
 }
 
 export interface IGroup extends Partial<Group.AsObject> {
     avatar?: string;
-    participantList?: GroupParticipant.AsObject[];
+    participantsList?: GroupParticipant.AsObject[];
     photogalleryList?: GroupPhoto.AsObject[];
     hasUpdate?: boolean;
     remove_photo?: boolean;

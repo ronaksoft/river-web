@@ -33,7 +33,7 @@ import {
 import APIManager, {currentUserId} from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
-import GroupRepo, {GroupDBUpdated, mergeParticipant} from '../../repository/group';
+import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import TimeUtility from '../../services/utilities/time';
 import {IParticipant, IUser} from '../../repository/user/interface';
 import UserAvatar from '../UserAvatar';
@@ -55,7 +55,6 @@ import {
     RadioGroup,
     Switch
 } from '@material-ui/core';
-import UserRepo from '../../repository/user';
 import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
 import UniqueId from '../../services/uniqueId';
@@ -133,7 +132,6 @@ export const NotifyContent = ({value, onChange}: { value: string, onChange: (val
 class GroupInfoMenu extends React.Component<IProps, IState> {
     private teamId: string = '0';
     private groupRepo: GroupRepo;
-    private userRepo: UserRepo;
     private apiManager: APIManager;
     private loading: boolean = false;
     private riverTime: RiverTime;
@@ -174,8 +172,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.riverTime = RiverTime.getInstance();
         // Group Repository singleton
         this.groupRepo = GroupRepo.getInstance();
-        // User Repository singleton
-        this.userRepo = UserRepo.getInstance();
         // SDK singleton
         this.apiManager = APIManager.getInstance();
 
@@ -494,18 +490,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 return;
             }
             this.loading = true;
-            this.apiManager.groupGetFull(peer).then((res) => {
-                const group: IGroup = res.group;
-                if (res.participantsList && res.participantsList.length > 0) {
-                    group.participantList = mergeParticipant(res.participantsList as any, res.usersList);
-                }
-                group.photogalleryList = res.photogalleryList;
-                this.groupRepo.importBulk([group], this.callerId);
-                this.userRepo.importBulk(false, res.usersList);
+            this.groupRepo.getFull(this.teamId, peer.getId(), undefined, false).then((res) => {
                 this.setState({
-                    group: res.group,
+                    group: res,
                     participants: res.participantsList,
                 });
+                // participantsList
                 this.loading = false;
             }).catch((err) => {
                 this.loading = false;

@@ -539,11 +539,11 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             return;
         }
         this.groupRepo.getFull(this.teamId, this.peer.getId() || '', undefined, true).then((res) => {
-            if (!res.participantList) {
+            if (!res.participantsList) {
                 return;
             }
             this.setState({
-                userList: res.participantList.map((p, i) => {
+                userList: res.participantsList.map((p, i) => {
                         this.userMap[p.userid || ''] = i;
                         return {
                             accesshash: p.accesshash,

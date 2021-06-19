@@ -123,7 +123,7 @@ export default class GroupRepo {
                     this.apiManager.groupGetFull(input).then((res) => {
                         let g: IGroup | undefined = res.group;
                         if (res.participantsList && res.participantsList.length > 0) {
-                            g.participantList = mergeParticipant(res.participantsList as any, res.usersList);
+                            g.participantsList = mergeParticipant(res.participantsList as any, res.usersList);
                         }
                         if (res.usersList) {
                             this.userRepo.importBulk(false, res.usersList);
@@ -204,7 +204,9 @@ export default class GroupRepo {
                 return o1.teamid === o2.teamid && o1.id === o2.id;
             });
             createItems.map((item) => {
-                item.participantList = uniqBy(item.participantList, 'userid');
+                if (item.participantsList) {
+                    item.participantsList = uniqBy(item.participantsList, 'userid');
+                }
                 return item;
             });
             const updateItems: IGroup[] = result.map((group: IGroup) => {
@@ -231,8 +233,8 @@ export default class GroupRepo {
     }
 
     private mergeCheck(group: IGroup, newGroup: IGroup): IGroup {
-        if (newGroup.participantList && newGroup.participantList.length > 0) {
-            group.participantList = uniqBy(newGroup.participantList, 'userid');
+        if (newGroup.participantsList && newGroup.participantsList.length > 0) {
+            group.participantsList = uniqBy(newGroup.participantsList, 'userid');
         }
         if (newGroup.photogalleryList) {
             group.photogalleryList = newGroup.photogalleryList;
