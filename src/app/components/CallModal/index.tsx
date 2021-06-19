@@ -198,7 +198,7 @@ class CallModal extends React.Component<IProps, IState> {
         if (force) {
             fn();
         } else {
-            this.hasDefaultInputSettings().then(() => {
+            this.hasDefaultInputSettings(video).then(() => {
                 fn();
             }).catch(() => {
                 this.setState({
@@ -1177,7 +1177,7 @@ class CallModal extends React.Component<IProps, IState> {
         }
     }
 
-    private hasDefaultInputSettings() {
+    private hasDefaultInputSettings(videoCall: boolean) {
         if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
             return Promise.resolve();
         }
@@ -1197,7 +1197,7 @@ class CallModal extends React.Component<IProps, IState> {
             } else {
                 const defaultAudio = localStorage.getItem(C_LOCALSTORAGE.SettingsDefaultAudio);
                 const defaultVideo = localStorage.getItem(C_LOCALSTORAGE.SettingsDefaultVideo);
-                if (defaultAudio && defaultVideo) {
+                if ((!videoCall && (defaultAudio || audio === 1)) || (videoCall && defaultAudio && (defaultVideo || video === 1))) {
                     return Promise.resolve();
                 } else {
                     return Promise.reject();
