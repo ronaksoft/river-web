@@ -373,7 +373,7 @@ class Chat extends React.Component<IProps, IState> {
             Sentry.configureScope((scope) => {
                 scope.setUser({
                     'App Version': C_VERSION,
-                    'Auth Id':this.connInfo.authid,
+                    'Auth Id': this.connInfo.authid,
                     'User Id': currentUserId,
                     'Username': this.connInfo.username,
                 });
@@ -4530,11 +4530,11 @@ class Chat extends React.Component<IProps, IState> {
     /* Resend message */
     private resendMessage(message: IMessage) {
         this.messageRepo.getPendingByMessageId(message.id || 0).then((res) => {
+            const messages = this.messages;
+            const index = findIndex(messages, (o) => {
+                return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
             if (res) {
-                const messages = this.messages;
-                const index = findIndex(messages, (o) => {
-                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                });
                 if (index > -1) {
                     messages[index].error = false;
                     this.updateVisibleRows([index]);
@@ -4555,6 +4555,10 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 if ((message.id || 0) < 0) {
                     this.messageRepo.remove(message.id || 0);
+                    if (index > -1) {
+                        messages.splice(index, 1);
+                        this.updateVisibleRows([index]);
+                    }
                 }
             }
         });
@@ -6397,6 +6401,22 @@ class Chat extends React.Component<IProps, IState> {
             res.forEach((message) => {
                 this.resendMessage(message);
             });
+        });
+        this.messageRepo.getInvalidPendingMessages().then((res) => {
+            console.log(res);
+            const messages = this.messages;
+            const msgs = res.map(msg => {
+                const index = findIndex(messages, (o) => {
+                    return o.id === msg.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
+                if (index > -1) {
+                    messages[index].error = true;
+                    this.updateVisibleRows([index]);
+                }
+                msg.error = true;
+                return msg;
+            });
+            this.messageRepo.importBulk(msgs);
         });
     }
 

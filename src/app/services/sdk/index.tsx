@@ -1512,7 +1512,7 @@ export default class APIManager {
         data.setId(Date.now());
         this.logVerbose(data);
         return this.server.send(C_MSG.Ping, data.serializeBinary(), true, {
-            retry: 1,
+            retry: 2,
             skipNetworkWait: true,
             timeout: 5000,
         });
@@ -1539,6 +1539,7 @@ export default class APIManager {
         return this.server.send(C_MSG.FileGetBySha256, data.serializeBinary(), true, {
             retry: 2,
             retryWait: 500,
+            timeout: 5000,
         });
     }
 

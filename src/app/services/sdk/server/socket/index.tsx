@@ -365,14 +365,18 @@ export default class Socket {
 
         this.tryCounter++;
 
-        const wsUrl = getWsServerUrl();
-        if (wsUrl && wsUrl.length > 0) {
-            this.socket = new WebSocket(`ws://${wsUrl}`);
-        } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
-            this.socket = new WebSocket('wss://' + window.location.host + '/ws');
-        } else {
-            this.socket = new WebSocket(`ws://${defaultGateway}`);
-        }
+        // if (Math.random() === 0) {
+            const wsUrl = getWsServerUrl();
+            if (wsUrl && wsUrl.length > 0) {
+                this.socket = new WebSocket(`ws://${wsUrl}`);
+            } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
+                this.socket = new WebSocket('wss://' + window.location.host + '/ws');
+            } else {
+                this.socket = new WebSocket(`ws://${defaultGateway}`);
+            }
+        // } else {
+        //     this.socket = new WebSocket(`ws://google.com`);
+        // }
         this.socket.binaryType = 'arraybuffer';
 
         // Connection opened

@@ -1,3 +1,6 @@
+## 1.2.5
+* Known bugs fixed
+
 ## 1.2.4
 * Improvements in reconnecting
 

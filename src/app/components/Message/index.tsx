@@ -1196,7 +1196,6 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private moreCmdHandler = (cmd: string, index: number) => (e: any) => {
-        window.console.log(cmd);
         e.stopPropagation();
         if (cmd === 'reply' && this.state.disable) {
             this.setState({

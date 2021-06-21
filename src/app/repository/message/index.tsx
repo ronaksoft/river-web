@@ -465,6 +465,13 @@ export default class MessageRepo {
         });
     }
 
+    public getInvalidPendingMessages() {
+        return this.db.pendingMessages.toArray().then((res) => {
+            const msgIds = res.map((item) => item.message_id || 0);
+            return this.getPendingNin(msgIds, true);
+        });
+    }
+
     /* Add pending message */
     public addPending(pending: IPendingMessage) {
         return this.db.pendingMessages.put(pending);
@@ -676,6 +683,18 @@ export default class MessageRepo {
 
     public getIn(ids: number[], asc: boolean) {
         const pipe = this.db.messages.where('id').anyOf(ids);
+        if (asc) {
+            return pipe.toArray();
+        } else {
+            return pipe.reverse().toArray();
+        }
+    }
+
+    public getPendingNin(ids: number[], asc: boolean) {
+        const pipe = this.db.messages.where('id').between(Dexie.minKey, 0);
+        pipe.filter((o) => {
+            return ids.indexOf(o.id) === -1;
+        });
         if (asc) {
             return pipe.toArray();
         } else {
