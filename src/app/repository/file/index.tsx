@@ -7,6 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
+/* eslint import/no-webpack-loader-syntax: off */
 import DB from '../../services/db/file';
 import {IFile, IFileMap, ITempFile} from './interface';
 import {DexieFileDB} from '../../services/db/dexie/file';
@@ -21,6 +22,8 @@ import {IMessage} from "../message/interface";
 import {getMediaDocument} from "../message";
 import {MediaDocument} from "../../services/sdk/messages/chat.messages.medias_pb";
 import {SetOptional} from "type-fest";
+// @ts-ignore
+// import FileWorker from "worker-loader?filename=fileworker.js&esModule!./worker";
 
 export const md5FromBlob = (theBlob: Blob): Promise<string> => {
     const b: any = theBlob;
@@ -42,7 +45,16 @@ export const getFileLocation = (msg: IMessage) => {
     return fileLocation;
 };
 
+export const db = DB.getInstance().getDB();
+
 export default class FileRepo {
+    public static getDb() {
+        if (!this.instance) {
+            return undefined;
+        }
+        return this.instance.db;
+    }
+
     public static getInstance() {
         if (!this.instance) {
             this.instance = new FileRepo();
@@ -55,10 +67,12 @@ export default class FileRepo {
 
     private dbService: DB;
     private db: DexieFileDB;
+    // private worker: Worker;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
+        // this.worker = FileWorker({type: 'module'});
     }
 
     public getTemp(id: string, part: number): Promise<ITempFile | undefined> {
@@ -80,6 +94,7 @@ export default class FileRepo {
     }
 
     public setManyTemp(tempFiles: ITempFile[]) {
+        // this.worker.postMessage({cmd: 'bulkPut', data: tempFiles});
         return this.db.temps.bulkPut(tempFiles);
     }
 

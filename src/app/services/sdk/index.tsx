@@ -1514,7 +1514,7 @@ export default class APIManager {
         return this.server.send(C_MSG.Ping, data.serializeBinary(), true, {
             retry: 1,
             skipNetworkWait: true,
-            timeout: 2000,
+            timeout: 5000,
         });
     }
 

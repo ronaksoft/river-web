@@ -73,6 +73,7 @@ export const C_WASM_MSG = {
     GenSrpHash: 'genSrpHash',
     Init: 'init',
     Load: 'load',
+    SessionInc: 'wasmSessionInc',
     SetServerTime: 'setServerTime',
 };
 
@@ -386,6 +387,7 @@ export default class Socket {
             this.connected = true;
             this.lastSendTime = Date.now();
             this.lastReceiveTime = Date.now() + 1;
+            this.sessionInc();
             this.dispatchEvent(EventSocketConnected, null);
             if (this.started) {
                 this.dispatchEvent(EventSocketReady, {duration: 0});
@@ -519,6 +521,10 @@ export default class Socket {
                 }
             });
         }
+    }
+
+    private sessionInc() {
+        this.workerMessage(C_WASM_MSG.SessionInc, {});
     }
 
     private dispatchEvent(cmd: string, data: any) {
