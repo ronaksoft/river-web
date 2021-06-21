@@ -78,7 +78,6 @@ export default class Http {
         } else if (window.location.protocol === 'http:') {
             this.dataCenterUrl = 'http://' + fileUrl;
         }
-        // this.dataCenterUrl = 'http://google.com';
 
         const fn = () => {
             if (shareWorker) {
