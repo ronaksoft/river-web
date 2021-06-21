@@ -6403,7 +6403,6 @@ class Chat extends React.Component<IProps, IState> {
             });
         });
         this.messageRepo.getInvalidPendingMessages().then((res) => {
-            console.log(res);
             const messages = this.messages;
             const msgs = res.map(msg => {
                 const index = findIndex(messages, (o) => {
