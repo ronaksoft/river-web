@@ -49,7 +49,7 @@ const messageHandler = (cmd: string, data: any) => {
     switch (cmd) {
         case 'init':
             // @ts-ignore
-            importScripts(data.tiny ? '/bin/wasm_exec.js?v11' : '/bin/wasm_exec.js?v8');
+            importScripts(data.tiny ? '/bin/wasm_exec_tiny.js?v11' : '/bin/wasm_exec.js?v8');
             // @ts-ignore
             go = new Go();
             console.time('wasm init');
