@@ -231,7 +231,7 @@ export default class APIManager {
 
     private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
 
-    private checkPingDebouncer: any = null;
+    private readonly checkPingDebouncer: any = null;
 
     public constructor() {
         this.server = Server.getInstance();
@@ -1513,6 +1513,7 @@ export default class APIManager {
         this.logVerbose(data);
         return this.server.send(C_MSG.Ping, data.serializeBinary(), true, {
             retry: 1,
+            skipNetworkWait: true,
             timeout: 2000,
         });
     }

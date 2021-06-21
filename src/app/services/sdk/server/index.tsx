@@ -46,6 +46,7 @@ interface IRequestOptions {
     retry?: number;
     retryErrors?: IErrorPair[];
     retryWait?: number;
+    skipNetworkWait?: boolean;
     timeout?: number;
 }
 
@@ -262,6 +263,12 @@ export default class Server {
                 }
             });
 
+            if (options.skipNetworkWait) {
+                request.timeout = setTimeout(() => {
+                    this.dispatchTimeout(request.reqId);
+                }, request.options ? (request.options.timeout || C_TIMEOUT) : C_TIMEOUT);
+            }
+
             /* Add request to the queue manager */
             this.messageListeners[reqId] = {
                 reject: internalReject,
@@ -435,17 +442,21 @@ export default class Server {
         this.onProgressQueue.push(request.reqId);
 
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId} ${request.inputTeam && request.inputTeam.id !== '0' ? ('teamId: ' + request.inputTeam.id) : ''}`, 'color: #f9d71c');
-        request.timeout = setTimeout(() => {
-            this.dispatchTimeout(request.reqId);
-        }, request.options ? (request.options.timeout || C_TIMEOUT) : C_TIMEOUT);
+        if (!request.options.skipNetworkWait) {
+            request.timeout = setTimeout(() => {
+                this.dispatchTimeout(request.reqId);
+            }, request.options ? (request.options.timeout || C_TIMEOUT) : C_TIMEOUT);
+        }
         this.socket.send(request);
     }
 
     private sendThrottledRequest(request: IServerRequest) {
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId} ${request.inputTeam && request.inputTeam.id !== '0' ? ('teamId: ' + request.inputTeam.id) : ''}`, 'color: #f9d74e');
-        request.timeout = setTimeout(() => {
-            this.dispatchTimeout(request.reqId);
-        }, request.options ? (request.options.timeout || C_TIMEOUT) : C_TIMEOUT);
+        if (!request.options.skipNetworkWait) {
+            request.timeout = setTimeout(() => {
+                this.dispatchTimeout(request.reqId);
+            }, request.options ? (request.options.timeout || C_TIMEOUT) : C_TIMEOUT);
+        }
         const data = new MessageEnvelope();
         data.setConstructor(request.constructor);
         data.setMessage(request.data);

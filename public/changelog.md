@@ -1,4 +1,5 @@
 ## 1.2.2
+* Force reconnect bug fixed
 * Overall improvements
 
 ## 1.2.1
