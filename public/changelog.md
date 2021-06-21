@@ -1,3 +1,6 @@
+## 1.2.2
+* Overall improvements
+
 ## 1.2.1
 * Media Input improvements
 * Group mention bug fixed

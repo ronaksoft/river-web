@@ -26,13 +26,13 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
 precache([{
-    revision: '35',
+    revision: '36',
     url: '/bin/river.wasm',
 }, {
     revision: '2',
     url: '/bin/highlight.min.js',
 }, {
-    revision: '7',
+    revision: '8',
     url: '/bin/wasm_exec.js',
 }, {
     revision: '2',
@@ -59,10 +59,10 @@ precache([{
     revision: '1',
     url: '/ringingtone/connecting-2.ogg',
 },{
-    revision: '3',
+    revision: '4',
     url: '/bin/river-tiny.wasm',
 }, {
-    revision: '10',
+    revision: '11',
     url: '/bin/wasm_exec_tiny.js',
 }]);
 

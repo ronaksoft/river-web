@@ -1,7 +1,4 @@
 // @ts-ignore
-importScripts('/bin/wasm_exec_tiny.js?v10');
-
-// @ts-ignore
 interface IWorker extends Worker {
     wasmLoad: (connInfo: string, serverKeys: string) => string | undefined;
     wasmSetServerTime: (time: number) => void;
@@ -33,7 +30,7 @@ const C_NO_AUTH_KEY = "no auth key";
 const ctx: IWorker = self as any;
 
 // @ts-ignore
-const go = new Go();
+let go: any = undefined;
 /* eslint-enable */
 
 const workerMessage = (cmd: string, data: any) => {
@@ -51,8 +48,12 @@ ctx.onmessage = ((e) => {
 const messageHandler = (cmd: string, data: any) => {
     switch (cmd) {
         case 'init':
+            // @ts-ignore
+            importScripts(data.tiny ? '/bin/wasm_exec.js?v11' : '/bin/wasm_exec.js?v8');
+            // @ts-ignore
+            go = new Go();
             console.time('wasm init');
-            fetch('/bin/river-tiny.wasm?v3').then((response) => {
+            fetch(data.tiny ? '/bin/river-tiny.wasm?v4' : '/bin/river.wasm?v36').then((response) => {
                 const alternativeFn = () => {
                     response.arrayBuffer().then((data) => {
                         WebAssembly.instantiate(data, go.importObject).then((res) => {

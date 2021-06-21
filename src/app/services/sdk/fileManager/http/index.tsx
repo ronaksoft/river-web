@@ -22,6 +22,7 @@ import {getFileServerUrl} from "../../../../components/DevTools";
 import {Error as RiverError} from "../../messages/rony_pb";
 //@ts-ignore
 import RiverWorker from 'worker-loader?filename=river.js!../../worker';
+import {isMobile} from "../../../utilities/localize";
 
 export interface IHttpRequest {
     constructor: number;
@@ -83,7 +84,7 @@ export default class Http {
                 this.initShareWorker();
             } else {
                 window.removeEventListener(EventSocketReady, fn);
-                this.workerMessage('init', {});
+                this.workerMessage(C_WASM_MSG.Init, {tiny: isMobile()});
                 this.initWorkerEvent();
             }
         };
@@ -233,7 +234,7 @@ export default class Http {
             payload.teamId = this.inputTeam.id;
             payload.teamAccessHash = this.inputTeam.accesshash;
         }
-        this.workerMessage('encode', payload);
+        this.workerMessage(C_WASM_MSG.Encode, payload);
     }
 
     private resolveEncrypt = (reqId: number, base64: string) => {
@@ -261,7 +262,7 @@ export default class Http {
         }).then((bytes) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 const data = new Uint8Array(bytes);
-                this.workerMessage('decode', {data: uint8ToBase64(new Uint8Array(data)), reqId, withParse: false});
+                this.workerMessage(C_WASM_MSG.Decode, {data: uint8ToBase64(new Uint8Array(data)), reqId, withParse: false});
             }
         }).catch((err) => {
             this.setTimeout(Date.now() - time);

@@ -23,6 +23,7 @@ import {getWsServerUrl} from "../../../../components/DevTools";
 //@ts-ignore
 import RiverWorker from 'worker-loader?filename=river.js!../../worker';
 import {RiverConnection} from "../../messages/conn_pb";
+import {isMobile} from "../../../utilities/localize";
 
 export const defaultGateway = 'edge.river.im';
 
@@ -144,7 +145,7 @@ export default class Socket {
         this.worker = new RiverWorker();
 
         setTimeout(() => {
-            this.workerMessage(C_WASM_MSG.Init, {});
+            this.workerMessage(C_WASM_MSG.Init, {tiny: isMobile()});
         }, 100);
 
         window.addEventListener(EventOnline, () => {
