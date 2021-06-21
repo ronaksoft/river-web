@@ -1,3 +1,6 @@
+## 1.2.4
+* Improvements in reconnecting
+
 ## 1.2.3
 * WS Session implemented
 

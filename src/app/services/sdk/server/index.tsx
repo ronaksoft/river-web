@@ -191,6 +191,7 @@ export default class Server {
             window.addEventListener(EventWebSocketClose, () => {
                 this.isReady = false;
                 this.isConnected = false;
+                this.clearPingRequests();
             });
 
             this.updateManager = UpdateManager.getInstance();
@@ -661,6 +662,9 @@ export default class Server {
     }
 
     private cleanQueue(reqId: number) {
+        if (this.messageListeners.hasOwnProperty(reqId)) {
+            clearTimeout(this.messageListeners[reqId].request.timeout);
+        }
         delete this.messageListeners[reqId];
         let index = this.sentQueue.indexOf(reqId);
         if (index > -1) {
@@ -1182,5 +1186,14 @@ export default class Server {
             return;
         }
         this.commandRepo.remove(request.commandId);
+    }
+
+    private clearPingRequests() {
+        this.sentQueue.forEach((reqId) => {
+            const req = this.messageListeners[reqId];
+            if (req && req.request.constructor === C_MSG.Ping) {
+                this.cleanQueue(reqId);
+            }
+        });
     }
 }
