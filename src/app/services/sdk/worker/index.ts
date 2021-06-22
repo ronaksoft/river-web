@@ -52,19 +52,20 @@ const messageHandler = (cmd: string, data: any) => {
             importScripts(data.tiny ? '/bin/wasm_exec_tiny.js?v11' : '/bin/wasm_exec.js?v8');
             // @ts-ignore
             go = new Go();
+            const title = `wasm init, tiny: ${data.tiny}`;
             console.time('wasm init');
             fetch(data.tiny ? '/bin/river-tiny.wasm?v7' : '/bin/river.wasm?v39').then((response) => {
                 const alternativeFn = () => {
                     response.arrayBuffer().then((data) => {
                         WebAssembly.instantiate(data, go.importObject).then((res) => {
-                            console.timeEnd('wasm init');
+                            console.timeEnd(title);
                             go.run(res.instance);
                         });
                     });
                 };
                 if (WebAssembly.instantiateStreaming) {
                     WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
-                        console.timeEnd('wasm init');
+                        console.timeEnd(title);
                         go.run(res.instance);
                     }).catch((err) => {
                         console.warn(err);
