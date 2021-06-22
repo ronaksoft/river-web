@@ -1,3 +1,6 @@
+## 1.2.7
+* WebWorker cache problem patched
+
 ## 1.2.6
 * Electron updated
 * WASM improvements

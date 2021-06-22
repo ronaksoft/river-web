@@ -21,7 +21,7 @@ import {C_LOCALSTORAGE, C_MSG} from "../../const";
 import {getWsServerUrl} from "../../../../components/DevTools";
 
 //@ts-ignore
-import RiverWorker from 'worker-loader?filename=river.js!../../worker';
+import RiverWorker from 'worker-loader?filename=newriver.js!../../worker';
 import {RiverConnection} from "../../messages/conn_pb";
 import {isMobile} from "../../../utilities/localize";
 

@@ -21,7 +21,7 @@ import {InputTeam} from "../../messages/core.types_pb";
 import {getFileServerUrl} from "../../../../components/DevTools";
 import {Error as RiverError} from "../../messages/rony_pb";
 //@ts-ignore
-import RiverWorker from 'worker-loader?filename=river.js!../../worker';
+import RiverWorker from 'worker-loader?filename=newriver.js!../../worker';
 import {isMobile} from "../../../utilities/localize";
 
 export interface IHttpRequest {
