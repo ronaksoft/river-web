@@ -53,7 +53,7 @@ const messageHandler = (cmd: string, data: any) => {
             // @ts-ignore
             go = new Go();
             console.time('wasm init');
-            fetch(data.tiny ? '/bin/river-tiny.wasm?v6' : '/bin/river.wasm?v38').then((response) => {
+            fetch(data.tiny ? '/bin/river-tiny.wasm?v7' : '/bin/river.wasm?v39').then((response) => {
                 const alternativeFn = () => {
                     response.arrayBuffer().then((data) => {
                         WebAssembly.instantiate(data, go.importObject).then((res) => {

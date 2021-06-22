@@ -1,3 +1,7 @@
+## 1.2.6
+* Electron updated
+* WASM improvements
+
 ## 1.2.5
 * Known bugs fixed
 

@@ -26,14 +26,20 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
 precache([{
-    revision: '38',
+    revision: '39',
     url: '/bin/river.wasm',
+},{
+    revision: '7',
+    url: '/bin/river-tiny.wasm',
 }, {
     revision: '2',
     url: '/bin/highlight.min.js',
 }, {
     revision: '8',
     url: '/bin/wasm_exec.js',
+}, {
+    revision: '11',
+    url: '/bin/wasm_exec_tiny.js',
 }, {
     revision: '2',
     url: '/recorder/decoderWorker.min.js',
@@ -58,12 +64,6 @@ precache([{
 }, {
     revision: '1',
     url: '/ringingtone/connecting-2.ogg',
-},{
-    revision: '6',
-    url: '/bin/river-tiny.wasm',
-}, {
-    revision: '11',
-    url: '/bin/wasm_exec_tiny.js',
 }]);
 
 // Set up App Shell-style routing, so that all navigation requests

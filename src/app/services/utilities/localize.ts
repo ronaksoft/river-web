@@ -49,7 +49,7 @@ export const localize = (str: string | number) => {
 };
 
 export const isMobile = () => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 };
 
 export const extractPhoneNumber = (str: string) => {
