@@ -668,7 +668,7 @@ export default class UpdateManager {
                 case C_MSG.UpdatePhoneCall:
                     const updatePhoneCall = UpdatePhoneCall.deserializeBinary(update.update as Uint8Array).toObject();
                     this.logVerbose(update.constructor, updatePhoneCall);
-                    if (!updatePhoneCall.timestamp || (this.riverTime.now() - updatePhoneCall.timestamp) < 60) {
+                    if (!updatePhoneCall.timestamp || (this.riverTime.now() - updatePhoneCall.timestamp) < 90) {
                         this.callHandlers('all', C_MSG.UpdatePhoneCall, updatePhoneCall);
                     }
                     break;

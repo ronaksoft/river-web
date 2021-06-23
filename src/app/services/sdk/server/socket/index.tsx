@@ -19,11 +19,11 @@ import {
 } from "../../../events";
 import {C_LOCALSTORAGE, C_MSG} from "../../const";
 import {getWsServerUrl} from "../../../../components/DevTools";
-
-//@ts-ignore
-import RiverWorker from 'worker-loader?filename=newriver.js!../../worker';
 import {RiverConnection} from "../../messages/conn_pb";
 import {isMobile} from "../../../utilities/localize";
+import RiverTime from "../../../utilities/river_time";
+//@ts-ignore
+import RiverWorker from 'worker-loader?filename=newriver.js!../../worker';
 
 export const defaultGateway = 'edge.river.im';
 
@@ -189,6 +189,7 @@ export default class Socket {
 
     public setServerTime(time: number) {
         serverTime = time;
+        RiverTime.getInstance().setServerTime(time);
         this.workerMessage(C_WASM_MSG.SetServerTime, time);
     }
 
