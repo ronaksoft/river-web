@@ -111,6 +111,7 @@ interface IState {
 }
 
 class DocumentViewer extends React.Component<IProps, IState> {
+    // private dialogBackdropEl: HTMLElement | undefined;
     private documentViewerService: DocumentViewService;
     private pictureWrapperRef: any = null;
     private floatPictureRef: any = null;
@@ -182,6 +183,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        // this.destroyBackdropEvent();
         window.removeEventListener(EventKeyDown, this.windowKeyDownHandler, true);
         window.removeEventListener(EventMouseMove, this.mediaDocumentMouseMoveHandler);
         window.removeEventListener(EventMouseUp, this.mediaDocumentMouseUpHandler);
@@ -200,7 +202,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 disableBackdropClick={true}
                 disableEscapeKeyDown={true}
                 classes={{
-                    paper: 'document-viewer-dialog-paper'
+                    paper: 'document-viewer-dialog-paper',
                 }}
             >
                 <ClickAwayListener disableReactTree={true} onClickAway={this.dialogCloseHandler()}>
@@ -770,6 +772,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             return;
         }
         const closeDialog = () => {
+            // this.destroyBackdropEvent();
             this.setState({
                 dialogOpen: false,
                 galleryList: [],
@@ -806,6 +809,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             doc,
             fileState: download ? 'download' : 'view',
         }, () => {
+            // this.initBackdropEvent();
             if (doc.type === 'picture' || doc.type === 'video') {
                 this.calculateImageSize();
                 this.initPaginationHandlers();
@@ -1047,6 +1051,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Document wheel handler */
     private mediaDocumentWheelHandler = (e: any) => {
+        window.console.log(e);
         if (!this.hasControl()) {
             return;
         }
@@ -1520,6 +1525,22 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 break;
         }
     }
+
+    // private initBackdropEvent() {
+    //     setTimeout(() => {
+    //         this.dialogBackdropEl = document.querySelector('.document-viewer-dialog .MuiBackdrop-root');
+    //         if (this.dialogBackdropEl) {
+    //             this.dialogBackdropEl.addEventListener(EventWheel, this.mediaDocumentWheelHandler);
+    //         }
+    //     }, 300);
+    // }
+    //
+    // private destroyBackdropEvent() {
+    //     if (!this.dialogBackdropEl) {
+    //         return;
+    //     }
+    //     this.dialogBackdropEl.removeEventListener(EventWheel, this.mediaDocumentWheelHandler);
+    // }
 }
 
 export default DocumentViewer;

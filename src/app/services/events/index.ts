@@ -4,6 +4,7 @@ export const EventDrop = 'drop';
 export const EventDragOver = 'dragover';
 export const EventBeforeUnload = 'beforeunload';
 export const EventMouseWheel = 'mousewheel';
+export const EventWheel = 'wheel';
 export const EventMouseUp = 'mouseup';
 export const EventMouseMove = 'mousemove';
 export const EventKeyUp = 'keyup';
