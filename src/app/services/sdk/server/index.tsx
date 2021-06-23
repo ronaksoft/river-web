@@ -26,9 +26,10 @@ import RiverTime from "../../utilities/river_time";
 import DialogRepo from "../../../repository/dialog";
 import {C_MESSAGE_ACTION} from "../../../repository/message/consts";
 import {currentUserId} from "../index";
-import {PublicKey, ServerKeys} from "../messages/conn_pb";
+import {PublicKey, RiverConnection, ServerKeys} from "../messages/conn_pb";
 import {ModalityService} from "kk-modality";
 import i18n from "../../i18n";
+import {IConnInfo} from "../interface";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;
@@ -704,7 +705,7 @@ export default class Server {
         const v = localStorage.getItem(C_LOCALSTORAGE.Version);
         if (v === null) {
             localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
-                v: 11,
+                v: 12,
             }));
             return false;
         }
@@ -722,8 +723,9 @@ export default class Server {
             case 8:
             case 9:
             case 10:
-                return pv.v;
             case 11:
+                return pv.v;
+            case 12:
                 return false;
         }
     }
@@ -759,6 +761,9 @@ export default class Server {
                 return;
             case 10:
                 this.migrate10();
+                return;
+            case 11:
+                this.migrate11();
                 return;
         }
     }
@@ -962,6 +967,37 @@ export default class Server {
         localStorage.removeItem(C_LOCALSTORAGE.ServerKeys);
         localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
             v: 11,
+        }));
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
+    }
+
+    private migrate11() {
+        if (this.updateManager) {
+            this.updateManager.disableLiveUpdate();
+        }
+        try {
+            const c = localStorage.getItem(C_LOCALSTORAGE.ConnInfo);
+            const data: IConnInfo = JSON.parse(c);
+            if (data.hasOwnProperty('AuthID')) {
+                const cc: RiverConnection.AsObject = {
+                    authid: data.AuthID,
+                    authkey: data.AuthKey,
+                    difftime: 0,
+                    firstname: data.FirstName,
+                    lastname: data.LastName,
+                    phone: data.Phone,
+                    userid: data.UserID,
+                    username: data.Username,
+                };
+                localStorage.setItem(C_LOCALSTORAGE.ConnInfo, JSON.stringify(cc));
+            }
+        } catch (e) {
+            window.console.log(e);
+        }
+        localStorage.setItem(C_LOCALSTORAGE.Version, JSON.stringify({
+            v: 12,
         }));
         setTimeout(() => {
             window.location.reload();
