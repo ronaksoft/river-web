@@ -512,7 +512,7 @@ class ContactList extends React.Component<IProps, IState> {
                 loading: false,
             });
         };
-        this.groupRepo.getFull(this.props.teamId, groupId, fn(true), true).then(fn(false));
+        this.groupRepo.getFull(this.props.teamId, groupId, fn(true), {checkLastUpdate: true}).then(fn(false));
     }
 
     private getDefaultContacts() {

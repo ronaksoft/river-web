@@ -190,7 +190,7 @@ class MentionInput extends React.Component<IProps, IState> {
             }
             callback(uniqBy(users, 'id'));
         };
-        this.groupRepo.getFull(this.props.teamId, peer.getId() || '', undefined, true).then((group) => {
+        this.groupRepo.getFull(this.props.teamId, peer.getId() || '', undefined, {checkLastUpdate: true}).then((group) => {
             if (group && group.participantsList && group.participantsList.length > 0) {
                 searchParticipant(keyword, group.participantsList);
             } else {

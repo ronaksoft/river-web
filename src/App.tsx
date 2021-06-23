@@ -438,7 +438,7 @@ class App extends React.Component<{}, IState> {
             confirmText: i18n.t('general.agree'),
             description: <>{this.state.clearingSiteData ? <CircularProgress/> : <DialogContentText>
                 {`You are receiving "Auth Error", ${clear ? 'do you like to clear all site data' : 'do you want to logout'}?`}<br/>
-                <i>This probably fix your problem!</i>
+                <i>{`This probably will fix your problem!`}</i>
             </DialogContentText>}</>,
             title: 'Critical Error',
         }).then((modalRes) => {

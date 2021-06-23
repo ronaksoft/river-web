@@ -8,6 +8,7 @@
 */
 
 import {DexieFileDB} from './dexie/file';
+import {dbHealthCheck} from "./index";
 
 export default class FileDB {
     public static getInstance() {
@@ -24,6 +25,7 @@ export default class FileDB {
     private constructor() {
         this.db = new DexieFileDB();
         this.db.open();
+        dbHealthCheck(this.db);
     }
 
     public getDB() {

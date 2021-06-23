@@ -538,7 +538,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         if (!this.peer) {
             return;
         }
-        this.groupRepo.getFull(this.teamId, this.peer.getId() || '', undefined, true).then((res) => {
+        this.groupRepo.getFull(this.teamId, this.peer.getId() || '', undefined, {checkLastUpdate: true}).then((res) => {
             if (!res.participantsList) {
                 return;
             }

@@ -8,6 +8,7 @@
 */
 
 import {DexieMessageDB} from './dexie/message';
+import {dbHealthCheck} from "./index";
 
 export default class MessageDB {
     public static getInstance() {
@@ -23,7 +24,9 @@ export default class MessageDB {
 
     private constructor() {
         this.db = new DexieMessageDB();
+        this.db.open();
 
+        dbHealthCheck(this.db);
         // setInterval(this.viewCleanup, 60000);
     }
 

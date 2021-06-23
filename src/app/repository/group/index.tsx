@@ -105,14 +105,14 @@ export default class GroupRepo {
         return this.db.groups.where('[teamid+id]').anyOf(queries).offset(skip || 0).limit(limit).toArray();
     }
 
-    public getFull(teamId: string, id: string, cacheCB?: (gs: IGroup) => void, checkLastUpdate?: boolean): Promise<IGroup> {
+    public getFull(teamId: string, id: string, cacheCB?: (gs: IGroup) => void, options?: {checkLastUpdate?: boolean, callerId?: number}): Promise<IGroup> {
         return new Promise<IGroup>((resolve, reject) => {
             this.get(teamId, id).then((group) => {
                 if (group) {
                     if (cacheCB) {
                         cacheCB(group);
                     }
-                    if (checkLastUpdate && group.last_updated && (this.riverTime.now() - (group.last_updated || 0)) < 60) {
+                    if (options && options.checkLastUpdate && group.last_updated && (this.riverTime.now() - (group.last_updated || 0)) < 60) {
                         resolve(group);
                         return;
                     }
@@ -132,7 +132,7 @@ export default class GroupRepo {
                         if (g) {
                             g = this.mergeCheck(group, g);
                             g.last_updated = this.riverTime.now();
-                            this.importBulk([g]);
+                            this.importBulk([g], options ? options.callerId : undefined);
                             resolve(g);
                         } else {
                             reject('not_found');

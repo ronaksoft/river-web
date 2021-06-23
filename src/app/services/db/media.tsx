@@ -8,6 +8,7 @@
 */
 
 import {DexieMediaDB} from './dexie/media';
+import {dbHealthCheck} from "./index";
 
 export default class MediaDB {
     public static getInstance() {
@@ -24,6 +25,8 @@ export default class MediaDB {
     private constructor() {
         this.db = new DexieMediaDB();
         this.db.open();
+
+        dbHealthCheck(this.db);
     }
 
     public getDB() {

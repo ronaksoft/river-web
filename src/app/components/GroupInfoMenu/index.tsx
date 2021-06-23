@@ -490,7 +490,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 return;
             }
             this.loading = true;
-            this.groupRepo.getFull(this.teamId, peer.getId(), undefined, false).then((res) => {
+            this.groupRepo.getFull(this.teamId, peer.getId(), undefined, {callerId: this.callerId, checkLastUpdate: false}).then((res) => {
                 this.setState({
                     group: res,
                     participants: res.participantsList,

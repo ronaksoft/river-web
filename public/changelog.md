@@ -1,3 +1,9 @@
+## 1.2.8
+* Group server fetch bug fixed
+* Reconnecting on ping improvements
+* DB health check added
+* Bind User error is now being handled
+
 ## 1.2.7
 * WebWorker cache problem patched
 

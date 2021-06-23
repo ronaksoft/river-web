@@ -68,7 +68,7 @@ class ConnectionStatus extends React.Component<IProps, IState> {
     private tryAgainHandler = (e: any) => {
         e.stopPropagation();
         e.preventDefault();
-        APIManager.getInstance().checkNetwork();
+        APIManager.getInstance().checkNetwork(true);
     };
 
     private updateFunctionHandler = () => {

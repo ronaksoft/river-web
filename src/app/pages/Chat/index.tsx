@@ -3299,7 +3299,6 @@ class Chat extends React.Component<IProps, IState> {
             this.started = false;
         };
         this.updateManager.disableLiveUpdate();
-        console.log(this.connInfo);
         this.apiManager.logout(this.connInfo.authid).then((res) => {
             wipe();
         }).catch(() => {

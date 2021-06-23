@@ -295,7 +295,7 @@ export default class Socket {
 
     public checkPing() {
         if (this.checkPingFn) {
-            this.checkPingFn();
+            this.checkPingFn(false);
         }
     }
 

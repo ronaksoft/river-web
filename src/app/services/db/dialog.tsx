@@ -8,6 +8,7 @@
 */
 
 import {DexieDialogDB} from './dexie/dialog';
+import {dbHealthCheck} from "./index";
 
 export default class DialogDB {
     public static getInstance() {
@@ -24,6 +25,7 @@ export default class DialogDB {
     private constructor() {
         this.db = new DexieDialogDB();
         this.db.open();
+        dbHealthCheck(this.db);
     }
 
     public getDB() {

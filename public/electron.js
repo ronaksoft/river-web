@@ -137,21 +137,25 @@ const listenFCM = (credentials) => {
         persistentIds.push(persistentId);
         if (!mainWindow && notifier && notifier.notify) {
             if (notification && notification.data && now < notification.data.ts && notification.data.Title !== '') {
-                notifier.notify({
-                    title: notification.data.Title,
-                    message: notification?.data?.Body || '',
-                    icon: AppIcon,
-                    sound: true,
-                }, (err, response, metadata) => {
-                    if (metadata.activationType === 'contentsClicked') {
-                        notificationPeer = {
-                            teamId: notification.data.teamID,
-                            peerId: notification.data.peerID,
-                            peerType: notification.data.peerType,
-                        };
-                        createWindow(firstTimeLoad);
-                    }
-                });
+                try {
+                    notifier.notify({
+                        title: notification.data.Title,
+                        message: notification?.data?.Body || '',
+                        icon: AppIcon,
+                        sound: true,
+                    }, (err, response, metadata) => {
+                        if (metadata.activationType === 'contentsClicked') {
+                            notificationPeer = {
+                                teamId: notification.data.teamID,
+                                peerId: notification.data.peerID,
+                                peerType: notification.data.peerType,
+                            };
+                            createWindow(firstTimeLoad);
+                        }
+                    });
+                } catch (e) {
+                    console.log(e);
+                }
             }
         }
     }

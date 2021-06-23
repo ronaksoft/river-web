@@ -1507,13 +1507,13 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneGetHistory, data.serializeBinary(), true);
     }
 
-    public ping(): Promise<Pong.AsObject> {
+    public ping(force: boolean): Promise<Pong.AsObject> {
         const data = new Ping();
         data.setId(Date.now());
         this.logVerbose(data);
         return this.server.send(C_MSG.Ping, data.serializeBinary(), true, {
             retry: 2,
-            skipNetworkWait: true,
+            skipNetworkWait: force || false,
             timeout: 5000,
         });
     }
@@ -1563,8 +1563,8 @@ export default class APIManager {
         this.server.sendAllGuaranteedCommands(checkReqId);
     }
 
-    public checkNetwork() {
-        this.checkPingDebouncer();
+    public checkNetwork(force: boolean) {
+        this.checkPingDebouncer(force);
     }
 
     private logVerbose(data: any) {
@@ -1573,8 +1573,8 @@ export default class APIManager {
         }
     }
 
-    private checkPingDebouncerHandler = () => {
-        this.ping().catch((err) => {
+    private checkPingDebouncerHandler = (force: boolean) => {
+        this.ping(force).catch((err) => {
             if (!(err && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemSkip)) {
                 window.console.warn('bad network');
                 this.server.restartNetwork();

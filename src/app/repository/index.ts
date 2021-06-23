@@ -98,6 +98,30 @@ export default class MainRepo {
         return Promise.all(promises);
     }
 
+    public clearDB(): Promise<any> {
+        const promises = [];
+        promises.push(this.userDB.contacts.clear());
+        promises.push(this.userDB.users.clear());
+        promises.push(this.userDB.groups.clear());
+        promises.push(this.messageDB.messages.clear());
+        promises.push(this.messageDB.pendingMessages.clear());
+        promises.push(this.dialogDB.dialogs.clear());
+        promises.push(this.dialogDB.drafts.clear());
+        promises.push(this.fileDB.fileMap.clear());
+        promises.push(this.fileDB.files.clear());
+        promises.push(this.mediaDB.medias.clear());
+        promises.push(this.labelDB.labelItems.clear());
+        promises.push(this.labelDB.labels.clear());
+        promises.push(this.topPeerDB.botinline.clear());
+        promises.push(this.topPeerDB.botmessage.clear());
+        promises.push(this.topPeerDB.forward.clear());
+        promises.push(this.topPeerDB.search.clear());
+        promises.push(this.gifDB.gifs.clear());
+        promises.push(this.teamDB.teams.clear());
+        promises.push(this.commandDB.commands.clear());
+        return Promise.all(promises);
+    }
+
     public destroyMessageRelatedDBs(): Promise<any> {
         const promises = [];
         // @ts-ignore

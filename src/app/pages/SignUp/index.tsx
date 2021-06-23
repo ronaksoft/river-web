@@ -8,7 +8,7 @@
 */
 
 import React from 'react';
-import APIManager, {currentUserId} from '../../services/sdk';
+import APIManager, {currentAuthId, currentUserId} from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
@@ -46,6 +46,7 @@ import NotificationService from "../../services/notification";
 
 import './tel-input.css';
 import './style.scss';
+import UpdateManager from "../../services/sdk/updateManager";
 
 export const codeLen = 5;
 export const codePlaceholder = [...new Array(codeLen)].map(o => '_').join('');
@@ -592,9 +593,7 @@ class SignUp extends React.Component<IProps, IState> {
                     if (this.props.enqueueSnackbar) {
                         this.props.enqueueSnackbar(i18n.t('sign_up.code_is_incorrect'));
                     }
-                    return;
-                }
-                if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemPhone) {
+                } else if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemPhone) {
                     let state: any = {};
                     if (this.iframeService.isActive()) {
                         state = {
@@ -610,7 +609,10 @@ class SignUp extends React.Component<IProps, IState> {
                     this.setState(state, () => {
                         this.focus('f-fname');
                     });
-                    return;
+                } else if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemBindUser) {
+                    this.logout().then(() => {
+                        this.confirmCodeHandler();
+                    });
                 }
             });
         }
@@ -1087,6 +1089,25 @@ class SignUp extends React.Component<IProps, IState> {
 
     private sessionDialogRefHandler = (ref: any) => {
         this.sessionDialogRef = ref;
+    }
+
+    private logout() {
+        const updateManager = UpdateManager.getInstance();
+        const mainRepo = MainRepo.getInstance();
+        const wipe = () => {
+            this.apiManager.resetConnInfo();
+            return mainRepo.clearDB().then(() => {
+                updateManager.setLastUpdateId(0);
+                updateManager.flushLastUpdateId();
+                return Promise.resolve();
+            });
+        };
+        updateManager.disableLiveUpdate();
+        return this.apiManager.logout(currentAuthId).then((res) => {
+            return wipe();
+        }).catch(() => {
+            return wipe();
+        });
     }
 }
 
