@@ -244,6 +244,7 @@ export default class CallService {
     private activeCallId: string | undefined;
     private callInfo: { [key: string]: ICallInfo } = {};
     private rejectedCallIds: string[] = [];
+    private verboseAPI: boolean = localStorage.getItem(C_LOCALSTORAGE.DebugVerboseAPI) === 'true';
 
     private constructor() {
         this.initMediaDevice();
@@ -746,6 +747,9 @@ export default class CallService {
         const d = parseData(data.action || 0, data.actiondata);
         delete data.actiondata;
         data.data = d;
+        if (this.verboseAPI) {
+            window.console.log('call update:', data);
+        }
         switch (data.action) {
             case PhoneCallAction.PHONECALLREQUESTED:
                 this.callRequested(data);

@@ -1,3 +1,6 @@
+## 1.2.9
+* More logs
+
 ## 1.2.8
 * Group server fetch bug fixed
 * Reconnecting on ping improvements
