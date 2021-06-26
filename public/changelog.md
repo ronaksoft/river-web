@@ -1,3 +1,6 @@
+## 1.2.10
+* Call history updated
+
 ## 1.2.9
 * Overall improvements
 

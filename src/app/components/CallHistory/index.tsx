@@ -16,7 +16,7 @@ import {
     CallMadeRounded,
     CallReceivedRounded,
     CallMissedRounded,
-    CallMissedOutgoingRounded
+    CallMissedOutgoingRounded, DeleteRounded
 } from "@material-ui/icons";
 import i18n from "../../services/i18n";
 import {PeerType} from "../../services/sdk/messages/core.types_pb";
@@ -27,6 +27,10 @@ import UserName from "../UserName";
 import TimeUtility from "../../services/utilities/time";
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import DialogSkeleton from "../DialogSkeleton";
+import Checkbox from "@material-ui/core/Checkbox";
+import Tooltip from "@material-ui/core/Tooltip/Tooltip";
+import {findIndex} from "lodash";
+import {ModalityService} from "kk-modality";
 
 import './style.scss';
 
@@ -38,7 +42,7 @@ export enum CallStatus {
     Unavailable = 0x04,
 };
 
-const C_FETCH_LIMIT = 100;
+const C_FETCH_LIMIT = 50;
 
 const listStyle: React.CSSProperties = {
     overflowX: 'visible',
@@ -53,6 +57,7 @@ interface IProps {
 interface IState {
     list: PhoneCallRecord.AsObject[];
     loading: boolean;
+    selectedIds: string[];
 }
 
 class CallHistory extends React.Component<IProps, IState> {
@@ -65,6 +70,7 @@ class CallHistory extends React.Component<IProps, IState> {
     private rtl = localStorage.getItem(C_LOCALSTORAGE.LangDir) === 'rtl';
     private firstTimeLoad: boolean = true;
     private hasMore: boolean = false;
+    private modalityService: ModalityService;
 
     constructor(props: IProps) {
         super(props);
@@ -72,11 +78,13 @@ class CallHistory extends React.Component<IProps, IState> {
         this.state = {
             list: [],
             loading: false,
+            selectedIds: [],
         };
 
         this.apiManager = APIManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
+        this.modalityService = ModalityService.getInstance();
     }
 
     public componentDidMount() {
@@ -88,12 +96,21 @@ class CallHistory extends React.Component<IProps, IState> {
     }
 
     public render() {
+        const {selectedIds} = this.state;
         return (<div className="call-history">
             <div className="menu-header">
                 <IconButton onClick={this.props.onClose}>
                     <KeyboardBackspaceRounded/>
                 </IconButton>
                 <label>{i18n.t('chat.call_history')}</label>
+                {Boolean(selectedIds.length > 0) && <IconButton
+                    onClick={this.removeHandler}
+                    className="add-remove-icon"
+                >
+                    <Tooltip title={i18n.t('general.remove')}>
+                        <DeleteRounded/>
+                    </Tooltip>
+                </IconButton>}
             </div>
             <div className="call-list-container">
                 {this.getWrapper()}
@@ -153,7 +170,7 @@ class CallHistory extends React.Component<IProps, IState> {
                                     ref={this.refHandler}
                                     itemSize={64}
                                     itemCount={list.length}
-                                    overscanCount={32}
+                                    overscanCount={16}
                                     width={width}
                                     height={height}
                                     className="calls-container"
@@ -179,12 +196,29 @@ class CallHistory extends React.Component<IProps, IState> {
     private rowRender = ({index, style}: any): any => {
         const call = this.state.list[index];
         const {teamId} = this.props;
+        const {selectedIds} = this.state;
         return (
-            <div style={style} key={call.callid} className="call-item">
-                <div className="avatar">
-                    {call.peertype === PeerType.PEERGROUP ?
-                        <GroupAvatar id={call.peerid} teamId={teamId}/> :
-                        <UserAvatar id={call.peerid}/>}
+            <div style={style} key={call.callid}
+                 className={'call-item' + (Object.keys(selectedIds).length > 0 ? ' selected-mode' : '')}
+                 onClick={this.selectHandler(call.callid || '0', true)}>
+                <div className="call-icon">
+                    <div className="avatar">
+                        {call.peertype === PeerType.PEERGROUP ?
+                            <GroupAvatar id={call.peerid} teamId={teamId}/> :
+                            <UserAvatar id={call.peerid}/>}
+                    </div>
+                    <div className="call-action">
+                        <Checkbox
+                            color="primary"
+                            checked={selectedIds.indexOf(call.callid || '0') > -1}
+                            onChange={this.selectHandler(call.callid || '0')}
+                            classes={{
+                                checked: 'checkbox-checked',
+                                root: 'checkbox',
+                            }}
+                            className="checkbox-icon"
+                        />
+                    </div>
                 </div>
                 <div className="info">
                     {call.peertype === PeerType.PEERGROUP ?
@@ -299,6 +333,60 @@ class CallHistory extends React.Component<IProps, IState> {
         }).catch(() => {
             this.setState({
                 loading: false,
+            });
+        });
+    }
+
+    private selectHandler = (id: string, checkSelected?: boolean) => (e: any, checked?: boolean) => {
+        e.stopPropagation();
+        const {selectedIds} = this.state;
+        if (checkSelected && Object.keys(selectedIds).length === 0) {
+            return;
+        }
+        const index = selectedIds.indexOf(id);
+        if (checkSelected) {
+            if (index > -1) {
+                selectedIds.splice(index, 1);
+            } else if (index === -1) {
+                selectedIds.push(id);
+            }
+        } else {
+            if (index > -1 && !checked) {
+                selectedIds.splice(index, 1);
+            } else if (index === -1 && checked) {
+                selectedIds.push(id);
+            }
+        }
+        this.setState({
+            selectedIds,
+        });
+    }
+
+    private removeHandler = () => {
+        this.modalityService.open({
+            cancelText: i18n.t('general.cancel'),
+            confirmText: i18n.t('general.yes'),
+            title: i18n.t('general.are_you_sure'),
+        }).then((modalRes) => {
+            if (modalRes === 'confirm') {
+                this.confirmAcceptHandler();
+            }
+        });
+    }
+
+    private confirmAcceptHandler = () => {
+        const {selectedIds} = this.state;
+        this.apiManager.callDeleteHistory(selectedIds).then(() => {
+            const {list} = this.state;
+            selectedIds.forEach((id) => {
+                const index = findIndex(list, {callid: id});
+                if (index > -1) {
+                    list.splice(index, 1);
+                }
+            });
+            this.setState({
+                list,
+                selectedIds: [],
             });
         });
     }

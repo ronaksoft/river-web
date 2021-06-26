@@ -145,6 +145,32 @@ export namespace PhoneDiscardCall {
   }
 }
 
+export class PhoneGetCall extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer | undefined;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  getCallid(): string;
+  setCallid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneGetCall.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneGetCall): PhoneGetCall.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneGetCall, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneGetCall;
+  static deserializeBinaryFromReader(message: PhoneGetCall, reader: jspb.BinaryReader): PhoneGetCall;
+}
+
+export namespace PhoneGetCall {
+  export type AsObject = {
+    peer?: core_types_pb.InputPeer.AsObject,
+    callid: string,
+  }
+}
+
 export class PhoneJoinCall extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
@@ -368,6 +394,28 @@ export namespace PhoneGetHistory {
   export type AsObject = {
     limit: number,
     after: number,
+  }
+}
+
+export class PhoneDeleteHistory extends jspb.Message {
+  clearCallidsList(): void;
+  getCallidsList(): Array<string>;
+  setCallidsList(value: Array<string>): void;
+  addCallids(value: string, index?: number): string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PhoneDeleteHistory.AsObject;
+  static toObject(includeInstance: boolean, msg: PhoneDeleteHistory): PhoneDeleteHistory.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PhoneDeleteHistory, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PhoneDeleteHistory;
+  static deserializeBinaryFromReader(message: PhoneDeleteHistory, reader: jspb.BinaryReader): PhoneDeleteHistory;
+}
+
+export namespace PhoneDeleteHistory {
+  export type AsObject = {
+    callidsList: Array<string>,
   }
 }
 

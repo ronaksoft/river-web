@@ -190,7 +190,7 @@ import {
     PhoneCall,
     PhoneCallAction,
     PhoneCallRateReason,
-    PhoneCallsMany,
+    PhoneCallsMany, PhoneDeleteHistory,
     PhoneDiscardCall,
     PhoneGetHistory, PhoneGetParticipants,
     PhoneInit,
@@ -1505,6 +1505,13 @@ export default class APIManager {
         data.setAfter(after);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneGetHistory, data.serializeBinary(), true);
+    }
+
+    public callDeleteHistory(ids: string[]): Promise<Bool.AsObject> {
+        const data = new PhoneDeleteHistory();
+        data.setCallidsList(ids);
+        this.logVerbose(data);
+        return this.server.send(C_MSG.PhoneDeleteHistory, data.serializeBinary(), true);
     }
 
     public ping(force: boolean): Promise<Pong.AsObject> {

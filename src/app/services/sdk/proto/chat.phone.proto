@@ -75,6 +75,14 @@ message PhoneDiscardCall {
     DiscardReason Reason = 5;
 }
 
+// PhoneGetCall
+// @Function
+// @Return: Bool
+message PhoneGetCall {
+    InputPeer Peer = 1;
+    int64 CallID = 2 [jstype = JS_STRING];
+}
+
 // PhoneAddParticipant
 // @Function
 // @Return: PhoneParticipants
@@ -138,6 +146,13 @@ message PhoneRateCall {
 message PhoneGetHistory {
     int32 Limit = 1;
     int64 After = 2;
+}
+
+// PhoneDeleteHistory
+// @Function
+// Returns:     Bool
+message PhoneDeleteHistory {
+    repeated int64 CallIDs = 1 [jstype = JS_STRING];
 }
 
 message PhoneCallRecord {
