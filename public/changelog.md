@@ -1,3 +1,6 @@
+## 1.2.11
+* Video call improvements
+
 ## 1.2.10
 * Call history updated
 

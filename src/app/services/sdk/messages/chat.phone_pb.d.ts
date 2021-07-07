@@ -54,6 +54,9 @@ export class PhoneRequestCall extends jspb.Message {
   getDevicetype(): CallDeviceType;
   setDevicetype(value: CallDeviceType): void;
 
+  getVideo(): boolean;
+  setVideo(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneRequestCall.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneRequestCall): PhoneRequestCall.AsObject;
@@ -72,6 +75,7 @@ export namespace PhoneRequestCall {
     participantsList: Array<PhoneParticipantSDP.AsObject>,
     callid: string,
     devicetype: CallDeviceType,
+    video: boolean,
   }
 }
 
@@ -778,6 +782,9 @@ export class PhoneActionRequested extends jspb.Message {
   getDevicetype(): CallDeviceType;
   setDevicetype(value: CallDeviceType): void;
 
+  getVideo(): boolean;
+  setVideo(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PhoneActionRequested.AsObject;
   static toObject(includeInstance: boolean, msg: PhoneActionRequested): PhoneActionRequested.AsObject;
@@ -794,6 +801,7 @@ export namespace PhoneActionRequested {
     type: string,
     participantsList: Array<PhoneParticipant.AsObject>,
     devicetype: CallDeviceType,
+    video: boolean,
   }
 }
 

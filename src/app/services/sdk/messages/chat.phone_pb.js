@@ -1128,7 +1128,8 @@ proto.msg.PhoneRequestCall.toObject = function(includeInstance, msg) {
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     proto.msg.PhoneParticipantSDP.toObject, includeInstance),
     callid: jspb.Message.getFieldWithDefault(msg, 5, "0"),
-    devicetype: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    devicetype: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    video: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -1190,6 +1191,10 @@ proto.msg.PhoneRequestCall.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {!proto.msg.CallDeviceType} */ (reader.readEnum());
       msg.setDevicetype(value);
+      break;
+    case 7:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setVideo(value);
       break;
     default:
       reader.skipField();
@@ -1261,6 +1266,13 @@ proto.msg.PhoneRequestCall.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeEnum(
       6,
+      f
+    );
+  }
+  f = message.getVideo();
+  if (f) {
+    writer.writeBool(
+      7,
       f
     );
   }
@@ -1411,6 +1423,24 @@ proto.msg.PhoneRequestCall.prototype.getDevicetype = function() {
  */
 proto.msg.PhoneRequestCall.prototype.setDevicetype = function(value) {
   return jspb.Message.setProto3EnumField(this, 6, value);
+};
+
+
+/**
+ * optional bool Video = 7;
+ * @return {boolean}
+ */
+proto.msg.PhoneRequestCall.prototype.getVideo = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.PhoneRequestCall} returns this
+ */
+proto.msg.PhoneRequestCall.prototype.setVideo = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 
@@ -6418,7 +6448,8 @@ proto.msg.PhoneActionRequested.toObject = function(includeInstance, msg) {
     type: jspb.Message.getFieldWithDefault(msg, 2, ""),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     proto.msg.PhoneParticipant.toObject, includeInstance),
-    devicetype: jspb.Message.getFieldWithDefault(msg, 4, 0)
+    devicetype: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    video: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -6471,6 +6502,10 @@ proto.msg.PhoneActionRequested.deserializeBinaryFromReader = function(msg, reade
     case 4:
       var value = /** @type {!proto.msg.CallDeviceType} */ (reader.readEnum());
       msg.setDevicetype(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setVideo(value);
       break;
     default:
       reader.skipField();
@@ -6527,6 +6562,13 @@ proto.msg.PhoneActionRequested.serializeBinaryToWriter = function(message, write
   if (f !== 0.0) {
     writer.writeEnum(
       4,
+      f
+    );
+  }
+  f = message.getVideo();
+  if (f) {
+    writer.writeBool(
+      5,
       f
     );
   }
@@ -6622,6 +6664,24 @@ proto.msg.PhoneActionRequested.prototype.getDevicetype = function() {
  */
 proto.msg.PhoneActionRequested.prototype.setDevicetype = function(value) {
   return jspb.Message.setProto3EnumField(this, 4, value);
+};
+
+
+/**
+ * optional bool Video = 5;
+ * @return {boolean}
+ */
+proto.msg.PhoneActionRequested.prototype.getVideo = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.PhoneActionRequested} returns this
+ */
+proto.msg.PhoneActionRequested.prototype.setVideo = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 

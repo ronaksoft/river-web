@@ -1394,7 +1394,7 @@ export default class APIManager {
         return this.server.send(C_MSG.PhoneInitCall, data.serializeBinary(), true);
     }
 
-    public callRequest(inputPeer: InputPeer, randomId: number, initiator: boolean, participants: PhoneParticipantSDP[], callId?: string, batch?: boolean): Promise<PhoneCall.AsObject> {
+    public callRequest(inputPeer: InputPeer, randomId: number, initiator: boolean, video: boolean, participants: PhoneParticipantSDP[], callId?: string, batch?: boolean): Promise<PhoneCall.AsObject> {
         const data = new PhoneRequestCall();
         data.setPeer(inputPeer);
         data.setRandomid(randomId);
@@ -1403,6 +1403,7 @@ export default class APIManager {
         if (callId) {
             data.setCallid(callId);
         }
+        data.setVideo(video);
         data.setDevicetype(ElectronService.isElectron() ? CallDeviceType.CALLDEVICEDESKTOP : CallDeviceType.CALLDEVICEWEB);
         this.logVerbose(data);
         return this.server.send(C_MSG.PhoneRequestCall, data.serializeBinary(), !batch);

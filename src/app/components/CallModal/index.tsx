@@ -729,7 +729,7 @@ class CallModal extends React.Component<IProps, IState> {
         });
         if (this.peer) {
             const callFn = () => {
-                this.callService.start(this.peer, this.getRecipients(), callId).then((callId) => {
+                this.callService.start(this.peer, this.getRecipients(), this.mediaSettings.video, callId).then((callId) => {
                     this.setState({
                         callId,
                     }, () => {

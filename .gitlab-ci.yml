@@ -11,6 +11,7 @@ build:app:
   stage: build
   only:
     - master
+    - main
     - dev
   script:
     - cp -a ./. /var/lib/app
@@ -31,6 +32,7 @@ deploy:production:
   stage: deploy
   only:
     - master
+    - main
   services:
     - docker:dind
   variables:

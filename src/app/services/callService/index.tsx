@@ -480,7 +480,7 @@ export default class CallService {
         }
     }
 
-    public start(peer: InputPeer, participants: InputUser.AsObject[], callId?: string) {
+    public start(peer: InputPeer, participants: InputUser.AsObject[], video: boolean, callId?: string) {
         this.peer = peer;
 
         return this.apiManager.callInit(peer, callId).then((res) => {
@@ -489,14 +489,14 @@ export default class CallService {
                 this.activeCallId = callId;
                 return this.apiManager.callJoin(peer, this.activeCallId).then((res) => {
                     this.initParticipants(this.activeCallId, res.participantsList, true);
-                    return this.initConnections(peer, this.activeCallId, false).then(() => {
+                    return this.initConnections(peer, this.activeCallId, false, video).then(() => {
                         return this.activeCallId || '0';
                     });
                 });
             } else {
                 this.activeCallId = undefined;
                 this.initCallParticipants('temp', participants);
-                return this.initConnections(peer, 'temp', true).then(() => {
+                return this.initConnections(peer, 'temp', true, video).then(() => {
                     this.swapTempInfo(this.activeCallId || '0');
                     return this.activeCallId || '0';
                 });
@@ -535,7 +535,7 @@ export default class CallService {
                 do {
                     const request = info.requests.shift();
                     if (request) {
-                        promises.push(this.initConnections(peer, callId, false, request).then(() => {
+                        promises.push(this.initConnections(peer, callId, false, video, request).then(() => {
                             const streamState = this.getStreamState();
                             this.mediaSettingsInit(streamState);
                             const connId = this.getConnId(callId, request.userid);
@@ -818,9 +818,9 @@ export default class CallService {
         });
     }
 
-    private callUser(peer: InputPeer, initiator: boolean, phoneParticipants: PhoneParticipantSDP[], callId?: string) {
+    private callUser(peer: InputPeer, initiator: boolean, video: boolean, phoneParticipants: PhoneParticipantSDP[], callId?: string) {
         const randomId = UniqueId.getRandomId();
-        return this.apiManager.callRequest(peer, randomId, initiator, phoneParticipants, callId).then((res) => {
+        return this.apiManager.callRequest(peer, randomId, initiator, video, phoneParticipants, callId).then((res) => {
             if (!callId) {
                 this.activeCallId = res.id || '0';
             }
@@ -828,9 +828,9 @@ export default class CallService {
         });
     }
 
-    private callUserSingle(peer: InputPeer, phoneParticipant: PhoneParticipantSDP, callId: string) {
+    private callUserSingle(peer: InputPeer, video: boolean, phoneParticipant: PhoneParticipantSDP, callId: string) {
         const randomId = UniqueId.getRandomId();
-        return this.apiManager.callRequest(peer, randomId, false, [phoneParticipant], callId, true);
+        return this.apiManager.callRequest(peer, randomId, false, video, [phoneParticipant], callId, true);
     }
 
     private phoneCallEndedHandler = (data: UpdatePhoneCallEnded.AsObject) => {
@@ -1192,7 +1192,7 @@ export default class CallService {
         return participant.initiator || false;
     }
 
-    private initConnections(peer: InputPeer, callId: string, initiator: boolean, request?: IUpdatePhoneCall): Promise<any> {
+    private initConnections(peer: InputPeer, callId: string, initiator: boolean, video: boolean, request?: IUpdatePhoneCall): Promise<any> {
         const currentUserConnId = this.getConnId(callId, currentUserId) || 0;
         const callInfo = this.getCallInfo(callId);
         if (!callInfo) {
@@ -1262,7 +1262,7 @@ export default class CallService {
                         this.peerConnections[connId].connectingInterval = setInterval(() => {
                             if (this.activeCallId && this.peerConnections.hasOwnProperty(connId)) {
                                 this.peerConnections[connId].try++;
-                                this.callUserSingle(peer, participant, this.activeCallId).finally(() => {
+                                this.callUserSingle(peer, video, participant, this.activeCallId).finally(() => {
                                     if (this.peerConnections.hasOwnProperty(connId) && this.peerConnections[connId].try >= C_RETRY_LIMIT) {
                                         clearInterval(this.peerConnections[connId].connectingInterval);
                                         if (initiator) {
@@ -1275,7 +1275,7 @@ export default class CallService {
                     }
                 });
                 window.console.log('[webrtc] call from:', currentUserId, ' to:', phoneParticipants.map(o => o.getPeer().getUserid()).join(", "));
-                return this.callUser(peer, initiator, phoneParticipants, this.activeCallId);
+                return this.callUser(peer, initiator, video, phoneParticipants, this.activeCallId);
             }));
         }
         if (acceptPromises.length > 0) {

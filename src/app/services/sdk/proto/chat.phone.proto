@@ -22,6 +22,7 @@ message PhoneRequestCall {
     repeated PhoneParticipantSDP Participants = 4;
     int64 CallID = 5 [jstype = JS_STRING];
     CallDeviceType DeviceType = 6;
+    bool Video = 7;
 }
 
 // PhoneAcceptCall
@@ -288,6 +289,7 @@ message PhoneActionRequested {
     string Type = 2;
     repeated PhoneParticipant Participants = 3;
     CallDeviceType DeviceType = 4;
+    bool Video = 5;
 }
 
 // PhoneActionCallWaiting
