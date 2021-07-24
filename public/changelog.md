@@ -1,3 +1,6 @@
+## 1.2.12
+* Electron updated
+
 ## 1.2.11
 * Video call improvements
 
