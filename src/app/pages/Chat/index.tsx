@@ -12,7 +12,7 @@ import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
 import MessageRepo, {getMediaDocument, modifyReactions} from '../../repository/message/index';
-import DialogRepo, {GetPeerName, GetPeerNameByPeer} from '../../repository/dialog/index';
+import DialogRepo, {GetPeerName, GetPeerNameByPeer, SortFn} from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import ChatInput, {
     C_TYPING_INTERVAL,
@@ -56,7 +56,7 @@ import GroupName from '../../components/GroupName';
 import {isMuted} from '../../components/UserInfoMenu';
 import UserDialog from '../../components/UserDialog';
 import {IInputPeer} from '../../components/SearchList';
-import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
+import ElectronService, {C_ELECTRON_REQUEST_TYPE} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo, {GetDbFileName, getFileLocation} from '../../repository/file';
@@ -554,11 +554,11 @@ class Chat extends React.Component<IProps, IState> {
         // TODO: add timestamp to pending message
 
         // Electron events
-        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Setting, this.electronSettingsHandler));
-        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.About, this.electronAboutHandler));
-        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Logout, this.electronLogoutHandler));
-        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.SizeMode, this.electronSizeModeHandler));
-        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Notification, this.electronNotificationHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_REQUEST_TYPE.Setting, this.electronSettingsHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_REQUEST_TYPE.About, this.electronAboutHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_REQUEST_TYPE.Logout, this.electronLogoutHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_REQUEST_TYPE.SizeMode, this.electronSizeModeHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_REQUEST_TYPE.Notification, this.electronNotificationHandler));
 
         // Deep link events
         this.eventReferences.push(this.deepLinkService.listen(C_DEEP_LINK_EVENT.OpenChat, this.deepLinkOpenChatHandler));
@@ -1047,9 +1047,9 @@ class Chat extends React.Component<IProps, IState> {
                             const peer = this.getPeerByName(selectedPeerName);
                             this.isBot = peer.user ? (peer.user.isbot || false) : false;
                             this.setChatParams(this.teamId, selectedPeerName, peer.peer);
-                            requestAnimationFrame(() => {
+                            setTimeout(() => {
                                 this.getMessagesByPeerName(selectedPeerName, true, selectedMessageId);
-                            });
+                            }, 1);
                         }
                     });
                 }
@@ -2529,36 +2529,7 @@ class Chat extends React.Component<IProps, IState> {
         const td = clone(dialogs);
         if (noSort !== true) {
             if (td.length > 1) {
-                td.sort((i1, i2) => {
-                    const p1 = i1.pinned ? 1 : 0;
-                    const p2 = i2.pinned ? 1 : 0;
-                    if (p1 < p2) {
-                        return 1;
-                    }
-                    if (p1 > p2) {
-                        return -1;
-                    }
-                    const c1 = i1.activecallid && i1.activecallid !== '0' ? 1 : 0;
-                    const c2 = i2.activecallid && i2.activecallid !== '0' ? 1 : 0;
-                    if (c1 < c2) {
-                        return 1;
-                    }
-                    if (c1 > c2) {
-                        return -1;
-                    }
-                    const d1 = i1.draft && i1.draft.body ? 1 : 0;
-                    const d2 = i2.draft && i2.draft.body ? 1 : 0;
-                    if (d1 < d2) {
-                        return 1;
-                    }
-                    if (d1 > d2) {
-                        return -1;
-                    }
-                    if (!i1.topmessageid || !i2.topmessageid) {
-                        return 0;
-                    }
-                    return (i2.topmessageid || 0) - (i1.topmessageid || 0);
-                });
+                td.sort(SortFn);
             }
 
             const tDialogMap: any = {};
@@ -2743,13 +2714,13 @@ class Chat extends React.Component<IProps, IState> {
                         isUpdating: false,
                     });
                     this.updateManager.flushLastUpdateId();
-                    requestAnimationFrame(() => {
+                    setTimeout(() => {
                         if (res.dialogs.length > 0) {
                             this.startSyncing();
                         }
                         this.addSnapshotRecord(this.teamId);
                         resolve(null);
-                    });
+                    }, 1);
                 }).catch((err) => {
                     window.console.log('snapshot', err);
                     this.updateManager.enableLiveUpdate();
@@ -3132,6 +3103,9 @@ class Chat extends React.Component<IProps, IState> {
                 const text = message.reacted ? i18n.tf('notification.reaction_title', `${data.sender.firstname} ${data.sender.lastname}`) : `${data.sender.firstname} ${data.sender.lastname}`;
                 this.notify(text, messageTitle.text, GetPeerName(message.peerid, message.peertype));
             }
+        }
+        if (this.electronService) {
+            this.electronService.bounce();
         }
     }
 

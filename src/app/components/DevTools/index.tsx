@@ -39,7 +39,7 @@ export const getWsServerUrl = () => {
         if (serverMode === 'prod') {
             return 'edge.river.im';
         } else if (serverMode === 'dev') {
-            return 'river-rony.ronaksoftware.com';
+            return 'river.ronaksoftware.com';
         } else if (serverMode === 'other') {
             return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im';
         }
@@ -56,7 +56,7 @@ export const getFileServerUrl = () => {
         if (serverMode === 'prod') {
             return 'edge.river.im';
         } else if (serverMode === 'dev') {
-            return 'river-rony.ronaksoftware.com';
+            return 'river.ronaksoftware.com';
         } else if (serverMode === 'other') {
             return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im';
         }

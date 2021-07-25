@@ -10,7 +10,7 @@
 import {IpcRenderer} from 'electron';
 import DeepLinkService from "../deepLinkService";
 
-export const C_ELECTRON_SUBJECT = {
+export const C_ELECTRON_REQUEST_TYPE = {
     About: 'about',
     FnCall: 'fnCall',
     FnCallback: 'fnCallback',
@@ -22,6 +22,7 @@ export const C_ELECTRON_SUBJECT = {
 
 export const C_ELECTRON_CMD = {
     AskForMediaAccess: 'askForMediaAccess',
+    Bounce: 'bounce',
     Download: 'download',
     Error: 'error',
     Focus: 'focus',
@@ -119,19 +120,19 @@ export default class ElectronService {
 
         if (this.ipcRenderer) {
             this.ipcRenderer.on('settings', (event: any, msg: any) => {
-                this.callHandlers(C_ELECTRON_SUBJECT.Setting, msg);
+                this.callHandlers(C_ELECTRON_REQUEST_TYPE.Setting, msg);
             });
             this.ipcRenderer.on('about', (event: any, msg: any) => {
-                this.callHandlers(C_ELECTRON_SUBJECT.About, msg);
+                this.callHandlers(C_ELECTRON_REQUEST_TYPE.About, msg);
             });
             this.ipcRenderer.on('logout', (event: any, msg: any) => {
-                this.callHandlers(C_ELECTRON_SUBJECT.Logout, msg);
+                this.callHandlers(C_ELECTRON_REQUEST_TYPE.Logout, msg);
             });
             this.ipcRenderer.on('sizeMode', (event: any, msg: any) => {
-                this.callHandlers(C_ELECTRON_SUBJECT.SizeMode, msg);
+                this.callHandlers(C_ELECTRON_REQUEST_TYPE.SizeMode, msg);
             });
             this.ipcRenderer.on('notificationClick', (event: any, msg: any) => {
-                this.callHandlers(C_ELECTRON_SUBJECT.Notification, msg);
+                this.callHandlers(C_ELECTRON_REQUEST_TYPE.Notification, msg);
             });
             this.ipcRenderer.on('fnCallback', (event: any, data: any) => {
                 this.response(data);
@@ -232,6 +233,11 @@ export default class ElectronService {
     /* Focus */
     public focus() {
         return this.send(C_ELECTRON_CMD.Focus, {});
+    }
+
+    /* Bounce */
+    public bounce(type?: 'informational' | 'critical') {
+        return this.send(C_ELECTRON_CMD.Bounce, {type});
     }
 
     /* Init FCM */

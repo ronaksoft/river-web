@@ -214,9 +214,9 @@ const createWindow = (forceShow) => {
             contextIsolation: false,
             preload: path.join(__dirname, '/preload.js'),
             webSecurity: false,
-            backgroundThrottling: true,
-            v8CacheOptions: 'bypassHeatCheck',
+            backgroundThrottling: false,
             sandbox: true,
+            nativeWindowOpen: true,
         },
         height: 860,
         width: 1280,
@@ -638,7 +638,20 @@ ipcMain.on('fnCall', (e, arg) => {
             break;
         case 'focus':
             if (mainWindow) {
+                mainWindow.show();
                 mainWindow.focus();
+            }
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: true,
+                },
+            });
+            break;
+        case 'bounce':
+            if (mainWindow) {
+                app.dock.bounce(arg.data?.type || 'informational');
             }
             callReact('fnCallback', {
                 cmd: 'bool',

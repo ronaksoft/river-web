@@ -8,7 +8,7 @@
 */
 
 import {IDialogWithContact} from './interface';
-import DialogRepo from '../dialog';
+import DialogRepo, {SortFn} from '../dialog';
 import UserRepo from '../user';
 import GroupRepo from '../group';
 import {IUser} from '../user/interface';
@@ -94,36 +94,7 @@ export default class SearchRepo {
                         contacts: (arrRes[0] || []).filter((user: IUser) => {
                             return user.is_contact === 1;
                         }),
-                        dialogs: res.sort((i1, i2) => {
-                            const p1 = i1.pinned ? 1 : 0;
-                            const p2 = i2.pinned ? 1 : 0;
-                            if (p1 < p2) {
-                                return 1;
-                            }
-                            if (p1 > p2) {
-                                return -1;
-                            }
-                            const c1 = i1.activecallid && i1.activecallid !== '0' ? 1 : 0;
-                            const c2 = i2.activecallid && i2.activecallid !== '0' ? 1 : 0;
-                            if (c1 < c2) {
-                                return 1;
-                            }
-                            if (c1 > c2) {
-                                return -1;
-                            }
-                            const d1 = i1.draft && i1.draft.body ? 1 : 0;
-                            const d2 = i2.draft && i2.draft.body ? 1 : 0;
-                            if (d1 < d2) {
-                                return 1;
-                            }
-                            if (d1 > d2) {
-                                return -1;
-                            }
-                            if (!i1.topmessageid || !i2.topmessageid) {
-                                return 0;
-                            }
-                            return (i2.topmessageid || 0) - (i1.topmessageid || 0);
-                        }).slice(0, 16),
+                        dialogs: res.sort(SortFn).slice(0, 16),
                     });
                 });
             }).catch(reject);

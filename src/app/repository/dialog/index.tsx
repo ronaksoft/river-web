@@ -29,6 +29,37 @@ const getDialogKey = (teamId: string | undefined, peerId: string | undefined, pe
     return `${teamId || '0'}_${peerId || '0'}_${peerType || 0}`;
 };
 
+export function SortFn(i1: IDialog, i2: IDialog) {
+    const p1 = i1.pinned ? 1 : 0;
+    const p2 = i2.pinned ? 1 : 0;
+    if (p1 < p2) {
+        return 1;
+    }
+    if (p1 > p2) {
+        return -1;
+    }
+    const c1 = i1.activecallid && i1.activecallid !== '0' ? 1 : 0;
+    const c2 = i2.activecallid && i2.activecallid !== '0' ? 1 : 0;
+    if (c1 < c2) {
+        return 1;
+    }
+    if (c1 > c2) {
+        return -1;
+    }
+    const d1 = i1.draft && i1.draft.body ? 1 : 0;
+    const d2 = i2.draft && i2.draft.body ? 1 : 0;
+    if (d1 < d2) {
+        return 1;
+    }
+    if (d1 > d2) {
+        return -1;
+    }
+    if (!i1.topmessageid || !i2.topmessageid) {
+        return 0;
+    }
+    return (i2.topmessageid || 0) - (i1.topmessageid || 0);
+}
+
 export default class DialogRepo {
     public static getInstance() {
         if (!this.instance) {

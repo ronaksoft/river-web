@@ -424,9 +424,9 @@ export default class FileManager {
                 if (this.onWireUploads.indexOf(id) === -1) {
                     this.onWireUploads.push(id);
                 }
-                requestAnimationFrame(() => {
+                setTimeout(() => {
                     this.startUploading(id);
-                });
+                }, 1);
             }
             this.startUploadQueue();
         }
@@ -440,9 +440,9 @@ export default class FileManager {
                 if (this.onWireDownloads.indexOf(id) === -1) {
                     this.onWireDownloads.push(id);
                 }
-                requestAnimationFrame(() => {
+                setTimeout(() => {
                     this.startDownloading(id);
-                });
+                }, 1);
             }
             this.startDownloadQueue();
         }
@@ -455,9 +455,9 @@ export default class FileManager {
                 if (this.onWireInstantDownloads.indexOf(id) === -1) {
                     this.onWireInstantDownloads.push(id);
                 }
-                requestAnimationFrame(() => {
+                setTimeout(() => {
                     this.startDownloading(id);
-                });
+                }, 1);
             }
             this.startInstanceDownloadQueue();
         }

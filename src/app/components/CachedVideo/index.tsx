@@ -76,9 +76,9 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
         }).catch(() => {
             if (this.retries < 10) {
                 this.retries++;
-                requestAnimationFrame(() => {
+                setTimeout(() => {
                     this.getFile();
-                });
+                }, 1);
             }
         });
     }

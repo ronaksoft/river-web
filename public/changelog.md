@@ -1,3 +1,8 @@
+## 1.2.13
+* Dock icon bounce added
+* Electron improvements
+* Overall improvements
+
 ## 1.2.12
 * Electron updated
 
