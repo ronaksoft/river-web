@@ -1,3 +1,6 @@
+* 1.2.14
+* Last seen bug fixed
+
 ## 1.2.13
 * Dock icon bounce added
 * Electron improvements

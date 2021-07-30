@@ -304,6 +304,9 @@ export default class UserRepo {
                 } else if (user.lastseen) {
                     user.status_last_modified = user.lastseen;
                 }
+                if (user.lastseen > user.status_last_modified) {
+                    user.status_last_modified = user.lastseen;
+                }
                 if (user.remove_photo) {
                     delete user.remove_photo;
                 }
