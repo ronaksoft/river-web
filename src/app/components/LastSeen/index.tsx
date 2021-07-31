@@ -118,7 +118,10 @@ class LastSeen extends React.PureComponent<IProps, IState> {
             return i18n.tf('status.members', String(localize(group.participants || 0)));
         } else {
             const {user} = this.state;
-            const lastSeen = user.status_last_modified || user.lastseen || 0;
+            let lastSeen = user.status_last_modified || user.lastseen || 0;
+            if (user.lastseen > user.status_last_modified) {
+                lastSeen = user.lastseen;
+            }
             if (user.deleted) {
                 return <span className="force-upper-case">{i18n.t('status.rip')}</span>;
             } else if (this.state.you || (this.riverTime.now() - lastSeen < 60 && user.status === UserStatus.USERSTATUSONLINE)) {
