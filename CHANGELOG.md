@@ -1,7 +1,7 @@
-* 1.2.15
+## 1.2.15
 * Overall improvements
 
-* 1.2.14
+## 1.2.14
 * Last seen bug fixed
 
 ## 1.2.13
