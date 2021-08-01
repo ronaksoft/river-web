@@ -1246,8 +1246,8 @@ export namespace MessageEntity {
 }
 
 export class RSAPublicKey extends jspb.Message {
-  getFingerprint(): number;
-  setFingerprint(value: number): void;
+  getFingerprint(): string;
+  setFingerprint(value: string): void;
 
   getN(): string;
   setN(value: string): void;
@@ -1267,7 +1267,7 @@ export class RSAPublicKey extends jspb.Message {
 
 export namespace RSAPublicKey {
   export type AsObject = {
-    fingerprint: number,
+    fingerprint: string,
     n: string,
     e: number,
   }

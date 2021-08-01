@@ -17,16 +17,19 @@ import MainRepo from "../../../repository";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../index";
 import {EventWebSocketClose, EventSocketReady, EventSocketConnected, EventAuthError} from "../../events";
-import {SystemConfig, SystemGetServerTime, SystemServerTime} from "../messages/system_pb";
-import {DHGroup, InputPassword, InputTeam} from "../messages/core.types_pb";
+import {
+    SystemConfig,
+    SystemGetServerTime,
+    SystemServerTime
+} from "../messages/system_pb";
+import {InputPassword, InputTeam} from "../messages/core.types_pb";
 import {Error as RiverError, KeyValue, MessageContainer, MessageEnvelope} from "../messages/rony_pb";
-import {getServerKeys} from "../../../components/DevTools";
 import CommandRepo from "../../../repository/command";
 import RiverTime from "../../utilities/river_time";
 import DialogRepo from "../../../repository/dialog";
 import {C_MESSAGE_ACTION} from "../../../repository/message/consts";
 import {currentUserId} from "../index";
-import {PublicKey, RiverConnection, ServerKeys} from "../messages/conn_pb";
+import {RiverConnection} from "../messages/conn_pb";
 import {ModalityService} from "kk-modality";
 import i18n from "../../i18n";
 import {IConnInfo} from "../interface";
@@ -68,33 +71,6 @@ interface IMessageListener {
     resolve: any;
     state: number;
 }
-
-const convertJsonServerKeyToProto = (str: string) => {
-    try {
-        const data: any = JSON.parse(str);
-        const serverKeys = new ServerKeys();
-        data.DHGroups.forEach((item: any) => {
-            const dhGroup = new DHGroup();
-            dhGroup.setFingerprint(item.FingerPrint);
-            dhGroup.setGen(item.Gen);
-            dhGroup.setPrime(item.Prime);
-            serverKeys.addDhgroups(dhGroup);
-        });
-        data.PublicKeys.forEach((item: any) => {
-            const publicKey = new PublicKey();
-            publicKey.setN(item.N);
-            publicKey.setFingerprint(item.FingerPrint);
-            publicKey.setE(item.E);
-            serverKeys.addPublickeys(publicKey);
-        });
-        return uint8ToBase64(serverKeys.serializeBinary());
-    } catch (e) {
-        window.console.log(e);
-    }
-    return '';
-};
-
-export const serverKeys = convertJsonServerKeyToProto(getServerKeys());
 
 export default class Server {
     public static getInstance() {

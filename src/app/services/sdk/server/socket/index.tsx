@@ -9,7 +9,7 @@
 
 /* eslint import/no-webpack-loader-syntax: off */
 import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
-import {IServerRequest, serverKeys} from '../index';
+import {IServerRequest} from '../index';
 import ElectronService from '../../../electron';
 import {
     EventNetworkStatus,
@@ -18,12 +18,12 @@ import {
     EventSocketReady, EventSocketConnected, EventAuthProgress, EventOnline, EventOffline, EventChange
 } from "../../../events";
 import {C_LOCALSTORAGE, C_MSG} from "../../const";
-import {getWsServerUrl} from "../../../../components/DevTools";
 import {RiverConnection} from "../../messages/conn_pb";
 import {isMobile} from "../../../utilities/localize";
 import RiverTime from "../../../utilities/river_time";
 //@ts-ignore
 import RiverWorker from 'worker-loader?filename=newriver.js!../../worker';
+import SystemManager, {getWsServerUrl} from "../../../systemManager";
 
 export const defaultGateway = 'edge.river.im';
 
@@ -141,9 +141,12 @@ export default class Socket {
     private resolveGenInputPasswordFn: any | undefined;
     private resolveAuthStepFn: any | undefined;
     private checkPingFn: any | undefined;
+    private systemManager: SystemManager;
 
     public constructor() {
         this.worker = new RiverWorker();
+
+        this.systemManager = SystemManager.getInstance();
 
         setTimeout(() => {
             this.workerMessage(C_WASM_MSG.Init, {tiny: isMobile()});
@@ -468,14 +471,16 @@ export default class Socket {
     }
 
     private wasmLoaded() {
-        this.workerMessage(C_WASM_MSG.Load, {
-            connInfo: convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
-            serverKeys
+        this.systemManager.getServerKey().then((serverKeys) => {
+            this.workerMessage(C_WASM_MSG.Load, {
+                connInfo: convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
+                serverKeys
+            });
+            this.initWebSocket();
+            setTimeout(() => {
+                this.dispatchEvent(EventWasmInit, null);
+            }, 50);
         });
-        this.initWebSocket();
-        setTimeout(() => {
-            this.dispatchEvent(EventWasmInit, null);
-        }, 50);
     }
 
     private encode(data: any) {

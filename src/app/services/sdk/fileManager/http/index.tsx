@@ -14,15 +14,14 @@ import {base64ToU8a, uint8ToBase64} from './utils';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
 import {C_ERR, C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../../const';
 import ElectronService from '../../../electron';
-import {serverKeys} from "../../server";
 import Socket, {C_JS_MSG, C_WASM_MSG, convertConnInfoJsonToProto, ISendPayload, serverTime} from '../../server/socket';
 import {EventSocketReady} from "../../../events";
 import {InputTeam} from "../../messages/core.types_pb";
-import {getFileServerUrl} from "../../../../components/DevTools";
 import {Error as RiverError} from "../../messages/rony_pb";
 //@ts-ignore
 import RiverWorker from 'worker-loader?filename=newriver.js!../../worker';
 import {isMobile} from "../../../utilities/localize";
+import SystemManager, {getFileServerUrl} from "../../../systemManager";
 
 export interface IHttpRequest {
     constructor: number;
@@ -62,6 +61,7 @@ export default class Http {
     private socket: Socket | undefined;
     private executionTimes: number[] = [];
     private inputTeam: InputTeam.AsObject | undefined;
+    private systemManager: SystemManager;
 
     public constructor(shareWorker: boolean, id: number) {
         const fileUrl = getFileServerUrl();
@@ -78,6 +78,8 @@ export default class Http {
         } else if (window.location.protocol === 'http:') {
             this.dataCenterUrl = 'http://' + fileUrl;
         }
+
+        this.systemManager = SystemManager.getInstance();
 
         const fn = () => {
             if (shareWorker) {
@@ -186,13 +188,15 @@ export default class Http {
             const d = e.data;
             switch (d.cmd) {
                 case C_JS_MSG.WASMLoaded:
-                    this.workerMessage(C_WASM_MSG.Load, {
-                        connInfo: convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
-                        serverKeys
+                    this.systemManager.getServerKey().then((serverKeys) => {
+                        this.workerMessage(C_WASM_MSG.Load, {
+                            connInfo: convertConnInfoJsonToProto(localStorage.getItem(C_LOCALSTORAGE.ConnInfo)),
+                            serverKeys,
+                        });
+                        if (serverTime) {
+                            this.workerMessage(C_WASM_MSG.SetServerTime, serverTime);
+                        }
                     });
-                    if (serverTime) {
-                        this.workerMessage(C_WASM_MSG.SetServerTime, serverTime);
-                    }
                     break;
                 case C_JS_MSG.Ready:
                     if (this.readyHandler) {
@@ -262,7 +266,11 @@ export default class Http {
         }).then((bytes) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 const data = new Uint8Array(bytes);
-                this.workerMessage(C_WASM_MSG.Decode, {data: uint8ToBase64(new Uint8Array(data)), reqId, withParse: false});
+                this.workerMessage(C_WASM_MSG.Decode, {
+                    data: uint8ToBase64(new Uint8Array(data)),
+                    reqId,
+                    withParse: false
+                });
             }
         }).catch((err) => {
             this.setTimeout(Date.now() - time);

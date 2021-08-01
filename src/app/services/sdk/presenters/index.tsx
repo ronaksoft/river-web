@@ -37,7 +37,7 @@ import {
 } from '../messages/updates_pb';
 import {File} from '../messages/files_pb';
 import {AccountAuthorizations, AccountPassword, AccountPrivacyRules} from '../messages/accounts_pb';
-import {SystemConfig, SystemInfo, SystemSalts, SystemServerTime} from '../messages/system_pb';
+import {SystemConfig, SystemInfo, SystemKeys, SystemSalts, SystemServerTime} from '../messages/system_pb';
 import {UsersMany} from '../messages/users_pb';
 import {LabelItems, LabelsListItems} from "../messages/chat.labels_pb";
 import {BotCallbackAnswer, BotResults} from "../messages/chat.bot_pb";
@@ -135,6 +135,8 @@ export default class Presenter {
                 return ContactsTopPeers.deserializeBinary(data);
             case C_MSG.SystemConfig:
                 return SystemConfig.deserializeBinary(data);
+            case C_MSG.SystemKeys:
+                return SystemKeys.deserializeBinary(data);
             case C_MSG.SavedGifs:
                 return SavedGifs.deserializeBinary(data);
             case C_MSG.FoundGifs:

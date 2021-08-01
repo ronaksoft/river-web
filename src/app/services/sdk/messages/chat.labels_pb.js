@@ -3,14 +3,11 @@
 /**
  * @fileoverview
  * @enhanceable
- * @suppress {missingRequire} reports error on implicit type usages.
  * @suppress {messageConventions} JS Compiler reports an error if a variable or
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
-/* eslint-disable */
-// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -651,10 +648,8 @@ proto.msg.LabelsDelete.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt32() : [reader.readInt32()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addLabelids(values[i]);
-      }
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt32());
+      msg.setLabelidsList(value);
       break;
     default:
       reader.skipField();
@@ -917,16 +912,12 @@ proto.msg.LabelsAddToMessage.deserializeBinaryFromReader = function(msg, reader)
       msg.setPeer(value);
       break;
     case 3:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt32() : [reader.readInt32()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addLabelids(values[i]);
-      }
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt32());
+      msg.setLabelidsList(value);
       break;
     case 4:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt64() : [reader.readInt64()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addMessageids(values[i]);
-      }
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt64());
+      msg.setMessageidsList(value);
       break;
     default:
       reader.skipField();
@@ -1177,16 +1168,12 @@ proto.msg.LabelsRemoveFromMessage.deserializeBinaryFromReader = function(msg, re
       msg.setPeer(value);
       break;
     case 3:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt32() : [reader.readInt32()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addLabelids(values[i]);
-      }
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt32());
+      msg.setLabelidsList(value);
       break;
     case 4:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt64() : [reader.readInt64()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addMessageids(values[i]);
-      }
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt64());
+      msg.setMessageidsList(value);
       break;
     default:
       reader.skipField();

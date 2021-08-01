@@ -3,14 +3,11 @@
 /**
  * @fileoverview
  * @enhanceable
- * @suppress {missingRequire} reports error on implicit type usages.
  * @suppress {messageConventions} JS Compiler reports an error if a variable or
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
-/* eslint-disable */
-// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -2467,10 +2464,8 @@ proto.msg.Ack.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addMessageids(values[i]);
-      }
+      var value = /** @type {!Array<number>} */ (reader.readPackedUint64());
+      msg.setMessageidsList(value);
       break;
     default:
       reader.skipField();
@@ -7176,10 +7171,8 @@ proto.msg.Group.deserializeBinaryFromReader = function(msg, reader) {
       msg.setEditedon(value);
       break;
     case 6:
-      var values = /** @type {!Array<!proto.msg.GroupFlags>} */ (reader.isDelimited() ? reader.readPackedEnum() : [reader.readEnum()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addFlags(values[i]);
-      }
+      var value = /** @type {!Array<!proto.msg.GroupFlags>} */ (reader.readPackedEnum());
+      msg.setFlagsList(value);
       break;
     case 7:
       var value = new proto.msg.GroupPhoto;
@@ -8360,10 +8353,8 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setReplymarkupdata(value);
       break;
     case 23:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt32() : [reader.readInt32()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addLabelids(values[i]);
-      }
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt32());
+      msg.setLabelidsList(value);
       break;
     case 24:
       var value = /** @type {string} */ (reader.readInt64String());
@@ -10073,7 +10064,7 @@ proto.msg.RSAPublicKey.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.RSAPublicKey.toObject = function(includeInstance, msg) {
   var f, obj = {
-    fingerprint: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    fingerprint: jspb.Message.getFieldWithDefault(msg, 1, "0"),
     n: jspb.Message.getFieldWithDefault(msg, 2, ""),
     e: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
@@ -10113,7 +10104,7 @@ proto.msg.RSAPublicKey.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setFingerprint(value);
       break;
     case 2:
@@ -10154,8 +10145,8 @@ proto.msg.RSAPublicKey.prototype.serializeBinary = function() {
 proto.msg.RSAPublicKey.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getFingerprint();
-  if (f !== 0) {
-    writer.writeInt64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeInt64String(
       1,
       f
     );
@@ -10179,19 +10170,19 @@ proto.msg.RSAPublicKey.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * optional int64 FingerPrint = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.RSAPublicKey.prototype.getFingerprint = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.RSAPublicKey} returns this
  */
 proto.msg.RSAPublicKey.prototype.setFingerprint = function(value) {
-  return jspb.Message.setProto3IntField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
@@ -11323,10 +11314,8 @@ proto.msg.PrivacyRule.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPrivacytype(value);
       break;
     case 2:
-      var values = /** @type {!Array<string>} */ (reader.isDelimited() ? reader.readPackedInt64String() : [reader.readInt64String()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addUserids(values[i]);
-      }
+      var value = /** @type {!Array<string>} */ (reader.readPackedInt64String());
+      msg.setUseridsList(value);
       break;
     default:
       reader.skipField();
@@ -12621,10 +12610,8 @@ proto.msg.Team.deserializeBinaryFromReader = function(msg, reader) {
       msg.setAccesshash(value);
       break;
     case 7:
-      var values = /** @type {!Array<!proto.msg.TeamFlags>} */ (reader.isDelimited() ? reader.readPackedEnum() : [reader.readEnum()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addFlags(values[i]);
-      }
+      var value = /** @type {!Array<!proto.msg.TeamFlags>} */ (reader.readPackedEnum());
+      msg.setFlagsList(value);
       break;
     case 8:
       var value = /** @type {number} */ (reader.readInt32());

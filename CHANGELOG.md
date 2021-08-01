@@ -1,3 +1,6 @@
+## 1.2.16
+* Overall improvements
+
 ## 1.2.15
 * Overall improvements
 

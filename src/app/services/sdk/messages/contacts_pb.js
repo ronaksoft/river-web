@@ -3,14 +3,11 @@
 /**
  * @fileoverview
  * @enhanceable
- * @suppress {missingRequire} reports error on implicit type usages.
  * @suppress {messageConventions} JS Compiler reports an error if a variable or
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
-/* eslint-disable */
-// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
@@ -1031,10 +1028,8 @@ proto.msg.ContactsDelete.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var values = /** @type {!Array<string>} */ (reader.isDelimited() ? reader.readPackedInt64String() : [reader.readInt64String()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addUserids(values[i]);
-      }
+      var value = /** @type {!Array<string>} */ (reader.readPackedInt64String());
+      msg.setUseridsList(value);
       break;
     default:
       reader.skipField();
