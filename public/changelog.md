@@ -1,3 +1,6 @@
+## 1.2.17
+* Sign Up page updated
+
 ## 1.2.16
 * Overall improvements
 

@@ -11,12 +11,18 @@ import React from 'react';
 import APIManager, {currentAuthId, currentUserId} from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
-import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import {languageList} from '../../components/SettingsMenu';
-import TextField from '@material-ui/core/TextField';
-import {TimerRounded, ArrowForwardRounded, CropFreeRounded, LanguageRounded} from '@material-ui/icons';
+import {
+    TimerRounded,
+    ArrowForwardRounded,
+    CropFreeRounded,
+    LanguageRounded,
+    CloseRounded,
+    DoneRounded,
+    RefreshRounded
+} from '@material-ui/icons';
 import {SystemInfo} from '../../services/sdk/messages/system_pb';
 import WorkspaceManger from '../../services/workspaceManager';
 import SettingsModal from '../../components/SettingsModal';
@@ -24,9 +30,7 @@ import jsQR from 'jsqr';
 import {defaultGateway} from '../../services/sdk/server/socket';
 import UserRepo from '../../repository/user';
 import i18n from '../../services/i18n';
-import Tooltip from "@material-ui/core/Tooltip";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
+import {Tooltip, Button, IconButton, TextField} from "@material-ui/core";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {find} from 'lodash';
 import FileManager from "../../services/sdk/fileManager";
@@ -43,10 +47,10 @@ import {C_CLIENT, C_VERSION} from "../../../index";
 import SessionDialog from "../../components/SessionDialog";
 import MainRepo from "../../repository";
 import NotificationService from "../../services/notification";
+import UpdateManager from "../../services/sdk/updateManager";
 
 import './tel-input.css';
 import './style.scss';
-import UpdateManager from "../../services/sdk/updateManager";
 
 export const codeLen = 5;
 export const codePlaceholder = [...new Array(codeLen)].map(o => '_').join('');
@@ -327,33 +331,13 @@ class SignUp extends React.Component<IProps, IState> {
                             </>}
                             <div className="container-login-form-btn">
                                 {step === 'workspace' &&
-                                <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                     onClick={this.submitWorkspaceHandler}>
-                                    <ArrowForwardRounded/>
+                                <div className="login-form-btn cancel" onClick={this.cancelHandler}>
+                                    <CloseRounded/>
                                 </div>}
-                                {step === 'phone' && <>
-                                    <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                         onClick={this.sendCodeHandler}>
-                                        <ArrowForwardRounded/>
-                                    </div>
-                                </>}
-                                {step === 'code' && <>
-                                    <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                         onClick={this.confirmCodeHandler}>
-                                        <ArrowForwardRounded/>
-                                    </div>
-                                </>}
-                                {step === 'password' && <>
-                                    <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                         onClick={this.submitPasswordHandler}>
-                                        <ArrowForwardRounded/>
-                                    </div>
-                                </>}
-                                {step === 'register' &&
                                 <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                     onClick={this.registerHandler}>
+                                     onClick={this.submitHandler}>
                                     <ArrowForwardRounded/>
-                                </div>}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -823,6 +807,26 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
+    private submitHandler = (e: any) => {
+        switch (this.state.step) {
+            case 'workspace':
+                this.submitWorkspaceHandler();
+                break;
+            case 'phone':
+                this.sendCodeHandler();
+                break;
+            case 'code':
+                this.confirmCodeHandler();
+                break;
+            case 'password':
+                this.submitPasswordHandler();
+                break;
+            case 'register':
+                this.registerHandler();
+                break;
+        }
+    }
+
     private checkLastPhone(currentPhone: string) {
         const lastPhone = localStorage.getItem(C_LOCALSTORAGE.LastPhone);
         if (!lastPhone) {
@@ -1107,6 +1111,12 @@ class SignUp extends React.Component<IProps, IState> {
             return wipe();
         }).catch(() => {
             return wipe();
+        });
+    }
+
+    private cancelHandler = () => {
+        this.setState({
+            step: 'phone',
         });
     }
 }
