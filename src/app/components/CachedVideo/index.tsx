@@ -33,6 +33,8 @@ interface IState {
 class CachedVideo extends React.PureComponent<IProps, IState> {
     private cachedFileService: CachedFileService;
     private retries: number = 0;
+    private errorRetries: number = 0;
+    private mounted: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -49,6 +51,7 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mounted = false;
         this.cachedFileService.unmountCache(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid));
     }
 
@@ -68,12 +71,18 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
     /* Get file from cached storage */
     private getFile() {
         this.cachedFileService.getFile(this.props.fileLocation, this.props.md5 || '', 0, this.props.mimeType || 'video/mp4', this.props.searchTemp).then((src) => {
+            if (!this.mounted) {
+                return;
+            }
             setTimeout(() => {
                 this.setState({
                     src,
                 });
             }, this.props.timeOut || 0);
         }).catch(() => {
+            if (!this.mounted) {
+                return;
+            }
             if (this.retries < 10) {
                 this.retries++;
                 setTimeout(() => {
@@ -86,8 +95,16 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
     /* Video error handler */
     private videoErrorHandler = () => {
         this.cachedFileService.remove(GetDbFileName(this.props.fileLocation.fileid, this.props.fileLocation.clusterid)).then(() => {
+            if (!this.mounted) {
+                return;
+            }
             this.retries = 0;
-            this.getFile();
+            this.errorRetries++;
+            if (this.errorRetries < 5) {
+                setTimeout(() => {
+                    this.getFile();
+                }, 1);
+            }
         });
     }
 }

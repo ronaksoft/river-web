@@ -1,3 +1,6 @@
+## 1.2.18
+* Minor bugs fixed
+
 ## 1.2.17
 * Sign Up page updated
 

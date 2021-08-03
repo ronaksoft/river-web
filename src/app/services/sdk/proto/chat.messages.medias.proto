@@ -35,10 +35,15 @@ enum DocumentAttributeType {
     AttributeTypePhoto = 3;
     AttributeTypeFile = 4;
     AttributeTypeAnimated = 5;
-    AttributeReserved1 = 6;
+    AttributeTypeVoiceCall = 6;
     AttributeReserved2 = 7;
     AttributeReserved3 = 8;
     AttributeReserved4 = 9;
+}
+
+message DocumentAttributeVoiceCall {
+    uint32 MaxCallAttempts = 1;
+    uint32 CallAttemptSleep = 2;    // In Seconds
 }
 
 // DocumentAttributeAudio

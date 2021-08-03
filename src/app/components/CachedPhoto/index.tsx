@@ -37,6 +37,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
     private lastFileName: string;
     private lastBlur: number;
     private retries: number = 0;
+    private errorRetries: number = 0;
     private tryTimeout: any = null;
     private mounted: boolean = true;
     private lastSrc: string = '';
@@ -147,7 +148,12 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
                 return;
             }
             this.retries = 0;
-            this.getFile();
+            this.errorRetries++;
+            if (this.errorRetries < 5) {
+                setTimeout(() => {
+                    this.getFile();
+                }, 1);
+            }
         });
     }
 }

@@ -5,6 +5,30 @@
 import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
 
+export class DocumentAttributeVoiceCall extends jspb.Message {
+  getMaxcallattempts(): number;
+  setMaxcallattempts(value: number): void;
+
+  getCallattemptsleep(): number;
+  setCallattemptsleep(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DocumentAttributeVoiceCall.AsObject;
+  static toObject(includeInstance: boolean, msg: DocumentAttributeVoiceCall): DocumentAttributeVoiceCall.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: DocumentAttributeVoiceCall, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DocumentAttributeVoiceCall;
+  static deserializeBinaryFromReader(message: DocumentAttributeVoiceCall, reader: jspb.BinaryReader): DocumentAttributeVoiceCall;
+}
+
+export namespace DocumentAttributeVoiceCall {
+  export type AsObject = {
+    maxcallattempts: number,
+    callattemptsleep: number,
+  }
+}
+
 export class DocumentAttributeAudio extends jspb.Message {
   getVoice(): boolean;
   setVoice(value: boolean): void;
@@ -810,7 +834,7 @@ export enum DocumentAttributeType {
   ATTRIBUTETYPEPHOTO = 3,
   ATTRIBUTETYPEFILE = 4,
   ATTRIBUTETYPEANIMATED = 5,
-  ATTRIBUTERESERVED1 = 6,
+  ATTRIBUTETYPEVOICECALL = 6,
   ATTRIBUTERESERVED2 = 7,
   ATTRIBUTERESERVED3 = 8,
   ATTRIBUTERESERVED4 = 9,
