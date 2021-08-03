@@ -235,7 +235,6 @@ export default class SystemManager {
     }
 
     private sendRequest(request: IHttpRequest, reqId: number) {
-        console.log(request, reqId);
         const messageEnvelope = new MessageEnvelope();
         messageEnvelope.setConstructor(request.constructor);
         messageEnvelope.setMessage(request.data);
