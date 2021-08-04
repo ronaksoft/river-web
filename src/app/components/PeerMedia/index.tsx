@@ -408,12 +408,17 @@ class PeerMedia extends React.Component<IProps, IState> {
                             <div className="video-icon">
                                 <PlayCircleFilledRounded/>
                             </div>}
-                            {Boolean(item.type === C_MESSAGE_TYPE.Audio || item.type === C_MESSAGE_TYPE.Voice) &&
+                            {Boolean(item.type === C_MESSAGE_TYPE.Audio ||
+                                item.type === C_MESSAGE_TYPE.Voice ||
+                                item.type === C_MESSAGE_TYPE.VoiceMail) &&
                             <div className="video-icon" onClick={this.audioActionClickHandler(item.id)}>
                                 {!item.playing && <PlayArrowRounded/>}
                                 {item.playing && <PauseRounded/>}
                             </div>}
-                            {Boolean(item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Audio || item.type === C_MESSAGE_TYPE.Voice) &&
+                            {Boolean(item.type === C_MESSAGE_TYPE.Video ||
+                                item.type === C_MESSAGE_TYPE.Audio ||
+                                item.type === C_MESSAGE_TYPE.Voice ||
+                                item.type === C_MESSAGE_TYPE.VoiceMail) &&
                             <div className="media-duration-container">{getDuration(item.info.duration || 0)}</div>}
                             {this.getMoreContent(i)}
                         </div>
@@ -495,6 +500,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     private getName(item: IMedia) {
         switch (item.type) {
             case C_MESSAGE_TYPE.Voice:
+            case C_MESSAGE_TYPE.VoiceMail:
                 return i18n.t('media.audio');
             case C_MESSAGE_TYPE.Audio:
                 return item.info.title;
@@ -529,6 +535,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                             <HeadsetTwoTone/>
                         </div>);
                 case C_MESSAGE_TYPE.Voice:
+                case C_MESSAGE_TYPE.VoiceMail:
                     return (
                         <div className="file-icon voice">
                             <KeyboardVoiceTwoTone/>
@@ -841,7 +848,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 id: this.peer.getId(),
                 peerType: this.peer.getType(),
             };
-            this.audioPlayer.addToPlaylist(id, peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice ? undefined : item.info);
+            this.audioPlayer.addToPlaylist(id, peer, GetDbFileName(item.info.file.fileid, item.info.file.clusterid), item.userId, true, item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.VoiceMail ? undefined : item.info);
             this.audioPlayer.play(id);
         } else {
             this.audioPlayer.pause(id);

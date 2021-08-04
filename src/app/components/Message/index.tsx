@@ -189,6 +189,7 @@ export const isEditableMessageType = (type?: number) => {
         case C_MESSAGE_TYPE.Picture:
         case C_MESSAGE_TYPE.Video:
         case C_MESSAGE_TYPE.Voice:
+        case C_MESSAGE_TYPE.VoiceMail:
             return true;
     }
     return false;
@@ -811,6 +812,7 @@ class Message extends React.Component<IProps, IState> {
                 }
                 break;
             case C_MESSAGE_TYPE.Voice:
+            case C_MESSAGE_TYPE.VoiceMail:
                 height = 42;
                 break;
             case C_MESSAGE_TYPE.System:
@@ -867,7 +869,7 @@ class Message extends React.Component<IProps, IState> {
         const menuItems: any[] = [];
         const id = items[moreIndex].id || 0;
         const me = items[moreIndex].me || false;
-        const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio, C_MESSAGE_TYPE.Video, C_MESSAGE_TYPE.Picture];
+        const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.VoiceMail, C_MESSAGE_TYPE.Audio, C_MESSAGE_TYPE.Video, C_MESSAGE_TYPE.Picture];
         const isGroup = this.inputPeer && this.inputPeer.getType() === PeerType.PEERGROUP;
         const isSystemMessage = (items[moreIndex].messageaction || C_MESSAGE_ACTION.MessageActionNope) !== C_MESSAGE_ACTION.MessageActionNope;
         if (id < 0) {
@@ -1472,6 +1474,7 @@ class Message extends React.Component<IProps, IState> {
         if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.mediatype !== undefined) {
             switch (message.messagetype) {
                 case C_MESSAGE_TYPE.Voice:
+                case C_MESSAGE_TYPE.VoiceMail:
                     return (<MessageVoice key={message.id} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction} measureFn={measureFn}
                                           onBodyAction={this.bodyActionHandler}/>);
@@ -1526,6 +1529,7 @@ class Message extends React.Component<IProps, IState> {
                 type = 'file';
                 break;
             case C_MESSAGE_TYPE.Voice:
+            case C_MESSAGE_TYPE.VoiceMail:
                 type = 'voice';
                 break;
             case C_MESSAGE_TYPE.Audio:

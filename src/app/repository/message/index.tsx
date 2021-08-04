@@ -36,7 +36,7 @@ import {
     DocumentAttributeFile,
     DocumentAttributePhoto,
     DocumentAttributeType,
-    DocumentAttributeVideo,
+    DocumentAttributeVideo, DocumentAttributeVoiceCall,
     MediaContact,
     MediaDocument,
     MediaGeoLocation, MediaWebDocument,
@@ -169,7 +169,9 @@ export default class MessageRepo {
                     const audioAttr = DocumentAttributeAudio.deserializeBinary(attr.data).toObject();
                     attrOut.push(audioAttr);
                     if (audioAttr.voice) {
-                        flags.type = C_MESSAGE_TYPE.Voice;
+                        if (flags.type !== C_MESSAGE_TYPE.VoiceMail) {
+                            flags.type = C_MESSAGE_TYPE.Voice;
+                        }
                     } else {
                         flags.type = C_MESSAGE_TYPE.Audio;
                     }
@@ -197,6 +199,11 @@ export default class MessageRepo {
                     // @ts-ignore
                     attrOut.push(DocumentAttributeAnimated.deserializeBinary(attr.data).toObject());
                     flags.type = C_MESSAGE_TYPE.Gif;
+                    break;
+                case DocumentAttributeType.ATTRIBUTETYPEVOICECALL:
+                    // @ts-ignore
+                    attrOut.push(DocumentAttributeVoiceCall.deserializeBinary(attr.data).toObject());
+                    flags.type = C_MESSAGE_TYPE.VoiceMail;
                     break;
             }
             // @ts-ignore
@@ -346,6 +353,7 @@ export default class MessageRepo {
                 mediaType = MediaCategory.MEDIACATEGORYAUDIO;
                 break;
             case C_MESSAGE_TYPE.Voice:
+            case C_MESSAGE_TYPE.VoiceMail:
                 mediaType = MediaCategory.MEDIACATEGORYVOICE;
                 break;
             case C_MESSAGE_TYPE.Location:

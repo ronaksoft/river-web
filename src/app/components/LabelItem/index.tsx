@@ -396,6 +396,7 @@ const LabelBody = ({teamId, labelId, message, onAction}: IRootProps) => {
         case C_MESSAGE_TYPE.Gif:
             return <LabelBodyMedia message={message} onAction={onAction} teamId={teamId} labelId={labelId}/>;
         case C_MESSAGE_TYPE.Voice:
+        case C_MESSAGE_TYPE.VoiceMail:
             return <LabelBodyVoice message={message} teamId={teamId}/>;
         default:
             return <LabelBodyDefault message={message} teamId={teamId}/>;

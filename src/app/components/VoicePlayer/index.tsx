@@ -8,7 +8,7 @@
 */
 
 import React from 'react';
-import {PlayArrowRounded, PauseRounded, CloseRounded, ArrowDownwardRounded} from '@material-ui/icons';
+import {ArrowDownwardRounded, CloseRounded, PauseRounded, PlayArrowRounded} from '@material-ui/icons';
 import ProgressBroadcaster from '../../services/progress';
 import {IMessage} from '../../repository/message/interface';
 import {IFileProgress} from '../../services/sdk/fileManager';
@@ -21,7 +21,7 @@ import {ThemeChanged} from "../SettingsMenu";
 import {EventMouseUp, EventRightMenuToggled} from "../../services/events";
 import {
     DocumentAttributeAudio,
-    DocumentAttributeType,
+    DocumentAttributeType, DocumentAttributeVoiceCall,
     MediaDocument
 } from "../../services/sdk/messages/chat.messages.medias_pb";
 import {from4bitResolution} from "../ChatInput/utils";
@@ -51,6 +51,9 @@ export interface IVoicePlayerData {
     entityList?: MessageEntity.AsObject[];
     state: 'pause' | 'progress' | 'download';
     voice?: Blob;
+    isCall?: boolean;
+    callAttempts?: number,
+    callAttemptSleep?: number,
 }
 
 export const getVoiceInfo = (message: IMessage): IVoicePlayerData => {
@@ -82,6 +85,13 @@ export const getVoiceInfo = (message: IMessage): IVoicePlayerData => {
                     // @ts-ignore
                     info.bars = from4bitResolution(Array.from(base64ToU8a(attr.waveform)));
                 }
+            }
+        } else if (item.type === DocumentAttributeType.ATTRIBUTETYPEVOICECALL) {
+            if (message.attributes && message.attributes[index]) {
+                const attr: DocumentAttributeVoiceCall.AsObject = message.attributes[index];
+                info.isCall = true;
+                info.callAttempts = attr.maxcallattempts;
+                info.callAttemptSleep = attr.callattemptsleep;
             }
         }
     });
@@ -256,12 +266,12 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                     switch (message.peertype) {
                         case PeerType.PEERUSER:
                         case PeerType.PEEREXTERNALUSER:
-                            if (message.messagetype === C_MESSAGE_TYPE.Voice && ds.chat_voices) {
+                            if ((message.messagetype === C_MESSAGE_TYPE.Voice || message.messagetype === C_MESSAGE_TYPE.VoiceMail) && ds.chat_voices) {
                                 this.downloadVoiceHandler();
                             }
                             break;
                         case PeerType.PEERGROUP:
-                            if (message.messagetype === C_MESSAGE_TYPE.Voice && ds.group_voices) {
+                            if ((message.messagetype === C_MESSAGE_TYPE.Voice || message.messagetype === C_MESSAGE_TYPE.VoiceMail) && ds.group_voices) {
                                 this.downloadVoiceHandler();
                             }
                             break;

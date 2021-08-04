@@ -2226,7 +2226,10 @@ class ChatInput extends React.Component<IProps, IState> {
                         {getMessageIcon(messageTitle.icon)}
                         {messageTitle.text}
                     </div>
-                    {(droppedMessage.messagetype === C_MESSAGE_TYPE.Voice || droppedMessage.messagetype === C_MESSAGE_TYPE.Video || droppedMessage.messagetype === C_MESSAGE_TYPE.Audio) &&
+                    {(droppedMessage.messagetype === C_MESSAGE_TYPE.Voice ||
+                        droppedMessage.messagetype === C_MESSAGE_TYPE.VoiceMail ||
+                        droppedMessage.messagetype === C_MESSAGE_TYPE.Video ||
+                        droppedMessage.messagetype === C_MESSAGE_TYPE.Audio) &&
                     <div className="preview-message-body">
                         <div className="inner">{getDuration(info.duration || 0)}</div>
                     </div>}

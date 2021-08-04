@@ -109,7 +109,7 @@ export const getMessageTitle = (message: IMessage, ignoreCaption?: boolean, maxC
                 break;
             case MediaType.MEDIATYPEDOCUMENT:
                 const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-                if (message.messagetype === C_MESSAGE_TYPE.Voice) {
+                if (message.messagetype === C_MESSAGE_TYPE.Voice || message.messagetype === C_MESSAGE_TYPE.VoiceMail) {
                     messageIcon.icon = C_MESSAGE_ICON.Voice;
                     messageIcon.text = i18n.t('message.voice_message');
                 } else if (message.messagetype === C_MESSAGE_TYPE.Audio) {

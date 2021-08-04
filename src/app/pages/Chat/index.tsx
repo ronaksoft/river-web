@@ -1981,6 +1981,7 @@ class Chat extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Picture:
                 case C_MESSAGE_TYPE.Video:
                 case C_MESSAGE_TYPE.Voice:
+                case C_MESSAGE_TYPE.VoiceMail:
                     (message.mediadata as MediaDocument.AsObject).caption = text || '';
                     if (param && param.entities) {
                         (message.mediadata as MediaDocument.AsObject).entitiesList = param.entities.map((entity: MessageEntity) => {

@@ -23,6 +23,7 @@ export const C_MESSAGE_TYPE = {
     System: 1,
     Video: -11,
     Voice: -6,
+    VoiceMail: -15,
     WebDocument: -14,
 };
 
