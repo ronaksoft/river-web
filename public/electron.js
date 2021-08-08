@@ -17,7 +17,7 @@ const store = new Store();
 const {register, listen} = require('push-receiver');
 const notifier = require('node-notifier');
 
-const C_APP_VERSION = '0.43.0';
+const C_APP_VERSION = '0.44.0';
 
 const C_LOAD_URL = 'https://web.river.im';
 const C_LOAD_URL_KEY = 'load_url';
