@@ -26,10 +26,10 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
 precache([{
-    revision: '39',
+    revision: '40',
     url: '/bin/river.wasm',
 },{
-    revision: '7',
+    revision: '8',
     url: '/bin/river-tiny.wasm',
 }, {
     revision: '2',

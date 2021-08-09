@@ -1,3 +1,6 @@
+## 1.2.19
+* Improvements in WASM code
+
 ## 1.2.18
 * Minor bugs fixed
 
