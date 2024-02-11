@@ -25,18 +25,14 @@ import {uint8ToBase64} from "../sdk/fileManager/http/utils";
 
 export const getWsServerUrl = () => {
     const serverMode: any = localStorage.getItem(C_LOCALSTORAGE.ServerMode) || 'prod';
-    const isElectron = ElectronService.isElectron();
-    if (!isElectron && window.location.host.indexOf('localhost') === -1) {
-        return null;
-    } else {
-        if (serverMode === 'prod') {
-            return 'edge.river.im';
-        } else if (serverMode === 'dev') {
-            return 'river.ronaksoftware.com';
-        } else if (serverMode === 'other') {
-            return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im';
-        }
+    if (serverMode === 'prod') {
+        return 'edge.river.im';
+    } else if (serverMode === 'dev') {
+        return 'river.ronaksoftware.com';
+    } else if (serverMode === 'other') {
+        return localStorage.getItem(C_LOCALSTORAGE.WorkspaceUrl) || 'edge.river.im';
     }
+
     return null;
 };
 

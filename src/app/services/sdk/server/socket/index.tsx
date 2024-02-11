@@ -373,7 +373,7 @@ export default class Socket {
         if (wsUrl && wsUrl.length > 0) {
             this.socket = new WebSocket(`ws://${wsUrl}`);
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
-            this.socket = new WebSocket('wss://' + window.location.host + '/ws');
+            this.socket = new WebSocket(`wss://${wsUrl}`);
         } else {
             this.socket = new WebSocket(`ws://${defaultGateway}`);
         }
