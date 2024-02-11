@@ -371,9 +371,11 @@ export default class Socket {
 
         const wsUrl = getWsServerUrl();
         if (wsUrl && wsUrl.length > 0) {
-            this.socket = new WebSocket(`ws://${wsUrl}`);
-        } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
-            this.socket = new WebSocket(`wss://${wsUrl}`);
+            if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
+                this.socket = new WebSocket(`wss://${wsUrl}`);
+            } else {
+                this.socket = new WebSocket(`ws://${wsUrl}`);
+            }
         } else {
             this.socket = new WebSocket(`ws://${defaultGateway}`);
         }
