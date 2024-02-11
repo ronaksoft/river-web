@@ -13,9 +13,6 @@ import Routes from './app/routes';
 import {CircularProgress, DialogContentText} from '@material-ui/core';
 import MainRepo from './app/repository';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
-// import {ErrorInfo} from 'react';
-import * as Sentry from '@sentry/react';
-import {Integrations} from "@sentry/tracing";
 import i18n from "./app/services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from "./app/services/iframe";
 import UniqueId from "./app/services/uniqueId";
@@ -45,16 +42,16 @@ import APIManager from "./app/services/sdk";
 import './App.scss';
 
 if (isProd) {
-    Sentry.init({
-        autoSessionTracking: true,
-        dsn: "https://65e6ffeb9e96400c8d8100cd1e6678b5@sentry.ronaksoft.com/5",
-        ignoreErrors: [
-            /Non-Error/g
-        ],
-        integrations: [
-            new Integrations.BrowserTracing(),
-        ],
-    });
+    // Sentry.init({
+    //     autoSessionTracking: true,
+    //     dsn: "https://65e6ffeb9e96400c8d8100cd1e6678b5@sentry.ronaksoft.com/5",
+    //     ignoreErrors: [
+    //         /Non-Error/g
+    //     ],
+    //     integrations: [
+    //         new Integrations.BrowserTracing(),
+    //     ],
+    // });
 }
 
 const getTheme = (forceDark?: boolean) => {
