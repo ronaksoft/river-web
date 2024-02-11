@@ -10,18 +10,14 @@
 import {C_ERR, C_ERR_ITEM, C_LOCALSTORAGE, C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
 import UpdateManager from './../updateManager';
-import {throttle, cloneDeep, forEachRight} from 'lodash';
+import {cloneDeep, forEachRight, throttle} from 'lodash';
 import Socket from './socket';
 import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
 import * as Sentry from "@sentry/browser";
 import {isProd} from "../../../../index";
-import {EventWebSocketClose, EventSocketReady, EventSocketConnected, EventAuthError} from "../../events";
-import {
-    SystemConfig,
-    SystemGetServerTime,
-    SystemServerTime
-} from "../messages/system_pb";
+import {EventAuthError, EventSocketConnected, EventSocketReady, EventWebSocketClose} from "../../events";
+import {SystemConfig, SystemGetServerTime, SystemServerTime} from "../messages/system_pb";
 import {InputPassword, InputTeam} from "../messages/core.types_pb";
 import {Error as RiverError, KeyValue, MessageContainer, MessageEnvelope} from "../messages/rony_pb";
 import CommandRepo from "../../../repository/command";

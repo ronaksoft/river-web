@@ -147,11 +147,7 @@ export default class SystemManager {
 
     public getServerKey(): Promise<string> {
         return new Promise((resolve, reject) => {
-            if (window.location.host.indexOf('web.river.im') > -1) {
-                return resolve(serverKeys);
-            } else {
-                this.systemGetServerKeysWithRetry(resolve, reject, 0);
-            }
+            this.systemGetServerKeysWithRetry(resolve, reject, 0);
         });
     }
 
@@ -240,7 +236,7 @@ export default class SystemManager {
         protoMessage.setAuthid(0);
         protoMessage.setMessagekey(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
         protoMessage.setPayload(messageEnvelope.serializeBinary());
-        
+
         axios.post(this.dataCenterUrl, protoMessage.serializeBinary(), {
             headers: {
                 'Accept': 'application/protobuf',
